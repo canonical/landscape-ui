@@ -24,11 +24,6 @@ export const MSW_ENDPOINTS_TO_INTERCEPT =
   (import.meta.env.VITE_MSW_ENDPOINTS_TO_INTERCEPT ?? "")
     .split(",")
     .filter(Boolean) ?? [];
-export const COMMON_NUMBERS = {
-  ZERO: 0,
-  ONE: 1,
-  TWO: 2,
-};
 export const HOMEPAGE_PATH = "/overview";
 export const DEFAULT_ACCESS_GROUP_NAME = "global";
 export const BREAKPOINT_PX = {
@@ -39,3 +34,7 @@ export const BREAKPOINT_PX = {
   xl: 1280,
   xxl: 1400,
 };
+export const MAX_DELIVERY_DELAY_WINDOW = 43200; // 30 days in minutes
+export const MAX_MINUTES_IN_HOUR = 59;
+export const MAX_HOURS_IN_DAY = 23;
+export const MAX_PASSWORD_LENGTH = 50;

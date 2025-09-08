@@ -1,6 +1,7 @@
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Usn } from "@/types/Usn";
 import type { AxiosResponse } from "axios";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export const isSecurityLoadingState = ({
   currentPage,
@@ -13,7 +14,12 @@ export const isSecurityLoadingState = ({
   pageSize: number;
   getUsnsQueryLoading: boolean;
 }) => {
-  return !search && currentPage === 1 && pageSize === 20 && getUsnsQueryLoading;
+  return (
+    !search &&
+    currentPage === 1 &&
+    pageSize === DEFAULT_PAGE_SIZE &&
+    getUsnsQueryLoading
+  );
 };
 
 export const isSecurityEmptyState = ({
@@ -32,7 +38,7 @@ export const isSecurityEmptyState = ({
   return (
     !search &&
     currentPage === 1 &&
-    pageSize === 20 &&
+    pageSize === DEFAULT_PAGE_SIZE &&
     !getUsnsQueryLoading &&
     (!getUsnsQueryResult || getUsnsQueryResult.data.results.length === 0)
   );
@@ -54,7 +60,7 @@ export const isSecurityListLoaded = ({
   return (
     search ||
     currentPage > 1 ||
-    pageSize !== 20 ||
+    pageSize !== DEFAULT_PAGE_SIZE ||
     (!getUsnsQueryLoading &&
       getUsnsQueryResult &&
       getUsnsQueryResult.data.results.length > 0)

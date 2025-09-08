@@ -1,5 +1,7 @@
 import * as Yup from "yup";
 
+const MAX_DAYS_WITHOUT_EXCHANGE = 2147483647;
+
 export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
     access_group: Yup.string(),
@@ -14,7 +16,10 @@ export const getValidationSchema = (action: "add" | "edit") => {
       })
       .integer("Timeframe must be an integer value.")
       .min(1, "Timeframe must be at least 1.")
-      .max(2147483647, "Timeframe must be less than 2147483648."),
+      .max(
+        MAX_DAYS_WITHOUT_EXCHANGE,
+        `Timeframe must be less than ${MAX_DAYS_WITHOUT_EXCHANGE}.`,
+      ),
     tags: Yup.array().of(Yup.string()),
     title: Yup.string().test({
       name: "required",

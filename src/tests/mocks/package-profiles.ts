@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-magic-numbers: 0 */
+
 import type { PackageProfile } from "@/features/package-profiles";
 
 export const packageProfiles: PackageProfile[] = [

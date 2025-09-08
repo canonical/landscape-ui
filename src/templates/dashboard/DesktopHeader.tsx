@@ -7,6 +7,8 @@ import { APP_TITLE } from "@/constants";
 import classes from "./DesktopHeader.module.scss";
 import classNames from "classnames";
 
+const ICON_RATIO = 1.6;
+
 interface DesktopHeaderProps {
   readonly closeMenu: () => void;
 }
@@ -30,7 +32,7 @@ const DesktopHeader: FC<DesktopHeaderProps> = ({ closeMenu }) => {
           className={classes.logoIcon}
           src={LogoIcon}
           alt={APP_TITLE}
-          width={1.6 * 16}
+          width={ICON_RATIO * 16}
         />
       </Link>
       <div className="u-hide--large">

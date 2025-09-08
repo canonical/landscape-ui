@@ -67,6 +67,8 @@ export const getSchedule = (profile: SecurityProfile) => {
     profile.schedule.split(";").map((part) => part.split("=")),
   );
 
+  const sliceEndIdx = -2;
+
   if (schedule.COUNT == 1) {
     return "On a date";
   }
@@ -110,8 +112,8 @@ export const getSchedule = (profile: SecurityProfile) => {
             "3": "third",
             "4": "fourth",
             "-1": "last",
-          }[(schedule.BYDAY as string).slice(0, -2)]
-        } ${{ SU: "Sunday", MO: "Monday", TU: "Tuesday", WE: "Wednesday", TH: "Thursday", FR: "Friday", SA: "Saturday" }[(schedule.BYDAY as string).slice(-2)]}`;
+          }[(schedule.BYDAY as string).slice(0, sliceEndIdx)]
+        } ${{ SU: "Sunday", MO: "Monday", TU: "Tuesday", WE: "Wednesday", TH: "Thursday", FR: "Friday", SA: "Saturday" }[(schedule.BYDAY as string).slice(sliceEndIdx)]}`;
       }
 
       break;

@@ -19,6 +19,8 @@ import {
 } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
+const HOUR_S = 3600;
+
 interface SwitchAccountParams {
   account_name: string;
 }
@@ -93,7 +95,7 @@ export default [
     () => {
       return HttpResponse.json({
         valid: true,
-        valid_until: new Date(Date.now() + 3600 * 1000).toISOString(),
+        valid_until: new Date(Date.now() + HOUR_S * 1000).toISOString(),
       });
     },
   ),

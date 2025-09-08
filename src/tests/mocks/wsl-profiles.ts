@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-magic-numbers: 0 */
+
 import type { WslProfile } from "@/features/wsl-profiles";
 
 export const wslProfiles: WslProfile[] = [

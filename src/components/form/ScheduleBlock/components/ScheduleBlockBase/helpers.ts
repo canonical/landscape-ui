@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-magic-numbers: 0 */
+
 const ordinalSuffix = (number: number) => {
   switch (number % 100) {
     case 11:

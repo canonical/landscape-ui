@@ -7,6 +7,7 @@ import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import ScriptsVersionHistory from "./ScriptsVersionHistory";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const props: ComponentProps<typeof ScriptsVersionHistory> = {
   script: scriptDetails,
@@ -23,7 +24,10 @@ describe("Scripts Version History", () => {
     expect(screen.getByText(/version/i)).toBeInTheDocument();
     expect(screen.getByText(/created/i)).toBeInTheDocument();
 
-    const limitedVersions = scriptVersionsWithPagination.slice(0, 20);
+    const limitedVersions = scriptVersionsWithPagination.slice(
+      0,
+      DEFAULT_PAGE_SIZE,
+    );
     for (const version of limitedVersions) {
       const button = screen.getByRole("button", {
         name: `${version.version_number}`,

@@ -78,6 +78,16 @@ export default tseslint.config(
       ],
       "react/prefer-read-only-props": "error",
       "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/no-magic-numbers": [
+        "error",
+        {
+          ignore: [
+            -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 60, 90, 180, 270, 360, 16, 32,
+            64, 128, 256, 512, 1024, 2048, 4096, 8192, 100, 1000, 10000, 100000,
+            1000000,
+          ],
+        },
+      ],
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],

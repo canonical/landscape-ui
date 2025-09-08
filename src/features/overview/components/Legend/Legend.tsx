@@ -51,7 +51,7 @@ const Legend: FC<LegendProps> = ({
                 )}
                 style={{
                   opacity:
-                    selectedArc === index || selectedArc === null ? 1 : 0.3,
+                    selectedArc === index || selectedArc === null ? 1 : 0.3, // eslint-disable-line @typescript-eslint/no-magic-numbers
                 }}
                 onMouseEnter={() => {
                   handleChartMouseOver(

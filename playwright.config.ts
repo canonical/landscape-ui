@@ -1,6 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = process.env.CI ? 4173 : 5173;
+const TIMEOUT_IN_SECONDS = 120;
+const DEV_PORT = 5173;
+const PREVIEW_PORT = 4173;
+
+const PORT = process.env.CI ? DEV_PORT : PREVIEW_PORT;
 
 const BASE_URL = `http://localhost:${PORT}`;
 
@@ -24,7 +28,7 @@ export default defineConfig({
     command: process.env.CI ? "npm run preview" : "npm run dev",
     port: PORT,
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: TIMEOUT_IN_SECONDS * 1000,
   },
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {

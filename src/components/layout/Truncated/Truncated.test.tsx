@@ -23,8 +23,10 @@ const TruncatedItem: FC<
 };
 
 describe("Truncated", () => {
+  const TEST_COUNT = 50;
+
   it("should render", async () => {
-    const content = Array(50).fill("Item").join(", ");
+    const content = Array(TEST_COUNT).fill("Item").join(", ");
 
     renderWithProviders(<TruncatedItem content={content} />);
 
@@ -34,7 +36,7 @@ describe("Truncated", () => {
   });
 
   it("should show count", async () => {
-    const content = Array(50)
+    const content = Array(TEST_COUNT)
       .fill("Item, ")
       .map((item, index) => {
         return <span key={index}>{item}</span>;

@@ -111,13 +111,14 @@ describe("PageParamsManager (Refactored)", () => {
     });
 
     it("parses numeric fields as numbers", () => {
+      const testPageSize = 99;
       const params = new URLSearchParams({
         currentPage: "10",
-        pageSize: "99",
+        pageSize: String(testPageSize),
       });
       const parsed = pageParamsManager.getParsedParams(params);
       expect(parsed.currentPage).toBe(10);
-      expect(parsed.pageSize).toBe(99);
+      expect(parsed.pageSize).toBe(testPageSize);
     });
 
     it("falls back to default if numeric parse fails", () => {
