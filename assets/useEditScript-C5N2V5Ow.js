@@ -1,1 +1,0 @@
-import{c,e as u,f as r}from"./index-Cl3Ng_mk.js";const o=()=>{const t=c(),e=u(),{mutateAsync:s,isPending:i}=r({mutationKey:["scripts","edit"],mutationFn:async n=>t.get("EditScript",{params:n}),onSuccess:async()=>e.invalidateQueries({queryKey:["scripts"]})});return{editScript:s,isEditing:i}};export{o as u};
