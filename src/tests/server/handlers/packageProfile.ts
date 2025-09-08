@@ -2,6 +2,7 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { http, HttpResponse } from "msw";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import { isAction } from "./_helpers";
 
 export default [
@@ -49,7 +50,7 @@ export default [
         endpointStatus.path.includes("packageprofiles/:profileName"))
     ) {
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw ENDPOINT_STATUS_API_ERROR;
       }
     }
 
@@ -64,7 +65,7 @@ export default [
       (endpointStatus.path && endpointStatus.path.includes("packageprofiles"))
     ) {
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw ENDPOINT_STATUS_API_ERROR;
       }
     }
 
@@ -82,7 +83,7 @@ export default [
         ))
     ) {
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw ENDPOINT_STATUS_API_ERROR;
       }
     }
 
@@ -100,7 +101,7 @@ export default [
         ))
     ) {
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw ENDPOINT_STATUS_API_ERROR;
       }
     }
 
@@ -120,7 +121,7 @@ export default [
           ))
       ) {
         if (endpointStatus.status === "error") {
-          throw new HttpResponse(null, { status: 500 });
+          throw ENDPOINT_STATUS_API_ERROR;
         }
       }
 
@@ -132,7 +133,7 @@ export default [
     const endpointStatus = getEndpointStatus();
 
     if (!endpointStatus.path && endpointStatus.status === "error") {
-      throw new HttpResponse(null, { status: 500 });
+      throw ENDPOINT_STATUS_API_ERROR;
     }
 
     if (!isAction(request, "RemovePackageProfile")) {

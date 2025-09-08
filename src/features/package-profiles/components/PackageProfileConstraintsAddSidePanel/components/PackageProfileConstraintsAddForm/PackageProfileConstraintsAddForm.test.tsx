@@ -1,6 +1,7 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import PackageProfileConstraintsAddForm from "./PackageProfileConstraintsAddForm";
@@ -63,7 +64,7 @@ describe("PackageProfileConstraintsAddForm", () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
     expect(
-      await screen.findByText("Request failed with status code 500"),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

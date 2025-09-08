@@ -2,6 +2,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { instances } from "@/tests/mocks/instance";
 import { tags } from "@/tests/mocks/tag";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect } from "vitest";
@@ -86,7 +87,7 @@ describe("PackageProfileAddSidePanel", () => {
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
     expect(
-      await screen.findByText("Request failed with status code 500"),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

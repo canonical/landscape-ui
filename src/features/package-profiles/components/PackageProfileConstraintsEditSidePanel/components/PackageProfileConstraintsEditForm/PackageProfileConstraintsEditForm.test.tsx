@@ -2,6 +2,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
@@ -122,7 +123,7 @@ describe("PackageProfileConstraintsEditForm", () => {
       screen.queryByText("Package profile constraint updated"),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText("Request failed with status code 500"),
+      screen.getByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

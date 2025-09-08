@@ -1,6 +1,7 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
@@ -47,7 +48,7 @@ describe("PackageProfileDetailsSidePanel", () => {
       screen.queryByText("Package profile removed"),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText("Request failed with status code 500"),
+      screen.getByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

@@ -1,6 +1,7 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useFormik } from "formik";
@@ -14,7 +15,7 @@ type TestComponentProps = Omit<
   "formik"
 >;
 
-const props: TestComponentProps = {
+const defaultProps: TestComponentProps = {
   filter: "",
   onFilterChange: vi.fn(),
   profile: packageProfiles[0],
@@ -48,7 +49,7 @@ describe("PackageProfileConstraintsEditFormActions", () => {
   });
 
   it("removes constraints", async () => {
-    renderWithProviders(<TestComponent {...props} />);
+    renderWithProviders(<TestComponent {...defaultProps} />);
 
     await user.click(
       screen.getByRole("button", {
@@ -59,11 +60,11 @@ describe("PackageProfileConstraintsEditFormActions", () => {
       screen.getByRole("heading", { name: "Remove constraint" }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Remove" }));
-    expect(props.setSelectedIds).toHaveBeenCalledExactlyOnceWith([]);
+    expect(defaultProps.setSelectedIds).toHaveBeenCalledExactlyOnceWith([]);
   });
 
   it("catches errors while removing constraints", async () => {
-    renderWithProviders(<TestComponent {...props} />);
+    renderWithProviders(<TestComponent {...defaultProps} />);
 
     setEndpointStatus("error");
 
@@ -76,19 +77,21 @@ describe("PackageProfileConstraintsEditFormActions", () => {
       screen.getByRole("heading", { name: "Remove constraint" }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Remove" }));
-    expect(props.setSelectedIds).not.toHaveBeenCalled();
+    expect(defaultProps.setSelectedIds).not.toHaveBeenCalled();
     expect(
-      await screen.findByText("Request failed with status code 500"),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 
   it("changes the filter", async () => {
-    renderWithProviders(<TestComponent {...props} />);
+    renderWithProviders(<TestComponent {...defaultProps} />);
 
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Constraint type" }),
       "conflicts",
     );
-    expect(props.onFilterChange).toHaveBeenCalledExactlyOnceWith("conflicts");
+    expect(defaultProps.onFilterChange).toHaveBeenCalledExactlyOnceWith(
+      "conflicts",
+    );
   });
 });

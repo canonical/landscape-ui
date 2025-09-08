@@ -9,7 +9,7 @@ export default function useDebug() {
   return (error: unknown) => {
     let errorMessage: string;
 
-    if (isAxiosError<ApiError>(error) && error.response?.data.message) {
+    if (isAxiosError<ApiError>(error) && error.response) {
       const { message } = error.response.data;
       errorMessage = message;
 
