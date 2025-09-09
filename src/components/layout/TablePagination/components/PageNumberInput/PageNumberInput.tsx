@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import classes from "./PageNumberInput.module.scss";
 import { Input } from "@canonical/react-components";
 
-const MEDIUM_INPUT_THRESHOLD = 9;
-const LARGE_INPUT_THRESHOLD = 99;
-const XLARGE_INPUT_THRESHOLD = 999;
-
 const PageNumberInput = ({
   currentPage,
   max,
@@ -84,12 +80,9 @@ const PageNumberInput = ({
             classes.input,
             {
               [classes.smallInput]: !currentPage || currentPage < 10,
-              [classes.mediumInput]:
-                currentPage && currentPage > MEDIUM_INPUT_THRESHOLD,
-              [classes.largeInput]:
-                currentPage && currentPage > LARGE_INPUT_THRESHOLD,
-              [classes.xLargeInput]:
-                currentPage && currentPage > XLARGE_INPUT_THRESHOLD,
+              [classes.mediumInput]: currentPage && currentPage > 10,
+              [classes.largeInput]: currentPage && currentPage > 100,
+              [classes.xLargeInput]: currentPage && currentPage > 1000,
             },
           )}
           onKeyDown={handleKeyDown}

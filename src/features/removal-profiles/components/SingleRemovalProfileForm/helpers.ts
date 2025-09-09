@@ -18,7 +18,7 @@ export const getValidationSchema = (action: "add" | "edit") => {
       .min(1, "Timeframe must be at least 1.")
       .max(
         MAX_DAYS_WITHOUT_EXCHANGE,
-        `Timeframe must be less than ${MAX_DAYS_WITHOUT_EXCHANGE}.`,
+        `Timeframe must be at most  ${MAX_DAYS_WITHOUT_EXCHANGE}.`,
       ),
     tags: Yup.array().of(Yup.string()),
     title: Yup.string().test({
