@@ -36,6 +36,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
           : values.deliver_after,
         query,
         script_id: values.script_id,
+        time_limit: values.time_limit,
         username: values.username,
       });
       closeSidePanel();
