@@ -5,12 +5,13 @@ import { employees } from "@/tests/mocks/employees";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get<never, GetEmployeesParams, ApiPaginatedResponse<Employee>>(
     `${API_URL}employees`,
     async ({ request }) => {
+      const DEFAULT_PAGE_SIZE = 20;
+
       const endpointStatus = getEndpointStatus();
 
       const url = new URL(request.url);

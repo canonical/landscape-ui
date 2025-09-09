@@ -13,7 +13,6 @@ import {
   generateFilteredResponse,
   generatePaginatedResponse,
 } from "./_helpers";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get(
@@ -85,6 +84,7 @@ export default [
   http.get<never, GetSnapsParams, ApiPaginatedResponse<InstalledSnap>>(
     `${API_URL}computers/:computerId/snaps/installed`,
     async ({ request }) => {
+      const DEFAULT_PAGE_SIZE = 20;
       const endpointStatus = getEndpointStatus();
       const url = new URL(request.url);
       const search = url.searchParams.get("search") ?? "";

@@ -19,8 +19,6 @@ import {
 } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
-const HOUR_S = 3600;
-
 interface SwitchAccountParams {
   account_name: string;
 }
@@ -93,6 +91,8 @@ export default [
   http.get(
     `${API_URL}ubuntu-installer-attach-sessions/code/:attach_code`,
     () => {
+      const HOUR_S = 3600;
+
       return HttpResponse.json({
         valid: true,
         valid_until: new Date(Date.now() + HOUR_S * 1000).toISOString(),

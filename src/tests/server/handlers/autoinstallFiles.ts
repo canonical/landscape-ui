@@ -12,7 +12,6 @@ import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get<
@@ -20,6 +19,7 @@ export default [
     GetAutoinstallFilesParams,
     ApiPaginatedResponse<AutoinstallFile>
   >(`${API_URL}autoinstall`, async ({ request }) => {
+    const DEFAULT_PAGE_SIZE = 20;
     const endpointStatus = getEndpointStatus();
 
     const url = new URL(request.url);

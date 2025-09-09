@@ -9,7 +9,6 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { diffPocket, listPockets } from "@/tests/mocks/pockets";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get<never, ListPocketParams, ApiPaginatedResponse<PackageObject>>(
@@ -18,6 +17,8 @@ export default [
       if (!isAction(request, "ListPocket")) {
         return;
       }
+
+      const DEFAULT_PAGE_SIZE = 20;
 
       const endpointStatus = getEndpointStatus();
       const url = new URL(request.url);
