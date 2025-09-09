@@ -11,6 +11,7 @@ import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
 import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const AutoinstallFileVersion = lazy(
   async () => import("../AutoinstallFileVersion"),
@@ -33,7 +34,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const versions = autoinstallFile ? autoinstallFile.metadata.versions : [];
 

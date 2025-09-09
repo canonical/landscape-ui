@@ -9,6 +9,7 @@ import ScriptProfilesList from "../ScriptProfilesList";
 import NoScriptsEmptyState from "../NoScriptsEmptyState";
 import NoScriptProfilesEmptyState from "../NoScriptProfilesEmptyState";
 import ScriptProfilesHeader from "../ScriptProfilesHeader";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const ScriptProfilesPanel: FC = () => {
   const { currentPage, pageSize, search, status } = usePageParams();
@@ -40,7 +41,9 @@ const ScriptProfilesPanel: FC = () => {
     useGetScriptProfileLimits();
 
   const isProfilesLoading =
-    currentPage === 1 && pageSize === 20 && isGettingScriptProfiles;
+    currentPage === 1 &&
+    pageSize === DEFAULT_PAGE_SIZE &&
+    isGettingScriptProfiles;
 
   if (
     isGettingActiveScriptProfiles ||

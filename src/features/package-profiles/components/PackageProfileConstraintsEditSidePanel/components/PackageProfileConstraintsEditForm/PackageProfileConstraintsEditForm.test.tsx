@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-magic-numbers: 0 */
+
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { packageProfiles } from "@/tests/mocks/package-profiles";

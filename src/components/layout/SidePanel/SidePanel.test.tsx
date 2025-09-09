@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactNode } from "react";
-import { use, type FC } from "react";
+import { type FC, use } from "react";
 import { describe, expect } from "vitest";
 import SidePanel from "./SidePanel";
 
@@ -54,6 +54,7 @@ describe("SidePanel", () => {
   it("renders a loading fallback with suspense", async () => {
     const children = "Content";
     const close = vi.fn();
+    const delay = 500;
 
     renderWithProviders(
       <SidePanel onClose={close}>
@@ -63,7 +64,7 @@ describe("SidePanel", () => {
               new Promise((resolve) => {
                 setTimeout(() => {
                   resolve(children);
-                }, 500);
+                }, delay);
               })
             }
           />

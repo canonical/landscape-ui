@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { Notification, NotificationHelper } from "@/types/Notification";
 
+const DEFAULT_NOTIFICATION_TIMEOUT = 5000;
+
 const useNotificationHelper = (): NotificationHelper => {
   const [notification, setNotification] = useState<Notification | null>(null);
 
@@ -42,7 +44,7 @@ const useNotificationHelper = (): NotificationHelper => {
 
       setTimeout(() => {
         setNotification(null);
-      }, 5000);
+      }, DEFAULT_NOTIFICATION_TIMEOUT);
     },
 
     clear: () => {

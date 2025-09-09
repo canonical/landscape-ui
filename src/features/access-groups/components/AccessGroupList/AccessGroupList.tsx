@@ -67,7 +67,7 @@ const AccessGroupList: FC<AccessGroupListProps> = ({ accessGroups }) => {
           return (
             <div
               style={{
-                paddingLeft: `${(row as Row<AccessGroupWithInstancesCount> & { depth: number }).depth * 1.25}rem`,
+                paddingLeft: `${(row as Row<AccessGroupWithInstancesCount> & { depth: number }).depth * 1.25}rem`, // eslint-disable-line @typescript-eslint/no-magic-numbers
               }}
             >
               <span>{row.original.title}</span>

@@ -1,4 +1,4 @@
-import { API_URL, COMMON_NUMBERS } from "@/constants";
+import { API_URL } from "@/constants";
 import type { GetSnapsParams, InstalledSnap } from "@/features/snaps";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
@@ -13,6 +13,7 @@ import {
   generateFilteredResponse,
   generatePaginatedResponse,
 } from "./_helpers";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get(
@@ -56,7 +57,7 @@ export default [
 
       const url = new URL(request.url);
       const pathParts = url.pathname.split("/");
-      const encodedName = pathParts[pathParts.length - COMMON_NUMBERS.TWO]; // Get the second to last element
+      const encodedName = pathParts[pathParts.length - 2]; // Get the second to last element
       const name = decodeURIComponent(encodedName);
       return HttpResponse.json(
         availableSnapInfo.find((snap) => snap.name === name)
@@ -87,9 +88,8 @@ export default [
       const endpointStatus = getEndpointStatus();
       const url = new URL(request.url);
       const search = url.searchParams.get("search") ?? "";
-      const offset =
-        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
-      const limit = Number(url.searchParams.get("limit")) || 20;
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
 
       if (endpointStatus.status === "error") {
         throw new HttpResponse(null, { status: 500 });

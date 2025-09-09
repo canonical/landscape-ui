@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./PageNumberInput.module.scss";
 import { Input } from "@canonical/react-components";
 
@@ -80,9 +80,9 @@ const PageNumberInput = ({
             classes.input,
             {
               [classes.smallInput]: !currentPage || currentPage < 10,
-              [classes.mediumInput]: currentPage && currentPage > 9,
-              [classes.largeInput]: currentPage && currentPage > 99,
-              [classes.xLargeInput]: currentPage && currentPage > 999,
+              [classes.mediumInput]: currentPage && currentPage > 10,
+              [classes.largeInput]: currentPage && currentPage > 100,
+              [classes.xLargeInput]: currentPage && currentPage > 1000,
             },
           )}
           onKeyDown={handleKeyDown}

@@ -1,7 +1,6 @@
 import type { FC, ReactNode } from "react";
 import classNames from "classnames";
 import classes from "./EmptyState.module.scss";
-import { COMMON_NUMBERS } from "@/constants";
 
 interface EmptyStateProps {
   readonly title?: string;
@@ -41,9 +40,7 @@ const EmptyState: FC<EmptyStateProps> = ({
             </p>
           )}
           {body && <div>{body}</div>}
-          {cta.length > COMMON_NUMBERS.ZERO && (
-            <div className={classes.cta}>{cta}</div>
-          )}
+          {cta.length > 0 && <div className={classes.cta}>{cta}</div>}
         </div>
       </div>
     </div>

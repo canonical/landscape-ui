@@ -12,6 +12,7 @@ import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get<
@@ -23,7 +24,7 @@ export default [
 
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset")) || 0;
-    const limit = Number(url.searchParams.get("limit")) || 20;
+    const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
     const search = url.searchParams.get("search") ?? "";
 
     return HttpResponse.json(

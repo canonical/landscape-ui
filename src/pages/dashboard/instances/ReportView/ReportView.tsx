@@ -44,6 +44,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   const { data: getUsnTimeToFixResult, isLoading: getUsnTimeToFixLoading } =
     getUsnTimeToFix({
       query: `id:${instanceIds.join(" OR id:")}`,
+      // eslint-disable-next-line @typescript-eslint/no-magic-numbers
       fixed_in_days: [2, 14, 30, 60],
     });
 

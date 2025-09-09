@@ -9,6 +9,7 @@ import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
 import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 interface PackageProfileDetailsConstraintsProps {
   readonly profile: PackageProfile;
@@ -18,7 +19,7 @@ const PackageProfileDetailsConstraints: FC<
   PackageProfileDetailsConstraintsProps
 > = ({ profile }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
 
   const { pushSidePath } = usePageParams();
@@ -42,12 +43,12 @@ const PackageProfileDetailsConstraints: FC<
     <>
       {!search &&
         currentPage === 1 &&
-        pageSize === 20 &&
+        pageSize === DEFAULT_PAGE_SIZE &&
         getPackageProfileConstraintsQueryLoading && <LoadingState />}
 
       {(search ||
         currentPage !== 1 ||
-        pageSize !== 20 ||
+        pageSize !== DEFAULT_PAGE_SIZE ||
         (!getPackageProfileConstraintsQueryLoading &&
           getPackageProfileConstraintsQueryResult &&
           getPackageProfileConstraintsQueryResult.data.results.length > 0)) && (

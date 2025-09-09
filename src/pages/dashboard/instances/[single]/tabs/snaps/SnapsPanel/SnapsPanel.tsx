@@ -14,6 +14,7 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);
@@ -47,9 +48,10 @@ const SnapsPanel: FC = () => {
 
   return (
     <>
-      {!search && isLoading && currentPage === 1 && pageSize === 20 && (
-        <LoadingState />
-      )}
+      {!search &&
+        isLoading &&
+        currentPage === 1 &&
+        pageSize === DEFAULT_PAGE_SIZE && <LoadingState />}
       {!isLoading &&
         !search &&
         (!getSnapsQueryResult ||
@@ -70,7 +72,7 @@ const SnapsPanel: FC = () => {
         )}
       {(search ||
         currentPage !== 1 ||
-        pageSize !== 20 ||
+        pageSize !== DEFAULT_PAGE_SIZE ||
         (getSnapsQueryResult &&
           getSnapsQueryResult?.data.results.length > 0)) && (
         <>

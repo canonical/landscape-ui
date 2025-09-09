@@ -3,15 +3,11 @@ import { DAYS_FILTER_OPTIONS } from "@/features/events-log";
 import moment from "moment";
 import type { ParamsConfig } from "./types";
 
-const DEFAULT_DAY_INDEX = 1;
-const DEFAULT_PAGE_SIZE_INDEX = 0;
-
 export const DEFAULT_CURRENT_PAGE = 1;
 export const DEFAULT_EMPTY_ARRAY = [];
 export const DEFAULT_EMPTY_STRING = "";
-export const DEFAULT_PAGE_SIZE =
-  PAGE_SIZE_OPTIONS[DEFAULT_PAGE_SIZE_INDEX].value;
-export const DEFAULT_DAYS = DAYS_FILTER_OPTIONS[DEFAULT_DAY_INDEX].value;
+export const DEFAULT_PAGE_SIZE = PAGE_SIZE_OPTIONS[0].value;
+export const DEFAULT_DAYS = DAYS_FILTER_OPTIONS[1].value;
 export const DEFAULT_RATE_FROM = 0;
 export const DEFAULT_RATE_TO = 100;
 

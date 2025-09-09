@@ -9,6 +9,7 @@ import { getAuthorInfo } from "../../helpers";
 import type { SingleScript, TruncatedScriptVersion } from "../../types";
 import classes from "./ScriptsVersionHistory.module.scss";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const ScriptVersionHistoryDetails = lazy(
   async () => import("../ScriptVersionHistoryDetails"),
@@ -24,7 +25,7 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
   viewVersionHistory,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const { setSidePanelContent } = useSidePanel();
   const { versions, isVersionsLoading, count } = useGetScriptVersions({

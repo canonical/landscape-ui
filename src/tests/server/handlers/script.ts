@@ -9,12 +9,13 @@ import {
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 export default [
   http.get(`${API_URL}scripts`, async ({ request }) => {
     const endpointStatus = getEndpointStatus();
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit")) || 20;
+    const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
     const offset = Number(url.searchParams.get("offset")) || 0;
     const search = url.searchParams.get("search") || "";
 
@@ -70,7 +71,7 @@ export default [
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {
     const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit")) || 20;
+    const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
     const offset = Number(url.searchParams.get("offset")) || 0;
 
     return HttpResponse.json(

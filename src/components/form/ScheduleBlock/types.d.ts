@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-magic-numbers: 0 */
+
 export interface ScheduleBlockFormProps {
   day_of_month_type: "day-of-month" | "day-of-week";
   days: ("SU" | "MO" | "TU" | "WE" | "TH" | "FR" | "SA")[];
