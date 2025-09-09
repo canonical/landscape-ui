@@ -1,17 +1,19 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { TablePagination } from "@/components/layout/TablePagination";
 import {
   RepositoryProfileHeader,
   RepositoryProfileList,
   useRepositoryProfiles,
 } from "@/features/repository-profiles";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 
 const RepositoryProfileForm = lazy(() =>
   import("@/features/repository-profiles").then((module) => ({
@@ -20,13 +22,31 @@ const RepositoryProfileForm = lazy(() =>
 );
 
 const RepositoryProfilesPage: FC = () => {
+  const { currentPage, pageSize, search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
 
-  const { data: repositoryProfilesResponse, isLoading } =
-    getRepositoryProfilesQuery();
+  const getUnfilteredRepositoryProfilesQueryResult = getRepositoryProfilesQuery(
+    { limit: 0 },
+  );
 
-  const repositoryProfiles = repositoryProfilesResponse?.data.results ?? [];
+  const getFilteredRepositoryProfilesQueryResult = getRepositoryProfilesQuery({
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+    search: search ? [search] : undefined,
+  });
+
+  if (getUnfilteredRepositoryProfilesQueryResult.isPending) {
+    return <LoadingState />;
+  }
+
+  if (getUnfilteredRepositoryProfilesQueryResult.error) {
+    throw getUnfilteredRepositoryProfilesQueryResult.error;
+  }
+
+  if (getFilteredRepositoryProfilesQueryResult.error) {
+    throw getFilteredRepositoryProfilesQueryResult.error;
+  }
 
   const handleAddProfile = () => {
     setSidePanelContent(
@@ -37,24 +57,29 @@ const RepositoryProfilesPage: FC = () => {
     );
   };
 
+  const button = (
+    <Button
+      appearance="positive"
+      key="add"
+      onClick={handleAddProfile}
+      type="button"
+    >
+      Add repository profile
+    </Button>
+  );
+
   return (
     <PageMain>
       <PageHeader
         title="Repository profiles"
-        actions={[
-          <Button
-            key="new-key-button"
-            appearance="positive"
-            onClick={handleAddProfile}
-            type="button"
-          >
-            Add repository profile
-          </Button>,
-        ]}
+        actions={
+          getUnfilteredRepositoryProfilesQueryResult.data.data.count
+            ? [button]
+            : undefined
+        }
       />
       <PageContent>
-        {isLoading && <LoadingState />}
-        {!isLoading && repositoryProfiles.length === 0 && (
+        {!getUnfilteredRepositoryProfilesQueryResult.data.data.count ? (
           <EmptyState
             title="No repository profiles found"
             body={
@@ -69,22 +94,27 @@ const RepositoryProfilesPage: FC = () => {
                 </a>
               </>
             }
-            cta={[
-              <Button
-                appearance="positive"
-                key="table-add-new-profile"
-                onClick={handleAddProfile}
-                type="button"
-              >
-                Add repository profile
-              </Button>,
-            ]}
+            cta={[button]}
           />
-        )}
-        {!isLoading && repositoryProfiles.length > 0 && (
+        ) : getFilteredRepositoryProfilesQueryResult.isPending ? (
+          <LoadingState />
+        ) : (
           <>
             <RepositoryProfileHeader />
-            <RepositoryProfileList repositoryProfiles={repositoryProfiles} />
+            <RepositoryProfileList
+              repositoryProfiles={
+                getFilteredRepositoryProfilesQueryResult.data.data.results
+              }
+            />
+            <TablePagination
+              totalItems={
+                getFilteredRepositoryProfilesQueryResult.data.data.count
+              }
+              currentItemCount={
+                getFilteredRepositoryProfilesQueryResult.data.data.results
+                  .length
+              }
+            />
           </>
         )}
       </PageContent>
