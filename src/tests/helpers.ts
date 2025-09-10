@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
-import { BREAKPOINT_PX, COMMON_NUMBERS } from "@/constants";
+import { BREAKPOINT_PX } from "@/constants";
 
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
@@ -12,7 +12,7 @@ export const expectLoadingState = async (): Promise<void> => {
 
 export const expectErrorNotification = async (): Promise<void> => {
   const errorNotificationCount = (await screen.findAllByText(/error/i)).length;
-  expect(errorNotificationCount).toBeGreaterThanOrEqual(COMMON_NUMBERS.ONE);
+  expect(errorNotificationCount).toBeGreaterThanOrEqual(1);
 };
 
 const originalMatchMedia = window.matchMedia;

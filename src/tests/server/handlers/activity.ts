@@ -1,4 +1,4 @@
-import { API_URL, API_URL_OLD, COMMON_NUMBERS } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity, GetActivitiesParams } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities, activityTypes } from "@/tests/mocks/activity";
@@ -17,9 +17,8 @@ export default [
       }
 
       const url = new URL(request.url);
-      const offset =
-        Number(url.searchParams.get("offset")) || COMMON_NUMBERS.ZERO;
-      const limit = Number(url.searchParams.get("limit")) || COMMON_NUMBERS.ONE;
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const limit = Number(url.searchParams.get("limit")) || 1;
       const search = url.searchParams.get("search") ?? "";
 
       return HttpResponse.json(

@@ -1,6 +1,8 @@
 import type { Page } from "@playwright/test";
 
-const PORT = process.env.CI ? 4173 : 5173;
+const DEV_PORT = 5173;
+const PREVIEW_PORT = 4173;
+const PORT = process.env.CI ? PREVIEW_PORT : DEV_PORT;
 const ROOT_PATH = process.env.VITE_ROOT_PATH ?? "/";
 const BASE_URL = `http://localhost:${PORT}`;
 

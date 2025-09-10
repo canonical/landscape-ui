@@ -91,9 +91,11 @@ export default [
   http.get(
     `${API_URL}ubuntu-installer-attach-sessions/code/:attach_code`,
     () => {
+      const HOUR_S = 3600;
+
       return HttpResponse.json({
         valid: true,
-        valid_until: new Date(Date.now() + 3600 * 1000).toISOString(),
+        valid_until: new Date(Date.now() + HOUR_S * 1000).toISOString(),
       });
     },
   ),

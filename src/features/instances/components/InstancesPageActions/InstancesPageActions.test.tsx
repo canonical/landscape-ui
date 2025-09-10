@@ -239,10 +239,13 @@ describe("InstancesPageActions", () => {
 
   describe("Run script form warning", () => {
     it("should appear when some invalid instances are selected", async () => {
+      const startIdx = 9;
+      const endIdx = 12;
+
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={instances.slice(9, 12)}
+          selectedInstances={instances.slice(startIdx, endIdx)}
         />,
       );
 

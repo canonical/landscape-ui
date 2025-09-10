@@ -1,11 +1,12 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import CloseContext from "@/components/layout/SidePanel/CloseContext";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
+import { useContext, type FC } from "react";
 import { EMPTY_CONSTRAINT } from "../../../../constants";
 import { usePackageProfiles } from "../../../../hooks";
 import type { ConstraintsFormProps, PackageProfile } from "../../../../types";
@@ -19,9 +20,10 @@ interface PackageProfileConstraintsAddFormProps {
 const PackageProfileConstraintsAddForm: FC<
   PackageProfileConstraintsAddFormProps
 > = ({ profile }) => {
+  const cancel = useContext(CloseContext);
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath } = usePageParams();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
@@ -57,21 +59,21 @@ const PackageProfileConstraintsAddForm: FC<
     },
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA,
+    validateOnMount: true,
   });
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <PackageProfileConstraintsBlock formik={formik} />
       <SidePanelFormButtons
+        submitButtonDisabled={!formik.isValid || formik.isValidating}
         submitButtonLoading={formik.isSubmitting}
         submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
         submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
         hasBackButton={sidePath.length > 1}
         onBackButtonPress={popSidePath}
-        onCancel={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onCancel={cancel}
       />
     </Form>
   );

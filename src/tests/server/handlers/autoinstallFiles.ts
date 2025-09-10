@@ -19,11 +19,12 @@ export default [
     GetAutoinstallFilesParams,
     ApiPaginatedResponse<AutoinstallFile>
   >(`${API_URL}autoinstall`, async ({ request }) => {
+    const DEFAULT_PAGE_SIZE = 20;
     const endpointStatus = getEndpointStatus();
 
     const url = new URL(request.url);
     const offset = Number(url.searchParams.get("offset")) || 0;
-    const limit = Number(url.searchParams.get("limit")) || 20;
+    const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
     const search = url.searchParams.get("search") ?? "";
 
     return HttpResponse.json(

@@ -16,7 +16,7 @@ export default function useDebug() {
       if (IS_DEV_ENV) {
         console.error(error.response);
       }
-    } else if (error instanceof Error) {
+    } else if (error instanceof Error && error.message) {
       const { message } = error;
       errorMessage = message;
     } else if (typeof error === "string") {

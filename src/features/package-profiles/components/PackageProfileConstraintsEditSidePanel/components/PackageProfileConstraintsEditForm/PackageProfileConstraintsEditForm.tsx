@@ -17,6 +17,7 @@ import PackageProfileConstraintsEditFormActions from "../../../PackageProfileCon
 import PackageProfileConstraintsEditFormTable from "../../../PackageProfileConstraintsEditFormTable";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 interface PackageProfileConstraintsEditFormProps {
   readonly profile: PackageProfile;
@@ -27,7 +28,7 @@ const PackageProfileConstraintsEditForm: FC<
 > = ({ profile }) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
   const [constraintType, setConstraintType] = useState<
     PackageProfileConstraintType | ""
@@ -99,13 +100,13 @@ const PackageProfileConstraintsEditForm: FC<
       {!search &&
         !constraintType &&
         currentPage === 1 &&
-        pageSize === 20 &&
+        pageSize === DEFAULT_PAGE_SIZE &&
         getPackageProfileConstraintsQueryLoading && <LoadingState />}
 
       {(search ||
         constraintType ||
         currentPage !== 1 ||
-        pageSize !== 20 ||
+        pageSize !== DEFAULT_PAGE_SIZE ||
         (!getPackageProfileConstraintsQueryLoading &&
           getPackageProfileConstraintsQueryResult &&
           getPackageProfileConstraintsQueryResult.data.results.length > 0)) && (
@@ -115,19 +116,13 @@ const PackageProfileConstraintsEditForm: FC<
               <PackageProfileConstraintsEditFormActions
                 filter={constraintType}
                 formik={formik}
-                onFilterChange={(value) => {
-                  setConstraintType(value);
-                }}
+                onFilterChange={setConstraintType}
                 profile={profile}
                 selectedIds={selectedIds}
-                setSelectedIds={(value) => {
-                  setSelectedIds(value);
-                }}
+                setSelectedIds={setSelectedIds}
               />
             }
-            onSearch={(searchText) => {
-              setSearch(searchText);
-            }}
+            onSearch={setSearch}
             disabled={formik.values.id !== 0}
           />
 
@@ -135,9 +130,7 @@ const PackageProfileConstraintsEditForm: FC<
             filter={constraintType}
             formik={formik}
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
-            onSelectedIdsChange={(value) => {
-              setSelectedIds(value);
-            }}
+            onSelectedIdsChange={setSelectedIds}
             pageSize={pageSize}
             profileConstraints={
               getPackageProfileConstraintsQueryResult?.data.results

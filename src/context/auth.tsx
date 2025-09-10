@@ -16,6 +16,8 @@ import Redirecting from "@/components/layout/Redirecting";
 import type { FeatureKey } from "@/types/FeatureKey";
 import useFeatures from "@/hooks/useFeatures";
 
+const NOT_AUTHORIZED_CODE = 401;
+
 export interface AuthContextProps {
   authLoading: boolean;
   authorized: boolean;
@@ -98,7 +100,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const isAuthError = useMemo(
     () =>
       isAxiosError(notify.notification?.error) &&
-      notify.notification.error.response?.status === 401,
+      notify.notification.error.response?.status === NOT_AUTHORIZED_CODE,
     [notify.notification],
   );
 

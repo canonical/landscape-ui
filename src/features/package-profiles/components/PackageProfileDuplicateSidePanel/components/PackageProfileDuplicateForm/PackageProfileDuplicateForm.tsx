@@ -78,10 +78,6 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   });
 
   useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
     formik.setValues({
       access_group: profile.access_group,
       all_computers: profile.all_computers,

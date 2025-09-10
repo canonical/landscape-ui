@@ -32,7 +32,7 @@ const FallbackComponent: FC<FallbackProps> = ({
         </Button>,
       ]}
       icon="disconnect"
-      title="Unexpected error occured"
+      title="Unexpected error occurred"
     />
   );
 };

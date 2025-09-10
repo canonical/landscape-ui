@@ -3,6 +3,7 @@ import { Chart, registerables } from "chart.js";
 import { describe, vi } from "vitest";
 import PieChart from "./PieChart";
 import { colorMap } from "../../constants";
+
 Chart.register(...registerables);
 
 const GREEN = colorMap.green.light.default;
@@ -30,6 +31,7 @@ const props = {
       },
       {
         backgroundColor: [RED, lightBackground],
+        // eslint-disable-next-line @typescript-eslint/no-magic-numbers
         data: [0, 13],
         borderWidth: 3,
         borderColor: lightBackground,

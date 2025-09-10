@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-magic-numbers: 0 */
+
 import type { Usn, UsnPackage } from "@/types/Usn";
 
 export const usns: Usn[] = [

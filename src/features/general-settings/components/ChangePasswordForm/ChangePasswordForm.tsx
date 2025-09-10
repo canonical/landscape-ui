@@ -9,6 +9,7 @@ import type { FC } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import classes from "./ChangePasswordForm.module.scss";
 import { VALIDATION_SCHEMA } from "./constants";
+import { MAX_PASSWORD_LENGTH } from "@/constants";
 
 interface FormProps {
   currentPassword: string;
@@ -49,7 +50,7 @@ const ChangePasswordForm: FC = () => {
       label: "8-50 characters",
       passed:
         formik.values.newPassword.length >= 8 &&
-        formik.values.newPassword.length <= 50,
+        formik.values.newPassword.length <= MAX_PASSWORD_LENGTH,
     },
     {
       label: "Lower case letters (a-z)",

@@ -27,9 +27,10 @@ describe("NavigationRoute", () => {
       />,
     );
 
+    const testId = 23;
     const label = container.querySelector(".p-side-navigation__label");
 
-    expect(screen.queryByText(23)).toBeInTheDocument();
+    expect(screen.queryByText(testId)).toBeInTheDocument();
     expect(label?.className).toContain("hasBadge");
   });
 

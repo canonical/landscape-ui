@@ -4,6 +4,11 @@ import type {
   UpgradeProfileFrequency,
   UpgradeProfileType,
 } from "../../types";
+import {
+  MAX_DELIVERY_DELAY_WINDOW,
+  MAX_HOURS_IN_DAY,
+  MAX_MINUTES_IN_HOUR,
+} from "@/constants";
 
 export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
@@ -16,13 +21,13 @@ export const getValidationSchema = (action: "add" | "edit") => {
           .required("Hour is required.")
           .integer("Hour must be an integer.")
           .min(0, "Hour must be between 0 and 23.")
-          .max(23, "Hour must be between 0 and 23."),
+          .max(MAX_HOURS_IN_DAY, "Hour must be between 0 and 23."),
     }),
     at_minute: Yup.number()
       .required("Minute is required.")
       .integer("Minute must be an integer.")
       .min(0, "Minute must be between 0 and 59.")
-      .max(59, "Minute must be between 0 and 59."),
+      .max(MAX_MINUTES_IN_HOUR, "Minute must be between 0 and 59."),
     deliver_delay_window: Yup.number().when("randomizeDelivery", {
       is: true,
       then: (schema) =>
@@ -30,7 +35,7 @@ export const getValidationSchema = (action: "add" | "edit") => {
           .required("This field is required.")
           .integer("This field must be an integer.")
           .max(
-            43200,
+            MAX_DELIVERY_DELAY_WINDOW,
             "Deliver delay window in minutes must be a number less than or equal to 30 days (43200 minutes)",
           )
           .test(

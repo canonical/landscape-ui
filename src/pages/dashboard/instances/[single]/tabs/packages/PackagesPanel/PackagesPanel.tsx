@@ -12,6 +12,7 @@ import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useLocation, useParams } from "react-router";
 import { getEmptyMessage } from "./helpers";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const PackagesPanel: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
@@ -49,7 +50,7 @@ const PackagesPanel: FC = () => {
       {!search &&
       !status &&
       currentPage === 1 &&
-      pageSize === 20 &&
+      pageSize === DEFAULT_PAGE_SIZE &&
       isGettingPackages ? (
         <LoadingState />
       ) : (

@@ -12,6 +12,8 @@ import type { CellProps, Column } from "react-table";
 import { handleCellProps } from "./helpers";
 import LoadingState from "@/components/layout/LoadingState";
 
+const TWO_WEEKS_DAYS = 14;
+
 const InvitesPanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
@@ -89,7 +91,7 @@ const InvitesPanel: FC = () => {
         Cell: ({ row }: CellProps<Invitation>) => (
           <span className="font-monospace">
             {moment(row.original.creation_time)
-              .add(14, "days")
+              .add(TWO_WEEKS_DAYS, "days")
               .format(DISPLAY_DATE_TIME_FORMAT)}
           </span>
         ),

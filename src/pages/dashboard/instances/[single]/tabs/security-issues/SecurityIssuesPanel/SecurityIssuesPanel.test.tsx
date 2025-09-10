@@ -5,6 +5,7 @@ import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
 import SecurityIssuesPanel from "@/pages/dashboard/instances/[single]/tabs/security-issues";
 import { usns } from "@/tests/mocks/usn";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const props = {
   instance: instances[0],
@@ -17,7 +18,7 @@ describe("SecurityIssuesPanel", () => {
     await expectLoadingState();
 
     await waitFor(() => {
-      usns.slice(0, 20).forEach((item) => {
+      usns.slice(0, DEFAULT_PAGE_SIZE).forEach((item) => {
         expect(
           screen.getByRole("link", {
             name: item.usn,
