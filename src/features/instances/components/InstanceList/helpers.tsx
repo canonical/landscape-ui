@@ -75,7 +75,7 @@ export const getStatusCellIconAndLabel = (
     };
   }
 
-  const filteredAlerts = (instance?.alerts ?? []).filter(
+  const filteredAlerts = (instance.alerts ?? []).filter(
     ({ type }) =>
       !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
   );

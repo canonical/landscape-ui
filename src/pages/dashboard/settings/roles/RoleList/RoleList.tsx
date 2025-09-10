@@ -73,7 +73,8 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
               "view",
             )}
             isExpanded={
-              expandedCell?.rowIndex === index &&
+              !!expandedCell &&
+              expandedCell.rowIndex === index &&
               expandedCell.columnId === "view"
             }
             onExpand={() => {

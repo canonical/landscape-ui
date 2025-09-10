@@ -162,7 +162,7 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
     <ResponsiveTable
       columns={columns}
       data={users}
-      emptyMsg="No users available"
+      emptyMsg="No users found according to your search parameters."
     />
   );
 };

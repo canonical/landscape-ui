@@ -58,7 +58,8 @@ export const handleCellProps =
       {};
 
     if (
-      expandedCell?.rowIndex === index &&
+      expandedCell &&
+      expandedCell.rowIndex === index &&
       expandedCell.columnId === column.id
     ) {
       cellProps.className = "expandedCell";

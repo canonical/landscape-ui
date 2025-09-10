@@ -122,7 +122,7 @@ const AlertTagsCell: FC<AlertTagsCellProps> = ({
     const label = multiSelectFieldRef.current?.querySelector(
       ".multi-select__condensed-text",
     );
-    if (label?.textContent?.includes("All instances")) {
+    if (label && label.textContent.includes("All instances")) {
       label.textContent = "All instances";
     }
   }, [formik.values.tags]);

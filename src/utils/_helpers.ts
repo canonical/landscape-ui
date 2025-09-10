@@ -32,8 +32,11 @@ export const handleParams = ({
   const requestParams = figureRequestParams(config);
   const paramsToPass = initParamsToPass({ config, isOld });
 
-  for (let i = 0; i < Object.keys(requestParams ?? []).length; i++) {
-    const param = Object.keys(requestParams)[i];
+  if (!requestParams) {
+    return paramsToPass;
+  }
+
+  for (const param of Object.keys(requestParams)) {
     const value = requestParams[param];
 
     if ("string" === typeof value && "" !== value) {
@@ -61,11 +64,7 @@ export const handleParams = ({
     } else if (typeof value === "object") {
       paramsToPass[param] =
         isOld || "get" === config.method ? JSON.stringify(value) : value;
-    } else if (
-      "" !== value &&
-      undefined !== value &&
-      !(Array.isArray(value) && 0 === value.length)
-    ) {
+    } else if ("" !== value && undefined !== value) {
       throw new Error(
         `Unsupported argument type. Provided: ${value} for ${param}`,
       );

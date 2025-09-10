@@ -49,11 +49,11 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
           type="truncated"
         />
 
-        <InfoGrid.Item label="Location" large value={user?.location} />
+        <InfoGrid.Item label="Location" large value={user.location} />
 
-        <InfoGrid.Item label="Home phone" large value={user?.home_phone} />
+        <InfoGrid.Item label="Home phone" large value={user.home_phone} />
 
-        <InfoGrid.Item label="Work phone" large value={user?.work_phone} />
+        <InfoGrid.Item label="Work phone" large value={user.work_phone} />
       </InfoGrid>
     </>
   );
