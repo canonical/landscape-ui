@@ -1,53 +1,84 @@
-name: Vulnerability Scanning with Trivy
+name: Vulnerability Scan
+
 on:
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch: # Allows manual triggering
   schedule:
-    - cron: "0 0 * * 0" # Run weekly at midnight on Sunday
+    - cron: "0 2 * * 1" # Run weekly at 2 AM on Monday
 
 permissions:
-  actions: read
   contents: read
-  security-events: write # for uploading SARIF results to the security tab
+  packages: write # Required to push to GitHub Container Registry
+  issues: write   # Required to create issues on failure
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  trivy-scan:
-    name: Trivy vulnerability scanner
+  build-image:
+    name: Build Docker Image
     runs-on: ubuntu-latest
+    outputs:
+      image_name: ${{ steps.meta.outputs.tags }}
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: main
 
-      - name: Create Trivy cache directory
-        run: mkdir -p $HOME/landscape-ui/.vuln-cache
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          scan-type: "fs"
-          format: "sarif"
-          output: "trivy-landscape-scan-results.sarif"
-          cache-dir: "$HOME/landscape-ui/.vuln-cache"
-          severity: "HIGH,CRITICAL,MEDIUM"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cache trivy and vulnerability database
-        uses: actions/cache/save@v4
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
         with:
-          path: $HOME/landscape-ui/.vuln-cache
-          key: trivy-cache
+          images: ghcr.io/${{ github.repository }}
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
         with:
-          sarif_file: "trivy-landscape-scan-results.sarif"
-          sha: ${{ github.sha }}
-          ref: refs/heads/main
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  scan-image:
+    name: Scan Container Image with Secscan
+    needs: build-image
+    runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+    steps:
+      - name: Install secscan client
+        run: sudo snap install canonical-secscan-client
+
+      - name: Run security scan
+        id: secscan
+        continue-on-error: true
+        run: |
+          IMAGE_TO_SCAN="${{ needs.build-image.outputs.image_name }}"
+          
+          # Run the scan and save the output to a file
+          secscan-client --batch submit \
+            --ssdlc-product-name "landscape-ui" \
+            --ssdlc-cycle "25.10" \
+            --ssdlc-product-version "1.17.0" \
+            --ssdlc-product-channel "edge" \
+            --scanner trivy \
+            --type container-image \
+            --format oci \
+            "$IMAGE_TO_SCAN" \
+            --wait-and-print > secscan-results.txt
+
+      - name: Create issue on high/critical findings
+        if: steps.secscan.outcome != 'success' || contains(toJSON(cat secscan-results.txt), 'CRITICAL') || contains(toJSON(cat secscan-results.txt), 'HIGH')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Vulnerability scan found high/critical issues or failed." > issue-body.txt
+          echo "### Scan Results" >> issue-body.txt
+          echo '```' >> issue-body.txt
+          cat secscan-results.txt >> issue-body.txt
+          echo '```' >> issue-body.txt
+          gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security"

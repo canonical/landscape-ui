@@ -7,17 +7,17 @@
     "node": ">=22.15.1"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "npm run lint:ci && tsc && vite build",
+    "dev": "vite --host",
+    "build": "pnpm run lint:ci && tsc && vite build",
     "lint:ci": "eslint . --config eslint.ci.config.mjs --ext .ts,.tsx",
     "preview": "vite preview",
     "prepare": "husky",
-    "test": "npx playwright test",
-    "test:ui": "npx playwright test --ui",
+    "test": "pnpm exec playwright test",
+    "test:ui": "pnpm exec playwright test --ui",
     "vitest": "vitest",
     "coverage": "vitest run --coverage",
-    "test:codegen": "npx playwright codegen",
-    "test:report": "npx playwright show-report"
+    "test:codegen": "pnpm exec playwright codegen",
+    "test:report": "pnpm exec playwright show-report"
   },
   "dependencies": {
     "@canonical/react-components": "3.0.0",
