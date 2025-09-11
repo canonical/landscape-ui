@@ -64,8 +64,6 @@ jobs:
         run: sudo snap install canonical-secscan-client
 
       - name: Run security scan
-        # We use continue-on-error so that even if the scan command fails,
-        # we can proceed to the 'Create Issue on Failure' step.
         continue-on-error: true
         id: scan
         run: |
@@ -80,21 +78,31 @@ jobs:
             "${{ needs.build-image.outputs.image_name }}" \
             --wait-and-print > secscan-results.txt
 
-      - name: Check for high/critical vulnerabilities
-        id: vulnerability_check
+      - name: Analyze Scan Results and Determine Job Status
+        if: always()
+        id: analysis
         run: |
-          # This step fails if HIGH or CRITICAL vulnerabilities are found in the results.
+          # Case 1: The scan tool itself reported a failure in its output.
+          if grep -q -i 'Scan has failed' secscan-results.txt; then
+            echo "::error::The secscan tool reported a failure. See results for details."
+            exit 1
+          fi
+
+          # Case 2: High or Critical vulnerabilities were found in a successful scan.
           if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
             echo "::error::High or Critical vulnerabilities found."
             exit 1
-          else
-            echo "Success: No high or critical vulnerabilities detected."
           fi
-        # This condition ensures this check runs only if the scan step succeeded.
-        if: steps.scan.outcome == 'success'
+          
+          # Case 3: The scan command failed for another reason (e.g., bad auth, network issue).
+          if [ "${{ steps.scan.outcome }}" == "failure" ]; then
+            echo "::error::The 'Run security scan' step failed unexpectedly. Check its logs."
+            exit 1
+          fi
+
+          echo "Success: Scan completed with no high/critical vulnerabilities."
 
       - name: Upload Scan Results on Success
-        # This step only runs if the entire job has been successful so far.
         if: success()
         uses: actions/upload-artifact@v4
         with:
@@ -102,7 +110,6 @@ jobs:
           path: secscan-results.txt
 
       - name: Create Issue on Failure
-        # This step runs if any of the previous steps have failed.
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
