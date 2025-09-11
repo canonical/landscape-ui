@@ -1,0 +1,86 @@
+# This is a reusable composite action for running the Canonical Secscan client.
+# It encapsulates the logic for installing the client, running the scan,
+# and checking the results for high or critical vulnerabilities.
+
+name: 'Run Canonical Secscan'
+description: 'Run the secscan tool and fail if high/critical vulnerabilities are found.'
+
+inputs:
+  image-to-scan:
+    description: 'The full name of the container image to scan (e.g., ghcr.io/user/repo:tag).'
+    required: true
+  ssdlc-product-name:
+    description: 'The SSDLC product name for the scan.'
+    required: true
+  ssdlc-cycle:
+    description: 'The SSDLC cycle for the scan (e.g., "25.10").'
+    required: true
+  ssdlc-product-version:
+    description: 'The SSDLC product version for the scan.'
+    required: true
+  ssdlc-product-channel:
+    description: 'The SSDLC product channel (e.g., "edge").'
+    required: true
+  scanner-type:
+    description: 'The type of scanner to use.'
+    required: false
+    default: 'trivy'
+  artifact-type:
+    description: 'The type of artifact being scanned.'
+    required: false
+    default: 'container-image'
+  format-type:
+    description: 'The format of the artifact.'
+    required: false
+    default: 'oci'
+
+outputs:
+  results-file:
+    description: "The path to the file containing the scan results."
+    value: ${{ steps.run-scan.outputs.results-path }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install secscan client
+      run: sudo snap install canonical-secscan-client
+      shell: bash
+
+    - name: Run security scan
+      id: run-scan
+      run: |
+        RESULTS_FILE="secscan-results.txt"
+        echo "Scanning image: ${{ inputs.image-to-scan }}"
+
+        # Run the scan and save the output to the results file
+        secscan-client --batch submit \
+          --ssdlc-product-name "${{ inputs.ssdlc-product-name }}" \
+          --ssdlc-cycle "${{ inputs.ssdlc-cycle }}" \
+          --ssdlc-product-version "${{ inputs.ssdlc-product-version }}" \
+          --ssdlc-product-channel "${{ inputs.ssdlc-product-channel }}" \
+          --scanner "${{ inputs.scanner-type }}" \
+          --type "${{ inputs.artifact-type }}" \
+          --format "${{ inputs.format-type }}" \
+          "${{ inputs.image-to-scan }}" \
+          --wait-and-print > $RESULTS_FILE
+        
+        # Make the results file path available to other steps/jobs
+        echo "results-path=$(realpath $RESULTS_FILE)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Check for high/critical vulnerabilities
+      id: check-vulnerabilities
+      run: |
+        RESULTS_FILE="${{ steps.run-scan.outputs.results-path }}"
+        echo "Checking for HIGH or CRITICAL vulnerabilities in $RESULTS_FILE..."
+        
+        # Grep for CRITICAL or HIGH severities.
+        # The '-q' flag makes grep quiet, it just sets the exit code.
+        if grep -q -E 'CRITICAL|HIGH' "$RESULTS_FILE"; then
+          echo "Error: High or Critical vulnerabilities found."
+          exit 1
+        else
+          echo "Success: No high or critical vulnerabilities detected."
+          exit 0
+        fi
+      shell: bash

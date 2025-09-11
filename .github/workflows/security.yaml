@@ -4,11 +4,15 @@ on:
   workflow_dispatch: # Allows manual triggering
   schedule:
     - cron: "0 2 * * 1" # Run weekly at 2 AM on Monday
+  pull_request:
+    paths:
+      - 'Dockerfile'
+      - '.github/workflows/security.yaml'
 
 permissions:
   contents: read
-  packages: write # Required to push to GitHub Container Registry
-  issues: write   # Required to create issues on failure
+  packages: write
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -36,6 +40,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,prefix=pr-${{ github.event.number }}-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -45,40 +52,38 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  scan-image:
-    name: Scan Container Image with Secscan
+  scan-and-report:
+    name: Scan and Report
     needs: build-image
     runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
     steps:
-      - name: Install secscan client
-        run: sudo snap install canonical-secscan-client
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Run security scan
-        id: secscan
-        continue-on-error: true
-        run: |
-          IMAGE_TO_SCAN="${{ needs.build-image.outputs.image_name }}"
-          
-          # Run the scan and save the output to a file
-          secscan-client --batch submit \
-            --ssdlc-product-name "landscape-ui" \
-            --ssdlc-cycle "25.10" \
-            --ssdlc-product-version "1.17.0" \
-            --ssdlc-product-channel "edge" \
-            --scanner trivy \
-            --type container-image \
-            --format oci \
-            "$IMAGE_TO_SCAN" \
-            --wait-and-print > secscan-results.txt
+      - name: Scan container image with Secscan
+        id: scan
+        uses: ./.github/actions/secscan.yaml
+        with:
+          image-to-scan: ${{ needs.build-image.outputs.image_name }}
+          ssdlc-product-name: 'landscape-ui'
+          ssdlc-cycle: '25.10'
+          ssdlc-product-version: '1.17.0'
+          ssdlc-product-channel: 'edge'
 
-      - name: Create issue on high/critical findings
-        if: steps.secscan.outcome != 'success' || contains(toJSON(cat secscan-results.txt), 'CRITICAL') || contains(toJSON(cat secscan-results.txt), 'HIGH')
+      - name: Upload Scan Results on Success
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secscan-results
+          path: ${{ steps.scan.outputs.results-file }}
+
+      - name: Create Issue on Failure
+        if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Vulnerability scan found high/critical issues or failed." > issue-body.txt
-          echo "### Scan Results" >> issue-body.txt
-          echo '```' >> issue-body.txt
-          cat secscan-results.txt >> issue-body.txt
-          echo '```' >> issue-body.txt
-          gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security"
+          echo "Vulnerability scan found high/critical issues." > issue-body.txt
+          echo "The workflow failed. Please review the scan results from the failed run." >> issue-body.txt
+          echo "You can find the logs in the 'Scan container image with Secscan' step of the 'Scan and Report' job." >> issue-body.txt
+          
+          gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
