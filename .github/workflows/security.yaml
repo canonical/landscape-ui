@@ -140,8 +140,10 @@ jobs:
           path: sbomber
 
       - name: Install Prerequisites
+        uses: astral-sh/setup-uv@v1
+
+      - name: Install secscan client
         run: |
-          sudo snap install astral-uv
           sudo snap install canonical-secscan-client
           sudo snap connect canonical-secscan-client:home system:home
 
