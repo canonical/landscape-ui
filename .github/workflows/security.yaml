@@ -82,7 +82,6 @@ jobs:
         id: scan
         run: |
           secscan-client --batch submit \
-            --token scan.token \
             --ssdlc-product-name 'landscape-ui' \
             --ssdlc-cycle '25.10' \
             --ssdlc-product-version '1.17.0' \
@@ -129,18 +128,14 @@ jobs:
         run: |
           echo "Vulnerability scan found high/critical issues or failed to run." > issue-body.txt
           echo "" >> issue-body.txt
-          echo "### Scan Results" >> issue-body.txt
-          echo '```' >> issue-body.txt
-          if [ -f secscan-results.txt ]; then cat secscan-results.txt; fi >> issue-body.txt
-          echo '```' >> issue-body.txt
+          echo "Please check the workflow run logs for the 'Run security scan' step for details." >> issue-body.txt
           echo "" >> issue-body.txt
-          echo "### Detailed Scan Log" >> issue-body.txt
+          echo "### Scan Output" >> issue-body.txt
           echo '```' >> issue-body.txt
-          # Attempt to get the detailed log using the token, as per documentation
-          if [ -f scan.token ]; then
-            secscan-client --batch log --token scan.token
+          if [ -f secscan-results.txt ]; then 
+            cat secscan-results.txt
           else
-            echo "Scan token not found. Could not retrieve detailed log."
+            echo "Scan results file not found."
           fi >> issue-body.txt
           echo '```' >> issue-body.txt
           
