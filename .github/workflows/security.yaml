@@ -75,7 +75,9 @@ jobs:
           name: image-tar
 
       - name: Install secscan client
-        run: sudo snap install canonical-secscan-client
+        run: |
+          sudo snap install canonical-secscan-client
+          sudo snap connect canonical-secscan-client:home
 
       - name: Run security scan
         continue-on-error: true
