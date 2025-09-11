@@ -2,7 +2,10 @@ import type { HTMLProps } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 import type { WslProfile } from "../../types";
 
-export const getCellProps = (expandedRowIndex: number | null) => {
+export const getCellProps = (
+  expandedRowIndex: number | null,
+  expandedColumnId: string | null,
+) => {
   return ({
     column,
     row: { index },
@@ -21,12 +24,15 @@ export const getCellProps = (expandedRowIndex: number | null) => {
         break;
       case "tags":
         cellProps["aria-label"] = "Tags";
-        if (expandedRowIndex === index) {
+        if (expandedRowIndex === index && expandedColumnId === "tags") {
           cellProps.className = "expandedCell";
         }
         break;
       case "description":
         cellProps["aria-label"] = "Description";
+        if (expandedRowIndex === index && expandedColumnId === "description") {
+          cellProps.className = "expandedCell";
+        }
         break;
       case "computers['non-compliant']":
         cellProps["aria-label"] = "Not compliant instances";
