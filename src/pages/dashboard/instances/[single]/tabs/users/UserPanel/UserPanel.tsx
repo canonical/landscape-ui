@@ -59,58 +59,57 @@ const UserPanel: FC = () => {
     setSidePanelContent("Add new user", <NewUserForm />);
   };
 
+  if (!search && isLoading) {
+    return <LoadingState />;
+  }
+
+  if (!search && (!userResponse || userResponse.data.results.length === 0)) {
+    return (
+      <EmptyState
+        title="No users found"
+        body="Add new users by clicking the button below."
+        icon="connected"
+        cta={[
+          <Button
+            type="button"
+            key="empty-state-add-new-user"
+            appearance="positive"
+            onClick={handleEmptyStateAddUser}
+          >
+            Add user
+          </Button>,
+        ]}
+      />
+    );
+  }
+
   return (
     <>
-      {!search && isLoading && <LoadingState />}
-      {!isLoading &&
-        !search &&
-        (!userResponse || userResponse.data.results.length === 0) && (
-          <EmptyState
-            title="No users found"
-            body="Add new users by clicking the button below."
-            icon="connected"
-            cta={[
-              <Button
-                type="button"
-                key="empty-state-add-new-user"
-                appearance="positive"
-                onClick={handleEmptyStateAddUser}
-              >
-                Add user
-              </Button>,
-            ]}
-          />
-        )}
-      {(search || (!isLoading && users.length > 0)) && (
-        <>
-          <UserPanelHeader
-            selected={selected}
-            handleClearSelection={handleClearSelection}
-            users={users}
-          />
-          {userResponse?.data.count &&
-            userResponse.data.count > MAX_USERS_LIMIT && (
-              <Notification
-                severity="caution"
-                title={`Fetched ${MAX_USERS_LIMIT} out of ${userResponse?.data.count} users`}
-              >
-                <span>
-                  The number of requested users is too high. Please{" "}
-                  <Link to="https://support-portal.canonical.com/">
-                    contact our support team.
-                  </Link>
-                </span>
-              </Notification>
-            )}
-          <UserList
-            selected={selected}
-            setSelected={(userIds) => {
-              setSelected(userIds);
-            }}
-            users={users}
-          />
-        </>
+      <UserPanelHeader
+        selected={selected}
+        handleClearSelection={handleClearSelection}
+        users={users}
+      />
+      {userResponse && userResponse.data.count > MAX_USERS_LIMIT && (
+        <Notification
+          severity="caution"
+          title={`Fetched ${MAX_USERS_LIMIT} out of ${userResponse.data.count} users`}
+        >
+          <span>
+            The number of requested users is too high. Please{" "}
+            <Link to="https://support-portal.canonical.com/">
+              contact our support team.
+            </Link>
+          </span>
+        </Notification>
       )}
+      <UserList
+        selected={selected}
+        setSelected={(userIds) => {
+          setSelected(userIds);
+        }}
+        users={users}
+      />
       <TablePagination
         handleClearSelection={handleClearSelection}
         totalItems={filteredUsers.length}

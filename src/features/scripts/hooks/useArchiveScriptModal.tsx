@@ -42,7 +42,7 @@ export const useArchiveScriptModal = ({
       await archiveScript(script.id || 0);
 
       notify.success({
-        message: `"${script?.title}" script archived successfully`,
+        message: `"${script.title}" script archived successfully`,
         title: "Script archived",
       });
     } catch (error) {

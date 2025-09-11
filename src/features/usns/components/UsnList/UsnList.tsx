@@ -95,7 +95,11 @@ const UsnList: FC<UsnListProps> = ({
 
   const handleExpandCellClick = (columnId: string, rowIndex: number) => {
     setExpandedCell((prevState) => {
-      if (prevState?.column === columnId && prevState.row === rowIndex) {
+      if (
+        prevState &&
+        prevState.column === columnId &&
+        prevState.row === rowIndex
+      ) {
         return null;
       }
 

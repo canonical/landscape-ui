@@ -45,9 +45,14 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
 
   const handleExpandCellClick = (columnId: string, rowIndex: number) => {
     setExpandedCell((prevState) => {
-      if (prevState?.column === columnId && prevState.row === rowIndex) {
+      if (
+        prevState &&
+        prevState.column === columnId &&
+        prevState.row === rowIndex
+      ) {
         return null;
       }
+
       return {
         column: columnId,
         row:
