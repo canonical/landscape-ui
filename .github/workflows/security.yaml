@@ -40,17 +40,26 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=sha,prefix=pr-${{ github.event.number }}-
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+          tags: type=sha,prefix=scan-
 
       - name: Build and push Docker image
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Save image to a tar file
+        run: docker save ${{ steps.meta.outputs.tags }} -o image.tar
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tar
+          path: image.tar
+          retention-days: 1
 
   scan-and-report:
     name: Scan and Report
@@ -60,6 +69,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tar
+
       - name: Install secscan client
         run: sudo snap install canonical-secscan-client
 
@@ -68,6 +82,7 @@ jobs:
         id: scan
         run: |
           secscan-client --batch submit \
+            --token scan.token \
             --ssdlc-product-name 'landscape-ui' \
             --ssdlc-cycle '25.10' \
             --ssdlc-product-version '1.17.0' \
@@ -75,31 +90,29 @@ jobs:
             --scanner trivy \
             --type container-image \
             --format oci \
-            "${{ needs.build-image.outputs.image_name }}" \
+            image.tar \
             --wait-and-print > secscan-results.txt
 
       - name: Analyze Scan Results and Determine Job Status
         if: always()
         id: analysis
         run: |
-          # Case 1: The scan tool itself reported a failure in its output.
+          if ! [ -f secscan-results.txt ]; then
+             echo "::error::Scan results file was not created. The scan client may have crashed."
+             exit 1
+          fi
           if grep -q -i 'Scan has failed' secscan-results.txt; then
             echo "::error::The secscan tool reported a failure. See results for details."
             exit 1
           fi
-
-          # Case 2: High or Critical vulnerabilities were found in a successful scan.
           if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
             echo "::error::High or Critical vulnerabilities found."
             exit 1
           fi
-          
-          # Case 3: The scan command failed for another reason (e.g., bad auth, network issue).
           if [ "${{ steps.scan.outcome }}" == "failure" ]; then
             echo "::error::The 'Run security scan' step failed unexpectedly. Check its logs."
             exit 1
           fi
-
           echo "Success: Scan completed with no high/critical vulnerabilities."
 
       - name: Upload Scan Results on Success
@@ -118,11 +131,17 @@ jobs:
           echo "" >> issue-body.txt
           echo "### Scan Results" >> issue-body.txt
           echo '```' >> issue-body.txt
-          if [ -f secscan-results.txt ]; then
-            cat secscan-results.txt >> issue-body.txt
+          if [ -f secscan-results.txt ]; then cat secscan-results.txt; fi >> issue-body.txt
+          echo '```' >> issue-body.txt
+          echo "" >> issue-body.txt
+          echo "### Detailed Scan Log" >> issue-body.txt
+          echo '```' >> issue-body.txt
+          # Attempt to get the detailed log using the token, as per documentation
+          if [ -f scan.token ]; then
+            secscan-client --batch log --token scan.token
           else
-            echo "Scan results file not found. The scan step may have failed." >> issue-body.txt
-          fi
+            echo "Scan token not found. Could not retrieve detailed log."
+          fi >> issue-body.txt
           echo '```' >> issue-body.txt
           
           gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
