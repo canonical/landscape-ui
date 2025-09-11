@@ -98,23 +98,32 @@ jobs:
         if: always()
         id: analysis
         run: |
-          if ! [ -f secscan-results.txt ]; then
-             echo "::error::Scan results file was not created. The scan client may have crashed."
-             exit 1
+          EXIT_CODE=${{ steps.scan.exit_code }}
+          echo "Scan step exited with code: $EXIT_CODE"
+
+          # Exit code 0 means a clean scan
+          if [ "$EXIT_CODE" == "0" ]; then
+            echo "Success: Scan completed and no vulnerabilities were found."
+            exit 0
           fi
-          if grep -q -i 'Scan has failed' secscan-results.txt; then
-            echo "::error::The secscan tool reported a failure. See results for details."
-            exit 1
+
+          # Exit codes 100-199 mean CVEs were found
+          if [ "$EXIT_CODE" -ge 100 ] && [ "$EXIT_CODE" -lt 200 ]; then
+            echo "::error::Vulnerabilities were detected by the scan."
+            if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
+              echo "::error::High or Critical vulnerabilities found."
+            else
+              echo "::warning::Medium or Low vulnerabilities found."
+            fi
+            exit 1 # Fail the job
           fi
-          if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
-            echo "::error::High or Critical vulnerabilities found."
-            exit 1
+
+          # Any other non-zero exit code is a processing error
+          echo "::error::The security scan failed to run properly. Exit code: $EXIT_CODE"
+          if [ -f secscan-results.txt ] && grep -q -i 'Scan has failed' secscan-results.txt; then
+            echo "::error::The secscan tool reported a failure in its output. See results for details."
           fi
-          if [ "${{ steps.scan.outcome }}" == "failure" ]; then
-            echo "::error::The 'Run security scan' step failed unexpectedly. Check its logs."
-            exit 1
-          fi
-          echo "Success: Scan completed with no high/critical vulnerabilities."
+          exit 1
 
       - name: Upload Scan Results on Success
         if: success()
