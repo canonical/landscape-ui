@@ -1,4 +1,4 @@
-name: Vulnerability Scan
+name: Vulnerability Scan and SBOM
 
 on:
   workflow_dispatch: # Allows manual triggering
@@ -62,13 +62,10 @@ jobs:
           retention-days: 1
 
   scan-and-report:
-    name: Scan and Report
+    name: Vulnerability Scan
     needs: build-image
     runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Download image artifact
         uses: actions/download-artifact@v4
         with:
@@ -77,7 +74,7 @@ jobs:
       - name: Install secscan client
         run: |
           sudo snap install canonical-secscan-client
-          sudo snap connect canonical-secscan-client:home
+          sudo snap connect canonical-secscan-client:home system:home
 
       - name: Run security scan
         continue-on-error: true
@@ -94,60 +91,96 @@ jobs:
             image.tar \
             --wait-and-print > secscan-results.txt
 
-      - name: Analyze Scan Results and Determine Job Status
+      - name: Analyze Scan Results
         if: always()
         id: analysis
         run: |
           EXIT_CODE=${{ steps.scan.exit_code }}
           echo "Scan step exited with code: $EXIT_CODE"
-
-          # Exit code 0 means a clean scan
           if [ "$EXIT_CODE" == "0" ]; then
             echo "Success: Scan completed and no vulnerabilities were found."
             exit 0
           fi
-
-          # Exit codes 100-199 mean CVEs were found
           if [ "$EXIT_CODE" -ge 100 ] && [ "$EXIT_CODE" -lt 200 ]; then
             echo "::error::Vulnerabilities were detected by the scan."
-            if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
-              echo "::error::High or Critical vulnerabilities found."
-            else
-              echo "::warning::Medium or Low vulnerabilities found."
-            fi
-            exit 1 # Fail the job
+            exit 1
           fi
-
-          # Any other non-zero exit code is a processing error
           echo "::error::The security scan failed to run properly. Exit code: $EXIT_CODE"
-          if [ -f secscan-results.txt ] && grep -q -i 'Scan has failed' secscan-results.txt; then
-            echo "::error::The secscan tool reported a failure in its output. See results for details."
-          fi
           exit 1
-
-      - name: Upload Scan Results on Success
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: secscan-results
-          path: secscan-results.txt
 
       - name: Create Issue on Failure
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Vulnerability scan found high/critical issues or failed to run." > issue-body.txt
+          echo "Vulnerability scan found issues or failed to run for Landscape UI." > issue-body.txt
           echo "" >> issue-body.txt
-          echo "Please check the workflow run logs for the 'Run security scan' step for details." >> issue-body.txt
+          echo "**Job:** [${{ github.job }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> issue-body.txt
           echo "" >> issue-body.txt
           echo "### Scan Output" >> issue-body.txt
           echo '```' >> issue-body.txt
-          if [ -f secscan-results.txt ]; then 
-            cat secscan-results.txt
-          else
-            echo "Scan results file not found."
-          fi >> issue-body.txt
+          if [ -f secscan-results.txt ]; then cat secscan-results.txt; else echo "Scan results file not found."; fi >> issue-body.txt
           echo '```' >> issue-body.txt
-          
-          gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
+          gh issue create --title "Vulnerability Scan Failed for Landscape UI" --body-file issue-body.txt --label "security,bug"
+
+  sbom-generation:
+    name: Generate SBOM
+    needs: build-image
+    runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+    steps:
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tar
+
+      - name: Checkout sbomber tool
+        uses: actions/checkout@v4
+        with:
+          repository: canonical/sbomber
+          path: sbomber
+
+      - name: Install Prerequisites
+        run: |
+          sudo snap install astral-uv
+          sudo snap install canonical-secscan-client
+          sudo snap connect canonical-secscan-client:home system:home
+
+      - name: Create sbomber manifest
+        run: |
+          cat <<EOF > sbomber/manifest.yaml
+          clients:
+            sbom:
+                department: Web Engineering
+                email: yurii.vasyliev@canonical.com
+                team: Landscape
+          artifacts:
+            - name: landscape-ui-container
+              type: container
+              path: ../image.tar # Relative path from sbomber dir
+          EOF
+
+      - name: Run sbomber to generate SBOM
+        id: sbomber
+        continue-on-error: true
+        run: |
+          cd sbomber
+          chmod +x sbomber
+          ./sbomber sequential sbom manifest.yaml
+
+      - name: Check SBOM Generation Status
+        if: always()
+        run: |
+          if [ "${{ steps.sbomber.outcome }}" == "success" ]; then
+            echo "SBOM generation completed successfully."
+          else
+            echo "::error::SBOM generation failed. Check the logs from the 'Run sbomber' step for details."
+            exit 1
+          fi
+
+      - name: Upload SBOM Reports
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-reports
+          path: sbomber/reports/
+          retention-days: 90
