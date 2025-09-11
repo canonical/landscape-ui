@@ -1,26 +1,15 @@
-import moment from "moment/moment";
 import * as Yup from "yup";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
 import { pluralize } from "@/utils/_helpers";
+import {
+  randomizationValidationSchema,
+  deliveryValidationSchema,
+} from "@/components/form/DeliveryScheduling";
 
 export const getValidationSchema = (action: InstalledPackageAction) =>
   Yup.object({
-    deliver_after: Yup.string().when("deliver_immediately", {
-      is: false,
-      then: (schema) =>
-        schema.required("This field is required").test({
-          test: (value) =>
-            moment(value).isValid() && moment(value).isAfter(moment()),
-          message: "You have to enter a valid date and time in the future",
-        }),
-    }),
-    deliver_delay_window: Yup.number().when("randomize_delivery", {
-      is: true,
-      then: (schema) =>
-        schema.min(0, "Delivery delay must be greater than or equal to 0"),
-    }),
-    deliver_immediately: Yup.boolean(),
-    randomize_delivery: Yup.boolean(),
+    ...randomizationValidationSchema,
+    ...deliveryValidationSchema,
     version: Yup.string().test({
       name: "required",
       message: "This field is required",

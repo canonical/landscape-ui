@@ -68,9 +68,9 @@ export default function useSecurityProfileFormConfirmationStep<
                       label="Randomize delivery over a time window"
                       large
                       value={
-                        formik.values.randomize_delivery === "yes"
-                          ? `Yes, over ${formik.values.restart_deliver_delay_window} ${pluralize(
-                              formik.values.restart_deliver_delay_window,
+                        formik.values.randomize_delivery === true
+                          ? `Yes, over ${formik.values.deliver_delay_window} ${pluralize(
+                              formik.values.deliver_delay_window,
                               "minute",
                             )}`
                           : "No"

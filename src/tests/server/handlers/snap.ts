@@ -59,9 +59,7 @@ export default [
       const encodedName = pathParts[pathParts.length - 2]; // Get the second to last element
       const name = decodeURIComponent(encodedName);
       return HttpResponse.json(
-        availableSnapInfo.find((snap) => snap.name === name)
-          ? availableSnapInfo.find((snap) => snap.name === name)
-          : {},
+        availableSnapInfo.find((snap) => snap.name === name) || null,
       );
     },
   ),

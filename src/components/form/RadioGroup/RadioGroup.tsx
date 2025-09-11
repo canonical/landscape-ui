@@ -7,7 +7,8 @@ import classes from "./RadioGroup.module.scss";
 
 interface RadioGroupProps<
   TField extends string,
-  TFormik extends Record<TField, Key>,
+  TValue,
+  TFormik extends Record<TField, TValue>,
 > {
   readonly field: TField;
   readonly formik: FormikContextType<TFormik>;
@@ -17,26 +18,40 @@ interface RadioGroupProps<
     | "key"
     | "onChange"
     | keyof ReturnType<FormikContextType<TFormik>["getFieldProps"]>
-  > & { key: Key; expansion?: ReactNode; help?: ReactNode })[];
+  > & {
+    value: TValue;
+    key: Key;
+    expansion?: ReactNode;
+    help?: ReactNode;
+    onSelect?: () => Promise<void> | void;
+  })[];
   readonly label?: ReactNode;
 }
 
 const RadioGroup = <
   TField extends string,
-  TFormik extends Record<TField, Key>,
+  TValue,
+  TFormik extends Record<TField, TValue>,
 >({
   field,
   formik,
   inputs = [],
   label,
-}: RadioGroupProps<TField, TFormik>) => {
+}: RadioGroupProps<TField, TValue, TFormik>) => {
   return (
     <>
-      <p className="u-no-margin--bottom">{label}</p>
+      <p
+        className={classNames(
+          "u-no-margin--bottom p-heading--5",
+          classes.label,
+        )}
+      >
+        {label}
+      </p>
 
       <div>
-        {inputs.map(({ expansion, help, key, ...input }) => {
-          const checked = formik.values[field] == key;
+        {inputs.map(({ expansion, help, key, value, onSelect, ...input }) => {
+          const checked = formik.values[field] == value;
 
           return (
             <div key={key}>
@@ -45,7 +60,13 @@ const RadioGroup = <
                   {...input}
                   {...formik.getFieldProps(field)}
                   checked={checked}
-                  onChange={async () => formik.setFieldValue(field, key)}
+                  onChange={async () => {
+                    await formik.setFieldValue(field, value);
+
+                    if (onSelect) {
+                      await onSelect();
+                    }
+                  }}
                 />
               </div>
 

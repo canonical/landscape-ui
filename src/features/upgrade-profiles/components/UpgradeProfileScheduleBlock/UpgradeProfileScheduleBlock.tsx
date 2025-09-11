@@ -7,6 +7,7 @@ import { DAY_OPTIONS } from "../../constants";
 import type { FormProps } from "../../types";
 import { EXPIRATION_TOOLTIP_MESSAGE } from "./constants";
 import classes from "./UpgradeProfileScheduleBlock.module.scss";
+import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 
 interface UpgradeProfileScheduleBlockProps {
   readonly formik: FormikContextType<FormProps>;
@@ -153,46 +154,7 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
         )}
       </div>
 
-      <p>Randomise delivery over a time window</p>
-
-      <div className={classes.radioGroup}>
-        <RadioInput
-          label="No"
-          {...formik.getFieldProps("randomizeDelivery")}
-          checked={!formik.values.randomizeDelivery}
-          onChange={async () => {
-            await formik.setFieldValue("randomizeDelivery", false);
-            await formik.setFieldValue("deliver_delay_window", "");
-          }}
-        />
-        <RadioInput
-          label="Yes"
-          {...formik.getFieldProps("randomizeDelivery")}
-          checked={formik.values.randomizeDelivery}
-          onChange={() => formik.setFieldValue("randomizeDelivery", true)}
-        />
-      </div>
-
-      {formik.values.randomizeDelivery && (
-        <div className={classes.windowInputContainer}>
-          <Input
-            type="number"
-            inputMode="numeric"
-            min={0}
-            label="Deliver delay window"
-            labelClassName="u-off-screen"
-            className={classes.windowInput}
-            {...formik.getFieldProps("deliver_delay_window")}
-            error={
-              formik.touched.deliver_delay_window &&
-              formik.errors.deliver_delay_window
-                ? formik.errors.deliver_delay_window
-                : undefined
-            }
-          />
-          <span className={classes.windowInputDescription}>minutes</span>
-        </div>
-      )}
+      <RandomizationBlock formik={formik} />
     </div>
   );
 };

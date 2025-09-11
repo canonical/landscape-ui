@@ -1,10 +1,10 @@
-import moment from "moment";
 import * as Yup from "yup";
 import type { FormProps } from "./types";
+import { deliveryValidationSchema } from "@/components/form/DeliveryScheduling";
 
 export const INITIAL_VALUES: FormProps = {
   deliver_after: "",
-  deliverImmediately: true,
+  deliver_immediately: true,
   instanceIds: [],
   queryType: "tags",
   tags: [],
@@ -13,17 +13,8 @@ export const INITIAL_VALUES: FormProps = {
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
+  ...deliveryValidationSchema,
   access_group: Yup.string(),
-  deliverImmediately: Yup.boolean().required("This field is required."),
-  deliver_after: Yup.string().when("deliverImmediately", {
-    is: false,
-    then: (schema) =>
-      schema.required("This field is required").test({
-        test: (value) =>
-          moment(value).isValid() && moment(value).isAfter(moment()),
-        message: "You have to enter a valid date and time in the future",
-      }),
-  }),
   instanceIds: Yup.array()
     .of(Yup.number())
     .when("queryType", {

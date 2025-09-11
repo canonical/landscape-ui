@@ -4,7 +4,6 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
 import { Form, Input, Select } from "@canonical/react-components";
-import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { ChangeEvent, FC } from "react";
@@ -17,6 +16,10 @@ import type { InstalledSnap } from "../../types";
 import classes from "./EditSnap.module.scss";
 import { getEditSnapValidationSchema, getSnapMessage } from "./helpers";
 import type { SnapFormProps } from "./types";
+import {
+  DeliveryBlock,
+  RandomizationBlock,
+} from "@/components/form/DeliveryScheduling";
 
 interface EditSnapProps {
   readonly type: EditSnapType;
@@ -82,8 +85,8 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
               : type === EditSnapType.Switch
                 ? "refresh"
                 : type.toLowerCase(),
-          snaps: installedSnaps.map((installedSnap) => ({
-            name: installedSnap.snap.name,
+          snaps: installedSnaps.map((currentInstalledSnap) => ({
+            name: currentInstalledSnap.snap.name,
             channel: values.release
               ? snapInfoData?.data["channel-map"].find(
                   (channel) =>
@@ -149,17 +152,6 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
     }
   };
 
-  const handleDeliveryTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const deliverImmediately = event.currentTarget.value === "true";
-    formik.setFieldValue("deliver_immediately", deliverImmediately);
-    if (!deliverImmediately) {
-      formik.setFieldValue(
-        "deliver_after",
-        moment().toISOString().slice(0, 16),
-      );
-    }
-  };
-
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       {getSnapMessage(type, installedSnaps)}
@@ -206,79 +198,10 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           )}
         </>
       )}
-      <span className={classNames(classes.bold, classes.marginTop)}>
-        Delivery time
-      </span>
-      <div className={classes.radioGroup}>
-        <Input
-          type="radio"
-          label="As soon as possible"
-          name="deliver_immediately"
-          value="true"
-          onChange={handleDeliveryTimeChange}
-          checked={formik.values.deliver_immediately}
-        />
-        <Input
-          type="radio"
-          label="Scheduled"
-          name="deliver_immediately"
-          value="false"
-          onChange={handleDeliveryTimeChange}
-          checked={!formik.values.deliver_immediately}
-        />
-      </div>
-      {!formik.values.deliver_immediately && (
-        <Input
-          type="datetime-local"
-          label="Deliver after"
-          labelClassName="u-off-screen"
-          {...formik.getFieldProps("deliver_after")}
-          error={
-            formik.touched.deliver_after && formik.errors.deliver_after
-              ? formik.errors.deliver_after
-              : undefined
-          }
-        />
-      )}
-      <span className={classNames(classes.bold, classes.marginTop)}>
-        Randomise delivery over a time window
-      </span>
-      <div className={classes.radioGroup}>
-        <Input
-          type="radio"
-          label="No"
-          {...formik.getFieldProps("randomize_delivery")}
-          onChange={async () => {
-            await formik.setFieldValue("randomize_delivery", false);
-            await formik.setFieldValue("deliver_delay_window", 0);
-          }}
-          checked={!formik.values.randomize_delivery}
-        />
-        <Input
-          type="radio"
-          label="Yes"
-          {...formik.getFieldProps("randomize_delivery")}
-          onChange={() => formik.setFieldValue("randomize_delivery", true)}
-          checked={formik.values.randomize_delivery}
-        />
-      </div>
-      {formik.values.randomize_delivery && (
-        <Input
-          type="number"
-          inputMode="numeric"
-          min={0}
-          label="Delivery delay window"
-          labelClassName="u-off-screen"
-          help="Time in minutes"
-          {...formik.getFieldProps("deliver_delay_window")}
-          error={
-            formik.touched.deliver_delay_window &&
-            formik.errors.deliver_delay_window
-              ? formik.errors.deliver_delay_window
-              : undefined
-          }
-        />
-      )}
+
+      <DeliveryBlock formik={formik} />
+      <RandomizationBlock formik={formik} />
+
       <SidePanelFormButtons
         submitButtonText={type}
         submitButtonAppearance={

@@ -207,7 +207,7 @@ export const getInitialValues = (
       schedule.FREQ == "YEARLY" && schedule.BYMONTH
         ? schedule.BYMONTH.split(",").map((month: string) => Number(month))
         : [],
-    randomize_delivery: profile.restart_deliver_delay_window ? "yes" : "no",
+    randomize_delivery: profile.restart_deliver_delay_window ? true : false,
     start_date: moment(
       profile.next_run_time ?? profile.last_run_results.timestamp,
     ).format(INPUT_DATE_TIME_FORMAT),
@@ -215,6 +215,7 @@ export const getInitialValues = (
     tailoring_file: null,
     unit_of_time: schedule.FREQ || "DAILY",
     ...profile,
+    deliver_delay_window: profile.restart_deliver_delay_window,
   };
 };
 

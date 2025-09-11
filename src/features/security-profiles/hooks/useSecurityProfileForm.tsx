@@ -13,6 +13,7 @@ import useSecurityProfileFormBenchmarkStep from "./useSecurityProfileFormBenchma
 import useSecurityProfileFormConfirmationStep from "./useSecurityProfileFormConfirmationStep";
 import useSecurityProfileFormNameStep from "./useSecurityProfileFormNameStep";
 import useSecurityProfileFormScheduleStep from "./useSecurityProfileFormScheduleStep";
+import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling/helpers";
 
 export interface UseSecurityProfileFormProps {
   initialValues: SecurityProfileFormValues;
@@ -39,13 +40,14 @@ const useSecurityProfileForm = ({
 }: UseSecurityProfileFormProps) => {
   const debug = useDebug();
   const { setPageParams } = usePageParams();
-
   const formik = useFormik<SecurityProfileFormValues>({
     initialValues,
 
     validateOnMount: true,
 
     validationSchema: Yup.object().shape({
+      ...randomizationValidationSchema,
+
       benchmark: Yup.string().required("This field is required."),
 
       end_date: Yup.string().when(
@@ -77,10 +79,10 @@ const useSecurityProfileForm = ({
 
       mode: Yup.string().required("This field is required."),
 
-      restart_deliver_delay_window: Yup.number().when(
+      deliver_delay_window: Yup.number().when(
         ["mode", "randomize_delivery"],
         ([mode, randomize_delivery], schema) =>
-          mode == "audit-fix-restart" && randomize_delivery == "yes"
+          mode == "audit-fix-restart" && randomize_delivery == true
             ? schema
                 .required("This field is required.")
                 .positive("Enter a positive number.")
@@ -171,7 +173,7 @@ const useSecurityProfileForm = ({
           mode: values.mode,
           restart_deliver_delay_window:
             values.mode == "audit-fix-restart"
-              ? values.restart_deliver_delay_window
+              ? values.deliver_delay_window
               : undefined,
           restart_deliver_delay:
             values.mode == "audit-fix-restart"

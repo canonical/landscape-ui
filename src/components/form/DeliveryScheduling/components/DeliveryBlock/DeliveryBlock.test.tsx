@@ -8,8 +8,10 @@ import DeliveryBlock from "./DeliveryBlock";
 describe("DeliveryBlock", () => {
   const formik = {
     values: {
-      deliverImmediately: true,
+      deliver_immediately: true,
     },
+    touched: {},
+    errors: {},
     setFieldValue: vi.fn(),
     getFieldProps: vi.fn(() => ({
       name: "deliver_after",
@@ -23,7 +25,7 @@ describe("DeliveryBlock", () => {
     ...formik,
     values: {
       ...formik.values,
-      deliverImmediately: false,
+      deliver_immediately: false,
     },
     touched: {},
     errors: {},

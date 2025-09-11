@@ -10,7 +10,6 @@ import {
   Form,
   Icon,
   Input,
-  RadioInput,
   Select,
   Tooltip,
 } from "@canonical/react-components";
@@ -30,6 +29,7 @@ import {
 import { getInitialValues, getValidationSchema } from "./helpers";
 import classes from "./RebootProfilesForm.module.scss";
 import type { FormProps, RebootProfilesFormProps } from "./types";
+import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 
 const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
   const { getAccessGroupQuery } = useRoles();
@@ -64,9 +64,9 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             at_hour: Number(values.at_hour),
             at_minute: Number(values.at_minute),
             deliver_delay_window: values.randomize_delivery
-              ? Number(values.deliver_delay_window)
+              ? values.deliver_delay_window
               : 0,
-            deliver_within: Number(values.deliver_delay_window),
+            deliver_within: values.deliver_within,
             on_days: values.on_days,
             title: values.title,
             tags: values.tags,
@@ -83,9 +83,9 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             at_hour: Number(values.at_hour),
             at_minute: Number(values.at_minute),
             deliver_delay_window: values.randomize_delivery
-              ? Number(values.deliver_delay_window)
+              ? values.deliver_delay_window
               : 0,
-            deliver_within: Number(values.deliver_within),
+            deliver_within: values.deliver_within,
             all_computers: values.all_computers,
           });
         }
@@ -146,12 +146,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             }
             isSortedAlphabetically={false}
             hasSelectedItemsFirst={false}
-            error={
-              formik.touched.on_days &&
-              typeof formik.errors.on_days === "string"
-                ? formik.errors.on_days
-                : undefined
-            }
+            error={getFormikError(formik, "on_days")}
           />
 
           <div className={classes.timeContainer}>
@@ -234,48 +229,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             )}
           </div>
 
-          <p>Randomise delivery over a time window</p>
-
-          <div className={classes.radioGroup}>
-            <RadioInput
-              label="No"
-              {...formik.getFieldProps("randomize_delivery")}
-              checked={!formik.values.randomize_delivery}
-              onChange={async () => {
-                await formik.setFieldValue("randomize_delivery", false);
-                await formik.setFieldValue("deliver_delay_window", "");
-              }}
-            />
-            <RadioInput
-              label="Yes"
-              {...formik.getFieldProps("randomize_delivery")}
-              checked={formik.values.randomize_delivery}
-              onChange={async () =>
-                formik.setFieldValue("randomize_delivery", true)
-              }
-            />
-          </div>
-
-          {formik.values.randomize_delivery && (
-            <div className={classes.windowInputContainer}>
-              <Input
-                type="number"
-                inputMode="numeric"
-                min={0}
-                label="Deliver delay window"
-                labelClassName="u-off-screen"
-                className={classes.windowInput}
-                {...formik.getFieldProps("deliver_delay_window")}
-                error={
-                  formik.touched.deliver_delay_window &&
-                  formik.errors.deliver_delay_window
-                    ? formik.errors.deliver_delay_window
-                    : undefined
-                }
-              />
-              <span className={classes.windowInputDescription}>minutes</span>
-            </div>
-          )}
+          <RandomizationBlock formik={formik} />
         </div>
 
         <AssociationBlock formik={formik} />

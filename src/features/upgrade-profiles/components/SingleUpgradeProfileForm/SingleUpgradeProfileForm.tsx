@@ -67,9 +67,8 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       valuesToSubmit.at_hour = values.at_hour as number;
     }
 
-    if (values.randomizeDelivery) {
-      valuesToSubmit.deliver_delay_window =
-        values.deliver_delay_window as `${number}`;
+    if (values.randomize_delivery) {
+      valuesToSubmit.deliver_delay_window = `${values.deliver_delay_window}`;
     }
 
     if (!values.all_computers && values.tags.length) {
@@ -128,7 +127,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       deliver_within: parseInt(props.profile.deliver_within),
       every: props.profile.every,
       on_days: props.profile.on_days ?? [],
-      randomizeDelivery: props.profile.deliver_delay_window !== "0",
+      randomize_delivery: props.profile.deliver_delay_window !== "0",
       tags: props.profile.tags,
       title: props.profile.title,
       upgrade_type: props.profile.upgrade_type,

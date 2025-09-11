@@ -6,6 +6,7 @@ import { Input } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 import classes from "./useSecurityProfileFormScheduleStep.module.scss";
+import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 
 export default function useSecurityProfileFormScheduleStep<
   T extends SecurityProfileFormValues,
@@ -16,7 +17,7 @@ export default function useSecurityProfileFormScheduleStep<
       !formik.errors.start_date &&
       !formik.errors.every &&
       !formik.errors.end_date &&
-      !formik.errors.restart_deliver_delay_window &&
+      !formik.errors.deliver_delay_window &&
       !formik.errors.restart_deliver_delay,
     description:
       "Add a schedule for the security profile. Select a specific date or a recurring schedule for continuous audit generation.",
@@ -36,9 +37,10 @@ export default function useSecurityProfileFormScheduleStep<
               formik={formik}
               label="Delivery time"
               inputs={[
-                { label: "As soon as possible", key: "asap" },
+                { label: "As soon as possible", key: "asap", value: "asap" },
                 {
                   label: "Delayed",
+                  value: "delayed",
                   key: "delayed",
                   expansion: (
                     <div className={classes.inputContainer}>
@@ -58,37 +60,7 @@ export default function useSecurityProfileFormScheduleStep<
               ]}
             />
 
-            <RadioGroup
-              field={"randomize_delivery"}
-              formik={formik}
-              label="Randomize delivery over a time window"
-              inputs={[
-                { label: "No", key: "no" },
-                {
-                  label: "Yes",
-                  key: "yes",
-                  expansion: (
-                    <div className={classes.inputContainer}>
-                      <Input
-                        type="number"
-                        required
-                        className={classes.input}
-                        wrapperClassName={classes.inputWrapper}
-                        {...formik.getFieldProps(
-                          "restart_deliver_delay_window",
-                        )}
-                        error={getFormikError(
-                          formik,
-                          "restart_deliver_delay_window",
-                        )}
-                      />
-
-                      <span className={classes.inputDescription}>minutes</span>
-                    </div>
-                  ),
-                },
-              ]}
-            />
+            <RandomizationBlock formik={formik} />
           </>
         )}
       </>
