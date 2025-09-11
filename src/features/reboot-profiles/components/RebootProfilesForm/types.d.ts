@@ -6,7 +6,7 @@ export interface FormProps {
   all_computers: boolean;
   tags: string[];
   deliver_within: number;
-  deliver_delay_window: string;
+  deliver_delay_window: number;
   at_hour: number | "";
   at_minute: number | "";
   on_days: string[];

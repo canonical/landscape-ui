@@ -9,7 +9,7 @@ import { Col, Form, Input, Row } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useRunScript } from "../../api";
-import DeliveryBlock from "../DeliveryBlock";
+import { DeliveryBlock } from "@/components/form/DeliveryScheduling";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import type { FormProps } from "./types";
 
@@ -31,7 +31,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
   const handleSubmit = async (values: FormProps) => {
     try {
       await runScript({
-        deliver_after: values.deliverImmediately
+        deliver_after: values.deliver_immediately
           ? undefined
           : values.deliver_after,
         query,
@@ -98,6 +98,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
           />
         </Col>
       </Row>
+
       <DeliveryBlock formik={formik} />
 
       <SidePanelFormButtons

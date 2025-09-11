@@ -4,8 +4,8 @@ export interface SnapFormProps {
   release?: string;
   hold?: string;
   hold_until?: string;
-  deliver_delay_window?: number;
-  deliver_after?: string;
+  deliver_delay_window: number;
+  deliver_after: string;
 }
 
 export type FormValidationSchemaShape = {

@@ -236,6 +236,7 @@ const SecurityProfileDownloadAuditForm: FC<
         inputs={[
           {
             key: "specific-date",
+            value: "specific-date",
             label: "Specific date",
             expansion: (
               <Input
@@ -248,6 +249,7 @@ const SecurityProfileDownloadAuditForm: FC<
           },
           {
             key: "date-range",
+            value: "date-range",
             label: "Date range",
             expansion: (
               <div className={classes.dateRange}>
@@ -288,11 +290,13 @@ const SecurityProfileDownloadAuditForm: FC<
         inputs={[
           {
             key: "summary-only",
+            value: "summary-only",
             label: "Summary only",
             help: "High-level overview of audit results",
           },
           {
             key: "detailed-view",
+            value: "detailed-view",
             label: "Detailed view",
             help: "Includes rules ID, severity, identifiers and references, description, rationale",
           },

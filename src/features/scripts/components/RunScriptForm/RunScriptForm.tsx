@@ -20,11 +20,11 @@ import moment from "moment/moment";
 import { useState, type FC } from "react";
 import { useRunScript } from "../../api";
 import type { Script } from "../../types";
-import DeliveryBlock from "../DeliveryBlock";
 import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./RunScriptForm.module.scss";
 import type { FormProps } from "./types";
+import { DeliveryBlock } from "@/components/form/DeliveryScheduling";
 
 interface RunScriptFormProps {
   readonly script: Script;
@@ -46,14 +46,14 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
       script_id: script.id,
       username: values.username,
       time_limit: Number(values.time_limit),
-      deliver_after: values.deliverImmediately
+      deliver_after: values.deliver_immediately
         ? undefined
         : moment(values.deliver_after)
             .toISOString()
             .replace(/\.\d+(?=Z$)/, ""),
     };
 
-    if (!values.deliverImmediately) {
+    if (!values.deliver_immediately) {
       valuesToSubmit.deliver_after = moment(values.deliver_after)
         .toISOString()
         .replace(/\.\d+(?=Z$)/, "");
@@ -262,6 +262,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             />
           </Col>
         </Row>
+
         <DeliveryBlock formik={formik} />
 
         <SidePanelFormButtons

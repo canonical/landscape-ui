@@ -1,6 +1,7 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
+  GetInstanceParams,
   GetInstancesParams,
   RemoveInstancesParams,
   SanitizeInstanceParams,
@@ -36,6 +37,24 @@ export default [
           limit,
           offset,
         }),
+      );
+    },
+  ),
+
+  http.get<never, GetInstanceParams, Instance>(
+    `${API_URL}computers/:computerId`,
+    async ({ request }) => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      const url = new URL(request.url);
+      const computerId = url.pathname.split("/").pop();
+
+      return HttpResponse.json(
+        instances.find((inst) => inst.id === Number(computerId)) || null,
       );
     },
   ),

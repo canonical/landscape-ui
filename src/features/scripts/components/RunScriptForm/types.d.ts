@@ -1,6 +1,6 @@
 export interface FormProps {
   deliver_after: string;
-  deliverImmediately: boolean;
+  deliver_immediately: boolean;
   instanceIds: number[];
   queryType: "ids" | "tags";
   tags: string[];
