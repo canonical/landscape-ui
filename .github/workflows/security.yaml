@@ -60,30 +60,62 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Scan container image with Secscan
+      - name: Install secscan client
+        run: sudo snap install canonical-secscan-client
+
+      - name: Run security scan
+        # We use continue-on-error so that even if the scan command fails,
+        # we can proceed to the 'Create Issue on Failure' step.
+        continue-on-error: true
         id: scan
-        uses: ./.github/actions/secscan.yaml
-        with:
-          image-to-scan: ${{ needs.build-image.outputs.image_name }}
-          ssdlc-product-name: 'landscape-ui'
-          ssdlc-cycle: '25.10'
-          ssdlc-product-version: '1.17.0'
-          ssdlc-product-channel: 'edge'
+        run: |
+          secscan-client --batch submit \
+            --ssdlc-product-name 'landscape-ui' \
+            --ssdlc-cycle '25.10' \
+            --ssdlc-product-version '1.17.0' \
+            --ssdlc-product-channel 'edge' \
+            --scanner trivy \
+            --type container-image \
+            --format oci \
+            "${{ needs.build-image.outputs.image_name }}" \
+            --wait-and-print > secscan-results.txt
+
+      - name: Check for high/critical vulnerabilities
+        id: vulnerability_check
+        run: |
+          # This step fails if HIGH or CRITICAL vulnerabilities are found in the results.
+          if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
+            echo "::error::High or Critical vulnerabilities found."
+            exit 1
+          else
+            echo "Success: No high or critical vulnerabilities detected."
+          fi
+        # This condition ensures this check runs only if the scan step succeeded.
+        if: steps.scan.outcome == 'success'
 
       - name: Upload Scan Results on Success
+        # This step only runs if the entire job has been successful so far.
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: secscan-results
-          path: ${{ steps.scan.outputs.results-file }}
+          path: secscan-results.txt
 
       - name: Create Issue on Failure
+        # This step runs if any of the previous steps have failed.
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Vulnerability scan found high/critical issues." > issue-body.txt
-          echo "The workflow failed. Please review the scan results from the failed run." >> issue-body.txt
-          echo "You can find the logs in the 'Scan container image with Secscan' step of the 'Scan and Report' job." >> issue-body.txt
+          echo "Vulnerability scan found high/critical issues or failed to run." > issue-body.txt
+          echo "" >> issue-body.txt
+          echo "### Scan Results" >> issue-body.txt
+          echo '```' >> issue-body.txt
+          if [ -f secscan-results.txt ]; then
+            cat secscan-results.txt >> issue-body.txt
+          else
+            echo "Scan results file not found. The scan step may have failed." >> issue-body.txt
+          fi
+          echo '```' >> issue-body.txt
           
           gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
