@@ -134,7 +134,9 @@ const PackageProfileConstraintsEditFormTable: FC<
                 labelClassName="u-no-margin--bottom u-no-padding--top"
                 disabled={formik.values.id !== 0}
                 checked={selectedIds.includes(original.id)}
-                onChange={() => handleConstraintToggle(original.id)}
+                onChange={() => {
+                  handleConstraintToggle(original.id);
+                }}
               />
               <span>{original.constraint}</span>
             </div>

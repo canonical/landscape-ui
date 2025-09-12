@@ -25,7 +25,7 @@ const FileInput: FC<FileInputProps> = ({
     useState<FocusEvent<HTMLInputElement> | null>(null);
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+    const { files } = event.target;
 
     if (!files || !files.length) {
       return;
@@ -78,7 +78,9 @@ const FileInput: FC<FileInputProps> = ({
       help={help}
       label={label}
       multiple={false}
-      onBlur={(event) => setFocusEvent(event)}
+      onBlur={(event) => {
+        setFocusEvent(event);
+      }}
       onChange={handleFileChange}
     />
   );

@@ -169,6 +169,9 @@ jobs:
           path: sbomber
           persist-credentials: false
 
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y skopeo
+
       - name: Install Prerequisites
         uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # Pinned to older version (v6.6.1) for sbomber compatibility
 

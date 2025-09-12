@@ -122,7 +122,9 @@ const AffectedInstances: FC<AffectedInstancesProps> = ({
                 original.id,
                 currentPackage.id,
               )}
-              onChange={() => handleInstanceToggle(original.id)}
+              onChange={() => {
+                handleInstanceToggle(original.id);
+              }}
             />
           ),
       },

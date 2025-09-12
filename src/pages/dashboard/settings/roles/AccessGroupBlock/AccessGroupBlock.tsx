@@ -77,7 +77,9 @@ const AccessGroupBlock: FC<AccessGroupBlockProps> = ({
           name="access_groups"
           checked={accessGroups.includes(option.value)}
           indeterminate={isIndeterminate(option.children)}
-          onChange={() => handleAccessGroupChange(option, array)}
+          onChange={() => {
+            handleAccessGroupChange(option, array);
+          }}
         />
       ))}
     </>

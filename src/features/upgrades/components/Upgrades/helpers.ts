@@ -19,7 +19,9 @@ export const getTabLinks = ({
       id,
       label,
       active: id === activeTabLinkId,
-      onClick: () => onTabLinkClick(id),
+      onClick: () => {
+        onTabLinkClick(id);
+      },
       role: "tab",
     }),
   );

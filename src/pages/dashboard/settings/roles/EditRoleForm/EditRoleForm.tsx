@@ -78,7 +78,8 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
     );
 
     if (!Object.values(promiseObject).some(Boolean)) {
-      return closeSidePanel();
+      closeSidePanel();
+      return;
     }
 
     try {

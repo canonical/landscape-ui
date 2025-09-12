@@ -62,7 +62,9 @@ const HeaderWithSearch: FC<HeaderWithSearchProps> = ({
             externallyControlled
             shouldRefocusAfterReset
             autocomplete={autocomplete ?? "off"}
-            onSearch={() => handleSearch(formik.values)}
+            onSearch={() => {
+              handleSearch(formik.values);
+            }}
             value={formik.values.inputText}
             onChange={handleChange}
             onClear={handleClear}

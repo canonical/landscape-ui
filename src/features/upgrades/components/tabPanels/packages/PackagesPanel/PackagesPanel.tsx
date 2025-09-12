@@ -57,7 +57,9 @@ const PackagesPanel: FC<PackagesPanelProps> = ({
       instances={instances}
       isPackagesLoading={getPackagesQueryLoading}
       onExcludedPackagesChange={onExcludedPackagesChange}
-      onTableLimitChange={() => setOffset((prevState) => prevState + 5)}
+      onTableLimitChange={() => {
+        setOffset((prevState) => prevState + 5);
+      }}
       packages={packages}
       totalPackageCount={totalPackageCountRef.current}
     />

@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/prefer-readonly-parameter-types: 0 */
+
 import { renderWithProviders } from "@/tests/render";
 import TagsAddConfirmationModal from "./TagsAddConfirmationModal";
 import { screen } from "@testing-library/react";

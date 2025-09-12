@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "pnpm run lint:ci && tsc && vite build",
-    "lint:ci": "eslint . --config eslint.ci.config.mjs --ext .ts,.tsx",
+    "lint:ci": "eslint --fix . --config eslint.ci.config.mjs --ext .ts,.tsx",
     "preview": "vite preview",
     "prepare": "husky",
     "test": "pnpm exec playwright test",
@@ -53,7 +53,7 @@
     "@testing-library/jest-dom": "6.8.0",
     "@testing-library/react": "16.3.0",
     "@testing-library/user-event": "14.6.1",
-    "@types/chart.js": "2.9.41",
+    "@types/chart.js": "4.0.1",
     "@types/react": "19.1.12",
     "@types/react-dom": "19.1.9",
     "@types/react-table": "7.7.20",

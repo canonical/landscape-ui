@@ -16,7 +16,9 @@ const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
     <>
       {search && showForm && (
         <SavedSearchCreateForm
-          onClose={() => setShowForm(false)}
+          onClose={() => {
+            setShowForm(false);
+          }}
           onSearchSave={onSearchSave}
           search={search}
         />
@@ -33,7 +35,9 @@ const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
           <Button
             type="button"
             appearance="link"
-            onClick={() => setShowForm(true)}
+            onClick={() => {
+              setShowForm(true);
+            }}
             className={classes.saveButton}
           >
             Save search

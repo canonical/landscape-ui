@@ -21,8 +21,12 @@ const SearchBoxWithForm: FC<SearchBoxWithFormProps> = ({ onSearch }) => {
         shouldRefocusAfterReset
         autoComplete="off"
         value={input}
-        onChange={(inputValue) => setInput(inputValue)}
-        onSearch={() => onSearch(input)}
+        onChange={(inputValue) => {
+          setInput(inputValue);
+        }}
+        onSearch={() => {
+          onSearch(input);
+        }}
         onClear={() => {
           setInput("");
           onSearch("");

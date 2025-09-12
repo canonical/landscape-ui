@@ -44,7 +44,9 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
         <UsnInstanceList
           instances={instances}
           limit={limit}
-          onLimitChange={() => setLimit((prevState) => prevState + 5)}
+          onLimitChange={() => {
+            setLimit((prevState) => prevState + 5);
+          }}
           usn={usn}
           usnPackages={usnPackages}
         />
@@ -53,7 +55,9 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
         <UsnPackageList
           instanceTitle={instances[0].title}
           limit={limit}
-          onLimitChange={() => setLimit((prevState) => prevState + 5)}
+          onLimitChange={() => {
+            setLimit((prevState) => prevState + 5);
+          }}
           showRemoveButton={isRemovable}
           usn={usn}
           usnPackages={usnPackages}

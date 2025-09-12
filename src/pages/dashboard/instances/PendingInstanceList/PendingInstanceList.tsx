@@ -41,13 +41,13 @@ const PendingInstanceList: FC<PendingInstanceListProps> = ({
               selectedIds.length > 0 &&
               selectedIds.length < pendingInstances.length
             }
-            onChange={() =>
+            onChange={() => {
               onSelectedIdsChange(
                 selectedIds.length > 0
                   ? []
                   : pendingInstances.map(({ id }) => id),
-              )
-            }
+              );
+            }}
           />
         ),
         Cell: ({ row: { original } }: CellProps<PendingInstance>) => (
@@ -57,13 +57,13 @@ const PendingInstanceList: FC<PendingInstanceListProps> = ({
             }
             inline
             checked={selectedIds.includes(original.id)}
-            onChange={() =>
+            onChange={() => {
               onSelectedIdsChange(
                 selectedIds.includes(original.id)
                   ? selectedIds.filter((id) => id !== original.id)
                   : [...selectedIds, original.id],
-              )
-            }
+              );
+            }}
           />
         ),
       },

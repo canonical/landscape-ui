@@ -30,9 +30,9 @@ describe("ExpandableTableFooter", () => {
     );
 
     const newLimit = 10;
-    onLimitChange.mockImplementationOnce(() =>
-      rerender(<ExpandableTableFooter {...props} itemCount={newLimit} />),
-    );
+    onLimitChange.mockImplementationOnce(() => {
+      rerender(<ExpandableTableFooter {...props} itemCount={newLimit} />);
+    });
 
     await userEvent.click(screen.getByRole("button"));
 
@@ -43,9 +43,9 @@ describe("ExpandableTableFooter", () => {
       `Show ${Math.min(totalCount - newLimit, 5)} more`,
     );
 
-    onLimitChange.mockImplementationOnce(() =>
-      rerender(<ExpandableTableFooter {...props} itemCount={totalCount} />),
-    );
+    onLimitChange.mockImplementationOnce(() => {
+      rerender(<ExpandableTableFooter {...props} itemCount={totalCount} />);
+    });
 
     await userEvent.click(screen.getByRole("button"));
 

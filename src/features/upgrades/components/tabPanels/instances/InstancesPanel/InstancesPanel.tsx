@@ -119,7 +119,9 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
               excludedPackages={excludedPackages}
               instance={original}
               onExcludedPackagesChange={onExcludedPackagesChange}
-              onLimitChange={() => setOffset((prevState) => prevState + 5)}
+              onLimitChange={() => {
+                setOffset((prevState) => prevState + 5);
+              }}
               packages={packages}
               packagesCount={totalPackageCountRef.current}
               packagesLoading={getInstancePackagesLoading}
@@ -135,7 +137,9 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
             type="button"
             className={classNames("p-accordion__tab", classes.expandButton)}
             aria-expanded={expandedRow === index}
-            onClick={() => handleExpandCellClick(index)}
+            onClick={() => {
+              handleExpandCellClick(index);
+            }}
           >
             {DETAILED_UPGRADES_VIEW_ENABLED
               ? (original.upgrades?.regular ?? original.upgrades?.security ?? 0)
@@ -159,7 +163,9 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
       data={instanceData}
       getCellProps={handleCellProps(expandedRow)}
       itemNames={{ plural: "instances", singular: "instance" }}
-      onLimitChange={() => setTableLimit((prevState) => prevState + 5)}
+      onLimitChange={() => {
+        setTableLimit((prevState) => prevState + 5);
+      }}
       totalCount={instances.length}
     />
   );

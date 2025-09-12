@@ -24,7 +24,9 @@ const CellInput: FC<CellInputProps> = ({
       autoComplete="off"
       {...inputProps}
       value={value}
-      onChange={(event) => setValue(event.target.value)}
+      onChange={(event) => {
+        setValue(event.target.value);
+      }}
       onBlur={() => onChange(value)}
     />
   );

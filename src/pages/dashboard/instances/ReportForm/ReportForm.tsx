@@ -46,8 +46,9 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
       reportByCve: Yup.boolean(),
     }),
     // todo: figure out how to use form values to submit
-    onSubmit: () =>
-      downloadCSV(getCsvComplianceDataResult?.data || "", "report.csv"),
+    onSubmit: () => {
+      downloadCSV(getCsvComplianceDataResult?.data || "", "report.csv");
+    },
   });
 
   return (
