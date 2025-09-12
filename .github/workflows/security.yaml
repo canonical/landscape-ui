@@ -169,7 +169,7 @@ jobs:
           path: sbomber
 
       - name: Install Prerequisites
-        uses: astral-sh/setup-uv@v1
+        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # Pinned to older version (v6.6.1) for sbomber compatibility
 
       - name: Install secscan client
         run: |
