@@ -14,18 +14,16 @@ interface FormProps {
 const AccessGroupHeader: FC = () => {
   const { search, setPageParams } = usePageParams();
 
-  const handleSearch = () => {
-    setPageParams({ search: formik.values.searchText });
-  };
-
   const handleClear = () => {
     setPageParams({ search: "" });
   };
 
+  const handleSearch = (values: FormProps) => {
+    setPageParams({ search: values.searchText });
+  };
+
   const formik = useFormik<FormProps>({
-    initialValues: {
-      searchText: search,
-    },
+    initialValues: { searchText: search },
     enableReinitialize: true,
     validationSchema: Yup.object().shape({
       search: Yup.string(),
@@ -49,7 +47,9 @@ const AccessGroupHeader: FC = () => {
                 await formik.setFieldValue("searchText", value)
               }
               placeholder="Search"
-              onSearch={handleSearch}
+              onSearch={() => {
+                formik.submitForm();
+              }}
               onClear={handleClear}
             />
           </Form>

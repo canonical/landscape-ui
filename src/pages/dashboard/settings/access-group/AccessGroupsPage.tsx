@@ -7,7 +7,6 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import classes from "./AccessGroupsPage.module.scss";
 
 const NewAccessGroupForm = lazy(() =>
   import("@/features/access-groups").then((module) => ({
@@ -30,7 +29,7 @@ const AccessGroupsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        className={classes.header}
+        sticky
         title="Access groups"
         actions={[
           <Button

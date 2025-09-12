@@ -12,7 +12,6 @@ import {
 import useSelection from "@/hooks/useSelection";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import type { FC } from "react";
-import classes from "./ActivitiesPage.module.scss";
 
 const ActivitiesPage: FC = () => {
   const { activities, activitiesCount, isGettingActivities } =
@@ -38,7 +37,7 @@ const ActivitiesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Activities"
-        className={classes.header}
+        sticky
         actions={
           unfilteredActivitiesCount
             ? [

@@ -10,7 +10,7 @@
   padding: 0 !important;
   position: absolute;
   width: 100%;
-  z-index: 100;
+  z-index: var(--z-dropdown);
 }
 
 .pointer {

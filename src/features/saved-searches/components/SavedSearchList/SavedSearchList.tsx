@@ -69,7 +69,9 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                 type="button"
                 appearance="base"
                 className={classes.search}
-                onClick={() => onSavedSearchClick(savedSearch)}
+                onClick={() => {
+                  onSavedSearchClick(savedSearch);
+                }}
               >
                 <Row className={classes.row}>
                   <Col size={4}>

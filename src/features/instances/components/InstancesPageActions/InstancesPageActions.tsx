@@ -18,6 +18,7 @@ import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
+import { createPortal } from "react-dom";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -282,42 +283,46 @@ const InstancesPageActions = memo(function InstancesPageActions({
         toggleDisabled={0 === selectedInstances.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
-      {rebootModalOpen && (
-        <ConfirmationModal
-          close={() => {
-            setRebootModalOpen(false);
-          }}
-          title="Restarting selected instances"
-          confirmButtonLabel="Restart"
-          confirmButtonAppearance="negative"
-          confirmButtonLoading={isRestartingInstances}
-          confirmButtonDisabled={isRestartingInstances}
-          onConfirm={handleRebootInstance}
-        >
-          <p>
-            Are you sure you want to restart {selectedInstances.length}
-            {pluralize(selectedInstances.length, "instance")}?
-          </p>
-        </ConfirmationModal>
-      )}
-      {shutdownModalOpen && (
-        <ConfirmationModal
-          close={() => {
-            setShutdownModalOpen(false);
-          }}
-          title="Shutting down selected instances"
-          confirmButtonLabel="Shut down"
-          confirmButtonAppearance="negative"
-          confirmButtonLoading={isShuttingDownInstances}
-          confirmButtonDisabled={isShuttingDownInstances}
-          onConfirm={handleShutdownInstance}
-        >
-          <p>
-            Are you sure you want to shut down {selectedInstances.length}
-            {pluralize(selectedInstances.length, "instance")}?
-          </p>
-        </ConfirmationModal>
-      )}
+      {rebootModalOpen &&
+        createPortal(
+          <ConfirmationModal
+            close={() => {
+              setRebootModalOpen(false);
+            }}
+            title="Restarting selected instances"
+            confirmButtonLabel="Restart"
+            confirmButtonAppearance="negative"
+            confirmButtonLoading={isRestartingInstances}
+            confirmButtonDisabled={isRestartingInstances}
+            onConfirm={handleRebootInstance}
+          >
+            <p>
+              Are you sure you want to restart {selectedInstances.length}
+              {pluralize(selectedInstances.length, "instance")}?
+            </p>
+          </ConfirmationModal>,
+          document.body,
+        )}
+      {shutdownModalOpen &&
+        createPortal(
+          <ConfirmationModal
+            close={() => {
+              setShutdownModalOpen(false);
+            }}
+            title="Shutting down selected instances"
+            confirmButtonLabel="Shut down"
+            confirmButtonAppearance="negative"
+            confirmButtonLoading={isShuttingDownInstances}
+            confirmButtonDisabled={isShuttingDownInstances}
+            onConfirm={handleShutdownInstance}
+          >
+            <p>
+              Are you sure you want to shut down {selectedInstances.length}{" "}
+              {pluralize(selectedInstances.length, "instance")}?
+            </p>
+          </ConfirmationModal>,
+          document.body,
+        )}
     </>
   );
 });

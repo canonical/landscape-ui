@@ -10,7 +10,7 @@
   padding-bottom: $spv--large;
   position: sticky;
   top: var(--pageheader-height);
-  z-index: 1;
+  z-index: var(--z-default);
 }
 
 .searchContainer {

@@ -137,8 +137,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
                 {selected.length === 1 ? "activity" : "activities"}?
               </p>
             ),
-            confirmButtonLabel: "Apply",
-            confirmButtonAppearance: "positive",
+            confirmButtonLabel: "Confirm",
+            confirmButtonAppearance: "negative",
             confirmButtonDisabled: cancelActivitiesLoading,
             confirmButtonLoading: cancelActivitiesLoading,
             onConfirm: handleCancelActivities,

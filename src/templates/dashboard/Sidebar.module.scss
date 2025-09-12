@@ -24,7 +24,7 @@
   color-scheme: dark;
   scrollbar-color: $colors--dark-theme--text-muted
     $colors--dark-theme--background-default;
-  z-index: 350;
+  z-index: var(--z-application);
 }
 
 @media (width >= $breakpoint-small) and (width < $breakpoint-large) {

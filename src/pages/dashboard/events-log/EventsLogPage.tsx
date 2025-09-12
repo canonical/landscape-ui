@@ -15,7 +15,6 @@ import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { useMemo } from "react";
-import classes from "./EventsLogPage.module.scss";
 import { downloadCSV } from "./helpers";
 
 const EventsLogPage: FC = () => {
@@ -41,7 +40,7 @@ const EventsLogPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        className={classes.header}
+        sticky
         title="Events log"
         actions={[
           <Button

@@ -19,7 +19,7 @@
   }
 
   .l-application & {
-    z-index: 350;
+    z-index: var(--z-application);
   }
 }
 
@@ -47,11 +47,11 @@
     max-width: 20rem;
     white-space: normal;
     width: max-content;
-    z-index: 1000;
+    z-index: var(--z-tooltip);
   }
 }
 
 .p-contextual-menu__dropdown {
   background-color: $colors--theme--background-default;
-  z-index: 15;
+  z-index: var(--z-dropdown);
 }
