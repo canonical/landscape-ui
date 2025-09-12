@@ -7,7 +7,7 @@
 
 .expandButton {
   background-color: $color-transparent;
-  z-index: 0 !important;
+  z-index: var(--z-below) !important;
 
   &[aria-expanded="true"] {
     background-color: inherit;

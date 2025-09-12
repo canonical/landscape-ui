@@ -1,5 +1,5 @@
 .p-modal {
-  z-index: 350;
+  z-index: var(--z-modal);
 
   &__footer {
     & > button {

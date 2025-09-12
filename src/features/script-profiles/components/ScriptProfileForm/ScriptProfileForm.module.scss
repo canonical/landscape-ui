@@ -10,7 +10,3 @@
   border-left: 1px solid $colors--theme--border-default;
   padding-left: $sph--large;
 }
-
-.notification::before {
-  z-index: 0 !important;
-}

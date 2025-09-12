@@ -14,5 +14,5 @@
   background-color: $colors--theme--background-default;
   position: sticky;
   top: 0;
-  z-index: 350;
+  z-index: var(--z-sticky);
 }

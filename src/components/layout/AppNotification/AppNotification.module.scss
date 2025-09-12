@@ -8,11 +8,11 @@
   position: fixed;
   right: $sph--large;
   width: 26rem;
-  z-index: 1000;
+  z-index: var(--z-notification);
 }
 
 .baseNotificationStyle {
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .notification {

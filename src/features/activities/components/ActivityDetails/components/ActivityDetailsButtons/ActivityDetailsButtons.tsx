@@ -133,8 +133,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
                   Are you sure you want to cancel {activity.summary} activity?
                 </p>
               ),
-              confirmButtonLabel: "Apply",
-              confirmButtonAppearance: "positive",
+              confirmButtonLabel: "Confirm",
+              confirmButtonAppearance: "negative",
               confirmButtonDisabled: cancelActivitiesLoading,
               confirmButtonLoading: cancelActivitiesLoading,
               onConfirm: async () => handleCancelActivity(activity),

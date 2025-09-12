@@ -5,7 +5,7 @@
 
 .expandedRow {
   position: relative;
-  z-index: 20;
+  z-index: var(--z-expanded-row);
 }
 
 .truncatedItem {

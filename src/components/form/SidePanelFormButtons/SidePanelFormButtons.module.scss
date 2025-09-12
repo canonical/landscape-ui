@@ -11,6 +11,7 @@
   padding-bottom: $spv--x-large;
   padding-top: $spv--x-large;
   position: sticky;
+  z-index: var(--z-sticky);
 
   .actionButtons {
     display: flex;

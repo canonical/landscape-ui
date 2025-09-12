@@ -1,5 +1,5 @@
 import type { FC, RefObject, ReactNode, Ref } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import type { MultiSelectProps } from "@canonical/react-components";
 import { MultiSelect } from "@canonical/react-components";
 import classNames from "classnames";
@@ -27,8 +27,6 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
   required,
   ...otherProps
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const controlRef = useRef<HTMLButtonElement | HTMLInputElement>(null);
   const dropdownIdRef = useRef("");
 
@@ -61,45 +59,6 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
     dropdownIdRef.current =
       controlRef.current?.getAttribute("aria-controls") || "";
   };
-
-  useEffect(() => {
-    if (!controlRef.current) {
-      return;
-    }
-
-    const observer = new MutationObserver((mutations) => {
-      if (
-        mutations.some(
-          ({ attributeName, type }) =>
-            type === "attributes" && attributeName === "aria-expanded",
-        )
-      ) {
-        setIsExpanded((prevState) => !prevState);
-      }
-    });
-
-    observer.observe(controlRef.current, { attributes: true });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isExpanded || !dropdownIdRef.current) {
-      return;
-    }
-
-    const dropdown = document.getElementById(dropdownIdRef.current);
-
-    const portal = dropdown?.closest<HTMLSpanElement>(".multi-select");
-
-    if (!portal) {
-      return;
-    }
-
-    portal.style.zIndex = "101";
-  }, [isExpanded]);
 
   const footer = error ? (
     <div>

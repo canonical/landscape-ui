@@ -5,5 +5,5 @@
 }
 
 .tooltip {
-  z-index: 400;
+  z-index: var(--z-tooltip);
 }
