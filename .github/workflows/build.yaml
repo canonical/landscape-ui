@@ -52,7 +52,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: ${{ github.event_name == 'workflow_run' && 'ppa-build' || 'ppa-build-dev' }}
-          persist-credentials: false
           fetch-depth: 0
 
       - name: Download dist for PPA
@@ -61,13 +60,18 @@ jobs:
           name: dist-for-ppa
           path: dist
 
+      - name: Extract dist
+        run: |
+          mv ./dist ../
+          rm -rf ./*
+          mv ../dist/* ./
+
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           repository: .
           branch: ${{ github.event_name == 'workflow_run' && 'ppa-build' || 'ppa-build-dev' }}
           commit_message: 'Automated build: ${{ github.sha }}'
-          file_pattern: dist/**/*
           commit_user_name: 'Mitch Burton'
           commit_user_email: 'mitch.burton@canonical.com'
           commit_author: 'Mitch Burton <mitch.burton@canonical.com>'
