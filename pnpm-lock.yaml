@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@canonical/react-components':
-        specifier: 3.0.0
-        version: 3.0.0(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(formik@2.4.6(@types/react@19.1.12)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(vanilla-framework@4.33.0(sass@1.92.1))
+        specifier: 3.0.1
+        version: 3.0.1(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(formik@2.4.6(@types/react@19.1.12)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(vanilla-framework@4.33.0(sass@1.92.1))
       '@monaco-editor/react':
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.52.2)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -293,8 +293,8 @@ packages:
   '@bundled-es-modules/tough-cookie@0.1.6':
     resolution: {integrity: sha512-dvMHbL464C0zI+Yqxbz6kZ5TOEp7GLW+pry/RWndAR8MJQAXZ2rPmIs8tziTZjeIyhSNZgZbCePtfSbdWqStJw==}
 
-  '@canonical/react-components@3.0.0':
-    resolution: {integrity: sha512-dLCg9ujtS5qCCPCOyNHpgn7GAnoOlm4Iv7N6oLZW/9h06BNRgKMmQOhkYj/7BCEmjg2oAP9mTOSVucTNPpeVTA==}
+  '@canonical/react-components@3.0.1':
+    resolution: {integrity: sha512-MQ7sPK8afAlUwbLQm46h5OH0NdFlD8SCGvD4u3Ei7Rkol4g9al5w8uJDpnpK6rC/mC2sc09QxZeLiBRZZt71+Q==}
     peerDependencies:
       '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': ^18.0.0 || ^19.0.0
@@ -4570,7 +4570,7 @@ snapshots:
       '@types/tough-cookie': 4.0.5
       tough-cookie: 4.1.4
 
-  '@canonical/react-components@3.0.0(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(formik@2.4.6(@types/react@19.1.12)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(vanilla-framework@4.33.0(sass@1.92.1))':
+  '@canonical/react-components@3.0.1(@types/react-dom@19.1.9(@types/react@19.1.12))(@types/react@19.1.12)(formik@2.4.6(@types/react@19.1.12)(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)(vanilla-framework@4.33.0(sass@1.92.1))':
     dependencies:
       '@types/jest': 29.5.14
       '@types/node': 20.17.19

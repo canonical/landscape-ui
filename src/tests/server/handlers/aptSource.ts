@@ -4,6 +4,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 
 export default [
   http.get<never, GetAPTSourcesParams, APTSource[]>(
@@ -26,7 +27,7 @@ export default [
         endpointStatus.path === "repository/apt-source/:sourceId")
     ) {
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw HttpResponse.json(ENDPOINT_STATUS_API_ERROR, { status: 500 });
       }
     }
 

@@ -29,9 +29,10 @@ describe("ModalTablePagination", () => {
       name: /previous page/i,
     });
 
-    await userEvent.click(nextButton);
+    const user = userEvent.setup();
+    await user.click(nextButton);
     expect(onNext).toHaveBeenCalled();
-    await userEvent.click(previousButton);
+    await user.click(previousButton);
     expect(onPrev).toHaveBeenCalled();
   });
 
