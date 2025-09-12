@@ -1,3 +1,11 @@
+## [1.18.2](https://github.com/canonical/landscape-ui/compare/v1.18.1...v1.18.2) (2025-09-12)
+
+
+### Bug Fixes
+
+* instances can run scripts with a timeout ([#352](https://github.com/canonical/landscape-ui/issues/352)) ([895032f](https://github.com/canonical/landscape-ui/commit/895032f6473796264d1107781ed0ea18f8f8e29b))
+* wsl profile expandable cells can open individually [LNDENG-3116] ([#351](https://github.com/canonical/landscape-ui/issues/351)) ([a86705b](https://github.com/canonical/landscape-ui/commit/a86705b112781b6283bd8910949ee1d37ae6efd5))
+
 ## [1.18.1](https://github.com/canonical/landscape-ui/compare/v1.18.0...v1.18.1) (2025-09-03)
 
 
