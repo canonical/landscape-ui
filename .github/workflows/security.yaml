@@ -182,13 +182,21 @@ jobs:
           cat <<EOF > sbomber/manifest.yaml
           clients:
             sbom:
-                department: Web Engineering
+                service_url: https://sbom-request.canonical.com
+                department: web_engineering
                 email: yurii.vasyliev@canonical.com
-                team: Landscape
+                team: landscape
+            secscan: {}
+          
           artifacts:
             - name: landscape-ui-container
+              path: ../image.tar
               type: rock
-              path: ../image.tar # Relative path from sbomber dir
+              ssdlc_params:
+                name: 'ops'
+                version: ''
+                channel: 'stable'
+                cycle: '25.10'
           EOF
 
       - name: Run sbomber
