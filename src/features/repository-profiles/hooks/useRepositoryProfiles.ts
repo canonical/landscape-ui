@@ -9,7 +9,9 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { RepositoryProfile } from "../types";
 
 interface GetRepositoryProfilesParams {
-  names?: string[];
+  limit?: number;
+  offset?: number;
+  search?: string[];
 }
 
 export interface CreateRepositoryProfileParams {
@@ -64,8 +66,13 @@ export default function useRepositoryProfiles() {
     CreateRepositoryProfileParams
   >({
     mutationFn: async (params) => authFetch.post("repositoryprofiles", params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["aptSources"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] });
+    },
   });
 
   const editRepositoryProfileQuery = useMutation<
@@ -75,8 +82,13 @@ export default function useRepositoryProfiles() {
   >({
     mutationFn: async ({ name, ...params }) =>
       authFetch.put(`repositoryprofiles/${name}`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["aptSources"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] });
+    },
   });
 
   const removeRepositoryProfileQuery = useMutation<
@@ -87,8 +99,13 @@ export default function useRepositoryProfiles() {
     mutationKey: ["repositoryProfiles"],
     mutationFn: async (params) =>
       authFetchOld.get("RemoveRepositoryProfile", { params }),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["aptSources"],
+        refetchType: "all",
+      });
+      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] });
+    },
   });
 
   return {

@@ -1,4 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
@@ -12,8 +14,6 @@ import {
 import { type ComponentProps, type FC, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useCounter } from "usehooks-ts";
-import TagsAddPagination from "./components/TagsAddPagination";
-import { PAGE_SIZE } from "./constants";
 import { getRowProps } from "./helpers";
 
 interface TagsAddConfirmationModalProps
@@ -41,8 +41,8 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
   const { isPendingProfileChanges, profileChanges } = useGetProfileChanges({
     instance_ids: instances.map((instance) => instance.id),
     tags,
-    limit: PAGE_SIZE,
-    offset: (currentPage - 1) * PAGE_SIZE,
+    limit: DEFAULT_MODAL_PAGE_SIZE,
+    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
   });
 
   const modalColumns = useMemo<Column<ProfileChange>[]>(
@@ -108,8 +108,6 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
     [],
   );
 
-  const maximumPage = Math.ceil(profileChangesCount / PAGE_SIZE);
-
   return (
     <ConfirmationModal
       title={`Add ${pluralize(tags.length, `"${tags[0]}" tag`, `${tags.length} tags`)} to ${pluralize(instances.length, `"${instances[0].title}"`, `${instances.length} instances`)}`}
@@ -151,14 +149,12 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         />
       )}
 
-      {maximumPage > 1 && (
-        <TagsAddPagination
-          max={maximumPage}
-          current={currentPage}
-          onPrev={decrementCurrentPage}
-          onNext={incrementCurrentPage}
-        />
-      )}
+      <ModalTablePagination
+        max={Math.ceil(profileChangesCount / DEFAULT_MODAL_PAGE_SIZE)}
+        current={currentPage}
+        onPrev={decrementCurrentPage}
+        onNext={incrementCurrentPage}
+      />
     </ConfirmationModal>
   );
 };

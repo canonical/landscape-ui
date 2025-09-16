@@ -88,6 +88,7 @@ export default tseslint.config(
           ],
         },
       ],
+      "no-nested-ternary": "warn",
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],
