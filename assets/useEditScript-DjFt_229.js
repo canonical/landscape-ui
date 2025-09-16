@@ -1,0 +1,1 @@
+import{h as c,i as u,k as r}from"./index-CIJ7mRT9.js";const o=()=>{const t=c(),e=u(),{mutateAsync:i,isPending:s}=r({mutationKey:["scripts","edit"],mutationFn:async n=>t.get("EditScript",{params:n}),onSuccess:async()=>e.invalidateQueries({queryKey:["scripts"]})});return{editScript:i,isEditing:s}};export{o as u};
