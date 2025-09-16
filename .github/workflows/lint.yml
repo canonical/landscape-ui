@@ -11,24 +11,34 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+
+      - name: Checkout base
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> GITHUB_ENV
 
       - name: Set up pnpm
+        if: env.FILES
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Set up Node.js
+        if: env.FILES
         uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
           cache: "pnpm"
 
       - name: Install dependencies
+        if: env.FILES
         run: pnpm install --frozen-lockfile
 
       - name: Run ESLint
-        run: pnpm eslint --cache $(git diff --name-only HEAD^1 HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$")
+        if: env.FILES
+        run: pnpm eslint --cache ${{ env.FILES }}
 
   prettier:
     runs-on: ubuntu-latest
@@ -38,22 +48,32 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Checkout base
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> GITHUB_ENV
+
       - name: Set up pnpm
+        if: env.FILES
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Set up Node.js
+        if: env.FILES
         uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
           cache: "pnpm"
 
       - name: Install dependencies
+        if: env.FILES
         run: pnpm install --frozen-lockfile
 
       - name: Run Prettier
-        run: pnpm prettier --check $(git diff --name-only HEAD^1 HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$")
+        if: env.FILES
+        run: pnpm prettier --check ${{ env.FILES }}
 
   stylelint:
     runs-on: ubuntu-latest
@@ -63,19 +83,29 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Checkout base
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.scss$") >> GITHUB_ENV
+
       - name: Set up pnpm
+        if: env.FILES
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Set up Node.js
+        if: env.FILES
         uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
           cache: "pnpm"
 
       - name: Install dependencies
+        if: env.FILES
         run: pnpm install --frozen-lockfile
 
       - name: Run Stylelint
-        run: pnpm stylelint $(git diff --name-only HEAD^1 HEAD | grep -E "\.scss$")
+        if: env.FILES
+        run: pnpm stylelint ${{ env.FILES }}
