@@ -17,7 +17,7 @@ jobs:
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: Get changed files
-        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> GITHUB_ENV
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> $GITHUB_ENV
 
       - name: Set up pnpm
         if: env.FILES
@@ -52,7 +52,7 @@ jobs:
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: Get changed files
-        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> GITHUB_ENV
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> $GITHUB_ENV
 
       - name: Set up pnpm
         if: env.FILES
@@ -87,7 +87,7 @@ jobs:
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: Get changed files
-        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.scss$") >> GITHUB_ENV
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.scss$") >> $GITHUB_ENV
 
       - name: Set up pnpm
         if: env.FILES
