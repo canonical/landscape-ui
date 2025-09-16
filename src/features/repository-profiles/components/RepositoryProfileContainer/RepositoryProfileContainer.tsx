@@ -15,13 +15,12 @@ import RepositoryProfileList from "../RepositoryProfileList";
 interface RepositoryProfileContainerProps {
   readonly unfilteredRepositoryProfilesResult: UseQueryResult<
     AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>
-  >;
+  > & { isPending: false };
 }
 
 const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
   unfilteredRepositoryProfilesResult: {
     data: unfilteredRepositoryProfilesResponse,
-    isPending: isPendingUnfilteredRepositoryProfiles,
     error: unfilteredRepositoryProfilesError,
   },
 }) => {
@@ -37,10 +36,6 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     offset: (currentPage - 1) * pageSize,
     search: search ? [search] : undefined,
   });
-
-  if (isPendingUnfilteredRepositoryProfiles) {
-    return <LoadingState />;
-  }
 
   if (!unfilteredRepositoryProfilesResponse) {
     throw unfilteredRepositoryProfilesError;
