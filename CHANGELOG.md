@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/canonical/landscape-ui/compare/v1.18.2...v1.19.0) (2025-09-16)
+
+
+### Features
+
+* associated apt sources can be deleted ([#346](https://github.com/canonical/landscape-ui/issues/346)) ([b37dd2b](https://github.com/canonical/landscape-ui/commit/b37dd2b5618d50a11672a610420435e184ce1937))
+
 ## [1.18.2](https://github.com/canonical/landscape-ui/compare/v1.18.1...v1.18.2) (2025-09-12)
 
 
