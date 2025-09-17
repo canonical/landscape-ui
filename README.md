@@ -85,8 +85,6 @@ This command bundles the app into static files for production in the `dist/` dir
 
 ---
 
----
-
 ## Technology Stack
 
 This project is built with a modern, robust set of tools:
@@ -126,5 +124,9 @@ You can contribute by:
 ## Code of Conduct
 
 This project adopts the [Ubuntu Code of Conduct](https://ubuntu.com/community/code-of-conduct).
+
+## License
+
+Code licensed AGPLv3 by Canonical Ltd.
 
 With ♥ from Canonical
