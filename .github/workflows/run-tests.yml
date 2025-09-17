@@ -83,6 +83,15 @@ jobs:
   unit-tests:
     needs: [eslint-check]
     runs-on: [self-hosted, Linux, large]
+    environment: dev
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+      VITE_APP_TITLE: Landscape
+      VITE_ROOT_PATH: /new_dashboard/
+      VITE_REPORT_VIEW_ENABLED: false
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_SELF_HOSTED_ENV: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
