@@ -11,9 +11,6 @@ The modern web interface for Canonical's Landscape, built with React and TypeScr
 - [Getting Started with Local Development](#getting-started-with-local-development)
 - [Technology Stack](#technology-stack)
 - [Feedback & Support](#feedback--support)
-- [Contributing](#contributing)
-- [Code of Conduct](#code-of-conduct)
-- [License](#license)
 
 ---
 
