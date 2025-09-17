@@ -2,13 +2,6 @@ name: Full TICS report
 
 on: workflow_dispatch
 
-env:
-  VITE_API_URL: https://landscape.yuriy.works/api/v2/
-  VITE_API_URL_OLD: https://landscape.yuriy.works/api/
-  VITE_APP_TITLE: Landscape
-  VITE_ROOT_PATH: /new_dashboard/
-  VITE_SELF_HOSTED_ENV: true
-
 jobs:
   unit-tests:
     runs-on: [self-hosted, Linux, large]

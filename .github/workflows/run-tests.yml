@@ -4,15 +4,6 @@ on:
   push:
     branches: [dev]
 
-env:
-  VITE_API_URL: http://landscape.yuriy.works/api/v2/
-  VITE_API_URL_OLD: http://landscape.yuriy.works/api/
-  VITE_APP_TITLE: Landscape
-  VITE_ROOT_PATH: /new_dashboard/
-  VITE_REPORT_VIEW_ENABLED: false
-  VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
-  VITE_SELF_HOSTED_ENV: true
-
 jobs:
   eslint-check:
     runs-on: [self-hosted, Linux, large]
@@ -42,6 +33,15 @@ jobs:
     runs-on: [self-hosted, Linux, large]
     container:
       image: mcr.microsoft.com/playwright:v1.45.1
+    environment: dev
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+      VITE_APP_TITLE: Landscape
+      VITE_ROOT_PATH: /new_dashboard/
+      VITE_REPORT_VIEW_ENABLED: false
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_SELF_HOSTED_ENV: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5

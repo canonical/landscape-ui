@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -46,6 +47,7 @@ jobs:
 
   commit:
     needs: build
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout destination branch
@@ -61,10 +63,7 @@ jobs:
           path: dist
 
       - name: Extract dist
-        run: |
-          mv ./dist ../
-          rm -rf ./*
-          mv ../dist/* ./
+        run: rsync -av --delete --exclude='.git/' dist/ .
 
       - name: Commit and Push
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -72,6 +71,3 @@ jobs:
           repository: .
           branch: ${{ github.event_name == 'workflow_run' && 'ppa-build' || 'ppa-build-dev' }}
           commit_message: 'Automated build: ${{ github.sha }}'
-          commit_user_name: 'Mitch Burton'
-          commit_user_email: 'mitch.burton@canonical.com'
-          commit_author: 'Mitch Burton <mitch.burton@canonical.com>'
