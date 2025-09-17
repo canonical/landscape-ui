@@ -1,0 +1,1 @@
+Code licensed AGPLv3 by Canonical Ltd.
