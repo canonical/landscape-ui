@@ -1,4 +1,4 @@
-name: Lint
+name: Lint & format
 
 on:
   pull_request:
@@ -6,18 +6,19 @@ on:
 
 jobs:
   eslint:
+    name: ESLint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
-      - name: Checkout base
+      - name: Fetch base
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: Get changed files
-        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> $GITHUB_ENV
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(ts|tsx)$") >> $GITHUB_ENV
 
       - name: Set up pnpm
         if: env.FILES
@@ -41,6 +42,7 @@ jobs:
         run: pnpm eslint --cache ${{ env.FILES }}
 
   prettier:
+    name: Prettier
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -48,7 +50,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Checkout base
+      - name: Fetch base
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: Get changed files
@@ -76,6 +78,7 @@ jobs:
         run: pnpm prettier --check ${{ env.FILES }}
 
   stylelint:
+    name: Stylelint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -83,7 +86,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Checkout base
+      - name: Fetch base
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: Get changed files
