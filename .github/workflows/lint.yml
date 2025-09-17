@@ -1,0 +1,114 @@
+name: Lint & format
+
+on:
+  pull_request:
+    branches: [dev]
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Fetch base
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(ts|tsx)$") >> $GITHUB_ENV
+
+      - name: Set up pnpm
+        if: env.FILES
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        if: env.FILES
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.1
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: env.FILES
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        if: env.FILES
+        run: pnpm eslint --cache ${{ env.FILES }}
+
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Fetch base
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.(js|jsx|ts|tsx|json|md|html)$") >> $GITHUB_ENV
+
+      - name: Set up pnpm
+        if: env.FILES
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        if: env.FILES
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.1
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: env.FILES
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Prettier
+        if: env.FILES
+        run: pnpm prettier --check ${{ env.FILES }}
+
+  stylelint:
+    name: Stylelint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+
+      - name: Fetch base
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
+
+      - name: Get changed files
+        run: echo FILES=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | grep -E "\.scss$") >> $GITHUB_ENV
+
+      - name: Set up pnpm
+        if: env.FILES
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        if: env.FILES
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.1
+          cache: "pnpm"
+
+      - name: Install dependencies
+        if: env.FILES
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Stylelint
+        if: env.FILES
+        run: pnpm stylelint ${{ env.FILES }}
