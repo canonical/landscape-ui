@@ -39,6 +39,9 @@ jobs:
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /new_dashboard/
 
+      - name: Copy .gitignore to dist
+        run: cp .gitignore dist/
+
       - name: Archive dist for PPA
         uses: actions/upload-artifact@v4
         with:
