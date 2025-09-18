@@ -7,38 +7,51 @@ import type {
 import { getAccessGroupsToSubmit } from "@/pages/dashboard/settings/roles/helpers";
 import type { FormProps, GetPromisesToEditRoleFn } from "./types";
 
+export const addImpliedViewPermissions = (
+  permissions: string[],
+  permissionOptions: PermissionOption[],
+): string[] => {
+  const completePermissions = new Set(permissions);
+
+  for (const option of permissionOptions) {
+    if (option.values.manage && completePermissions.has(option.values.manage)) {
+      completePermissions.add(option.values.view);
+    }
+  }
+
+  return Array.from(completePermissions);
+};
+
 export const getValuesToEditRole = (
   values: FormProps,
   role: Role,
   accessGroupOptions: AccessGroupOption[],
   permissionOptions: PermissionOption[],
 ) => {
-  const globalPermissions = values.permissions.filter((permission) =>
-    permissionOptions.find(
-      ({ global, values }) =>
-        global && (values.manage === permission || values.view === permission),
-    ),
+  const originalTotalPermissions = role.global_permissions
+    ? [...role.permissions, ...role.global_permissions]
+    : role.permissions;
+
+  const originalPermissionsWithImpliedView = addImpliedViewPermissions(
+    originalTotalPermissions,
+    permissionOptions,
+  );
+  const formPermissionsWithImpliedView = addImpliedViewPermissions(
+    values.permissions,
+    permissionOptions,
   );
 
-  const nonGlobalPermissions = values.permissions.filter(
-    (permission) => !globalPermissions.includes(permission),
+  const permissionsToAdd = formPermissionsWithImpliedView.filter(
+    (permission) => !originalPermissionsWithImpliedView.includes(permission),
   );
 
-  const permissionsToAdd = nonGlobalPermissions.filter(
-    (permission) => !role.permissions.includes(permission),
+  const permissionsToRemove = originalPermissionsWithImpliedView.filter(
+    (permission) => !formPermissionsWithImpliedView.includes(permission),
   );
 
   if (permissionsToAdd.includes("AddComputerToAccessGroup")) {
     permissionsToAdd.push("RemoveComputerFromAccessGroup");
   }
-
-  if (globalPermissions.length > 0) {
-    permissionsToAdd.push(...globalPermissions);
-  }
-
-  const permissionsToRemove = role.permissions.filter(
-    (permission) => !nonGlobalPermissions.includes(permission),
-  );
 
   if (permissionsToRemove.includes("AddComputerToAccessGroup")) {
     permissionsToRemove.push("RemoveComputerFromAccessGroup");
@@ -141,14 +154,10 @@ export const getRoleFormProps = (
     ? [...role.permissions, ...role.global_permissions]
     : role.permissions;
 
-  const permissions = [
-    ...new Set([
-      ...initialPermissions,
-      ...permissionOptions
-        .filter(({ values }) => initialPermissions.includes(values.manage))
-        .map(({ values }) => values.view),
-    ]),
-  ];
+  const completePermissions = addImpliedViewPermissions(
+    initialPermissions,
+    permissionOptions,
+  );
 
-  return { accessGroups, permissions };
+  return { accessGroups, permissions: completePermissions };
 };

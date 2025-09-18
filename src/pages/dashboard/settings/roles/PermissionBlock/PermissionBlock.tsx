@@ -4,6 +4,7 @@ import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
 import type { CellProps, Column } from "react-table";
 import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classes from "./PermissionBlock.module.scss";
+import { isOptionDisabled } from "./helpers";
 
 interface PermissionBlockProps {
   readonly description: string;
@@ -35,15 +36,6 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
       }),
     [options],
   );
-
-  const isOptionDisabled = (option: PermissionOption) => {
-    return (
-      option.values.view === "" ||
-      permissions.includes(
-        options.filter(({ label }) => label === option.label)[0]?.values.manage,
-      )
-    );
-  };
 
   const handlePermissionChange = (
     permissionOption: PermissionOption,
@@ -96,7 +88,11 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
             }
             name="permissions"
             value={row.original.values.view}
-            disabled={isOptionDisabled(row.original)}
+            disabled={isOptionDisabled({
+              option: row.original,
+              permissions,
+              options: optionData,
+            })}
             checked={
               row.original.values.view === "" ||
               permissions.includes(row.original.values.view)
