@@ -30,7 +30,7 @@ describe("PackageProfileList", () => {
     packageProfiles.forEach((profile) => {
       expect(
         screen.getByRole("rowheader", {
-          name: `${profile.title} ${profile.name}`,
+          name: `${profile.title} profile title and name`,
         }),
       ).toBeInTheDocument();
     });
@@ -47,7 +47,7 @@ describe("PackageProfileList", () => {
 
     expect(
       screen.getByRole("rowheader", {
-        name: `${searchText} ${packageProfiles[0].name}`,
+        name: `${packageProfiles[0].title} profile title and name`,
       }),
     ).toBeInTheDocument();
 
@@ -55,7 +55,9 @@ describe("PackageProfileList", () => {
       .filter(({ title }) => !title.includes(searchText))
       .forEach((profile) => {
         expect(
-          screen.queryByRole("rowheader", { name: profile.title }),
+          screen.queryByRole("rowheader", {
+            name: `${profile.title} profile title and name`,
+          }),
         ).not.toBeInTheDocument();
       });
   });

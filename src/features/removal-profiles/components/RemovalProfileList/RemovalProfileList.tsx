@@ -52,6 +52,10 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile title and name`,
+        },
         Cell: ({ row: { original } }: CellProps<RemovalProfile>) => (
           <ListTitle>
             <Button
@@ -73,6 +77,9 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
       {
         accessor: "access_group",
         Header: "Access group",
+        meta: {
+          ariaLabel: (row) => `${row.original.title} profile access group`,
+        },
         Cell: ({ row: { original } }: CellProps<RemovalProfile>) => (
           <>
             {accessGroupOptions.find(
@@ -84,6 +91,9 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
       {
         accessor: "tags",
         Header: "Tags",
+        meta: {
+          ariaLabel: (row) => `${row.original.title} profile tags`,
+        },
         Cell: ({ row: { original, index } }: CellProps<RemovalProfile>) =>
           original.tags.length > 0 ? (
             <TruncatedCell
@@ -105,6 +115,10 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
       {
         accessor: "associated",
         Header: "Associated",
+        meta: {
+          ariaLabel: (row) =>
+            `${row.original.title} profile associated instances`,
+        },
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
