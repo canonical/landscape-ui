@@ -1,6 +1,6 @@
 import { DEFAULT_ACCESS_GROUP_NAME } from "@/constants";
 import * as Yup from "yup";
-import { EMPTY_CONSTRAINT } from "../../constants";
+import { constraintsSchema, EMPTY_CONSTRAINT } from "../../constants";
 import type { AddFormProps } from "../../types";
 
 export const INITIAL_VALUES: AddFormProps = {
@@ -22,24 +22,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   all_computers: Yup.boolean(),
   constraints: Yup.array().when("constraintsType", {
     is: "manual",
-    then: (schema) =>
-      schema
-        .of(
-          Yup.object().shape({
-            constraint: Yup.string().required("Required."),
-            notAnyVersion: Yup.boolean(),
-            package: Yup.string().required("Required."),
-            rule: Yup.string().when("notAnyVersion", {
-              is: true,
-              then: (schema) => schema.required("Required."),
-            }),
-            version: Yup.string().when("notAnyVersion", {
-              is: true,
-              then: (schema) => schema.required("Required."),
-            }),
-          }),
-        )
-        .min(1, "Package profiles must have at least one package constraint."),
+    then: () => constraintsSchema,
   }),
   constraintsType: Yup.string().required("This field is required."),
   csvFile: Yup.mixed<File>()

@@ -1,5 +1,6 @@
 import type { SelectOption } from "@/types/SelectOption";
 import type { Constraint } from "./types";
+import * as Yup from "yup";
 
 export const EMPTY_CONSTRAINT: Omit<Constraint, "id"> = {
   constraint: "",
@@ -35,3 +36,21 @@ export const CONSTRAINT_OPTIONS: SelectOption[] = [
   { label: "Conflicts with", value: "conflicts" },
   { label: "Depends on", value: "depends" },
 ];
+
+export const constraintsSchema = Yup.array()
+  .of(
+    Yup.object().shape({
+      constraint: Yup.string().required("Required."),
+      notAnyVersion: Yup.boolean(),
+      package: Yup.string().required("Required."),
+      rule: Yup.string().when("notAnyVersion", {
+        is: true,
+        then: (schema) => schema.required("Required."),
+      }),
+      version: Yup.string().when("notAnyVersion", {
+        is: true,
+        then: (schema) => schema.required("Required."),
+      }),
+    }),
+  )
+  .min(1, "Package profiles must have at least one package constraint.");
