@@ -18,6 +18,7 @@ jobs:
       VITE_REPORT_VIEW_ENABLED: false
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
       VITE_SELF_HOSTED_ENV: true
+      DEBUG: "pw:webserver"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
