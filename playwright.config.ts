@@ -1,12 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const DEV_PORT = 5173;
-const PREVIEW_PORT = 4173;
-
-const PORT = process.env.CI ? DEV_PORT : PREVIEW_PORT;
-
-const BASE_URL = `http://localhost:${PORT}`;
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -24,8 +17,8 @@ export default defineConfig({
   reporter: [["html", { open: "never" }], ["list"]],
   /* Start a web server before running the tests. */
   webServer: {
-    command: process.env.CI ? "npm run preview" : "npm run dev",
-    url: BASE_URL,
+    command: process.env.CI ? "pnpm preview" : "pnpm dev",
+    url: `http://localhost:${process.env.CI ? "5173" : "4173"}`,
     reuseExistingServer: !process.env.CI,
     stdout: "pipe",
     stderr: "pipe",
@@ -33,7 +26,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: BASE_URL,
+    baseURL: `http://localhost:${process.env.CI ? "5173" : "4173"}`,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
     video: "retain-on-failure",
