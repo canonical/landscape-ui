@@ -48,11 +48,13 @@ describe("RepositoryProfileList", () => {
 
     expect(
       screen.getByRole("rowheader", {
-        name: `${repositoryProfiles[0].title}${repositoryProfiles[0].name}`,
+        name: `${repositoryProfiles[0].title} profile title and name`,
       }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("rowheader", { name: repositoryProfiles[1].title }),
+      screen.queryByRole("rowheader", {
+        name: `${repositoryProfiles[1].title} profile title and name`,
+      }),
     ).not.toBeInTheDocument();
   });
 });

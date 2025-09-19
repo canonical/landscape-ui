@@ -1,57 +1,8 @@
+import { createTablePropGetters } from "@/utils/table";
 import type { RemovalProfile } from "../../types";
-import type { HTMLProps } from "react";
-import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
 
-export const getCellProps = (expandedRowIndex: number | null) => {
-  return ({
-    column,
-    row: { index },
-  }: Cell<RemovalProfile>): Partial<
-    TableCellProps & HTMLProps<HTMLTableCellElement>
-  > => {
-    const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
-      {};
-
-    switch (column.id) {
-      case "title":
-        cellProps.role = "rowheader";
-        break;
-      case "access_group":
-        cellProps["aria-label"] = "Access group";
-        break;
-      case "tags":
-        cellProps["aria-label"] = "Tags";
-        if (expandedRowIndex === index) {
-          cellProps.className = "expandedCell";
-        }
-        break;
-      case "associated":
-        cellProps["aria-label"] = "Associated instances";
-        break;
-      case "actions":
-        cellProps["aria-label"] = "Actions";
-        break;
-    }
-
-    return cellProps;
-  };
-};
-
-export const getRowProps = (expandedRowIndex: number | null) => {
-  return ({
-    index,
-    original,
-  }: Row<RemovalProfile>): Partial<
-    TableRowProps & HTMLProps<HTMLTableRowElement>
-  > => {
-    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
-      {};
-
-    if (expandedRowIndex === index) {
-      rowProps.className = "expandedRow";
-    }
-    rowProps["aria-label"] = `${original.title} removal profile row`;
-
-    return rowProps;
-  };
-};
+export const { getCellProps, getRowProps } =
+  createTablePropGetters<RemovalProfile>({
+    headerColumnId: "title",
+    itemTypeName: "removal profile",
+  });

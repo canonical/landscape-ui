@@ -44,6 +44,10 @@ const WslProfilesList: FC = () => {
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile title and name`,
+        },
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => {
           const openWslProfileDetails = () => {
             setPageParams({ sidePath: ["view"], profile: wslProfile.name });
@@ -69,6 +73,10 @@ const WslProfilesList: FC = () => {
         accessor: "description",
         className: classes.description,
         Header: "Description",
+        meta: {
+          ariaLabel: (row) => `${row.original.title} profile description`,
+          isExpandable: true,
+        },
         Cell: ({
           row: { original: wslProfile, index },
         }: CellProps<WslProfile>) => {
@@ -90,6 +98,9 @@ const WslProfilesList: FC = () => {
       {
         accessor: "access_group",
         Header: "Access group",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile access group`,
+        },
         Cell: ({
           row: {
             original: { access_group },
@@ -101,6 +112,10 @@ const WslProfilesList: FC = () => {
       {
         accessor: "tags",
         Header: "Tags",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile tags`,
+          isExpandable: true,
+        },
         Cell: ({
           row: { original: wslProfile, index },
         }: CellProps<WslProfile>) => {
@@ -135,12 +150,20 @@ const WslProfilesList: FC = () => {
       {
         accessor: "computers['constrained']",
         Header: "Associated parents",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} associated parent instances`,
+        },
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
           <WslProfileAssociatedParentsLink wslProfile={wslProfile} />
         ),
       },
       {
         accessor: "computers['non-compliant']",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} non compliant parent instances`,
+        },
         Header: (
           <div className={classes.header}>
             Not compliant
@@ -166,6 +189,10 @@ const WslProfilesList: FC = () => {
       },
       {
         accessor: "computers['compliant']",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} compliant parent instances`,
+        },
         Header: (
           <div className={classes.header}>
             Compliant
@@ -200,7 +227,7 @@ const WslProfilesList: FC = () => {
       <ResponsiveTable
         columns={columns}
         data={wslProfiles}
-        emptyMsg={`No WSL profiles found according to your search parameters.`}
+        emptyMsg="No WSL profiles found according to your search parameters."
         getCellProps={getCellProps(expandedRowIndex, expandedColumnId)}
         getRowProps={getRowProps(expandedRowIndex)}
         minWidth={1200}

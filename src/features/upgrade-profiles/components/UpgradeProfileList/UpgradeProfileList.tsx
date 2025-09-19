@@ -54,6 +54,10 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile title and name`,
+        },
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
           <ListTitle>
             <Button
@@ -74,6 +78,9 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       {
         accessor: "access_group",
         Header: "Access group",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile access group`,
+        },
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
           <>
             {accessGroupOptions.find(
@@ -85,6 +92,10 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       {
         accessor: "tags",
         Header: "Tags",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile tags`,
+          isExpandable: true,
+        },
         Cell: ({ row: { original, index } }: CellProps<UpgradeProfile>) =>
           original.tags.length > 0 ? (
             <TruncatedCell
@@ -106,6 +117,10 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       {
         accessor: "associated",
         Header: "Associated",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile associated instances`,
+        },
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
