@@ -1,8 +1,9 @@
 import { API_URL } from "@/constants";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { http, HttpResponse } from "msw";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import { generatePaginatedResponse } from "./_helpers";
-import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
   http.get(`${API_URL}rebootprofiles`, ({ request }) => {
@@ -56,6 +57,18 @@ export default [
   }),
 
   http.delete(`${API_URL}rebootprofiles/:id`, ({ params }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      !endpointStatus.path ||
+      (endpointStatus.path &&
+        endpointStatus.path.includes("rebootprofiles/:id"))
+    ) {
+      if (endpointStatus.status === "error") {
+        throw ENDPOINT_STATUS_API_ERROR;
+      }
+    }
+
     const id = Number(params.id);
     const profile = rebootProfiles.find((p) => p.id === id);
 
