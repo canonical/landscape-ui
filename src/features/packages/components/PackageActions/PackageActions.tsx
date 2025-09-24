@@ -1,19 +1,18 @@
-import classNames from "classnames";
+import LoadingState from "@/components/layout/LoadingState";
+import { ResponsiveButtons } from "@/components/ui";
+import useSidePanel from "@/hooks/useSidePanel";
+import { pluralize } from "@/utils/_helpers";
+import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { Button, Icon } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
+import PackagesInstallButton from "../PackagesInstallButton";
 import classes from "./PackageActions.module.scss";
-import { pluralize } from "@/utils/_helpers";
-import { ResponsiveButtons } from "@/components/ui";
 
 const InstalledPackagesActionForm = lazy(
   async () => import("../InstalledPackagesActionForm"),
 );
-const PackagesInstallForm = lazy(async () => import("../PackagesInstallForm"));
 
 interface PackageActionsProps {
   readonly selectedPackages: InstancePackage[];
@@ -60,26 +59,9 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
       selectedPackages.every((pkg) => !pkg.available_version),
   };
 
-  const handlePackagesInstall = () => {
-    setSidePanelContent(
-      "Install packages",
-      <Suspense fallback={<LoadingState />}>
-        <PackagesInstallForm />
-      </Suspense>,
-    );
-  };
-
   return (
     <div className={classes.container}>
-      <Button
-        type="button"
-        onClick={handlePackagesInstall}
-        hasIcon
-        className={classNames("u-no-margin--bottom", classes.noWrap)}
-      >
-        <i className="p-icon--plus" />
-        <span>Install</span>
-      </Button>
+      <PackagesInstallButton />
       <ResponsiveButtons
         collapseFrom="xl"
         buttons={Object.keys(INSTALLED_PACKAGE_ACTIONS)
