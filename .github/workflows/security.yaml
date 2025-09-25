@@ -173,3 +173,10 @@ jobs:
           github-pat: ${{ secrets.GITHUB_TOKEN }}
           severity: "HIGH,CRITICAL"
           scanners: "vuln"
+
+      - name: Upload SBOM as an Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-report-json
+          path: 'dependency-results.sbom.json'
+          retention-days: 30
