@@ -44,26 +44,24 @@ const RebootProfileRemoveModal: FC<RebootProfileRemoveModalProps> = ({
   };
 
   return (
-    <>
-      <TextConfirmationModal
-        isOpen={opened}
-        title="Remove reboot profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        onConfirm={handleRemoveRebootProfile}
-        confirmButtonDisabled={isRemovingRebootProfile}
-        confirmButtonLoading={isRemovingRebootProfile}
-        close={close}
-        confirmationText={`remove ${rebootProfile.title}`}
-      >
-        <p>
-          Are you sure you want to remove &quot;{rebootProfile.title}
-          &quot; reboot profile? The removal of &quot;{rebootProfile.title}
-          &quot; reboot profile is irreversible and might adversely affect your
-          system.
-        </p>
-      </TextConfirmationModal>
-    </>
+    <TextConfirmationModal
+      isOpen={opened}
+      title="Remove reboot profile"
+      confirmButtonLabel="Remove"
+      confirmButtonAppearance="negative"
+      onConfirm={handleRemoveRebootProfile}
+      confirmButtonDisabled={isRemovingRebootProfile}
+      confirmButtonLoading={isRemovingRebootProfile}
+      close={close}
+      confirmationText={`remove ${rebootProfile.title}`}
+    >
+      <p>
+        Are you sure you want to remove &quot;{rebootProfile.title}
+        &quot; reboot profile? The removal of &quot;{rebootProfile.title}
+        &quot; reboot profile is irreversible and might adversely affect your
+        system.
+      </p>
+    </TextConfirmationModal>
   );
 };
 
