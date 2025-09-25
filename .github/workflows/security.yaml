@@ -10,7 +10,7 @@ on:
       - '.github/workflows/security.yaml'
 
 permissions:
-  contents: read
+  contents: write
   packages: write
   issues: write
 
@@ -152,81 +152,17 @@ jobs:
           
           gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
 
-  sbom-generation:
-    name: Generate SBOM
+  generate-and-submit-sbom:
+    name: Generate and Submit SBOM
     needs: build-image
-    runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+    runs-on: ubuntu-latest
     steps:
-      - name: Download image artifact
-        uses: actions/download-artifact@v4
+      - name: Run Trivy to generate SBOM and submit to Dependency Graph
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          name: image-tar
-
-      - name: Checkout sbomber tool
-        uses: actions/checkout@v5
-        with:
-          repository: canonical/sbomber
-          path: sbomber
-          persist-credentials: false
-
-      - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y skopeo
-
-      - name: Install Prerequisites
-        uses: astral-sh/setup-uv@557e51de59eb14aaaba2ed9621916900a91d50c6 # Pinned to older version (v6.6.1) for sbomber compatibility
-
-      - name: Install secscan client
-        run: |
-          sudo snap install canonical-secscan-client
-          sudo snap connect canonical-secscan-client:home system:home
-
-      - name: Create sbomber manifest
-        run: |
-          cat <<EOF > sbomber/manifest.yaml
-          clients:
-            sbom:
-                service_url: https://sbom-request.canonical.com
-                department: web_engineering
-                email: yurii.vasyliev@canonical.com
-                team: landscape
-            secscan: {}
-          
-          artifacts:
-            - name: landscape-ui-container
-              path: ../image.tar
-              type: rock
-              ssdlc_params:
-                name: 'ops'
-                version: ''
-                channel: 'stable'
-                cycle: '25.10'
-          EOF
-
-      - name: Run sbomber
-        id: sbomber
-        continue-on-error: true
-        run: |
-          cd sbomber
-          chmod +x sbomber
-          ./sbomber prepare manifest.yaml
-          ./sbomber submit
-          ./sbomber poll --wait --timeout 30
-          ./sbomber download
-
-      - name: Check SBOM Generation Status
-        if: always()
-        run: |
-          if [ "${{ steps.sbomber.outcome }}" == "success" ]; then
-            echo "SBOM generation completed successfully."
-          else
-            echo "::error::SBOM generation failed. Check the logs from the 'Run sbomber' step for details."
-            exit 1
-          fi
-
-      - name: Upload SBOM Reports
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: sbom-reports
-          path: sbomber/reports/
-          retention-days: 90
+          image-ref: ${{ needs.build-image.outputs.image_name }}
+          format: 'spdx-json'
+          output: 'dependency-results.sbom.json'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+          severity: "MEDIUM,HIGH,CRITICAL"
+          scanners: "vuln"
