@@ -1,19 +1,16 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useRemoveRebootProfileQuery } from "../../api";
 import useGetPageRebootProfile from "../../api/useGetPageRebootProfile";
 import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
+import RebootProfileRemoveModal from "../RebootProfileRemoveModal";
 import { formatWeeklyRebootSchedule } from "./helpers";
 
 const RebootProfileDetailsSidePanel: FC = () => {
@@ -23,11 +20,7 @@ const RebootProfileDetailsSidePanel: FC = () => {
     setTrue: handleOpenModal,
   } = useBoolean();
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { pushSidePath, setPageParams } = usePageParams();
-  const { removeRebootProfile, isRemovingRebootProfile } =
-    useRemoveRebootProfileQuery();
+  const { pushSidePath } = usePageParams();
 
   const { rebootProfile: profile, isGettingRebootProfile } =
     useGetPageRebootProfile();
@@ -39,25 +32,6 @@ const RebootProfileDetailsSidePanel: FC = () => {
   if (isGettingRebootProfile || isGettingAccessGroups) {
     return <SidePanel.LoadingState />;
   }
-
-  const handleRemoveRebootProfile = async () => {
-    try {
-      await removeRebootProfile({
-        id: profile.id,
-      });
-
-      setPageParams({ sidePath: [], profile: "" });
-
-      notify.success({
-        title: "Reboot profile removed",
-        message: `Reboot profile ${profile.title} has been removed`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
 
   const handleEditRebootProfile = () => {
     pushSidePath("edit");
@@ -175,24 +149,11 @@ const RebootProfileDetailsSidePanel: FC = () => {
         </Blocks>
       </SidePanel.Content>
 
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        title="Remove reboot profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        onConfirm={handleRemoveRebootProfile}
-        confirmButtonDisabled={isRemovingRebootProfile}
-        confirmButtonLoading={isRemovingRebootProfile}
+      <RebootProfileRemoveModal
         close={handleCloseModal}
-        confirmationText={`remove ${profile.title}`}
-      >
-        <p>
-          Are you sure you want to remove &quot;{profile.title}
-          &quot; reboot profile? The removal of &quot;{profile.title}
-          &quot; reboot profile is irreversible and might adversely affect your
-          system.
-        </p>
-      </TextConfirmationModal>
+        opened={modalOpen}
+        rebootProfile={profile}
+      />
     </>
   );
 };
