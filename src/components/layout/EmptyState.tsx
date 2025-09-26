@@ -1,5 +1,4 @@
 import type { FC, ReactNode } from "react";
-import classNames from "classnames";
 import classes from "./EmptyState.module.scss";
 
 interface EmptyStateProps {
@@ -30,15 +29,7 @@ const EmptyState: FC<EmptyStateProps> = ({
               />
             </div>
           )}
-          {title && (
-            <p
-              className={classNames("p-heading--4", {
-                "u-no-margin--bottom": Boolean(body),
-              })}
-            >
-              {title}
-            </p>
-          )}
+          {title && <p className="p-heading--4 u-no-margin--bottom">{title}</p>}
           {body && <div>{body}</div>}
           {cta.length > 0 && <div className={classes.cta}>{cta}</div>}
         </div>

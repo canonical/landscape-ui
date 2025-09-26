@@ -1,8 +1,10 @@
+import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { InstancePackage } from "@/features/packages";
 import {
   PackageList,
+  PackagesInstallButton,
   PackagesPanelHeader,
   usePackages,
 } from "@/features/packages";
@@ -12,7 +14,6 @@ import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useLocation, useParams } from "react-router";
 import { getEmptyMessage } from "./helpers";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const PackagesPanel: FC = () => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
@@ -24,43 +25,74 @@ const PackagesPanel: FC = () => {
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
-  const { data: packagesResponse, isLoading: isGettingPackages } =
-    getInstancePackagesQuery({
-      instance_id: instanceId,
-      search: search,
-      limit: pageSize,
-      offset: currentPage * pageSize - pageSize,
-      installed: !status || undefined,
-      upgrade: status === "upgrade" || undefined,
-      held: status === "held" || undefined,
-      security: status === "security" || undefined,
-    });
+  const {
+    data: unfilteredPackagesResponse,
+    isPending: isGettingUnfilteredPackages,
+    error: unfilteredPackagesError,
+  } = getInstancePackagesQuery({
+    limit: 1,
+    instance_id: instanceId,
+  });
 
-  const packages = packagesResponse?.data.results ?? [];
+  const {
+    data: packagesResponse,
+    isPending: isGettingPackages,
+    error: packagesError,
+  } = getInstancePackagesQuery({
+    instance_id: instanceId,
+    search: search,
+    limit: pageSize,
+    offset: currentPage * pageSize - pageSize,
+    installed: !status || undefined,
+    upgrade: status === "upgrade" || undefined,
+    held: status === "held" || undefined,
+    security: status === "security" || undefined,
+  });
 
   const { selectedItems: selected, setSelectedItems: setSelected } =
-    useSelection<InstancePackage>(packages, isGettingPackages);
+    useSelection<InstancePackage>(
+      packagesResponse?.data.results ?? [],
+      isGettingPackages,
+    );
 
   const handleClearSelection = (): void => {
     setSelected([]);
   };
 
+  if (isGettingUnfilteredPackages) {
+    return <LoadingState />;
+  }
+
+  if (unfilteredPackagesError) {
+    throw unfilteredPackagesError;
+  }
+
+  if (!unfilteredPackagesResponse.data.count) {
+    return (
+      <EmptyState
+        title="No packages have been found yet."
+        cta={[<PackagesInstallButton key="install" appearance="positive" />]}
+      />
+    );
+  }
+
+  if (packagesError) {
+    throw packagesError;
+  }
+
   return (
     <>
-      {!search &&
-      !status &&
-      currentPage === 1 &&
-      pageSize === DEFAULT_PAGE_SIZE &&
-      isGettingPackages ? (
+      <PackagesPanelHeader
+        selectedPackages={selected}
+        handleClearSelection={handleClearSelection}
+      />
+
+      {isGettingPackages ? (
         <LoadingState />
       ) : (
         <>
-          <PackagesPanelHeader
-            selectedPackages={selected}
-            handleClearSelection={handleClearSelection}
-          />
           <PackageList
-            packages={packages}
+            packages={packagesResponse.data.results}
             packagesLoading={isGettingPackages}
             selectedPackages={selected}
             onPackagesSelect={(packageNames) => {
@@ -69,14 +101,13 @@ const PackagesPanel: FC = () => {
             emptyMsg={getEmptyMessage(status, search)}
             selectAll={!!state?.selectAll}
           />
+          <TablePagination
+            handleClearSelection={handleClearSelection}
+            totalItems={packagesResponse.data.count}
+            currentItemCount={packagesResponse.data.results.length}
+          />
         </>
       )}
-
-      <TablePagination
-        handleClearSelection={handleClearSelection}
-        totalItems={packagesResponse?.data.count}
-        currentItemCount={packages.length}
-      />
     </>
   );
 };
