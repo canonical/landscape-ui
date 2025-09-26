@@ -70,8 +70,8 @@ const PackagesPanel: FC = () => {
   if (!unfilteredPackagesResponse.data.count) {
     return (
       <EmptyState
-        title="You haven’t installed any packages yet."
-        cta={[<PackagesInstallButton key="install" />]}
+        title="No packages have been found yet."
+        cta={[<PackagesInstallButton key="install" appearance="positive" />]}
       />
     );
   }
