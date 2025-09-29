@@ -59,6 +59,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile title and name`,
+        },
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <ListTitle>
             <Button
@@ -80,10 +84,16 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         accessor: "description",
         className: classes.description,
         Header: "Description",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile description`,
+        },
       },
       {
         accessor: "access_group",
         Header: "Access group",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile access group`,
+        },
         Cell: ({
           row: {
             original: { access_group },
@@ -95,6 +105,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       {
         accessor: "tags",
         Header: "Tags",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile tags`,
+          isExpandable: true,
+        },
         Cell: ({
           row: {
             original: { tags },
@@ -120,6 +134,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       },
       {
         accessor: "computers['non-compliant']",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile non-compliant instances`,
+        },
         Header: (
           <div className={classes.noWrap}>
             <span>Not compliant </span>
@@ -136,6 +154,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       },
       {
         accessor: "computers['pending']",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile pending instances`,
+        },
         Header: (
           <div className={classes.noWrap}>
             <span>Pending </span>
@@ -152,6 +174,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       },
       {
         accessor: "computers['constrained']",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile constrained instances`,
+        },
         Header: "Associated",
         Cell: ({
           row: { original: packageProfile },

@@ -54,6 +54,10 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "title",
         Header: "Title",
+        id: "title",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile title`,
+        },
         Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
           <Button
             type="button"
@@ -70,6 +74,9 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "access_group",
         Header: "access group",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile access group`,
+        },
         Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
           <>
             {accessGroupOptions.find(
@@ -81,6 +88,9 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "tags",
         Header: "Tags",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile tags`,
+        },
         Cell: ({ row: { original, index } }: CellProps<RebootProfile>) =>
           original.tags.length > 0 ? (
             <TruncatedCell
@@ -102,6 +112,10 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "associated",
         Header: "associated",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile associated instances`,
+        },
         Cell: ({
           row: { original: rebootProfile },
         }: CellProps<RebootProfile>) => (
@@ -111,6 +125,10 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       {
         accessor: "scheduled_reboot",
         Header: "scheduled reboot",
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile next scheduled reboot`,
+        },
         className: "date-cell",
         Cell: ({ row }: CellProps<RebootProfile>) => {
           return (
@@ -122,6 +140,9 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile actions`,
+        },
         Cell: ({ row }: CellProps<RebootProfile>) => (
           <RebootProfilesListActions profile={row.original} />
         ),

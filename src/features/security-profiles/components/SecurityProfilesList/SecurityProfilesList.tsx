@@ -18,6 +18,7 @@ import type { SecurityProfile } from "../../types";
 import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import classes from "./SecurityProfilesList.module.scss";
+import { getCellProps, getRowProps } from "./helpers";
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <div className={classes.header}>
@@ -46,6 +47,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile title and name`,
+        },
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => {
           return (
             <ListTitle>
@@ -71,6 +76,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "status",
         Header: "Status",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile status`,
+        },
         className: classes.status,
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) =>
           getStatus(profile).label,
@@ -81,6 +89,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "lastAuditPassrate",
         Header: "Last audit's pass rate",
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} last audit pass rate`,
+        },
+        className: classes.lastAuditPassrate,
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const { passing, failing, in_progress, not_started } =
             row.original.last_run_results;
@@ -200,7 +212,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         accessor: "associatedInstances",
         Header: ASSOCIATED_INSTANCES_HEADER,
         className: classes.associatedInstances,
-
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} associated instances and tags`,
+        },
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
             <div className={classes.ellipsis}>
@@ -208,7 +223,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 securityProfile={profile}
               />
               <br />
-              {getTags(profile)}
+              <span aria-label={`${profile.title} profile tags`}>
+                {getTags(profile)}
+              </span>
             </div>
           </>
         ),
@@ -216,6 +233,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "mode",
         Header: "Mode",
+        meta: {
+          ariaLabel: ({ original }: { original: SecurityProfile }) =>
+            `${original.title} profile mode`,
+        },
         className: classes.mode,
         Cell: ({
           row: {
@@ -226,6 +247,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       {
         accessor: "schedule",
         Header: LAST_RUN_HEADER,
+        meta: { ariaLabel: "Last run and schedule" },
         className: "date-cell",
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const lastRun = !row.original.last_run_results.timestamp ? (
@@ -264,9 +286,17 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
               message={tooltipMessage}
             >
               <div className={classes.truncated}>
-                <span className="font-monospace">{lastRun}</span>
+                <span
+                  className="font-monospace"
+                  aria-label={`Last run for ${row.original.title} profile`}
+                >
+                  {lastRun}
+                </span>
                 <br />
-                <span className={classes.ellipsis}>
+                <span
+                  className={classes.ellipsis}
+                  aria-label={`Schedule for ${row.original.title} profile`}
+                >
                   {getSchedule(row.original)}
                 </span>
               </div>
@@ -290,6 +320,8 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
       columns={columns}
       data={securityProfiles}
       minWidth={1200}
+      getCellProps={getCellProps()}
+      getRowProps={getRowProps()}
     />
   );
 };

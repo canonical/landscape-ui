@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
-import { handleCellProps } from "./helpers";
+import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 
 interface RepositoryProfileListProps {
@@ -47,6 +47,10 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     () => [
       {
         ...LIST_TITLE_COLUMN_PROPS,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile title and name`,
+        },
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
           <ListTitle>
             {row.original.title}
@@ -58,6 +62,12 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         accessor: "description",
         Header: "Description",
         className: classes.description,
+        meta: {
+          ariaLabel: ({ original }) =>
+            original.description
+              ? `${original.title} profile description`
+              : `No description for ${original.title} profile`,
+        },
         Cell: ({ row }: CellProps<RepositoryProfile>) =>
           row.original.description || <NoData />,
       },
@@ -65,6 +75,9 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         accessor: "access_group",
         Header: "Access group",
         className: classes.accessGroup,
+        meta: {
+          ariaLabel: ({ original }) => `${original.title} profile access group`,
+        },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
           accessGroupOptions.find(
             ({ value }) => original.access_group === value,
@@ -84,7 +97,8 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     <ResponsiveTable
       columns={columns}
       data={profiles}
-      getCellProps={handleCellProps}
+      getCellProps={getCellProps()}
+      getRowProps={getRowProps()}
       emptyMsg={`No repository profiles found with the search "${search}"`}
     />
   );

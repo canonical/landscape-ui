@@ -1,8 +1,8 @@
 import { createTablePropGetters } from "@/utils/table";
-import type { RebootProfile } from "../../types";
+import type { SecurityProfile } from "../../types";
 
 export const { getCellProps, getRowProps } =
-  createTablePropGetters<RebootProfile>({
+  createTablePropGetters<SecurityProfile>({
+    itemTypeName: "security profile",
     headerColumnId: "title",
-    itemTypeName: "reboot profile",
   });
