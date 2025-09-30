@@ -5,6 +5,7 @@ import type { FC } from "react";
 import { formatTitleCase, getAuthorInfo } from "../../helpers";
 import type { SingleScript } from "../../types";
 import AttachmentFile from "../AttachmentFile";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptDetailsInfoProps {
   readonly script: SingleScript;
@@ -72,7 +73,11 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
           script.script_profiles.length > 0
             ? script.script_profiles.map((profile, index) => (
                 <StaticLink
-                  to={`/scripts?tab=profiles&sidePath=view&profile=${profile.id}`}
+                  to={ROUTES.scripts.root({
+                    tab: "profiles",
+                    sidePath: ["view"],
+                    profile: profile.id.toString(),
+                  })}
                   key={profile.id}
                 >
                   {profile.title}

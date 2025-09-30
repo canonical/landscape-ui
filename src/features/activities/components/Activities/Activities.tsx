@@ -15,6 +15,7 @@ import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { ROUTES } from "@/libs/routes";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -142,7 +143,9 @@ const Activities: FC<ActivitiesProps> = ({
           Header: "Instance",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
-              <Link to={`/instances/${row.original.computer_id}`}>
+              <Link
+                to={ROUTES.instances.details.single(row.original.computer_id)}
+              >
                 ID: {row.original.computer_id}
               </Link>
             ) : (

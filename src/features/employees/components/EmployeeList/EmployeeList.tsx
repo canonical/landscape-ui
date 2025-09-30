@@ -15,6 +15,7 @@ import type { Employee } from "../../types";
 import EmployeeListActions from "../EmployeeListActions";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { ROUTES } from "@/libs/routes";
 
 const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
 
@@ -121,7 +122,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
                 <Link
                   key={computer.id}
                   className="truncatedItem"
-                  to={`/instances/${computer.id}`}
+                  to={ROUTES.instances.details.single(computer.id)}
                 >
                   {computer.title}
                 </Link>

@@ -4,6 +4,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import SnapDropdownSearch from "./SnapDropdownSearch";
+import { PATHS } from "@/libs/routes";
 
 const props = {
   selectedItems: [],
@@ -17,7 +18,7 @@ describe("SnapDropdownSearch", () => {
       <SnapDropdownSearch {...props} />,
       {},
       "/instances/1",
-      "instances/:instanceId",
+      `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
   });
 

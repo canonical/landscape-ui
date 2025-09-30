@@ -3,6 +3,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { SecurityProfile } from "../../types";
+import { ROUTES } from "@/libs/routes";
 
 interface SecurityProfileAssociatedInstancesLinkProps {
   readonly securityProfile: SecurityProfile;
@@ -21,10 +22,9 @@ const SecurityProfileAssociatedInstancesLink: FC<
 
   return (
     <StaticLink
-      to={{
-        pathname: "/instances",
-        search: `query=${encodeURIComponent(`profile:security:${securityProfile.id}`)}`,
-      }}
+      to={ROUTES.instances.root({
+        query: `profile:security:${securityProfile.id}`,
+      })}
     >
       {securityProfile.associated_instances}{" "}
       {pluralize(securityProfile.associated_instances, "instance")}

@@ -1,22 +1,47 @@
+import { ROUTES } from "@/libs/routes";
 import type { Profile } from "@/types/Profile";
 
 export const getTo = (profile: Profile) => {
   switch (profile.type) {
     case "package":
-      return `/profiles/package?sidePath=view&profile=${profile.name}`;
+      return ROUTES.profiles.package({
+        sidePath: ["view"],
+        profile: profile.name || "",
+      });
     case "reboot":
-      return `/profiles/reboot?sidePath=view&profile=${profile.id}`;
+      return ROUTES.profiles.reboot({
+        sidePath: ["view"],
+        profile: profile.id.toString() || "",
+      });
     case "removal":
-      return `/profiles/removal?sidePath=view&profile=${profile.id}`;
+      return ROUTES.profiles.removal({
+        sidePath: ["view"],
+        profile: profile.id.toString() || "",
+      });
     case "repository":
-      return `/profiles/repository?search=${profile.title}`;
+      return ROUTES.profiles.repository({
+        search: profile.title || "",
+      });
     case "script":
-      return `/scripts?tab=profiles&sidePath=view&profile=${profile.id}`;
+      return ROUTES.scripts.root({
+        tab: "profiles",
+        sidePath: ["view"],
+        profile: profile.id.toString() || "",
+      });
     case "security":
-      return `/profiles/security?sidePath=view&profile=${profile.id}`;
+      return ROUTES.profiles.security({
+        sidePath: ["view"],
+        profile: profile.id.toString() || "",
+      });
     case "upgrade":
-      return `/profiles/upgrade?sidePath=view&profile=${profile.id}`;
+      return ROUTES.profiles.upgrade({
+        sidePath: ["view"],
+        profile: profile.id.toString() || "",
+      });
     case "wsl":
-      return `/profiles/wsl?sidePath=view&profile=${profile.name}`;
+      return ROUTES.profiles.wsl({
+        sidePath: ["view"],
+        profile: profile.name || "",
+      });
   }
 };

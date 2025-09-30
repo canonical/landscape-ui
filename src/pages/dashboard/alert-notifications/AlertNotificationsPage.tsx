@@ -8,6 +8,7 @@ import {
   useAlertsSummary,
 } from "@/features/alert-notifications";
 import { useGetPendingInstances } from "@/features/instances";
+import { ROUTES } from "@/libs/routes";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useNavigate } from "react-router";
@@ -49,8 +50,8 @@ const AlertNotificationsPage: FC = () => {
               <Button
                 appearance="positive"
                 key="go-to-alerts-page"
-                onClick={async () =>
-                  navigate("/account/alerts", { replace: true })
+                onClick={() =>
+                  navigate(ROUTES.account.alerts(), { replace: true })
                 }
                 type="button"
                 aria-label="Go to alerts page"

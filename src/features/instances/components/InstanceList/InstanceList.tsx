@@ -24,6 +24,7 @@ import {
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
+import { ROUTES } from "@/libs/routes";
 
 interface InstanceListProps {
   readonly instances: Instance[];
@@ -107,11 +108,7 @@ const InstanceList = memo(function InstanceList({
 
               <ListTitle>
                 <StaticLink
-                  to={
-                    row.original.parent
-                      ? `/instances/${row.original.parent.id}/${row.original.id}`
-                      : `/instances/${row.original.id}`
-                  }
+                  to={ROUTES.instances.details.fromInstance(row.original)}
                 >
                   {row.original.title}
                 </StaticLink>

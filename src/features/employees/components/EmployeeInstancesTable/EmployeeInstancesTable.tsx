@@ -10,6 +10,7 @@ import EmployeeInstancesTableActions from "../EmployeeInstancesTableActions";
 import { EMPTY_STATE } from "./constants";
 import classes from "./EmployeeInstancesTable.module.scss";
 import { handleCellProps } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 interface EmployeeInstancesTableProps {
   readonly instances: Instance[] | null;
@@ -24,13 +25,7 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
         accessor: "name",
         Header: "name",
         Cell: ({ row }: CellProps<Instance>) => (
-          <Link
-            to={
-              row.original.parent
-                ? `/instances/${row.original.parent.id}/${row.original.id}`
-                : `/instances/${row.original.id}`
-            }
-          >
+          <Link to={ROUTES.instances.details.fromInstance(row.original)}>
             {row.original.title}
           </Link>
         ),

@@ -4,6 +4,7 @@ import { Spinner } from "@canonical/react-components";
 import { type FC } from "react";
 import { Link } from "react-router";
 import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
+import { ROUTES } from "@/libs/routes";
 
 interface AccessGroupInstanceCountCellProps {
   readonly accessGroup: AccessGroupWithInstancesCount;
@@ -30,7 +31,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
 
   if (instancesCount) {
     return (
-      <Link to={`/instances?accessGroups=${accessGroup.name}`}>
+      <Link to={ROUTES.instances.root({ accessGroups: [accessGroup.name] })}>
         {instancesCount} {pluralize(instancesCount, "instance")}
       </Link>
     );

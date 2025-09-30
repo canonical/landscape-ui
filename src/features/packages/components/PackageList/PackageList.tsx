@@ -22,6 +22,7 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const PackageDetails = lazy(async () => import("../PackageDetails"));
 
@@ -117,8 +118,10 @@ const PackageList: FC<PackageListProps> = ({
                 <div>
                   <p className="u-no-padding--top">Ubuntu Pro is required</p>
                   <Link
-                    to={`/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`}
-                    state={{ tab: "ubuntu-pro" }}
+                    to={ROUTES.instances.details.fromParams({
+                      instanceId,
+                      childInstanceId,
+                    })}
                     className={classes.tooltipLink}
                   >
                     learn more

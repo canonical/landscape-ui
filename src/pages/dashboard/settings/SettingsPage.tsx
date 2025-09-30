@@ -1,3 +1,4 @@
+import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
@@ -6,7 +7,7 @@ const SettingsPage: FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate("/settings/general", { replace: true });
+    navigate(ROUTES.settings.general(), { replace: true });
   }, []);
 
   return null;

@@ -1,20 +1,21 @@
+import { ROUTES } from "@/libs/routes";
 import type { MenuItem } from "../Navigation/types";
 
 export const ACCOUNT_SETTINGS: MenuItem = {
   label: "Account settings",
-  path: "/account",
+  path: ROUTES.account.root(),
   items: [
     {
       label: "General",
-      path: "/account/general",
+      path: ROUTES.account.general(),
     },
     {
       label: "Alerts",
-      path: "/account/alerts",
+      path: ROUTES.account.alerts(),
     },
     {
       label: "API credentials",
-      path: "/account/api-credentials",
+      path: ROUTES.account.apiCredentials(),
     },
   ],
 };

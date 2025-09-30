@@ -3,6 +3,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { RebootProfile } from "../../types";
+import { ROUTES } from "@/libs/routes";
 
 interface RebootProfileAssociatedInstancesLinkProps {
   readonly rebootProfile: RebootProfile;
@@ -21,10 +22,9 @@ const RebootProfileAssociatedInstancesLink: FC<
 
   return (
     <StaticLink
-      to={{
-        pathname: "/instances",
-        search: `query=${encodeURIComponent(`profile:reboot:${rebootProfile.id}`)}`,
-      }}
+      to={ROUTES.instances.root({
+        query: `profile:reboot:${rebootProfile.id}`,
+      })}
     >
       {rebootProfile.num_computers}{" "}
       {pluralize(rebootProfile.num_computers, "instance")}

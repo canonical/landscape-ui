@@ -3,6 +3,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { PackageProfile } from "../../types";
+import { ROUTES } from "@/libs/routes";
 
 interface PackageProfileAssociatedInstancesLinkProps {
   readonly packageProfile: PackageProfile;
@@ -21,10 +22,9 @@ const PackageProfileAssociatedInstancesLink: FC<
 
   return (
     <StaticLink
-      to={{
-        pathname: "/instances",
-        search: `query=${encodeURIComponent(`profile:package:${packageProfile.id}`)}`,
-      }}
+      to={ROUTES.instances.root({
+        query: `profile:package:${packageProfile.id}`,
+      })}
     >
       {packageProfile.computers.constrained.length}{" "}
       {pluralize(packageProfile.computers.constrained.length, "instance")}

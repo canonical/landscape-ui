@@ -21,6 +21,7 @@ import type { Script } from "../../types";
 import ScriptListActions from "../ScriptListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -110,7 +111,11 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
             <TruncatedCell
               content={script_profiles.map(({ id, title }) => (
                 <StaticLink
-                  to={`/scripts?tab=profiles&sidePath=view&profile=${id}`}
+                  to={ROUTES.scripts.root({
+                    tab: "profiles",
+                    sidePath: ["view"],
+                    profile: id.toString(),
+                  })}
                   key={id}
                   className="truncatedItem"
                 >

@@ -30,6 +30,7 @@ import type { WslProfile } from "../../../../types";
 import classes from "./WslProfileNonCompliantInstancesList.module.scss";
 import WindowsInstanceActions from "./components/WindowsInstanceActions";
 import { getCellProps, getRowProps } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 interface WslProfileNonCompliantInstancesListProps {
   readonly wslProfile: WslProfile;
@@ -107,7 +108,7 @@ const WslProfileNonCompliantInstancesList: FC<
               }}
             />
 
-            <StaticLink to={`/instances/${instance.id}`}>
+            <StaticLink to={ROUTES.instances.details.single(instance.id)}>
               {instance.title}
             </StaticLink>
           </>

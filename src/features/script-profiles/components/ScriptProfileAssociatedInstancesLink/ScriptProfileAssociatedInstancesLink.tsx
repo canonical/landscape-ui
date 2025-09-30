@@ -3,6 +3,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { ScriptProfile } from "../../types";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileAssociatedInstancesLinkProps {
   readonly scriptProfile: ScriptProfile;
@@ -28,10 +29,9 @@ const ScriptProfileAssociatedInstancesLink: FC<
 
   return (
     <StaticLink
-      to={{
-        pathname: "/instances",
-        search: `query=${encodeURIComponent(`profile:script:${scriptProfile.id}`)}`,
-      }}
+      to={ROUTES.instances.root({
+        query: `profile:script:${scriptProfile.id}`,
+      })}
     >
       {scriptProfile.computers.num_associated_computers}{" "}
       {pluralize(scriptProfile.computers.num_associated_computers, "instance")}
