@@ -17,6 +17,7 @@ import NewUserForm from "../NewUserForm";
 import UserList from "../UserList";
 import { getFilteredUsers } from "./helpers";
 import { MAX_USERS_LIMIT } from "./constants";
+import { ROUTES } from "@/libs/routes";
 
 const UserPanel: FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
@@ -97,7 +98,7 @@ const UserPanel: FC = () => {
         >
           <span>
             The number of requested users is too high. Please{" "}
-            <Link to="https://support-portal.canonical.com/">
+            <Link to={ROUTES.external.support()}>
               contact our support team.
             </Link>
           </span>

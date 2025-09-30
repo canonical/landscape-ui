@@ -54,6 +54,7 @@ import ProfileLink from "../ProfileLink";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
+import { ROUTES } from "@/libs/routes";
 
 const EditInstance = lazy(
   async () =>
@@ -277,7 +278,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   };
 
   const goBack = () => {
-    navigate("/instances", { replace: true });
+    navigate(ROUTES.instances.root(), { replace: true });
   };
 
   const accessGroups = getAccessGroupQueryResult

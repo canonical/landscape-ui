@@ -2,6 +2,7 @@ import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 import { Button } from "@canonical/react-components";
 import { useNavigate } from "react-router";
+import { ROUTES } from "@/libs/routes";
 
 interface SingleInstanceEmptyStateProps {
   readonly childInstanceId: string | undefined;
@@ -38,7 +39,9 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
         <Button
           appearance="positive"
           key="go-back-to-instances-page"
-          onClick={async () => navigate("/instances", { replace: true })}
+          onClick={async () =>
+            navigate(ROUTES.instances.root(), { replace: true })
+          }
           type="button"
           aria-label="Go back"
         >
@@ -46,7 +49,7 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
         </Button>,
         <Button
           key="go-back-to-home-page"
-          onClick={async () => navigate("/", { replace: true })}
+          onClick={async () => navigate(ROUTES.root.root(), { replace: true })}
           type="button"
           aria-label="Go back"
         >

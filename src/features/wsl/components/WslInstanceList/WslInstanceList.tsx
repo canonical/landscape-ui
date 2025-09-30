@@ -15,6 +15,7 @@ import WslInstancesHeader from "../WslInstancesHeader";
 import GroupHeader from "./components/GroupHeader";
 import { getCompliance, getComplianceIcon } from "./helpers";
 import classes from "./WslInstanceList.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 interface WslInstanceListProps {
   readonly wslInstances: InstanceChild[];
@@ -160,7 +161,10 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
 
             {wslInstance.computer_id !== null ? (
               <StaticLink
-                to={`/instances/${windowsInstance.id}/${wslInstance.computer_id}`}
+                to={ROUTES.instances.details.child(
+                  windowsInstance.id,
+                  wslInstance.computer_id,
+                )}
               >
                 {wslInstance.name}
               </StaticLink>

@@ -6,6 +6,7 @@ import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
 import { STATUSES } from "@/features/instances";
 import { useTheme } from "@/context/theme";
+import { ROUTES } from "@/libs/routes";
 
 interface LegendProps {
   readonly data: ChartData<"pie">;
@@ -72,7 +73,7 @@ const Legend: FC<LegendProps> = ({
                   <span>{item.text}</span>
                 </div>
                 <Link
-                  to={`/instances?status=${statusItem.filterValue}`}
+                  to={ROUTES.instances.root({ status: statusItem.filterValue })}
                   className="u-no-margin u-no-padding"
                 >
                   {numberOfInstances[index]} instances

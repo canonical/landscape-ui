@@ -10,6 +10,7 @@ import { Link } from "react-router";
 import { getStatusText, getTriggerLongText } from "../../helpers";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileInfoProps {
   readonly profile: ScriptProfile;
@@ -46,7 +47,10 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             label="Script"
             value={
               script ? (
-                <Link to="/scripts?tab=scripts" state={{ scriptId: script.id }}>
+                <Link
+                  to={ROUTES.scripts.root({ tab: "scripts" })}
+                  state={{ scriptId: script.id }}
+                >
                   {script.title}
                 </Link>
               ) : null
@@ -84,7 +88,11 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
             label="Last run"
             value={
               activity ? (
-                <Link to={`/activities?query=parent-id%3A${activity.id}`}>
+                <Link
+                  to={ROUTES.activities.root({
+                    query: `parent-id:${activity.id}`,
+                  })}
+                >
                   {moment(activity.creation_time)
                     .utc()
                     .format(DISPLAY_DATE_TIME_FORMAT)}

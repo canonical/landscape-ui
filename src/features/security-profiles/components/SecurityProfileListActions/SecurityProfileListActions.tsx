@@ -11,6 +11,7 @@ import { useRunSecurityProfile } from "../../api";
 import { getNotificationMessage } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
+import { ROUTES } from "@/libs/routes";
 
 interface SecurityProfileListActionsProps {
   readonly profile: SecurityProfile;
@@ -48,7 +49,11 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
           {
             label: "View details",
             onClick: () => {
-              navigate(`/activities?query=parent-id%3A${activity.id}`);
+              navigate(
+                ROUTES.activities.root({
+                  query: `parent-id:${activity.id}`,
+                }),
+              );
             },
           },
         ],

@@ -9,6 +9,7 @@ import { useMediaQuery } from "usehooks-ts";
 import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAuthHandle } from "@/features/auth";
 import useDebug from "@/hooks/useDebug";
+import { ROUTES } from "@/libs/routes";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -103,13 +104,15 @@ const UserInfo: FC = () => {
           )}
           {!isSmallerScreen && (
             <Link
-              to="/account/general"
+              to={ROUTES.account.general()}
               className={classNames(
                 "p-side-navigation__link",
                 classes.accordionButton,
               )}
               aria-expanded={false}
-              aria-current={pathname.includes("account") ? "page" : undefined}
+              aria-current={
+                pathname.includes(ROUTES.account.root()) ? "page" : undefined
+              }
             >
               <Icon
                 name="account"
@@ -132,8 +135,10 @@ const UserInfo: FC = () => {
         <li className="p-side-navigation__item">
           <Link
             className={classNames("p-side-navigation__link", classes.link)}
-            to="/alerts"
-            aria-current={pathname === "/alerts" ? "page" : undefined}
+            to={ROUTES.alerts.root()}
+            aria-current={
+              pathname === ROUTES.alerts.root() ? "page" : undefined
+            }
           >
             <Icon
               name="bell"

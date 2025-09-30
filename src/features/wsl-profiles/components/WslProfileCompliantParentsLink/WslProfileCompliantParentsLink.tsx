@@ -3,6 +3,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { WslProfile } from "../../types";
+import { ROUTES } from "@/libs/routes";
 
 interface WslProfileCompliantParentsLinkProps {
   readonly wslProfile: WslProfile;
@@ -25,10 +26,9 @@ const WslProfileCompliantParentsLink: FC<
 
   return (
     <StaticLink
-      to={{
-        pathname: "/instances",
-        search: `query=${encodeURIComponent(`profile:wsl:${wslProfile.id}:compliant`)}`,
-      }}
+      to={ROUTES.instances.root({
+        query: `profile:wsl:${wslProfile.id}:compliant`,
+      })}
     >
       {compliantInstanceCount} {pluralize(compliantInstanceCount, "instance")}
     </StaticLink>

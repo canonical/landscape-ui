@@ -21,6 +21,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router";
+import { PATHS, ROUTES } from "./libs/routes";
 
 const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
@@ -113,9 +114,9 @@ const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    const redirectTo = encodeURIComponent(`${pathname}${search}`);
+    const redirectTo = `${pathname}${search}`;
 
-    navigate(`login?redirect-to=${redirectTo}`, {
+    navigate(ROUTES.auth.login({ "redirect-to": redirectTo }), {
       replace: true,
     });
     queryClient.removeQueries({
@@ -170,7 +171,7 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
       return;
     }
 
-    navigate("/env-error", { replace: true });
+    navigate(ROUTES.errors.envError(), { replace: true });
   }, [isSelfHosted, envLoading]);
 
   if (envLoading) {
@@ -212,16 +213,16 @@ const App: FC = () => {
               </AuthRoute>
             }
           >
-            <Route path="/" element={<DashboardPage />}>
+            <Route path={PATHS.root.root} element={<DashboardPage />}>
               <Route
-                path="overview"
+                path={PATHS.overview.root}
                 element={
                   <Suspense key="overview" fallback={<LoadingState />}>
                     <OverviewPage />
                   </Suspense>
                 }
               />
-              <Route path="instances">
+              <Route path={PATHS.instances.root}>
                 <Route
                   index
                   element={
@@ -231,7 +232,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path=":instanceId"
+                  path={PATHS.instances.single}
                   element={
                     <Suspense
                       key="instances/instance"
@@ -241,11 +242,11 @@ const App: FC = () => {
                     </Suspense>
                   }
                 >
-                  <Route path=":childInstanceId" />
+                  <Route path={PATHS.instances.child} />
                 </Route>
               </Route>
               <Route
-                path="activities"
+                path={PATHS.activities.root}
                 element={
                   <Suspense key="activities" fallback={<LoadingState />}>
                     <ActivitiesPage />
@@ -253,7 +254,7 @@ const App: FC = () => {
                 }
               />
               <Route
-                path="scripts"
+                path={PATHS.scripts.root}
                 element={
                   <Suspense key="scripts" fallback={<LoadingState />}>
                     <ScriptsPage />
@@ -261,16 +262,16 @@ const App: FC = () => {
                 }
               />
               <Route
-                path="events-log"
+                path={PATHS.eventsLog.root}
                 element={
                   <Suspense key="events-log" fallback={<LoadingState />}>
                     <EventsLogPage />
                   </Suspense>
                 }
               />
-              <Route path="profiles">
+              <Route path={PATHS.profiles.root}>
                 <Route
-                  path="repository"
+                  path={PATHS.profiles.repository}
                   element={
                     <Suspense
                       key="profiles/repository"
@@ -281,7 +282,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="package"
+                  path={PATHS.profiles.package}
                   element={
                     <Suspense
                       key="profiles/package"
@@ -292,7 +293,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="upgrade"
+                  path={PATHS.profiles.upgrade}
                   element={
                     <Suspense
                       key="profiles/upgrade"
@@ -303,7 +304,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="reboot"
+                  path={PATHS.profiles.reboot}
                   element={
                     <Suspense key="profiles/reboot" fallback={<LoadingState />}>
                       <RebootProfilesPage />
@@ -311,7 +312,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="removal"
+                  path={PATHS.profiles.removal}
                   element={
                     <Suspense
                       key="profiles/removal"
@@ -322,7 +323,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="wsl"
+                  path={PATHS.profiles.wsl}
                   element={
                     <FeatureRoute feature="wsl-child-instance-profiles">
                       <Suspense key="profiles/wsl" fallback={<LoadingState />}>
@@ -332,7 +333,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="security"
+                  path={PATHS.profiles.security}
                   element={
                     <FeatureRoute feature="usg-profiles">
                       <Suspense
@@ -345,9 +346,9 @@ const App: FC = () => {
                   }
                 />
               </Route>
-              <Route path="repositories">
+              <Route path={PATHS.repositories.root}>
                 <Route
-                  path="mirrors"
+                  path={PATHS.repositories.mirrors}
                   element={
                     <SelfHostedRoute>
                       <Suspense
@@ -361,7 +362,7 @@ const App: FC = () => {
                 />
 
                 <Route
-                  path="gpg-keys"
+                  path={PATHS.repositories.gpgKeys}
                   element={
                     <Suspense
                       key="repositories/gpg-keys"
@@ -372,7 +373,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="apt-sources"
+                  path={PATHS.repositories.aptSources}
                   element={
                     <Suspense
                       key="repositories/apt-sources"
@@ -383,9 +384,9 @@ const App: FC = () => {
                   }
                 />
               </Route>
-              <Route path="settings">
+              <Route path={PATHS.settings.root}>
                 <Route
-                  path="general"
+                  path={PATHS.settings.general}
                   element={
                     <Suspense
                       key="settings/general"
@@ -396,7 +397,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="administrators"
+                  path={PATHS.settings.administrators}
                   element={
                     <Suspense
                       key="settings/administrators"
@@ -407,7 +408,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="employees"
+                  path={PATHS.settings.employees}
                   element={
                     <FeatureRoute feature="employee-management">
                       <Suspense
@@ -420,7 +421,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="roles"
+                  path={PATHS.settings.roles}
                   element={
                     <Suspense key="settings/roles" fallback={<LoadingState />}>
                       <RolesPage />
@@ -428,7 +429,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="access-groups"
+                  path={PATHS.settings.accessGroups}
                   element={
                     <Suspense
                       key="settings/access-groups"
@@ -439,7 +440,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="identity-providers"
+                  path={PATHS.settings.identityProviders}
                   element={
                     <FeatureRoute feature="oidc-configuration">
                       <Suspense
@@ -452,9 +453,9 @@ const App: FC = () => {
                   }
                 />
               </Route>
-              <Route path="account">
+              <Route path={PATHS.account.root}>
                 <Route
-                  path="general"
+                  path={PATHS.account.general}
                   element={
                     <Suspense key="account/general" fallback={<LoadingState />}>
                       <GeneralSettings />
@@ -462,7 +463,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="alerts"
+                  path={PATHS.account.alerts}
                   element={
                     <Suspense key="account/alerts" fallback={<LoadingState />}>
                       <Alerts />
@@ -470,7 +471,7 @@ const App: FC = () => {
                   }
                 />
                 <Route
-                  path="api-credentials"
+                  path={PATHS.account.apiCredentials}
                   element={
                     <Suspense
                       key="account/api-credentials"
@@ -482,7 +483,7 @@ const App: FC = () => {
                 />
               </Route>
               <Route
-                path="alerts"
+                path={PATHS.alerts.root}
                 element={
                   <Suspense key="alerts" fallback={<LoadingState />}>
                     <AlertNotificationsPage />
@@ -490,7 +491,7 @@ const App: FC = () => {
                 }
               />
               <Route
-                path="env-error"
+                path={PATHS.error.envError}
                 element={
                   <Suspense key="env-error" fallback={<LoadingState />}>
                     <EnvError />
@@ -507,16 +508,16 @@ const App: FC = () => {
             }
           >
             <Route
-              path={"/attach"}
+              path={PATHS.auth.attach}
               element={
                 <FeatureRoute feature="employee-management">
                   <AttachPage />
                 </FeatureRoute>
               }
             />
-            <Route path={"/login"} element={<LoginPage />} />
+            <Route path={PATHS.auth.login} element={<LoginPage />} />
             <Route
-              path={"/support/login"}
+              path={PATHS.auth.supportLogin}
               element={
                 <FeatureRoute feature="support-provider-login">
                   <Suspense key="/support/login" fallback={<LoadingState />}>
@@ -527,7 +528,7 @@ const App: FC = () => {
             />
 
             <Route
-              path={"/handle-auth/oidc"}
+              path={PATHS.auth.handleOidc}
               element={
                 <Suspense key="/handle-auth/oidc" fallback={<LoadingState />}>
                   <OidcAuthPage />
@@ -535,7 +536,7 @@ const App: FC = () => {
               }
             />
             <Route
-              path={"/handle-auth/ubuntu-one"}
+              path={PATHS.auth.handleUbuntuOne}
               element={
                 <Suspense
                   key="/handle-auth/ubuntu-one"
@@ -547,7 +548,7 @@ const App: FC = () => {
             />
           </Route>
           <Route
-            path={"/*"}
+            path={PATHS.root.notFound}
             element={
               <Suspense key="*" fallback={<LoadingState />}>
                 <PageNotFound />

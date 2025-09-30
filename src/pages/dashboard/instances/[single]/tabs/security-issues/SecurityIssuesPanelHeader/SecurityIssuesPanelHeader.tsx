@@ -3,7 +3,6 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
 import classNames from "classnames";
@@ -11,6 +10,7 @@ import type { FC } from "react";
 import { useNavigate, useParams } from "react-router";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
 import { pluralize } from "@/utils/_helpers";
+import { ROUTES } from "@/libs/routes";
 
 interface SecurityIssuesPanelHeaderProps {
   readonly usns: string[];
@@ -20,7 +20,6 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
   usns,
 }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
-  const { setPageParams } = usePageParams();
   const navigate = useNavigate();
   const debug = useDebug();
   const { notify } = useNotify();
@@ -33,9 +32,12 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
   const handleActivityDetailsView = () => {
     navigate(
-      `/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : `${instanceId}`}`,
+      ROUTES.instances.details.fromParams(
+        { instanceId: urlInstanceId, childInstanceId },
+        { tab: "activities" },
+      ),
     );
-    setPageParams({ tab: "activities" });
+
     notify.clear();
   };
 

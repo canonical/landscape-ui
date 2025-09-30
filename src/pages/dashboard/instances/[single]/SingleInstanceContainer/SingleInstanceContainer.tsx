@@ -28,6 +28,7 @@ import {
   isLivepatchInfoQueryEnabled,
   isUsnQueryEnabled,
 } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 const SingleInstanceContainer: FC = () => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
@@ -52,7 +53,7 @@ const SingleInstanceContainer: FC = () => {
       return;
     }
 
-    navigate("/instances", { replace: true });
+    navigate(ROUTES.instances.root(), { replace: true });
   }, [user?.current_account]);
 
   const { instance, isGettingInstance } = useGetInstance(

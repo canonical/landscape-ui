@@ -3,6 +3,7 @@ import { Suspense, useEffect } from "react";
 import DashboardTemplate from "@/templates/dashboard";
 import { Outlet, useLocation, useNavigate } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
+import { ROUTES } from "@/libs/routes";
 import { HOMEPAGE_PATH } from "@/constants";
 
 const DashboardPage: FC = () => {
@@ -10,7 +11,7 @@ const DashboardPage: FC = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if ("/" !== pathname) {
+    if (ROUTES.root.root() !== pathname) {
       return;
     }
 

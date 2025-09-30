@@ -37,6 +37,7 @@ import {
   MAX_USN_COUNT,
 } from "./constants";
 import classes from "./InfoTablesContainer.module.scss";
+import { ROUTES } from "@/libs/routes";
 
 const InfoTablesContainer: FC = () => {
   const [currentUpgradesTab, setCurrentUpgradesTab] = useState<
@@ -211,7 +212,7 @@ const InfoTablesContainer: FC = () => {
             accessor: "instanceName",
             Cell: ({ row }: CellProps<Instance>): ReactNode => (
               <Link
-                to={`/instances/${row.original.id}`}
+                to={ROUTES.instances.details.single(row.original.id)}
                 className="u-no-margin--bottom"
               >
                 {row.original.title}
@@ -299,7 +300,7 @@ const InfoTablesContainer: FC = () => {
         className: classes.description,
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => (
           <Link
-            to="/activities"
+            to={ROUTES.activities.root()}
             state={{ activity: row.original as Activity }}
             className="u-no-margin--bottom"
           >
@@ -398,7 +399,7 @@ const InfoTablesContainer: FC = () => {
   const handleUpgradesLimitChange = async () => {
     switch (currentUpgradesTab) {
       case "instances": {
-        await navigate("/instances?status=package-upgrades");
+        await navigate(ROUTES.instances.root({ status: "package-upgrades" }));
         break;
       }
 
@@ -417,12 +418,12 @@ const InfoTablesContainer: FC = () => {
   const handleActivitiesLimitChange = async () => {
     switch (currentActivitiesTab) {
       case "unapproved": {
-        await navigate("/activities?status=unapproved");
+        await navigate(ROUTES.activities.root({ status: "unapproved" }));
         break;
       }
 
       case "inProgress": {
-        await navigate("/activities?status=delivered");
+        await navigate(ROUTES.activities.root({ status: "delivered" }));
         break;
       }
     }

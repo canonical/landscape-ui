@@ -15,6 +15,7 @@ import { useSetWslInstanceAsDefault } from "../../api/useSetWslInstanceAsDefault
 import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
 import WslInstanceRemoveFromLandscapeModal from "../WslInstanceRemoveFromLandscapeModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
+import { ROUTES } from "@/libs/routes";
 
 interface WslInstanceListActionsProps {
   readonly windowsInstance: WindowsInstanceWithoutRelation;
@@ -106,7 +107,10 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
           label: "View details",
           onClick: () =>
             navigate(
-              `/instances/${windowsInstance.id}/${wslInstance.computer_id}`,
+              ROUTES.instances.details.child(
+                windowsInstance.id,
+                wslInstance.computer_id || "",
+              ),
             ),
           excluded: wslInstance.computer_id === null,
         },

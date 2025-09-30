@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { useRunSecurityProfile } from "../../api";
 import useGetPageSecurityProfile from "../../api/useGetPageSecurityProfile";
 import { getNotificationMessage } from "../../helpers";
+import { ROUTES } from "@/libs/routes";
 
 const SecurityProfileRunFixSidePanel: FC = () => {
   const debug = useDebug();
@@ -45,7 +46,11 @@ const SecurityProfileRunFixSidePanel: FC = () => {
           {
             label: "View details",
             onClick: () => {
-              navigate(`/activities?query=parent-id%3A${activity.id}`);
+              navigate(
+                ROUTES.activities.root({
+                  query: `parent-id:${activity.id}`,
+                }),
+              );
             },
           },
         ],

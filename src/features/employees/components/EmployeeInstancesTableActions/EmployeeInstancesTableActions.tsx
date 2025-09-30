@@ -7,6 +7,7 @@ import {
 } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import { ROUTES } from "@/libs/routes";
 import type { Action } from "@/types/Action";
 import type { Instance } from "@/types/Instance";
 import { ICONS } from "@canonical/react-components";
@@ -64,7 +65,8 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
       icon: "show",
       label: "View details",
       "aria-label": `View ${instance.title} instance details`,
-      onClick: async () => navigate(`instances/${instance.id}`),
+      onClick: async () =>
+        navigate(ROUTES.instances.details.single(instance.id)),
     },
   ];
 

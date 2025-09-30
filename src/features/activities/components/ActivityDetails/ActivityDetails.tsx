@@ -10,6 +10,7 @@ import { ACTIVITY_STATUSES } from "../../constants";
 import { useActivities } from "../../hooks";
 import classes from "./ActivityDetails.module.scss";
 import ActivityDetailsButtons from "./components/ActivityDetailsButtons";
+import { ROUTES } from "@/libs/routes/routes";
 
 interface ActivityDetailsProps {
   readonly activityId: number;
@@ -63,9 +64,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
             label="Instance"
             large
             value={
-              <StaticLink
-                to={`/instances/${instance.parent ? `${instance.parent.id}/${instance.id}` : instance.id}`}
-              >
+              <StaticLink to={ROUTES.instances.details.fromInstance(instance)}>
                 {instance.title}
               </StaticLink>
             }

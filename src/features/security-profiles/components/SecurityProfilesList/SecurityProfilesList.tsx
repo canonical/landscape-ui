@@ -19,6 +19,7 @@ import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociated
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import classes from "./SecurityProfilesList.module.scss";
 import { getCellProps, getRowProps } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <div className={classes.header}>
@@ -147,10 +148,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 <div>
                   {passing > 0 ? (
                     <Link
-                      to={{
-                        pathname: "/instances",
-                        search: `?query=security-profile%3A${row.original.id}%3Apass`,
-                      }}
+                      to={ROUTES.instances.root({
+                        query: `security-profile:${row.original.id}:pass`,
+                      })}
                     >
                       <span>{passing} passed</span>
                     </Link>
@@ -160,10 +160,9 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 </div>
                 {failing > 0 ? (
                   <Link
-                    to={{
-                      pathname: "/instances",
-                      search: `?query=security-profile%3A${row.original.id}%3Afail`,
-                    }}
+                    to={ROUTES.instances.root({
+                      query: `security-profile:${row.original.id}:fail`,
+                    })}
                   >
                     <span>{failing} failed</span>
                   </Link>

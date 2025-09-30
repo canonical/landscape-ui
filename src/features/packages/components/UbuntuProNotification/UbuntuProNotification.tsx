@@ -2,6 +2,7 @@ import type { FC } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Button, Notification } from "@canonical/react-components";
 import type { UrlParams } from "@/types/UrlParams";
+import { ROUTES } from "@/libs/routes";
 
 interface UbuntuProNotificationProps {
   readonly onDismiss: () => void;
@@ -24,10 +25,10 @@ const UbuntuProNotification: FC<UbuntuProNotificationProps> = ({
         appearance="link"
         onClick={() => {
           navigate(
-            `/instances/${childInstanceId ? `${instanceId}/${childInstanceId}` : instanceId}`,
-            {
-              state: { tab: "ubuntu-pro" },
-            },
+            ROUTES.instances.details.fromParams(
+              { instanceId, childInstanceId },
+              { tab: "ubuntu-pro" },
+            ),
           );
         }}
       >

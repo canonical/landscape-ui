@@ -11,6 +11,7 @@ import classes from "./OTPInputContainer.module.scss";
 import type { FormikProps } from "./types";
 import { getFormikError } from "@/utils/formikErrors";
 import * as Yup from "yup";
+import { ROUTES } from "@/libs/routes";
 
 const OTPInputContainer: FC = () => {
   const [searchParams] = useSearchParams();
@@ -52,7 +53,7 @@ const OTPInputContainer: FC = () => {
           return;
         }
 
-        navigate(`/login?code=${attachCode}`);
+        navigate(ROUTES.auth.login({ code: attachCode }));
       } catch (error) {
         debug(error);
       }

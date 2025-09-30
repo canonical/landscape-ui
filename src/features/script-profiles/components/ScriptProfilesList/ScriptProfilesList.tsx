@@ -16,6 +16,7 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
 import ScriptProfilesListActions from "../ScriptProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
+import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfilesListProps {
   readonly profiles: ScriptProfile[];
@@ -121,7 +122,9 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
           activity ? (
             <Link
               className="font-monospace"
-              to={`/activities?query=parent-id%3A${activity.id}`}
+              to={ROUTES.activities.root({
+                query: `parent-id:${activity.id}`,
+              })}
             >
               {moment(activity.creation_time)
                 .utc()

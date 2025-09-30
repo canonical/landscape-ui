@@ -15,6 +15,7 @@ import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
 import type { FeatureKey } from "@/types/FeatureKey";
 import useFeatures from "@/hooks/useFeatures";
+import { ROUTES } from "@/libs/routes";
 
 const NOT_AUTHORIZED_CODE = 401;
 
@@ -106,7 +107,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleLogout = () => {
     setUser(null);
-    navigate("/login", { replace: true });
+    navigate(ROUTES.auth.login(), { replace: true });
     queryClient.removeQueries({
       predicate: (query) => query.queryKey[0] !== "authUser",
     });

@@ -1,3 +1,5 @@
+import { ROUTES } from "./libs/routes";
+
 export const IS_DEV_ENV = import.meta.env.DEV;
 export const IS_SELF_HOSTED_ENV = import.meta.env.VITE_SELF_HOSTED_ENV;
 export const API_URL = import.meta.env.VITE_API_URL;
@@ -24,7 +26,7 @@ export const MSW_ENDPOINTS_TO_INTERCEPT =
   (import.meta.env.VITE_MSW_ENDPOINTS_TO_INTERCEPT ?? "")
     .split(",")
     .filter(Boolean) ?? [];
-export const HOMEPAGE_PATH = "/overview";
+export const HOMEPAGE_PATH = ROUTES.overview.root();
 export const DEFAULT_ACCESS_GROUP_NAME = "global";
 export const BREAKPOINT_PX = {
   xs: 460,
