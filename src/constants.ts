@@ -13,8 +13,7 @@ export const DISPLAY_DATE_FORMAT = "MMM D, YYYY";
 export const DISPLAY_DATE_TIME_FORMAT = "MMM DD, YYYY, HH:mm";
 export const NOT_AVAILABLE = "N/A";
 export const APP_VERSION = __APP_VERSION__;
-export const FEEDBACK_LINK =
-  "https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528";
+export const FEEDBACK_LINK = "https://bugs.launchpad.net/landscape";
 export const REPORT_VIEW_ENABLED =
   import.meta.env.VITE_REPORT_VIEW_ENABLED === "true";
 export const CONTACT_SUPPORT_TEAM_MESSAGE =

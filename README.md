@@ -103,7 +103,7 @@ This project is built with a modern, robust set of tools:
 We welcome your feedback! The best way to share your thoughts, report issues, or request features is through one of the following channels:
 
 * **Create an issue** directly on our [GitHub Issues page](https://github.com/canonical/landscape-ui/issues).
-* **Join the discussion** on our official [Discourse feedback topic](https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528).
+* **Report a bug** on our [Launchpad project](https://bugs.launchpad.net/landscape).
 
 ---
 
