@@ -1,9 +1,9 @@
 import type { HTMLProps } from "react";
-import type { Fix } from "../../types";
 import type { Cell, TableCellProps } from "react-table";
+import type { Fix } from "../../types";
 
 export const generateCveLink = (cve: string): string => {
-  return `https://cve.mitre.org/cgi-bin/cvename.cgi?name=${cve}`;
+  return `https://ubuntu.com/security/${cve}`;
 };
 
 export const handleCellProps = (cell: Cell<Fix>) => {

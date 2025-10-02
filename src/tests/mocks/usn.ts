@@ -11,78 +11,63 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-1725",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1725",
+        cve_link: "https://ubuntu.com/security/CVE-2022-1725",
       },
       {
         cve: "CVE-2022-1771",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1771",
+        cve_link: "https://ubuntu.com/security/CVE-2022-1771",
       },
       {
         cve: "CVE-2022-1886",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1886",
+        cve_link: "https://ubuntu.com/security/CVE-2022-1886",
       },
       {
         cve: "CVE-2022-1897",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1897",
+        cve_link: "https://ubuntu.com/security/CVE-2022-1897",
       },
       {
         cve: "CVE-2022-2000",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2000",
+        cve_link: "https://ubuntu.com/security/CVE-2022-2000",
       },
       {
         cve: "CVE-2022-2042",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2042",
+        cve_link: "https://ubuntu.com/security/CVE-2022-2042",
       },
       {
         cve: "CVE-2023-46246",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-46246",
+        cve_link: "https://ubuntu.com/security/CVE-2023-46246",
       },
       {
         cve: "CVE-2023-48231",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48231",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48231",
       },
       {
         cve: "CVE-2023-48232",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48232",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48232",
       },
       {
         cve: "CVE-2023-48233",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48233",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48233",
       },
       {
         cve: "CVE-2023-48234",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48234",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48234",
       },
       {
         cve: "CVE-2023-48235",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48235",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48235",
       },
       {
         cve: "CVE-2023-48236",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48236",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48236",
       },
       {
         cve: "CVE-2023-48237",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48237",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48237",
       },
       {
         cve: "CVE-2023-48706",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-48706",
+        cve_link: "https://ubuntu.com/security/CVE-2023-48706",
       },
     ],
     computers_count: 1,
@@ -96,13 +81,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-46218",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-46218",
+        cve_link: "https://ubuntu.com/security/CVE-2023-46218",
       },
       {
         cve: "CVE-2023-46219",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-46219",
+        cve_link: "https://ubuntu.com/security/CVE-2023-46219",
       },
     ],
     computers_count: 1,
@@ -116,13 +99,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-34058",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-34058",
+        cve_link: "https://ubuntu.com/security/CVE-2023-34058",
       },
       {
         cve: "CVE-2023-34059",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-34059",
+        cve_link: "https://ubuntu.com/security/CVE-2023-34059",
       },
     ],
     computers_count: 1,
@@ -136,13 +117,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-3341",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-3341",
+        cve_link: "https://ubuntu.com/security/CVE-2023-3341",
       },
       {
         cve: "CVE-2023-4236",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-4236",
+        cve_link: "https://ubuntu.com/security/CVE-2023-4236",
       },
     ],
     computers_count: 1,
@@ -156,8 +135,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-3297",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-3297",
+        cve_link: "https://ubuntu.com/security/CVE-2023-3297",
       },
     ],
     computers_count: 1,
@@ -180,8 +158,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-47629",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-47629",
+        cve_link: "https://ubuntu.com/security/CVE-2022-47629",
       },
     ],
     computers_count: 1,
@@ -204,8 +181,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-40284",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-40284",
+        cve_link: "https://ubuntu.com/security/CVE-2022-40284",
       },
     ],
     computers_count: 1,
@@ -219,18 +195,15 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-42010",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-42010",
+        cve_link: "https://ubuntu.com/security/CVE-2022-42010",
       },
       {
         cve: "CVE-2022-42011",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-42011",
+        cve_link: "https://ubuntu.com/security/CVE-2022-42011",
       },
       {
         cve: "CVE-2022-42012",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-42012",
+        cve_link: "https://ubuntu.com/security/CVE-2022-42012",
       },
     ],
     computers_count: 1,
@@ -244,13 +217,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-2928",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2928",
+        cve_link: "https://ubuntu.com/security/CVE-2022-2928",
       },
       {
         cve: "CVE-2022-2929",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-2929",
+        cve_link: "https://ubuntu.com/security/CVE-2022-2929",
       },
     ],
     computers_count: 1,
@@ -264,8 +235,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-43680",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-43680",
+        cve_link: "https://ubuntu.com/security/CVE-2022-43680",
       },
     ],
     computers_count: 1,
@@ -279,8 +249,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-4115",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4115",
+        cve_link: "https://ubuntu.com/security/CVE-2021-4115",
       },
     ],
     computers_count: 1,
@@ -294,8 +263,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-4122",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-4122",
+        cve_link: "https://ubuntu.com/security/CVE-2021-4122",
       },
     ],
     computers_count: 1,
@@ -309,8 +277,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-41072",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-41072",
+        cve_link: "https://ubuntu.com/security/CVE-2021-41072",
       },
     ],
     computers_count: 1,
@@ -324,8 +291,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-3520",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3520",
+        cve_link: "https://ubuntu.com/security/CVE-2021-3520",
       },
     ],
     computers_count: 1,
@@ -339,8 +305,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2020-14343",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-14343",
+        cve_link: "https://ubuntu.com/security/CVE-2020-14343",
       },
     ],
     computers_count: 1,
@@ -363,8 +328,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2020-8927",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-8927",
+        cve_link: "https://ubuntu.com/security/CVE-2020-8927",
       },
     ],
     computers_count: 1,
@@ -378,13 +342,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2020-16121",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-16121",
+        cve_link: "https://ubuntu.com/security/CVE-2020-16121",
       },
       {
         cve: "CVE-2020-16122",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-16122",
+        cve_link: "https://ubuntu.com/security/CVE-2020-16122",
       },
     ],
     computers_count: 1,
@@ -398,13 +360,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-39348",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-39348",
+        cve_link: "https://ubuntu.com/security/CVE-2022-39348",
       },
       {
         cve: "CVE-2023-46137",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-46137",
+        cve_link: "https://ubuntu.com/security/CVE-2023-46137",
       },
     ],
     computers_count: 1,
@@ -418,13 +378,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-46908",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-46908",
+        cve_link: "https://ubuntu.com/security/CVE-2022-46908",
       },
       {
         cve: "CVE-2023-7104",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-7104",
+        cve_link: "https://ubuntu.com/security/CVE-2023-7104",
       },
     ],
     computers_count: 1,
@@ -438,18 +396,15 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-41617",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-41617",
+        cve_link: "https://ubuntu.com/security/CVE-2021-41617",
       },
       {
         cve: "CVE-2023-51384",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-51384",
+        cve_link: "https://ubuntu.com/security/CVE-2023-51384",
       },
       {
         cve: "CVE-2023-51385",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-51385",
+        cve_link: "https://ubuntu.com/security/CVE-2023-51385",
       },
     ],
     computers_count: 1,
@@ -463,13 +418,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-48522",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-48522",
+        cve_link: "https://ubuntu.com/security/CVE-2022-48522",
       },
       {
         cve: "CVE-2023-47038",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-47038",
+        cve_link: "https://ubuntu.com/security/CVE-2023-47038",
       },
     ],
     computers_count: 1,
@@ -483,18 +436,15 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2018-25091",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-25091",
+        cve_link: "https://ubuntu.com/security/CVE-2018-25091",
       },
       {
         cve: "CVE-2023-43804",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-43804",
+        cve_link: "https://ubuntu.com/security/CVE-2023-43804",
       },
       {
         cve: "CVE-2023-45803",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-45803",
+        cve_link: "https://ubuntu.com/security/CVE-2023-45803",
       },
     ],
     computers_count: 1,
@@ -508,18 +458,15 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-43785",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-43785",
+        cve_link: "https://ubuntu.com/security/CVE-2023-43785",
       },
       {
         cve: "CVE-2023-43786",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-43786",
+        cve_link: "https://ubuntu.com/security/CVE-2023-43786",
       },
       {
         cve: "CVE-2023-43787",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-43787",
+        cve_link: "https://ubuntu.com/security/CVE-2023-43787",
       },
     ],
     computers_count: 1,
@@ -533,53 +480,43 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2018-16062",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16062",
+        cve_link: "https://ubuntu.com/security/CVE-2018-16062",
       },
       {
         cve: "CVE-2018-16403",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16403",
+        cve_link: "https://ubuntu.com/security/CVE-2018-16403",
       },
       {
         cve: "CVE-2018-18310",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18310",
+        cve_link: "https://ubuntu.com/security/CVE-2018-18310",
       },
       {
         cve: "CVE-2018-18520",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18520",
+        cve_link: "https://ubuntu.com/security/CVE-2018-18520",
       },
       {
         cve: "CVE-2018-18521",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-18521",
+        cve_link: "https://ubuntu.com/security/CVE-2018-18521",
       },
       {
         cve: "CVE-2019-7149",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7149",
+        cve_link: "https://ubuntu.com/security/CVE-2019-7149",
       },
       {
         cve: "CVE-2019-7150",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7150",
+        cve_link: "https://ubuntu.com/security/CVE-2019-7150",
       },
       {
         cve: "CVE-2019-7665",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-7665",
+        cve_link: "https://ubuntu.com/security/CVE-2019-7665",
       },
       {
         cve: "CVE-2020-21047",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-21047",
+        cve_link: "https://ubuntu.com/security/CVE-2020-21047",
       },
       {
         cve: "CVE-2021-33294",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-33294",
+        cve_link: "https://ubuntu.com/security/CVE-2021-33294",
       },
     ],
     computers_count: 1,
@@ -593,18 +530,15 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2020-13987",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13987",
+        cve_link: "https://ubuntu.com/security/CVE-2020-13987",
       },
       {
         cve: "CVE-2020-13988",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-13988",
+        cve_link: "https://ubuntu.com/security/CVE-2020-13988",
       },
       {
         cve: "CVE-2020-17437",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-17437",
+        cve_link: "https://ubuntu.com/security/CVE-2020-17437",
       },
     ],
     computers_count: 1,
@@ -618,38 +552,31 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-24593",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-24593",
+        cve_link: "https://ubuntu.com/security/CVE-2023-24593",
       },
       {
         cve: "CVE-2023-25180",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-25180",
+        cve_link: "https://ubuntu.com/security/CVE-2023-25180",
       },
       {
         cve: "CVE-2023-29499",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-29499",
+        cve_link: "https://ubuntu.com/security/CVE-2023-29499",
       },
       {
         cve: "CVE-2023-32611",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-32611",
+        cve_link: "https://ubuntu.com/security/CVE-2023-32611",
       },
       {
         cve: "CVE-2023-32636",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-32636",
+        cve_link: "https://ubuntu.com/security/CVE-2023-32636",
       },
       {
         cve: "CVE-2023-32643",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-32643",
+        cve_link: "https://ubuntu.com/security/CVE-2023-32643",
       },
       {
         cve: "CVE-2023-32665",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-32665",
+        cve_link: "https://ubuntu.com/security/CVE-2023-32665",
       },
     ],
     computers_count: 1,
@@ -663,8 +590,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-1523",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1523",
+        cve_link: "https://ubuntu.com/security/CVE-2023-1523",
       },
     ],
     computers_count: 1,
@@ -678,8 +604,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-1326",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1326",
+        cve_link: "https://ubuntu.com/security/CVE-2023-1326",
       },
     ],
     computers_count: 1,
@@ -693,13 +618,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2023-28486",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-28486",
+        cve_link: "https://ubuntu.com/security/CVE-2023-28486",
       },
       {
         cve: "CVE-2023-28487",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-28487",
+        cve_link: "https://ubuntu.com/security/CVE-2023-28487",
       },
     ],
     computers_count: 1,
@@ -713,8 +636,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-29154",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-29154",
+        cve_link: "https://ubuntu.com/security/CVE-2022-29154",
       },
     ],
     computers_count: 1,
@@ -728,8 +650,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-47016",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-47016",
+        cve_link: "https://ubuntu.com/security/CVE-2022-47016",
       },
     ],
     computers_count: 1,
@@ -743,8 +664,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-43618",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-43618",
+        cve_link: "https://ubuntu.com/security/CVE-2021-43618",
       },
     ],
     computers_count: 1,
@@ -758,8 +678,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-1664",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-1664",
+        cve_link: "https://ubuntu.com/security/CVE-2022-1664",
       },
     ],
     computers_count: 1,
@@ -773,8 +692,7 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2019-18276",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-18276",
+        cve_link: "https://ubuntu.com/security/CVE-2019-18276",
       },
     ],
     computers_count: 1,
@@ -788,23 +706,19 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2021-31870",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31870",
+        cve_link: "https://ubuntu.com/security/CVE-2021-31870",
       },
       {
         cve: "CVE-2021-31871",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31871",
+        cve_link: "https://ubuntu.com/security/CVE-2021-31871",
       },
       {
         cve: "CVE-2021-31872",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31872",
+        cve_link: "https://ubuntu.com/security/CVE-2021-31872",
       },
       {
         cve: "CVE-2021-31873",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-31873",
+        cve_link: "https://ubuntu.com/security/CVE-2021-31873",
       },
     ],
     computers_count: 1,
@@ -818,18 +732,15 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2022-25308",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-25308",
+        cve_link: "https://ubuntu.com/security/CVE-2022-25308",
       },
       {
         cve: "CVE-2022-25309",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-25309",
+        cve_link: "https://ubuntu.com/security/CVE-2022-25309",
       },
       {
         cve: "CVE-2022-25310",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-25310",
+        cve_link: "https://ubuntu.com/security/CVE-2022-25310",
       },
     ],
     computers_count: 1,
@@ -843,13 +754,11 @@ export const usns: Usn[] = [
     cves: [
       {
         cve: "CVE-2018-16869",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-16869",
+        cve_link: "https://ubuntu.com/security/CVE-2018-16869",
       },
       {
         cve: "CVE-2021-3580",
-        cve_link:
-          "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3580",
+        cve_link: "https://ubuntu.com/security/CVE-2021-3580",
       },
     ],
     computers_count: 1,
