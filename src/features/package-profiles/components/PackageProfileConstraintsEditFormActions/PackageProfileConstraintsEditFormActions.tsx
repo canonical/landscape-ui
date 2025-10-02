@@ -41,7 +41,7 @@ const PackageProfileConstraintsEditFormActions: FC<
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { pushSidePath } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
   const { removePackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: removeConstraints, isPending: isRemoving } =
@@ -65,9 +65,7 @@ const PackageProfileConstraintsEditFormActions: FC<
     }
   };
 
-  const handleConstraintsAdd = () => {
-    pushSidePath("add-constraints");
-  };
+  const handleConstraintsAdd = createSidePathPusher("add-constraints");
 
   return (
     <div className={classes.container}>

@@ -45,7 +45,8 @@ const PackageProfileEditSidePanel = lazy(async () =>
 );
 
 const PackageProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -56,9 +57,10 @@ const PackageProfilesPage: FC = () => {
     "view",
   ]);
 
-  const handleAddPackageProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const handleAddPackageProfile = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   return (
     <PageMain>
@@ -80,9 +82,7 @@ const PackageProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
         isOpen={!!sidePath.length}
         size={
           ["add", "add-constraints", "edit-constraints", "view"].includes(

@@ -4,11 +4,9 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 
 const WslProfilesEmptyState: FC = () => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
-  const handleCreateWslProfile = () => {
-    setPageParams({ sidePath: ["add"] });
-  };
+  const handleCreateWslProfile = createPageParamsSetter({ sidePath: ["add"] });
 
   return (
     <EmptyState

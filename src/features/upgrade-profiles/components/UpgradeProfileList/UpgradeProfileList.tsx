@@ -23,7 +23,7 @@ interface UpgradeProfileListProps {
 
 const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   const { search } = usePageParams();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -46,10 +46,6 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     });
   }, [profiles, search]);
 
-  const handleUpgradeProfileDetailsOpen = (profile: UpgradeProfile) => {
-    setPageParams({ sidePath: ["view"], profile: profile.id.toString() });
-  };
-
   const columns = useMemo<Column<UpgradeProfile>[]>(
     () => [
       {
@@ -64,9 +60,10 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => {
-                handleUpgradeProfileDetailsOpen(original);
-              }}
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                profile: original.id.toString(),
+              })}
             >
               {original.title}
             </Button>

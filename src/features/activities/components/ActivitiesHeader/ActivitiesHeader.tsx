@@ -8,6 +8,8 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { useActivities } from "../../hooks";
+import type { ActivityCommon } from "../../types";
+import ActivitiesActions from "../ActivitiesActions";
 import ActivitiesDateFilter from "../ActivitiesDateFilter";
 import ActivityTypeFilter from "../ActivityTypeFilter";
 import classes from "./ActivitiesHeader.module.scss";
@@ -15,8 +17,6 @@ import {
   ACTIVITY_SEARCH_HELP_TERMS,
   ACTIVITY_STATUS_OPTIONS,
 } from "./constants";
-import ActivitiesActions from "../ActivitiesActions";
-import type { ActivityCommon } from "../../types";
 
 interface ActivitiesHeaderProps {
   readonly selected: ActivityCommon[];
@@ -30,7 +30,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   const [searchText, setSearchText] = useState<string>("");
   const [showSearchHelp, setShowSearchHelp] = useState(false);
 
-  const { query, setPageParams } = usePageParams();
+  const { query, setPageParams, createPageParamsSetter } = usePageParams();
   const { instanceId } = useParams<UrlParams>();
   const { getActivityTypesQuery } = useActivities();
 
@@ -62,9 +62,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
     resetSelectedIds();
   };
 
-  const handleClear = () => {
-    setPageParams({ query: "" });
-  };
+  const handleClear = createPageParamsSetter({ query: "" });
 
   return (
     <>

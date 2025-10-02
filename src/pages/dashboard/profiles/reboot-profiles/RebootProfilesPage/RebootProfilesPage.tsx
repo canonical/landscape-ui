@@ -34,7 +34,8 @@ const RebootProfileEditSidePanel = lazy(async () =>
 );
 
 const RebootProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -43,9 +44,10 @@ const RebootProfilesPage: FC = () => {
     "view",
   ]);
 
-  const handleAddProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const handleAddProfile = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   return (
     <PageMain>
@@ -67,9 +69,7 @@ const RebootProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
         key="add"
         isOpen={!!sidePath.length}
       >

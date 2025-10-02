@@ -1,16 +1,17 @@
+import ProfileAssociation from "@/components/form/ProfileAssociation";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useRoles from "@/hooks/useRoles";
+import { ROUTES } from "@/libs/routes";
 import moment from "moment";
 import type { FC } from "react";
 import { Link } from "react-router";
 import { getStatusText, getTriggerLongText } from "../../helpers";
 import type { ScriptProfile } from "../../types";
 import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
-import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileInfoProps {
   readonly profile: ScriptProfile;
@@ -70,7 +71,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
           <InfoGrid.Item
             label="Trigger"
             large
-            value={getTriggerLongText(profile) || null}
+            value={getTriggerLongText(profile)}
           />
 
           {profile.trigger.trigger_type !== "event" && (
@@ -104,26 +105,23 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
       </Blocks.Item>
 
       <Blocks.Item title="Association">
-        <InfoGrid>
-          <InfoGrid.Item
-            label="Associated instances"
-            large
-            value={
-              <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
-            }
-          />
-
-          <InfoGrid.Item
-            label="Tags"
-            large
-            value={
-              profile.all_computers
-                ? "All instances"
-                : profile.tags.join(", ") || null
-            }
-            type="truncated"
-          />
-        </InfoGrid>
+        <ProfileAssociation profile={profile}>
+          <InfoGrid>
+            <InfoGrid.Item
+              label="Associated instances"
+              large
+              value={
+                <ScriptProfileAssociatedInstancesLink scriptProfile={profile} />
+              }
+            />
+            <InfoGrid.Item
+              label="Tags"
+              large
+              value={profile.tags.join(", ")}
+              type="truncated"
+            />
+          </InfoGrid>
+        </ProfileAssociation>
       </Blocks.Item>
     </Blocks>
   );

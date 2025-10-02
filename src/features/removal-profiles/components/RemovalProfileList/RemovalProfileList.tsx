@@ -21,7 +21,7 @@ interface RemovalProfileListProps {
 }
 
 const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
-  const { search, setPageParams } = usePageParams();
+  const { search, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -44,10 +44,6 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
     });
   }, [profiles, search]);
 
-  const handleRemovalProfileDetailsOpen = (profile: RemovalProfile) => {
-    setPageParams({ sidePath: ["view"], profile: profile.id.toString() });
-  };
-
   const columns = useMemo<Column<RemovalProfile>[]>(
     () => [
       {
@@ -61,9 +57,10 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
             <Button
               type="button"
               appearance="link"
-              onClick={() => {
-                handleRemovalProfileDetailsOpen(original);
-              }}
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                profile: original.id.toString(),
+              })}
               className="u-no-margin--bottom u-no-padding--top u-align--left"
               aria-label={`Open "${original.title}" profile details`}
             >

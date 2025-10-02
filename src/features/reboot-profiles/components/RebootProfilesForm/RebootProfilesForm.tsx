@@ -1,4 +1,5 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
@@ -29,12 +30,11 @@ import {
 import { getInitialValues, getValidationSchema } from "./helpers";
 import classes from "./RebootProfilesForm.module.scss";
 import type { FormProps, RebootProfilesFormProps } from "./types";
-import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 
 const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
@@ -48,46 +48,33 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
       value: name,
     })) ?? [];
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues(props),
     enableReinitialize: true,
     onSubmit: async (values) => {
+      const params = {
+        access_group: values.access_group,
+        all_computers: values.all_computers,
+        at_hour: Number(values.at_hour),
+        at_minute: Number(values.at_minute),
+        deliver_delay_window: values.deliver_delay_window,
+        deliver_within: values.deliver_within,
+        every: "week",
+        on_days: values.on_days,
+        tags: values.tags,
+        title: values.title,
+      };
+
       try {
         if (props.action === "edit") {
           await editRebootProfile({
             id: props.profile.id,
-            access_group: values.access_group,
-            at_hour: Number(values.at_hour),
-            at_minute: Number(values.at_minute),
-            deliver_delay_window: values.randomize_delivery
-              ? values.deliver_delay_window
-              : 0,
-            deliver_within: values.deliver_within,
-            on_days: values.on_days,
-            title: values.title,
-            tags: values.tags,
-            every: "week",
-            all_computers: values.all_computers,
+            ...params,
           });
         } else {
-          await createRebootProfile({
-            title: values.title,
-            tags: values.tags,
-            access_group: values.access_group,
-            on_days: values.on_days,
-            every: "week",
-            at_hour: Number(values.at_hour),
-            at_minute: Number(values.at_minute),
-            deliver_delay_window: values.randomize_delivery
-              ? values.deliver_delay_window
-              : 0,
-            deliver_within: values.deliver_within,
-            all_computers: values.all_computers,
-          });
+          await createRebootProfile(params);
         }
 
         closeSidePanel();

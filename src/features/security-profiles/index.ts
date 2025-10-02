@@ -5,7 +5,6 @@ export {
   useUpdateSecurityProfile,
 } from "./api";
 export type { AddSecurityProfileParams } from "./api";
-export { default as AddSecurityProfileButton } from "./components/AddSecurityProfileButton";
 export { default as SecurityProfileAddSidePanel } from "./components/SecurityProfileAddSidePanel";
 export { default as SecurityProfileDetailsSidePanel } from "./components/SecurityProfileDetailsSidePanel";
 export { default as SecurityProfileDownloadAuditSidePanel } from "./components/SecurityProfileDownloadAuditSidePanel";

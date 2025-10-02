@@ -21,7 +21,7 @@ const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
   onSuccess,
 }) => {
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
@@ -104,9 +104,7 @@ const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
           }
           submitButtonLoading={steps[step].isLoading || isSecurityProfileAdding}
           submitButtonText={steps[step].submitButtonText}
-          onCancel={() => {
-            setPageParams({ sidePath: [] });
-          }}
+          onCancel={createPageParamsSetter({ sidePath: [] })}
         />
       </SidePanel.Content>
     </>

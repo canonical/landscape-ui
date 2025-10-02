@@ -11,15 +11,13 @@ interface AddScriptProfileButtonProps {
 const AddScriptProfileButton: FC<AddScriptProfileButtonProps> = ({
   appearance,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const { scriptProfilesCount: activeScriptProfilesCount } =
     useGetScriptProfiles({ listenToUrlParams: false }, { archived: "active" });
   const { scriptProfileLimits } = useGetScriptProfileLimits();
 
-  const addProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const addProfile = createPageParamsSetter({ sidePath: ["add"], profile: "" });
 
   return (
     <Button

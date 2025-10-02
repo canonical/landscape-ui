@@ -1,3 +1,4 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
@@ -15,7 +16,6 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PackageProfile } from "../../types";
-import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
 import PackageProfileListActions from "../PackageProfileListActions";
 import { NON_COMPLIANT_TOOLTIP, PENDING_TOOLTIP } from "./constants";
 import { getCellProps, getRowProps } from "./helpers";
@@ -28,7 +28,7 @@ interface PackageProfileListProps {
 const PackageProfileList: FC<PackageProfileListProps> = ({
   packageProfiles,
 }) => {
-  const { search, setPageParams } = usePageParams();
+  const { search, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -40,10 +40,6 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
       label: title,
       value: name,
     })) ?? [];
-
-  const handlePackageProfileDetailsOpen = (profile: PackageProfile) => {
-    setPageParams({ sidePath: ["view"], profile: profile.name });
-  };
 
   const profiles = useMemo(() => {
     if (!search) {
@@ -69,9 +65,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => {
-                handlePackageProfileDetailsOpen(original);
-              }}
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                profile: original.name,
+              })}
             >
               {original.title}
             </Button>
@@ -182,8 +179,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         Cell: ({
           row: { original: packageProfile },
         }: CellProps<PackageProfile>) => (
-          <PackageProfileAssociatedInstancesLink
-            packageProfile={packageProfile}
+          <ProfileAssociatedInstancesLink
+            profile={packageProfile}
+            count={packageProfile.computers.constrained.length}
+            query={`package:${packageProfile.id}`}
           />
         ),
       },

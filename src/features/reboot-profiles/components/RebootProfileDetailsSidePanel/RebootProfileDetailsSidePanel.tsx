@@ -1,15 +1,17 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
+import ProfileAssociation from "@/components/form/ProfileAssociation";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { getTitle } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import useGetPageRebootProfile from "../../api/useGetPageRebootProfile";
-import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import RebootProfileRemoveModal from "../RebootProfileRemoveModal";
 import { formatWeeklyRebootSchedule } from "./helpers";
 
@@ -20,7 +22,7 @@ const RebootProfileDetailsSidePanel: FC = () => {
     setTrue: handleOpenModal,
   } = useBoolean();
 
-  const { pushSidePath } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
 
   const { rebootProfile: profile, isGettingRebootProfile } =
     useGetPageRebootProfile();
@@ -33,13 +35,9 @@ const RebootProfileDetailsSidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const handleEditRebootProfile = () => {
-    pushSidePath("edit");
-  };
+  const handleEditRebootProfile = createSidePathPusher("edit");
 
-  const handleDuplicateRebootProfile = () => {
-    pushSidePath("duplicate");
-  };
+  const handleDuplicateRebootProfile = createSidePathPusher("duplicate");
 
   return (
     <>
@@ -85,11 +83,7 @@ const RebootProfileDetailsSidePanel: FC = () => {
 
               <InfoGrid.Item
                 label="Access group"
-                value={
-                  accessGroupsData?.data.find(
-                    (accessGroup) => accessGroup.name === profile.access_group,
-                  )?.title ?? profile.access_group
-                }
+                value={getTitle(profile.access_group, accessGroupsData)}
               />
             </InfoGrid>
           </Blocks.Item>
@@ -113,38 +107,27 @@ const RebootProfileDetailsSidePanel: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            {profile.all_computers && (
-              <p>This profile has been associated with all instances.</p>
-            )}
-
-            {!profile.all_computers && !profile.tags.length && (
-              <p>
-                This profile has not yet been associated with any instances.
-              </p>
-            )}
-
-            {(profile.all_computers || !!profile.tags.length) && (
+            <ProfileAssociation profile={profile}>
               <InfoGrid>
-                {!profile.all_computers && (
-                  <InfoGrid.Item
-                    label="Tags"
-                    large
-                    value={profile.tags.join(", ") || null}
-                    type="truncated"
-                  />
-                )}
-
+                <InfoGrid.Item
+                  label="Tags"
+                  large
+                  value={profile.tags.join(", ")}
+                  type="truncated"
+                />
                 <InfoGrid.Item
                   label="Associated instances"
                   large
                   value={
-                    <RebootProfileAssociatedInstancesLink
-                      rebootProfile={profile}
+                    <ProfileAssociatedInstancesLink
+                      profile={profile}
+                      count={profile.num_computers}
+                      query={`reboot:${profile.id}`}
                     />
                   }
                 />
               </InfoGrid>
-            )}
+            </ProfileAssociation>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>

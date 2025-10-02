@@ -4,11 +4,11 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 
 const UpgradeProfilesEmptyState: FC = () => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
-  const handleCreateUpgradeProfile = () => {
-    setPageParams({ sidePath: ["add"] });
-  };
+  const handleCreateUpgradeProfile = createPageParamsSetter({
+    sidePath: ["add"],
+  });
 
   return (
     <EmptyState

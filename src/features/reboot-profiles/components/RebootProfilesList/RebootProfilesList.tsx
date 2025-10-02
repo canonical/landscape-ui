@@ -1,3 +1,4 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
@@ -13,7 +14,6 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RebootProfile } from "../../types";
-import RebootProfileAssociatedInstancesLink from "../RebootProfileAssociatedInstancesLink";
 import RebootProfilesListActions from "../RebootProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
 
@@ -22,7 +22,7 @@ interface RebootProfilesListProps {
 }
 
 const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
-  const { search, setPageParams } = usePageParams();
+  const { search, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
@@ -45,10 +45,6 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
     });
   }, [profiles, search]);
 
-  const handleRebootProfileDetailsOpen = (profile: RebootProfile) => {
-    setPageParams({ sidePath: ["view"], profile: profile.id.toString() });
-  };
-
   const columns = useMemo<Column<RebootProfile>[]>(
     () => [
       {
@@ -63,9 +59,10 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => {
-              handleRebootProfileDetailsOpen(original);
-            }}
+            onClick={createPageParamsSetter({
+              sidePath: ["view"],
+              profile: original.id.toString(),
+            })}
           >
             {original.title}
           </Button>
@@ -119,7 +116,11 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         Cell: ({
           row: { original: rebootProfile },
         }: CellProps<RebootProfile>) => (
-          <RebootProfileAssociatedInstancesLink rebootProfile={rebootProfile} />
+          <ProfileAssociatedInstancesLink
+            profile={rebootProfile}
+            count={rebootProfile.num_computers}
+            query={`reboot:${rebootProfile.id}`}
+          />
         ),
       },
       {

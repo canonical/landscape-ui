@@ -23,7 +23,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { setPageParams, createPageParamsSetter } = usePageParams();
 
   const profileLimitReached = useIsSecurityProfilesLimitReached();
   const { runSecurityProfile } = useRunSecurityProfile();
@@ -68,20 +68,19 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
       icon: "show",
       label: "View details",
       "aria-label": `View "${profile.title}" security profile details`,
-      onClick: () => {
-        setPageParams({ sidePath: ["view"], profile: profile.id.toString() });
-      },
+      onClick: createPageParamsSetter({
+        sidePath: ["view"],
+        profile: profile.id.toString(),
+      }),
     },
     {
       icon: "file-blank",
       label: "Download audit",
       "aria-label": `Download "${profile.title}" security profile audit`,
-      onClick: () => {
-        setPageParams({
-          sidePath: ["download"],
-          profile: profile.id.toString(),
-        });
-      },
+      onClick: createPageParamsSetter({
+        sidePath: ["download"],
+        profile: profile.id.toString(),
+      }),
     },
   ];
 
@@ -91,9 +90,10 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
         icon: "edit",
         label: "Edit",
         "aria-label": `Edit "${profile.title}" security profile`,
-        onClick: () => {
-          setPageParams({ sidePath: ["edit"], profile: profile.id.toString() });
-        },
+        onClick: createPageParamsSetter({
+          sidePath: ["edit"],
+          profile: profile.id.toString(),
+        }),
       },
       {
         icon: "play",
@@ -116,12 +116,10 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     icon: "canvas",
     label: "Duplicate profile",
     "aria-label": `Duplicate "${profile.title}" security profile`,
-    onClick: () => {
-      setPageParams({
-        sidePath: ["duplicate"],
-        profile: profile.id.toString(),
-      });
-    },
+    onClick: createPageParamsSetter({
+      sidePath: ["duplicate"],
+      profile: profile.id.toString(),
+    }),
     disabled: profileLimitReached,
   });
 

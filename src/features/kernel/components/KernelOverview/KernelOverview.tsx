@@ -20,7 +20,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
     <InfoGrid spaced>
       <InfoGrid.Item
         label="current kernel version"
-        value={kernelOverview.currentVersion || null}
+        value={kernelOverview.currentVersion}
       />
 
       <InfoGrid.Item
@@ -30,7 +30,7 @@ const KernelOverview: FC<KernelHeaderProps> = ({ kernelOverview }) => {
             <span>
               {!livepatchEnabled
                 ? "Not covered by Livepatch"
-                : kernelOverview.status || null}
+                : kernelOverview.status}
             </span>
             <Tooltip
               message={getStatusTooltipMessage(

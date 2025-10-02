@@ -48,6 +48,8 @@ describe("RebootProfilesForm", () => {
 
     await user.type(screen.getByLabelText("at hour"), "25");
     await user.type(screen.getByLabelText("at minute"), "65");
+    await user.tripleClick(screen.getByLabelText("Expires after"));
+    await user.keyboard("-1");
 
     await user.click(
       screen.getByRole("button", { name: "Add reboot profile" }),
@@ -61,6 +63,9 @@ describe("RebootProfilesForm", () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByText("At least one day must be selected."),
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("'Expires after' must be at least 0."),
     ).toBeInTheDocument();
   });
 });

@@ -36,7 +36,7 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
       <InfoGrid spaced>
         <InfoGrid.Item label="Username" large value={user.username} />
 
-        <InfoGrid.Item label="Name" large value={user.name || null} />
+        <InfoGrid.Item label="Name" large value={user.name} />
 
         <InfoGrid.Item label="Password" large type="password" />
 

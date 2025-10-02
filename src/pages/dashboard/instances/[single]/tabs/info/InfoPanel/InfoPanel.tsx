@@ -409,7 +409,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <InfoGrid.Item
               label="Tags"
-              value={instance.tags.join(", ") || null}
+              value={instance.tags.join(", ")}
               type="truncated"
             />
             <InfoGrid.Item
@@ -483,7 +483,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         <Blocks.Item title="Other">
           <InfoGrid>
             <InfoGrid.Item label="Annotations" value={null} />
-            <InfoGrid.Item label="Comment" value={instance.comment || null} />
+            <InfoGrid.Item label="Comment" value={instance.comment} />
           </InfoGrid>
         </Blocks.Item>
       </Blocks>

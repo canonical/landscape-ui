@@ -19,7 +19,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 const PackageProfileAddSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { createPackageProfileQuery } = usePackageProfiles();
 
@@ -34,9 +34,7 @@ const PackageProfileAddSidePanel: FC = () => {
 
   const { mutateAsync: createPackageProfile } = createPackageProfileQuery;
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: AddFormProps) => {
     const valuesToProfileCreation: CreatePackageProfileParams = {

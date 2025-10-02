@@ -13,7 +13,7 @@ interface ScriptProfilesListActionsProps {
 const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
   scriptProfile,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const {
     value: archiveModalOpened,
@@ -25,12 +25,10 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
-      onClick: () => {
-        setPageParams({
-          sidePath: ["view"],
-          profile: scriptProfile.id.toString(),
-        });
-      },
+      onClick: createPageParamsSetter({
+        sidePath: ["view"],
+        profile: scriptProfile.id.toString(),
+      }),
     },
   ];
 
@@ -38,12 +36,10 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
     nondestructiveActions.push({
       icon: "edit",
       label: "Edit",
-      onClick: () => {
-        setPageParams({
-          sidePath: ["edit"],
-          profile: scriptProfile.id.toString(),
-        });
-      },
+      onClick: createPageParamsSetter({
+        sidePath: ["edit"],
+        profile: scriptProfile.id.toString(),
+      }),
     });
   }
 

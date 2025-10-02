@@ -25,7 +25,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
   const { copyPackageProfileQuery } = usePackageProfiles();
@@ -40,9 +40,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       value: name,
     })) ?? [];
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: DuplicateFormProps) => {
     const valuesToSubmit: CopyPackageProfileParams = {

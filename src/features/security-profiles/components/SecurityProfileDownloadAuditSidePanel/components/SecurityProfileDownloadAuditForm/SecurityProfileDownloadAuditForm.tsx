@@ -37,7 +37,7 @@ const SecurityProfileDownloadAuditForm: FC<
   SecurityProfileDownloadAuditFormProps
 > = ({ securityProfile }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
 
   const { getSingleActivityQuery } = useActivities();
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
@@ -312,9 +312,7 @@ const SecurityProfileDownloadAuditForm: FC<
         submitButtonText="Generate CSV"
         hasBackButton={sidePath.length > 1}
         onBackButtonPress={popSidePath}
-        onCancel={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onCancel={createPageParamsSetter({ sidePath: [], profile: "" })}
       />
     </>
   );

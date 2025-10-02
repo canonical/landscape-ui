@@ -42,7 +42,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
   const navigate = useNavigate();
   const { currentPage, pageSize, search, status, passRateFrom, passRateTo } =
     usePageParams();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const profileLimitReached = useIsSecurityProfilesLimitReached();
 
   const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
@@ -88,12 +88,6 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
       "_landscape_isSecurityProfileLimitNotificationIgnored",
     ) == "true",
   );
-
-  const handleEditProfile = () => {
-    const [profile] = overLimitSecurityProfiles;
-
-    setPageParams({ sidePath: ["edit"], profile: profile.id.toString() });
-  };
 
   return (
     <>
@@ -167,7 +161,14 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           . Only the first{" "}
           {SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT.toLocaleString()} will be
           covered. Edit the profile or duplicate it to cover the rest.{" "}
-          <Button type="button" appearance="link" onClick={handleEditProfile}>
+          <Button
+            type="button"
+            appearance="link"
+            onClick={createPageParamsSetter({
+              sidePath: ["edit"],
+              profile: overLimitSecurityProfiles[0].id.toString(),
+            })}
+          >
             Edit profile
           </Button>
         </Notification>

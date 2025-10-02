@@ -19,15 +19,13 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
   const { editPackageProfileQuery } = usePackageProfiles();
 
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: EditFormProps) => {
     try {

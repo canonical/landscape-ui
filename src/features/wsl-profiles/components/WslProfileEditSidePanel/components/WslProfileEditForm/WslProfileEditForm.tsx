@@ -33,7 +33,7 @@ interface FormProps {
 const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
 
   const { editWslProfile } = useEditWslProfile();
@@ -59,9 +59,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       value: name,
     })) ?? [];
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: FormProps) => {
     try {

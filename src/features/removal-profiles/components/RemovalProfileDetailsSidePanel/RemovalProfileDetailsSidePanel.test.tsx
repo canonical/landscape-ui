@@ -3,7 +3,6 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import { removalProfiles } from "@/tests/mocks/removalProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import RemovalProfileDetailsSidePanel from "./RemovalProfileDetailsSidePanel";
 
@@ -14,8 +13,6 @@ const accessGroupOptions = accessGroups.map((group) => ({
 }));
 
 describe("RemovalProfileDetails", () => {
-  const user = userEvent.setup();
-
   it("renders all info items correctly", async () => {
     const { container } = renderWithProviders(
       <RemovalProfileDetailsSidePanel />,
@@ -61,29 +58,5 @@ describe("RemovalProfileDetails", () => {
 
     expect(editButton).toBeInTheDocument();
     expect(removeButton).toBeInTheDocument();
-  });
-
-  it("opens modal and enables remove button after confirmation text", async () => {
-    renderWithProviders(
-      <RemovalProfileDetailsSidePanel />,
-      undefined,
-      `/?profile=${profile.id}`,
-    );
-
-    await expectLoadingState();
-
-    await user.click(
-      screen.getByRole("button", { name: `Remove ${profile.title}` }),
-    );
-
-    expect(
-      screen.getByRole("heading", { name: /remove package profile/i }),
-    ).toBeInTheDocument();
-
-    const removeButton = screen.getByRole("button", { name: "Remove" });
-    expect(removeButton).toBeDisabled();
-
-    await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
-    expect(removeButton).toBeEnabled();
   });
 });

@@ -1,13 +1,10 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useUpgradeProfiles } from "../../hooks";
 import type { UpgradeProfile } from "../../types";
+import UpgradeProfileRemoveModal from "../UpgradeProfileRemoveModal";
 
 interface UpgradeProfileListActionsProps {
   readonly profile: UpgradeProfile;
@@ -16,11 +13,7 @@ interface UpgradeProfileListActionsProps {
 const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
   profile,
 }) => {
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
-
-  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
+  const { createPageParamsSetter } = usePageParams();
 
   const {
     value: isModalOpen,
@@ -28,27 +21,10 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
-    removeUpgradeProfileQuery;
-
-  const handleRemoveUpgradeProfile = async () => {
-    try {
-      await removeUpgradeProfile({ name: profile.name });
-
-      notify.success({
-        message: `Upgrade profile "${profile.title}" removed successfully`,
-        title: "Upgrade profile removed",
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      closeModal();
-    }
-  };
-
-  const handleUpgradeProfileEdit = () => {
-    setPageParams({ sidePath: ["edit"], profile: profile.id.toString() });
-  };
+  const handleUpgradeProfileEdit = createPageParamsSetter({
+    sidePath: ["edit"],
+    profile: profile.id.toString(),
+  });
 
   const actions: Action[] = [
     {
@@ -76,22 +52,11 @@ const UpgradeProfileListActions: FC<UpgradeProfileListActionsProps> = ({
         destructiveActions={destructiveActions}
       />
 
-      <TextConfirmationModal
-        isOpen={isModalOpen}
-        confirmationText={`remove ${profile.title}`}
-        title="Remove upgrade profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        onConfirm={handleRemoveUpgradeProfile}
+      <UpgradeProfileRemoveModal
         close={closeModal}
-      >
-        <p>
-          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-          <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+        isOpen={isModalOpen}
+        upgradeProfile={profile}
+      />
     </>
   );
 };

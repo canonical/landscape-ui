@@ -17,11 +17,10 @@ const ScriptProfileDetailsSidePanel = lazy(
 );
 
 const ScriptProfilesTab: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
-  const close = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const close = createPageParamsSetter({ sidePath: [], profile: "" });
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 

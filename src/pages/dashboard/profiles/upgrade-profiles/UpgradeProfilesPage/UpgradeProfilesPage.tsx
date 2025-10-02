@@ -28,13 +28,12 @@ const UpgradeProfileEditSidePanel = lazy(() =>
 );
 
 const UpgradeProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
-  const handleAddUpgradeProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const handleAddUpgradeProfile = createPageParamsSetter({ sidePath: ["add"] });
 
   return (
     <PageMain>
@@ -56,9 +55,7 @@ const UpgradeProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (
