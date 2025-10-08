@@ -19,7 +19,7 @@ export const useUninstallWslInstances = () => {
     UninstallWslInstancesParams
   >({
     mutationFn: async ({ parent_id, ...params }) =>
-      authFetch.post(`computers/${parent_id}/delete-children`, { params }),
+      authFetch.post(`computers/${parent_id}/delete-children`, params),
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["wsl-hosts"] }),
