@@ -1,3 +1,16 @@
+# [1.20.0](https://github.com/canonical/landscape-ui/compare/v1.19.0...v1.20.0) (2025-10-09)
+
+
+### Bug Fixes
+
+* delete wsl children ([#388](https://github.com/canonical/landscape-ui/issues/388)) ([454c770](https://github.com/canonical/landscape-ui/commit/454c770462c684fa2fd572c1525ed635a475c29c))
+
+
+### Features
+
+* packages tab empty state ([#380](https://github.com/canonical/landscape-ui/issues/380)) ([da17f13](https://github.com/canonical/landscape-ui/commit/da17f13aed705706be3a981f27fba31f9e886af2))
+* update feedback link ([a471849](https://github.com/canonical/landscape-ui/commit/a471849d2005a4ba1b4bf90df743731653437cac))
+
 # [1.19.0](https://github.com/canonical/landscape-ui/compare/v1.18.2...v1.19.0) (2025-09-16)
 
 
