@@ -27,6 +27,10 @@ const OidcAuthPage = lazy(async () => import("@/pages/auth/handle/oidc"));
 const UbuntuOneAuthPage = lazy(
   async () => import("@/pages/auth/handle/ubuntu-one"),
 );
+const InvitationPage = lazy(async () => import("@/pages/auth/invitation"));
+const AccountCreationPage = lazy(
+  async () => import("@/pages/auth/account-creation"),
+);
 const EnvError = lazy(async () => import("@/pages/EnvError"));
 const PageNotFound = lazy(async () => import("@/pages/PageNotFound"));
 const LoginPage = lazy(async () => import("@/pages/auth/login"));
@@ -104,40 +108,59 @@ interface AuthRouteProps {
 }
 
 const AuthRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized, authLoading } = useAuth();
+  const { authorized, authLoading, hasAccounts } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { pathname, search } = useLocation();
 
   useEffect(() => {
-    if (authorized || authLoading) {
+    if (authLoading) {
       return;
     }
 
-    const redirectTo = `${pathname}${search}`;
+    if (!authorized) {
+      const redirectTo = `${pathname}${search}`;
+      navigate(ROUTES.auth.login({ "redirect-to": redirectTo }), {
+        replace: true,
+      });
+      queryClient.removeQueries({
+        predicate: (query) => query.queryKey[0] !== "authUser",
+      });
+      return;
+    }
 
-    navigate(ROUTES.auth.login({ "redirect-to": redirectTo }), {
-      replace: true,
-    });
-    queryClient.removeQueries({
-      predicate: (query) => query.queryKey[0] !== "authUser",
-    });
-  }, [authorized, authLoading]);
+    if (!hasAccounts) {
+      navigate(ROUTES.auth.createAccount(), { replace: true });
+    }
+  }, [
+    authorized,
+    authLoading,
+    hasAccounts,
+    pathname,
+    search,
+    navigate,
+    queryClient,
+  ]);
 
   if (authLoading) {
     return <LoadingState />;
   }
 
-  return authorized ? <>{children}</> : <Redirecting />;
+  return authorized && hasAccounts ? <>{children}</> : <Redirecting />;
 };
 
 const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
-  const { authorized, authLoading, redirectToExternalUrl } = useAuth();
+  const { authorized, authLoading, hasAccounts, redirectToExternalUrl } =
+    useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     if (!authorized || authLoading) {
+      return;
+    }
+
+    if (!hasAccounts) {
       return;
     }
 
@@ -153,13 +176,20 @@ const GuestRoute: FC<AuthRouteProps> = ({ children }) => {
     } else {
       navigate(redirectTo, { replace: true });
     }
-  }, [authorized, authLoading]);
+  }, [
+    authorized,
+    authLoading,
+    hasAccounts,
+    searchParams,
+    navigate,
+    redirectToExternalUrl,
+  ]);
 
   if (authLoading) {
     return <LoadingState />;
   }
 
-  return !authorized ? <>{children}</> : <Redirecting />;
+  return !authorized || !hasAccounts ? <>{children}</> : <Redirecting />;
 };
 
 const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
@@ -172,7 +202,7 @@ const SelfHostedRoute: FC<AuthRouteProps> = ({ children }) => {
     }
 
     navigate(ROUTES.errors.envError(), { replace: true });
-  }, [isSelfHosted, envLoading]);
+  }, [isSelfHosted, envLoading, navigate]);
 
   if (envLoading) {
     return <LoadingState />;
@@ -516,6 +546,22 @@ const App: FC = () => {
               }
             />
             <Route path={PATHS.auth.login} element={<LoginPage />} />
+            <Route
+              path={PATHS.auth.invitation}
+              element={
+                <Suspense key="/accept-invitation" fallback={<LoadingState />}>
+                  <InvitationPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path={PATHS.auth.createAccount}
+              element={
+                <Suspense key="/create-account" fallback={<LoadingState />}>
+                  <AccountCreationPage />
+                </Suspense>
+              }
+            />
             <Route
               path={PATHS.auth.supportLogin}
               element={

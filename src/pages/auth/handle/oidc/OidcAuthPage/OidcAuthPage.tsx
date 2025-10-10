@@ -36,6 +36,28 @@ const OidcAuthPage: FC = () => {
       return;
     }
 
+    setAuthLoading(true);
+    setUser(getAuthStateQueryResult.data);
+
+    if (getAuthStateQueryResult.data.invitation_id) {
+      navigate(
+        ROUTES.auth.invitation({
+          secureId: getAuthStateQueryResult.data.invitation_id,
+        }),
+        {
+          replace: true,
+        },
+      );
+      return;
+    }
+
+    if (getAuthStateQueryResult.data.accounts.length === 0) {
+      navigate(ROUTES.auth.createAccount(), { replace: true });
+      return;
+    }
+
+    const returnToUrl = getAuthStateQueryResult.data.return_to?.url;
+
     if (
       getAuthStateQueryResult.data.return_to?.external &&
       getAuthStateQueryResult.data.return_to.url
@@ -44,17 +66,17 @@ const OidcAuthPage: FC = () => {
         replace: true,
       });
     } else {
-      setAuthLoading(true);
-      setUser(getAuthStateQueryResult.data);
-
-      const url = new URL(
-        getAuthStateQueryResult.data.return_to?.url ?? HOMEPAGE_PATH,
-        location.origin,
-      );
+      const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
 
       navigate(url.toString().replace(url.origin, ""), { replace: true });
     }
-  }, [getAuthStateQueryResult, redirectToExternalUrl]);
+  }, [
+    getAuthStateQueryResult,
+    redirectToExternalUrl,
+    navigate,
+    setAuthLoading,
+    setUser,
+  ]);
 
   return (
     <div className={classes.container}>

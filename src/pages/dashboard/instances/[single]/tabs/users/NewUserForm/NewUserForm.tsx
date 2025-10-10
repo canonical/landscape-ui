@@ -112,7 +112,7 @@ const NewUserForm: FC = () => {
       />
       <Input
         type="password"
-        label="Passphrase"
+        label="Password"
         autoComplete="new-password"
         required
         error={
@@ -124,7 +124,7 @@ const NewUserForm: FC = () => {
       />
       <Input
         type="password"
-        label="Confirm passphrase"
+        label="Confirm password"
         autoComplete="new-password"
         required
         error={
@@ -136,7 +136,7 @@ const NewUserForm: FC = () => {
       />
       <Input
         type="checkbox"
-        label="Require passphrase reset"
+        label="Require password reset"
         help="User must change password at first login."
         {...formik.getFieldProps("requirePasswordReset")}
         checked={formik.values.requirePasswordReset}

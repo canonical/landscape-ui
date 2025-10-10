@@ -23,6 +23,7 @@ const authProps: AuthContextProps = {
   user: authUser,
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: vi.fn(),
+  hasAccounts: true,
 };
 
 const envCommon: Omit<EnvContextState, "isSaas" | "isSelfHosted"> = {

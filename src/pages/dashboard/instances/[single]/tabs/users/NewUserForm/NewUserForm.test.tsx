@@ -16,8 +16,8 @@ describe("NewUserForm", () => {
     expect(form).toHaveTexts([
       "Username",
       "Name",
-      "Passphrase",
-      "Confirm passphrase",
+      "Password",
+      "Confirm password",
       "Primary Group",
       "Location",
       "Home phone",

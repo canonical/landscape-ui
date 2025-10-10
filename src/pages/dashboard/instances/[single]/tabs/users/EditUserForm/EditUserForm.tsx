@@ -11,6 +11,7 @@ import useUsers from "@/hooks/useUsers";
 import type { User } from "@/types/User";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   name: string;
@@ -82,8 +83,8 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         return password && password.length > 0
           ? schema
               .trim()
-              .required("Confirm passphrase is required")
-              .oneOf([Yup.ref("password"), ""], "Passphrases must match")
+              .required("Confirm password is required")
+              .oneOf([Yup.ref("password"), ""], "Passwords must match")
           : schema.notRequired();
       }),
       location: Yup.string(),
@@ -154,43 +155,27 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         label="Username"
         required
         autoComplete="new-username"
-        error={
-          formik.touched.username && formik.errors.username
-            ? formik.errors.username
-            : undefined
-        }
+        error={getFormikError(formik, "username")}
         {...formik.getFieldProps("username")}
       />
       <Input
         type="text"
         label="Name"
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
         {...formik.getFieldProps("name")}
       />
       <Input
         type="password"
-        label="Passphrase"
+        label="Password"
         autoComplete="new-password"
-        error={
-          formik.touched.password && formik.errors.password
-            ? formik.errors.password
-            : undefined
-        }
+        error={getFormikError(formik, "password")}
         {...formik.getFieldProps("password")}
       />
       <Input
         type="password"
-        label="Confirm passphrase"
+        label="Confirm password"
         autoComplete="new-password"
-        error={
-          formik.touched.confirmPassword && formik.errors.confirmPassword
-            ? formik.errors.confirmPassword
-            : undefined
-        }
+        error={getFormikError(formik, "confirmPassword")}
         {...formik.getFieldProps("confirmPassword")}
       />
       <Select
@@ -200,11 +185,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         disabled={isLoadingGroups}
         options={groups}
         {...formik.getFieldProps("primaryGroupValue")}
-        error={
-          formik.touched.primaryGroupValue && formik.errors.primaryGroupValue
-            ? formik.errors.primaryGroupValue
-            : undefined
-        }
+        error={getFormikError(formik, "primaryGroupValue")}
       />
       <MultiSelectField
         variant="condensed"
@@ -220,42 +201,24 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
             items.map(({ value }) => value),
           );
         }}
-        error={
-          (formik.touched.additionalGroupValue &&
-            (Array.isArray(formik.errors.additionalGroupValue)
-              ? formik.errors.additionalGroupValue.join(", ")
-              : formik.errors.additionalGroupValue)) ||
-          undefined
-        }
+        error={getFormikError(formik, "additionalGroupValue")}
       />
       <Input
         type="text"
         label="Location"
-        error={
-          formik.touched.location && formik.errors.location
-            ? formik.errors.location
-            : undefined
-        }
+        error={getFormikError(formik, "location")}
         {...formik.getFieldProps("location")}
       />
       <Input
         type="text"
         label="Home phone"
-        error={
-          formik.touched.homePhoneNumber && formik.errors.homePhoneNumber
-            ? formik.errors.homePhoneNumber
-            : undefined
-        }
+        error={getFormikError(formik, "homePhoneNumber")}
         {...formik.getFieldProps("homePhoneNumber")}
       />
       <Input
         type="text"
         label="Work phone"
-        error={
-          formik.touched.workPhoneNumber && formik.errors.workPhoneNumber
-            ? formik.errors.workPhoneNumber
-            : undefined
-        }
+        error={getFormikError(formik, "workPhoneNumber")}
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons

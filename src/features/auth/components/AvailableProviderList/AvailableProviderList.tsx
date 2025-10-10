@@ -43,6 +43,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
 
   if (invitationId) {
     params.invitation_id = invitationId;
+    params.return_to = `/accept-invitation/${invitationId}`;
   }
 
   if (external) {
@@ -73,6 +74,7 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
 
   if (invitationId) {
     ubuntuOneParams.invitation_id = invitationId;
+    ubuntuOneParams.return_to = `/accept-invitation/${invitationId}`;
   }
 
   if (external) {

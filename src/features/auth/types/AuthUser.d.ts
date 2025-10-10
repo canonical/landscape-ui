@@ -13,4 +13,5 @@ export interface AuthUser {
   has_password: boolean;
   name: string;
   token: string;
+  invitation_id?: string;
 }

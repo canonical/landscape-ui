@@ -158,7 +158,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
           help={
             isSaas ? (
               <>
-                To change your passphrase, go to{" "}
+                To change your password, go to{" "}
                 <Link
                   href="https://login.ubuntu.com/"
                   target="_blank"

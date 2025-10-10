@@ -22,4 +22,5 @@ export const authUser: AuthUser = {
 export const authResponse: AuthStateResponse = {
   ...authUser,
   return_to: null,
+  attach_code: null,
 };

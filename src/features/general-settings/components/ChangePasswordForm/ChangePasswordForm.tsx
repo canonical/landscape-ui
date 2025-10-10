@@ -1,15 +1,13 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import PasswordConstraints from "@/components/form/PasswordConstraints";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Form, Icon, Input, PasswordToggle } from "@canonical/react-components";
-import classNames from "classnames";
+import { Form, Input, PasswordToggle } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useUserGeneralSettings } from "../../hooks";
-import classes from "./ChangePasswordForm.module.scss";
 import { VALIDATION_SCHEMA } from "./constants";
-import { MAX_PASSWORD_LENGTH } from "@/constants";
 
 interface FormProps {
   currentPassword: string;
@@ -45,26 +43,6 @@ const ChangePasswordForm: FC = () => {
     },
   });
 
-  const checkConstraints = () => [
-    {
-      label: "8-50 characters",
-      passed:
-        formik.values.newPassword.length >= 8 &&
-        formik.values.newPassword.length <= MAX_PASSWORD_LENGTH,
-    },
-    {
-      label: "Lower case letters (a-z)",
-      passed: /[a-z]/.test(formik.values.newPassword),
-    },
-    {
-      label: "Upper case letters (A-Z)",
-      passed: /[A-Z]/.test(formik.values.newPassword),
-    },
-    { label: "Numbers (0-9)", passed: /[0-9]/.test(formik.values.newPassword) },
-  ];
-
-  const constraints = checkConstraints();
-
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Input
@@ -94,36 +72,13 @@ const ChangePasswordForm: FC = () => {
         }
         {...formik.getFieldProps("newPassword")}
       />
-      <>
-        <span className={classNames("u-text--muted")}>
-          Password must contain
-        </span>
-        {constraints.map((constraint) => (
-          <span
-            key={constraint.label}
-            className={classNames(classes.passwordConstraint, {
-              [classes.passed]: constraint.passed,
-              [classes.default]:
-                !constraint.passed && !formik.touched.newPassword,
-              [classes.failed]:
-                !constraint.passed &&
-                formik.errors.newPassword &&
-                formik.touched.newPassword,
-            })}
-          >
-            <Icon
-              name={
-                constraint.passed
-                  ? "success"
-                  : formik.errors.newPassword && formik.touched.newPassword
-                    ? "error"
-                    : "information"
-              }
-            />
-            {constraint.label}
-          </span>
-        ))}
-      </>
+
+      <PasswordConstraints
+        password={formik.values.newPassword}
+        touched={!!formik.touched.newPassword}
+        hasError={!!formik.errors.newPassword}
+      />
+
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"

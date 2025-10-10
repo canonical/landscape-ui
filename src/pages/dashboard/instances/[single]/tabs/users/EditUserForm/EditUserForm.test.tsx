@@ -23,8 +23,8 @@ describe("EditUserForm", () => {
     expect(form).toHaveTexts([
       "Username",
       "Name",
-      "Passphrase",
-      "Confirm passphrase",
+      "Password",
+      "Confirm password",
       "Primary Group",
       "Additional Groups",
       "Location",
@@ -51,7 +51,7 @@ describe("EditUserForm", () => {
       const inputs = await within(form).findAllByDisplayValue(
         props.user.username,
       );
-      username = inputs[0];
+      [username] = inputs;
     } else {
       username = await within(form).findByDisplayValue(props.user.username);
     }

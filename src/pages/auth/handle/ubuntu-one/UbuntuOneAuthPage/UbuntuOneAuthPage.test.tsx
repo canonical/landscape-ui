@@ -83,6 +83,16 @@ describe("UbuntuOneAuthPage", () => {
         ...authUser,
         return_to: null,
       },
+      {
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      },
+      {
+        ...authUser,
+        invitation_id: "test-secure-id",
+      },
     ];
 
     beforeEach(async ({ task: { id } }) => {
@@ -126,6 +136,19 @@ describe("UbuntuOneAuthPage", () => {
     it("should redirect to internal URL when return_to is not provided", async () => {
       expect(navigate).toHaveBeenCalledWith(
         new URL(HOMEPAGE_PATH, location.origin).pathname,
+        { replace: true },
+      );
+    });
+
+    it("should redirect to create-account when user has no accounts", async () => {
+      expect(navigate).toHaveBeenCalledWith("/create-account", {
+        replace: true,
+      });
+    });
+
+    it("should redirect to invitation when invitation_id is present", async () => {
+      expect(navigate).toHaveBeenCalledWith(
+        "/accept-invitation/test-secure-id",
         { replace: true },
       );
     });
