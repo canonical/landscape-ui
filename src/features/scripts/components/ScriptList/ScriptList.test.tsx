@@ -25,6 +25,7 @@ const authContextValues: AuthContextProps = {
   user: null,
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: () => true,
+  hasAccounts: true,
 };
 
 const authContextValuesWithoutFeatureFlag: AuthContextProps = {

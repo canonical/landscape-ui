@@ -5,7 +5,7 @@ import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import {
   identityProviders,
-  locationToRedirectTo,
+  oidcLocationToRedirectTo,
 } from "@/tests/mocks/identityProviders";
 import userEvent from "@testing-library/user-event";
 
@@ -37,6 +37,8 @@ describe("AvailableProviderList", () => {
       await screen.findByRole("button", { name: "Sign in with Okta Enabled" }),
     );
 
-    expect(redirectToExternalUrl).toHaveBeenCalledWith(locationToRedirectTo);
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(
+      `${window.location.origin}${oidcLocationToRedirectTo}`,
+    );
   });
 });

@@ -24,6 +24,7 @@ const authProps: AuthContextProps = {
   user: authUser,
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: vi.fn(),
+  hasAccounts: true,
 };
 
 vi.mock("@/hooks/useAuth");

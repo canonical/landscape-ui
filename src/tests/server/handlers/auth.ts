@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { API_URL } from "@/constants";
+import { API_URL, ROOT_PATH } from "@/constants";
 import { authResponse } from "@/tests/mocks/auth";
 import type {
   AuthStateResponse,
@@ -9,15 +9,13 @@ import type {
 } from "@/features/auth";
 import {
   identityProviders,
-  locationToRedirectTo,
+  oidcLocationToRedirectTo,
   singleIdentityProviders,
   supportedProviders,
 } from "@/tests/mocks/identityProviders";
-import {
-  allLoginMethods,
-  employeeLoginMethods,
-} from "@/tests/mocks/loginMethods";
+import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { invitationState } from "./invitations";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -26,6 +24,28 @@ interface SwitchAccountParams {
 interface SwitchAccountResponse {
   token: string;
 }
+
+interface CreatedAccount {
+  account: string;
+  creation_time: string;
+  administrators: {
+    name: string;
+    email: string;
+    openid: string;
+  }[];
+  disabled: boolean;
+  disabled_reason: null;
+  computers: number;
+  company: string;
+  last_login_time: string;
+  licenses: unknown[];
+  salesforce_account_key: null;
+  enabled_features: unknown[];
+  subdomain: null;
+}
+
+let createdAccount: CreatedAccount | null = null;
+let pendingInvitationId: string | null = null;
 
 export default [
   http.post<never, LoginRequestParams, AuthStateResponse>(
@@ -64,6 +84,30 @@ export default [
     },
   ),
 
+  http.post(`${API_URL}accounts`, async () => {
+    createdAccount = {
+      account: "8xag1afp",
+      creation_time: "2025-09-15T22:52:11Z",
+      administrators: [
+        {
+          name: "Your Name",
+          email: "yourname@example.com",
+          openid: "youropenid",
+        },
+      ],
+      disabled: false,
+      disabled_reason: null,
+      computers: 0,
+      company: "Onward, Inc.",
+      last_login_time: "2025-09-15T22:52:11Z",
+      licenses: [],
+      salesforce_account_key: null,
+      enabled_features: [],
+      subdomain: null,
+    };
+    return HttpResponse.json(createdAccount);
+  }),
+
   http.get(`${API_URL}identity-providers`, () => {
     return HttpResponse.json(identityProviders);
   }),
@@ -84,8 +128,39 @@ export default [
     },
   ),
 
-  http.get(`${API_URL}auth/start`, () => {
-    return HttpResponse.json({ location: locationToRedirectTo });
+  http.get(`${API_URL}auth/start`, ({ request }) => {
+    const url = new URL(request.url);
+    const invitationId = url.searchParams.get("invitation_id");
+    const returnTo = url.searchParams.get("return_to");
+
+    if (invitationId) {
+      pendingInvitationId = invitationId;
+    }
+
+    let redirectUrl = `${location.origin}${oidcLocationToRedirectTo}`;
+
+    if (returnTo) {
+      redirectUrl += `&return_to=${encodeURIComponent(returnTo)}`;
+    }
+
+    return HttpResponse.json({
+      location: redirectUrl,
+    });
+  }),
+
+  http.get(`${API_URL}auth/ubuntu-one/start`, ({ request }) => {
+    const url = new URL(request.url);
+    const returnTo = url.searchParams.get("return_to");
+
+    let redirectUrl = `${location.origin}${ROOT_PATH}handle-auth/ubuntu-one?code=ubuntu-one-code&state=state123`;
+
+    if (returnTo) {
+      redirectUrl += `&return_to=${encodeURIComponent(returnTo)}`;
+    }
+
+    return HttpResponse.json({
+      location: redirectUrl,
+    });
   }),
 
   http.get(
@@ -100,18 +175,150 @@ export default [
     },
   ),
 
-  http.get(`${API_URL}employee-access/login/methods`, () => {
-    return HttpResponse.json(employeeLoginMethods);
+  http.get(`${API_URL}auth/handle-code`, ({ request }) => {
+    const url = new URL(request.url);
+    const code = url.searchParams.get("code");
+
+    if (code === "attach-code") {
+      return HttpResponse.json({
+        ...authResponse,
+        attach_code: "QWER12",
+      });
+    }
+
+    const baseResponse: AuthStateResponse = {
+      accounts: [],
+      current_account: "",
+      email: "new-oidc-user@example.com",
+      has_password: false,
+      name: "New OIDC User",
+      token: "new-oidc-token",
+      return_to: null,
+      attach_code: null,
+      ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+    };
+
+    return HttpResponse.json(baseResponse);
   }),
 
-  http.get(`${API_URL}auth/handle-code`, () => {
-    return HttpResponse.json({
-      ...authResponse,
-      attach_code: "QWER12",
-    });
-  }),
+  http.get(`${API_URL}auth/ubuntu-one/complete`, ({ request }) => {
+    const url = new URL(request.url);
+    const callbackUrl = url.searchParams.get("url");
 
-  http.get(`${API_URL}me`, () => {
+    let invitationIdFromUrl = null;
+
+    if (callbackUrl) {
+      const parsedCallback = new URL(callbackUrl);
+      const returnToParam = parsedCallback.searchParams.get("return_to");
+
+      if (returnToParam && returnToParam.includes("/accept-invitation/")) {
+        const match = returnToParam.match(/\/accept-invitation\/([^/?]+)/);
+        if (match) {
+          [, invitationIdFromUrl] = match;
+        }
+      }
+    }
+
+    const baseResponse = {
+      accounts: [],
+      current_account: "",
+      email: "new-user@example.com",
+      has_password: false,
+      name: "New Ubuntu One User",
+      token: "new-user-token",
+      return_to: null,
+      attach_code: null,
+    };
+
+    if (invitationIdFromUrl) {
+      pendingInvitationId = invitationIdFromUrl;
+      return HttpResponse.json({
+        ...baseResponse,
+        invitation_id: invitationIdFromUrl,
+      });
+    }
+
+    return HttpResponse.json(baseResponse);
+  }),
+  http.get(`${API_URL}me`, ({ request }) => {
+    const authHeader = request.headers.get("Authorization");
+    const token = authHeader?.replace("Bearer ", "");
+
+    if (invitationState.accepted) {
+      const response = {
+        ...authResponse,
+        email: "new-user@example.com",
+        name: "New Ubuntu One User",
+        token: "new-user-token",
+      };
+
+      return HttpResponse.json(response);
+    }
+
+    if (token === "new-user-token") {
+      return HttpResponse.json({
+        accounts: [],
+        current_account: "",
+        email: "new-user@example.com",
+        has_password: false,
+        name: "New Ubuntu One User",
+        token: "new-user-token",
+        return_to: null,
+        attach_code: null,
+        ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+      });
+    }
+
+    if (token === "new-oidc-token") {
+      const accounts = createdAccount
+        ? [
+            {
+              classic_dashboard_url: "",
+              default: true,
+              name: createdAccount.account,
+              subdomain: null,
+              title: createdAccount.company,
+            },
+          ]
+        : [];
+      return HttpResponse.json({
+        accounts,
+        current_account: createdAccount ? createdAccount.account : "",
+        email: "new-oidc-user@example.com",
+        has_password: false,
+        name: "New OIDC User",
+        token: "new-oidc-token",
+        return_to: null,
+        attach_code: null,
+        ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+      });
+    }
+
+    if (!token) {
+      const accounts = createdAccount
+        ? [
+            {
+              classic_dashboard_url: "",
+              default: true,
+              name: createdAccount.account,
+              subdomain: null,
+              title: createdAccount.company,
+            },
+          ]
+        : [];
+
+      return HttpResponse.json({
+        accounts,
+        current_account: createdAccount ? createdAccount.account : "",
+        email: "new-user@example.com",
+        has_password: false,
+        name: "New Ubuntu One User",
+        token: "new-user-token",
+        return_to: null,
+        attach_code: null,
+        ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+      });
+    }
     return HttpResponse.json(authResponse);
   }),
 

@@ -1,3 +1,4 @@
+import { ROOT_PATH } from "@/constants";
 import type {
   IdentityProvider,
   SingleIdentityProvider,
@@ -60,4 +61,4 @@ export const supportedProviders: SupportedIdentityProvider[] = [
   },
 ];
 
-export const locationToRedirectTo = "http://example.com";
+export const oidcLocationToRedirectTo = `${ROOT_PATH}handle-auth/oidc?code=oidc-code&state=state123`;

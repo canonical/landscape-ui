@@ -1,5 +1,6 @@
 import savedSearches from "@/tests/server/handlers/savedSearches";
 import script from "@/tests/server/handlers/script";
+import about from "./about";
 import accessGroup from "./accessGroup";
 import activity from "./activity";
 import administrators from "./administrators";
@@ -29,6 +30,7 @@ import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
 import securityProfiles from "./securityProfiles";
 import snap from "./snap";
+import standaloneAccount from "./standaloneAccount";
 import tag from "./tag";
 import upgradeProfile from "./upgradeProfile";
 import user from "./user";
@@ -38,6 +40,7 @@ import wsl from "./wsl";
 import wslProfiles from "./wslProfiles";
 
 export default [
+  ...about,
   ...accessGroup,
   ...administrators,
   ...autoinstallFiles,
@@ -68,6 +71,7 @@ export default [
   ...script,
   ...scriptProfiles,
   ...snap,
+  ...standaloneAccount,
   ...tag,
   ...upgradeProfile,
   ...user,

@@ -153,7 +153,7 @@ describe("UserList", () => {
         return [
           { label: "Username", value: item.username },
           { label: "Name", value: item?.name ?? <NoData /> },
-          { label: "Passphrase", value: "****************" },
+          { label: "Password", value: "****************" },
           { label: "Primary group", value: primaryGroup ?? <NoData /> },
           { label: "Additional groups", value: groupsData },
           { label: "Location", value: item?.location ?? <NoData /> },

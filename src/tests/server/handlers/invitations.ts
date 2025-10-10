@@ -6,6 +6,10 @@ import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
 import { invitations, invitationsSummary } from "@/tests/mocks/invitations";
 
+export const invitationState = {
+  accepted: false,
+};
+
 export default [
   http.get<never, never, ApiPaginatedResponse<Invitation>>(
     `${API_URL}invitations`,
@@ -40,4 +44,16 @@ export default [
       );
     },
   ),
+
+  http.post(`${API_URL}accept-invitation`, () => {
+    invitationState.accepted = true;
+    return HttpResponse.json({
+      account_id: 4,
+      account_title: "My Account",
+    });
+  }),
+
+  http.post(`${API_URL}reject-invitation`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];

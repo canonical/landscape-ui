@@ -46,6 +46,7 @@ describe("SingleInstanceTabs", () => {
         setAuthLoading: vi.fn(),
         setUser: vi.fn(),
         user: authUser,
+        hasAccounts: true,
       });
     });
 

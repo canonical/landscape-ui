@@ -38,7 +38,7 @@ const UserDetails: FC<UserDetailsProps> = ({ user }) => {
 
         <InfoGrid.Item label="Name" large value={user.name || null} />
 
-        <InfoGrid.Item label="Passphrase" large type="password" />
+        <InfoGrid.Item label="Password" large type="password" />
 
         <InfoGrid.Item label="Primary group" large value={primaryGroup} />
 

@@ -22,6 +22,7 @@ const NOT_AUTHORIZED_CODE = 401;
 export interface AuthContextProps {
   authLoading: boolean;
   authorized: boolean;
+  hasAccounts: boolean;
   logout: () => void;
   redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
   setAuthLoading: (loading: boolean) => void;
@@ -33,6 +34,7 @@ export interface AuthContextProps {
 const initialState: AuthContextProps = {
   authLoading: false,
   authorized: false,
+  hasAccounts: false,
   logout: () => undefined,
   redirectToExternalUrl: () => undefined,
   setAuthLoading: () => undefined,
@@ -76,7 +78,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
 
     setLoading(false);
-  }, [pathname]);
+  }, [loading, pathname]);
 
   const { data: getAuthStateQueryResult } = getAuthStateQuery(
     {},
@@ -105,13 +107,13 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [notify.notification],
   );
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     setUser(null);
     navigate(ROUTES.auth.login(), { replace: true });
     queryClient.removeQueries({
       predicate: (query) => query.queryKey[0] !== "authUser",
     });
-  };
+  }, [navigate, queryClient]);
 
   useEffect(() => {
     if (!isAuthError) {
@@ -119,7 +121,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
 
     handleLogout();
-  }, [isAuthError]);
+  }, [handleLogout, isAuthError]);
 
   const handleSetUser = (newUser: AuthUser) => {
     setUser(newUser);
@@ -148,6 +150,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         user,
         authLoading: loading || isFeaturesLoading,
         authorized: null !== user,
+        hasAccounts: !!user?.accounts.length,
         logout: handleLogout,
         redirectToExternalUrl: handleExternalRedirect,
         setAuthLoading: handleAuthLoading,

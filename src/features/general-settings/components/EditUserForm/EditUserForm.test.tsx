@@ -63,6 +63,7 @@ const authContextValues: AuthContextProps = {
   user: authUser,
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: vi.fn(),
+  hasAccounts: true,
 };
 
 const mockSelfHosted: EnvContextState = {

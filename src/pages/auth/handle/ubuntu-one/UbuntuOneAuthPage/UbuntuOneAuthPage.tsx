@@ -41,14 +41,36 @@ const UbuntuOneAuthPage: FC = () => {
       setAuthLoading(true);
       setUser(getUbuntuOneStateQueryResult.data);
 
-      const url = new URL(
-        getUbuntuOneStateQueryResult.data.return_to?.url ?? HOMEPAGE_PATH,
-        location.origin,
-      );
+      if (getUbuntuOneStateQueryResult.data.invitation_id) {
+        navigate(
+          ROUTES.auth.invitation({
+            secureId: getUbuntuOneStateQueryResult.data.invitation_id,
+          }),
+          {
+            replace: true,
+          },
+        );
+        return;
+      }
+
+      if (getUbuntuOneStateQueryResult.data.accounts.length === 0) {
+        navigate(ROUTES.auth.createAccount(), { replace: true });
+        return;
+      }
+
+      const returnToUrl = getUbuntuOneStateQueryResult.data.return_to?.url;
+
+      const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
 
       navigate(url.toString().replace(url.origin, ""), { replace: true });
     }
-  }, [getUbuntuOneStateQueryResult, redirectToExternalUrl]);
+  }, [
+    getUbuntuOneStateQueryResult,
+    redirectToExternalUrl,
+    navigate,
+    setAuthLoading,
+    setUser,
+  ]);
 
   return (
     <div className={classes.container}>
