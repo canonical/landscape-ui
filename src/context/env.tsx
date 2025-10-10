@@ -61,7 +61,8 @@ const EnvProvider: FC<EnvProviderProps> = ({ children }) => {
         debug(error);
       }
     })();
-  }, [debug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return <EnvContext.Provider value={state}>{children}</EnvContext.Provider>;
 };
