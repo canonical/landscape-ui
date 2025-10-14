@@ -1,3 +1,15 @@
+# [1.21.0](https://github.com/canonical/landscape-ui/compare/v1.20.0...v1.21.0) (2025-10-14)
+
+
+### Bug Fixes
+
+* revert ppa build action ([#391](https://github.com/canonical/landscape-ui/issues/391)) ([5e25323](https://github.com/canonical/landscape-ui/commit/5e25323883366f1b9d19643e43ab16333e38baea))
+
+
+### Features
+
+* implement account creation and invitation page ([#390](https://github.com/canonical/landscape-ui/issues/390)) ([4654a00](https://github.com/canonical/landscape-ui/commit/4654a0068b8376a897c5c4630ed3d6d71b44d58b))
+
 # [1.20.0](https://github.com/canonical/landscape-ui/compare/v1.19.0...v1.20.0) (2025-10-09)
 
 
