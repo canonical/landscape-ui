@@ -8,7 +8,7 @@ interface ProfileAssociationProps {
   readonly children?: ReactNode;
 }
 
-const ProfileAssociation: FC<ProfileAssociationProps> = ({
+const ProfileAssociationInfo: FC<ProfileAssociationProps> = ({
   children,
   profile,
 }) => {
@@ -23,4 +23,4 @@ const ProfileAssociation: FC<ProfileAssociationProps> = ({
   return <p>This profile has not yet been associated with any instances.</p>;
 };
 
-export default ProfileAssociation;
+export default ProfileAssociationInfo;

@@ -1,12 +1,12 @@
 import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
-import ProfileAssociation from "@/components/form/ProfileAssociation";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitle, pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -114,7 +114,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
 
               <InfoGrid.Item
                 label="Access group"
-                value={getTitle(profile.access_group, accessGroupsData)}
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
               <InfoGrid.Item label="Status" value={getStatus(profile).label} />
             </InfoGrid>
@@ -181,7 +181,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            <ProfileAssociation profile={profile}>
+            <ProfileAssociationInfo profile={profile}>
               <InfoGrid>
                 <InfoGrid.Item
                   label="Associated instances"
@@ -201,7 +201,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
                   type="truncated"
                 />
               </InfoGrid>
-            </ProfileAssociation>
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>

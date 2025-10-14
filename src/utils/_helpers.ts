@@ -82,7 +82,7 @@ export const pluralize = (
   return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
 };
 
-export const getTitle = (
+export const getTitleByName = (
   name: string,
   response: AxiosResponse<{ name: string; title: string }[]> | undefined,
 ) => {

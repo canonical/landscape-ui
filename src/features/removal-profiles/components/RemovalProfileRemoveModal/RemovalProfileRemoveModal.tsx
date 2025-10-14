@@ -7,7 +7,7 @@ import type { FC } from "react";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
 
-export interface RemovalProfileRemoveModalProps
+interface RemovalProfileRemoveModalProps
   extends Pick<TextConfirmationModalProps, "close" | "isOpen"> {
   readonly removalProfile: RemovalProfile;
 }

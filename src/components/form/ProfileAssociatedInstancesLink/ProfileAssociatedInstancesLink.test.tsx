@@ -1,4 +1,5 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { ROUTES } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -44,6 +45,9 @@ describe("ProfileAssociatedInstancesLink", () => {
 
     const link = screen.getByRole("link", { name: "1 instance" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", `/instances?query=profile:${query}`);
+    expect(link).toHaveAttribute(
+      "href",
+      ROUTES.instances.root({ query: `profile:${query}` }),
+    );
   });
 });

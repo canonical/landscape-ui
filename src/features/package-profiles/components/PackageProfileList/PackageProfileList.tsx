@@ -9,8 +9,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
-import { pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -34,12 +33,6 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
     useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const profiles = useMemo(() => {
     if (!search) {
@@ -96,8 +89,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
             original: { access_group },
           },
         }: CellProps<PackageProfile>) =>
-          accessGroupOptions.find(({ value }) => value === access_group)
-            ?.label ?? access_group,
+          getTitleByName(access_group, getAccessGroupQueryResult),
       },
       {
         accessor: "tags",
@@ -193,7 +185,12 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex],
+    [
+      createPageParamsSetter,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   return (

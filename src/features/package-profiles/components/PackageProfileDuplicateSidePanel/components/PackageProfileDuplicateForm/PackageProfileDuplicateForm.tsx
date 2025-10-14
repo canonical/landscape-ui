@@ -9,13 +9,12 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
 import {
   usePackageProfiles,
   type CopyPackageProfileParams,
 } from "../../../../hooks";
 import type { DuplicateFormProps, PackageProfile } from "../../../../types";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { VALIDATION_SCHEMA } from "./constants";
 
 interface PackageProfileDuplicateFormProps {
   readonly profile: PackageProfile;
@@ -70,20 +69,16 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   };
 
   const formik = useFormik<DuplicateFormProps>({
-    initialValues: INITIAL_VALUES,
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA,
-  });
-
-  useEffect(() => {
-    formik.setValues({
+    initialValues: {
       access_group: profile.access_group,
       all_computers: profile.all_computers,
       description: profile.description,
       tags: profile.tags,
       title: `${profile.title} (copy)`,
-    });
-  }, [profile]);
+    },
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA,
+  });
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

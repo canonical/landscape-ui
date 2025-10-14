@@ -1,10 +1,10 @@
-import ProfileAssociation from "@/components/form/ProfileAssociation";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitle, pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -68,7 +68,7 @@ const RemovalProfileDetails: FC = () => {
 
               <InfoGrid.Item
                 label="Access group"
-                value={getTitle(profile.access_group, accessGroupsData)}
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
 
               <InfoGrid.Item
@@ -80,7 +80,7 @@ const RemovalProfileDetails: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            <ProfileAssociation profile={profile}>
+            <ProfileAssociationInfo profile={profile}>
               <InfoGrid>
                 <InfoGrid.Item
                   label="Tags"
@@ -89,7 +89,7 @@ const RemovalProfileDetails: FC = () => {
                   type="truncated"
                 />
               </InfoGrid>
-            </ProfileAssociation>
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>

@@ -7,7 +7,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -28,12 +28,6 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
     useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const filteredProfiles = useMemo(() => {
     if (!search) {
@@ -76,9 +70,7 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         },
         Cell: ({ row: { original } }: CellProps<RebootProfile>) => (
           <>
-            {accessGroupOptions.find(
-              ({ value }) => value === original.access_group,
-            )?.label ?? original.access_group}
+            {getTitleByName(original.access_group, getAccessGroupQueryResult)}
           </>
         ),
       },
@@ -149,7 +141,12 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex],
+    [
+      createPageParamsSetter,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   return (

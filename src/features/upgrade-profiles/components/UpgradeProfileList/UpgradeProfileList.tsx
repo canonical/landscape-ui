@@ -8,7 +8,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -29,12 +29,6 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
     useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const filteredProfiles = useMemo(() => {
     if (!search) {
@@ -80,9 +74,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         },
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
           <>
-            {accessGroupOptions.find(
-              ({ value }) => value === original.access_group,
-            )?.label ?? original.access_group}
+            {getTitleByName(original.access_group, getAccessGroupQueryResult)}
           </>
         ),
       },
@@ -126,7 +118,12 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex],
+    [
+      createPageParamsSetter,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   return (

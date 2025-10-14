@@ -7,6 +7,7 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 import { Button, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -19,7 +20,6 @@ import type { SecurityProfile } from "../../types";
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import classes from "./SecurityProfilesList.module.scss";
 import { getCellProps, getRowProps } from "./helpers";
-import { ROUTES } from "@/libs/routes";
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <div className={classes.header}>
@@ -310,7 +310,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         ),
       },
     ],
-    [],
+    [createPageParamsSetter],
   );
 
   return (

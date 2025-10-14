@@ -140,7 +140,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [expandedRowIndex],
+    [createPageParamsSetter, expandedRowIndex, handleExpand],
   );
 
   return (

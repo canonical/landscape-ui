@@ -8,6 +8,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -27,12 +28,6 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
     useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const filteredProfiles = useMemo(() => {
     if (!search) {
@@ -79,9 +74,7 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         },
         Cell: ({ row: { original } }: CellProps<RemovalProfile>) => (
           <>
-            {accessGroupOptions.find(
-              (option) => option.value === original.access_group,
-            )?.label ?? original.access_group}
+            {getTitleByName(original.access_group, getAccessGroupQueryResult)}
           </>
         ),
       },
@@ -124,7 +117,12 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [expandedRowIndex, accessGroupOptions.length],
+    [
+      createPageParamsSetter,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   return (

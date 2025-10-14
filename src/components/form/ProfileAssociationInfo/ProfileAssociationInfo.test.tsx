@@ -1,12 +1,12 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ProfileAssociation from "./ProfileAssociation";
+import ProfileAssociationInfo from "./ProfileAssociationInfo";
 
-describe("ProfileAssociation", () => {
+describe("ProfileAssociationInfo", () => {
   it("renders a message with association to all computers", () => {
     renderWithProviders(
-      <ProfileAssociation profile={{ all_computers: true, tags: [] }} />,
+      <ProfileAssociationInfo profile={{ all_computers: true, tags: [] }} />,
     );
 
     expect(
@@ -16,16 +16,16 @@ describe("ProfileAssociation", () => {
 
   it("renders a body with tags", () => {
     renderWithProviders(
-      <ProfileAssociation profile={{ tags: [undefined] }}>
+      <ProfileAssociationInfo profile={{ tags: [undefined] }}>
         Body
-      </ProfileAssociation>,
+      </ProfileAssociationInfo>,
     );
 
     expect(screen.getByText("Body")).toBeInTheDocument();
   });
 
   it("renders an empty message", () => {
-    renderWithProviders(<ProfileAssociation profile={{ tags: [] }} />);
+    renderWithProviders(<ProfileAssociationInfo profile={{ tags: [] }} />);
 
     expect(
       screen.getByText(

@@ -8,7 +8,6 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
 import type { CreateUpgradeProfileParams } from "../../hooks";
 import { useUpgradeProfiles } from "../../hooks";
 import type { FormProps, UpgradeProfile } from "../../types";
@@ -106,32 +105,29 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues:
+      props.action === "edit"
+        ? {
+            access_group: props.profile.access_group,
+            all_computers: props.profile.all_computers,
+            at_hour: props.profile.at_hour
+              ? parseInt(props.profile.at_hour)
+              : "",
+            at_minute: parseInt(props.profile.at_minute),
+            autoremove: props.profile.autoremove,
+            deliver_delay_window: parseInt(props.profile.deliver_delay_window),
+            deliver_within: parseInt(props.profile.deliver_within),
+            every: props.profile.every,
+            on_days: props.profile.on_days ?? [],
+            randomize_delivery: props.profile.deliver_delay_window !== "0",
+            tags: props.profile.tags,
+            title: props.profile.title,
+            upgrade_type: props.profile.upgrade_type,
+          }
+        : INITIAL_VALUES,
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(props.action),
   });
-
-  useEffect(() => {
-    if (props.action !== "edit" || !props.profile) {
-      return;
-    }
-
-    formik.setValues({
-      access_group: props.profile.access_group,
-      all_computers: props.profile.all_computers,
-      at_hour: props.profile.at_hour ? parseInt(props.profile.at_hour) : "",
-      at_minute: parseInt(props.profile.at_minute),
-      autoremove: props.profile.autoremove,
-      deliver_delay_window: parseInt(props.profile.deliver_delay_window),
-      deliver_within: parseInt(props.profile.deliver_within),
-      every: props.profile.every,
-      on_days: props.profile.on_days ?? [],
-      randomize_delivery: props.profile.deliver_delay_window !== "0",
-      tags: props.profile.tags,
-      title: props.profile.title,
-      upgrade_type: props.profile.upgrade_type,
-    });
-  }, [props]);
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

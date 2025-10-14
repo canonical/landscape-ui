@@ -25,12 +25,7 @@ const ProfileAssociatedInstancesLink: FC<
   }
 
   return (
-    <StaticLink
-      to={{
-        pathname: ROUTES.instances.root(),
-        search: `query=profile:${query}`,
-      }}
-    >
+    <StaticLink to={ROUTES.instances.root({ query: `profile:${query}` })}>
       {count} {pluralize(count, "instance")}
     </StaticLink>
   );

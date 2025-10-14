@@ -8,7 +8,6 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
 import type { CreateRemovalProfileParams } from "../../hooks";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
@@ -84,24 +83,19 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues:
+      props.action === "edit"
+        ? {
+            access_group: props.profile.access_group,
+            all_computers: props.profile.all_computers,
+            days_without_exchange: props.profile.days_without_exchange,
+            tags: props.profile.tags,
+            title: props.profile.title,
+          }
+        : INITIAL_VALUES,
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(props.action),
   });
-
-  useEffect(() => {
-    if (props.action !== "edit") {
-      return;
-    }
-
-    formik.setValues({
-      access_group: props.profile.access_group,
-      all_computers: props.profile.all_computers,
-      days_without_exchange: props.profile.days_without_exchange,
-      tags: props.profile.tags,
-      title: props.profile.title,
-    });
-  }, [props]);
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

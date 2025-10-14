@@ -1,4 +1,4 @@
-import ProfileAssociation from "@/components/form/ProfileAssociation";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
@@ -105,7 +105,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
       </Blocks.Item>
 
       <Blocks.Item title="Association">
-        <ProfileAssociation profile={profile}>
+        <ProfileAssociationInfo profile={profile}>
           <InfoGrid>
             <InfoGrid.Item
               label="Associated instances"
@@ -121,7 +121,7 @@ const ScriptProfileInfo: FC<ScriptProfileInfoProps> = ({ profile }) => {
               type="truncated"
             />
           </InfoGrid>
-        </ProfileAssociation>
+        </ProfileAssociationInfo>
       </Blocks.Item>
     </Blocks>
   );

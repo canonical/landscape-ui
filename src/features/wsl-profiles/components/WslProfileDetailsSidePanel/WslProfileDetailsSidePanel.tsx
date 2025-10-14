@@ -1,11 +1,11 @@
 import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
-import ProfileAssociation from "@/components/form/ProfileAssociation";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitle } from "@/utils/_helpers";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -70,7 +70,7 @@ const WslProfileDetailsSidePanel: FC = () => {
               <InfoGrid.Item label="Name" value={profile.name} />
               <InfoGrid.Item
                 label="Access group"
-                value={getTitle(profile.access_group, accessGroupsData)}
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
               <InfoGrid.Item
                 label="Description"
@@ -104,7 +104,7 @@ const WslProfileDetailsSidePanel: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            <ProfileAssociation profile={profile}>
+            <ProfileAssociationInfo profile={profile}>
               <InfoGrid>
                 <InfoGrid.Item
                   label="Tags"
@@ -146,7 +146,7 @@ const WslProfileDetailsSidePanel: FC = () => {
                   }
                 />
               </InfoGrid>
-            </ProfileAssociation>
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>

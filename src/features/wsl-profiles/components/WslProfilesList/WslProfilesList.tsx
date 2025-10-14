@@ -10,7 +10,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -32,12 +32,6 @@ const WslProfilesList: FC = () => {
   const { isGettingWslProfiles, wslProfiles } = useGetWslProfiles({ search });
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const columns = useMemo<Column<WslProfile>[]>(
     () => [
@@ -106,8 +100,7 @@ const WslProfilesList: FC = () => {
             original: { access_group },
           },
         }: CellProps<WslProfile>) =>
-          accessGroupOptions.find(({ value }) => value === access_group)
-            ?.label ?? access_group,
+          getTitleByName(access_group, getAccessGroupQueryResult),
       },
       {
         accessor: "tags",
@@ -224,7 +217,13 @@ const WslProfilesList: FC = () => {
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex, expandedColumnId],
+    [
+      createPageParamsSetter,
+      expandedColumnId,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   if (isGettingWslProfiles) {

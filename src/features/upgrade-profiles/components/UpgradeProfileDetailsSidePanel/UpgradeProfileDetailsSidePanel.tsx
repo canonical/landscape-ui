@@ -1,11 +1,11 @@
-import ProfileAssociation from "@/components/form/ProfileAssociation";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import InfoItem from "@/components/layout/InfoItem";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitle, pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -69,7 +69,7 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
               <InfoGrid.Item label="Name" value={profile.name} />
               <InfoGrid.Item
                 label="Access group"
-                value={getTitle(profile.access_group, accessGroupsData)}
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
               <InfoGrid.Item
                 label="Upgrade type"
@@ -98,9 +98,9 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            <ProfileAssociation profile={profile}>
+            <ProfileAssociationInfo profile={profile}>
               <InfoItem label="Tags" value={profile.tags.join(", ")} />
-            </ProfileAssociation>
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
