@@ -4,11 +4,7 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 
 const RemovalProfilesEmptyState: FC = () => {
-  const { setPageParams } = usePageParams();
-
-  const handleCreateRemovalProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const { createPageParamsSetter } = usePageParams();
 
   return (
     <EmptyState
@@ -26,9 +22,9 @@ const RemovalProfilesEmptyState: FC = () => {
       }
       cta={[
         <Button
-          appearance="positive"
           key="table-add-new-mirror"
-          onClick={handleCreateRemovalProfile}
+          appearance="positive"
+          onClick={createPageParamsSetter({ sidePath: ["add"], profile: "" })}
           type="button"
         >
           Add removal profile

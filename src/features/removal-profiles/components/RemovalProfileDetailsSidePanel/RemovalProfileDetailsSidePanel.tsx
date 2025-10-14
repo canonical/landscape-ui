@@ -1,31 +1,24 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import useGetPageRemovalProfile from "../../api/useGetPageRemovalProfile";
-import { useRemovalProfiles } from "../../hooks";
+import RemovalProfileRemoveModal from "../RemovalProfileRemoveModal";
 
 const RemovalProfileDetails: FC = () => {
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { pushSidePath, setPageParams } = usePageParams();
-  const { removeRemovalProfileQuery } = useRemovalProfiles();
+  const { createSidePathPusher } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { removalProfile: profile, isGettingRemovalProfile } =
     useGetPageRemovalProfile();
   const { data: accessGroupsData, isPending: isGettingAccessGroups } =
     getAccessGroupQuery();
-  const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
-    removeRemovalProfileQuery;
 
   const {
     value: modalOpen,
@@ -37,26 +30,7 @@ const RemovalProfileDetails: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const handleRemovalProfileRemove = async () => {
-    try {
-      await removeRemovalProfile({ name: profile.name });
-
-      setPageParams({ sidePath: [], profile: "" });
-
-      notify.success({
-        title: "Removal profile removed",
-        message: `Removal profile ${profile.title} has been removed`,
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handleEditRemovalProfile = () => {
-    pushSidePath("edit");
-  };
+  const handleEditRemovalProfile = createSidePathPusher("edit");
 
   return (
     <>
@@ -94,11 +68,7 @@ const RemovalProfileDetails: FC = () => {
 
               <InfoGrid.Item
                 label="Access group"
-                value={
-                  accessGroupsData?.data.find(
-                    (accessGroup) => accessGroup.name === profile.access_group,
-                  )?.title ?? profile.access_group
-                }
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
 
               <InfoGrid.Item
@@ -110,46 +80,25 @@ const RemovalProfileDetails: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            {profile.all_computers && (
-              <p>This profile has been associated with all instances.</p>
-            )}
-
-            {!profile.all_computers && !profile.tags.length && (
-              <p>
-                This profile has not yet been associated with any instances.
-              </p>
-            )}
-
-            {!profile.all_computers && !!profile.tags.length && (
+            <ProfileAssociationInfo profile={profile}>
               <InfoGrid>
                 <InfoGrid.Item
                   label="Tags"
                   large
-                  value={profile.tags.join(", ") || null}
+                  value={profile.tags.join(", ")}
                   type="truncated"
                 />
               </InfoGrid>
-            )}
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
 
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        title="Remove package profile"
-        confirmationText={`remove ${profile.title}`}
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        onConfirm={handleRemovalProfileRemove}
+      <RemovalProfileRemoveModal
         close={handleCloseModal}
-      >
-        <p>
-          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-          <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+        isOpen={modalOpen}
+        removalProfile={profile}
+      />
     </>
   );
 };

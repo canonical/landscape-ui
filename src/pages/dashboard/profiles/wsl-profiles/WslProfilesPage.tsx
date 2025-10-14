@@ -41,7 +41,8 @@ const WslProfileNonCompliantInstancesSidePanel = lazy(() =>
 );
 
 const WslProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -63,9 +64,10 @@ const WslProfilesPage: FC = () => {
 
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
 
-  const handleAddWslProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const handleAddWslProfile = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   const isWslProfileLimitReached =
     unfilteredWslProfilesCount >= wslProfileLimit;
@@ -120,9 +122,7 @@ const WslProfilesPage: FC = () => {
       )}
 
       <SidePanel
-        onClose={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
         isOpen={!!sidePath.length}
         size={lastSidePathSegment === "noncompliant" ? "large" : undefined}
       >

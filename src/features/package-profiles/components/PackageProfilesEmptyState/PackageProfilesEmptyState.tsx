@@ -4,11 +4,12 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 
 const PackageProfilesEmptyState: FC = () => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
-  const handleCreatePackageProfile = () => {
-    setPageParams({ sidePath: ["add"] });
-  };
+  const handleCreatePackageProfile = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   return (
     <EmptyState

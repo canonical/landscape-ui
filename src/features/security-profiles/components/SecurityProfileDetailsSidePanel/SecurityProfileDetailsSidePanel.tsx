@@ -1,10 +1,12 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -15,17 +17,11 @@ import {
   SECURITY_PROFILE_BENCHMARK_LABELS,
   SECURITY_PROFILE_MODE_LABELS,
 } from "../../constants";
-import {
-  getSchedule,
-  getStatus,
-  getTags,
-  getTailoringFile,
-} from "../../helpers";
+import { getSchedule, getStatus, getTailoringFile } from "../../helpers";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
-import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 
 const SecurityProfileDetailsSidePanel: FC = () => {
-  const { pushSidePath } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { securityProfile: profile, isGettingSecurityProfile } =
@@ -54,9 +50,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
               className="p-segmented-control__button"
               type="button"
               hasIcon
-              onClick={() => {
-                pushSidePath("download");
-              }}
+              onClick={createSidePathPusher("download")}
             >
               <Icon name="file-blank" />
               <span>Download audit</span>
@@ -67,9 +61,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
                 className="p-segmented-control__button"
                 type="button"
                 hasIcon
-                onClick={() => {
-                  pushSidePath("edit");
-                }}
+                onClick={createSidePathPusher("edit")}
               >
                 <Icon name="edit" />
                 <span>Edit</span>
@@ -81,9 +73,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
                 className="p-segmented-control__button"
                 type="button"
                 hasIcon
-                onClick={() => {
-                  pushSidePath("run");
-                }}
+                onClick={createSidePathPusher("run")}
                 disabled={!profile.associated_instances}
               >
                 <Icon name="play" />
@@ -95,9 +85,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
               className="p-segmented-control__button"
               type="button"
               hasIcon
-              onClick={() => {
-                pushSidePath("duplicate");
-              }}
+              onClick={createSidePathPusher("duplicate")}
               disabled={profileLimitReached}
             >
               <Icon name="canvas" />
@@ -126,11 +114,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
 
               <InfoGrid.Item
                 label="Access group"
-                value={
-                  accessGroupsData?.data.find(
-                    (group) => group.name == profile.access_group,
-                  )?.title ?? profile.access_group
-                }
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
               <InfoGrid.Item label="Status" value={getStatus(profile).label} />
             </InfoGrid>
@@ -197,24 +181,27 @@ const SecurityProfileDetailsSidePanel: FC = () => {
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            <InfoGrid>
-              <InfoGrid.Item
-                label="Associated instances"
-                large
-                value={
-                  <SecurityProfileAssociatedInstancesLink
-                    securityProfile={profile}
-                  />
-                }
-              />
-
-              <InfoGrid.Item
-                label="Tags"
-                large
-                value={getTags(profile)}
-                type="truncated"
-              />
-            </InfoGrid>
+            <ProfileAssociationInfo profile={profile}>
+              <InfoGrid>
+                <InfoGrid.Item
+                  label="Associated instances"
+                  large
+                  value={
+                    <ProfileAssociatedInstancesLink
+                      count={profile.associated_instances}
+                      profile={profile}
+                      query={`security:${profile.id}`}
+                    />
+                  }
+                />
+                <InfoGrid.Item
+                  label="Tags"
+                  large
+                  value={profile.tags.join(", ")}
+                  type="truncated"
+                />
+              </InfoGrid>
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>

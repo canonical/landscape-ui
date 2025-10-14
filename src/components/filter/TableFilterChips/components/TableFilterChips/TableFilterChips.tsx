@@ -34,6 +34,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
 }) => {
   const {
     setPageParams,
+    createPageParamsSetter,
     accessGroups,
     availabilityZones,
     fromDate,
@@ -59,9 +60,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       remove: (value) => {
         setPageParams({ query: filterSearchQuery(query, value as string) });
       },
-      clear: () => {
-        setPageParams({ query: "" });
-      },
+      clear: createPageParamsSetter({ query: "" }),
     });
   }
 
@@ -69,9 +68,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Search",
       item: search,
-      clear: () => {
-        setPageParams({ search: "" });
-      },
+      clear: createPageParamsSetter({ search: "" }),
     });
   }
 
@@ -79,9 +76,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Status",
       item: getItem(statusOptions, status),
-      clear: () => {
-        setPageParams({ status: "" });
-      },
+      clear: createPageParamsSetter({ status: "" }),
     });
   }
 
@@ -89,9 +84,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "OS",
       item: getItem(osOptions, os),
-      clear: () => {
-        setPageParams({ os: "" });
-      },
+      clear: createPageParamsSetter({ os: "" }),
     });
   }
 
@@ -110,9 +103,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           ),
         });
       },
-      clear: () => {
-        setPageParams({ availabilityZones: [] });
-      },
+      clear: createPageParamsSetter({ availabilityZones: [] }),
     });
   }
 
@@ -126,9 +117,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           accessGroups: accessGroups.filter((g) => g !== accessGroup),
         });
       },
-      clear: () => {
-        setPageParams({ accessGroups: [] });
-      },
+      clear: createPageParamsSetter({ accessGroups: [] }),
     });
   }
 
@@ -142,9 +131,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           tags: tags.filter((t) => t !== tag),
         });
       },
-      clear: () => {
-        setPageParams({ tags: [] });
-      },
+      clear: createPageParamsSetter({ tags: [] }),
     });
   }
 
@@ -152,9 +139,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "From",
       item: fromDate,
-      clear: () => {
-        setPageParams({ fromDate: "" });
-      },
+      clear: createPageParamsSetter({ fromDate: "" }),
     });
   }
 
@@ -162,9 +147,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "To",
       item: toDate,
-      clear: () => {
-        setPageParams({ toDate: "" });
-      },
+      clear: createPageParamsSetter({ toDate: "" }),
     });
   }
 
@@ -172,9 +155,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "From pass rate",
       item: passRateFrom === 0 ? undefined : `${passRateFrom}%`,
-      clear: () => {
-        setPageParams({ passRateFrom: 0 });
-      },
+      clear: createPageParamsSetter({ passRateFrom: 0 }),
     });
   }
 
@@ -182,9 +163,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "To",
       item: passRateTo === 100 ? undefined : `${passRateTo}%`,
-      clear: () => {
-        setPageParams({ passRateTo: 100 });
-      },
+      clear: createPageParamsSetter({ passRateTo: 100 }),
     });
   }
 
@@ -192,9 +171,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     filters.push({
       label: "Type",
       item: getItem(typeOptions, type),
-      clear: () => {
-        setPageParams({ type: "" });
-      },
+      clear: createPageParamsSetter({ type: "" }),
     });
   }
 
@@ -208,31 +185,27 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
           wsl: wsl.filter((i) => i !== item),
         });
       },
-      clear: () => {
-        setPageParams({ wsl: [] });
-      },
+      clear: createPageParamsSetter({ wsl: [] }),
     });
   }
 
   return (
     <TableFilterChipsBase
-      clearAll={() => {
-        setPageParams({
-          accessGroups: [],
-          availabilityZones: [],
-          fromDate: "",
-          os: "",
-          status: "",
-          tags: [],
-          toDate: "",
-          type: "",
-          search: "",
-          query: "",
-          passRateFrom: 0,
-          passRateTo: 100,
-          wsl: [],
-        });
-      }}
+      clearAll={createPageParamsSetter({
+        accessGroups: [],
+        availabilityZones: [],
+        fromDate: "",
+        os: "",
+        status: "",
+        tags: [],
+        toDate: "",
+        type: "",
+        search: "",
+        query: "",
+        passRateFrom: 0,
+        passRateTo: 100,
+        wsl: [],
+      })}
       filters={filters}
     />
   );

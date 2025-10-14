@@ -35,8 +35,8 @@ export const wslProfiles: WslProfile[] = [
     image_source: "https://example.com",
     cloud_init_contents: null,
     cloud_init_secret_name: null,
-    tags: [],
-    all_computers: true,
+    tags: ["appservers"],
+    all_computers: false,
     access_group: "global",
     computers: {
       constrained: [

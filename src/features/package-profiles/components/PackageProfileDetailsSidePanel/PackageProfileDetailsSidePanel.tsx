@@ -1,32 +1,24 @@
-import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import useGetPagePackageProfile from "../../api/useGetPagePackageProfile";
-import { usePackageProfiles } from "../../hooks";
-import PackageProfileAssociatedInstancesLink from "../PackageProfileAssociatedInstancesLink";
 import PackageProfileDetailsConstraints from "../PackageProfileDetailsConstraints";
+import PackageProfileRemoveModal from "../PackageProfileRemoveModal";
 
 const PackageProfileDetailsSidePanel: FC = () => {
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { pushSidePath, setPageParams } = usePageParams();
-  const { removePackageProfileQuery } = usePackageProfiles();
+  const { createSidePathPusher } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
-  const { data: accessGroupsData } = getAccessGroupQuery();
-  const accessGroups = accessGroupsData?.data ?? [];
+  const { data: accessGroupsData, isPending: isGettingAccessGroups } =
+    getAccessGroupQuery();
 
   const { packageProfile: profile, isGettingPackageProfile } =
     useGetPagePackageProfile();
-  const { mutateAsync: removePackageProfile, isPending: isRemoving } =
-    removePackageProfileQuery;
 
   const {
     value: modalOpen,
@@ -34,34 +26,13 @@ const PackageProfileDetailsSidePanel: FC = () => {
     setFalse: handleCloseModal,
   } = useBoolean();
 
-  if (isGettingPackageProfile) {
+  if (isGettingPackageProfile || isGettingAccessGroups) {
     return <SidePanel.LoadingState />;
   }
 
-  const handleRemovePackageProfile = async () => {
-    try {
-      await removePackageProfile({ name: profile.name });
+  const handlePackageProfileEdit = createSidePathPusher("edit");
 
-      setPageParams({ sidePath: [], profile: "" });
-
-      notify.success({
-        message: `Package profile "${profile.name}" removed successfully.`,
-        title: "Package profile removed",
-      });
-    } catch (error) {
-      debug(error);
-    } finally {
-      handleCloseModal();
-    }
-  };
-
-  const handlePackageProfileEdit = () => {
-    pushSidePath("edit");
-  };
-
-  const handlePackageProfileDuplicate = () => {
-    pushSidePath("duplicate");
-  };
+  const handlePackageProfileDuplicate = createSidePathPusher("duplicate");
 
   return (
     <>
@@ -107,23 +78,24 @@ const PackageProfileDetailsSidePanel: FC = () => {
 
           <InfoGrid.Item
             label="Access group"
-            value={
-              accessGroups.find((group) => group.name === profile.access_group)
-                ?.title ?? profile.access_group
-            }
+            value={getTitleByName(profile.access_group, accessGroupsData)}
           />
 
           <InfoGrid.Item
             label="Tags"
             large
-            value={profile.tags.join(", ") || null}
+            value={profile.tags.join(", ")}
             type="truncated"
           />
 
           <InfoGrid.Item
             label="Associated to"
             value={
-              <PackageProfileAssociatedInstancesLink packageProfile={profile} />
+              <ProfileAssociatedInstancesLink
+                profile={profile}
+                count={profile.computers.constrained.length}
+                query={`package:${profile.id}`}
+              />
             }
           />
 
@@ -147,22 +119,11 @@ const PackageProfileDetailsSidePanel: FC = () => {
         <PackageProfileDetailsConstraints profile={profile} />
       </SidePanel.Content>
 
-      <TextConfirmationModal
-        isOpen={modalOpen}
-        title="Remove package profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonLoading={isRemoving}
-        confirmButtonDisabled={isRemoving}
+      <PackageProfileRemoveModal
         close={handleCloseModal}
-        confirmationText={`remove ${profile.title}`}
-        onConfirm={handleRemovePackageProfile}
-      >
-        <p>
-          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-          <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+        isOpen={modalOpen}
+        packageProfile={profile}
+      />
     </>
   );
 };

@@ -5,14 +5,15 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import {
-  AddSecurityProfileButton,
   SecurityProfilesContainer,
   useGetSecurityProfiles,
+  useIsSecurityProfilesLimitReached,
 } from "@/features/security-profiles";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { Fragment, lazy, useState } from "react";
+import { lazy, useState } from "react";
 
 const SecurityProfileAddSidePanel = lazy(() =>
   import("@/features/security-profiles").then((module) => ({
@@ -51,7 +52,8 @@ const SecurityProfileDetailsSidePanel = lazy(() =>
 );
 
 const SecurityProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   const [isRetentionNotificationVisible, setIsRetentionNotificationVisible] =
     useState(false);
@@ -63,6 +65,8 @@ const SecurityProfilesPage: FC = () => {
     offset: 0,
     limit: 0,
   });
+
+  const profileLimitReached = useIsSecurityProfilesLimitReached();
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -77,6 +81,11 @@ const SecurityProfilesPage: FC = () => {
     setIsRetentionNotificationVisible(true);
   };
 
+  const openAddSidePanel = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
+
   return (
     <PageMain>
       <PageHeader
@@ -84,9 +93,15 @@ const SecurityProfilesPage: FC = () => {
         actions={
           initialSecurityProfilesCount
             ? [
-                <Fragment key="add-security-profile-button">
-                  <AddSecurityProfileButton />
-                </Fragment>,
+                <Button
+                  key="add-security-profile-button"
+                  type="button"
+                  appearance="positive"
+                  onClick={openAddSidePanel}
+                  disabled={profileLimitReached}
+                >
+                  Add security profile
+                </Button>,
               ]
             : undefined
         }
@@ -107,9 +122,15 @@ const SecurityProfilesPage: FC = () => {
                 </p>
               }
               cta={[
-                <Fragment key="add-security-profile-button">
-                  <AddSecurityProfileButton />
-                </Fragment>,
+                <Button
+                  key="add-security-profile-button"
+                  type="button"
+                  appearance="positive"
+                  onClick={openAddSidePanel}
+                  disabled={profileLimitReached}
+                >
+                  Add security profile
+                </Button>,
               ]}
               title="You don't have any security profiles yet"
             />
@@ -126,9 +147,7 @@ const SecurityProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
         isOpen={!!sidePath.length}
         size={lastSidePathSegment === "view" ? "medium" : undefined}
       >

@@ -9,11 +9,12 @@ import RebootProfilesList from "../RebootProfilesList";
 
 const RebootProfilesContainer: FC = () => {
   const { rebootProfiles, isPending: isLoading } = useGetRebootProfiles();
-  const { search, setPageParams } = usePageParams();
+  const { search, createPageParamsSetter } = usePageParams();
 
-  const handleAddProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const handleAddProfile = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   return (
     <>

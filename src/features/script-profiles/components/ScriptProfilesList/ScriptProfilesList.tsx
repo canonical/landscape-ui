@@ -23,7 +23,7 @@ interface ScriptProfilesListProps {
 }
 
 const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
 
@@ -37,12 +37,10 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             type="button"
             appearance="link"
             className="u-no-margin u-no-padding--top u-align-text--left"
-            onClick={() => {
-              setPageParams({
-                sidePath: ["view"],
-                profile: profile.id.toString(),
-              });
-            }}
+            onClick={createPageParamsSetter({
+              sidePath: ["view"],
+              profile: profile.id.toString(),
+            })}
           >
             {profile.title}
           </Button>
@@ -142,7 +140,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [expandedRowIndex],
+    [createPageParamsSetter, expandedRowIndex, handleExpand],
   );
 
   return (

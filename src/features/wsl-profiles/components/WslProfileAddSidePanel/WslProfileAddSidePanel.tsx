@@ -21,7 +21,7 @@ import classes from "./WslProfileAddSidePanel.module.scss";
 
 const WslProfileAddSidePanel: FC = () => {
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
 
@@ -49,9 +49,7 @@ const WslProfileAddSidePanel: FC = () => {
       value: name,
     })) ?? [];
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [] });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [] });
 
   const handleSubmit = async (values: FormProps) => {
     try {

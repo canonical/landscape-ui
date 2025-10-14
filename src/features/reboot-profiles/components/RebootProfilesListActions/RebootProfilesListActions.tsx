@@ -13,7 +13,7 @@ interface RebootProfilesListActionsProps {
 const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
   profile,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const {
     value: isModalOpen,
@@ -21,13 +21,15 @@ const RebootProfilesListActions: FC<RebootProfilesListActionsProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const handleRebootProfileEdit = () => {
-    setPageParams({ sidePath: ["edit"], profile: profile.id.toString() });
-  };
+  const handleRebootProfileEdit = createPageParamsSetter({
+    sidePath: ["edit"],
+    profile: profile.id.toString(),
+  });
 
-  const handleRebootProfileDuplicate = () => {
-    setPageParams({ sidePath: ["duplicate"], profile: profile.id.toString() });
-  };
+  const handleRebootProfileDuplicate = createPageParamsSetter({
+    sidePath: ["duplicate"],
+    profile: profile.id.toString(),
+  });
 
   const actions: Action[] = [
     {

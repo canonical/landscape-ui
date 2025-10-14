@@ -1,5 +1,5 @@
 import { API_VERSION } from "@/constants";
-import type { InternalAxiosRequestConfig } from "axios";
+import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>
   ["get", "delete"].includes(config.method ?? "get")
@@ -80,4 +80,21 @@ export const pluralize = (
   pluralForm?: string,
 ) => {
   return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
+};
+
+export const getTitleByName = (
+  name: string,
+  response: AxiosResponse<{ name: string; title: string }[]> | undefined,
+) => {
+  if (!response) {
+    return name;
+  }
+
+  const item = response.data.find((i) => i.name === name);
+
+  if (item) {
+    return item.title;
+  }
+
+  return name;
 };

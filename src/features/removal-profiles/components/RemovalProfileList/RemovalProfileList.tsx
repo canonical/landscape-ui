@@ -8,6 +8,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -21,18 +22,12 @@ interface RemovalProfileListProps {
 }
 
 const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
-  const { search, setPageParams } = usePageParams();
+  const { search, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const filteredProfiles = useMemo(() => {
     if (!search) {
@@ -43,10 +38,6 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
       return profile.title.toLowerCase().includes(search.toLowerCase());
     });
   }, [profiles, search]);
-
-  const handleRemovalProfileDetailsOpen = (profile: RemovalProfile) => {
-    setPageParams({ sidePath: ["view"], profile: profile.id.toString() });
-  };
 
   const columns = useMemo<Column<RemovalProfile>[]>(
     () => [
@@ -61,9 +52,10 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
             <Button
               type="button"
               appearance="link"
-              onClick={() => {
-                handleRemovalProfileDetailsOpen(original);
-              }}
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                profile: original.id.toString(),
+              })}
               className="u-no-margin--bottom u-no-padding--top u-align--left"
               aria-label={`Open "${original.title}" profile details`}
             >
@@ -82,9 +74,7 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         },
         Cell: ({ row: { original } }: CellProps<RemovalProfile>) => (
           <>
-            {accessGroupOptions.find(
-              (option) => option.value === original.access_group,
-            )?.label ?? original.access_group}
+            {getTitleByName(original.access_group, getAccessGroupQueryResult)}
           </>
         ),
       },
@@ -127,7 +117,12 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [expandedRowIndex, accessGroupOptions.length],
+    [
+      createPageParamsSetter,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   return (

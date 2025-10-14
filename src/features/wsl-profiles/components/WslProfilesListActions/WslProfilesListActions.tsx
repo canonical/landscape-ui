@@ -13,7 +13,7 @@ interface WslProfilesListActionsProps {
 const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
   profile,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const {
     value: isRemoveModalOpen,
@@ -21,9 +21,10 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const handleWslProfileEdit = () => {
-    setPageParams({ sidePath: ["edit"], profile: profile.name });
-  };
+  const handleWslProfileEdit = createPageParamsSetter({
+    sidePath: ["edit"],
+    profile: profile.name,
+  });
 
   const actions: Action[] = [
     {

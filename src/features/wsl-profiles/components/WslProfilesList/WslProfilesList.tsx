@@ -1,3 +1,4 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
@@ -9,15 +10,13 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetWslProfiles } from "../../api";
 import type { WslProfile } from "../../types";
-import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
-import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfilesListActions from "../WslProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
@@ -27,18 +26,12 @@ const WslProfilesList: FC = () => {
   const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
     useExpandableRow();
   const { search } = usePageParams();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { isGettingWslProfiles, wslProfiles } = useGetWslProfiles({ search });
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const columns = useMemo<Column<WslProfile>[]>(
     () => [
@@ -49,9 +42,10 @@ const WslProfilesList: FC = () => {
             `${original.title} profile title and name`,
         },
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => {
-          const openWslProfileDetails = () => {
-            setPageParams({ sidePath: ["view"], profile: wslProfile.name });
-          };
+          const openWslProfileDetails = createPageParamsSetter({
+            sidePath: ["view"],
+            profile: wslProfile.name,
+          });
 
           return (
             <ListTitle>
@@ -106,8 +100,7 @@ const WslProfilesList: FC = () => {
             original: { access_group },
           },
         }: CellProps<WslProfile>) =>
-          accessGroupOptions.find(({ value }) => value === access_group)
-            ?.label ?? access_group,
+          getTitleByName(access_group, getAccessGroupQueryResult),
       },
       {
         accessor: "tags",
@@ -155,7 +148,11 @@ const WslProfilesList: FC = () => {
             `${original.title} associated parent instances`,
         },
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
-          <WslProfileAssociatedParentsLink wslProfile={wslProfile} />
+          <ProfileAssociatedInstancesLink
+            count={wslProfile.computers.constrained.length}
+            profile={wslProfile}
+            query={`wsl:${wslProfile.id}`}
+          />
         ),
       },
       {
@@ -178,12 +175,10 @@ const WslProfilesList: FC = () => {
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
           <WslProfileNonCompliantParentsLink
             wslProfile={wslProfile}
-            onClick={() => {
-              setPageParams({
-                sidePath: ["noncompliant"],
-                profile: wslProfile.name,
-              });
-            }}
+            onClick={createPageParamsSetter({
+              sidePath: ["noncompliant"],
+              profile: wslProfile.name,
+            })}
           />
         ),
       },
@@ -205,7 +200,14 @@ const WslProfilesList: FC = () => {
           </div>
         ),
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => (
-          <WslProfileCompliantParentsLink wslProfile={wslProfile} />
+          <ProfileAssociatedInstancesLink
+            profile={wslProfile}
+            count={
+              wslProfile.computers.constrained.length -
+              wslProfile.computers["non-compliant"].length
+            }
+            query={`wsl:${wslProfile.id}:compliant`}
+          />
         ),
       },
       {
@@ -215,7 +217,13 @@ const WslProfilesList: FC = () => {
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex, expandedColumnId],
+    [
+      createPageParamsSetter,
+      expandedColumnId,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   if (isGettingWslProfiles) {

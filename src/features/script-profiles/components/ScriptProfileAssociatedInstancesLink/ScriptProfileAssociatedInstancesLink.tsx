@@ -1,9 +1,7 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import NoData from "@/components/layout/NoData";
-import StaticLink from "@/components/layout/StaticLink";
-import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { ScriptProfile } from "../../types";
-import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfileAssociatedInstancesLinkProps {
   readonly scriptProfile: ScriptProfile;
@@ -12,31 +10,20 @@ interface ScriptProfileAssociatedInstancesLinkProps {
 const ScriptProfileAssociatedInstancesLink: FC<
   ScriptProfileAssociatedInstancesLinkProps
 > = ({ scriptProfile }) => {
-  if (!scriptProfile.tags.length && !scriptProfile.all_computers) {
-    return <NoData />;
-  }
-
   if (
     scriptProfile.trigger.trigger_type === "event" &&
     scriptProfile.trigger.event_type === "post_enrollment"
   ) {
     return <NoData />;
+  } else {
+    return (
+      <ProfileAssociatedInstancesLink
+        count={scriptProfile.computers.num_associated_computers}
+        profile={scriptProfile}
+        query={`script:${scriptProfile.id}`}
+      />
+    );
   }
-
-  if (!scriptProfile.computers.num_associated_computers) {
-    return "0 instances";
-  }
-
-  return (
-    <StaticLink
-      to={ROUTES.instances.root({
-        query: `profile:script:${scriptProfile.id}`,
-      })}
-    >
-      {scriptProfile.computers.num_associated_computers}{" "}
-      {pluralize(scriptProfile.computers.num_associated_computers, "instance")}
-    </StaticLink>
-  );
 };
 
 export default ScriptProfileAssociatedInstancesLink;

@@ -29,14 +29,11 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
       </span>
     </div>
     <InfoGrid spaced>
-      <InfoGrid.Item
-        label="Account"
-        value={ubuntuProData.account?.name || null}
-      />
+      <InfoGrid.Item label="Account" value={ubuntuProData.account?.name} />
 
       <InfoGrid.Item
         label="Subscription"
-        value={ubuntuProData.contract?.name || null}
+        value={ubuntuProData.contract?.name}
       />
 
       <InfoGrid.Item

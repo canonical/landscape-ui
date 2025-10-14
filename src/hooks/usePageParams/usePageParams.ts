@@ -6,8 +6,9 @@ import { useSearchParams } from "react-router";
 interface UsePageParamsReturnType extends PageParams {
   setPageParams: (newParams: Partial<PageParams>) => void;
   lastSidePathSegment: string;
-  pushSidePath: (value: string) => void;
   popSidePath: () => void;
+  createSidePathPusher: (value: string) => () => void;
+  createPageParamsSetter: (newParams: Partial<PageParams>) => () => void;
 }
 
 const usePageParams = (): UsePageParamsReturnType => {
@@ -51,20 +52,29 @@ const usePageParams = (): UsePageParamsReturnType => {
   const lastSidePathSegment =
     parsedSearchParams.sidePath[parsedSearchParams.sidePath.length - 1];
 
-  const pushSidePath = (value: string) => {
-    setPageParams({ sidePath: [...parsedSearchParams.sidePath, value] });
+  const createPageParamsSetter = (newParams: Partial<PageParams>) => {
+    return () => {
+      setPageParams(newParams);
+    };
   };
 
-  const popSidePath = () => {
-    setPageParams({ sidePath: parsedSearchParams.sidePath.slice(0, -1) });
+  const popSidePath = createPageParamsSetter({
+    sidePath: parsedSearchParams.sidePath.slice(0, -1),
+  });
+
+  const createSidePathPusher = (value: string) => {
+    return createPageParamsSetter({
+      sidePath: [...parsedSearchParams.sidePath, value],
+    });
   };
 
   return {
     ...parsedSearchParams,
     setPageParams,
     lastSidePathSegment,
-    pushSidePath,
     popSidePath,
+    createSidePathPusher,
+    createPageParamsSetter,
   };
 };
 

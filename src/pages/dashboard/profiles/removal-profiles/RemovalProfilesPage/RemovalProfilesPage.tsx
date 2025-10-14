@@ -27,13 +27,15 @@ const RemovalProfileEditSidePanel = lazy(async () =>
 );
 
 const RemovalProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, setPageParams } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
-  const handleCreate = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
+  const handleCreate = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   return (
     <PageMain>
@@ -56,9 +58,7 @@ const RemovalProfilesPage: FC = () => {
 
       <SidePanel
         isOpen={!!sidePath.length}
-        onClose={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">

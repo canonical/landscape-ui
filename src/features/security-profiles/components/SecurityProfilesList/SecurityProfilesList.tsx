@@ -1,3 +1,4 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
@@ -6,6 +7,7 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 import { Button, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -15,11 +17,9 @@ import type { CellProps, Column } from "react-table";
 import { SECURITY_PROFILE_MODE_LABELS } from "../../constants";
 import { getSchedule, getStatus, getTags } from "../../helpers";
 import type { SecurityProfile } from "../../types";
-import SecurityProfileAssociatedInstancesLink from "../SecurityProfileAssociatedInstancesLink";
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import classes from "./SecurityProfilesList.module.scss";
 import { getCellProps, getRowProps } from "./helpers";
-import { ROUTES } from "@/libs/routes";
 
 const ASSOCIATED_INSTANCES_HEADER = (
   <div className={classes.header}>
@@ -42,7 +42,7 @@ interface SecurityProfilesListProps {
 const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
   securityProfiles,
 }) => {
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
 
   const columns = useMemo<Column<SecurityProfile>[]>(
     () => [
@@ -59,12 +59,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 appearance="link"
                 type="button"
                 className="u-no-margin--bottom u-no-padding--top u-align--left"
-                onClick={() => {
-                  setPageParams({
-                    sidePath: ["view"],
-                    profile: profile.id.toString(),
-                  });
-                }}
+                onClick={createPageParamsSetter({
+                  sidePath: ["view"],
+                  profile: profile.id.toString(),
+                })}
               >
                 {profile.title}
               </Button>
@@ -218,8 +216,10 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         Cell: ({ row: { original: profile } }: CellProps<SecurityProfile>) => (
           <>
             <div className={classes.ellipsis}>
-              <SecurityProfileAssociatedInstancesLink
-                securityProfile={profile}
+              <ProfileAssociatedInstancesLink
+                count={profile.associated_instances}
+                profile={profile}
+                query={`security:${profile.id}`}
               />
               <br />
               <span aria-label={`${profile.title} profile tags`}>
@@ -310,7 +310,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         ),
       },
     ],
-    [],
+    [createPageParamsSetter],
   );
 
   return (

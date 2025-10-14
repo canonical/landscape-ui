@@ -12,7 +12,7 @@ interface ScriptProfileControlProps {
 }
 
 const ScriptProfileControl: FC<ScriptProfileControlProps> = ({ profile }) => {
-  const { pushSidePath } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
 
   const {
     value: archiveModalOpened,
@@ -36,9 +36,7 @@ const ScriptProfileControl: FC<ScriptProfileControlProps> = ({ profile }) => {
           className="p-segmented-control__button"
           type="button"
           hasIcon
-          onClick={() => {
-            pushSidePath("edit");
-          }}
+          onClick={createSidePathPusher("edit")}
         >
           <Icon name="edit" />
           <span>Edit</span>

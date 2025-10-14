@@ -2,6 +2,7 @@ import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
@@ -9,7 +10,6 @@ import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
 import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
 import classes from "./PackageProfileDetailsConstraints.module.scss";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 interface PackageProfileDetailsConstraintsProps {
   readonly profile: PackageProfile;
@@ -22,7 +22,7 @@ const PackageProfileDetailsConstraints: FC<
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
 
-  const { pushSidePath } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
   const { getPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const {
@@ -35,9 +35,8 @@ const PackageProfileDetailsConstraints: FC<
     search,
   });
 
-  const handlePackageConstraintsChange = () => {
-    pushSidePath("edit-constraints");
-  };
+  const handlePackageConstraintsChange =
+    createSidePathPusher("edit-constraints");
 
   return (
     <>

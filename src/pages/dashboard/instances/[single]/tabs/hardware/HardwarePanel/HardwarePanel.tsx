@@ -69,18 +69,15 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
             {groupedHardware.cpu.map((cpu, index) => (
               <Blocks.Item key={index}>
                 <InfoGrid>
-                  <InfoGrid.Item label="Vendor" value={cpu.vendor || null} />
+                  <InfoGrid.Item label="Vendor" value={cpu.vendor} />
 
-                  <InfoGrid.Item
-                    label="Clock speed"
-                    value={cpu.clock_speed || null}
-                  />
+                  <InfoGrid.Item label="Clock speed" value={cpu.clock_speed} />
 
-                  <InfoGrid.Item label="Model" value={cpu.model || null} />
+                  <InfoGrid.Item label="Model" value={cpu.model} />
 
                   <InfoGrid.Item
                     label="Architecture"
-                    value={cpu.architecture || null}
+                    value={cpu.architecture}
                   />
                 </InfoGrid>
               </Blocks.Item>
@@ -98,49 +95,27 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
 
       <HardwareInfoRow label="Memory">
         <InfoGrid>
-          <InfoGrid.Item
-            label="Size"
-            value={groupedHardware.memory.size || null}
-          />
+          <InfoGrid.Item label="Size" value={groupedHardware.memory.size} />
         </InfoGrid>
       </HardwareInfoRow>
 
       <HardwareInfoRow label="Network">
         {typeof groupedHardware.network === "string" ? (
           <InfoGrid>
-            <InfoGrid.Item
-              label="Network"
-              value={groupedHardware.network || null}
-            />
+            <InfoGrid.Item label="Network" value={groupedHardware.network} />
           </InfoGrid>
         ) : (
           <Blocks>
             {groupedHardware.network.map((network, index) => (
               <Blocks.Item key={index}>
                 <InfoGrid>
-                  <InfoGrid.Item
-                    label="IP address"
-                    value={network.ip || null}
-                  />
-
-                  <InfoGrid.Item
-                    label="Vendor"
-                    value={network.vendor || null}
-                  />
-
-                  <InfoGrid.Item
-                    label="Model"
-                    value={network.product || null}
-                  />
-
-                  <InfoGrid.Item
-                    label="MAC address"
-                    value={network.mac || null}
-                  />
-
+                  <InfoGrid.Item label="IP address" value={network.ip} />
+                  <InfoGrid.Item label="Vendor" value={network.vendor} />
+                  <InfoGrid.Item label="Model" value={network.product} />
+                  <InfoGrid.Item label="MAC address" value={network.mac} />
                   <InfoGrid.Item
                     label="Description"
-                    value={network.description || null}
+                    value={network.description}
                   />
                 </InfoGrid>
               </Blocks.Item>
@@ -153,12 +128,11 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
         <InfoGrid>
           <InfoGrid.Item
             label="Model"
-            value={groupedHardware.multimedia.model || null}
+            value={groupedHardware.multimedia.model}
           />
-
           <InfoGrid.Item
             label="Vendor"
-            value={groupedHardware.multimedia.vendor || null}
+            value={groupedHardware.multimedia.vendor}
           />
         </InfoGrid>
       </HardwareInfoRow>

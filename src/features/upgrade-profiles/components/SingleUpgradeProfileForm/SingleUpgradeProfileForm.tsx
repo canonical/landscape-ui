@@ -4,10 +4,10 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
 import type { CreateUpgradeProfileParams } from "../../hooks";
 import { useUpgradeProfiles } from "../../hooks";
 import type { FormProps, UpgradeProfile } from "../../types";
@@ -27,7 +27,7 @@ type SingleUpgradeProfileFormProps =
 const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { createUpgradeProfileQuery, editUpgradeProfileQuery } =
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
@@ -46,9 +46,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const { mutateAsync: createUpgradeProfile } = createUpgradeProfileQuery;
   const { mutateAsync: editUpgradeProfile } = editUpgradeProfileQuery;
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateUpgradeProfileParams = {
@@ -107,32 +105,29 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues:
+      props.action === "edit"
+        ? {
+            access_group: props.profile.access_group,
+            all_computers: props.profile.all_computers,
+            at_hour: props.profile.at_hour
+              ? parseInt(props.profile.at_hour)
+              : "",
+            at_minute: parseInt(props.profile.at_minute),
+            autoremove: props.profile.autoremove,
+            deliver_delay_window: parseInt(props.profile.deliver_delay_window),
+            deliver_within: parseInt(props.profile.deliver_within),
+            every: props.profile.every,
+            on_days: props.profile.on_days ?? [],
+            randomize_delivery: props.profile.deliver_delay_window !== "0",
+            tags: props.profile.tags,
+            title: props.profile.title,
+            upgrade_type: props.profile.upgrade_type,
+          }
+        : INITIAL_VALUES,
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(props.action),
   });
-
-  useEffect(() => {
-    if (props.action !== "edit" || !props.profile) {
-      return;
-    }
-
-    formik.setValues({
-      access_group: props.profile.access_group,
-      all_computers: props.profile.all_computers,
-      at_hour: props.profile.at_hour ? parseInt(props.profile.at_hour) : "",
-      at_minute: parseInt(props.profile.at_minute),
-      autoremove: props.profile.autoremove,
-      deliver_delay_window: parseInt(props.profile.deliver_delay_window),
-      deliver_within: parseInt(props.profile.deliver_within),
-      every: props.profile.every,
-      on_days: props.profile.on_days ?? [],
-      randomize_delivery: props.profile.deliver_delay_window !== "0",
-      tags: props.profile.tags,
-      title: props.profile.title,
-      upgrade_type: props.profile.upgrade_type,
-    });
-  }, [props]);
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -141,11 +136,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         required={props.action === "add"}
         label="Title"
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <Input
@@ -175,11 +166,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         aria-label="Access group"
         options={accessGroupOptions}
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <UpgradeProfileScheduleBlock formik={formik} />

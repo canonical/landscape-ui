@@ -13,6 +13,8 @@ const RegularInfoItem: FC<RegularInfoItemProps> = ({
   value,
   ...props
 }) => {
+  const hasValue = !!value || value === 0;
+
   return (
     <div {...props}>
       <div
@@ -21,7 +23,7 @@ const RegularInfoItem: FC<RegularInfoItemProps> = ({
         {label}
       </div>
 
-      <div>{value ?? <NoData />}</div>
+      <div>{hasValue ? value : <NoData />}</div>
     </div>
   );
 };

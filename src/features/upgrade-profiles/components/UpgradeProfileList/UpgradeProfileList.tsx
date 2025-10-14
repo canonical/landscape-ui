@@ -8,7 +8,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import type { SelectOption } from "@/types/SelectOption";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -23,18 +23,12 @@ interface UpgradeProfileListProps {
 
 const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   const { search } = usePageParams();
-  const { setPageParams } = usePageParams();
+  const { createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { expandedRowIndex, handleExpand, getTableRowsRef } =
     useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const filteredProfiles = useMemo(() => {
     if (!search) {
@@ -45,10 +39,6 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
       return profile.title.toLowerCase().includes(search.toLowerCase());
     });
   }, [profiles, search]);
-
-  const handleUpgradeProfileDetailsOpen = (profile: UpgradeProfile) => {
-    setPageParams({ sidePath: ["view"], profile: profile.id.toString() });
-  };
 
   const columns = useMemo<Column<UpgradeProfile>[]>(
     () => [
@@ -64,9 +54,10 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => {
-                handleUpgradeProfileDetailsOpen(original);
-              }}
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                profile: original.id.toString(),
+              })}
             >
               {original.title}
             </Button>
@@ -83,9 +74,7 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         },
         Cell: ({ row: { original } }: CellProps<UpgradeProfile>) => (
           <>
-            {accessGroupOptions.find(
-              ({ value }) => value === original.access_group,
-            )?.label ?? original.access_group}
+            {getTitleByName(original.access_group, getAccessGroupQueryResult)}
           </>
         ),
       },
@@ -129,7 +118,12 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         ),
       },
     ],
-    [accessGroupOptions.length, expandedRowIndex],
+    [
+      createPageParamsSetter,
+      expandedRowIndex,
+      getAccessGroupQueryResult,
+      handleExpand,
+    ],
   );
 
   return (

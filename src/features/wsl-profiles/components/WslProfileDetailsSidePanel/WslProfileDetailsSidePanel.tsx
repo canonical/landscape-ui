@@ -1,19 +1,20 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
+import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { getTitleByName } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import useGetPageWslProfile from "../../api/useGetPageWslProfile";
-import WslProfileAssociatedParentsLink from "../WslProfileAssociatedParentsLink";
-import WslProfileCompliantParentsLink from "../WslProfileCompliantParentsLink";
 import WslProfileNonCompliantParentsLink from "../WslProfileNonCompliantParentsLink";
 import WslProfileRemoveModal from "../WslProfileRemoveModal";
 
 const WslProfileDetailsSidePanel: FC = () => {
-  const { pushSidePath } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const { wslProfile: profile, isGettingWslProfile: isGettingUpgradeProfile } =
@@ -31,9 +32,7 @@ const WslProfileDetailsSidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const handleWslProfileEdit = () => {
-    pushSidePath("edit");
-  };
+  const handleWslProfileEdit = createSidePathPusher("edit");
 
   return (
     <>
@@ -71,11 +70,7 @@ const WslProfileDetailsSidePanel: FC = () => {
               <InfoGrid.Item label="Name" value={profile.name} />
               <InfoGrid.Item
                 label="Access group"
-                value={
-                  accessGroupsData?.data.find(
-                    (accessGroup) => accessGroup.name === profile.access_group,
-                  )?.title ?? profile.access_group
-                }
+                value={getTitleByName(profile.access_group, accessGroupsData)}
               />
               <InfoGrid.Item
                 label="Description"
@@ -103,38 +98,29 @@ const WslProfileDetailsSidePanel: FC = () => {
               <InfoGrid.Item
                 label="Cloud-init"
                 large
-                value={profile.cloud_init_contents || null}
+                value={profile.cloud_init_contents}
               />
             </InfoGrid>
           </Blocks.Item>
 
           <Blocks.Item title="Association">
-            {profile.all_computers && (
-              <p>This profile has been associated with all instances.</p>
-            )}
-
-            {!profile.all_computers && !profile.tags.length && (
-              <p>
-                This profile has not yet been associated with any instances.
-              </p>
-            )}
-
-            {(profile.all_computers || !!profile.tags.length) && (
+            <ProfileAssociationInfo profile={profile}>
               <InfoGrid>
-                {!profile.all_computers && (
-                  <InfoGrid.Item
-                    label="Tags"
-                    large
-                    value={profile.tags.join(", ") || null}
-                    type="truncated"
-                  />
-                )}
-
+                <InfoGrid.Item
+                  label="Tags"
+                  large
+                  value={profile.tags.join(", ")}
+                  type="truncated"
+                />
                 <InfoGrid.Item
                   label="Associated parents"
                   large
                   value={
-                    <WslProfileAssociatedParentsLink wslProfile={profile} />
+                    <ProfileAssociatedInstancesLink
+                      count={profile.computers.constrained.length}
+                      profile={profile}
+                      query={`wsl:${profile.id}`}
+                    />
                   }
                 />
                 <InfoGrid.Item
@@ -142,20 +128,25 @@ const WslProfileDetailsSidePanel: FC = () => {
                   value={
                     <WslProfileNonCompliantParentsLink
                       wslProfile={profile}
-                      onClick={() => {
-                        pushSidePath("noncompliant");
-                      }}
+                      onClick={createSidePathPusher("noncompliant")}
                     />
                   }
                 />
                 <InfoGrid.Item
                   label="Compliant"
                   value={
-                    <WslProfileCompliantParentsLink wslProfile={profile} />
+                    <ProfileAssociatedInstancesLink
+                      profile={profile}
+                      count={
+                        profile.computers.constrained.length -
+                        profile.computers["non-compliant"].length
+                      }
+                      query={`wsl:${profile.id}:compliant`}
+                    />
                   }
                 />
               </InfoGrid>
-            )}
+            </ProfileAssociationInfo>
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>

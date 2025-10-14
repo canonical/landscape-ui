@@ -18,7 +18,7 @@ const SecurityProfileRunFixSidePanel: FC = () => {
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
 
   const { securityProfile: profile, isGettingSecurityProfile } =
     useGetPageSecurityProfile();
@@ -28,6 +28,8 @@ const SecurityProfileRunFixSidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
     try {
@@ -35,7 +37,7 @@ const SecurityProfileRunFixSidePanel: FC = () => {
         id: profile.id,
       });
 
-      setPageParams({ sidePath: [], profile: "" });
+      closeSidePanel();
 
       const message = getNotificationMessage(profile.mode);
 
@@ -137,9 +139,7 @@ const SecurityProfileRunFixSidePanel: FC = () => {
           <SidePanelFormButtons
             submitButtonDisabled={false}
             submitButtonText="Run"
-            onCancel={() => {
-              setPageParams({ sidePath: [], profile: "" });
-            }}
+            onCancel={closeSidePanel}
             hasBackButton={sidePath.length > 1}
             onBackButtonPress={popSidePath}
           />

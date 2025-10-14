@@ -4,10 +4,10 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
 import type { CreateRemovalProfileParams } from "../../hooks";
 import { useRemovalProfiles } from "../../hooks";
 import type { RemovalProfile } from "../../types";
@@ -28,7 +28,7 @@ type SingleRemovalProfileFormProps =
 const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { createRemovalProfileQuery, editRemovalProfileQuery } =
     useRemovalProfiles();
   const { getAccessGroupQuery } = useRoles();
@@ -44,9 +44,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const { mutateAsync: createRemovalProfile } = createRemovalProfileQuery;
   const { mutateAsync: editRemovalProfile } = editRemovalProfileQuery;
 
-  const closeSidePanel = () => {
-    setPageParams({ sidePath: [], profile: "" });
-  };
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateRemovalProfileParams = {
@@ -85,24 +83,19 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues:
+      props.action === "edit"
+        ? {
+            access_group: props.profile.access_group,
+            all_computers: props.profile.all_computers,
+            days_without_exchange: props.profile.days_without_exchange,
+            tags: props.profile.tags,
+            title: props.profile.title,
+          }
+        : INITIAL_VALUES,
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(props.action),
   });
-
-  useEffect(() => {
-    if (props.action !== "edit") {
-      return;
-    }
-
-    formik.setValues({
-      access_group: props.profile.access_group,
-      all_computers: props.profile.all_computers,
-      days_without_exchange: props.profile.days_without_exchange,
-      tags: props.profile.tags,
-      title: props.profile.title,
-    });
-  }, [props]);
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -111,11 +104,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
         label="Title"
         required={props.action === "add"}
         {...formik.getFieldProps("title")}
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
       />
 
       <div className={classes.inputContainer}>
@@ -128,12 +117,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
           className={classes.input}
           wrapperClassName={classes.inputWrapper}
           {...formik.getFieldProps("days_without_exchange")}
-          error={
-            formik.touched.days_without_exchange &&
-            formik.errors.days_without_exchange
-              ? formik.errors.days_without_exchange
-              : undefined
-          }
+          error={getFormikError(formik, "days_without_exchange")}
         />
 
         <span className={classes.inputDescription}>days</span>
@@ -143,11 +127,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
         label="Access group"
         options={accessGroupOptions}
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <AssociationBlock formik={formik} />

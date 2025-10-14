@@ -20,7 +20,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { useEffect, useState, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -64,9 +64,11 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   submitting = false,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, setPageParams } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
+
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -173,7 +175,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         return;
       }
 
-      setPageParams({ sidePath: [], profile: "" });
+      closeSidePanel();
 
       onSuccess(values);
     },
@@ -186,24 +188,6 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     limit: 1,
   });
 
-  const [isAssociationLimitReached, setIsAssociationLimitReached] =
-    useState(false);
-
-  useEffect(() => {
-    if (instancesCount === undefined || !scriptProfileLimits) {
-      return;
-    }
-
-    if (!formik.values.tags.length && !formik.values.all_computers) {
-      setIsAssociationLimitReached(false);
-      return;
-    }
-
-    setIsAssociationLimitReached(
-      instancesCount >= scriptProfileLimits.max_num_computers,
-    );
-  }, [instancesCount]);
-
   if (isGettingScriptProfileLimits) {
     return <LoadingState />;
   }
@@ -211,6 +195,9 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   if (!scriptProfileLimits) {
     return;
   }
+
+  const isAssociationLimitReached =
+    (instancesCount ?? 0) >= scriptProfileLimits.max_num_computers;
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
@@ -392,9 +379,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         }
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
-        onCancel={() => {
-          setPageParams({ sidePath: [], profile: "" });
-        }}
+        onCancel={closeSidePanel}
         hasBackButton={sidePath.length > 1}
         onBackButtonPress={popSidePath}
       />

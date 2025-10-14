@@ -1,3 +1,4 @@
+import { tags } from "@/tests/mocks/tag";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -49,9 +50,6 @@ describe("SingleUpgradeProfileForm", () => {
     const accessGroupSelect = screen.getByLabelText(/access group/i);
     const hoursInput = screen.getByLabelText(/at hour/i);
     const minutesInput = screen.getByLabelText(/at minute/);
-    const associationCheckbox = screen.getByLabelText(
-      "Associate to all instances",
-    );
     const submitButton = screen.getByText("Add upgrade profile");
 
     await user.type(nameInput, "Test profile");
@@ -62,7 +60,8 @@ describe("SingleUpgradeProfileForm", () => {
     await user.click(await screen.findByText(/friday/i));
     await user.type(hoursInput, "12");
     await user.type(minutesInput, "30");
-    await user.click(associationCheckbox);
+    await user.type(await screen.findByLabelText("Tags"), tags[0]);
+    await user.click(screen.getByRole("checkbox", { name: tags[0] }));
 
     await userEvent.click(submitButton);
 
