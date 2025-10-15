@@ -14,10 +14,13 @@ export const getToggleLabel = ({
   >;
 }): ReactNode => {
   if (otherProps.showSelectionOnToggleLabel) {
-    return (
-      options.find((selection) => selection.value === otherProps.selectedItem)
-        ?.label || label
+    const option = options.find(
+      (selection) => selection.value === otherProps.selectedItem,
     );
+
+    if (option) {
+      return option.label;
+    }
   }
 
   return label;

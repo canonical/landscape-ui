@@ -1,10 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe } from "vitest";
+import { describe, expect } from "vitest";
+import classes from "../../TableFilter.module.scss";
 import type { GroupedOption } from "../../types";
 import TableFilterSingle from "./TableFilterSingle";
-import classes from "../../TableFilter.module.scss";
 
 const options: GroupedOption[] = [
   {
@@ -22,6 +22,8 @@ const options: GroupedOption[] = [
 ];
 
 describe("Filter with single selection", () => {
+  const user = userEvent.setup();
+
   const singleSelectionFilterOptions = [
     {
       label: "Select option",
@@ -47,7 +49,7 @@ describe("Filter with single selection", () => {
 
     expect(button).toHaveTextContent(filterLabel);
 
-    await userEvent.click(button);
+    await user.click(button);
 
     expect(screen.getAllByRole("listitem")).toHaveLength(
       singleSelectionFilterOptions.length,
@@ -71,11 +73,11 @@ describe("Filter with single selection", () => {
 
     const button = screen.getByRole("button");
 
-    await userEvent.click(button);
+    await user.click(button);
 
     expect(screen.getByRole("list")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByText(options[1].label));
+    await user.click(screen.getByText(options[1].label));
 
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
@@ -92,7 +94,7 @@ describe("Filter with single selection", () => {
       <TableFilterSingle {...singleFilterProps} options={groupedOptions} />,
     );
 
-    await userEvent.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("button"));
 
     const listItems = screen.getAllByRole("listitem");
 
@@ -126,7 +128,7 @@ describe("Filter with single selection", () => {
       />,
     );
 
-    await userEvent.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("button"));
 
     for (const { label, value } of singleSelectionFilterOptions) {
       if (value === singleFilterProps.selectedItem) {
@@ -153,9 +155,9 @@ describe("Filter with single selection", () => {
     expect(button).toHaveTextContent(filterLabel);
     expect(within(button).queryByText("1")).not.toBeInTheDocument();
 
-    await userEvent.click(button);
+    await user.click(button);
 
-    await userEvent.click(screen.getByText(options[0].label));
+    await user.click(screen.getByText(options[0].label));
 
     rerender(
       <TableFilterSingle
@@ -173,11 +175,34 @@ describe("Filter with single selection", () => {
 
     render(<TableFilterSingle {...singleFilterProps} onSearch={onSearch} />);
 
-    await userEvent.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("button"));
 
-    await userEvent.type(screen.getByRole("searchbox"), "test");
-    await userEvent.click(screen.getByRole("button", { name: "Search" }));
+    await user.type(screen.getByRole("searchbox"), "test");
+    await user.click(screen.getByRole("button", { name: "Search" }));
 
     expect(onSearch).toHaveBeenCalledWith("test");
+  });
+
+  it("renders inline", () => {
+    render(<TableFilterSingle {...singleFilterProps} inline />);
+
+    for (const { label } of options) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
+  });
+
+  it("can use the selected option as the label", async () => {
+    const option = options.find(({ label }) => label !== filterLabel);
+    assert(option);
+
+    render(
+      <TableFilterSingle
+        {...singleFilterProps}
+        showSelectionOnToggleLabel
+        selectedItem={option.value}
+      />,
+    );
+
+    expect(screen.getByText(option.label)).toBeInTheDocument();
   });
 });

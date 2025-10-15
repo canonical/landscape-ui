@@ -1,4 +1,4 @@
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import type { FC } from "react";
 import type { InstancePackage } from "../../types";
@@ -21,7 +21,11 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
         afterSearch={handleClearSelection}
         actions={
           <div className={classes.actions}>
-            <StatusFilter options={STATUS_OPTIONS} label="Status" />
+            <PageParamFilter
+              pageParamKey="status"
+              options={STATUS_OPTIONS}
+              label="Status"
+            />
             <PackageActions selectedPackages={selectedPackages} />
           </div>
         }

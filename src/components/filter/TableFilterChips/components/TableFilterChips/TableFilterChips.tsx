@@ -1,15 +1,18 @@
 import usePageParams from "@/hooks/usePageParams";
+import type { PageParams } from "@/libs/pageParamsManager";
 import type { SelectOption } from "@/types/SelectOption";
-import type { ComponentProps, FC } from "react";
+import type { FC } from "react";
 import { defaultFiltersToDisplay } from "../../constants";
+import type { FilterKey } from "../../types";
+import TableFilterChipsBase from "../TableFilterChipsBase";
 import {
+  filterItem,
   filterSearchQuery,
   getItem,
   getItems,
+  getPassRate,
   parseSearchQuery,
-} from "../../helpers";
-import type { FilterKey } from "../../types";
-import TableFilterChipsBase from "../TableFilterChipsBase";
+} from "./helpers";
 
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
@@ -32,9 +35,10 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   typeOptions,
   wslOptions,
 }) => {
+  const { setPageParams, createPageParamsSetter, ...pageParams } =
+    usePageParams();
+
   const {
-    setPageParams,
-    createPageParamsSetter,
     accessGroups,
     availabilityZones,
     fromDate,
@@ -48,167 +52,157 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     passRateFrom,
     passRateTo,
     wsl,
-  } = usePageParams();
+  } = pageParams;
 
-  const filters: ComponentProps<typeof TableFilterChipsBase>["filters"] = [];
+  const createRemover = <T extends keyof PageParams>(
+    pageParamKey: T,
+    remove: (items: PageParams[T], value: string) => unknown,
+  ) => {
+    return (value: string) => {
+      setPageParams({
+        [pageParamKey]: remove(pageParams[pageParamKey], value),
+      });
+    };
+  };
 
-  if (filtersToDisplay.includes("query")) {
-    filters.push({
-      label: "Query",
-      multiple: true,
-      items: parseSearchQuery(query),
-      remove: (value) => {
-        setPageParams({ query: filterSearchQuery(query, value as string) });
+  const filters = [
+    {
+      condition: filtersToDisplay.includes("query"),
+      value: {
+        label: "Query",
+        multiple: true as const,
+        items: parseSearchQuery(query),
+        remove: createRemover("query", filterSearchQuery),
+        clear: createPageParamsSetter({ query: "" }),
       },
-      clear: createPageParamsSetter({ query: "" }),
-    });
-  }
-
-  if (filtersToDisplay.includes("search")) {
-    filters.push({
-      label: "Search",
-      item: search,
-      clear: createPageParamsSetter({ search: "" }),
-    });
-  }
-
-  if (filtersToDisplay.includes("status")) {
-    filters.push({
-      label: "Status",
-      item: getItem(statusOptions, status),
-      clear: createPageParamsSetter({ status: "" }),
-    });
-  }
-
-  if (filtersToDisplay.includes("os")) {
-    filters.push({
-      label: "OS",
-      item: getItem(osOptions, os),
-      clear: createPageParamsSetter({ os: "" }),
-    });
-  }
-
-  if (
-    filtersToDisplay.includes("availabilityZones") &&
-    availabilityZonesOptions
-  ) {
-    filters.push({
-      label: "Availability z.",
-      multiple: true,
-      items: getItems(availabilityZonesOptions, availabilityZones),
-      remove: (availabilityZone) => {
-        setPageParams({
-          availabilityZones: availabilityZones.filter(
-            (z) => z !== availabilityZone,
-          ),
-        });
+    },
+    {
+      condition: filtersToDisplay.includes("search"),
+      value: {
+        label: "Search",
+        item: search,
+        clear: createPageParamsSetter({ search: "" }),
       },
-      clear: createPageParamsSetter({ availabilityZones: [] }),
-    });
-  }
-
-  if (filtersToDisplay.includes("accessGroups")) {
-    filters.push({
-      label: "Access group",
-      multiple: true,
-      items: getItems(accessGroupOptions, accessGroups),
-      remove: (accessGroup) => {
-        setPageParams({
-          accessGroups: accessGroups.filter((g) => g !== accessGroup),
-        });
+    },
+    {
+      condition: filtersToDisplay.includes("status"),
+      value: {
+        label: "Status",
+        item: getItem(statusOptions, status),
+        clear: createPageParamsSetter({ status: "" }),
       },
-      clear: createPageParamsSetter({ accessGroups: [] }),
-    });
-  }
-
-  if (filtersToDisplay.includes("tags")) {
-    filters.push({
-      label: "Tag",
-      multiple: true,
-      items: getItems(tagOptions, tags),
-      remove: (tag) => {
-        setPageParams({
-          tags: tags.filter((t) => t !== tag),
-        });
+    },
+    {
+      condition: filtersToDisplay.includes("os"),
+      value: {
+        label: "OS",
+        item: getItem(osOptions, os),
+        clear: createPageParamsSetter({ os: "" }),
       },
-      clear: createPageParamsSetter({ tags: [] }),
-    });
-  }
-
-  if (filtersToDisplay.includes("fromDate")) {
-    filters.push({
-      label: "From",
-      item: fromDate,
-      clear: createPageParamsSetter({ fromDate: "" }),
-    });
-  }
-
-  if (filtersToDisplay.includes("toDate")) {
-    filters.push({
-      label: "To",
-      item: toDate,
-      clear: createPageParamsSetter({ toDate: "" }),
-    });
-  }
-
-  if (filtersToDisplay.includes("passRateFrom")) {
-    filters.push({
-      label: "From pass rate",
-      item: passRateFrom === 0 ? undefined : `${passRateFrom}%`,
-      clear: createPageParamsSetter({ passRateFrom: 0 }),
-    });
-  }
-
-  if (filtersToDisplay.includes("passRateTo")) {
-    filters.push({
-      label: "To",
-      item: passRateTo === 100 ? undefined : `${passRateTo}%`,
-      clear: createPageParamsSetter({ passRateTo: 100 }),
-    });
-  }
-
-  if (filtersToDisplay.includes("type")) {
-    filters.push({
-      label: "Type",
-      item: getItem(typeOptions, type),
-      clear: createPageParamsSetter({ type: "" }),
-    });
-  }
-
-  if (filtersToDisplay.includes("wsl")) {
-    filters.push({
-      label: "WSL",
-      multiple: true,
-      items: getItems(wslOptions, wsl),
-      remove: (item) => {
-        setPageParams({
-          wsl: wsl.filter((i) => i !== item),
-        });
+    },
+    {
+      condition:
+        filtersToDisplay.includes("availabilityZones") &&
+        availabilityZonesOptions !== undefined,
+      value: {
+        label: "Availability z.",
+        multiple: true as const,
+        items: getItems(availabilityZonesOptions, availabilityZones),
+        remove: createRemover("availabilityZones", filterItem),
+        clear: createPageParamsSetter({ availabilityZones: [] }),
       },
-      clear: createPageParamsSetter({ wsl: [] }),
-    });
-  }
+    },
+    {
+      condition: filtersToDisplay.includes("accessGroups"),
+      value: {
+        label: "Access group",
+        multiple: true as const,
+        items: getItems(accessGroupOptions, accessGroups),
+        remove: createRemover("accessGroups", filterItem),
+        clear: createPageParamsSetter({ accessGroups: [] }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("tags"),
+      value: {
+        label: "Tag",
+        multiple: true as const,
+        items: getItems(tagOptions, tags),
+        remove: createRemover("tags", filterItem),
+        clear: createPageParamsSetter({ tags: [] }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("fromDate"),
+      value: {
+        label: "From",
+        item: fromDate,
+        clear: createPageParamsSetter({ fromDate: "" }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("toDate"),
+      value: {
+        label: "To",
+        item: toDate,
+        clear: createPageParamsSetter({ toDate: "" }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("passRateFrom"),
+      value: {
+        label: "From pass rate",
+        item: getPassRate(passRateFrom, 0),
+        clear: createPageParamsSetter({ passRateFrom: 0 }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("passRateTo"),
+      value: {
+        label: "To",
+        item: getPassRate(passRateTo, 100),
+        clear: createPageParamsSetter({ passRateTo: 100 }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("type"),
+      value: {
+        label: "Type",
+        item: getItem(typeOptions, type),
+        clear: createPageParamsSetter({ type: "" }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("wsl"),
+      value: {
+        label: "WSL",
+        multiple: true as const,
+        items: getItems(wslOptions, wsl),
+        remove: createRemover("wsl", filterItem),
+        clear: createPageParamsSetter({ wsl: [] }),
+      },
+    },
+  ]
+    .filter(({ condition }) => condition)
+    .map(({ value }) => value);
 
-  return (
-    <TableFilterChipsBase
-      clearAll={createPageParamsSetter({
-        accessGroups: [],
-        availabilityZones: [],
-        fromDate: "",
-        os: "",
-        status: "",
-        tags: [],
-        toDate: "",
-        type: "",
-        search: "",
-        query: "",
-        passRateFrom: 0,
-        passRateTo: 100,
-        wsl: [],
-      })}
-      filters={filters}
-    />
-  );
+  const clearAll = createPageParamsSetter({
+    accessGroups: [],
+    availabilityZones: [],
+    fromDate: "",
+    os: "",
+    status: "",
+    tags: [],
+    toDate: "",
+    type: "",
+    search: "",
+    query: "",
+    passRateFrom: 0,
+    passRateTo: 100,
+    wsl: [],
+  });
+
+  return <TableFilterChipsBase clearAll={clearAll} filters={filters} />;
 };
 
 export default TableFilterChips;

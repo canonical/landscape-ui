@@ -1,7 +1,7 @@
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
+import PassRateFilter from "@/components/filter/PassRateFilter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import type { FC } from "react";
-import PassRateFilter from "@/components/filter/PassRateFilter";
 import { SECURITY_STATUSES } from "./constants";
 import classes from "./SecurityProfilesHeader.module.scss";
 
@@ -11,7 +11,11 @@ const SecurityProfilesHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.filters}>
-            <StatusFilter options={SECURITY_STATUSES} label="Status" />
+            <PageParamFilter
+              pageParamKey="status"
+              options={SECURITY_STATUSES}
+              label="Status"
+            />
             <PassRateFilter />
           </div>
         }

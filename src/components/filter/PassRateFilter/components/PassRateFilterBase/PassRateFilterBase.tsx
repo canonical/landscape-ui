@@ -15,6 +15,20 @@ interface FormProps {
 const PassRateFilterBase: FC<CustomFilterComponentProps> = ({ closeMenu }) => {
   const { setPageParams, passRateFrom, passRateTo } = usePageParams();
 
+  const setPassRate = ({
+    passRateFrom: from,
+    passRateTo: to,
+  }: {
+    passRateFrom: number;
+    passRateTo: number;
+  }) => {
+    setPageParams({
+      passRateFrom: from,
+      passRateTo: to,
+    });
+    closeMenu?.();
+  };
+
   const formik = useFormik<FormProps>({
     initialValues: {
       passRateFrom: passRateFrom,
@@ -34,14 +48,12 @@ const PassRateFilterBase: FC<CustomFilterComponentProps> = ({ closeMenu }) => {
           schema.min(from, "Must not be less than minimum pass rate"),
         ),
     }),
-    onSubmit: (values) => {
-      setPageParams({
-        passRateFrom: values.passRateFrom,
-        passRateTo: values.passRateTo,
-      });
-      closeMenu?.();
-    },
+    onSubmit: setPassRate,
   });
+
+  const reset = () => {
+    setPassRate({ passRateFrom: 0, passRateTo: 100 });
+  };
 
   return (
     <Form
@@ -81,13 +93,7 @@ const PassRateFilterBase: FC<CustomFilterComponentProps> = ({ closeMenu }) => {
           type="button"
           appearance="base"
           className="u-no-margin--bottom"
-          onClick={() => {
-            setPageParams({
-              passRateFrom: 0,
-              passRateTo: 100,
-            });
-            closeMenu?.();
-          }}
+          onClick={reset}
         >
           Reset
         </Button>

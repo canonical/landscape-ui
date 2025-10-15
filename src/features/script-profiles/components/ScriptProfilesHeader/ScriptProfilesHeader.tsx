@@ -1,4 +1,4 @@
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import type { FC } from "react";
 import AddScriptProfileButton from "../AddScriptProfileButton";
@@ -11,7 +11,11 @@ const ScriptProfilesHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.actions}>
-            <StatusFilter label="Status" options={STATUS_OPTIONS} />
+            <PageParamFilter
+              pageParamKey="status"
+              label="Status"
+              options={STATUS_OPTIONS}
+            />
             <AddScriptProfileButton />
           </div>
         }

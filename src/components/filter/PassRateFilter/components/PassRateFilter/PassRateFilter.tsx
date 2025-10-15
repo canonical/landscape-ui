@@ -1,14 +1,13 @@
+import TableFilter from "@/components/filter/TableFilter";
 import tableFilterClasses from "@/components/filter/TableFilter/TableFilter.module.scss";
+import usePageParams from "@/hooks/usePageParams";
 import { Badge } from "@canonical/react-components";
 import PassRateFilterBase from "../PassRateFilterBase";
-import usePageParams from "@/hooks/usePageParams";
-import TableFilter from "@/components/filter/TableFilter";
 
 const PassRateFilter = () => {
   const { passRateFrom, passRateTo } = usePageParams();
 
-  const hasPassRateFrom = passRateFrom !== 0;
-  const hasPassRateTo = passRateTo !== 100;
+  const badgeValue = Number(passRateFrom > 0) + Number(passRateTo < 100);
 
   return (
     <TableFilter
@@ -17,18 +16,13 @@ const PassRateFilter = () => {
         <>
           <span>Pass rate</span>
           <span className={tableFilterClasses.badgeContainer}>
-            {hasPassRateFrom || hasPassRateTo ? (
-              <Badge
-                value={hasPassRateFrom && hasPassRateTo ? 2 : 1}
-                className={tableFilterClasses.badge}
-              />
-            ) : null}
+            {badgeValue > 0 && (
+              <Badge value={badgeValue} className={tableFilterClasses.badge} />
+            )}
           </span>
         </>
       }
-      customComponent={({ closeMenu }) => (
-        <PassRateFilterBase closeMenu={closeMenu} />
-      )}
+      customComponent={PassRateFilterBase}
     />
   );
 };
