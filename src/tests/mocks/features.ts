@@ -38,7 +38,7 @@ export const features: Feature[] = [
       "Allows for profiles that handle security and hardening measures",
     key: "usg-profiles",
     database_key: 5,
-    enabled: false,
+    enabled: true,
     details: {
       configuration: true,
       account: false,
