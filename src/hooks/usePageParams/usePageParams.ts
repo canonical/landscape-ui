@@ -1,6 +1,6 @@
 import type { PageParams } from "@/libs/pageParamsManager";
 import { pageParamsManager } from "@/libs/pageParamsManager";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router";
 
 interface UsePageParamsReturnType extends PageParams {
@@ -24,39 +24,45 @@ const usePageParams = (): UsePageParamsReturnType => {
 
   const parsedSearchParams = pageParamsManager.getParsedParams(searchParams);
 
-  const setPageParams = (newParams: Partial<PageParams>): void => {
-    setSearchParams(
-      (prevSearchParams) => {
-        if (newParams.tab && newParams.tab !== parsedSearchParams.tab) {
-          return new URLSearchParams({ tab: newParams.tab });
-        }
+  const setPageParams = useCallback(
+    (newParams: Partial<PageParams>): void => {
+      setSearchParams(
+        (prevSearchParams) => {
+          if (newParams.tab && newParams.tab !== parsedSearchParams.tab) {
+            return new URLSearchParams({ tab: newParams.tab });
+          }
 
-        const updatedSearchParams = new URLSearchParams(
-          prevSearchParams.toString(),
-        );
+          const updatedSearchParams = new URLSearchParams(
+            prevSearchParams.toString(),
+          );
 
-        if (pageParamsManager.shouldResetPage(newParams)) {
-          updatedSearchParams.delete(pageParamsManager.getCurrentPageParam());
-        }
+          if (pageParamsManager.shouldResetPage(newParams)) {
+            updatedSearchParams.delete(pageParamsManager.getCurrentPageParam());
+          }
 
-        Object.entries(newParams).forEach(([key, value]) => {
-          updatedSearchParams.set(key, String(value));
-        });
+          Object.entries(newParams).forEach(([key, value]) => {
+            updatedSearchParams.set(key, String(value));
+          });
 
-        return pageParamsManager.sanitizeSearchParams(updatedSearchParams);
-      },
-      { replace: true },
-    );
-  };
+          return pageParamsManager.sanitizeSearchParams(updatedSearchParams);
+        },
+        { replace: true },
+      );
+    },
+    [parsedSearchParams.tab, setSearchParams],
+  );
 
   const lastSidePathSegment =
     parsedSearchParams.sidePath[parsedSearchParams.sidePath.length - 1];
 
-  const createPageParamsSetter = (newParams: Partial<PageParams>) => {
-    return () => {
-      setPageParams(newParams);
-    };
-  };
+  const createPageParamsSetter = useCallback(
+    (newParams: Partial<PageParams>) => {
+      return () => {
+        setPageParams(newParams);
+      };
+    },
+    [setPageParams],
+  );
 
   const popSidePath = createPageParamsSetter({
     sidePath: parsedSearchParams.sidePath.slice(0, -1),
