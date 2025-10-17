@@ -1,4 +1,4 @@
-import { GroupFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import { FILTERS } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import { Form, SearchBox } from "@canonical/react-components";
@@ -52,10 +52,11 @@ const AccessGroupHeader: FC = () => {
             />
           </Form>
         </div>
-        <GroupFilter
+        <PageParamFilter
           label="Group by"
           options={groupOptions}
           key="group-by-filter"
+          pageParamKey="groupBy"
         />
       </div>
       <TableFilterChips filtersToDisplay={["search"]} />

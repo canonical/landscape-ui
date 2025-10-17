@@ -1,11 +1,11 @@
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import { type FC, lazy, Suspense } from "react";
 import classes from "./ScriptsHeader.module.scss";
 import { STATUS_OPTIONS } from "./constants";
-import LoadingState from "@/components/layout/LoadingState";
 
 const CreateScriptForm = lazy(async () => import("../CreateScriptForm"));
 
@@ -26,7 +26,11 @@ const ScriptsHeader: FC = () => {
       <HeaderWithSearch
         actions={
           <div className={classes.actions}>
-            <StatusFilter options={STATUS_OPTIONS} label="Status" />
+            <PageParamFilter
+              pageParamKey="status"
+              options={STATUS_OPTIONS}
+              label="Status"
+            />
             <Button
               type="button"
               onClick={handleScriptCreate}

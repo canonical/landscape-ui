@@ -1,5 +1,5 @@
 import type { GroupedOption } from "@/components/filter";
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import ColumnFilter from "@/components/form/ColumnFilter";
@@ -80,7 +80,8 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         <ResponsiveTableFilters
           collapseFrom="xxl"
           filters={[
-            <StatusFilter
+            <PageParamFilter
+              pageParamKey="status"
               key="status"
               label="Status"
               options={statusOptions}

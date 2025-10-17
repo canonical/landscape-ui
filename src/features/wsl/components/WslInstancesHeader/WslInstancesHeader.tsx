@@ -1,5 +1,4 @@
-import { TableFilterChips } from "@/components/filter";
-import GroupFilter from "@/components/filter/GroupFilter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
@@ -98,12 +97,13 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
         actions={
           <div className={classes.cta}>
             {hasWslProfiles && (
-              <GroupFilter
+              <PageParamFilter
                 label="Group by"
                 options={[
                   { label: "None", value: "" },
                   { label: "Compliance", value: "compliance" },
                 ]}
+                pageParamKey="groupBy"
               />
             )}
 

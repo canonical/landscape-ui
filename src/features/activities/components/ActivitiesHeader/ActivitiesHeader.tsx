@@ -1,4 +1,4 @@
-import { StatusFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescriptionButton";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import usePageParams from "@/hooks/usePageParams";
@@ -84,7 +84,11 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         />
         <div className={classes.actions}>
           <div className={classes.filters}>
-            <StatusFilter label="Status" options={ACTIVITY_STATUS_OPTIONS} />
+            <PageParamFilter
+              pageParamKey="status"
+              label="Status"
+              options={ACTIVITY_STATUS_OPTIONS}
+            />
             <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
             <ActivitiesDateFilter />
           </div>

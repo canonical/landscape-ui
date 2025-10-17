@@ -1,7 +1,7 @@
 import { Button, Chip, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC } from "react";
-import { useEffect, useRef, useState } from "react";
+import type { FC, RefCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 import classes from "./TableFilterChipsBase.module.scss";
 
@@ -11,21 +11,21 @@ interface FilterBase {
   multiple?: boolean;
 }
 
-interface SingleFilter<T> extends FilterBase {
-  item: T | undefined;
+interface SingleFilter extends FilterBase {
+  item: string | undefined;
   multiple?: false;
 }
 
-interface MultiFilter<T> extends FilterBase {
-  remove: (value: T) => void;
+interface MultiFilter extends FilterBase {
+  remove: (value: string) => void;
   items: {
     label: string;
-    value: T;
+    value: string;
   }[];
   multiple: true;
 }
 
-type Filter<T = unknown> = SingleFilter<T> | MultiFilter<T>;
+type Filter = SingleFilter | MultiFilter;
 
 interface TableFilterChipsProps {
   readonly filters: Filter[];
@@ -49,112 +49,111 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const calculateOverflowingChips = useCallback(() => {
+    if (containerRef.current) {
+      const chips = [
+        ...containerRef.current.querySelectorAll<HTMLSpanElement>(".p-chip"),
+      ];
+
+      const top = chips[0].offsetTop;
+
+      const hiddenChipsLength = chips.filter(
+        ({ offsetTop }) => offsetTop > top,
+      ).length;
+
+      if (hiddenChipsLength === 0) {
+        collapse();
+      }
+
+      setHiddenChipCount(hiddenChipsLength);
+    }
+  }, [collapse]);
+
+  const flatFilters: SingleFilter[] = filters
+    .flatMap((filter) => {
+      if (!filter.multiple) {
+        return filter;
+      }
+
+      return filter.items.map<SingleFilter>((item) => {
+        return {
+          item: item.label,
+          label: filter.label,
+          clear: () => {
+            filter.remove(item.value);
+          },
+        };
+      });
+    })
+    .filter((filter) => filter.item);
+
+  const hasMultipleChips = flatFilters.length > 1;
+
+  useEffect(() => {
+    if (hasMultipleChips) {
+      window.addEventListener("resize", calculateOverflowingChips);
+
+      return () => {
+        window.removeEventListener("resize", calculateOverflowingChips);
+      };
+    }
+  }, [hasMultipleChips, calculateOverflowingChips]);
+
+  if (!flatFilters.length) {
+    return null;
+  }
+
+  if (!hasMultipleChips) {
+    return (
+      <div className={classes.container}>
+        <Chip
+          value={`${flatFilters[0].label}: ${flatFilters[0].item}`}
+          onDismiss={flatFilters[0].clear}
+          className="u-no-margin--bottom u-no-margin--right"
+        />
+      </div>
+    );
+  }
+
+  const containerRefCallback: RefCallback<HTMLDivElement> = (container) => {
+    containerRef.current = container;
+    calculateOverflowingChips();
+  };
+
   const clearAllAndCollapse = () => {
     clearAll();
     collapse();
   };
 
-  const calculateOverflowingChips = () => {
-    if (!containerRef.current) {
-      return;
-    }
-
-    const chips = [
-      ...containerRef.current.querySelectorAll<HTMLSpanElement>(".p-chip"),
-    ];
-
-    if (!chips.length) {
-      setHiddenChipCount(0);
-      return;
-    }
-
-    const top = chips[0].offsetTop;
-
-    const hiddenChipsLength = chips.filter(
-      ({ offsetTop }) => offsetTop > top,
-    ).length;
-
-    if (hiddenChipsLength === 0) {
-      collapse();
-      setHiddenChipCount(0);
-    }
-
-    setHiddenChipCount(hiddenChipsLength);
-  };
-
-  useEffect(() => {
-    window.addEventListener("resize", calculateOverflowingChips);
-
-    return () => {
-      window.removeEventListener("resize", calculateOverflowingChips);
-    };
-  }, []);
-
-  useEffect(() => {
-    calculateOverflowingChips();
-  }, [
-    hiddenChipCount,
-    ...filters.map((filter) =>
-      filter.multiple ? filter.items.length : filter.item,
-    ),
-  ]);
-
-  const totalChipsToRenderCount = filters.reduce(
-    (previousValue, filter) =>
-      previousValue +
-      (filter.multiple ? filter.items.length : Number(!!filter.item)),
-    0,
-  );
-
-  if (!totalChipsToRenderCount) {
-    return null;
-  }
-
   return (
     <div className={classes.container}>
       <div
-        ref={containerRef}
+        ref={containerRefCallback}
         className={classNames(classes.chipsContainer, {
           [classes.collapsed]: !isExpanded,
         })}
       >
-        {totalChipsToRenderCount > 1 && (
-          <Button
-            type="button"
-            appearance="link"
-            hasIcon
-            className={classes.clearAllButton}
-            onClick={clearAllAndCollapse}
-          >
-            <Icon name="close" className={classes.clearAllIcon} />
-            <span>Clear all filters</span>
-          </Button>
-        )}
+        <Button
+          type="button"
+          appearance="link"
+          hasIcon
+          className={classes.clearAllButton}
+          onClick={clearAllAndCollapse}
+        >
+          <Icon name="close" className={classes.clearAllIcon} />
+          <span>Clear all filters</span>
+        </Button>
 
-        {filters.map((filter) =>
-          filter.multiple
-            ? filter.items.map(
-                (item, index) =>
-                  !!item.label && (
-                    <Chip
-                      key={filter.label + index}
-                      value={`${filter.label}: ${item.label}`}
-                      onDismiss={() => {
-                        filter.remove(item.value);
-                      }}
-                      className="u-no-margin--bottom u-no-margin--right"
-                    />
-                  ),
-              )
-            : !!filter.item && (
-                <Chip
-                  key={filter.label}
-                  value={`${filter.label}: ${filter.item}`}
-                  onDismiss={filter.clear}
-                  className="u-no-margin--bottom u-no-margin--right"
-                />
-              ),
-        )}
+        {flatFilters.map((filter) => {
+          return (
+            <Chip
+              key={`${filter.label}-${filter.item}`}
+              value={`${filter.label}: ${filter.item}`}
+              onDismiss={filter.clear}
+              className="u-no-margin--bottom u-no-margin--right"
+            />
+          );
+        })}
 
         {isExpanded && (
           <Button

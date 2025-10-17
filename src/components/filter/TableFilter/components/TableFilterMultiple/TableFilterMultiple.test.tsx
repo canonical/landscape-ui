@@ -1,10 +1,11 @@
+import { renderWithProviders } from "@/tests/render";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe } from "vitest";
+import { describe, expect } from "vitest";
+import classes from "../../TableFilter.module.scss";
 import type { GroupedOption } from "../../types";
 import TableFilterMultiple from "./TableFilterMultiple";
-import classes from "../../TableFilter.module.scss";
 
 const options: GroupedOption[] = [
   {
@@ -260,5 +261,15 @@ describe("Filter with multiple selection", () => {
 
       return acc;
     }, Promise.resolve(multipleSelectionProps.selectedItems));
+  });
+
+  it("renders inline", () => {
+    renderWithProviders(
+      <TableFilterMultiple {...multipleSelectionProps} inline />,
+    );
+
+    for (const { label } of options) {
+      expect(screen.getByText(label)).toBeInTheDocument();
+    }
   });
 });
