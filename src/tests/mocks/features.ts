@@ -66,4 +66,15 @@ export const features: Feature[] = [
       configuration: true,
     },
   },
+  {
+    name: "Ubuntu Pro Licensing",
+    description:
+      "Allows attaching, replacing, and detaching Ubuntu Pro tokens to/from instances.",
+    key: "ubuntu_pro_licensing",
+    database_key: 8,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];

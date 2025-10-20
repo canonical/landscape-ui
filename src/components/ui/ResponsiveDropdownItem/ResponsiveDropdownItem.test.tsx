@@ -3,14 +3,14 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import ResponsiveTableFilterItem from "./ResponsiveTableFilterItem";
+import ResponsiveDropdownItem from "./ResponsiveDropdownItem";
 
-describe("ResponsiveTableFilterItem", () => {
+describe("ResponsiveDropdownItem", () => {
   const user = userEvent.setup();
 
   it("renders an element", async () => {
     renderWithProviders(
-      <ResponsiveTableFilterItem
+      <ResponsiveDropdownItem
         el={
           <PageParamFilter
             pageParamKey="status"

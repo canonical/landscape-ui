@@ -5,4 +5,5 @@ export type FeatureKey =
   | "script-profiles"
   | "usg-profiles"
   | "support-provider-login"
-  | "wsl-child-instance-profiles";
+  | "wsl-child-instance-profiles"
+  | "ubuntu_pro_licensing";

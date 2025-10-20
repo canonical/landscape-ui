@@ -1,62 +1,48 @@
-import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import UbuntuProHeader from "./UbuntuProHeader";
+import { getInstanceWithUbuntuPro } from "../../helpers";
+import { instances } from "@/tests/mocks/instance";
+import { INSTANCES_PATHS } from "@/libs/routes/instances";
 import { screen } from "@testing-library/react";
-import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import NoData from "@/components/layout/NoData";
-import type { UbuntuProInfo } from "@/types/Instance";
 
-const getUbuntuProInfo = (hasAccount: boolean): UbuntuProInfo | undefined => {
-  for (const instance of instances) {
-    const info = instance.ubuntu_pro_info;
-    if (info?.result === "success" && !!info.account === hasAccount) {
-      return info;
-    }
+const instanceWithUbuntuPro = getInstanceWithUbuntuPro(instances);
+const singleInstancePath = `/${INSTANCES_PATHS.root}/${INSTANCES_PATHS.single}`;
+
+describe("UbuntuProHeader", () => {
+  if (!instanceWithUbuntuPro) {
+    throw new Error("No instance with Ubuntu Pro found in mock data");
   }
-  return undefined;
-};
 
-const ubuntuProDataWithAccountInfo = getUbuntuProInfo(true);
-const ubuntuProDataWithoutAccountInfo = getUbuntuProInfo(false);
+  const ubuntuProData = instanceWithUbuntuPro.ubuntu_pro_info;
+  if (ubuntuProData?.result !== "success") {
+    throw new Error("Invalid ubuntu_pro_info");
+  }
 
-describe("renders Ubuntu Pro Panel", () => {
-  it.each([ubuntuProDataWithAccountInfo, ubuntuProDataWithoutAccountInfo])(
-    "renders Ubuntu Pro Panel with Ubuntu Pro entitlement",
-    (data) => {
-      assert(data);
+  it("renders header with account information title", () => {
+    renderWithProviders(
+      <UbuntuProHeader instance={instanceWithUbuntuPro} />,
+      undefined,
+      `/instances/${instanceWithUbuntuPro.id}`,
+      singleInstancePath,
+    );
 
-      const { container } = renderWithProviders(
-        <UbuntuProHeader ubuntuProData={data} />,
-      );
-      expect(screen.getByText(/account information/i)).toBeInTheDocument();
+    expect(screen.getByText(/account information/i)).toBeInTheDocument();
+  });
 
-      const ubuntuProHeaderFields = [
-        {
-          label: "Account",
-          value: data.account?.name ?? <NoData />,
-        },
-        {
-          label: "Subscription",
-          value: data.contract?.name ?? <NoData />,
-        },
-        {
-          label: "Valid Until",
-          value:
-            data.expires && moment(data.expires).isValid() ? (
-              moment(data.expires).format(DISPLAY_DATE_TIME_FORMAT)
-            ) : (
-              <NoData />
-            ),
-        },
-        {
-          label: "Technical Support Level",
-          value: data.contract?.tech_support_level ?? <NoData />,
-        },
-      ];
-      ubuntuProHeaderFields.forEach((field) => {
-        expect(container).toHaveInfoItem(field.label, field.value);
-      });
-    },
-  );
+  it("renders Ubuntu Pro dashboard link", () => {
+    renderWithProviders(
+      <UbuntuProHeader instance={instanceWithUbuntuPro} />,
+      undefined,
+      `/instances/${instanceWithUbuntuPro.id}`,
+      singleInstancePath,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "Ubuntu Pro Dashboard",
+    });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute("href", "https://ubuntu.com/pro/dashboard");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link).toHaveAttribute("rel", "nofollow noopener noreferrer");
+  });
 });

@@ -1,6 +1,6 @@
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach } from "vitest";
 import InstancesContainer from "./InstancesContainer";
@@ -63,17 +63,25 @@ describe("InstancesContainer", () => {
   it("should manage table columns", async () => {
     setScreenSize("xxl");
 
-    const { container } = renderWithProviders(
+    renderWithProviders(
       <InstancesContainer {...props} setSelectedInstances={() => undefined} />,
     );
 
-    expect(container).toHaveTexts([
-      "Access group",
-      "Tag",
+    const filtersButton = screen.getByRole("button", { name: /filters/i });
+    await userEvent.click(filtersButton);
+
+    const expectedLabels = [
+      "Access groups",
+      "Tags",
       "Columns",
       ...columns.map(({ label }) => label),
-    ]);
+    ];
 
+    await waitFor(() => {
+      for (const text of expectedLabels) {
+        expect(screen.getAllByText(text).length).toBeGreaterThan(0);
+      }
+    });
     await userEvent.click(screen.getByText("Columns"));
 
     expect(screen.getAllByRole("checkbox", { checked: true })).toHaveLength(

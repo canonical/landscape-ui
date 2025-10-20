@@ -4,6 +4,7 @@ export type FilterType = Pick<
   ReturnType<typeof usePageParams>,
   | "accessGroups"
   | "availabilityZones"
+  | "contractExpiryDays"
   | "fromDate"
   | "os"
   | "search"

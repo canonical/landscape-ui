@@ -113,6 +113,17 @@ export const alerts: Alert[] = [
     tags: [],
     label: "Unapproved Activities Alert",
   },
+  {
+    id: 206,
+    alert_type: "UbuntuProContractExpirationAlert",
+    description: "Alert when any Ubuntu Pro contract nears expiration",
+    subscribed: true,
+    status: "OK",
+    scope: "account",
+    all_computers: false,
+    tags: [],
+    label: "Ubuntu Pro Contract Expiration Alert",
+  },
 ];
 
 export const alertsSummary: AlertSummary[] = [
@@ -182,5 +193,12 @@ export const alertsSummary: AlertSummary[] = [
     alert_type: "ChildInstanceProfileAlert",
     summary: "1 noncompliant child instance profile",
     activation_time: "2024-06-22 15:05:07.711100",
+  },
+  {
+    id: 206,
+    alert_type: "UbuntuProContractExpirationAlert",
+    summary:
+      "2 Ubuntu Pro contracts are nearing expiration: ABC123 (30 days), DEF456 (7 days)",
+    activation_time: "2025-10-16 12:00:00.000000",
   },
 ];

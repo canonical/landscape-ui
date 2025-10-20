@@ -5,11 +5,11 @@ import { screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import AlertCard from "./AlertCard";
 import type { Status } from "@/features/instances";
-import { STATUSES } from "@/features/instances";
+import { ALERT_STATUSES } from "@/features/instances";
 
 const alert =
-  Object.values(STATUSES).find((status) => status.alternateLabel) ??
-  STATUSES["Unknown"];
+  Object.values(ALERT_STATUSES).find((status) => status.alternateLabel) ??
+  ALERT_STATUSES["Unknown"];
 
 const props: Required<Status> = {
   alertType: alert.alertType,

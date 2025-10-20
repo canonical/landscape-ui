@@ -32,6 +32,7 @@ import securityProfiles from "./securityProfiles";
 import snap from "./snap";
 import standaloneAccount from "./standaloneAccount";
 import tag from "./tag";
+import ubuntuPro from "./ubuntuPro";
 import upgradeProfile from "./upgradeProfile";
 import user from "./user";
 import userSettings from "./userSettings";
@@ -73,6 +74,7 @@ export default [
   ...snap,
   ...standaloneAccount,
   ...tag,
+  ...ubuntuPro,
   ...upgradeProfile,
   ...user,
   ...userSettings,

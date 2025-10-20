@@ -1,56 +1,84 @@
-import InfoGrid from "@/components/layout/InfoGrid";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import type { UbuntuProInfo } from "@/types/Instance";
-import moment from "moment";
+import HeaderActions from "@/components/layout/HeaderActions";
+import useAuth from "@/hooks/useAuth";
+import useSidePanel from "@/hooks/useSidePanel";
 import type { FC } from "react";
-import classes from "./UbuntuProHeader.module.scss";
+import React, { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
+import DetachTokenModal from "../DetachTokenModal";
+import LoadingState from "@/components/layout/LoadingState";
+import { getComputerIdFromParams } from "../../helpers";
+import { useParams } from "react-router";
+import type { UrlParams } from "@/types/UrlParams";
+import type { Instance } from "@/types/Instance";
+
+const ReplaceTokenForm = lazy(() => import("../ReplaceTokenForm"));
 
 interface UbuntuProHeaderProps {
-  readonly ubuntuProData: UbuntuProInfo;
+  readonly instance: Instance;
 }
 
-const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ ubuntuProData }) => (
-  <div className={classes.infoRow}>
-    <div className={classes.header}>
-      <span className="p-heading--5">Account information</span>{" "}
-      <span
-        style={{
-          display: "inline",
-        }}
-      >
-        <span className="u-text--muted">listed from </span>
-        <a
-          href="https://ubuntu.com/pro/dashboard"
-          target="_blank"
-          rel="nofollow noopener noreferrer"
-        >
-          Ubuntu Pro Dashboard
-        </a>
-      </span>
-    </div>
-    <InfoGrid spaced>
-      <InfoGrid.Item label="Account" value={ubuntuProData.account?.name} />
+const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ instance }) => {
+  const { instanceId, childInstanceId } = useParams<UrlParams>();
+  const { isFeatureEnabled } = useAuth();
+  const { setSidePanelContent } = useSidePanel();
 
-      <InfoGrid.Item
-        label="Subscription"
-        value={ubuntuProData.contract?.name}
-      />
+  const {
+    value: showDetachModal,
+    setTrue: openDetachModal,
+    setFalse: closeDetachModal,
+  } = useBoolean(false);
 
-      <InfoGrid.Item
-        label="Valid Until"
-        value={
-          ubuntuProData.expires && moment(ubuntuProData.expires).isValid()
-            ? moment(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
-            : null
+  const handleEditToken = () => {
+    setSidePanelContent(
+      "Replace Ubuntu Pro Token",
+      <Suspense fallback={<LoadingState />}>
+        <ReplaceTokenForm selectedInstances={[instance]} />
+      </Suspense>,
+    );
+  };
+
+  return (
+    <>
+      <HeaderActions
+        title={
+          <div>
+            <span className="p-heading--5 u-no-margin--bottom">
+              Account information
+            </span>{" "}
+            <span style={{ display: "inline" }}>
+              <span className="u-text--muted">listed from </span>
+              <a
+                href="https://ubuntu.com/pro/dashboard"
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+              >
+                Ubuntu Pro Dashboard
+              </a>
+            </span>
+          </div>
         }
+        actions={{
+          nondestructive: [
+            { icon: "edit", label: "Edit token", onClick: handleEditToken },
+          ],
+          destructive: [
+            {
+              icon: "delete",
+              label: "Detach token",
+              onClick: openDetachModal,
+              excluded: !isFeatureEnabled("ubuntu_pro_licensing"),
+            },
+          ],
+        }}
       />
-
-      <InfoGrid.Item
-        label="Technical Support Level"
-        value={ubuntuProData.contract?.tech_support_level}
+      <DetachTokenModal
+        isOpen={showDetachModal}
+        onClose={closeDetachModal}
+        computerIds={getComputerIdFromParams({ instanceId, childInstanceId })}
+        instanceTitle={instance.title}
       />
-    </InfoGrid>
-  </div>
-);
+    </>
+  );
+};
 
 export default UbuntuProHeader;

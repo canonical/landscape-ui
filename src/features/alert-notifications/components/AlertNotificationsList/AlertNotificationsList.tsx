@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { STATUSES } from "@/features/instances";
+import { ALERT_STATUSES } from "@/features/instances";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { PendingInstance } from "@/types/Instance";
 import { Button, Icon, List } from "@canonical/react-components";
@@ -11,6 +11,7 @@ import type { AlertSummary } from "../../types";
 import classes from "./AlertNotificationsList.module.scss";
 import { pluralize } from "@/utils/_helpers";
 import { ROUTES } from "@/libs/routes";
+import { getRouteParams } from "./helpers";
 
 const PendingInstancesForm = lazy(
   () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -38,12 +39,14 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
   };
 
   const listItems = alerts.map((alert, index) => {
-    const status = STATUSES[alert.alert_type] || STATUSES.Unknown;
+    const alertStatus =
+      ALERT_STATUSES[alert.alert_type] || ALERT_STATUSES.Unknown;
+    const routeParams = getRouteParams(alert);
 
     return (
-      <div key={status.alertType || index} className={classes.listItem}>
-        <Icon name={`${status.icon.color ?? status.icon.gray}`} />
-        {status.alertType === "PendingComputersAlert" ? (
+      <div key={alertStatus.alertType || index} className={classes.listItem}>
+        <Icon name={`${alertStatus.icon.color ?? alertStatus.icon.gray}`} />
+        {alertStatus.alertType === "PendingComputersAlert" ? (
           <Button
             type="button"
             appearance="link"
@@ -60,7 +63,7 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
           </Button>
         ) : (
           <Link
-            to={ROUTES.instances.root({ status: status.filterValue })}
+            to={ROUTES.instances.root(routeParams)}
             className={classNames(
               "u-no-margin u-no-padding",
               classes.listItem__link,

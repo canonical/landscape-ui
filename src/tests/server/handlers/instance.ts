@@ -30,6 +30,17 @@ export default [
       const url = new URL(request.url);
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || 1;
+      const query = url.searchParams.get("query") || "";
+
+      if (query.includes("has-pro-management:false")) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Instance>({
+            data: [instances[1], instances[2]],
+            limit,
+            offset,
+          }),
+        );
+      }
 
       return HttpResponse.json(
         generatePaginatedResponse<Instance>({

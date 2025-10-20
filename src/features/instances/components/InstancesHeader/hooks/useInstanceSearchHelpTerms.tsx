@@ -166,6 +166,35 @@ const useInstanceSearchHelpTerms = () => {
       ),
     },
     {
+      term: "license-type:<license-type>",
+      description: (
+        <span>
+          Instances associated with the specified{" "}
+          <code>&lt;license-type&gt;</code>. The <code>license-type</code> must
+          be one of <code>unlicensed</code>, <code>pro</code>,{" "}
+          <code>free_pro</code>, <code>legacy</code>.
+        </span>
+      ),
+    },
+    {
+      term: "contract:<contract-id>",
+      description: (
+        <span>
+          Instances associated with the specified{" "}
+          <code>&lt;contract-id&gt;</code>,
+        </span>
+      ),
+    },
+    {
+      term: "license-expires-within-days:<days>",
+      description: (
+        <span>
+          Instances associated with a Legacy License that expires within{" "}
+          <code>&lt;days&gt;</code> days.
+        </span>
+      ),
+    },
+    {
       term: "needs:license OR license-id:none",
       description:
         "Search for instances that do not have a Landscape license, and, as a result, are not managed",

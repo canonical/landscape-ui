@@ -1,20 +1,22 @@
 import {
   decorateNode,
   textFromNode,
+  isContextualMenu,
+  getContextualMenuProps,
 } from "@/components/ui/ResponsiveButtons/helpers";
 import { BREAKPOINT_PX } from "@/constants";
 import type {
   ConfirmationButtonProps,
-  MenuLink,
   Position,
 } from "@canonical/react-components";
-import { ContextualMenu } from "@canonical/react-components";
+import { Button, ContextualMenu } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactElement, ReactNode } from "react";
 import { isValidElement, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
+import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import classes from "./ResponsiveButtons.module.scss";
-import type { ButtonLikeProps } from "./types";
+import type { ButtonLikeProps, CollapsedLink, CollapsedNode } from "./types";
 
 export interface ResponsiveButtonGroupProps {
   readonly buttons: ReactNode[];
@@ -39,12 +41,51 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
 
-  const { visibleButtons, collapsedLinks } = useMemo(() => {
+  const { visibleButtons, collapsedItems } = useMemo(() => {
     const visible = isLargeScreen ? buttons : buttons.slice(0, alwaysVisible);
-    const collapsed: (MenuLink & { key: string })[] = [];
+
+    const collapsed: (CollapsedLink | CollapsedNode)[] = [];
 
     buttons.slice(isLargeScreen ? 0 : alwaysVisible).forEach((node, i) => {
       const index = isLargeScreen ? i : i + alwaysVisible;
+
+      if (isContextualMenu(node) && !visible.includes(node)) {
+        const menuProps = getContextualMenuProps(node);
+        if (menuProps) {
+          const content = (
+            <>
+              {menuProps.links?.map((link, linkIndex) => {
+                if (typeof link === "string" || Array.isArray(link)) {
+                  return null;
+                }
+                return (
+                  <Button
+                    key={linkIndex}
+                    type="button"
+                    className="p-contextual-menu__link"
+                    onClick={(e) => {
+                      if (link.onClick) {
+                        link.onClick(e);
+                      }
+                    }}
+                    disabled={link.disabled}
+                  >
+                    {link.children}
+                  </Button>
+                );
+              })}
+            </>
+          );
+
+          collapsed.push({
+            key: `contextual-menu-${index}`,
+            label: menuProps.toggleLabel,
+            content,
+            disabled: menuProps.toggleDisabled,
+          });
+        }
+        return;
+      }
 
       if (
         isValidElement(node) &&
@@ -69,21 +110,24 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
       }
     });
 
-    return { visibleButtons: visible, collapsedLinks: collapsed };
+    return { visibleButtons: visible, collapsedItems: collapsed };
   }, [buttons, alwaysVisible, isLargeScreen]);
 
   const groupedMarkup =
     grouped && visibleButtons.length > 1 ? (
       <div className="p-segmented-control">
         <div className="p-segmented-control__list">
-          {visibleButtons.map(
-            (node, i): ReactNode =>
-              decorateNode(
-                node,
-                i,
-                "p-segmented-control__button u-no-margin--bottom",
-              ),
-          )}
+          {visibleButtons.map((node, i): ReactNode => {
+            if (isContextualMenu(node)) {
+              return decorateNode(node, i, "u-no-margin--bottom");
+            }
+
+            return decorateNode(
+              node,
+              i,
+              "p-segmented-control__button u-no-margin--bottom",
+            );
+          })}
         </div>
       </div>
     ) : (
@@ -102,17 +146,50 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
     >
       {visibleButtons.length > 0 && groupedMarkup}
 
-      {collapsedLinks.length > 0 && (
+      {collapsedItems.length > 0 && (
         <ContextualMenu
           position={menuPosition}
           hasToggleIcon
           toggleLabel={menuLabel}
           toggleClassName="u-no-margin--bottom"
-          toggleDisabled={collapsedLinks.every(
-            (link) => "disabled" in link && link.disabled,
+        >
+          {(close: () => void) => (
+            <>
+              {collapsedItems.map((item) => {
+                if ("content" in item && "label" in item) {
+                  return (
+                    <ResponsiveDropdownItem
+                      key={item.key}
+                      el={item.content}
+                      label={item.label}
+                      disabled={item.disabled}
+                      onMenuClose={close}
+                    />
+                  );
+                }
+                if (typeof item !== "string" && "onClick" in item) {
+                  return (
+                    <Button
+                      key={item.key}
+                      type="button"
+                      className="p-contextual-menu__link"
+                      onClick={(e) => {
+                        close();
+                        if (item.onClick) {
+                          item.onClick(e);
+                        }
+                      }}
+                      disabled={item.disabled}
+                    >
+                      {item.children}
+                    </Button>
+                  );
+                }
+                return null;
+              })}
+            </>
           )}
-          links={collapsedLinks}
-        />
+        </ContextualMenu>
       )}
     </div>
   );

@@ -13,6 +13,7 @@ import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
+import ContractExpiryFilter from "../ContractExpiryFilter";
 import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
@@ -66,6 +67,10 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
   const osOptions = FILTERS.os.type === "select" ? FILTERS.os.options : [];
   const wslOptions =
     FILTERS.wsl.type === "multi-select" ? FILTERS.wsl.options : [];
+  const contractExpiryOptions =
+    FILTERS.contractExpiryDays.type === "select"
+      ? FILTERS.contractExpiryDays.options
+      : [];
 
   return (
     <>
@@ -78,7 +83,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           />
         </div>
         <ResponsiveTableFilters
-          collapseFrom="xxl"
+          isCollapsed={true}
           filters={[
             <PageParamFilter
               pageParamKey="status"
@@ -99,6 +104,11 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
             />,
             <TagFilter key="tag" label="Tags" options={tagOptions} />,
             <WslFilter key="wsl" label="WSL" options={wslOptions} />,
+            <ContractExpiryFilter
+              key="contract-expiry"
+              label="Contract expiry"
+              options={contractExpiryOptions}
+            />,
             <span key="divider-2" className={classes.divider} />,
             <ColumnFilter
               key="column"
@@ -118,6 +128,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "tags",
           "query",
           "wsl",
+          "contractExpiryDays",
         ]}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}
@@ -125,6 +136,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
         statusOptions={statusOptions}
         tagOptions={tagOptions}
         wslOptions={wslOptions}
+        contractExpiryOptions={contractExpiryOptions}
       />
 
       <SearchHelpPopup

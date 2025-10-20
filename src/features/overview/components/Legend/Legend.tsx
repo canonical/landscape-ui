@@ -4,7 +4,7 @@ import type { FC } from "react";
 import { Link } from "react-router";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import classes from "./Legend.module.scss";
-import { STATUSES } from "@/features/instances";
+import { ALERT_STATUSES } from "@/features/instances";
 import { useTheme } from "@/context/theme";
 import { ROUTES } from "@/libs/routes";
 
@@ -40,9 +40,9 @@ const Legend: FC<LegendProps> = ({
         {chartInstance.legend?.legendItems?.map(
           (item: LegendItem, index: number) => {
             const statusItem =
-              Object.values(STATUSES).find(
+              Object.values(ALERT_STATUSES).find(
                 (status) => status?.alternateLabel === item.text,
-              ) ?? STATUSES["Unknown"];
+              ) ?? ALERT_STATUSES["Unknown"];
             return (
               <div
                 key={index}

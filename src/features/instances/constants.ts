@@ -2,7 +2,7 @@ import type { ListFilter } from "@/types/Filters";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Status } from "./types/Status";
 
-export const STATUSES: Record<string, Status> = {
+export const STATUS_FILTERS: Record<string, Status> = {
   Online: {
     alertType: "ComputerOnlineAlert",
     label: "Computers online",
@@ -99,6 +99,18 @@ export const STATUSES: Record<string, Status> = {
     query: "NOT alert:package-upgrades",
     icon: { color: "up-to-date" },
   },
+  ChildInstanceProfileAlert: {
+    alertType: "ChildInstanceProfileAlert",
+    label: "Child instance profiles",
+    alternateLabel: "Child instance profiles",
+    filterValue: "child-instance-profiles",
+    query: "alert:child-instance-profiles",
+    icon: { gray: "machines" },
+  },
+};
+
+export const ALERT_STATUSES: Record<string, Status> = {
+  ...STATUS_FILTERS,
   PendingComputersAlert: {
     alertType: "PendingComputersAlert",
     label: "Pending",
@@ -107,13 +119,13 @@ export const STATUSES: Record<string, Status> = {
     query: "",
     icon: { gray: "pause", color: "pause-color" },
   },
-  ChildInstanceProfileAlert: {
-    alertType: "ChildInstanceProfileAlert",
-    label: "Child instance profiles",
-    alternateLabel: "Child instance profiles",
-    filterValue: "child-instance-profiles",
-    query: "alert:child-instance-profiles",
-    icon: { gray: "machines" },
+  UbuntuProContractExpirationAlert: {
+    alertType: "UbuntuProContractExpirationAlert",
+    label: "Ubuntu Pro contract expiring",
+    alternateLabel: "Ubuntu Pro expiring",
+    filterValue: "90",
+    query: "contract-expires-within-days:90",
+    icon: { color: "contract-expiration-alert" },
   },
   Unknown: {
     alertType: "",
@@ -125,27 +137,12 @@ export const STATUSES: Record<string, Status> = {
   },
 };
 
-const alertTypes = [
-  "UpToDate",
-  "PackageUpgradesAlert",
-  "SecurityUpgradesAlert",
-  "PackageProfilesAlert",
-  "PackageReporterAlert",
-  "EsmDisabledAlert",
-  "ComputerOfflineAlert",
-  "ComputerOnlineAlert",
-  "ComputerRebootAlert",
-  "ComputerDuplicateAlert",
-  "UnapprovedActivitiesAlert",
-  "ChildInstanceProfileAlert",
-];
-
 const ARCHIVED_STATUS_OPTION: SelectOption = {
   label: "Archived",
   value: "archived",
 };
 
-type FilterKey = "os" | "groupBy" | "status" | "wsl";
+type FilterKey = "os" | "groupBy" | "status" | "wsl" | "contractExpiryDays";
 
 export const FILTERS: Record<FilterKey, ListFilter> = {
   os: {
@@ -173,12 +170,8 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
     type: "select",
     options: [
       { label: "All", value: "", query: "" },
-      ...Object.values(STATUSES)
-        .filter(({ alertType }) => alertTypes.includes(alertType))
-        .sort(
-          (a, b) =>
-            alertTypes.indexOf(a.alertType) - alertTypes.indexOf(b.alertType),
-        )
+      ...Object.values(STATUS_FILTERS)
+        .sort((a, b) => a.label.localeCompare(b.label))
         .map(({ label, filterValue, query }) => ({
           label,
           value: filterValue,
@@ -194,6 +187,34 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
     options: [
       { label: "Parent", value: "parent", query: "wsl:parent" },
       { label: "Child", value: "child", query: "wsl:child" },
+    ],
+  },
+  contractExpiryDays: {
+    slug: "contractExpiryDays",
+    label: "Contract expiry",
+    type: "select",
+    options: [
+      { label: "All", value: "", query: "" },
+      {
+        label: "90 days",
+        value: "90",
+        query: "contract-expires-within-days:90",
+      },
+      {
+        label: "60 days",
+        value: "60",
+        query: "contract-expires-within-days:60",
+      },
+      {
+        label: "30 days",
+        value: "30",
+        query: "contract-expires-within-days:30",
+      },
+      {
+        label: "7 days",
+        value: "7",
+        query: "contract-expires-within-days:7",
+      },
     ],
   },
 };

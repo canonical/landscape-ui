@@ -11,6 +11,7 @@ export const getOptionQuery = (filter: ListFilter, optionValue: string) => {
 interface GetQueryProps {
   accessGroups: string[];
   availabilityZones: string[];
+  contractExpiryDays: string;
   os: string;
   query: string;
   status: string;
@@ -20,6 +21,7 @@ interface GetQueryProps {
 export const getQuery = ({
   accessGroups,
   availabilityZones,
+  contractExpiryDays,
   os,
   query,
   status,
@@ -33,6 +35,12 @@ export const getQuery = ({
 
   if (status) {
     queryParts.push(getOptionQuery(FILTERS.status, status));
+  }
+
+  if (contractExpiryDays) {
+    queryParts.push(
+      getOptionQuery(FILTERS.contractExpiryDays, contractExpiryDays),
+    );
   }
 
   if (query) {
