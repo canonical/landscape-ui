@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from "react";
 import { cloneElement, isValidElement } from "react";
-import type { ButtonLikeProps } from "./types";
+import type { ButtonLikeProps, ContextualMenuProps } from "./types";
 import classNames from "classnames";
 
 export const textFromNode = (node: ReactNode): string => {
@@ -37,4 +37,24 @@ export const decorateNode = (
   }
 
   return node;
+};
+
+export const isContextualMenu = (node: ReactNode): boolean => {
+  if (!isValidElement(node)) {
+    return false;
+  }
+  const displayName =
+    (node.type as { displayName?: string })?.displayName ||
+    (node.type as { name?: string })?.name ||
+    "";
+  return displayName.includes("ContextualMenu");
+};
+
+export const getContextualMenuProps = (
+  node: ReactNode,
+): ContextualMenuProps | null => {
+  if (!isValidElement(node)) {
+    return null;
+  }
+  return node.props as ContextualMenuProps;
 };

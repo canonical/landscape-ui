@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import AccountCreationSelfHostedForm from "./AccountCreationSelfHostedForm";
 
 describe("AccountCreationSelfHostedForm", () => {
+  const user = userEvent.setup();
+
   it("renders the form correctly", () => {
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
@@ -18,18 +20,23 @@ describe("AccountCreationSelfHostedForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows validation errors for empty fields", async () => {
-    const user = userEvent.setup();
+  it("correctly disables button based on form validity", async () => {
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
     const submitButton = screen.getByRole("button", { name: "Create account" });
-    await user.click(submitButton);
+    expect(submitButton).toBeDisabled();
 
-    expect(screen.getAllByText("This field is required")).toHaveLength(2);
+    await user.type(screen.getByLabelText("Full name"), "John Doe");
+    await user.type(
+      screen.getByLabelText("Email address"),
+      "john.doe@example.com",
+    );
+    await user.type(screen.getByLabelText("Password"), "Password1234");
+
+    expect(submitButton).toBeEnabled();
   });
 
   it("shows validation error for invalid email", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
     await user.type(screen.getByLabelText("Email address"), "invalid-email");

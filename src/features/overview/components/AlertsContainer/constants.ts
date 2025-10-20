@@ -1,4 +1,4 @@
-import { STATUSES } from "@/features/instances";
+import { ALERT_STATUSES } from "@/features/instances";
 
 const overviewAlerts = [
   "ComputerOfflineAlert",
@@ -9,7 +9,7 @@ const overviewAlerts = [
   "PendingComputersAlert",
 ];
 
-export const widgetAlerts = Object.values(STATUSES)
+export const widgetAlerts = Object.values(ALERT_STATUSES)
   .filter(({ alertType }) => overviewAlerts.includes(alertType))
   .sort(
     (a, b) =>

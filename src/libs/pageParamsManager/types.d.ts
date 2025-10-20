@@ -10,6 +10,7 @@ export type SortDirection = "asc" | "desc" | null;
 export interface PageParams {
   accessGroups: string[];
   availabilityZones: string[];
+  contractExpiryDays: string;
   currentPage: number;
   days: string;
   disabledColumns: string[];

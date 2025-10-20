@@ -39,7 +39,7 @@ describe("useFeatures", () => {
     });
 
     expect(result.current.isFeatureEnabled("spa-dashboard")).toBe(true);
-    expect(result.current.isFeatureEnabled("usg-profiles")).toBe(false);
+    expect(result.current.isFeatureEnabled("usg-profiles")).toBe(true);
   });
 
   it("warns and returns false when the endpoint is empty", async () => {

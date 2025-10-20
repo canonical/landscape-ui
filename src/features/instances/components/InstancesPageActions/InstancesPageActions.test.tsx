@@ -16,6 +16,7 @@ const BUTTON_LABELS = [
   "Run script",
   "Upgrade",
   "Assign",
+  "Attach token",
 ];
 
 describe("InstancesPageActions", () => {

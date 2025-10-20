@@ -7,7 +7,7 @@ import { ContextualMenu } from "@canonical/react-components";
 import { BREAKPOINT_PX } from "@/constants";
 
 import classes from "./ResponsiveTableFilters.module.scss";
-import ResponsiveTableFilterItem from "@/components/filter/ResponsiveTableFilters/components/ResponsiveTableFilterItem";
+import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import type { FilterProps } from "@/components/filter/types";
 
 export interface ResponsiveTableFiltersProps {
@@ -19,6 +19,7 @@ export interface ResponsiveTableFiltersProps {
   readonly menuLabel?: string;
   readonly className?: string;
   readonly menuPosition?: Position;
+  readonly isCollapsed?: boolean;
 }
 
 const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
@@ -27,6 +28,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
   menuLabel = "Filters",
   className,
   menuPosition = "right",
+  isCollapsed = false,
 }) => {
   const isLarge = useMediaQuery(
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
@@ -34,7 +36,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
 
   return (
     <div className={classNames(classes.wrapper, className)}>
-      {isLarge ? (
+      {isLarge && !isCollapsed ? (
         filters.map((node, i) => <span key={i}>{node}</span>)
       ) : (
         <ContextualMenu
@@ -49,7 +51,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
                 return node;
               }
 
-              return <ResponsiveTableFilterItem key={i} el={node} />;
+              return <ResponsiveDropdownItem key={i} el={node} />;
             })}
           </div>
         </ContextualMenu>

@@ -19,6 +19,8 @@ import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
 import { createPortal } from "react-dom";
+import { DetachTokenModal } from "@/features/ubuntupro";
+import useAuth from "@/hooks/useAuth";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -35,6 +37,16 @@ const ReportView = lazy(
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const TagsAddForm = lazy(async () => import("../TagsAddForm"));
+const AttachTokenForm = lazy(async () =>
+  import("@/features/ubuntupro").then((module) => ({
+    default: module.AttachTokenForm,
+  })),
+);
+const ReplaceTokenForm = lazy(async () =>
+  import("@/features/ubuntupro").then((module) => ({
+    default: module.ReplaceTokenForm,
+  })),
+);
 
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
@@ -46,12 +58,14 @@ const InstancesPageActions = memo(function InstancesPageActions({
   selectedInstances,
 }: InstancesPageActionsProps) {
   const debug = useDebug();
+  const { isFeatureEnabled } = useAuth();
   const { notify } = useNotify();
   const { openActivityDetails } = useActivities();
   const { setSidePanelContent } = useSidePanel();
 
   const [rebootModalOpen, setRebootModalOpen] = useState(false);
   const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
+  const [detachModalOpen, setDetachModalOpen] = useState(false);
 
   const { restartInstances, isRestartingInstances } = useRestartInstances();
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
@@ -182,6 +196,50 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
+  const handleAttachToken = () => {
+    setSidePanelContent(
+      `Attach Ubuntu Pro token to ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      <Suspense fallback={<LoadingState />}>
+        <AttachTokenForm selectedInstances={selectedInstances} />
+      </Suspense>,
+    );
+  };
+
+  const handleReplaceToken = () => {
+    setSidePanelContent(
+      `Replace Ubuntu Pro token for ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      <Suspense fallback={<LoadingState />}>
+        <ReplaceTokenForm selectedInstances={selectedInstances} />
+      </Suspense>,
+    );
+  };
+
+  const allInstancesHaveToken = selectedInstances.every(
+    (instance) =>
+      instance.ubuntu_pro_info?.result === "success" &&
+      instance.ubuntu_pro_info.attached,
+  );
+
+  const proServicesLinks = [
+    allInstancesHaveToken
+      ? {
+          children: <span>Replace token</span>,
+          onClick: handleReplaceToken,
+        }
+      : {
+          children: <span>Attach token</span>,
+          onClick: handleAttachToken,
+        },
+    isFeatureEnabled("ubuntu_pro_licensing")
+      ? {
+          children: <span>Detach token</span>,
+          onClick: () => {
+            setDetachModalOpen(true);
+          },
+        }
+      : {},
+  ].filter((link) => link.children);
+
   return (
     <>
       <ResponsiveButtons
@@ -219,6 +277,28 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <Icon name="restart" />
             <span>Restart</span>
           </Button>,
+          proServicesLinks.length === 1 ? (
+            <Button
+              key="pro-services"
+              type="button"
+              className="u-no-margin--bottom"
+              onClick={proServicesLinks[0].onClick}
+              disabled={0 === selectedInstances.length}
+            >
+              {proServicesLinks[0].children}
+            </Button>
+          ) : (
+            <ContextualMenu
+              key="pro-services"
+              hasToggleIcon
+              links={proServicesLinks}
+              position="right"
+              toggleLabel={<span>Pro services</span>}
+              toggleClassName="u-no-margin--bottom"
+              toggleDisabled={0 === selectedInstances.length}
+              dropdownProps={{ style: { zIndex: 10 } }}
+            />
+          ),
           REPORT_VIEW_ENABLED && (
             <Button
               key="report-view"
@@ -323,6 +403,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
           </ConfirmationModal>,
           document.body,
         )}
+      {detachModalOpen && (
+        <DetachTokenModal
+          isOpen={detachModalOpen}
+          onClose={() => {
+            setDetachModalOpen(false);
+          }}
+          computerIds={selectedInstances.map(({ id }) => id)}
+        />
+      )}
     </>
   );
 });

@@ -23,6 +23,11 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_ARRAY,
   },
   {
+    urlParam: "contractExpiryDays",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
     urlParam: "currentPage",
     shouldResetPage: false,
     defaultValue: DEFAULT_CURRENT_PAGE,

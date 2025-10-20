@@ -3,7 +3,6 @@ import InstancesHeader from "./InstancesHeader";
 import { renderWithProviders } from "@/tests/render";
 import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
-import { setScreenSize } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
 
 const props: ComponentProps<typeof InstancesHeader> = {
@@ -26,10 +25,10 @@ describe("InstancesHeader", async () => {
     expect(searchBox).toBeInTheDocument();
   });
 
-  it("should display all filter options", () => {
-    setScreenSize("xxl");
-
+  it("should display all filter options", async () => {
     renderWithProviders(<InstancesHeader {...props} />);
+
+    await user.click(screen.getByRole("button", { name: /filters/i }));
 
     const statusFilter = screen.getByRole("button", { name: /status/i });
     expect(statusFilter).toBeInTheDocument();
@@ -58,20 +57,6 @@ describe("InstancesHeader", async () => {
 
     const columnFilter = screen.getByRole("button", { name: /columns/i });
     expect(columnFilter).toBeInTheDocument();
-  });
-
-  it("should display a filters button when screen size is small", async () => {
-    setScreenSize("sm");
-
-    renderWithProviders(<InstancesHeader {...props} />);
-
-    const filtersButton = screen.getByRole("button", { name: /filters/i });
-    expect(filtersButton).toBeInTheDocument();
-
-    await user.click(filtersButton);
-
-    const statusFilter = screen.getByRole("button", { name: /status/i });
-    expect(statusFilter).toBeInTheDocument();
   });
 
   it("shows search help when help button is clicked", async () => {

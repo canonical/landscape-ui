@@ -1,5 +1,5 @@
 import { useTheme } from "@/context/theme";
-import { STATUSES, useGetInstances } from "@/features/instances";
+import { ALERT_STATUSES, useGetInstances } from "@/features/instances";
 import type { FC } from "react";
 import { colorMap } from "../../constants";
 import type { Color } from "../../types";
@@ -29,21 +29,23 @@ const ChartContainer: FC = () => {
   const chartData = [
     {
       count: upToDateInstancesCount,
-      title: STATUSES["UpToDate"].alternateLabel ?? STATUSES["UpToDate"].label,
+      title:
+        ALERT_STATUSES["UpToDate"].alternateLabel ??
+        ALERT_STATUSES["UpToDate"].label,
       colorKey: "green",
     },
     {
       count: instancesWithPackageUpgradesCount,
       title:
-        STATUSES["PackageUpgradesAlert"].alternateLabel ??
-        STATUSES["PackageUpgradesAlert"].label,
+        ALERT_STATUSES["PackageUpgradesAlert"].alternateLabel ??
+        ALERT_STATUSES["PackageUpgradesAlert"].label,
       colorKey: "orange",
     },
     {
       count: instancesWithSecurityUpgradesCount,
       title:
-        STATUSES["SecurityUpgradesAlert"].alternateLabel ??
-        STATUSES["SecurityUpgradesAlert"].label,
+        ALERT_STATUSES["SecurityUpgradesAlert"].alternateLabel ??
+        ALERT_STATUSES["SecurityUpgradesAlert"].label,
       colorKey: "red",
     },
   ];

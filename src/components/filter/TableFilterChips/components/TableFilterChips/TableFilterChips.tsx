@@ -17,6 +17,7 @@ import {
 interface TableFilterChipsProps {
   readonly accessGroupOptions?: SelectOption[];
   readonly availabilityZonesOptions?: SelectOption[];
+  readonly contractExpiryOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
   readonly osOptions?: SelectOption[];
   readonly statusOptions?: SelectOption[];
@@ -28,6 +29,7 @@ interface TableFilterChipsProps {
 const TableFilterChips: FC<TableFilterChipsProps> = ({
   accessGroupOptions,
   availabilityZonesOptions,
+  contractExpiryOptions,
   filtersToDisplay = defaultFiltersToDisplay,
   osOptions,
   statusOptions,
@@ -41,6 +43,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const {
     accessGroups,
     availabilityZones,
+    contractExpiryDays,
     fromDate,
     os,
     status,
@@ -182,6 +185,14 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         clear: createPageParamsSetter({ wsl: [] }),
       },
     },
+    {
+      condition: filtersToDisplay.includes("contractExpiryDays"),
+      value: {
+        label: "Contract expiry",
+        item: getItem(contractExpiryOptions, contractExpiryDays),
+        clear: createPageParamsSetter({ contractExpiryDays: "" }),
+      },
+    },
   ]
     .filter(({ condition }) => condition)
     .map(({ value }) => value);
@@ -189,6 +200,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   const clearAll = createPageParamsSetter({
     accessGroups: [],
     availabilityZones: [],
+    contractExpiryDays: "",
     fromDate: "",
     os: "",
     status: "",

@@ -100,7 +100,9 @@ const AccountCreationSelfHostedForm: FC = () => {
           appearance="positive"
           type="submit"
           loading={isCreatingStandaloneAccount}
-          disabled={isCreatingStandaloneAccount}
+          disabled={
+            isCreatingStandaloneAccount || !formik.isValid || !formik.dirty
+          }
         >
           Create account
         </ActionButton>

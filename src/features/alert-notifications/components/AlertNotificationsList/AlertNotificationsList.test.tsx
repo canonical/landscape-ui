@@ -1,4 +1,3 @@
-import { STATUSES } from "@/features/instances";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
@@ -6,6 +5,9 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import AlertNotificationsList from "./AlertNotificationsList";
 import { pluralize } from "@/utils/_helpers";
+import { ALERT_STATUSES } from "@/features/instances";
+import { ROUTES } from "@/libs/routes";
+import { getRouteParams } from "./helpers";
 
 const alertsWithoutPending = alertsSummary.filter(
   (alert) => alert.alert_type !== "PendingComputersAlert",
@@ -42,7 +44,7 @@ describe("AlertNotificationsList", () => {
 
       if (match) {
         expect(item).toHaveIcon(
-          `p-icon--${STATUSES[match.alert_type].icon.color ?? STATUSES[match.alert_type].icon.gray}`,
+          `p-icon--${ALERT_STATUSES[match.alert_type].icon.color ?? ALERT_STATUSES[match.alert_type].icon.gray}`,
         );
       }
     });
@@ -53,7 +55,7 @@ describe("AlertNotificationsList", () => {
     expect(icon).toBeInTheDocument();
 
     expect(icon?.className).toContain(
-      `p-icon--${STATUSES.PendingComputersAlert.icon.color}`,
+      `p-icon--${ALERT_STATUSES.PendingComputersAlert.icon.color}`,
     );
   });
 
@@ -89,10 +91,9 @@ describe("AlertNotificationsList", () => {
         (item) => item.summary === link.textContent,
       );
 
-      expect(link).toHaveAttribute(
-        "href",
-        `/instances?status=${STATUSES[match?.alert_type ?? "Unknown"].filterValue}`,
-      );
+      const routeParams = match ? getRouteParams(match) : {};
+
+      expect(link).toHaveAttribute("href", ROUTES.instances.root(routeParams));
     });
   });
 });

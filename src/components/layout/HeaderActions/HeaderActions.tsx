@@ -2,9 +2,25 @@ import ActionsMenu from "@/components/layout/ActionsMenu";
 import type { Action } from "@/types/Action";
 import { Button, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import type { ReactNode, Ref } from "react";
-import { useState, type FC } from "react";
+import {
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+  type ReactNode,
+  type Ref,
+} from "react";
 import classes from "./HeaderActions.module.scss";
+import {
+  actionListsAreEqual,
+  bucketsHaveAnyCollapsed,
+  collapsedBucketsAreEqual,
+  combineActions,
+  countExplicitCollapseFlags,
+  filterOutExcludedActions,
+  measureAndPartitionActionsByOverflow,
+} from "./helpers";
 
 export interface HeaderActionsProps {
   readonly actions: {
@@ -16,125 +32,143 @@ export interface HeaderActionsProps {
 
 const HeaderActions: FC<HeaderActionsProps> = ({
   actions: {
-    destructive: destructiveActions = [],
-    nondestructive: nondestructiveActions = [],
+    destructive: destructiveFromProps = [],
+    nondestructive: nondestructiveFromProps = [],
   },
   title,
 }) => {
-  destructiveActions = destructiveActions.filter((action) => !action.excluded);
-
-  nondestructiveActions = nondestructiveActions.filter(
-    (action) => !action.excluded,
+  const nondestructiveActions = useMemo(
+    () => filterOutExcludedActions(nondestructiveFromProps),
+    [nondestructiveFromProps],
+  );
+  const destructiveActions = useMemo(
+    () => filterOutExcludedActions(destructiveFromProps),
+    [destructiveFromProps],
   );
 
-  const initialVisibleActions = [
-    ...nondestructiveActions,
-    ...destructiveActions,
-  ];
+  const initialVisibleActions = useMemo(
+    () => combineActions(nondestructiveActions, destructiveActions),
+    [nondestructiveActions, destructiveActions],
+  );
 
-  const initialCollapsedActions = {
-    nondestructive: [],
-    destructive: [],
-  };
-
-  const [visibleActions, setVisibleActions] = useState(initialVisibleActions);
-
+  const [visibleActions, setVisibleActions] = useState<Action[]>(
+    initialVisibleActions,
+  );
   const [collapsedActions, setCollapsedActions] = useState<{
     destructive: Action[];
     nondestructive: Action[];
-  }>(initialCollapsedActions);
-
+  }>({
+    nondestructive: [],
+    destructive: [],
+  });
   const [isCollapsedButtonVisible, setIsCollapsedButtonVisible] =
-    useState(false);
+    useState<boolean>(false);
 
-  const [previousWidth, setPreviousWidth] = useState(0);
+  const [previousContainerWidth, setPreviousContainerWidth] =
+    useState<number>(0);
 
-  const hasMultipleCollapsedActions =
-    nondestructiveActions.filter((action) => action.collapsed).length +
-      destructiveActions.filter((action) => action.collapsed).length >
-    1;
+  const hasMultipleForcedCollapsed = useMemo(
+    () =>
+      countExplicitCollapseFlags(nondestructiveActions, destructiveActions) > 1,
+    [nondestructiveActions, destructiveActions],
+  );
 
-  const visibleCheck = (element: HTMLElement, parentElement: HTMLElement) => {
-    if (
-      collapsedActions.destructive.length ||
-      collapsedActions.nondestructive.length
-    ) {
-      return;
-    }
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const relayoutInProgressRef = useRef<boolean>(false);
 
-    if (
-      (!element.lastElementChild ||
-        element.lastElementChild.getBoundingClientRect().right <=
-          parentElement.getBoundingClientRect().right) &&
-      !hasMultipleCollapsedActions
-    ) {
-      setIsCollapsedButtonVisible(false);
-      return;
-    }
+  const recomputeLayoutFromMeasurements = useCallback(
+    (renderedListEl: HTMLElement): void => {
+      const { visible, collapsed, showCollapsedMenu } =
+        measureAndPartitionActionsByOverflow(
+          renderedListEl,
+          nondestructiveActions,
+          destructiveActions,
+          hasMultipleForcedCollapsed,
+        );
 
-    setIsCollapsedButtonVisible(true);
+      setIsCollapsedButtonVisible((prev) =>
+        prev === showCollapsedMenu ? prev : showCollapsedMenu,
+      );
 
-    const newVisibleActions: Action[] = [];
-    const newCollapsedActions: {
-      destructive: Action[];
-      nondestructive: Action[];
-    } = { nondestructive: [], destructive: [] };
+      setVisibleActions((prev) =>
+        actionListsAreEqual(prev, visible) ? prev : visible,
+      );
+      setCollapsedActions((prev) =>
+        collapsedBucketsAreEqual(prev, collapsed) ? prev : collapsed,
+      );
+    },
+    [nondestructiveActions, destructiveActions, hasMultipleForcedCollapsed],
+  );
 
-    nondestructiveActions.forEach((action, index) => {
-      if (
-        element.children[index].getBoundingClientRect().right >
-          element.getBoundingClientRect().right ||
-        (action.collapsed && hasMultipleCollapsedActions)
-      ) {
-        newCollapsedActions.nondestructive.push(action);
-      } else {
-        newVisibleActions.push(action);
+  const handleContainerResize = useCallback(
+    (containerEl: HTMLElement, listEl: HTMLElement): void => {
+      const { width } = containerEl.getBoundingClientRect();
+
+      if (width === previousContainerWidth) {
+        return;
       }
-    });
 
-    destructiveActions.forEach((action, index) => {
-      index += nondestructiveActions.length;
+      const grew = width > previousContainerWidth;
+      setPreviousContainerWidth(width);
 
-      if (
-        element.children[index].getBoundingClientRect().right >
-          element.getBoundingClientRect().right ||
-        (action.collapsed && hasMultipleCollapsedActions)
-      ) {
-        newCollapsedActions.destructive.push(action);
-      } else {
-        newVisibleActions.push(action);
+      const anyCollapsedNow = bucketsHaveAnyCollapsed(collapsedActions);
+
+      if (grew && anyCollapsedNow && !relayoutInProgressRef.current) {
+        relayoutInProgressRef.current = true;
+
+        setIsCollapsedButtonVisible(false);
+
+        const allActions = combineActions(
+          nondestructiveActions,
+          destructiveActions,
+        );
+        setVisibleActions(allActions);
+        setCollapsedActions({ nondestructive: [], destructive: [] });
+
+        return;
       }
-    });
+      recomputeLayoutFromMeasurements(listEl);
+    },
+    [
+      previousContainerWidth,
+      collapsedActions,
+      nondestructiveActions,
+      destructiveActions,
+      recomputeLayoutFromMeasurements,
+    ],
+  );
 
-    setVisibleActions(newVisibleActions);
-    setCollapsedActions(newCollapsedActions);
-  };
-
-  const initialVisibleCheck: Ref<HTMLElement> = (element) => {
-    const parentElement = element?.parentElement?.parentElement;
-
-    if (!parentElement) {
-      return;
-    }
-
-    visibleCheck(element, parentElement);
-
-    const observer = new ResizeObserver(() => {
-      const { width } = parentElement.getBoundingClientRect();
-
-      if (width !== previousWidth) {
-        setVisibleActions(initialVisibleActions);
-        setCollapsedActions(initialCollapsedActions);
-        setPreviousWidth(width);
+  const attachVisibleListAndObserve: Ref<HTMLElement> = useCallback(
+    (listElement: HTMLElement | null) => {
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
       }
-    });
 
-    observer.observe(parentElement);
+      if (!listElement) {
+        return;
+      }
 
-    return () => {
-      observer.disconnect();
-    };
-  };
+      const listEl = listElement as HTMLDivElement;
+      const containerEl = listEl.parentElement
+        ?.parentElement as HTMLElement | null;
+
+      if (!containerEl) {
+        return;
+      }
+
+      recomputeLayoutFromMeasurements(listEl);
+      relayoutInProgressRef.current = false;
+
+      const resizeObserver = new ResizeObserver(() => {
+        handleContainerResize(containerEl, listEl);
+      });
+
+      resizeObserver.observe(containerEl);
+      resizeObserverRef.current = resizeObserver;
+    },
+    [recomputeLayoutFromMeasurements, handleContainerResize],
+  );
 
   return (
     <div
@@ -151,15 +185,12 @@ const HeaderActions: FC<HeaderActionsProps> = ({
         <div
           className={classNames(classes.innerContainer, "p-segmented-control")}
         >
-          <div ref={initialVisibleCheck} className="p-segmented-control__list">
+          <div
+            ref={attachVisibleListAndObserve}
+            className="p-segmented-control__list"
+          >
             {visibleActions.map(
-              ({
-                collapsed: _collapsed,
-                excluded: _excluded,
-                icon,
-                label,
-                ...action
-              }) => (
+              ({ collapsed: _c, excluded: _e, icon, label, ...action }) => (
                 <Button
                   className={classNames(
                     classes.button,
@@ -175,6 +206,7 @@ const HeaderActions: FC<HeaderActionsProps> = ({
             )}
           </div>
         </div>
+
         {isCollapsedButtonVisible && (
           <ActionsMenu
             hasToggleIcon

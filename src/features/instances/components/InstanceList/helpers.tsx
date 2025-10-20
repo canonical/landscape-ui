@@ -1,7 +1,6 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import NoData from "@/components/layout/NoData";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { STATUSES } from "@/features/instances";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
 import { Icon, Tooltip } from "@canonical/react-components";
@@ -21,6 +20,7 @@ import {
 } from "../../helpers";
 import classes from "./InstanceList.module.scss";
 import type { GetUpgradesResult, InstanceColumn } from "./types";
+import { ALERT_STATUSES } from "../../constants";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -82,14 +82,15 @@ export const getStatusCellIconAndLabel = (
 
   if (0 === filteredAlerts.length) {
     return {
-      icon: `${STATUSES.Online.icon.color}`,
-      label: STATUSES.Online.alternateLabel ?? STATUSES.Online.label,
+      icon: `${ALERT_STATUSES.Online.icon.color}`,
+      label:
+        ALERT_STATUSES.Online.alternateLabel ?? ALERT_STATUSES.Online.label,
     };
   }
 
   if (1 === filteredAlerts.length) {
     return {
-      icon: `${STATUSES[filteredAlerts[0].type].icon.color ?? STATUSES.Unknown.icon.color}`,
+      icon: `${ALERT_STATUSES[filteredAlerts[0].type].icon.color ?? ALERT_STATUSES.Unknown.icon.color}`,
       label: <>{filteredAlerts[0].summary}</>,
     };
   }
@@ -102,7 +103,7 @@ export const getStatusCellIconAndLabel = (
             <Tooltip message={summary}>
               <Icon
                 className="u-no-margin--left"
-                name={`${STATUSES[type]?.icon.color ?? STATUSES.Unknown.icon.color}`}
+                name={`${ALERT_STATUSES[type]?.icon.color ?? ALERT_STATUSES.Unknown.icon.color}`}
               />
             </Tooltip>
           </span>
@@ -118,14 +119,14 @@ const getUpgradesFromAlerts = (
   return {
     regular: hasRegularUpgrades(alerts)
       ? {
-          icon: STATUSES.PackageUpgradesAlert.icon.color ?? "",
-          label: STATUSES.PackageUpgradesAlert.label,
+          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color ?? "",
+          label: ALERT_STATUSES.PackageUpgradesAlert.label,
         }
       : false,
     security: hasSecurityUpgrades(alerts)
       ? {
-          icon: STATUSES.SecurityUpgradesAlert.icon.color ?? "",
-          label: STATUSES.SecurityUpgradesAlert.label,
+          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color ?? "",
+          label: ALERT_STATUSES.SecurityUpgradesAlert.label,
         }
       : false,
   };
@@ -141,13 +142,13 @@ const getUpgradesFromUpgrades = (
   return {
     regular: upgrades.regular
       ? {
-          icon: STATUSES.PackageUpgradesAlert.icon.color ?? "",
+          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color ?? "",
           label: `${upgrades.regular} regular ${pluralize(upgrades.regular, "upgrade")}`,
         }
       : false,
     security: upgrades.security
       ? {
-          icon: STATUSES.SecurityUpgradesAlert.icon.color ?? "",
+          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color ?? "",
           label: `${upgrades.security} security ${pluralize(upgrades.security, "upgrade")}`,
         }
       : false,
@@ -188,8 +189,8 @@ export const getUpgradesCellIconAndLabel = (instance: Instance) => {
   }
 
   return {
-    icon: STATUSES.UpToDate.icon.color,
-    label: STATUSES.UpToDate.label,
+    icon: ALERT_STATUSES.UpToDate.icon.color,
+    label: ALERT_STATUSES.UpToDate.label,
   };
 };
 
