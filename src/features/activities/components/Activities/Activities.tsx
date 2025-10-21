@@ -1,8 +1,10 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ROUTES } from "@/libs/routes";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import moment from "moment/moment";
 import type { FC } from "react";
@@ -14,8 +16,6 @@ import { useOpenActivityDetails } from "../../hooks";
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { ROUTES } from "@/libs/routes";
 
 const ActivityDetails = lazy(
   async () => import("@/features/activities/components/ActivityDetails"),
@@ -79,53 +79,51 @@ const Activities: FC<ActivitiesProps> = ({
     () =>
       [
         {
-          accessor: "checkbox",
-          className: classes.checkbox,
-          Header: (
-            <CheckboxInput
-              label={<span className="u-off-screen">Toggle all</span>}
-              inline
-              onChange={toggleAll}
-              checked={
-                activities.length > 0 &&
-                selectedActivities.length === activities.length
-              }
-              indeterminate={
-                selectedActivities.length > 0 &&
-                selectedActivities.length < activities.length
-              }
-              disabled={!activities.length}
-            />
-          ),
-          Cell: ({ row }: CellProps<ActivityCommon>) => (
-            <CheckboxInput
-              label={
-                <span className="u-off-screen">{row.original.summary}</span>
-              }
-              inline
-              labelClassName="u-no-margin--bottom u-no-padding--top"
-              checked={selectedActivities.includes(row.original)}
-              onChange={() => {
-                handleToggleActivity(row.original);
-              }}
-            />
-          ),
-        },
-        {
-          accessor: "summary",
+          accessor: "description",
           className: classes.description,
-          Header: "Description",
+          Header: (
+            <>
+              <CheckboxInput
+                label={<span className="u-off-screen">Toggle all</span>}
+                inline
+                onChange={toggleAll}
+                checked={
+                  activities.length > 0 &&
+                  selectedActivities.length === activities.length
+                }
+                indeterminate={
+                  selectedActivities.length > 0 &&
+                  selectedActivities.length < activities.length
+                }
+                disabled={!activities.length}
+              />
+              Description
+            </>
+          ),
           Cell: ({ row }: CellProps<ActivityCommon>) => (
-            <Button
-              type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => {
-                handleActivityDetailsOpen(row.original);
-              }}
-            >
-              {row.original.summary}
-            </Button>
+            <>
+              <CheckboxInput
+                label={
+                  <span className="u-off-screen">{row.original.summary}</span>
+                }
+                inline
+                labelClassName="u-no-margin--bottom u-no-padding--top"
+                checked={selectedActivities.includes(row.original)}
+                onChange={() => {
+                  handleToggleActivity(row.original);
+                }}
+              />
+              <Button
+                type="button"
+                appearance="link"
+                className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+                onClick={() => {
+                  handleActivityDetailsOpen(row.original);
+                }}
+              >
+                {row.original.summary}
+              </Button>
+            </>
           ),
         },
         {

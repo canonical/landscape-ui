@@ -8,6 +8,7 @@
   display: flex;
   position: sticky;
   top: var(--pageheader-height);
+  z-index: var(--z-sticky);
 }
 
 .searchContainer {
