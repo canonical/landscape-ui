@@ -35,7 +35,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
                 <SecondaryNavigation />
               </div>
             )}
-            <div className={classes.pageContent}>{children}</div>
+            {children}
           </main>
         </ApplicationIdContext>
       </SidePanelProvider>
