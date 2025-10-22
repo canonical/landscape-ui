@@ -23,15 +23,17 @@ export default defineConfig(
   eslint.configs.recommended,
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
+  reactHooks.configs.flat.recommended,
 
   {
-    files: ["src/**/*.{js,jsx,ts,tsx}"],
-    plugins: {
-      "react-hooks": reactHooks,
-    },
-    extends: ["react-hooks/recommended"],
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    plugins: { "react-hooks": reactHooks },
     rules: {
+      "react-hooks/immutability": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
+      "react-hooks/refs": "warn",
       "react-hooks/rules-of-hooks": "warn",
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
 
