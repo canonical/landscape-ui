@@ -9,5 +9,16 @@
   background-color: $colors--theme--background-default;
   left: 0;
   position: sticky;
-  z-index: var(--z-first-column);
+  z-index: var(--z-table-edge);
+}
+
+.firstRow {
+  background-color: $colors--theme--background-default;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-table-edge);
+}
+
+.firstRow.firstColumn {
+  z-index: var(--z-table-corner);
 }

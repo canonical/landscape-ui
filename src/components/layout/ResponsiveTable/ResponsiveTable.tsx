@@ -21,6 +21,7 @@ export default function ResponsiveTable<
   style,
   minWidth = 1024,
   columns,
+  getHeaderProps,
   ...tableProps
 }: ResponsiveTableProps<Row>): JSX.Element {
   const isSmall = useMediaQuery(`(max-width: ${BREAKPOINT_PX.sm}px)`);
@@ -35,12 +36,23 @@ export default function ResponsiveTable<
         ...columns.slice(1),
       ];
 
+  const getHeaderPropsAdjusted: ModularTableProps<Row>["getHeaderProps"] = (
+    header,
+  ) => {
+    const headerProps = getHeaderProps ? getHeaderProps(header) : {};
+
+    headerProps.className = classNames(headerProps.className, classes.firstRow);
+
+    return headerProps;
+  };
+
   return (
     <div className={classes.responsiveTable} style={style}>
       <ModularTable
         ref={ref}
         style={{ minWidth }}
         columns={columns}
+        getHeaderProps={getHeaderPropsAdjusted}
         {...tableProps}
       />
     </div>

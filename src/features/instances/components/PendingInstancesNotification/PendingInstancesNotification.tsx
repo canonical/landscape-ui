@@ -4,6 +4,7 @@ import { pluralize } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useGetPendingInstances } from "../../api";
 import classes from "./PendingInstancesNotification.module.scss";
 
@@ -16,7 +17,9 @@ const PendingInstancesNotification: FC = () => {
 
   const { pendingInstances } = useGetPendingInstances();
 
-  if (!pendingInstances.length) {
+  const { value: dismissed, setTrue: dismiss } = useBoolean();
+
+  if (!pendingInstances.length || dismissed) {
     return null;
   }
 
@@ -35,6 +38,7 @@ const PendingInstancesNotification: FC = () => {
       severity="information"
       title="Pending instances"
       className={classes.notification}
+      onDismiss={dismiss}
     >
       <span>
         {`You currently have ${pendingInstances.length} pending
