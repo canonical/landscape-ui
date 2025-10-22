@@ -7,6 +7,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
 import { CheckboxInput } from "@canonical/react-components";
 import moment from "moment";
@@ -24,7 +25,6 @@ import {
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
-import { ROUTES } from "@/libs/routes";
 
 interface InstanceListProps {
   readonly instances: Instance[];
@@ -255,21 +255,20 @@ const InstanceList = memo(function InstanceList({
   );
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        emptyMsg={
-          isFilteringInstances
-            ? "No instances found according to your search parameters."
-            : "No instances found"
-        }
-        columns={filteredColumns}
-        data={instances}
-        getHeaderProps={handleHeaderProps}
-        getRowProps={getRowProps(expandedRowIndex)}
-        getCellProps={getCellProps(expandedRowIndex)}
-        minWidth={1400}
-      />
-    </div>
+    <ResponsiveTable
+      emptyMsg={
+        isFilteringInstances
+          ? "No instances found according to your search parameters."
+          : "No instances found"
+      }
+      ref={getTableRowsRef}
+      columns={filteredColumns}
+      data={instances}
+      getHeaderProps={handleHeaderProps}
+      getRowProps={getRowProps(expandedRowIndex)}
+      getCellProps={getCellProps(expandedRowIndex)}
+      minWidth={1400}
+    />
   );
 });
 

@@ -1,21 +1,14 @@
-import type { FC } from "react";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import classNames from "classnames";
+import type { FC } from "react";
 import classes from "./PageContent.module.scss";
 import type { PageContentProps } from "./types";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
-const PageContent: FC<PageContentProps> = ({
-  children,
-  container = "fluid",
-  align = "center",
-}) => {
+const PageContent: FC<PageContentProps> = ({ children }) => {
   return (
-    <div className={classNames("p-panel__content", classes.outerDiv)}>
+    <div className="p-panel__content">
       <div
-        className={classNames("p-panel__inner", classes.innerDiv, {
-          [classes.alignCenter]: container === "medium" && align === "center",
-          [classes.alignLeft]: container === "medium" && align === "left",
-        })}
+        className={classNames("u-fixed-width u-no-max-width", classes.innerDiv)}
       >
         <AppErrorBoundary>{children}</AppErrorBoundary>
       </div>

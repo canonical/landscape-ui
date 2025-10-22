@@ -6,7 +6,7 @@ export function useExpandableRow<T extends HTMLElement>() {
   const [expandedColumnId, setExpandedColumnId] = useState<string | null>(null);
   const tableRowsRef = useRef<T[]>([]);
 
-  const getTableRowsRef = useCallback((instance: HTMLDivElement | null) => {
+  const getTableRowsRef = useCallback((instance: HTMLElement | null) => {
     if (!instance) {
       return;
     }
