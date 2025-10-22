@@ -32,7 +32,6 @@ interface PackageListProps {
 const defaultPage = 1;
 const defaultItemsPerPage = 20;
 
-// eslint-disable-next-line complexity
 const PackageList: FC<PackageListProps> = ({
   distributionName,
   pocket,
