@@ -16,6 +16,7 @@ import AccessGroupBlock from "@/pages/dashboard/settings/roles/AccessGroupBlock"
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getPromisesToAddRole } from "./helpers";
 import type { FormProps } from "./types";
+import { getFormikError } from "@/utils/formikErrors";
 
 const AddRoleForm: FC = () => {
   const debug = useDebug();
@@ -84,11 +85,7 @@ const AddRoleForm: FC = () => {
         required
         autoComplete="off"
         {...formik.getFieldProps("name")}
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
       />
 
       <Input
@@ -96,11 +93,7 @@ const AddRoleForm: FC = () => {
         label="Description"
         autoComplete="off"
         {...formik.getFieldProps("description")}
-        error={
-          formik.touched.description && formik.errors.description
-            ? formik.errors.description
-            : undefined
-        }
+        error={getFormikError(formik, "description")}
       />
 
       <PermissionBlock
