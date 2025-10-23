@@ -4,11 +4,18 @@ import type { FC } from "react";
 import classes from "./PageContent.module.scss";
 import type { PageContentProps } from "./types";
 
-const PageContent: FC<PageContentProps> = ({ children }) => {
+const PageContent: FC<PageContentProps> = ({
+  children,
+  container = "fluid",
+  align = "center",
+}) => {
   return (
-    <div className="p-panel__content">
+    <div className={classNames("p-panel__content", classes.outerDiv)}>
       <div
-        className={classNames("u-fixed-width u-no-max-width", classes.innerDiv)}
+        className={classNames("p-panel__inner", classes.innerDiv, {
+          [classes.alignCenter]: container === "medium" && align === "center",
+          [classes.alignLeft]: container === "medium" && align === "left",
+        })}
       >
         <AppErrorBoundary>{children}</AppErrorBoundary>
       </div>
