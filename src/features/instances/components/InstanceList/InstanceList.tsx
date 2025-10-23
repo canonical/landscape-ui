@@ -65,7 +65,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: false,
         optionLabel: "Instance name",
         Header: (
-          <>
+          <div className={classes.rowHeader}>
             <CheckboxInput
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
@@ -80,8 +80,12 @@ const InstanceList = memo(function InstanceList({
                 selectedInstances.length < instances.length
               }
             />
-            <span id="column-1-label">Name</span>
-          </>
+            <div>
+              <span id="column-1-label">Title</span>
+              <br />
+              <span className="u-text--muted">Hostname</span>
+            </div>
+          </div>
         ),
         Cell: ({ row }: CellProps<Instance>) => {
           return (
