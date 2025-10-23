@@ -3,22 +3,30 @@
 .responsiveTable {
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-}
 
-.firstColumn {
-  background-color: $colors--theme--background-default;
-  left: 0;
-  position: sticky;
-  z-index: var(--z-table-edge);
-}
+  thead {
+    background-color: $colors--theme--background-default;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-table-corner);
+  }
 
-.firstRow {
-  background-color: $colors--theme--background-default;
-  position: sticky;
-  top: 0;
-  z-index: var(--z-table-edge);
-}
+  &.scrolledDown {
+    thead {
+      box-shadow: 0 0 2rem rgb(0 0 0 / 10%);
+      clip-path: inset(0 0 -2rem 0);
+    }
+  }
 
-.firstRow.firstColumn {
-  z-index: var(--z-table-corner);
+  .firstColumn {
+    background-color: $colors--theme--background-default;
+    left: 0;
+    position: sticky;
+    z-index: var(--z-table-edge);
+
+    &.scrolledRight {
+      box-shadow: 0 0 2rem rgb(0 0 0 / 10%);
+      clip-path: inset(0 -2rem 0 0);
+    }
+  }
 }
