@@ -5,6 +5,13 @@ import { setupWorker } from "msw/browser";
 import fallbackHandlers from "./server/handlers";
 
 const handlers: RequestHandler[] = [
+  http.all("*", ({ request }) => {
+    if (request.url.includes("sentry.is.canonical.com")) {
+      return passthrough();
+    }
+
+    return;
+  }),
   http.all("*", async ({ request }) => {
     if (!request.url.includes(API_URL) && !request.url.includes(API_URL_OLD)) {
       return passthrough();
