@@ -194,16 +194,15 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
   );
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        columns={columns}
-        data={profiles}
-        emptyMsg={`No package profiles found with the search "${search}"`}
-        getCellProps={getCellProps(expandedRowIndex)}
-        getRowProps={getRowProps(expandedRowIndex)}
-        minWidth={1200}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRowsRef}
+      columns={columns}
+      data={profiles}
+      emptyMsg={`No package profiles found with the search "${search}"`}
+      getCellProps={getCellProps(expandedRowIndex)}
+      getRowProps={getRowProps(expandedRowIndex)}
+      minWidth={1200}
+    />
   );
 };
 

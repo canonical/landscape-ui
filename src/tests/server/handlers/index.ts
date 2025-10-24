@@ -16,6 +16,7 @@ import features from "./features";
 import gpgKey from "./gpgKey";
 import instance from "./instance";
 import invitations from "./invitations";
+import kernel from "./kernel";
 import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
@@ -57,6 +58,7 @@ export default [
   ...gpgKey,
   ...instance,
   ...invitations,
+  ...kernel,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,

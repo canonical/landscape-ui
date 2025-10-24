@@ -21,6 +21,7 @@
 }
 
 :global(.l-navigation) {
+  background-color: $colors--dark-theme--background-default;
   color-scheme: dark;
   scrollbar-color: $colors--dark-theme--text-muted
     $colors--dark-theme--background-default;
