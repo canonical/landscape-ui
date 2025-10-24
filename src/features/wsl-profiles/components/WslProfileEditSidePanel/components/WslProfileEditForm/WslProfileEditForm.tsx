@@ -100,6 +100,14 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
+      <Notification severity="caution" title="Editing unavailable">
+        <span>
+          You cannot edit rootfs image, cloud-init file, or &quot;Only allow WSL
+          instances created by Landscape&quot;. To modify these fields, create a
+          new profile.
+        </span>
+      </Notification>
+
       <Input
         type="text"
         label="Title"
@@ -116,6 +124,14 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         error={getFormikError(formik, "description")}
       />
 
+      <Input
+        type="checkbox"
+        label="Only allow WSL instances created by Landscape"
+        help="This profile will delete WSL instances that were not created by Landscape from the associated Windows host machines."
+        checked={!!profile.only_landscape_created}
+        disabled
+      />
+
       <Select
         label="Access group"
         aria-label="Access group"
@@ -126,13 +142,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       />
 
       <div className={classes.block}>
-        <Notification severity="caution" title="Editing unavailable">
-          <span>
-            You cannot edit rootfs image or cloud-init file. To modify these
-            fields, create a new profile.
-          </span>
-        </Notification>
-
         <Select
           disabled
           label="Rootfs image"

@@ -66,6 +66,7 @@ const WslProfileAddSidePanel: FC = () => {
         image_source: values.rootfsImage,
         cloud_init_contents: strippedCloudInit,
         all_computers: values.all_computers,
+        only_landscape_created: values.only_landscape_created,
         tags: values.tags,
       });
 
@@ -116,6 +117,20 @@ const WslProfileAddSidePanel: FC = () => {
             required
             {...formik.getFieldProps("description")}
             error={getFormikError(formik, "description")}
+          />
+
+          <Input
+            type="checkbox"
+            label="Only allow WSL instances created by Landscape"
+            help="This profile will delete WSL instances that were not created by Landscape from the associated Windows host machines."
+            {...formik.getFieldProps("only_landscape_created")}
+            checked={formik.values.only_landscape_created}
+            onChange={async () =>
+              formik.setFieldValue(
+                "only_landscape_created",
+                !formik.values.only_landscape_created,
+              )
+            }
           />
 
           <Select

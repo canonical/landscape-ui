@@ -36,4 +36,16 @@ export default [
   http.post(`${API_URL}computers/:parent_id/delete-children`, () => {
     return HttpResponse.json();
   }),
+
+  http.get(`${API_URL}wsl-feature-limits`, () => {
+    return HttpResponse.json<{
+      max_windows_host_machines: number;
+      max_wsl_child_instances_per_host: number;
+      max_wsl_child_instance_profiles: number;
+    }>({
+      max_windows_host_machines: 100,
+      max_wsl_child_instance_profiles: 10,
+      max_wsl_child_instances_per_host: 10,
+    });
+  }),
 ];
