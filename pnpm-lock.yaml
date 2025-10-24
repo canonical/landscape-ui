@@ -15,7 +15,7 @@ importers:
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.53.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@sentry/browser':
-        specifier: ^10.22.0
+        specifier: 10.22.0
         version: 10.22.0
       '@tanstack/react-query':
         specifier: 5.90.5
