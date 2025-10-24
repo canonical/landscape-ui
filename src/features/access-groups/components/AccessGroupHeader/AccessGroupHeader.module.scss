@@ -3,12 +3,8 @@
 
 .container {
   align-items: flex-start;
-  background-color: $colors--theme--background-default;
   column-gap: $sph--x-large;
   display: flex;
-  position: sticky;
-  top: var(--pageheader-height);
-  z-index: var(--z-sticky);
 }
 
 .searchContainer {

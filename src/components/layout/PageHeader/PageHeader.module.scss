@@ -9,10 +9,3 @@
 .visualTitle {
   flex-shrink: 0;
 }
-
-.sticky {
-  background-color: $colors--theme--background-default;
-  position: sticky;
-  top: 0;
-  z-index: var(--z-sticky);
-}
