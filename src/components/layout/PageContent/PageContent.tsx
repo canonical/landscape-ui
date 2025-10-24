@@ -1,8 +1,8 @@
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
-import classNames from "classnames";
 import type { FC } from "react";
+import classNames from "classnames";
 import classes from "./PageContent.module.scss";
 import type { PageContentProps } from "./types";
+import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 
 const PageContent: FC<PageContentProps> = ({
   children,
