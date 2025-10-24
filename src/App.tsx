@@ -31,6 +31,7 @@ const InvitationPage = lazy(async () => import("@/pages/auth/invitation"));
 const AccountCreationPage = lazy(
   async () => import("@/pages/auth/account-creation"),
 );
+const NoAccessPage = lazy(async () => import("@/pages/auth/NoAccess"));
 const EnvError = lazy(async () => import("@/pages/EnvError"));
 const PageNotFound = lazy(async () => import("@/pages/PageNotFound"));
 const LoginPage = lazy(async () => import("@/pages/auth/login"));
@@ -559,6 +560,14 @@ const App: FC = () => {
               element={
                 <Suspense key="/create-account" fallback={<LoadingState />}>
                   <AccountCreationPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path={PATHS.auth.noAccess}
+              element={
+                <Suspense key="/no-access" fallback={<LoadingState />}>
+                  <NoAccessPage />
                 </Suspense>
               }
             />

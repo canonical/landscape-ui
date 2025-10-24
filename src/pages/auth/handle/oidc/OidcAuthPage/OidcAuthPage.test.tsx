@@ -4,9 +4,33 @@ import { screen } from "@testing-library/react";
 import type { AuthStateResponse } from "@/features/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { HOMEPAGE_PATH } from "@/constants";
+import useEnv from "@/hooks/useEnv";
+import type { EnvContextState } from "@/context/env";
 
 const redirectToExternalUrl = vi.fn();
 const navigate = vi.fn();
+
+vi.mock("@/hooks/useEnv");
+
+const mockSelfHosted: EnvContextState = {
+  envLoading: false,
+  isSaas: false,
+  isSelfHosted: true,
+  packageVersion: "",
+  revision: "",
+  displayDisaStigBanner: false,
+};
+
+const mockSaas: EnvContextState = {
+  envLoading: false,
+  isSaas: true,
+  isSelfHosted: false,
+  packageVersion: "",
+  revision: "",
+  displayDisaStigBanner: false,
+};
+
+vi.mocked(useEnv).mockReturnValue(mockSaas);
 
 const mockTestParams = (response: AuthStateResponse | Error) => {
   vi.doMock("react-router", async () => ({
@@ -85,12 +109,6 @@ describe("OidcAuthPage", () => {
       },
       {
         ...authUser,
-        accounts: [],
-        current_account: "",
-        return_to: null,
-      },
-      {
-        ...authUser,
         invitation_id: "test-secure-id",
       },
     ];
@@ -140,12 +158,6 @@ describe("OidcAuthPage", () => {
       );
     });
 
-    it("should redirect to create-account when user has no accounts", async () => {
-      expect(navigate).toHaveBeenCalledWith("/create-account", {
-        replace: true,
-      });
-    });
-
     it("should redirect to invitation when invitation_id is present", async () => {
       expect(navigate).toHaveBeenCalledWith(
         "/accept-invitation/test-secure-id",
@@ -174,6 +186,123 @@ describe("OidcAuthPage", () => {
       expect(navigate).toHaveBeenCalledWith(`/attach`, {
         replace: true,
         state: { success: true },
+      });
+    });
+  });
+
+  describe("SaaS environment", () => {
+    beforeEach(() => {
+      vi.resetModules();
+      vi.mocked(useEnv).mockReturnValue(mockSaas);
+      vi.doMock("@/features/account-creation", () => ({
+        useGetStandaloneAccount: () => ({ accountExists: false }),
+      }));
+
+      vi.doMock("@/constants", async (importOriginal) => ({
+        ...(await importOriginal()),
+        GENERIC_DOMAIN: "localhost",
+      }));
+
+      mockTestParams({
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      });
+    });
+
+    it("should redirect to create-account when user has no accounts and GENERIC_DOMAIN matches hostname", async () => {
+      mockTestParams({
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      });
+
+      const { default: Component } = await import("./OidcAuthPage");
+
+      renderWithProviders(<Component />);
+
+      expect(navigate).toHaveBeenCalledWith("/create-account", {
+        replace: true,
+      });
+    });
+
+    it("should redirect to no-access when user has no accounts and GENERIC_DOMAIN does not match hostname", async () => {
+      vi.resetModules();
+      vi.doMock("@/constants", async (importOriginal) => ({
+        ...(await importOriginal()),
+        GENERIC_DOMAIN: "example.com",
+      }));
+
+      mockTestParams({
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      });
+
+      const { default: Component } = await import("./OidcAuthPage");
+      renderWithProviders(<Component />);
+
+      expect(navigate).toHaveBeenCalledWith("/no-access", { replace: true });
+    });
+  });
+
+  describe("Self-hosted environment", () => {
+    beforeEach(() => {
+      vi.resetModules();
+      vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+
+      vi.doMock("@/features/account-creation", () => ({
+        useGetStandaloneAccount: () => ({ accountExists: false }),
+      }));
+
+      mockTestParams({
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      });
+    });
+
+    it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
+      mockTestParams({
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      });
+
+      const { default: Component } = await import("./OidcAuthPage");
+
+      renderWithProviders(<Component />);
+
+      expect(navigate).toHaveBeenCalledWith("/create-account", {
+        replace: true,
+      });
+    });
+
+    it("should redirect to no-access when accountExists is true", async () => {
+      vi.resetModules();
+      vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+
+      vi.doMock("@/features/account-creation", () => ({
+        useGetStandaloneAccount: () => ({ accountExists: true }),
+      }));
+
+      mockTestParams({
+        ...authUser,
+        accounts: [],
+        current_account: "",
+        return_to: null,
+      });
+
+      const { default: Component } = await import("./OidcAuthPage");
+      renderWithProviders(<Component />);
+
+      expect(navigate).toHaveBeenCalledWith("/no-access", {
+        replace: true,
       });
     });
   });

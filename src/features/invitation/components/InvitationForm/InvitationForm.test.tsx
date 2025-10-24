@@ -19,7 +19,7 @@ const authProps: AuthContextProps = {
   authLoading: false,
   setAuthLoading: vi.fn(),
   setUser: vi.fn(),
-  user: { ...authUser, invitation_id: "1" },
+  user: { ...authUser },
   redirectToExternalUrl: vi.fn(),
   isFeatureEnabled: vi.fn(),
   hasAccounts: true,

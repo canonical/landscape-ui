@@ -12,6 +12,7 @@ export const AUTH_PATHS = {
   handleUbuntuOne: "/handle-auth/ubuntu-one",
   invitation: "/accept-invitation/:secureId",
   createAccount: "/create-account",
+  noAccess: "/no-access",
 } as const;
 
 export const AUTH_ROUTES = {
@@ -21,4 +22,5 @@ export const AUTH_ROUTES = {
     AUTH_PATHS.invitation,
   ),
   createAccount: createRoute(AUTH_PATHS.createAccount),
+  noAccess: createRoute(AUTH_PATHS.noAccess),
 } as const;

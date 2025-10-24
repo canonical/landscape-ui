@@ -7,7 +7,13 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import type { NotificationMethodArgs } from "@/types/Notification";
 import { getFormikError } from "@/utils/formikErrors";
-import { ConfirmationModal, Form, Input } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationModal,
+  Form,
+  Input,
+  Modal,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC, ReactNode } from "react";
 import { useState } from "react";
@@ -15,6 +21,7 @@ import * as Yup from "yup";
 import useAttachToken from "../../api/useAttachToken";
 import { classifyInstancesByToken } from "../../helpers";
 import { pluralize } from "@/utils/_helpers";
+import type { FormProps } from "./types";
 
 interface TokenFormBaseProps {
   readonly children: ReactNode;
@@ -29,7 +36,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
   submitButtonText,
   notification,
 }) => {
-  const [invalidInstancesCount, setInvalidInstancesCount] = useState<number>(0);
+  const [invalidInstanceIds, setInvalidInstanceIds] = useState<number[]>([]);
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -85,25 +92,34 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
     }
   };
 
-  const formik = useFormik({
+  const onSubmit = async (values: FormProps) => {
+    try {
+      const { data: validationData } = await getInvalidInstances();
+      const invalid = validationData?.data?.results ?? [];
+      setInvalidInstanceIds(invalid.map((i: Instance) => i.id));
+
+      if (invalid.length === 0) {
+        await handleAttach(values.token);
+      }
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const validInstances = selectedInstances.filter(
+    (instance) => !invalidInstanceIds.includes(instance.id),
+  );
+
+  const { withToken, withoutToken } = classifyInstancesByToken(validInstances);
+
+  const formik = useFormik<FormProps>({
     initialValues: {
       token: "",
     },
     validationSchema: Yup.object({
       token: Yup.string().required("Token is required"),
     }),
-    onSubmit: async (values) => {
-      try {
-        const { data: validationData } = await getInvalidInstances();
-        setInvalidInstancesCount(validationData?.data.count ?? 0);
-
-        if (validationData?.data.count === 0) {
-          await handleAttach(values.token);
-        }
-      } catch (error) {
-        debug(error);
-      }
-    },
+    onSubmit: onSubmit,
   });
 
   const handleConfirmAttachment = async (): Promise<void> => {
@@ -111,11 +127,8 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
   };
 
   const closeValidationModal = () => {
-    setInvalidInstancesCount(0);
+    setInvalidInstanceIds([]);
   };
-
-  const { withToken, withoutToken } =
-    classifyInstancesByToken(selectedInstances);
 
   return (
     <>
@@ -141,49 +154,64 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
         />
       </Form>
 
-      {invalidInstancesCount ? (
-        <ConfirmationModal
-          title="Attach Ubuntu Pro token"
-          confirmButtonLabel="Confirm"
-          confirmButtonAppearance="positive"
-          confirmButtonLoading={isAttachingToken}
-          onConfirm={handleConfirmAttachment}
-          close={closeValidationModal}
-        >
-          <p className="u-no-margin--bottom">Confirming this action means:</p>
-          <ul>
-            {invalidInstancesCount !== selectedInstances.length && (
-              <>
-                {withoutToken - invalidInstancesCount > 0 && (
-                  <li>
-                    <strong>{withoutToken - invalidInstancesCount}</strong>{" "}
-                    {pluralize(
-                      withoutToken - invalidInstancesCount,
-                      "instance",
-                    )}{" "}
-                    will be attached to this token
-                  </li>
-                )}
-                {withToken > 0 && (
-                  <li>
-                    <strong>{withToken}</strong>{" "}
-                    {pluralize(withToken, "instance")} will override{" "}
-                    {pluralize(withToken, "its", "their")} existing token
-                  </li>
-                )}
-              </>
-            )}
-            {invalidInstancesCount > 0 && (
+      {!!invalidInstanceIds.length &&
+        (invalidInstanceIds.length === selectedInstances.length ? (
+          <Modal
+            title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, "instance", "instances")}`}
+            close={closeValidationModal}
+            buttonRow={
+              <Button
+                type="button"
+                className="u-no-margin--bottom"
+                onClick={closeValidationModal}
+              >
+                Close
+              </Button>
+            }
+          >
+            <p>
+              Your Ubuntu Pro token can&apos;t be attached to the selected{" "}
+              {pluralize(selectedInstances.length, "instance")} because{" "}
+              {pluralize(selectedInstances.length, "it doesn't", "they don't")}{" "}
+              support this feature. This could be because the Landscape Client
+              is out of date.
+            </p>
+          </Modal>
+        ) : (
+          <ConfirmationModal
+            title="Attach Ubuntu Pro token"
+            confirmButtonLabel="Confirm"
+            confirmButtonAppearance="positive"
+            confirmButtonLoading={isAttachingToken}
+            onConfirm={handleConfirmAttachment}
+            close={closeValidationModal}
+          >
+            <p className="u-no-margin--bottom">Confirming this action means:</p>
+            <ul>
+              {withoutToken > 0 && (
+                <li>
+                  <strong>{withoutToken}</strong>{" "}
+                  {pluralize(withoutToken, "instance")} will be attached to this
+                  token
+                </li>
+              )}
+              {withToken > 0 && (
+                <li>
+                  <strong>{withToken}</strong>{" "}
+                  {pluralize(withToken, "instance")} will override{" "}
+                  {pluralize(withToken, "its", "their")} existing token
+                </li>
+              )}
               <li>
-                <strong>{invalidInstancesCount}</strong>{" "}
-                {pluralize(invalidInstancesCount, "instance")} will be skipped
-                as {pluralize(invalidInstancesCount, "it does", "they do")} not
+                <strong>{invalidInstanceIds.length}</strong>{" "}
+                {pluralize(invalidInstanceIds.length, "instance")} will be
+                skipped as{" "}
+                {pluralize(invalidInstanceIds.length, "it does", "they do")} not
                 support Ubuntu Pro management
               </li>
-            )}
-          </ul>
-        </ConfirmationModal>
-      ) : null}
+            </ul>
+          </ConfirmationModal>
+        ))}
     </>
   );
 };

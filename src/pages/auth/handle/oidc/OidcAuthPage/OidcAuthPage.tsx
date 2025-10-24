@@ -1,9 +1,15 @@
 import type { FC } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
+import {
+  CONTACT_SUPPORT_TEAM_MESSAGE,
+  GENERIC_DOMAIN,
+  HOMEPAGE_PATH,
+} from "@/constants";
 import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
+import useEnv from "@/hooks/useEnv";
+import { useGetStandaloneAccount } from "@/features/account-creation";
 import classes from "./OidcAuthPage.module.scss";
 import { ROUTES } from "@/libs/routes";
 
@@ -12,6 +18,8 @@ const OidcAuthPage: FC = () => {
 
   const { redirectToExternalUrl, setAuthLoading, setUser } = useAuth();
   const { getAuthStateWithOidcQuery } = useUnsigned();
+  const { isSelfHosted, isSaas } = useEnv();
+  const { accountExists } = useGetStandaloneAccount();
   const navigate = useNavigate();
 
   const code = searchParams.get("code") ?? "";
@@ -44,15 +52,20 @@ const OidcAuthPage: FC = () => {
         ROUTES.auth.invitation({
           secureId: getAuthStateQueryResult.data.invitation_id,
         }),
-        {
-          replace: true,
-        },
+        { replace: true },
       );
       return;
     }
 
     if (getAuthStateQueryResult.data.accounts.length === 0) {
-      navigate(ROUTES.auth.createAccount(), { replace: true });
+      if (
+        (isSaas && window.location.hostname === GENERIC_DOMAIN) ||
+        (isSelfHosted && !accountExists)
+      ) {
+        navigate(ROUTES.auth.createAccount(), { replace: true });
+      } else {
+        navigate(ROUTES.auth.noAccess(), { replace: true });
+      }
       return;
     }
 
@@ -76,6 +89,9 @@ const OidcAuthPage: FC = () => {
     navigate,
     setAuthLoading,
     setUser,
+    isSelfHosted,
+    accountExists,
+    isSaas,
   ]);
 
   return (

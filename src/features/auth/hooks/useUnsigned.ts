@@ -45,6 +45,7 @@ export type AuthStateResponse =
       self_hosted: boolean;
       identity_source: string;
       attach_code: string | null;
+      invitation_id: string | null;
     });
 
 export interface LoginRequestParams {

@@ -14,7 +14,7 @@ import { useNavigate } from "react-router";
 
 const InvitationPage: FC = () => {
   const navigate = useNavigate();
-  const { user, authorized } = useAuth();
+  const { authorized } = useAuth();
   const [hasRejected, setHasRejected] = useState(false);
 
   const { invitationId, invitationAccount, isLoading } = useInvitation();
@@ -39,7 +39,7 @@ const InvitationPage: FC = () => {
     return <InvitationRejected />;
   }
 
-  if (authorized && user?.invitation_id) {
+  if (authorized) {
     return (
       <InvitationForm
         accountTitle={invitationAccount.account_title}

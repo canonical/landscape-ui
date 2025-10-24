@@ -1,3 +1,9 @@
 .term {
   width: 30%;
 }
+
+:global(.p-modal) {
+  table {
+    width: 60rem;
+  }
+}
