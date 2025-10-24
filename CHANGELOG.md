@@ -1,3 +1,16 @@
+# [1.22.0](https://github.com/canonical/landscape-ui/compare/v1.21.0...v1.22.0) (2025-10-24)
+
+
+### Bug Fixes
+
+* pnpm-lock ([b43af61](https://github.com/canonical/landscape-ui/commit/b43af61d11662bc4c9055f2aee6b6dbb4893d151))
+* prevent infinite request loop in security profiles page ([#394](https://github.com/canonical/landscape-ui/issues/394)) ([2be0483](https://github.com/canonical/landscape-ui/commit/2be04834f84b1fdbf61d1b179a5cd997863d4a95))
+
+
+### Features
+
+* implement pro token attach and detach ([#395](https://github.com/canonical/landscape-ui/issues/395)) ([d3995f9](https://github.com/canonical/landscape-ui/commit/d3995f937eb6431b1464eee70368d2bdb19dc332))
+
 # [1.21.0](https://github.com/canonical/landscape-ui/compare/v1.20.0...v1.21.0) (2025-10-14)
 
 
