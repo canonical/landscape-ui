@@ -8,12 +8,18 @@ interface DetachTokenParams {
   computer_ids: number[];
 }
 
+interface DetachTokenResponse {
+  activity: Activity;
+  invalid_computer_ids: number[];
+  nonexistent_computer_ids: number[];
+}
+
 export default function useDetachToken() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const detachTokenQuery = useMutation<
-    AxiosResponse<Activity>,
+    AxiosResponse<DetachTokenResponse>,
     AxiosError<ApiError>,
     DetachTokenParams
   >({

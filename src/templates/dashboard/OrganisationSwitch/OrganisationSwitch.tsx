@@ -17,7 +17,7 @@ const OrganisationSwitch = () => {
 
   if (isOnSubdomain || options.length === 1) {
     return (
-      <div className={classes.container}>
+      <div className={classNames(classes.container, classes.marginBottom)}>
         <InfoItem
           label="Organization"
           value={currentAccount.title}

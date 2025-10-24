@@ -40,3 +40,4 @@ export const MAX_MINUTES_IN_HOUR = 59;
 export const MAX_HOURS_IN_DAY = 23;
 export const MAX_PASSWORD_LENGTH = 50;
 export const DEFAULT_MODAL_PAGE_SIZE = 10;
+export const GENERIC_DOMAIN = "landscape.canonical.com";
