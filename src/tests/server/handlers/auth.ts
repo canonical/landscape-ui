@@ -45,7 +45,6 @@ interface CreatedAccount {
 }
 
 let createdAccount: CreatedAccount | null = null;
-let pendingInvitationId: string | null = null;
 
 export default [
   http.post<never, LoginRequestParams, AuthStateResponse>(
@@ -130,12 +129,7 @@ export default [
 
   http.get(`${API_URL}auth/start`, ({ request }) => {
     const url = new URL(request.url);
-    const invitationId = url.searchParams.get("invitation_id");
     const returnTo = url.searchParams.get("return_to");
-
-    if (invitationId) {
-      pendingInvitationId = invitationId;
-    }
 
     let redirectUrl = `${location.origin}${oidcLocationToRedirectTo}`;
 
@@ -186,6 +180,27 @@ export default [
       });
     }
 
+    /**
+     * Simulate an invited user logging in via OIDC for the first time
+     */
+    // const baseResponse: AuthStateResponse = {
+    //   accounts: [],
+    //   current_account: "",
+    //   email: "new-oidc-user@example.com",
+    //   has_password: false,
+    //   name: "New OIDC User",
+    //   token: "new-oidc-token",
+    //   return_to: {
+    //     external: false,
+    //     url: `${ROOT_PATH}accept-invitation/1`,
+    //   },
+    //   attach_code: null,
+    //   invitation_id: 1,
+    // };
+
+    /**
+     * Simulate OIDC create account
+     */
     const baseResponse: AuthStateResponse = {
       accounts: [],
       current_account: "",
@@ -195,8 +210,29 @@ export default [
       token: "new-oidc-token",
       return_to: null,
       attach_code: null,
-      ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
     };
+
+    /**
+     * Simulate normal OIDC login
+     */
+    // const baseResponse: AuthStateResponse = {
+    //   accounts: [
+    //     {
+    //       classic_dashboard_url: "",
+    //       default: true,
+    //       name: "existing-account",
+    //       subdomain: null,
+    //       title: "Existing Account Inc.",
+    //     },
+    //   ],
+    //   current_account: "existing-account",
+    //   email: "existing-account@example.com",
+    //   has_password: true,
+    //   name: "Existing Account",
+    //   token: "existing-account-token",
+    //   return_to: null,
+    //   attach_code: null,
+    // };
 
     return HttpResponse.json(baseResponse);
   }),
@@ -218,7 +254,9 @@ export default [
         }
       }
     }
-
+    /**
+     * Simulate a user logging in via Ubuntu One with no associated account
+     */
     const baseResponse = {
       accounts: [],
       current_account: "",
@@ -230,8 +268,29 @@ export default [
       attach_code: null,
     };
 
+    /**
+     * Simulate a user logging in via Ubuntu One with an associated account
+     */
+    // const baseResponse = {
+    //   accounts: [
+    //     {
+    //       classic_dashboard_url: "",
+    //       default: true,
+    //       name: "standalone",
+    //       subdomain: null,
+    //       title: "Organization",
+    //     },
+    //   ],
+    //   current_account: "",
+    //   email: "new-user@example.com",
+    //   has_password: false,
+    //   name: "New Ubuntu One User",
+    //   token: "new-user-token",
+    //   return_to: null,
+    //   attach_code: null,
+    // };
+
     if (invitationIdFromUrl) {
-      pendingInvitationId = invitationIdFromUrl;
       return HttpResponse.json({
         ...baseResponse,
         invitation_id: invitationIdFromUrl,
@@ -265,7 +324,7 @@ export default [
         token: "new-user-token",
         return_to: null,
         attach_code: null,
-        ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+        invitation_id: null,
       });
     }
 
@@ -280,7 +339,16 @@ export default [
               title: createdAccount.company,
             },
           ]
-        : [];
+        : [
+            {
+              classic_dashboard_url: "",
+              default: true,
+              name: "8xag1afp",
+              subdomain: null,
+              title: "Onward, Inc.",
+            },
+          ];
+
       return HttpResponse.json({
         accounts,
         current_account: createdAccount ? createdAccount.account : "",
@@ -290,25 +358,17 @@ export default [
         token: "new-oidc-token",
         return_to: null,
         attach_code: null,
-        ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+        invitation_id: null,
       });
     }
 
     if (!token) {
-      const accounts = createdAccount
-        ? [
-            {
-              classic_dashboard_url: "",
-              default: true,
-              name: createdAccount.account,
-              subdomain: null,
-              title: createdAccount.company,
-            },
-          ]
-        : [];
+      if (createdAccount === null) {
+        return HttpResponse.json({});
+      }
 
       return HttpResponse.json({
-        accounts,
+        accounts: [createdAccount],
         current_account: createdAccount ? createdAccount.account : "",
         email: "new-user@example.com",
         has_password: false,
@@ -316,7 +376,7 @@ export default [
         token: "new-user-token",
         return_to: null,
         attach_code: null,
-        ...(pendingInvitationId && { invitation_id: pendingInvitationId }),
+        invitation_id: null,
       });
     }
     return HttpResponse.json(authResponse);

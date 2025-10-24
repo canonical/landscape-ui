@@ -32,7 +32,9 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
 
   const handleDetachToken = async () => {
     try {
-      const { data: detachActivity } = await detachToken({
+      const {
+        data: { activity },
+      } = await detachToken({
         computer_ids: computerIds,
       });
 
@@ -51,7 +53,7 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
           {
             label: "View details",
             onClick: () => {
-              openActivityDetails(detachActivity);
+              openActivityDetails(activity);
             },
           },
         ],

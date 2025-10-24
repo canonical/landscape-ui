@@ -15,7 +15,15 @@ export default [
       return HttpResponse.json({ exists: true });
     }
 
-    return HttpResponse.json({ exists: false });
+    /**
+     * Existing standalone account flow
+     */
+    return HttpResponse.json({ exists: true });
+
+    /**
+     * First time standalone account creation flow
+     */
+    // return HttpResponse.json({ exists: false });
   }),
 
   http.post<never, CreateStandaloneAccountParams>(

@@ -200,6 +200,15 @@ const useInstanceSearchHelpTerms = () => {
         "Search for instances that do not have a Landscape license, and, as a result, are not managed",
     },
     {
+      term: "has-pro-management:<option>",
+      description: (
+        <span>
+          Instances with pro management enabled if <code>&lt;option&gt;</code>{" "}
+          is a truthy value or disabled if falsy.
+        </span>
+      ),
+    },
+    {
       term: "annotation:<key>",
       description: (
         <span>
