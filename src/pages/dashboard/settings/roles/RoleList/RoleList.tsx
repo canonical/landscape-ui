@@ -1,4 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import useRoles from "@/hooks/useRoles";
 import { getPermissionOptions } from "@/pages/dashboard/settings/roles/helpers";
@@ -16,7 +17,6 @@ import {
 } from "./helpers";
 import classes from "./RoleList.module.scss";
 import type { CellCoordinates } from "./types";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 interface RoleListProps {
   readonly roleList: Role[];
@@ -118,14 +118,13 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
   );
 
   return (
-    <div ref={getTableRows(tableRowsRef)}>
-      <ResponsiveTable
-        columns={columns}
-        data={roles}
-        getCellProps={handleCellProps(expandedCell)}
-        getRowProps={handleRowProps(expandedCell?.rowIndex)}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRows(tableRowsRef)}
+      columns={columns}
+      data={roles}
+      getCellProps={handleCellProps(expandedCell)}
+      getRowProps={handleRowProps(expandedCell?.rowIndex)}
+    />
   );
 };
 

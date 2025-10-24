@@ -37,7 +37,6 @@ const ActivitiesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Activities"
-        sticky
         actions={
           unfilteredActivitiesCount
             ? [

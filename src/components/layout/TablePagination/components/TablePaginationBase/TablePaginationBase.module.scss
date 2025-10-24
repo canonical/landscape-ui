@@ -3,7 +3,6 @@
 
 .wrapper {
   align-items: center;
-  background-color: $colors--theme--background-default;
   border-top: 1px solid $colors--theme--border-default;
   bottom: 0;
   column-gap: $sph--x-small;
@@ -13,8 +12,6 @@
   margin-top: auto;
   padding-bottom: $spv--large;
   padding-top: $spv--large;
-  position: sticky;
-  z-index: var(--z-sticky);
 }
 
 .paginationContainer {

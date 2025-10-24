@@ -66,11 +66,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   return (
     <>
-      <div
-        className={classNames(classes.top, {
-          [classes.sticky]: !IS_PANEL,
-        })}
-      >
+      <div className={classNames(classes.top)}>
         <SearchBoxWithDescriptionButton
           inputValue={searchText}
           onInputChange={(inputValue) => {

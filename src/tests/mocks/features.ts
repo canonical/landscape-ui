@@ -77,4 +77,16 @@ export const features: Feature[] = [
       configuration: true,
     },
   },
+  {
+    name: "Script Profiles",
+    description:
+      "Allows for event based, recurring and one time execution of scripts",
+    key: "script-profiles",
+    database_key: 4,
+    enabled: true,
+    details: {
+      configuration: false,
+      account: false,
+    },
+  },
 ];

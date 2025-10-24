@@ -9,6 +9,7 @@ import useAuth from "@/hooks/useAuth";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ROUTES } from "@/libs/routes";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
@@ -21,7 +22,6 @@ import type { Script } from "../../types";
 import ScriptListActions from "../ScriptListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
-import { ROUTES } from "@/libs/routes";
 
 const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
@@ -180,15 +180,14 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   }, [scripts, accessGroupOptions, expandedRowIndex]);
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        columns={columns}
-        data={scripts}
-        getCellProps={getCellProps(expandedRowIndex)}
-        getRowProps={getRowProps(expandedRowIndex)}
-        minWidth={1200}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRowsRef}
+      columns={columns}
+      data={scripts}
+      getCellProps={getCellProps(expandedRowIndex)}
+      getRowProps={getRowProps(expandedRowIndex)}
+      minWidth={1200}
+    />
   );
 };
 

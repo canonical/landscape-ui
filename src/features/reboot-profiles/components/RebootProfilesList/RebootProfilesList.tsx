@@ -150,15 +150,14 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
   );
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        columns={columns}
-        data={filteredProfiles}
-        emptyMsg={`No profiles found with the search: "${search}"`}
-        getCellProps={getCellProps(expandedRowIndex)}
-        getRowProps={getRowProps(expandedRowIndex)}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRowsRef}
+      columns={columns}
+      data={filteredProfiles}
+      emptyMsg={`No profiles found with the search: "${search}"`}
+      getCellProps={getCellProps(expandedRowIndex)}
+      getRowProps={getRowProps(expandedRowIndex)}
+    />
   );
 };
 
