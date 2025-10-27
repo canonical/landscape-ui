@@ -85,7 +85,11 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
 
   return (
     <>
-      <Tabs listClassName="u-no-margin--bottom" links={tabLinks} />
+      <Tabs
+        className={classes.tabs}
+        listClassName="u-no-margin--bottom"
+        links={tabLinks}
+      />
       <div
         tabIndex={0}
         role="tabpanel"
