@@ -5,6 +5,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -16,7 +17,6 @@ import type { ScriptProfile } from "../../types";
 import ScriptProfileAssociatedInstancesLink from "../ScriptProfileAssociatedInstancesLink";
 import ScriptProfilesListActions from "../ScriptProfilesListActions";
 import { getCellProps, getRowProps } from "./helpers";
-import { ROUTES } from "@/libs/routes";
 
 interface ScriptProfilesListProps {
   readonly profiles: ScriptProfile[];
@@ -144,16 +144,15 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
   );
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        columns={columns}
-        data={profiles}
-        emptyMsg="No script profiles found according to your search parameters."
-        getCellProps={getCellProps(expandedRowIndex)}
-        getRowProps={getRowProps(expandedRowIndex)}
-        minWidth={1200}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRowsRef}
+      columns={columns}
+      data={profiles}
+      emptyMsg="No script profiles found according to your search parameters."
+      getCellProps={getCellProps(expandedRowIndex)}
+      getRowProps={getRowProps(expandedRowIndex)}
+      minWidth={1200}
+    />
   );
 };
 

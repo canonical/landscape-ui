@@ -119,46 +119,32 @@ const UsnList: FC<UsnListProps> = ({
     () =>
       [
         {
-          accessor: "checkbox",
-          className: "checkbox-column",
-          Header: () => (
-            <CheckboxInput
-              inline
-              label={
-                <span className="u-off-screen">Toggle all security issues</span>
-              }
-              disabled={securityIssues.length === 0 || isUsnsLoading}
-              indeterminate={
-                selectedUsns.length > 0 && selectedUsns.length < usns.length
-              }
-              checked={
-                selectedUsns.length > 0 && selectedUsns.length === usns.length
-              }
-              onChange={() => {
-                onSelectedUsnsChange(
-                  selectedUsns.length > 0 ? [] : usns.map(({ usn }) => usn),
-                );
-              }}
-            />
-          ),
-          Cell: ({ row: { original } }: CellProps<Usn>) => (
-            <CheckboxInput
-              labelClassName="u-no-margin--bottom u-no-padding--top"
-              label={
-                <span className="u-off-screen">{`Toggle ${original.usn}`}</span>
-              }
-              disabled={isUsnsLoading}
-              name="usn"
-              checked={selectedUsns.includes(original.usn)}
-              onChange={() => {
-                handleToggleSingleUsn(original.usn);
-              }}
-            />
-          ),
-        },
-        {
           accessor: "usn",
-          Header: "USN",
+          Header: (
+            <>
+              <CheckboxInput
+                inline
+                label={
+                  <span className="u-off-screen">
+                    Toggle all security issues
+                  </span>
+                }
+                disabled={securityIssues.length === 0 || isUsnsLoading}
+                indeterminate={
+                  selectedUsns.length > 0 && selectedUsns.length < usns.length
+                }
+                checked={
+                  selectedUsns.length > 0 && selectedUsns.length === usns.length
+                }
+                onChange={() => {
+                  onSelectedUsnsChange(
+                    selectedUsns.length > 0 ? [] : usns.map(({ usn }) => usn),
+                  );
+                }}
+              />
+              USN
+            </>
+          ),
           Cell: ({ row: { index, original } }: CellProps<Usn>) => {
             if (index === 0 && showSelectAllButton) {
               return (
@@ -202,13 +188,28 @@ const UsnList: FC<UsnListProps> = ({
             }
 
             return (
-              <a
-                href={original.usn_link}
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-              >
-                {original.usn}
-              </a>
+              <>
+                <CheckboxInput
+                  inline
+                  labelClassName="u-no-margin--bottom u-no-padding--top"
+                  label={
+                    <span className="u-off-screen">{`Toggle ${original.usn}`}</span>
+                  }
+                  disabled={isUsnsLoading}
+                  name="usn"
+                  checked={selectedUsns.includes(original.usn)}
+                  onChange={() => {
+                    handleToggleSingleUsn(original.usn);
+                  }}
+                />
+                <a
+                  href={original.usn_link}
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                >
+                  {original.usn}
+                </a>
+              </>
             );
           },
         },
@@ -306,9 +307,9 @@ const UsnList: FC<UsnListProps> = ({
     ],
   );
 
-  return (
-    <div ref={getTableRows(tableRowsRef)} className={classes.wrapper}>
-      {otherProps.tableType === "expandable" ? (
+  if (otherProps.tableType === "expandable") {
+    return (
+      <div ref={getTableRows(tableRowsRef)} className={classes.wrapper}>
         <ExpandableTable
           columns={securityIssueColumns}
           data={securityIssues}
@@ -324,25 +325,27 @@ const UsnList: FC<UsnListProps> = ({
           onLimitChange={otherProps.onNextPageFetch}
           totalCount={totalUsnCount}
         />
-      ) : (
-        <>
-          <ResponsiveTable
-            columns={securityIssueColumns}
-            data={securityIssues}
-            getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
-            getRowProps={handleRowProps(expandedCell)}
-            emptyMsg={`No security issues found with the search "${otherProps.search}"`}
-          />
-          <TablePagination
-            handleClearSelection={() => {
-              onSelectedUsnsChange([]);
-            }}
-            totalItems={totalUsnCount}
-            currentItemCount={usns.length}
-          />
-        </>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ResponsiveTable
+        columns={securityIssueColumns}
+        data={securityIssues}
+        getCellProps={handleCellProps({ expandedCell, isUsnsLoading })}
+        getRowProps={handleRowProps(expandedCell)}
+        emptyMsg={`No security issues found with the search "${otherProps.search}"`}
+      />
+      <TablePagination
+        handleClearSelection={() => {
+          onSelectedUsnsChange([]);
+        }}
+        totalItems={totalUsnCount}
+        currentItemCount={usns.length}
+      />
+    </>
   );
 };
 

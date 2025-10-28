@@ -2,14 +2,15 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { useGetScripts } from "@/features/scripts";
 import usePageParams from "@/hooks/usePageParams";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { Notification } from "@canonical/react-components";
 import { type FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
-import ScriptProfilesList from "../ScriptProfilesList";
-import NoScriptsEmptyState from "../NoScriptsEmptyState";
 import NoScriptProfilesEmptyState from "../NoScriptProfilesEmptyState";
+import NoScriptsEmptyState from "../NoScriptsEmptyState";
 import ScriptProfilesHeader from "../ScriptProfilesHeader";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+import ScriptProfilesList from "../ScriptProfilesList";
 
 const ScriptProfilesPanel: FC = () => {
   const { currentPage, pageSize, search, status } = usePageParams();
@@ -40,6 +41,9 @@ const ScriptProfilesPanel: FC = () => {
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
+  const { value: isNotificationVisible, setFalse: hideNotification } =
+    useBoolean(true);
+
   const isProfilesLoading =
     currentPage === 1 &&
     pageSize === DEFAULT_PAGE_SIZE &&
@@ -58,12 +62,14 @@ const ScriptProfilesPanel: FC = () => {
       <>
         <ScriptProfilesHeader />
 
-        {activeScriptProfilesCount &&
+        {isNotificationVisible &&
+          activeScriptProfilesCount &&
           activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles && (
             <Notification
               inline
               title="Profile limit reached:"
               severity="caution"
+              onDismiss={hideNotification}
             >
               You&apos;ve reached the limit of{" "}
               {scriptProfileLimits.max_num_profiles} active script profiles. To

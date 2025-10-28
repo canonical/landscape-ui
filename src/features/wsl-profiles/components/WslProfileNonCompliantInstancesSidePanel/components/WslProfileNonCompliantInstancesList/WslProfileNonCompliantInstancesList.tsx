@@ -14,6 +14,7 @@ import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_PAGE_SIZE,
 } from "@/libs/pageParamsManager/constants";
+import { ROUTES } from "@/libs/routes";
 import type { WindowsInstance } from "@/types/Instance";
 import {
   Button,
@@ -30,7 +31,6 @@ import type { WslProfile } from "../../../../types";
 import classes from "./WslProfileNonCompliantInstancesList.module.scss";
 import WindowsInstanceActions from "./components/WindowsInstanceActions";
 import { getCellProps, getRowProps } from "./helpers";
-import { ROUTES } from "@/libs/routes";
 
 interface WslProfileNonCompliantInstancesListProps {
   readonly wslProfile: WslProfile;
@@ -205,15 +205,14 @@ const WslProfileNonCompliantInstancesList: FC<
       {isGettingInstances ? (
         <LoadingState />
       ) : (
-        <div ref={getTableRowsRef}>
-          <ResponsiveTable
-            columns={columns}
-            data={instances as WindowsInstance[]}
-            emptyMsg="No Windows instances found according to your search parameters."
-            getCellProps={getCellProps(expandedRowIndex)}
-            getRowProps={getRowProps(expandedRowIndex)}
-          />
-        </div>
+        <ResponsiveTable
+          ref={getTableRowsRef}
+          columns={columns}
+          data={instances as WindowsInstance[]}
+          emptyMsg="No Windows instances found according to your search parameters."
+          getCellProps={getCellProps(expandedRowIndex)}
+          getRowProps={getRowProps(expandedRowIndex)}
+        />
       )}
 
       <WindowsInstanceMakeCompliantModal
