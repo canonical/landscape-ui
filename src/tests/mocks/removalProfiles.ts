@@ -10,6 +10,9 @@ export const removalProfiles: RemovalProfile[] = [
     cascade_to_children: false,
     days_without_exchange: 30,
     tags: ["alpha", "beta"],
+    computers: {
+      num_associated_computers: 1,
+    },
   },
   {
     id: 2,
@@ -20,5 +23,8 @@ export const removalProfiles: RemovalProfile[] = [
     cascade_to_children: false,
     days_without_exchange: 14,
     tags: [],
+    computers: {
+      num_associated_computers: 1,
+    },
   },
 ];

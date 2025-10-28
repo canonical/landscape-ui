@@ -1,3 +1,4 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
@@ -109,6 +110,17 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
         meta: {
           ariaLabel: ({ original }) =>
             `${original.title} profile associated instances`,
+        },
+        Cell: ({
+          row: { original: upgradeProfile },
+        }: CellProps<UpgradeProfile>) => {
+          return (
+            <ProfileAssociatedInstancesLink
+              count={upgradeProfile.computers.num_associated_computers}
+              profile={upgradeProfile}
+              query={`upgrade:${upgradeProfile.id}`}
+            />
+          );
         },
       },
       {

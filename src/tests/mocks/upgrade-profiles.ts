@@ -16,6 +16,9 @@ export const upgradeProfiles: UpgradeProfile[] = [
     every: "hour",
     on_days: ["mo", "th"],
     at_minute: "30",
+    computers: {
+      num_associated_computers: 1,
+    },
   },
   {
     id: 1,
@@ -31,6 +34,9 @@ export const upgradeProfiles: UpgradeProfile[] = [
     next_run: "2023-11-29T19:30:00Z",
     every: "hour",
     at_minute: "30",
+    computers: {
+      num_associated_computers: 1,
+    },
   },
   {
     id: 12,
@@ -48,5 +54,8 @@ export const upgradeProfiles: UpgradeProfile[] = [
     on_days: ["mo", "th"],
     at_minute: "30",
     at_hour: "10",
+    computers: {
+      num_associated_computers: 1,
+    },
   },
 ];

@@ -1,3 +1,4 @@
+import ProfileAssociatedInstancesLink from "@/components/form/ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
@@ -108,6 +109,17 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
         meta: {
           ariaLabel: (row) =>
             `${row.original.title} profile associated instances`,
+        },
+        Cell: ({
+          row: { original: removalProfile },
+        }: CellProps<RemovalProfile>) => {
+          return (
+            <ProfileAssociatedInstancesLink
+              count={removalProfile.computers.num_associated_computers}
+              profile={removalProfile}
+              query={`removal:${removalProfile.id}`}
+            />
+          );
         },
       },
       {
