@@ -13,6 +13,7 @@ import { useNavigate, useSearchParams } from "react-router";
 import * as Yup from "yup";
 import { useUnsigned } from "../../hooks";
 import classes from "./LoginForm.module.scss";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   email: string;
@@ -107,11 +108,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
       <Input
         type="text"
         label={isIdentityAvailable ? "Identity" : "Email"}
-        error={
-          formik.touched.email && formik.errors.email
-            ? formik.errors.email
-            : undefined
-        }
+        error={getFormikError(formik, "email")}
         {...formik.getFieldProps("email")}
         data-testid="email"
       />
@@ -119,11 +116,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
       <PasswordToggle
         id="password"
         label="Password"
-        error={
-          formik.touched.password && formik.errors.password
-            ? formik.errors.password
-            : undefined
-        }
+        error={getFormikError(formik, "password")}
         {...formik.getFieldProps("password")}
         data-testid="password"
       />

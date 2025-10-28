@@ -61,7 +61,11 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
   };
 
   const footer = error ? (
-    <div>
+    <div
+      className={classNames("p-form-validation p-form__group", {
+        "is-error": !!error,
+      })}
+    >
       <p className="p-form-validation__message">
         <span>{error}</span>
       </p>

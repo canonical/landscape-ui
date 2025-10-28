@@ -20,6 +20,7 @@ import {
   DeliveryBlock,
   RandomizationBlock,
 } from "@/components/form/DeliveryScheduling";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface EditSnapProps {
   readonly type: EditSnapType;
@@ -188,11 +189,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           {formik.values.hold === "date" && (
             <Input
               type="datetime-local"
-              error={
-                formik.touched.hold_until && formik.errors.hold_until
-                  ? formik.errors.hold_until
-                  : undefined
-              }
+              error={getFormikError(formik, "hold_until")}
               {...formik.getFieldProps("hold_until")}
             />
           )}

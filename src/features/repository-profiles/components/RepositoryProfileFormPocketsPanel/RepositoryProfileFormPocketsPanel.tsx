@@ -8,6 +8,7 @@ import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
 import type { Distribution } from "@/features/mirrors";
 import { getFilteredDistributionPocketOptions } from "./helpers";
 import classes from "./RepositoryProfileFormPocketsPanel.module.scss";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface RepositoryProfileFormPocketsPanelProps {
   readonly distributions: Distribution[];
@@ -33,7 +34,7 @@ const RepositoryProfileFormPocketsPanel: FC<
 
       <fieldset
         className={classNames("checkbox-group", {
-          "is-error": formik.touched.pockets && formik.errors.pockets,
+          "is-error": getFormikError(formik, "pockets"),
         })}
       >
         <Row className="u-no-padding--left u-no-padding--right">

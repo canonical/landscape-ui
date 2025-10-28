@@ -19,6 +19,7 @@ import { useAPTSources } from "../../hooks";
 import { APT_LINE_TOOLTIP, INITIAL_VALUES } from "./constants";
 import classes from "./NewAPTSourceForm.module.scss";
 import type { FormProps } from "./types";
+import { getFormikError } from "@/utils/formikErrors";
 
 const NewAPTSourceForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
@@ -89,11 +90,7 @@ const NewAPTSourceForm: FC = () => {
         type="text"
         label="Name"
         required
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
         {...formik.getFieldProps("name")}
       />
 
@@ -112,11 +109,7 @@ const NewAPTSourceForm: FC = () => {
           </>
         }
         required
-        error={
-          formik.touched.apt_line && formik.errors.apt_line
-            ? formik.errors.apt_line
-            : undefined
-        }
+        error={getFormikError(formik, "apt_line")}
         {...formik.getFieldProps("apt_line")}
       />
 
@@ -125,11 +118,7 @@ const NewAPTSourceForm: FC = () => {
         disabled={isGettingGPGKeys}
         options={[{ label: "Select GPG key", value: "" }, ...gpgKeysOptions]}
         {...formik.getFieldProps("gpg_key")}
-        error={
-          formik.touched.gpg_key && formik.errors.gpg_key
-            ? formik.errors.gpg_key
-            : undefined
-        }
+        error={getFormikError(formik, "gpg_key")}
       />
 
       <Select
@@ -137,11 +126,7 @@ const NewAPTSourceForm: FC = () => {
         disabled={isGettingAccessGroups}
         options={accessGroupsOptions}
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}

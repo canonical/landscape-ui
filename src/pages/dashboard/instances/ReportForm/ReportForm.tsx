@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import classes from "./ReportForm.module.scss";
+import { getFormikError } from "@/utils/formikErrors";
 
 const downloadCSV = (csvString: string, filename: string) => {
   // Create blob from string
@@ -66,11 +67,7 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
           className="u-no-margin--bottom"
           style={{ maxWidth: "min-content" }}
           {...formik.getFieldProps("range")}
-          error={
-            formik.touched.range && formik.errors.range
-              ? formik.errors.range
-              : undefined
-          }
+          error={getFormikError(formik, "range")}
         />
         <span>Days</span>
       </div>

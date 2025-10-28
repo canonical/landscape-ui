@@ -39,7 +39,7 @@ jobs:
 
       - name: Run ESLint
         if: env.FILES
-        run: pnpm eslint --cache ${{ env.FILES }}
+        run: pnpm eslint --config eslint.ci.config.mjs --cache ${{ env.FILES }}
 
   prettier:
     name: Prettier

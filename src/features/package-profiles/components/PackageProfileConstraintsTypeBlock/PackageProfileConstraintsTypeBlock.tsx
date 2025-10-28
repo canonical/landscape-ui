@@ -8,6 +8,7 @@ import type { AddFormProps } from "../../types";
 import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import { CONSTRAINTS_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsTypeBlock.module.scss";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface PackageProfileConstraintsTypeBlockProps {
   readonly formik: FormikContextType<AddFormProps>;
@@ -45,11 +46,7 @@ const PackageProfileConstraintsTypeBlock: FC<
         required
         options={CONSTRAINTS_TYPE_OPTIONS}
         {...formik.getFieldProps("constraintsType")}
-        error={
-          formik.touched.constraintsType && formik.errors.constraintsType
-            ? formik.errors.constraintsType
-            : undefined
-        }
+        error={getFormikError(formik, "constraintsType")}
       />
 
       {formik.values.constraintsType === "instance" && (
@@ -58,12 +55,7 @@ const PackageProfileConstraintsTypeBlock: FC<
           required={formik.values.constraintsType === "instance"}
           options={instanceOptions}
           {...formik.getFieldProps("source_computer_id")}
-          error={
-            formik.touched.source_computer_id &&
-            formik.errors.source_computer_id
-              ? formik.errors.source_computer_id
-              : undefined
-          }
+          error={getFormikError(formik, "source_computer_id")}
         />
       )}
 
@@ -78,8 +70,8 @@ const PackageProfileConstraintsTypeBlock: FC<
             'File should be formatted as either a package profile CSV file or the output of running "dpkg --get-selections" on a computer with desired packages installed.'
           }
           error={
-            (formik.touched.csvFile && formik.errors.csvFile) ||
-            (formik.touched.material && formik.errors.material) ||
+            getFormikError(formik, "csvFile") ||
+            getFormikError(formik, "material") ||
             undefined
           }
         />

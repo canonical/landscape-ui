@@ -8,6 +8,7 @@ import type { FormProps } from "../../types";
 import { EXPIRATION_TOOLTIP_MESSAGE } from "./constants";
 import classes from "./UpgradeProfileScheduleBlock.module.scss";
 import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface UpgradeProfileScheduleBlockProps {
   readonly formik: FormikContextType<FormProps>;
@@ -17,10 +18,9 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
   formik,
 }) => {
   const timeErrors = [
-    (formik.touched.at_hour && formik.errors.at_hour) || undefined,
-    (formik.touched.at_minute && formik.errors.at_minute) || undefined,
-    (formik.touched.deliver_within && formik.errors.deliver_within) ||
-      undefined,
+    getFormikError(formik, "at_hour"),
+    getFormikError(formik, "at_minute"),
+    getFormikError(formik, "deliver_within"),
   ];
 
   return (
@@ -42,11 +42,7 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
         }
         isSortedAlphabetically={false}
         hasSelectedItemsFirst={false}
-        error={
-          formik.touched.on_days && typeof formik.errors.on_days === "string"
-            ? formik.errors.on_days
-            : undefined
-        }
+        error={getFormikError(formik, "on_days")}
       />
 
       <div className={classes.radioGroup}>
