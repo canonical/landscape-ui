@@ -9,6 +9,7 @@ import { testLowercaseAlphaNumeric } from "@/utils/tests";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import type { FormProps } from "./types";
 import { INITIAL_VALUES } from "./constants";
+import { getFormikError } from "@/utils/formikErrors";
 
 const NewGPGKeyForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
@@ -58,11 +59,7 @@ const NewGPGKeyForm: FC = () => {
         type="text"
         label="Name"
         required
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
         {...formik.getFieldProps("name")}
       />
 
@@ -70,11 +67,7 @@ const NewGPGKeyForm: FC = () => {
         label="Material"
         required
         rows={10}
-        error={
-          formik.touched.material && formik.errors.material
-            ? formik.errors.material
-            : undefined
-        }
+        error={getFormikError(formik, "material")}
         {...formik.getFieldProps("material")}
       />
       <SidePanelFormButtons

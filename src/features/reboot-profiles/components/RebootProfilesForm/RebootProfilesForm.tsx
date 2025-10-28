@@ -104,7 +104,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
           label="Title"
           required={props.action === "add"}
           {...formik.getFieldProps("title")}
-          error={formik.touched.title && formik.errors.title}
+          error={getFormikError(formik, "title")}
         />
 
         <Select

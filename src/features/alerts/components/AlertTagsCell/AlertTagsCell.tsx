@@ -12,6 +12,7 @@ import { useAlerts } from "../../hooks";
 import type { Alert } from "../../types";
 import classes from "./AlertTagsCell.module.scss";
 import { findExclusiveTags } from "./helpers";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface AlertTagsCellProps {
   readonly alert: Alert;
@@ -149,11 +150,7 @@ const AlertTagsCell: FC<AlertTagsCellProps> = ({
         disabledItems={disabledItems}
         onItemsUpdate={updateItems}
         placeholder="Select tags"
-        error={
-          formik.touched.tags && typeof formik.errors.tags === "string"
-            ? formik.errors.tags
-            : undefined
-        }
+        error={getFormikError(formik, "tags")}
         dropdownFooter={
           <div className={classes.footer}>
             <Button

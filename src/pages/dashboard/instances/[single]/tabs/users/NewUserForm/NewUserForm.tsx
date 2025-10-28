@@ -8,6 +8,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import useUsers from "@/hooks/useUsers";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   name: string;
@@ -92,22 +93,14 @@ const NewUserForm: FC = () => {
         label="Username"
         autoComplete="new-username"
         required
-        error={
-          formik.touched.username && formik.errors.username
-            ? formik.errors.username
-            : undefined
-        }
+        error={getFormikError(formik, "username")}
         {...formik.getFieldProps("username")}
       />
       <Input
         type="text"
         label="Name"
         required
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
         {...formik.getFieldProps("name")}
       />
       <Input
@@ -115,11 +108,7 @@ const NewUserForm: FC = () => {
         label="Password"
         autoComplete="new-password"
         required
-        error={
-          formik.touched.password && formik.errors.password
-            ? formik.errors.password
-            : undefined
-        }
+        error={getFormikError(formik, "password")}
         {...formik.getFieldProps("password")}
       />
       <Input
@@ -127,11 +116,7 @@ const NewUserForm: FC = () => {
         label="Confirm password"
         autoComplete="new-password"
         required
-        error={
-          formik.touched.confirmPassword && formik.errors.confirmPassword
-            ? formik.errors.confirmPassword
-            : undefined
-        }
+        error={getFormikError(formik, "confirmPassword")}
         {...formik.getFieldProps("confirmPassword")}
       />
       <Input
@@ -146,40 +131,24 @@ const NewUserForm: FC = () => {
         disabled={isLoadingGroups}
         options={[{ label: "Select", value: "" }, ...groupOptions]}
         {...formik.getFieldProps("primaryGroupValue")}
-        error={
-          formik.touched.primaryGroupValue && formik.errors.primaryGroupValue
-            ? formik.errors.primaryGroupValue
-            : undefined
-        }
+        error={getFormikError(formik, "primaryGroupValue")}
       />
       <Input
         type="text"
         label="Location"
-        error={
-          formik.touched.location && formik.errors.location
-            ? formik.errors.location
-            : undefined
-        }
+        error={getFormikError(formik, "location")}
         {...formik.getFieldProps("location")}
       />
       <Input
         type="text"
         label="Home phone"
-        error={
-          formik.touched.homePhoneNumber && formik.errors.homePhoneNumber
-            ? formik.errors.homePhoneNumber
-            : undefined
-        }
+        error={getFormikError(formik, "homePhoneNumber")}
         {...formik.getFieldProps("homePhoneNumber")}
       />
       <Input
         type="text"
         label="Work phone"
-        error={
-          formik.touched.workPhoneNumber && formik.errors.workPhoneNumber
-            ? formik.errors.workPhoneNumber
-            : undefined
-        }
+        error={getFormikError(formik, "workPhoneNumber")}
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons

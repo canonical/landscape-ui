@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import { VALIDATION_SCHEMA } from "./constants";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   currentPassword: string;
@@ -50,11 +51,7 @@ const ChangePasswordForm: FC = () => {
         type="password"
         required
         autoComplete="current-password"
-        error={
-          formik.touched.currentPassword && formik.errors.currentPassword
-            ? formik.errors.currentPassword
-            : undefined
-        }
+        error={getFormikError(formik, "currentPassword")}
         {...formik.getFieldProps("currentPassword")}
       />
       <PasswordToggle

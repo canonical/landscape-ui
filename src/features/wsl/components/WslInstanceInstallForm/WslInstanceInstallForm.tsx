@@ -13,6 +13,7 @@ import * as Yup from "yup";
 import { useCreateWslInstance, useGetWslInstanceTypes } from "../../api";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import { fileToBase64 } from "./helpers";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   instanceType: string;
@@ -142,11 +143,7 @@ const WslInstanceInstallForm: FC = () => {
         disabled={isGettingWslInstanceTypes}
         options={instanceOptions}
         {...formik.getFieldProps("instanceType")}
-        error={
-          formik.touched.instanceType && formik.errors.instanceType
-            ? formik.errors.instanceType
-            : undefined
-        }
+        error={getFormikError(formik, "instanceType")}
       />
 
       {formik.values.instanceType === "custom" && (
@@ -156,22 +153,14 @@ const WslInstanceInstallForm: FC = () => {
             type="text"
             required
             {...formik.getFieldProps("instanceName")}
-            error={
-              formik.touched.instanceName && formik.errors.instanceName
-                ? formik.errors.instanceName
-                : undefined
-            }
+            error={getFormikError(formik, "instanceName")}
           />
           <Input
             label="Rootfs URL"
             type="text"
             required
             {...formik.getFieldProps("rootfs")}
-            error={
-              formik.touched.rootfs && formik.errors.rootfs
-                ? formik.errors.rootfs
-                : undefined
-            }
+            error={getFormikError(formik, "rootfs")}
           />
         </>
       )}
@@ -183,11 +172,7 @@ const WslInstanceInstallForm: FC = () => {
         onFileRemove={handleRemoveFile}
         onFileUpload={handleFileUpload}
         help="You can use a cloud-init configuration YAML file under 1MB to register new WSL instances. Cloud-init streamlines the setup by automating installation and configuration tasks."
-        error={
-          formik.touched.cloudInit && formik.errors.cloudInit
-            ? formik.errors.cloudInit
-            : undefined
-        }
+        error={getFormikError(formik, "cloudInit")}
       />
 
       <SidePanelFormButtons

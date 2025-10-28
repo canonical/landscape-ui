@@ -7,6 +7,7 @@ import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
 import type { RepositoryProfileFormValues } from "../../types";
 import type { APTSource } from "@/features/apt-sources";
 import { getFilteredAptSources } from "./helpers";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface RepositoryProfileFormAptSourcesPanelProps {
   readonly aptSources: APTSource[];
@@ -30,7 +31,7 @@ const RepositoryProfileFormAptSourcesPanel: FC<
       />
       <fieldset
         className={classNames("checkbox-group", {
-          "is-error": formik.touched.apt_sources && formik.errors.apt_sources,
+          "is-error": getFormikError(formik, "apt_sources"),
         })}
       >
         <Row className="u-no-padding--left u-no-padding--right">

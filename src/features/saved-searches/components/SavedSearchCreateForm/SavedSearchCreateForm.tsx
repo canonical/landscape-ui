@@ -5,6 +5,7 @@ import { Button, Form, Input } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useSavedSearches } from "../../hooks";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface SavedSearchCreateFormProps {
   readonly onClose: () => void;
@@ -61,11 +62,7 @@ const SavedSearchCreateForm: FC<SavedSearchCreateFormProps> = ({
         autoFocus
         label="Search name"
         {...formik.getFieldProps("name")}
-        error={
-          formik.touched.name && formik.errors.name
-            ? formik.errors.name
-            : undefined
-        }
+        error={getFormikError(formik, "name")}
       />
       <div className="form-buttons">
         <Button type="button" disabled={formik.isSubmitting} onClick={onClose}>

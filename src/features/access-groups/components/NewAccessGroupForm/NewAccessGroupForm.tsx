@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import type { FormProps } from "./types";
+import { getFormikError } from "@/utils/formikErrors";
 
 const NewAccessGroupForm: FC = () => {
   const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
@@ -42,11 +43,7 @@ const NewAccessGroupForm: FC = () => {
         type="text"
         label="Title"
         required
-        error={
-          formik.touched.title && formik.errors.title
-            ? formik.errors.title
-            : undefined
-        }
+        error={getFormikError(formik, "title")}
         {...formik.getFieldProps("title")}
       />
       <Select
@@ -54,11 +51,7 @@ const NewAccessGroupForm: FC = () => {
         label="Parent"
         disabled={isGettingAccessGroups}
         options={accessGroupsOptionsResults}
-        error={
-          formik.touched.parent && formik.errors.parent
-            ? formik.errors.parent
-            : undefined
-        }
+        error={getFormikError(formik, "parent")}
         {...formik.getFieldProps("parent")}
       />
       <SidePanelFormButtons

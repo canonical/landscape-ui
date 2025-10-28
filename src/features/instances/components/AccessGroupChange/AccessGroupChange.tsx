@@ -12,6 +12,7 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getAccessGroupOptions } from "./helpers";
 import type { AccessGroupChangeFormValues } from "./types";
 import { pluralize } from "@/utils/_helpers";
+import { getFormikError } from "@/utils/formikErrors";
 
 interface AccessGroupChangeProps {
   readonly selected: Instance[];
@@ -69,11 +70,7 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
         required
         options={getAccessGroupOptions(getAccessGroupQueryResult?.data)}
         {...formik.getFieldProps("access_group")}
-        error={
-          formik.touched.access_group && formik.errors.access_group
-            ? formik.errors.access_group
-            : undefined
-        }
+        error={getFormikError(formik, "access_group")}
       />
 
       <SidePanelFormButtons
