@@ -9,6 +9,7 @@ export interface UpgradeProfile extends Record<string, unknown> {
   all_computers: boolean;
   at_minute: `${number}`;
   autoremove: boolean;
+  computers: { num_associated_computers: number };
   deliver_delay_window: `${number}`;
   deliver_within: `${number}`;
   every: UpgradeProfileFrequency;
