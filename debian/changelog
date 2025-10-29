@@ -1,3 +1,9 @@
+landscape-dashboard (1.22.0-0landscape0) jammy; urgency=medium
+
+  * Release 1.22.0 for jammy
+
+ -- Mitch Burton <mitch.burton@canonical.com>  Wed, 29 Oct 2025 14:59:32 -0700
+
 landscape-dashboard (1.19.0-0landscape0) jammy; urgency=medium
 
   * Release 1.19.0 for jammy

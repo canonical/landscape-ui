@@ -1,0 +1,1 @@
+import{j as s,q as e}from"./index-BniO5lih.js";const t={accessor:"title",id:"title",Header:s.jsxs("div",{className:e.header,children:["Title",s.jsx("span",{className:"u-text--muted",children:"Name"})]})};export{t as L};
