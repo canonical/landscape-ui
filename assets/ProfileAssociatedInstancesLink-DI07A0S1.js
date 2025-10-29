@@ -1,0 +1,1 @@
+import{j as s,N as r,S as n,x as i,R as o}from"./index-BniO5lih.js";const l=({count:t,profile:a,query:e})=>!a.tags.length&&!a.all_computers?s.jsx(r,{}):t===0?s.jsx(s.Fragment,{children:"0 instances"}):s.jsxs(n,{to:o.instances.root({query:`profile:${e}`}),children:[t," ",i(t,"instance")]});export{l as P};

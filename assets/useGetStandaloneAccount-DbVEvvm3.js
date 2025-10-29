@@ -1,0 +1,1 @@
+import{c as o,r as c,e as r,A as u,f as i}from"./index-BniO5lih.js";const x=()=>{const{isSelfHosted:s}=o(),[a]=c.useState(()=>r.create({baseURL:u})),{data:e,isLoading:t,error:n}=i({queryKey:["standaloneAccount"],queryFn:async()=>await a.get("standalone-account"),retry:!1,enabled:s,staleTime:0,gcTime:0});return{accountExists:e?.data.exists??!1,isLoading:t,error:n}};export{x as u};

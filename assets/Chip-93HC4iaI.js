@@ -1,0 +1,1 @@
+import{j as s,V as i}from"./index-BniO5lih.js";const n="_chip_8o9xt_1",p={chip:n},o=({className:a,value:c})=>s.jsx("span",{className:i("p-chip is-dense u-no-margin--bottom u-no-margin--right",p.chip,a),children:s.jsx("span",{className:"p-chip__value",children:c})});export{o as C};
