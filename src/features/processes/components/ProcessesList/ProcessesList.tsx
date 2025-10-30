@@ -27,7 +27,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
   const columns = useMemo<Column<Process>[]>(
     () => [
       {
-        accessor: "selected",
+        accessor: "name",
         Header: (
           <>
             <CheckboxInput
