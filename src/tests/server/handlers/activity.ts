@@ -5,6 +5,7 @@ import { activities, activityTypes } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 
 export default [
   http.get<never, GetActivitiesParams, ApiPaginatedResponse<Activity>>(
@@ -13,7 +14,7 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw ENDPOINT_STATUS_API_ERROR;
       }
 
       const url = new URL(request.url);
@@ -75,4 +76,49 @@ export default [
 
     return HttpResponse.json(activityTypes);
   }),
+
+  http.get<never, never, number[]>(API_URL_OLD, async ({ request }) => {
+    if (!isAction(request, "CancelActivities")) {
+      return;
+    }
+
+    return HttpResponse.json([activities[0].id, activities[1].id]);
+  }),
+
+  http.get<never, never, string[]>(API_URL_OLD, async ({ request }) => {
+    if (!isAction(request, "ApproveActivities")) {
+      return;
+    }
+
+    return HttpResponse.json([
+      String(activities[0].id),
+      String(activities[1].id),
+    ]);
+  }),
+
+  http.post<never, { activity_ids: number[] }, number[]>(
+    `${API_URL}activities/revert`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw ENDPOINT_STATUS_API_ERROR;
+      }
+
+      return HttpResponse.json([activities[0].id, activities[1].id]);
+    },
+  ),
+
+  http.post<never, { activity_ids: number[] }, number[]>(
+    `${API_URL}activities/reapply`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw ENDPOINT_STATUS_API_ERROR;
+      }
+
+      return HttpResponse.json([activities[0].id, activities[1].id]);
+    },
+  ),
 ];

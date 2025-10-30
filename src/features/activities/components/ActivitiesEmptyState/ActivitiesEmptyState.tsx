@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
+import { DOCUMENTATION_LINK } from "./constants";
 
 const ActivitiesEmptyState: FC = () => {
   return (
@@ -8,7 +9,7 @@ const ActivitiesEmptyState: FC = () => {
         <>
           <p>There are no activities yet.</p>
           <a
-            href="https://ubuntu.com/landscape/docs/managing-computers"
+            href={DOCUMENTATION_LINK}
             target="_blank"
             rel="nofollow noopener noreferrer"
           >
