@@ -4,14 +4,10 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Badge, Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import * as Yup from "yup";
 import classes from "./ActivitiesDateFilter.module.scss";
 import { TableFilter } from "@/components/filter";
-
-interface FormProps {
-  fromDate: string;
-  toDate: string;
-}
+import { VALIDATION_SCHEMA } from "./constants";
+import type { FormProps } from "./types";
 
 const ActivitiesDateFilter: FC = () => {
   const { setPageParams, fromDate, toDate } = usePageParams();
@@ -22,14 +18,7 @@ const ActivitiesDateFilter: FC = () => {
       toDate: toDate,
     },
     enableReinitialize: true,
-    validationSchema: Yup.object().shape({
-      fromDate: Yup.date().typeError("Invalid date format"),
-      toDate: Yup.date()
-        .typeError("Invalid date format")
-        .when("fromDate", ([from], schema) =>
-          from ? schema.min(from, "To date must be after From date") : schema,
-        ),
-    }),
+    validationSchema: VALIDATION_SCHEMA,
     onSubmit: (values) => {
       setPageParams({
         fromDate: values.fromDate,

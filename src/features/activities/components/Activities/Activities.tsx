@@ -6,7 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import moment from "moment/moment";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { ACTIVITY_STATUSES } from "../../constants";
@@ -40,34 +40,40 @@ const Activities: FC<ActivitiesProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleActivityDetailsOpen = (activity: ActivityCommon) => {
-    setSidePanelContent(
-      activity.summary,
-      <Suspense fallback={<LoadingState />}>
-        <ActivityDetails activityId={activity.id} />
-      </Suspense>,
-    );
-  };
+  const handleActivityDetailsOpen = useCallback(
+    (activity: ActivityCommon) => {
+      setSidePanelContent(
+        activity.summary,
+        <Suspense fallback={<LoadingState />}>
+          <ActivityDetails activityId={activity.id} />
+        </Suspense>,
+      );
+    },
+    [setSidePanelContent],
+  );
 
   useOpenActivityDetails(handleActivityDetailsOpen);
 
-  const handleClearSelection = () => {
+  const handleClearSelection = useCallback(() => {
     setSelectedActivities([]);
-  };
+  }, [setSelectedActivities]);
 
-  const toggleAll = () => {
+  const toggleAll = useCallback(() => {
     setSelectedActivities(selectedActivities.length !== 0 ? [] : activities);
-  };
+  }, [activities, selectedActivities, setSelectedActivities]);
 
-  const handleToggleActivity = (activity: ActivityCommon) => {
-    setSelectedActivities(
-      selectedActivities.includes(activity)
-        ? selectedActivities.filter(
-            (selectedActivity) => selectedActivity !== activity,
-          )
-        : [...selectedActivities, activity],
-    );
-  };
+  const handleToggleActivity = useCallback(
+    (activity: ActivityCommon) => {
+      setSelectedActivities(
+        selectedActivities.includes(activity)
+          ? selectedActivities.filter(
+              (selectedActivity) => selectedActivity !== activity,
+            )
+          : [...selectedActivities, activity],
+      );
+    },
+    [selectedActivities, setSelectedActivities],
+  );
 
   const columns = useMemo<Column<ActivityCommon>[]>(
     () =>
@@ -172,7 +178,14 @@ const Activities: FC<ActivitiesProps> = ({
           ),
         },
       ].filter((col) => !instanceId || col.accessor !== "computer_id"),
-    [activities, selectedActivities],
+    [
+      activities,
+      selectedActivities,
+      toggleAll,
+      handleToggleActivity,
+      handleActivityDetailsOpen,
+      instanceId,
+    ],
   );
 
   return (

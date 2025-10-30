@@ -25,7 +25,7 @@ export const activities: Activity[] = [
     deliver_before_time: null,
     parent_id: 1008,
     modification_time: "2024-04-15T15:47:07Z",
-    completion_time: null,
+    completion_time: "2024-04-15T15:48:07Z",
     schedule_before_time: null,
     schedule_after_time: null,
     result_code: null,
