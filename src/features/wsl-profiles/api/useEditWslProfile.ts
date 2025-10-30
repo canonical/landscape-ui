@@ -1,7 +1,8 @@
-import useFetch from "@/hooks/useFetch";
+import { API_URL } from "@/constants";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import axios from "axios";
 import type { WslProfile } from "../types";
 
 interface EditWslProfileParams {
@@ -14,8 +15,11 @@ interface EditWslProfileParams {
 }
 
 export const useEditWslProfile = () => {
-  const authFetch = useFetch();
   const queryClient = useQueryClient();
+
+  const authFetch = axios.create({
+    baseURL: API_URL,
+  });
 
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<WslProfile>,
