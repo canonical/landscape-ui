@@ -8,4 +8,5 @@ export type {
   Package,
   PackageDiff,
   PackageObject,
+  DowngradePackageVersion,
 } from "./types";

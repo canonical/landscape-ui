@@ -1,10 +1,16 @@
 import { http, HttpResponse } from "msw";
-import { API_URL } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import type { GetPackagesParams, Package } from "@/features/packages";
+import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { getInstancePackages, packages } from "@/tests/mocks/packages";
+import {
+  downgradePackageVersions,
+  getInstancePackages,
+  packages,
+} from "@/tests/mocks/packages";
+import { activities } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { generatePaginatedResponse } from "./_helpers";
+import { generatePaginatedResponse, isAction } from "./_helpers";
 
 export default [
   http.get<never, GetPackagesParams, ApiPaginatedResponse<Package>>(
@@ -34,6 +40,7 @@ export default [
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit"));
     const offset = Number(url.searchParams.get("offset")) || 0;
+    const search = url.searchParams.get("search") || "";
     const instanceId = Number(params.id);
 
     const instancePackages = getInstancePackages(instanceId);
@@ -43,7 +50,37 @@ export default [
         data: instancePackages,
         limit,
         offset,
+        search,
+        searchFields: ["name"],
       }),
     );
+  }),
+
+  http.get(
+    `${API_URL}computers/:id/packages/installed/:packageName/downgrades`,
+    () => {
+      return HttpResponse.json({
+        results: downgradePackageVersions,
+      });
+    },
+  ),
+
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:id/packages/installed`,
+    async () => {
+      return HttpResponse.json<Activity>(activities[0]);
+    },
+  ),
+
+  http.post<never, never, Activity>(`${API_URL}packages`, async () => {
+    return HttpResponse.json<Activity>(activities[0]);
+  }),
+
+  http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
+    if (!isAction(request, "UpgradePackages")) {
+      return;
+    }
+
+    return HttpResponse.json<Activity>(activities[0]);
   }),
 ];
