@@ -5,14 +5,23 @@ import { describe, expect, it } from "vitest";
 import PackagesInstallButton from "./PackagesInstallButton";
 
 describe("PackagesInstallButton", () => {
-  it("opens a form", async () => {
-    const user = userEvent.setup();
+  const user = userEvent.setup();
 
+  it("renders install button with positive appearance", () => {
+    renderWithProviders(<PackagesInstallButton />);
+
+    const button = screen.getByRole("button", { name: "Install" });
+    expect(button).toBeInTheDocument();
+  });
+
+  it("opens install packages form when button is clicked", async () => {
     renderWithProviders(<PackagesInstallButton />);
 
     await user.click(screen.getByRole("button", { name: "Install" }));
+
     expect(
       await screen.findByRole("heading", { name: "Install packages" }),
     ).toBeInTheDocument();
+    expect(screen.getByRole("complementary")).toBeInTheDocument();
   });
 });

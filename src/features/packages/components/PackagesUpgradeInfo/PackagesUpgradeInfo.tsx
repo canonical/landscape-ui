@@ -33,7 +33,7 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
           <li>
             <span>apply </span>
             <span>
-              <b>{securityUpgradePackageCount}</b>
+              <b>{securityUpgradePackageCount} </b>
             </span>
             <span>
               security {pluralize(securityUpgradePackageCount, "upgrade")}

@@ -209,6 +209,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   type="button"
                   appearance="link"
                   className="u-no-margin--bottom"
+                  aria-label={`Delete ${item.name}`}
                   onClick={() => {
                     handleDeleteSelectedItem(item.name);
                   }}

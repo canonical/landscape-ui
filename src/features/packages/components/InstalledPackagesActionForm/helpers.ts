@@ -43,11 +43,11 @@ export const getActionSuccessNotificationProps = (
   );
 
   const titleEnding: Record<InstalledPackageAction, string> = {
-    downgrade: "downgrade",
+    downgrade: "downgraded",
     hold: "held",
     remove: "uninstall",
     unhold: "unheld",
-    upgrade: "upgrade",
+    upgrade: "upgraded",
   };
 
   const messageEnding: Record<InstalledPackageAction, string> = {

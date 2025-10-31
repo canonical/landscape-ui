@@ -1,4 +1,8 @@
-import type { InstancePackage, Package } from "@/features/packages";
+import type {
+  InstancePackage,
+  Package,
+  DowngradePackageVersion,
+} from "@/features/packages";
 
 export const packages: Package[] = [
   {
@@ -55,6 +59,12 @@ export const packages: Package[] = [
         current_version: "2.38-4ubuntu2.3",
         available_version: "2.38-4ubuntu2.4",
       },
+      {
+        id: 1,
+        status: "security",
+        current_version: "2.38-4ubuntu2.3",
+        available_version: "2.38-4ubuntu2.4",
+      },
     ],
   },
   {
@@ -67,6 +77,12 @@ export const packages: Package[] = [
         status: "security",
         current_version: "2.38-4ubuntu2.3",
         available_version: "2.38-4ubuntu2.4",
+      },
+      {
+        id: 1,
+        status: "installed",
+        current_version: null,
+        available_version: null,
       },
     ],
   },
@@ -94,6 +110,12 @@ export const packages: Package[] = [
         current_version: "1.2.2-1",
         available_version: "1.2.2-1ubuntu0.13",
       },
+      {
+        id: 1,
+        status: "installed",
+        current_version: "1.2.2-1",
+        available_version: "1.2.2-1ubuntu0.13",
+      },
     ],
   },
   {
@@ -104,6 +126,12 @@ export const packages: Package[] = [
       {
         id: 21,
         status: "installed",
+        current_version: "11ubuntu5",
+        available_version: "11ubuntu5.7",
+      },
+      {
+        id: 1,
+        status: "held",
         current_version: "11ubuntu5",
         available_version: "11ubuntu5.7",
       },
@@ -302,3 +330,18 @@ export const getInstancePackages = (instanceId: number): InstancePackage[] => {
         .map((instanceProps) => ({ ...instanceProps, ...commonProps })),
     );
 };
+
+export const downgradePackageVersions: DowngradePackageVersion[] = [
+  {
+    id: 1,
+    name: "libthai0",
+    summary: "Thai language support library",
+    version: "0.1.8-2",
+  },
+  {
+    id: 2,
+    name: "libthai0",
+    summary: "Thai language support library",
+    version: "0.1.7-3",
+  },
+];
