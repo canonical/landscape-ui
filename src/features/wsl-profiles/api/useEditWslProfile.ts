@@ -17,6 +17,7 @@ interface EditWslProfileParams {
 export const useEditWslProfile = () => {
   const queryClient = useQueryClient();
 
+  // TODO: Update useFetch to avoid doing this: https://warthogs.atlassian.net/browse/LNDENG-3458
   const authFetch = axios.create({
     baseURL: API_URL,
   });
