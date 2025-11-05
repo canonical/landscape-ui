@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "tooltipPositionElement": string;
+  readonly tooltipPositionElement: string;
 };
 export = styles;
-

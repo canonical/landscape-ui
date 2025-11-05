@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "grouped": string;
+  readonly grouped: string;
 };
 export = styles;
-

@@ -1,7 +1,6 @@
 declare const styles: {
-  readonly "divider": string;
-  readonly "menuContainer": string;
-  readonly "wrapper": string;
+  readonly divider: string;
+  readonly menuContainer: string;
+  readonly wrapper: string;
 };
 export = styles;
-

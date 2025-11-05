@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "rangeContainer": string;
+  readonly rangeContainer: string;
 };
 export = styles;
-

@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "noWrap": string;
+  readonly noWrap: string;
 };
 export = styles;
-

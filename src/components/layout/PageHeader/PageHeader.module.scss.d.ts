@@ -1,8 +1,7 @@
 declare const styles: {
-  readonly "breadcrumbs": string;
-  readonly "controls": string;
-  readonly "sticky": string;
-  readonly "visualTitle": string;
+  readonly breadcrumbs: string;
+  readonly controls: string;
+  readonly sticky: string;
+  readonly visualTitle: string;
 };
 export = styles;
-

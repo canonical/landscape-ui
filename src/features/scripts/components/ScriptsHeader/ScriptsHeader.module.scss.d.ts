@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "actions": string;
+  readonly actions: string;
 };
 export = styles;
-

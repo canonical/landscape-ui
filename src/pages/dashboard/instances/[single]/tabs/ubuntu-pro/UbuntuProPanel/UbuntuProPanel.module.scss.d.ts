@@ -1,5 +1,4 @@
 declare const styles: {
-  readonly "attachUbuntuProButton": string;
+  readonly attachUbuntuProButton: string;
 };
 export = styles;
-
