@@ -20,8 +20,6 @@ The modern web interface for Canonical's Landscape, built with React and TypeScr
 
 Landscape is available as a SaaS solution at [landscape.canonical.com](https://landscape.canonical.com/) and as a self-hosted application.
 
-
-
 ---
 
 ## About this Repository
@@ -38,18 +36,20 @@ Follow these instructions to set up the project on your local machine for develo
 
 ### Prerequisites
 
-* **Node.js** (v22 or later recommended)
-* **pnpm** package manager. If you don't have it, you can install it with `npm install -g pnpm`.
+- **Node.js** (v22 or later recommended)
+- **pnpm** package manager. If you don't have it, you can install it with `npm install -g pnpm`.
 
 ### Setup Instructions
 
 1.  **Clone the repository:**
+
     ```bash
-    git clone [https://github.com/canonical/landscape-ui.git](https://github.com/canonical/landscape-ui.git)
+    git clone https://github.com/canonical/landscape-ui.git)
     cd landscape-ui
     ```
 
 2.  **Install dependencies:**
+
     ```bash
     pnpm install
     ```
@@ -78,6 +78,7 @@ To create a production-ready build of the application, run:
 ```bash
 pnpm build
 ```
+
 This command bundles the app into static files for production in the `dist/` directory.
 
 ---
@@ -86,15 +87,15 @@ This command bundles the app into static files for production in the `dist/` dir
 
 This project is built with a modern, robust set of tools:
 
-* **Framework/Library**: [React](https://reactjs.org/)
-* **Language**: [TypeScript](https://www.typescriptlang.org/)
-* **Build Tool**: [Vite](https://vitejs.dev/)
-* **Package Manager**: [PNPM](https://pnpm.io/)
-* **Data Fetching**: [React Query](https://tanstack.com/query/latest)
-* **Unit & Integration Testing**: [Vitest](https://vitest.dev/)
-* **End-to-End Testing**: [Playwright](https://playwright.dev/)
-* **API Mocking**: [MSW (Mock Service Worker)](https://mswjs.io/)
-* **Containerization**: [Docker](https://www.docker.com/)
+- **Framework/Library**: [React](https://reactjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Package Manager**: [PNPM](https://pnpm.io/)
+- **Data Fetching**: [React Query](https://tanstack.com/query/latest)
+- **Unit & Integration Testing**: [Vitest](https://vitest.dev/)
+- **End-to-End Testing**: [Playwright](https://playwright.dev/)
+- **API Mocking**: [MSW (Mock Service Worker)](https://mswjs.io/)
+- **Containerization**: [Docker](https://www.docker.com/)
 
 ---
 
@@ -102,8 +103,8 @@ This project is built with a modern, robust set of tools:
 
 We welcome your feedback! The best way to share your thoughts, report issues, or request features is through one of the following channels:
 
-* **Create an issue** directly on our [GitHub Issues page](https://github.com/canonical/landscape-ui/issues).
-* **Report a bug** on our [Launchpad project](https://bugs.launchpad.net/landscape).
+- **Create an issue** directly on our [GitHub Issues page](https://github.com/canonical/landscape-ui/issues).
+- **Report a bug** on our [Launchpad project](https://bugs.launchpad.net/landscape).
 
 ---
 
