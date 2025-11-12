@@ -21,9 +21,15 @@ const PREVIEW_PORT = 4173;
 const PORT = IS_CI ? PREVIEW_PORT : DEV_PORT;
 
 /**
+ * The root path for the application, defaulting to "/".
+ */
+
+const ROOT_PATH = process.env.VITE_ROOT_PATH ?? "/";
+
+/**
  * The base URL for the application being tested.
  */
-const BASE_URL = `http://localhost:${PORT}`;
+const BASE_URL = `http://localhost:${PORT}${ROOT_PATH}`;
 
 /**
  * The timeout for the web server to start, in milliseconds.
@@ -81,6 +87,14 @@ export default defineConfig({
      * reliable than simply waiting for a port to be open.
      */
     url: BASE_URL,
+
+    /**
+     * Pass environment variables from the main Playwright
+     * process down into the 'pnpm preview' child process.
+     */
+    env: {
+      VITE_ROOT_PATH: ROOT_PATH,
+    },
 
     /**
      * The timeout for the web server to start.
