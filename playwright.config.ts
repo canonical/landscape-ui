@@ -80,7 +80,7 @@ export default defineConfig({
      * The command to start the web server. Uses 'preview' for CI after a build,
      * and 'dev' for local development.
      */
-    command: IS_CI ? "pnpm preview" : "pnpm dev",
+    command: IS_CI ? `pnpm preview --base ${ROOT_PATH}` : "pnpm dev",
 
     /**
      * A URL to poll to determine when the server is ready. This is more
