@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly step: string;
+  readonly "step": string;
 };
 export = styles;
+

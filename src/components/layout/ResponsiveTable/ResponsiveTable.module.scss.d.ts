@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly responsiveTable: string;
+  readonly "responsiveTable": string;
 };
 export = styles;
+

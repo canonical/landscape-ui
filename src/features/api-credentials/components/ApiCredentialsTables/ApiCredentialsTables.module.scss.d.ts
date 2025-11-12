@@ -1,5 +1,6 @@
 declare const styles: {
-  readonly apiCredentials: string;
-  readonly tableWrapper: string;
+  readonly "apiCredentials": string;
+  readonly "tableWrapper": string;
 };
 export = styles;
+

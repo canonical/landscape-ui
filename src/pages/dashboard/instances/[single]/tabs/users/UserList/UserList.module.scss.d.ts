@@ -1,5 +1,6 @@
 declare const styles: {
-  readonly status: string;
-  readonly statusCell: string;
+  readonly "status": string;
+  readonly "statusCell": string;
 };
 export = styles;
+

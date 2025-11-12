@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly modal: string;
+  readonly "modal": string;
 };
 export = styles;
+

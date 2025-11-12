@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly ctaRow: string;
+  readonly "ctaRow": string;
 };
 export = styles;
+

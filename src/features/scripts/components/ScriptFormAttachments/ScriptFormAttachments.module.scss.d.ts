@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly attachment: string;
+  readonly "attachment": string;
 };
 export = styles;
+

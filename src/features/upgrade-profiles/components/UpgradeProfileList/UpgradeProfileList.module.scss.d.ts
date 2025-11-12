@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly truncated: string;
+  readonly "truncated": string;
 };
 export = styles;
+

@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly indent: string;
+  readonly "indent": string;
 };
 export = styles;
+

@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly administrators: string;
+  readonly "administrators": string;
 };
 export = styles;
+

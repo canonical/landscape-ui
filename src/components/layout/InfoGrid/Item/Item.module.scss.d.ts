@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly largeItem: string;
+  readonly "largeItem": string;
 };
 export = styles;
+

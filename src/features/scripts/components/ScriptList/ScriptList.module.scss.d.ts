@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly associatedProfiles: string;
+  readonly "associatedProfiles": string;
 };
 export = styles;
+

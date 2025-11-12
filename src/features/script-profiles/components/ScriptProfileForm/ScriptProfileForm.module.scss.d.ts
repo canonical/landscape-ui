@@ -1,5 +1,6 @@
 declare const styles: {
-  readonly description: string;
-  readonly indent: string;
+  readonly "description": string;
+  readonly "indent": string;
 };
 export = styles;
+

@@ -1,5 +1,6 @@
 declare const styles: {
-  readonly actionButton: string;
-  readonly toggleButton: string;
+  readonly "actionButton": string;
+  readonly "toggleButton": string;
 };
 export = styles;
+

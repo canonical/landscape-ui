@@ -1,4 +1,5 @@
 declare const styles: {
-  readonly nameColumn: string;
+  readonly "nameColumn": string;
 };
 export = styles;
+
