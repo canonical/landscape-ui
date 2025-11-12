@@ -17,8 +17,8 @@
     "coverage": "vitest run --coverage",
     "test:codegen": "pnpm exec playwright codegen",
     "test:report": "pnpm exec playwright show-report",
-    "tcm:run": "tcm -p \"src/**/*.module.scss\"",
-    "tcm:watch": "tcm -w \"src/**\" -p \"*.module.scss\""
+    "tcm:run": "tcm \"src/**\" --pattern *.module.scss",
+    "tcm:watch": "pnpm tcm:run --watch"
   },
   "dependencies": {
     "@canonical/react-components": "3.6.0",
