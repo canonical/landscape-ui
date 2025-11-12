@@ -61,6 +61,11 @@ export default defineConfig({
    */
   retries: IS_CI ? 2 : 0,
 
+  timeout: WEBSERVER_TIMEOUT,
+  expect: {
+    timeout: WEBSERVER_TIMEOUT,
+  },
+
   /**
    * Limit the number of workers on CI to 1. This can significantly improve
    * stability on resource-constrained CI runners by preventing contention.
