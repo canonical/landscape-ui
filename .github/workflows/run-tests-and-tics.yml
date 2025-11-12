@@ -8,7 +8,7 @@ jobs:
   e2e-tests:
     runs-on: [ self-hosted, Linux, large ]
     container:
-      image: mcr.microsoft.com/playwright:v1.45.1
+      image: mcr.microsoft.com/playwright:v1.56.1
     environment: dev
     env:
       VITE_API_URL: ${{ vars.API_URL }}

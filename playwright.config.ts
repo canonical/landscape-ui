@@ -85,21 +85,13 @@ export default defineConfig({
      * The command to start the web server. Uses 'preview' for CI after a build,
      * and 'dev' for local development.
      */
-    command: IS_CI ? `pnpm preview --base ${ROOT_PATH}` : "pnpm dev",
+    command: IS_CI ? "pnpm preview" : "pnpm dev",
 
     /**
      * A URL to poll to determine when the server is ready. This is more
      * reliable than simply waiting for a port to be open.
      */
     url: BASE_URL,
-
-    /**
-     * Pass environment variables from the main Playwright
-     * process down into the 'pnpm preview' child process.
-     */
-    env: {
-      VITE_ROOT_PATH: ROOT_PATH,
-    },
 
     /**
      * The timeout for the web server to start.
