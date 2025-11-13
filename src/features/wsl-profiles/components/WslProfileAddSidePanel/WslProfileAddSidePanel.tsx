@@ -66,6 +66,7 @@ const WslProfileAddSidePanel: FC = () => {
         image_source: values.rootfsImage,
         cloud_init_contents: strippedCloudInit,
         all_computers: values.all_computers,
+        only_landscape_created: values.complianceSettings === "uninstall",
         tags: values.tags,
       });
 
@@ -214,6 +215,25 @@ const WslProfileAddSidePanel: FC = () => {
               />
             )}
           </div>
+
+          <Select
+            label="Compliance settings"
+            options={[
+              {
+                label:
+                  "Ignore WSL child instances that have not been created by Landscape",
+                value: "ignore",
+              },
+              {
+                label:
+                  "Uninstall WSL child instances that have not been created by Landscape",
+                value: "uninstall",
+              },
+            ]}
+            required
+            {...formik.getFieldProps("complianceSettings")}
+            error={getFormikError(formik, "complianceSettings")}
+          />
 
           <AssociationBlock formik={formik} />
 

@@ -24,6 +24,7 @@ export const wslProfiles: WslProfile[] = [
       "non-compliant": [27],
       pending: [6],
     },
+    only_landscape_created: false,
   },
   {
     id: 1,
@@ -46,5 +47,6 @@ export const wslProfiles: WslProfile[] = [
       "non-compliant": [27],
       pending: [6],
     },
+    only_landscape_created: true,
   },
 ];

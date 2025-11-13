@@ -9,4 +9,5 @@ export interface FormProps {
   cloudInit: File | string | null;
   all_computers: boolean;
   tags: string[];
+  complianceSettings: "ignore" | "uninstall";
 }

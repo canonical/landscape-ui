@@ -100,6 +100,13 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
+      <Notification severity="caution" title="Editing unavailable">
+        <span>
+          You cannot edit rootfs image, cloud-init file, or compliance settings.
+          To modify these fields, create a new profile.
+        </span>
+      </Notification>
+
       <Input
         type="text"
         label="Title"
@@ -126,13 +133,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       />
 
       <div className={classes.block}>
-        <Notification severity="caution" title="Editing unavailable">
-          <span>
-            You cannot edit rootfs image or cloud-init file. To modify these
-            fields, create a new profile.
-          </span>
-        </Notification>
-
         <Select
           disabled
           label="Rootfs image"
@@ -169,6 +169,24 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
           aria-label="Cloud-init"
           options={CLOUD_INIT_OPTIONS}
           disabled
+        />
+
+        <Select
+          label="Compliance settings"
+          options={[
+            {
+              label:
+                "Ignore WSL child instances that have not been created by Landscape",
+              value: "ignore",
+            },
+            {
+              label:
+                "Uninstall WSL child instances that have not been created by Landscape",
+              value: "uninstall",
+            },
+          ]}
+          disabled
+          value={profile.only_landscape_created ? "uninstall" : "ignore"}
         />
       </div>
 
