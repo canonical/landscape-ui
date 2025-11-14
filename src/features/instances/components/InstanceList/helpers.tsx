@@ -90,7 +90,13 @@ export const getStatusCellIconAndLabel = (
   if (1 === filteredAlerts.length) {
     return {
       icon: `${STATUSES[filteredAlerts[0].type].icon.color ?? STATUSES.Unknown.icon.color}`,
-      label: <>{filteredAlerts[0].summary}</>,
+      label: (
+        <>
+          {STATUSES[filteredAlerts[0].type].alternateLabel ??
+            STATUSES[filteredAlerts[0].type].label ??
+            filteredAlerts[0].summary}
+        </>
+      ),
     };
   }
 
@@ -99,7 +105,11 @@ export const getStatusCellIconAndLabel = (
       <span className={classes.statusContainer}>
         {filteredAlerts.map(({ type, summary }) => (
           <span className={classes.statusListItem} key={type}>
-            <Tooltip message={summary}>
+            <Tooltip
+              message={
+                STATUSES[type].alternateLabel ?? STATUSES[type].label ?? summary
+              }
+            >
               <Icon
                 className="u-no-margin--left"
                 name={`${STATUSES[type]?.icon.color ?? STATUSES.Unknown.icon.color}`}
