@@ -1,6 +1,7 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import CodeEditor from "@/components/form/CodeEditor";
 import FileInput from "@/components/form/FileInput";
+import RadioGroup from "@/components/form/RadioGroup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import SidePanel from "@/components/layout/SidePanel";
 import { useGetWslInstanceTypes } from "@/features/wsl";
@@ -66,7 +67,7 @@ const WslProfileAddSidePanel: FC = () => {
         image_source: values.rootfsImage,
         cloud_init_contents: strippedCloudInit,
         all_computers: values.all_computers,
-        only_landscape_created: values.complianceSettings === "uninstall",
+        only_landscape_created: values.only_landscape_created,
         tags: values.tags,
       });
 
@@ -216,23 +217,24 @@ const WslProfileAddSidePanel: FC = () => {
             )}
           </div>
 
-          <Select
+          <RadioGroup
             label="Compliance settings"
-            options={[
+            formik={formik}
+            field="only_landscape_created"
+            inputs={[
               {
+                key: "ignore",
+                value: false,
                 label:
                   "Ignore WSL child instances that have not been created by Landscape",
-                value: "ignore",
               },
               {
+                key: "uninstall",
+                value: true,
                 label:
                   "Uninstall WSL child instances that have not been created by Landscape",
-                value: "uninstall",
               },
             ]}
-            required
-            {...formik.getFieldProps("complianceSettings")}
-            error={getFormikError(formik, "complianceSettings")}
           />
 
           <AssociationBlock formik={formik} />
