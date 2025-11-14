@@ -1,15 +1,8 @@
 import EmptyState from "@/components/layout/EmptyState";
-import usePageParams from "@/hooks/usePageParams";
-import { Button } from "@canonical/react-components";
 import type { FC } from "react";
+import WslProfileAddButton from "../WslProfileAddButton";
 
 const WslProfilesEmptyState: FC = () => {
-  const { setPageParams } = usePageParams();
-
-  const handleCreateWslProfile = () => {
-    setPageParams({ sidePath: ["add"] });
-  };
-
   return (
     <EmptyState
       title="No WSL profiles found"
@@ -25,16 +18,7 @@ const WslProfilesEmptyState: FC = () => {
           </a>
         </>
       }
-      cta={[
-        <Button
-          type="button"
-          key="add"
-          appearance="positive"
-          onClick={handleCreateWslProfile}
-        >
-          Add WSL profile
-        </Button>,
-      ]}
+      cta={[<WslProfileAddButton key="add" />]}
     />
   );
 };

@@ -1,4 +1,5 @@
 export * from "./api";
+export { default as WslProfileAddButton } from "./components/WslProfileAddButton";
 export { default as WslProfileAddSidePanel } from "./components/WslProfileAddSidePanel";
 export { default as WslProfileDetailsSidePanel } from "./components/WslProfileDetailsSidePanel";
 export { default as WslProfileEditSidePanel } from "./components/WslProfileEditSidePanel";
