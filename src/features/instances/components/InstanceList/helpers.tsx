@@ -13,6 +13,7 @@ import type {
   TableHeaderProps,
   TableRowProps,
 } from "react-table";
+import { ALERT_STATUSES } from "../../constants";
 import {
   getFeatures,
   hasRegularUpgrades,
@@ -20,7 +21,6 @@ import {
 } from "../../helpers";
 import classes from "./InstanceList.module.scss";
 import type { GetUpgradesResult, InstanceColumn } from "./types";
-import { ALERT_STATUSES } from "../../constants";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -91,7 +91,13 @@ export const getStatusCellIconAndLabel = (
   if (1 === filteredAlerts.length) {
     return {
       icon: `${ALERT_STATUSES[filteredAlerts[0].type].icon.color ?? ALERT_STATUSES.Unknown.icon.color}`,
-      label: <>{filteredAlerts[0].summary}</>,
+      label: (
+        <>
+          {ALERT_STATUSES[filteredAlerts[0].type].alternateLabel ??
+            ALERT_STATUSES[filteredAlerts[0].type].label ??
+            filteredAlerts[0].summary}
+        </>
+      ),
     };
   }
 
@@ -100,7 +106,13 @@ export const getStatusCellIconAndLabel = (
       <span className={classes.statusContainer}>
         {filteredAlerts.map(({ type, summary }) => (
           <span className={classes.statusListItem} key={type}>
-            <Tooltip message={summary}>
+            <Tooltip
+              message={
+                ALERT_STATUSES[type].alternateLabel ??
+                ALERT_STATUSES[type].label ??
+                summary
+              }
+            >
               <Icon
                 className="u-no-margin--left"
                 name={`${ALERT_STATUSES[type]?.icon.color ?? ALERT_STATUSES.Unknown.icon.color}`}

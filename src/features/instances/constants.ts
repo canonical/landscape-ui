@@ -5,7 +5,7 @@ import type { Status } from "./types/Status";
 export const STATUS_FILTERS: Record<string, Status> = {
   Online: {
     alertType: "ComputerOnlineAlert",
-    label: "Computers online",
+    label: "Online instances",
     alternateLabel: "Online",
     filterValue: "computer-online",
     query: "NOT alert:computer-offline",
@@ -16,7 +16,7 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   ComputerDuplicateAlert: {
     alertType: "ComputerDuplicateAlert",
-    label: "Computer duplicates",
+    label: "Duplicate instances",
     alternateLabel: "Duplicate",
     filterValue: "computer-duplicates",
     query: "alert:computer-duplicates",
@@ -24,7 +24,7 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   ComputerOfflineAlert: {
     alertType: "ComputerOfflineAlert",
-    label: "Computers offline",
+    label: "Offline instances",
     alternateLabel: "Offline",
     filterValue: "computer-offline",
     query: "alert:computer-offline",
@@ -32,8 +32,8 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   ComputerRebootAlert: {
     alertType: "ComputerRebootAlert",
-    label: "Computer reboot",
-    alternateLabel: "Reboot required",
+    label: "Needs reboot",
+    alternateLabel: "Needs reboot",
     filterValue: "computer-reboot",
     query: "alert:computer-reboot",
     icon: {
@@ -54,7 +54,7 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   PackageProfilesAlert: {
     alertType: "PackageProfilesAlert",
-    label: "Package profiles",
+    label: "Package profile alert",
     filterValue: "package-profiles",
     query: "alert:package-profiles",
     icon: {
@@ -63,14 +63,14 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   PackageReporterAlert: {
     alertType: "PackageReporterAlert",
-    label: "Package reporter",
+    label: "Package reporter alert",
     filterValue: "package-reporter",
     query: "alert:package-reporter",
     icon: { color: "package-reporter-alert" },
   },
   PackageUpgradesAlert: {
     alertType: "PackageUpgradesAlert",
-    label: "Package upgrades",
+    label: "Package upgrades alert",
     alternateLabel: "Regular",
     filterValue: "package-upgrades",
     query: "alert:package-upgrades",
@@ -78,7 +78,7 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   SecurityUpgradesAlert: {
     alertType: "SecurityUpgradesAlert",
-    label: "Security upgrades",
+    label: "Security upgrades alert",
     alternateLabel: "Security",
     filterValue: "security-upgrades",
     query: "alert:security-upgrades",
@@ -86,14 +86,14 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   UnapprovedActivitiesAlert: {
     alertType: "UnapprovedActivitiesAlert",
-    label: "Unapproved activities",
+    label: "Unapproved activities alert",
     filterValue: "unapproved-activities",
     query: "alert:unapproved-activities",
     icon: { gray: "status-queued" },
   },
   UpToDate: {
     alertType: "UpToDate",
-    label: "Up to date",
+    label: "Packages up to date",
     alternateLabel: "Up to date",
     filterValue: "up-to-date",
     query: "NOT alert:package-upgrades",
@@ -101,8 +101,8 @@ export const STATUS_FILTERS: Record<string, Status> = {
   },
   ChildInstanceProfileAlert: {
     alertType: "ChildInstanceProfileAlert",
-    label: "Child instance profiles",
-    alternateLabel: "Child instance profiles",
+    label: "WSL profile alert",
+    alternateLabel: "WSL profile alert",
     filterValue: "child-instance-profiles",
     query: "alert:child-instance-profiles",
     icon: { gray: "machines" },
@@ -113,7 +113,7 @@ export const ALERT_STATUSES: Record<string, Status> = {
   ...STATUS_FILTERS,
   PendingComputersAlert: {
     alertType: "PendingComputersAlert",
-    label: "Pending",
+    label: "Pending acceptance",
     alternateLabel: "Pending",
     filterValue: "",
     query: "",
