@@ -6,6 +6,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import { useGetWslLimits } from "@/features/wsl";
 import {
   useGetWslProfiles,
+  WslProfileAddButton,
   WslProfilesEmptyState,
   WslProfilesHeader,
   WslProfilesList,
@@ -13,7 +14,7 @@ import {
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
-import { Button, Notification } from "@canonical/react-components";
+import { Notification } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 
 const WslProfileAddSidePanel = lazy(() =>
@@ -63,10 +64,6 @@ const WslProfilesPage: FC = () => {
 
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
 
-  const handleAddWslProfile = () => {
-    setPageParams({ sidePath: ["add"], profile: "" });
-  };
-
   const isWslProfileLimitReached =
     unfilteredWslProfilesCount >= wslProfileLimit;
 
@@ -79,15 +76,10 @@ const WslProfilesPage: FC = () => {
           <PageHeader
             title="WSL profiles"
             actions={[
-              <Button
-                type="button"
+              <WslProfileAddButton
                 key="add-wsl-profile"
-                appearance="positive"
-                onClick={handleAddWslProfile}
                 disabled={isWslProfileLimitReached}
-              >
-                Add WSL profile
-              </Button>,
+              />,
             ]}
           />
 
@@ -98,6 +90,20 @@ const WslProfilesPage: FC = () => {
               <LoadingState />
             ) : (
               <>
+                <Notification
+                  severity="caution"
+                  title="WSL profiles is a beta feature"
+                >
+                  We are gathering feedback to improve this feature.{" "}
+                  <a
+                    target="_blank"
+                    rel="noreferrer noopener nofollow"
+                    href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
+                  >
+                    Share your feedback
+                  </a>
+                </Notification>
+
                 <WslProfilesHeader />
 
                 {isWslProfileLimitReached && (
