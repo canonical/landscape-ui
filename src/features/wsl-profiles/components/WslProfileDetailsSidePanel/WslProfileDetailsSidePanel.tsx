@@ -100,6 +100,15 @@ const WslProfileDetailsSidePanel: FC = () => {
                 large
                 value={profile.cloud_init_contents}
               />
+              <InfoGrid.Item
+                label="Compliance settings"
+                large
+                value={
+                  profile.only_landscape_created
+                    ? "Uninstall WSL child instances that have not been created by Landscape"
+                    : "Ignore WSL child instances that have not been created by Landscape"
+                }
+              />
             </InfoGrid>
           </Blocks.Item>
 

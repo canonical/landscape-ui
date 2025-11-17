@@ -12,6 +12,7 @@ interface AddWslProfileParams {
   all_computers?: boolean;
   cloud_init_contents?: string;
   image_source?: string;
+  only_landscape_created?: boolean;
   tags?: string[];
 }
 
