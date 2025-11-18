@@ -1,1 +1,0 @@
-import{j as r,T as x}from"./index-BniO5lih.js";const l=({currentPage:a,pageSize:e,paginate:n,setPageSize:s,totalItems:t,className:i="",currentItemCount:o=0})=>r.jsx(x,{className:i,currentItemCount:o,currentPage:a,pageSize:e,paginate:n,setPageSize:s,totalItems:t});export{l as S};

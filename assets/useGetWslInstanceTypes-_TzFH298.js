@@ -1,1 +1,0 @@
-import{m as t,f as a}from"./index-BniO5lih.js";const r=()=>{const s=t(),{data:e,isPending:n}=a({queryKey:["wsl-instance-names"],queryFn:async()=>s.get("wsl-instance-names")});return{wslInstanceTypes:e?.data??[],isGettingWslInstanceTypes:n}};export{r as u};
