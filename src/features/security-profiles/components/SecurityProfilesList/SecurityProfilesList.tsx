@@ -91,7 +91,6 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
         meta: {
           ariaLabel: ({ original }) => `${original.title} last audit pass rate`,
         },
-        className: classes.lastAuditPassrate,
         Cell: ({ row }: CellProps<SecurityProfile>) => {
           const { passing, failing, in_progress, not_started } =
             row.original.last_run_results;

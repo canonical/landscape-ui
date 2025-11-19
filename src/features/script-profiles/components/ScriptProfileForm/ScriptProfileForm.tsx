@@ -341,7 +341,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
               error={getFormikError(formik, "start_after")}
             />
 
-            <Notification severity="caution" className={classes.notification}>
+            <Notification severity="caution">
               There is a minimum interval of{" "}
               <strong>{scriptProfileLimits?.min_interval} minutes</strong>{" "}
               between runs. Depending on the schedule, run times may be

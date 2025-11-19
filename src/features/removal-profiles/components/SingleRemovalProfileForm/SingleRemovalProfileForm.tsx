@@ -115,7 +115,6 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
           required={props.action === "add"}
           autoComplete="off"
           className={classes.input}
-          wrapperClassName={classes.inputWrapper}
           {...formik.getFieldProps("days_without_exchange")}
           error={getFormikError(formik, "days_without_exchange")}
         />

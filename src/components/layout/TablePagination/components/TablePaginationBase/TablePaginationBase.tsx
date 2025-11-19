@@ -1,3 +1,4 @@
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -5,7 +6,6 @@ import { useTotalPages } from "../../hooks";
 import PageNumberInput from "../PageNumberInput";
 import classes from "./TablePaginationBase.module.scss";
 import { PAGE_SIZE_OPTIONS } from "./constants";
-import { pluralize } from "@/utils/_helpers";
 
 interface TablePaginationBaseProps {
   readonly className?: string;
@@ -91,7 +91,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 onClick={paginatePrevious}
                 type="button"
               >
-                <Icon name="chevron-down" className={classes.icon} />
+                <Icon name="chevron-down" />
               </Button>
 
               <strong>Page </strong>
@@ -104,9 +104,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 setCurrentPage={paginate}
               />
 
-              <strong className={classes.noWrap}>
-                of {Math.max(totalPages, 1)}
-              </strong>
+              <strong>of {Math.max(totalPages, 1)}</strong>
 
               <Button
                 aria-label="Next page"
@@ -116,7 +114,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
                 onClick={paginateNext}
                 type="button"
               >
-                <Icon name="chevron-down" className={classes.icon} />
+                <Icon name="chevron-down" />
               </Button>
             </span>
           </nav>

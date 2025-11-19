@@ -31,7 +31,10 @@ const SidePanel: FC<SidePanelProps> & {
 
   return (
     <SidePanelBase
-      className={classNames(classes.sidePanel, classes[size])}
+      className={classNames(
+        classes.sidePanel,
+        size !== "small" && classes[size],
+      )}
       parentId={parentId}
       isAnimated
       {...props}

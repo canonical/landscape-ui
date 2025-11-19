@@ -1,7 +1,7 @@
-import type { FC } from "react";
-import { CheckboxInput } from "@canonical/react-components";
 import type { AccessGroupOption } from "@/pages/dashboard/settings/roles/types";
-import classes from "./AccessGroupBlock.module.scss";
+import { CheckboxInput } from "@canonical/react-components";
+import type { FC } from "react";
+import { INDENTATION } from "./constants";
 
 interface AccessGroupBlockProps {
   readonly accessGroupOptions: AccessGroupOption[];
@@ -70,17 +70,24 @@ const AccessGroupBlock: FC<AccessGroupBlockProps> = ({
       <p className="p-heading--5 u-no-margin--bottom">Access Groups</p>
 
       {accessGroupOptions.map((option, _, array) => (
-        <CheckboxInput
+        <div
           key={option.value}
-          label={option.label}
-          labelClassName={classes[`depth-${option.depth}`]}
-          name="access_groups"
-          checked={accessGroups.includes(option.value)}
-          indeterminate={isIndeterminate(option.children)}
-          onChange={() => {
-            handleAccessGroupChange(option, array);
+          style={{
+            marginLeft: `${INDENTATION * option.depth}rem`,
           }}
-        />
+        >
+          <CheckboxInput
+            key={option.value}
+            label={option.label}
+            labelClassName="u-no-margin"
+            name="access_groups"
+            checked={accessGroups.includes(option.value)}
+            indeterminate={isIndeterminate(option.children)}
+            onChange={() => {
+              handleAccessGroupChange(option, array);
+            }}
+          />
+        </div>
       ))}
     </>
   );

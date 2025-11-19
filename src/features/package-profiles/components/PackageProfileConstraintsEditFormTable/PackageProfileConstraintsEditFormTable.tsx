@@ -1,21 +1,21 @@
-import type { FormikContextType } from "formik";
-import type { FC } from "react";
-import { useMemo } from "react";
-import type { CellProps, Column } from "react-table";
+import CellInput from "@/components/form/CellInput";
+import LoadingState from "@/components/layout/LoadingState";
 import {
   CheckboxInput,
   ModularTable,
   Select,
 } from "@canonical/react-components";
-import CellInput from "@/components/form/CellInput";
-import LoadingState from "@/components/layout/LoadingState";
-import PackageProfileConstraintsEditFormTableActions from "../PackageProfileConstraintsEditFormTableActions";
+import type { FormikContextType } from "formik";
+import type { FC } from "react";
+import { useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   CONSTRAINT_OPTIONS,
   CONSTRAINT_RULE_OPTIONS,
   LOADING_CONSTRAINT,
 } from "../../constants";
 import type { Constraint, PackageProfileConstraint } from "../../types";
+import PackageProfileConstraintsEditFormTableActions from "../PackageProfileConstraintsEditFormTableActions";
 import {
   getCellProps,
   getConstraintPropHandlers,
@@ -125,7 +125,7 @@ const PackageProfileConstraintsEditFormTable: FC<
               error={getConstraintPropError("constraint")}
             />
           ) : (
-            <div className={classes.checkboxContainer}>
+            <div>
               <CheckboxInput
                 inline
                 label={

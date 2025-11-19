@@ -24,7 +24,7 @@ const Flow: FC<FlowProps> = ({ cards }) => {
           <Card className={"u-no-margin--bottom"}>
             <div>
               <div className={classes.header}>
-                <Icon name={card.iconName} className={classes.cardIcon} />
+                <Icon name={card.iconName} />
 
                 <p className="u-no-margin--bottom u-no-padding--top">
                   <strong>{card.header}</strong>

@@ -1,3 +1,4 @@
+import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 import RadioGroup from "@/components/form/RadioGroup";
 import ScheduleBlock from "@/components/form/ScheduleBlock";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
@@ -6,7 +7,6 @@ import { Input } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 import classes from "./useSecurityProfileFormScheduleStep.module.scss";
-import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 
 export default function useSecurityProfileFormScheduleStep<
   T extends SecurityProfileFormValues,
@@ -48,7 +48,6 @@ export default function useSecurityProfileFormScheduleStep<
                         type="number"
                         required
                         className={classes.input}
-                        wrapperClassName={classes.inputWrapper}
                         {...formik.getFieldProps("restart_deliver_delay")}
                         error={getFormikError(formik, "restart_deliver_delay")}
                       />

@@ -1,8 +1,8 @@
+import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 import classNames from "classnames";
 import { Link, matchPath, useLocation } from "react-router";
 import classes from "./SecondaryNavigation.module.scss";
 import { ACCOUNT_SETTINGS } from "./constants";
-import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 
 export const SecondaryNavigation = () => {
   const location = useLocation();
@@ -34,10 +34,7 @@ export const SecondaryNavigation = () => {
           {ACCOUNT_SETTINGS.items?.map((item) => {
             const isActive = matchPath(item.path, location.pathname);
             return (
-              <li
-                className={classes["secondaryNavigation__item--title"]}
-                key={item.path}
-              >
+              <li key={item.path}>
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={classNames(
