@@ -38,9 +38,7 @@ export const getScheduleInfo = (profile: UpgradeProfile) => {
       return { scheduleMessage: "Every week", nextRunMessage };
     }
 
-    const atHour = parseInt(at_hour);
-
-    scheduleMessage += `${getScheduledDays(on_days)} at ${atHour > 9 ? atHour : `0${atHour}`}:${atMinute > 9 ? atMinute : `0${atMinute}`} UTC`;
+    scheduleMessage += `${getScheduledDays(on_days)} at ${moment(next_run).utc().format("HH:mm")} UTC`;
   }
 
   return { scheduleMessage, nextRunMessage };
