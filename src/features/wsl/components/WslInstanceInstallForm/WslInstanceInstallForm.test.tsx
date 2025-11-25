@@ -7,7 +7,7 @@ describe("WslInstanceInstallForm", () => {
   it("renders correct form fields when a provided instance type is selected", () => {
     const { container } = renderWithProviders(<WslInstanceInstallForm />);
 
-    expect(container).toHaveTexts(["Instance type", "Cloud-init"]);
+    expect(container).toHaveTexts(["Instance type", "cloud-init"]);
 
     const installInstanceButton = screen.getByRole("button", {
       name: /create/i,
@@ -19,7 +19,7 @@ describe("WslInstanceInstallForm", () => {
   it("renders correct form fields when a provided custom instance type is selected", async () => {
     const { container } = renderWithProviders(<WslInstanceInstallForm />);
 
-    expect(container).toHaveTexts(["Instance type", "Cloud-init"]);
+    expect(container).toHaveTexts(["Instance type", "cloud-init"]);
 
     const instanceTypeSelect = screen.getByRole("combobox");
     expect(instanceTypeSelect).toBeInTheDocument();
@@ -30,8 +30,8 @@ describe("WslInstanceInstallForm", () => {
     expect(container).toHaveTexts([
       "Instance type",
       "Instance name",
-      "Rootfs URL",
-      "Cloud-init",
+      "rootfs URL",
+      "cloud-init",
     ]);
 
     const installInstanceButton = screen.getByRole("button", {

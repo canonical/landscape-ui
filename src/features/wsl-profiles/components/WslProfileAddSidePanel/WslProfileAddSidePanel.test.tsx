@@ -12,8 +12,8 @@ describe("WslProfileAddSidePanel", () => {
     expect(container).toHaveTexts([
       "Title",
       "Access group",
-      "Rootfs image",
-      "Cloud-init",
+      "rootfs image",
+      "cloud-init",
       "Add",
     ]);
   });
@@ -21,7 +21,7 @@ describe("WslProfileAddSidePanel", () => {
   it("shows file upload for cloud-init", async () => {
     renderWithProviders(<WslProfileAddSidePanel />);
 
-    await userEvent.selectOptions(screen.getByLabelText("Cloud-init"), "file");
+    await userEvent.selectOptions(screen.getByLabelText("cloud-init"), "file");
     const helperText = screen.getByText(FILE_INPUT_HELPER_TEXT);
     expect(helperText).toBeInTheDocument();
   });

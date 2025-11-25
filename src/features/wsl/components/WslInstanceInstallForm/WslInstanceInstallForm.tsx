@@ -163,7 +163,7 @@ const WslInstanceInstallForm: FC = () => {
             }
           />
           <Input
-            label="Rootfs URL"
+            label="rootfs URL"
             type="text"
             required
             {...formik.getFieldProps("rootfs")}
@@ -177,12 +177,12 @@ const WslInstanceInstallForm: FC = () => {
       )}
 
       <FileInput
-        label="Cloud-init"
+        label="cloud-init"
         accept=".yaml"
         {...formik.getFieldProps("cloudInit")}
         onFileRemove={handleRemoveFile}
         onFileUpload={handleFileUpload}
-        help="You can use a cloud-init configuration YAML file under 1MB to register new WSL instances. Cloud-init streamlines the setup by automating installation and configuration tasks."
+        help="You can use a cloud-init configuration YAML file under 1MB to register new WSL instances. cloud-init streamlines the setup by automating installation and configuration tasks."
         error={
           formik.touched.cloudInit && formik.errors.cloudInit
             ? formik.errors.cloudInit
