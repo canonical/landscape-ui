@@ -107,9 +107,6 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
     [],
   );
 
-  console.log(profileChanges);
-  console.log(profileChangesCount);
-
   return (
     <ConfirmationModal
       title={`Add ${pluralize(tags.length, `"${tags[0]}" tag`, `${tags.length} tags`)} to ${pluralize(instances.length, `"${instances[0].title}"`, `${instances.length} instances`)}`}

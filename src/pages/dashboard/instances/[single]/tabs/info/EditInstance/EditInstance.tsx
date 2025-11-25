@@ -73,18 +73,15 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     (tag) => !instance.tags.includes(tag),
   );
 
-  const {
-    isFetchingProfileChanges,
-    profileChangesCount,
-    refetchProfileChanges,
-  } = useGetProfileChanges(
-    {
-      instance_ids: [instance.id],
-      tags: addedTags,
-      limit: 10,
-    },
-    { enabled: false },
-  );
+  const { isFetchingProfileChanges, refetchProfileChanges } =
+    useGetProfileChanges(
+      {
+        instance_ids: [instance.id],
+        tags: addedTags,
+        limit: 10,
+      },
+      { enabled: false },
+    );
 
   const submit = async () => {
     if (addedTags.length) {
@@ -176,7 +173,6 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
           }}
           confirmButtonLoading={formik.isSubmitting}
           close={closeModal}
-          profileChangesCount={profileChangesCount}
         />
       )}
     </>
