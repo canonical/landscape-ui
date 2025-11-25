@@ -27,15 +27,15 @@ describe("WslProfileDetailsSidePanel", () => {
             ?.title ?? testProfile.access_group,
       },
       {
-        label: "Rootfs image name",
+        label: "rootfs image name",
         value: testProfile.image_name,
       },
       {
-        label: "Rootfs image source",
+        label: "rootfs image source",
         value: testProfile.image_source || NO_DATA_TEXT,
       },
       {
-        label: "Cloud-init",
+        label: "cloud-init",
         value: testProfile.cloud_init_contents || NO_DATA_TEXT,
       },
       {

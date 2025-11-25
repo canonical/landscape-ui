@@ -135,8 +135,8 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       <div className={classes.block}>
         <Select
           disabled
-          label="Rootfs image"
-          aria-label="Rootfs image"
+          label="rootfs image"
+          aria-label="rootfs image"
           options={ROOTFS_IMAGE_OPTIONS}
           {...formik.getFieldProps("instanceType")}
           error={getFormikError(formik, "instanceType")}
@@ -155,7 +155,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
             <Input
               disabled
               type="text"
-              label="Rootfs image URL"
+              label="rootfs image URL"
               required
               {...formik.getFieldProps("rootfsImage")}
               error={getFormikError(formik, "rootfsImage")}
@@ -165,8 +165,8 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         )}
 
         <Select
-          label="Cloud-init"
-          aria-label="Cloud-init"
+          label="cloud-init"
+          aria-label="cloud-init"
           options={CLOUD_INIT_OPTIONS}
           disabled
         />

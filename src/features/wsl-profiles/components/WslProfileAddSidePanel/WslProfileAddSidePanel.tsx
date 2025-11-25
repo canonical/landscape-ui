@@ -140,9 +140,9 @@ const WslProfileAddSidePanel: FC = () => {
               </Notification>
             )}
             <Select
-              label="Rootfs image"
+              label="rootfs image"
               disabled={isGettingWslInstanceTypes}
-              aria-label="Rootfs image"
+              aria-label="rootfs image"
               options={ROOTFS_IMAGE_OPTIONS}
               required
               {...formik.getFieldProps("instanceType")}
@@ -160,7 +160,7 @@ const WslProfileAddSidePanel: FC = () => {
                 />
                 <Input
                   type="text"
-                  label="Rootfs image URL"
+                  label="rootfs image URL"
                   required
                   {...formik.getFieldProps("rootfsImage")}
                   error={getFormikError(formik, "rootfsImage")}
@@ -170,8 +170,8 @@ const WslProfileAddSidePanel: FC = () => {
             )}
 
             <Select
-              label="Cloud-init"
-              aria-label="Cloud-init"
+              label="cloud-init"
+              aria-label="cloud-init"
               options={CLOUD_INIT_OPTIONS}
               {...formik.getFieldProps("cloudInitType")}
               onChange={async (value) => {
@@ -201,7 +201,7 @@ const WslProfileAddSidePanel: FC = () => {
 
             {formik.values.cloudInitType === "text" && (
               <CodeEditor
-                label="Cloud-init configuration"
+                label="cloud-init configuration"
                 onChange={(value) => {
                   formik.setFieldValue("cloudInit", value ?? "");
                 }}
