@@ -177,17 +177,13 @@ interface UbuntuProInfo {
   effective?: string;
   contract?: UbuntuProContract;
   account?: UbuntuProAccount;
-  result: "success";
-}
-
-interface FailedUbuntuProInfo {
-  errors: {
+  result?: "success" | "failure";
+  errors?: {
     message: string;
     message_code: string;
     service: string | null;
     type: string;
   }[];
-  result: "failure";
 }
 
 interface DistributionInfo {
@@ -215,7 +211,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   registered_at: string;
   tags: string[];
   title: string;
-  ubuntu_pro_info: UbuntuProInfo | FailedUbuntuProInfo | null;
+  ubuntu_pro_info: UbuntuProInfo | null;
   alerts?: InstanceAlert[];
   annotations?: Record<string, string>;
   grouped_hardware?: GroupedHardware;

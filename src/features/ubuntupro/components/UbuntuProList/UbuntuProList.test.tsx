@@ -6,7 +6,7 @@ import { screen, within } from "@testing-library/react";
 const getInstanceWithMixedServiceStatus = () => {
   return instances.find(
     (instance) =>
-      instance.ubuntu_pro_info?.result === "success" &&
+      instance.ubuntu_pro_info?.attached &&
       instance.ubuntu_pro_info.services.some((s) => s.status === "enabled") &&
       instance.ubuntu_pro_info.services.some((s) => s.status === "disabled"),
   );
@@ -15,7 +15,7 @@ const getInstanceWithMixedServiceStatus = () => {
 const instanceWithUbuntuPro = getInstanceWithMixedServiceStatus();
 
 const ubuntuProServices =
-  instanceWithUbuntuPro?.ubuntu_pro_info?.result === "success" &&
+  instanceWithUbuntuPro?.ubuntu_pro_info?.attached &&
   instanceWithUbuntuPro?.ubuntu_pro_info
     ? instanceWithUbuntuPro.ubuntu_pro_info.services
     : [];

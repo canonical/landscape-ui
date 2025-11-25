@@ -10,7 +10,7 @@ interface UbuntuProPanelProps {
 }
 
 const UbuntuProPanel: FC<UbuntuProPanelProps> = ({ instance }) => {
-  return instance.ubuntu_pro_info?.result === "success" ? (
+  return instance.ubuntu_pro_info?.attached ? (
     <>
       <UbuntuProHeader ubuntuProData={instance.ubuntu_pro_info} />
       <UbuntuProList services={instance.ubuntu_pro_info.services} />
