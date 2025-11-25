@@ -5,6 +5,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -13,7 +14,6 @@ import * as Yup from "yup";
 import { useCreateWslInstance, useGetWslInstanceTypes } from "../../api";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import { fileToBase64 } from "./helpers";
-import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
   instanceType: string;
@@ -156,7 +156,7 @@ const WslInstanceInstallForm: FC = () => {
             error={getFormikError(formik, "instanceName")}
           />
           <Input
-            label="Rootfs URL"
+            label="rootfs URL"
             type="text"
             required
             {...formik.getFieldProps("rootfs")}
@@ -166,12 +166,12 @@ const WslInstanceInstallForm: FC = () => {
       )}
 
       <FileInput
-        label="Cloud-init"
+        label="cloud-init"
         accept=".yaml"
         {...formik.getFieldProps("cloudInit")}
         onFileRemove={handleRemoveFile}
         onFileUpload={handleFileUpload}
-        help="You can use a cloud-init configuration YAML file under 1MB to register new WSL instances. Cloud-init streamlines the setup by automating installation and configuration tasks."
+        help="You can use a cloud-init configuration YAML file under 1MB to register new WSL instances. cloud-init streamlines the setup by automating installation and configuration tasks."
         error={getFormikError(formik, "cloudInit")}
       />
 

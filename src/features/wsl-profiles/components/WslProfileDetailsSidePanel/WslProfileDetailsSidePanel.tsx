@@ -83,20 +83,20 @@ const WslProfileDetailsSidePanel: FC = () => {
           <Blocks.Item>
             <InfoGrid>
               <InfoGrid.Item
-                label="Rootfs image name"
+                label="rootfs image name"
                 large
                 value={profile.image_name}
               />
               {profile.image_source !== null && (
                 <InfoGrid.Item
-                  label="Rootfs image source"
+                  label="rootfs image source"
                   large
                   value={profile.image_source}
                   type="truncated"
                 />
               )}
               <InfoGrid.Item
-                label="Cloud-init"
+                label="cloud-init"
                 large
                 value={profile.cloud_init_contents}
               />
