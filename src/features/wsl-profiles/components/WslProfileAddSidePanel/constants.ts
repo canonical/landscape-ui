@@ -12,4 +12,5 @@ export const INITIAL_VALUES: FormProps = {
   cloudInit: null,
   all_computers: false,
   tags: [],
+  only_landscape_created: false,
 };
