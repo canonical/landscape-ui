@@ -1,9 +1,9 @@
-import { renderWithProviders } from "@/tests/render";
-import UbuntuProHeader from "./UbuntuProHeader";
-import { getInstanceWithUbuntuPro } from "../../helpers";
-import { instances } from "@/tests/mocks/instance";
 import { INSTANCES_PATHS } from "@/libs/routes/instances";
+import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import { getInstanceWithUbuntuPro } from "../../helpers";
+import UbuntuProHeader from "./UbuntuProHeader";
 
 const instanceWithUbuntuPro = getInstanceWithUbuntuPro(instances);
 const singleInstancePath = `/${INSTANCES_PATHS.root}/${INSTANCES_PATHS.single}`;
