@@ -202,7 +202,7 @@ const InstanceList = memo(function InstanceList({
         className: "date-cell",
         Cell: ({ row }: CellProps<Instance>) => {
           if (
-            row.original.ubuntu_pro_info?.result === "success" &&
+            row.original.ubuntu_pro_info?.attached &&
             moment(row.original.ubuntu_pro_info.expires).isValid()
           ) {
             return (
