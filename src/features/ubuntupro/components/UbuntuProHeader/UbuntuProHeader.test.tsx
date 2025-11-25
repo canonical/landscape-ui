@@ -10,7 +10,7 @@ import type { UbuntuProInfo } from "@/types/Instance";
 const getUbuntuProInfo = (hasAccount: boolean): UbuntuProInfo | undefined => {
   for (const instance of instances) {
     const info = instance.ubuntu_pro_info;
-    if (info?.result === "success" && !!info.account === hasAccount) {
+    if (info?.attached && !!info.account === hasAccount) {
       return info;
     }
   }
