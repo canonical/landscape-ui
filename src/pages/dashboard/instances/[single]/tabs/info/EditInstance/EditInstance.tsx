@@ -1,4 +1,3 @@
-import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import {
@@ -13,19 +12,13 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { InstanceWithoutRelation } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Chip,
-  Form,
-  Input,
-  Select,
-  Textarea,
-} from "@canonical/react-components";
+import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { VALIDATION_SCHEMA } from "./constants";
-import classes from "./EditInstance.module.scss";
 import type { FormProps } from "./types";
+import TagMultiSelect from "@/components/form/TagMultiSelect";
 
 interface EditInstanceProps {
   readonly instance: InstanceWithoutRelation;
@@ -152,37 +145,12 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
           error={getFormikError(formik, "access_group")}
         />
 
-        <MultiSelectField
-          label="Tags"
-          placeholder="Search and add tags"
-          {...formik.getFieldProps("tags")}
-          items={tagOptions}
-          selectedItems={tagOptions.filter(({ value }) =>
-            formik.values.tags.includes(value),
-          )}
-          onItemsUpdate={async (items) =>
-            formik.setFieldValue(
-              "tags",
-              items.map(({ value }) => value) as string[],
-            )
-          }
+        <TagMultiSelect
+          onTagsChange={async (items) => formik.setFieldValue("tags", items)}
+          tags={tagOptions
+            .filter(({ value }) => formik.values.tags.includes(value))
+            .map(({ value }) => value)}
         />
-
-        <div className={classes.chips}>
-          {formik.values.tags.map((tag) => (
-            <Chip
-              key={tag}
-              className="u-no-margin--bottom u-no-margin--right"
-              value={tag}
-              onDismiss={async () =>
-                formik.setFieldValue(
-                  "tags",
-                  formik.values.tags.filter((t) => t !== tag),
-                )
-              }
-            />
-          ))}
-        </div>
 
         <Textarea
           label="Comment"
