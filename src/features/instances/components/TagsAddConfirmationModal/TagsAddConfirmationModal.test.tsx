@@ -11,7 +11,6 @@ import { expectLoadingState } from "@/tests/helpers";
 
 const props: ComponentProps<typeof TagsAddConfirmationModal> = {
   instances: instances.slice(0, 2),
-  profileChangesCount: 11,
   tags: tags,
   onConfirm: vi.fn(),
 };
