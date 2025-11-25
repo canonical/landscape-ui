@@ -1,0 +1,1 @@
+import{h as c,i as o,k as u}from"./index-DN_YS9_3.js";const r=()=>{const e=c(),s=o(),{isPending:n,mutateAsync:t}=u({mutationFn:async a=>e.get("RemoveComputers",{params:a}),onSuccess:async()=>s.invalidateQueries({queryKey:["instances"]})});return{removeInstancesFromLandscape:t,isRemovingInstancesFromLandscape:n}};export{r as u};
