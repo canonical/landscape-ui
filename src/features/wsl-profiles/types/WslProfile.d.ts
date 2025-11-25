@@ -14,6 +14,7 @@ export interface WslProfile extends Record<string, unknown> {
   image_source: string | null;
   instance_type: string;
   name: string;
+  only_landscape_created: boolean;
   tags: string[];
   title: string;
 }
