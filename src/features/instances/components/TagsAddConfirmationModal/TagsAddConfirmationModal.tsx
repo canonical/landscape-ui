@@ -22,13 +22,11 @@ interface TagsAddConfirmationModalProps
     "children" | "confirmButtonLabel" | "title"
   > {
   readonly instances: InstanceWithoutRelation[];
-  readonly profileChangesCount: number;
   readonly tags: string[];
 }
 
 const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
   instances,
-  profileChangesCount,
   tags,
   ...props
 }) => {
@@ -38,12 +36,13 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
     increment: incrementCurrentPage,
   } = useCounter(1);
 
-  const { isPendingProfileChanges, profileChanges } = useGetProfileChanges({
-    instance_ids: instances.map((instance) => instance.id),
-    tags,
-    limit: DEFAULT_MODAL_PAGE_SIZE,
-    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
-  });
+  const { isPendingProfileChanges, profileChanges, profileChangesCount } =
+    useGetProfileChanges({
+      instance_ids: instances.map((instance) => instance.id),
+      tags,
+      limit: DEFAULT_MODAL_PAGE_SIZE,
+      offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
+    });
 
   const modalColumns = useMemo<Column<ProfileChange>[]>(
     () =>
@@ -108,6 +107,9 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
     [],
   );
 
+  console.log(profileChanges);
+  console.log(profileChangesCount);
+
   return (
     <ConfirmationModal
       title={`Add ${pluralize(tags.length, `"${tags[0]}" tag`, `${tags.length} tags`)} to ${pluralize(instances.length, `"${instances[0].title}"`, `${instances.length} instances`)}`}
@@ -138,23 +140,27 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         restrictions.
       </p>
 
-      {isPendingProfileChanges ? (
-        <LoadingState />
-      ) : (
-        <ModularTable
-          className="u-no-margin--bottom"
-          columns={modalColumns}
-          data={profileChanges}
-          getRowProps={getRowProps}
-        />
-      )}
+      {isPendingProfileChanges && <LoadingState />}
 
-      <ModalTablePagination
-        max={Math.ceil(profileChangesCount / DEFAULT_MODAL_PAGE_SIZE)}
-        current={currentPage}
-        onPrev={decrementCurrentPage}
-        onNext={incrementCurrentPage}
-      />
+      {!isPendingProfileChanges && profileChangesCount > 0 && (
+        <>
+          <ModularTable
+            className="u-no-margin--bottom"
+            columns={modalColumns}
+            data={profileChanges}
+            getRowProps={getRowProps}
+          />
+          {profileChangesCount >
+            Math.ceil(profileChangesCount / DEFAULT_MODAL_PAGE_SIZE) && (
+            <ModalTablePagination
+              max={Math.ceil(profileChangesCount / DEFAULT_MODAL_PAGE_SIZE)}
+              current={currentPage}
+              onPrev={decrementCurrentPage}
+              onNext={incrementCurrentPage}
+            />
+          )}
+        </>
+      )}
     </ConfirmationModal>
   );
 };
