@@ -1,5 +1,6 @@
 @import "vanilla-framework/scss/settings_placeholders";
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
 
 .root {
   margin-bottom: $sp-unit * 2.5;
@@ -12,7 +13,7 @@
   ) !important;
 
   & + :global(.p-search-and-filter__panel) {
-    background-color: $color-x-light;
+    background-color: $colors--theme--background-default;
   }
 }
 
