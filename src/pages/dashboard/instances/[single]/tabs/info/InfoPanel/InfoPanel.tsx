@@ -52,6 +52,7 @@ import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
 import ProfileLink from "../ProfileLink";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import { getInstanceKeyForRemount } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
 
@@ -287,7 +288,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   return (
     <>
       <HeaderActions
-        key={instance.employee_id ?? "no-employee"}
+        key={getInstanceKeyForRemount(instance)}
         title={
           <div className={classes.headerContainer}>
             <h2

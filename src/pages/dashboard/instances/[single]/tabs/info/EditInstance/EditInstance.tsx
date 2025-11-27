@@ -4,7 +4,7 @@ import {
   TagsAddConfirmationModal,
   useEditInstance,
 } from "@/features/instances";
-import { useGetProfileChanges, useGetTags } from "@/features/tags";
+import { useGetProfileChanges } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
@@ -33,7 +33,6 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
 
   const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
     getAccessGroupQuery();
-  const { tags, isGettingTags } = useGetTags();
   const { editInstance } = useEditInstance();
 
   const {
@@ -99,7 +98,7 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     }
   };
 
-  if (isGettingAccessGroups || isGettingTags) {
+  if (isGettingAccessGroups) {
     return <LoadingState />;
   }
 
@@ -107,12 +106,6 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({
       label: title,
       value: name,
-    })) ?? [];
-
-  const tagOptions: SelectOption[] =
-    tags.map((tag) => ({
-      label: tag,
-      value: tag,
     })) ?? [];
 
   return (
@@ -144,9 +137,7 @@ const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
 
         <TagMultiSelect
           onTagsChange={async (items) => formik.setFieldValue("tags", items)}
-          tags={tagOptions
-            .filter(({ value }) => formik.values.tags.includes(value))
-            .map(({ value }) => value)}
+          tags={formik.values.tags}
         />
 
         <Textarea
