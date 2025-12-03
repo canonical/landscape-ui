@@ -4,10 +4,10 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import { pluralize } from "@/utils/_helpers";
-import { ConfirmationModal } from "@canonical/react-components";
 import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { AccessGroupWithInstancesCount } from "../../types";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 interface AccessGroupListActionsProps {
   readonly accessGroup: AccessGroupWithInstancesCount;
@@ -54,6 +54,8 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
     }
   };
 
+  const instancesCountText = `${instancesCount}${" "}${pluralize(instancesCount, "instance")}`;
+
   return (
     <>
       <ListActions
@@ -69,27 +71,41 @@ const AccessGroupListActions: FC<AccessGroupListActionsProps> = ({
       />
 
       {isModalOpen && (
-        <ConfirmationModal
+        <TextConfirmationModal
+          isOpen={isModalOpen}
           title={`Deleting ${accessGroup.title} access group`}
           confirmButtonLabel="Delete"
-          confirmButtonAppearance="negative"
+          confirmationText={`delete ${accessGroup.title}`}
           confirmButtonDisabled={isRemoving}
           confirmButtonLoading={isRemoving}
           onConfirm={tryRemove}
           close={closeModal}
         >
-          {instancesCount > 0 && (
+          {instancesCount > 0 ? (
+            <>
+              <p>
+                Profiles are associated with &quot;{accessGroup.title}&quot;.
+                Deleting &quot;{accessGroup.title}
+                &quot; will affect {instancesCountText}, and they will belong to
+                &quot;{parentAccessGroupTitle}&quot;.
+              </p>
+              <p>
+                Profiles targeting &quot;{parentAccessGroupTitle}&quot; may be
+                applied to these {instancesCountText}.
+              </p>
+            </>
+          ) : (
             <p>
-              Removing this access group will affect {instancesCount}{" "}
-              {pluralize(instancesCount, "instance")}. They will now belong to
-              &quot;
-              {parentAccessGroupTitle}&quot;.
+              Profiles may be associated with &quot;{accessGroup.title}&quot;.
+              Deleting &quot;{accessGroup.title}&quot; will affect profiles
+              which target &quot;{accessGroup.title}&quot;, and they will
+              instead target &quot;{parentAccessGroupTitle}&quot;.
             </p>
           )}
           <p>
             This action is <b>irreversible</b>
           </p>
-        </ConfirmationModal>
+        </TextConfirmationModal>
       )}
     </>
   );
