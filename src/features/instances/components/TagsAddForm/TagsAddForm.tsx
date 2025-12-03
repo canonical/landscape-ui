@@ -37,18 +37,15 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const {
-    isFetchingProfileChanges,
-    profileChangesCount,
-    refetchProfileChanges,
-  } = useGetProfileChanges(
-    {
-      instance_ids: selected.map((instance) => instance.id),
-      tags,
-      limit: 10,
-    },
-    { enabled: false },
-  );
+  const { isFetchingProfileChanges, refetchProfileChanges } =
+    useGetProfileChanges(
+      {
+        instance_ids: selected.map((instance) => instance.id),
+        tags,
+        limit: 10,
+      },
+      { enabled: false },
+    );
 
   const {
     value: isModalVisible,
@@ -240,7 +237,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
           onConfirm={addTags}
           confirmButtonLoading={isAddingTagsToInstances}
           close={closeModal}
-          profileChangesCount={profileChangesCount}
         />
       )}
     </>
