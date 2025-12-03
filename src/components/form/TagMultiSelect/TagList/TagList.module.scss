@@ -1,0 +1,26 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  padding-bottom: $spv--large;
+  padding-top: $spv--small;
+}
+
+.list {
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.listItem {
+  box-shadow: 0 1px 0 0 $color-mid-x-light;
+  column-gap: $sph--small;
+  display: flex;
+}
+
+.search {
+  flex-grow: 1;
+  margin-bottom: 0;
+  margin-right: 0;
+  padding: $spv--x-small 0 $spv--x-small;
+  text-align: left;
+}
