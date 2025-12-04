@@ -42,6 +42,16 @@ export default [
         );
       }
 
+      if (query.includes("access-group: server")) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Instance>({
+            data: [],
+            limit,
+            offset,
+          }),
+        );
+      }
+
       return HttpResponse.json(
         generatePaginatedResponse<Instance>({
           data: instances,
