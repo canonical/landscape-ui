@@ -43,4 +43,16 @@ export const accessGroups: AccessGroup[] = [
     parent: "sub-test",
     children: "",
   },
+  {
+    name: "singular-access-group",
+    title: "Singular Instance",
+    parent: "global",
+    children: "",
+  },
+  {
+    name: "empty-access-group",
+    title: "Empty Instances",
+    parent: "global",
+    children: "",
+  },
 ];

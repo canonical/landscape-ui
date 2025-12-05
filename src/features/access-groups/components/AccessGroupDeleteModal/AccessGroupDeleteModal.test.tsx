@@ -9,7 +9,9 @@ const handleClose = vi.fn();
 
 describe("AccessGroupDeleteModal", () => {
   it("should render with required text input and default warning", async () => {
-    const [, accessGroup] = accessGroups;
+    const [accessGroup] = accessGroups.filter(
+      (value) => value.name == "empty-access-group",
+    );
 
     renderWithProviders(
       <AccessGroupDeleteModal
@@ -24,7 +26,7 @@ describe("AccessGroupDeleteModal", () => {
       await screen.findByRole("button", { name: "Delete" }),
     ).toBeDisabled();
 
-    await screen.findByTestId("default-access-group-warning");
+    await screen.findByText(/profiles may be associated/i);
 
     await userEvent.type(
       screen.getByRole("textbox"),
@@ -54,6 +56,27 @@ describe("AccessGroupDeleteModal", () => {
       />,
     );
 
-    await screen.findByTestId("affected-instances-warning");
+    await screen.findByText(/is associated with [0-9]+ instances/i);
+    await screen.findByText(/move them to the parent access group/i);
+    await screen.findByText(/applied to these instances/i);
+  });
+
+  it("should render a specific warning for a single affected instance", async () => {
+    const [accessGroup] = accessGroups.filter(
+      (value) => value.name == "singular-access-group",
+    );
+
+    renderWithProviders(
+      <AccessGroupDeleteModal
+        accessGroup={accessGroup}
+        opened
+        close={handleClose}
+        parentAccessGroupTitle={accessGroup.parent}
+      />,
+    );
+
+    await screen.findByText(/is associated with 1 instance/i);
+    await screen.findByText(/move it to the parent access group/i);
+    await screen.findByText(/applied to this instance/i);
   });
 });

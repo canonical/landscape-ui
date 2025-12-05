@@ -42,7 +42,17 @@ export default [
         );
       }
 
-      if (query.includes("access-group: server")) {
+      if (query.includes("access-group:singular-access-group")) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Instance>({
+            data: [instances[0]],
+            limit,
+            offset,
+          }),
+        );
+      }
+
+      if (query.includes("access-group:empty-access-group")) {
         return HttpResponse.json(
           generatePaginatedResponse<Instance>({
             data: [],

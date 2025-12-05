@@ -43,13 +43,17 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
   };
 
   const { instancesCount = 0 } = useGetInstances({
-    query: `access-group: ${accessGroup.name}`,
-    with_alerts: true,
-    with_upgrades: true,
+    query: `access-group:${accessGroup.name}`,
     limit: 1,
   });
 
   const instancesCountText = `${instancesCount} ${pluralize(instancesCount, "instance")}`;
+  const itOrThem = pluralize(instancesCount, "it", "them");
+  const thisOrTheseInstances = pluralize(
+    instancesCount,
+    "this instance",
+    "these instances",
+  );
 
   return (
     <TextConfirmationModal
@@ -63,22 +67,23 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
       close={close}
     >
       {instancesCount > 0 ? (
-        <p data-testid="affected-instances-warning">
-          {instancesCountText} are associated with &quot;{accessGroup.title}
-          &quot;. Deleting &quot;{accessGroup.title}&quot; will move them to the
-          parent access group, &quot;{parentAccessGroupTitle}&quot;. Any
-          profiles associated with &quot;{parentAccessGroupTitle}&quot; may be
-          applied to these instances.
+        <p>
+          &quot;{accessGroup.title}&quot; is associated with{" "}
+          {instancesCountText}. Deleting &quot;{accessGroup.title}&quot; will
+          move {itOrThem} to the parent access group, &quot;
+          {parentAccessGroupTitle}&quot;. Any profiles associated with &quot;
+          {parentAccessGroupTitle}&quot; may be applied to{" "}
+          {thisOrTheseInstances}.
         </p>
       ) : (
-        <p data-testid="default-access-group-warning">
+        <p>
           Profiles may be associated with &quot;{accessGroup.title}&quot;.
           Deleting &quot;{accessGroup.title}&quot; will move any associated
           profiles to its parent group, &quot;{parentAccessGroupTitle}&quot;.
         </p>
       )}
       <p>
-        This action is <b>irreversible</b>.
+        This action is <strong>irreversible</strong>.
       </p>
     </TextConfirmationModal>
   );
