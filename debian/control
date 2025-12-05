@@ -5,8 +5,8 @@ Maintainer: Landscape Team <landscape-team@canonical.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.0
 Homepage: https://ubuntu.com/landscape
-Vcs-Browser: https://github.com/canonical/landscape-dashboard
-Vcs-Git: https://github.com/canonical/landscape-dashboard.git
+Vcs-Browser: https://github.com/canonical/landscape-ui
+Vcs-Git: https://github.com/canonical/landscape-ui.git
 Rules-Requires-Root: no
 
 Package: landscape-dashboard

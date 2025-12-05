@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: landscape-dashboard
 Upstream-Contact: Landscape Team <landscape-team@canonical.com>
-Source: https://github.com/canonical/landscape-dashboard
+Source: https://github.com/canonical/landscape-ui
 
 Files: *
 Copyright: 2023-2024 Canonical Ltd. <landscape-team@canonical.com>

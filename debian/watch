@@ -3,5 +3,5 @@ version=4
 
 # GitHub hosted projects
 opts="filenamemangle=s%(?:.*?)?v?(\d[\d.]*)\.tar\.gz%<project>-$1.tar.gz%" \
-   https://github.com/<user>/landscape-dashboard/tags \
-   (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
+ https://github.com/canonical/landscape-ui/tags \
+ (?:.*?/)?v?(\d[\d.]*)\.tar\.gz debian uupdate
