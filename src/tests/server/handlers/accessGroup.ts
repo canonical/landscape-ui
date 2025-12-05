@@ -27,4 +27,14 @@ export default [
 
     return HttpResponse.json({ success: true });
   }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (
+      !isAction(request, ["ChangeComputersAccessGroup", "RemoveAccessGroup"])
+    ) {
+      return;
+    }
+
+    return HttpResponse.json({ success: true });
+  }),
 ];
