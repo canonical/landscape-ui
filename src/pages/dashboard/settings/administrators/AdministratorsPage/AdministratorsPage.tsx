@@ -1,12 +1,12 @@
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
-import { Button } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsTabs from "@/pages/dashboard/settings/administrators/AdministratorsTabs";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
 
 const InviteAdministratorForm = lazy(
   () =>
@@ -40,7 +40,7 @@ const AdministratorsPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <AdministratorsTabs />
       </PageContent>
     </PageMain>

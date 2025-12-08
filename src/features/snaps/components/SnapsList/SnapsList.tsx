@@ -1,17 +1,13 @@
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
-import {
-  Button,
-  CheckboxInput,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
-import type { CellProps, Column, Row } from "react-table";
+import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { Suspense, useMemo } from "react";
+import type { CellProps, Column, Row } from "react-table";
 import type { InstalledSnap } from "../../types";
 import SnapDetails from "../SnapDetails";
 import classes from "./SnapsList.module.scss";
@@ -166,7 +162,7 @@ const SnapsList: FC<SnapsListProps> = ({
   );
 
   return (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={installedSnaps}
       getCellProps={handleCellProps}

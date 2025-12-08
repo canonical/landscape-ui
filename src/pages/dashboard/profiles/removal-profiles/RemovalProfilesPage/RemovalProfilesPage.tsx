@@ -52,7 +52,7 @@ const RemovalProfilesPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <RemovalProfileContainer />
       </PageContent>
 

@@ -42,7 +42,7 @@ const AccessGroupsPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <AccessGroupContainer />
       </PageContent>
     </PageMain>

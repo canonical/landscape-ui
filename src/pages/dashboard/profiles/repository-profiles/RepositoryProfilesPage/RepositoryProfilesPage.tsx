@@ -30,7 +30,7 @@ const RepositoryProfilesPage: FC = () => {
             : undefined
         }
       />
-      <PageContent>
+      <PageContent hasTable>
         <RepositoryProfileContainer
           unfilteredRepositoryProfilesResult={
             unfilteredRepositoryProfilesResult

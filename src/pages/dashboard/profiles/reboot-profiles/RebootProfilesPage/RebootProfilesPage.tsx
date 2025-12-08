@@ -64,7 +64,7 @@ const RebootProfilesPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <RebootProfilesContainer />
       </PageContent>
 

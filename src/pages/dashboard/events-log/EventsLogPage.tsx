@@ -56,7 +56,7 @@ const EventsLogPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <EventsLogHeader />
         {isLoading && <LoadingState />}
         {!isLoading && eventsLog && <EventsLogList eventsLog={eventsLog} />}

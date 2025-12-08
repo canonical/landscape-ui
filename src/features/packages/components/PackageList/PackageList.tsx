@@ -1,13 +1,10 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
-import {
-  Button,
-  CheckboxInput,
-  ModularTable,
-  Tooltip,
-} from "@canonical/react-components";
+import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
@@ -22,7 +19,6 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
-import { ROUTES } from "@/libs/routes";
 
 const PackageDetails = lazy(async () => import("../PackageDetails"));
 
@@ -226,7 +222,7 @@ const PackageList: FC<PackageListProps> = ({
           }}
         />
       )}
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={packagesToShow}
         getCellProps={handleCellProps}

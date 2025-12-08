@@ -19,7 +19,7 @@ const ScriptsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader title="Scripts" />
-      <PageContent>
+      <PageContent hasTable>
         {isNotificationVisible && (
           <Notification onDismiss={hideNotification} severity="caution">
             <strong>This page only displays v2 scripts.</strong> Older (v1)

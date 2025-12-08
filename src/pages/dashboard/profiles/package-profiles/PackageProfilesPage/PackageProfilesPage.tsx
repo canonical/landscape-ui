@@ -77,7 +77,7 @@ const PackageProfilesPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <PackageProfilesContainer />
       </PageContent>
 

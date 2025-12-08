@@ -1,12 +1,12 @@
+import LoadingState from "@/components/layout/LoadingState";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import PageMain from "@/components/layout/PageMain";
+import useSidePanel from "@/hooks/useSidePanel";
+import RolesContainer from "@/pages/dashboard/settings/roles/RolesContainer";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import PageMain from "@/components/layout/PageMain";
-import PageHeader from "@/components/layout/PageHeader";
-import PageContent from "@/components/layout/PageContent";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
-import RolesContainer from "@/pages/dashboard/settings/roles/RolesContainer";
-import LoadingState from "@/components/layout/LoadingState";
 
 const AddRoleForm = lazy(
   () => import("@/pages/dashboard/settings/roles/AddRoleForm"),
@@ -39,7 +39,7 @@ const RolesPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <RolesContainer />
       </PageContent>
     </PageMain>

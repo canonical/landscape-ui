@@ -48,7 +48,7 @@ const ActivitiesPage: FC = () => {
             : undefined
         }
       />
-      <PageContent>
+      <PageContent hasTable>
         {isGettingUnfilteredActivities ? (
           <LoadingState />
         ) : !unfilteredActivitiesCount ? (
