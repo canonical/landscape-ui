@@ -11,22 +11,10 @@
     z-index: var(--z-table-corner);
   }
 
-  &.scrolledDown {
-    thead {
-      box-shadow: 0 0 2rem rgb(0 0 0 / 10%);
-      clip-path: inset(0 0 -2rem 0);
-    }
-  }
-
   .firstColumn {
     background-color: $colors--theme--background-default;
     left: 0;
     position: sticky;
     z-index: var(--z-table-edge);
-
-    &.scrolledRight {
-      box-shadow: 0 0 2rem rgb(0 0 0 / 10%);
-      clip-path: inset(0 -2rem 0 0);
-    }
   }
 }
