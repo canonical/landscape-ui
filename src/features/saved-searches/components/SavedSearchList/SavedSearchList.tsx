@@ -1,61 +1,59 @@
+import LoadingState from "@/components/layout/LoadingState";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button, Col, Row, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC } from "react";
-import {
-  Button,
-  Col,
-  ConfirmationButton,
-  Icon,
-  Row,
-  Tooltip,
-} from "@canonical/react-components";
-import useDebug from "@/hooks/useDebug";
-import { useSavedSearches } from "../../hooks";
+import { Suspense, type FC } from "react";
 import type { SavedSearch } from "../../types";
+import ManageSavedSearchesSidePanel from "../ManageSavedSeachesSidePanel";
 import classes from "./SavedSearchList.module.scss";
-import useNotify from "@/hooks/useNotify";
+import SavedSearchActions from "../SavedSearchActions";
+import { SIDEPANEL_SIZE } from "../../constants";
 
 interface SavedSearchListProps {
   readonly onSavedSearchClick: (search: SavedSearch) => void;
-  readonly onSavedSearchRemove: () => void;
   readonly savedSearches: SavedSearch[];
+  readonly onManageSearches: () => void;
+  readonly onSavedSearchRemove: () => void;
 }
 
 const SavedSearchList: FC<SavedSearchListProps> = ({
   onSavedSearchClick,
-  onSavedSearchRemove,
   savedSearches,
+  onManageSearches,
+  onSavedSearchRemove,
 }) => {
+  const { setSidePanelContent } = useSidePanel();
+
   if (!savedSearches.length) {
     return null;
   }
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { removeSavedSearchQuery } = useSavedSearches();
-
-  const { mutateAsync: removeSavedSearch, isPending: isRemoving } =
-    removeSavedSearchQuery;
-
-  const handleSavedSearchRemove = async (name: string) => {
-    try {
-      await removeSavedSearch({ name });
-
-      onSavedSearchRemove();
-
-      notify.success({
-        message: `Saved search ${name} successfully removed`,
-        title: "Saved search removed",
-      });
-    } catch (error) {
-      debug(error);
-    }
+  const handleManageSavedSearches = () => {
+    onManageSearches();
+    setSidePanelContent(
+      "Manage saved searches",
+      <Suspense fallback={<LoadingState />}>
+        <ManageSavedSearchesSidePanel />
+      </Suspense>,
+      SIDEPANEL_SIZE,
+    );
   };
 
   return (
     <div className={classes.container}>
-      <p className="p-text--small-caps u-text--muted p-text--small">
-        Saved searches
-      </p>
+      <div className={classes.header}>
+        <p className="p-text--small-caps u-text--muted p-text--small">
+          Saved searches
+        </p>
+        <Button
+          type="button"
+          appearance="secondary"
+          className="is-small"
+          onClick={handleManageSavedSearches}
+        >
+          Manage
+        </Button>
+      </div>
       <ul
         className={classNames(
           "p-list--divided u-no-margin--bottom",
@@ -76,10 +74,10 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                 <Row className={classes.row}>
                   <Col size={4}>
                     <Tooltip
-                      message={savedSearch.name}
+                      message={savedSearch.title}
                       positionElementClassName={classes.truncated}
                     >
-                      <span>{savedSearch.name}</span>
+                      <span>{savedSearch.title}</span>
                     </Tooltip>
                   </Col>
                   <Col size={8}>
@@ -92,27 +90,12 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                   </Col>
                 </Row>
               </Button>
-              <ConfirmationButton
-                className="has-icon u-no-margin--bottom u-no-padding--bottom u-no-padding--top"
-                type="button"
-                appearance="base"
-                confirmationModalProps={{
-                  title: "Remove saved search",
-                  children: (
-                    <p>
-                      This will remove the saved search &quot;{savedSearch.name}
-                      &quot;.
-                    </p>
-                  ),
-                  confirmButtonLabel: "Remove",
-                  confirmButtonAppearance: "negative",
-                  confirmButtonDisabled: isRemoving,
-                  confirmButtonLoading: isRemoving,
-                  onConfirm: () => handleSavedSearchRemove(savedSearch.name),
-                }}
-              >
-                <Icon name="delete" />
-              </ConfirmationButton>
+              <div className={classes.actions}>
+                <SavedSearchActions
+                  savedSearch={savedSearch}
+                  onSavedSearchRemove={onSavedSearchRemove}
+                />
+              </div>
             </div>
           </li>
         ))}

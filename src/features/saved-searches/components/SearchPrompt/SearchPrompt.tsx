@@ -1,7 +1,5 @@
 import type { FC } from "react";
-import { useState } from "react";
-import { Button } from "@canonical/react-components";
-import SavedSearchCreateForm from "../SavedSearchCreateForm";
+import CreateSavedSearchButton from "../CreateSavedSearchButton";
 import classes from "./SearchPrompt.module.scss";
 
 interface SearchPromptProps {
@@ -10,21 +8,9 @@ interface SearchPromptProps {
 }
 
 const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
-  const [showForm, setShowForm] = useState(false);
-
   return (
     <>
-      {search && showForm && (
-        <SavedSearchCreateForm
-          onClose={() => {
-            setShowForm(false);
-          }}
-          onSearchSave={onSearchSave}
-          search={search}
-        />
-      )}
-
-      {search && !showForm && (
+      {search && (
         <div className={classes.container}>
           <span className={classes.prompt}>
             <span>Search for </span>
@@ -32,16 +18,13 @@ const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
             <span>...</span>
           </span>
 
-          <Button
-            type="button"
+          <CreateSavedSearchButton
+            buttonLabel="Save search"
             appearance="link"
-            onClick={() => {
-              setShowForm(true);
-            }}
             className={classes.saveButton}
-          >
-            Save search
-          </Button>
+            afterCreate={onSearchSave}
+            search={search}
+          />
         </div>
       )}
     </>

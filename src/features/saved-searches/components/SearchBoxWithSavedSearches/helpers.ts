@@ -26,10 +26,11 @@ export const getFilteredSavedSearches = ({
   }
 
   if (inputText) {
+    const lowerInputText = inputText.trim().toLowerCase();
     filteredSearches = filteredSearches.filter(
-      ({ name, search }) =>
-        name.toLowerCase() !== inputText.trim().toLowerCase() &&
-        search.toLowerCase() !== inputText.trim().toLowerCase(),
+      ({ name, search: searchQuery }) =>
+        name.toLowerCase().includes(lowerInputText) ||
+        searchQuery.toLowerCase().includes(lowerInputText),
     );
   }
 

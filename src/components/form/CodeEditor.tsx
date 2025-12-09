@@ -1,9 +1,10 @@
-import { Editor } from "@monaco-editor/react";
+import { Editor, type Monaco } from "@monaco-editor/react";
 import classNames from "classnames";
 import type { ComponentProps, FC, ReactNode } from "react";
+import { useCallback } from "react";
+import { useTheme } from "@/context/theme";
 import LoadingState from "../layout/LoadingState";
 import classes from "./CodeEditor.module.scss";
-import { useTheme } from "@/context/theme";
 
 interface CodeEditorProps {
   readonly label: string;
@@ -12,11 +13,14 @@ interface CodeEditorProps {
   readonly error?: string | false;
   readonly labelClassName?: string;
   readonly onChange?: (value: string | undefined) => void;
+  readonly onBlur?: () => void;
   readonly required?: boolean;
   readonly language?: string;
   readonly defaultValue?: string;
   readonly headerContent?: ReactNode;
   readonly options?: ComponentProps<typeof Editor>["options"];
+  readonly monacoBeforeMount?: (monaco: Monaco) => void;
+  readonly onMount?: ComponentProps<typeof Editor>["onMount"];
 }
 
 const CodeEditor: FC<CodeEditorProps> = ({
@@ -31,16 +35,26 @@ const CodeEditor: FC<CodeEditorProps> = ({
   defaultValue,
   headerContent,
   options,
+  monacoBeforeMount,
+  onMount,
+  onBlur,
 }) => {
   const { isDarkMode } = useTheme();
+
+  const handleBeforeMount = useCallback(
+    (monaco: Monaco) => {
+      if (monacoBeforeMount) {
+        monacoBeforeMount(monaco);
+      }
+    },
+    [monacoBeforeMount],
+  );
 
   return (
     <div
       className={classNames(
         "p-form__group p-form-validation",
-        {
-          "is-error": error,
-        },
+        { "is-error": error },
         classes.container,
       )}
     >
@@ -61,6 +75,11 @@ const CodeEditor: FC<CodeEditorProps> = ({
 
       <div
         className={classNames("p-form__control u-clearfix", classes.container)}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            onBlur?.();
+          }
+        }}
       >
         <Editor
           language={language}
@@ -69,13 +88,13 @@ const CodeEditor: FC<CodeEditorProps> = ({
           theme={isDarkMode ? "vs-dark" : "vs-light"}
           className={classNames(
             classes.highlighter,
-            {
-              [classes.error]: error,
-            },
+            { [classes.error]: error },
             className,
           )}
           value={value}
           onChange={onChange}
+          beforeMount={handleBeforeMount}
+          onMount={onMount}
           options={{
             minimap: { enabled: false },
             renderLineHighlight: "none",

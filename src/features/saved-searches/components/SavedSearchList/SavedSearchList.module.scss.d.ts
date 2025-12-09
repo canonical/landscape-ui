@@ -1,5 +1,7 @@
 declare const styles: {
+  readonly "actions": string;
   readonly "container": string;
+  readonly "header": string;
   readonly "list": string;
   readonly "listItem": string;
   readonly "row": string;

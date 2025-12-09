@@ -13,3 +13,4 @@ export {
   hasUpgrades,
 } from "./helpers";
 export type { Status } from "./types";
+export { default as useInstanceSearchHelpTerms } from "./components/InstancesHeader/hooks/useInstanceSearchHelpTerms";

@@ -9,14 +9,16 @@ import { createContext, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import classes from "./SidePanelProvider.module.scss";
 
+export type SidePanelSize = "small" | "medium" | "large";
+
 interface SidePanelContextProps {
-  changeSidePanelSize: (size: "small" | "medium" | "large") => void;
+  changeSidePanelSize: (size: SidePanelSize) => void;
   changeSidePanelTitleLabel: (title: string) => void;
   closeSidePanel: () => void;
   setSidePanelContent: (
     title: ReactNode,
     newState: ReactNode | null,
-    size?: "small" | "medium" | "large",
+    size?: SidePanelSize,
     titleLabel?: string,
   ) => void;
   setSidePanelTitle: (title: ReactNode) => void;
@@ -39,7 +41,7 @@ interface SidePanelProviderProps {
 
 const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
-  const [size, setSize] = useState<"small" | "medium" | "large">("small");
+  const [size, setSize] = useState<SidePanelSize>("small");
   const [title, setTitle] = useState<ReactNode>(undefined);
   const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
@@ -73,7 +75,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const handleContentChange = (
     newTitle: ReactNode,
     newBody: ReactNode,
-    newSize: "small" | "medium" | "large" = "small",
+    newSize: SidePanelSize = "small",
   ) => {
     handleTitleChange(newTitle);
     setBody(newBody);
