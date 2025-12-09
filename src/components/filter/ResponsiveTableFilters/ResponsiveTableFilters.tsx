@@ -1,8 +1,8 @@
-import type { FC, JSXElementConstructor, ReactElement } from "react";
+import type { FC, JSXElementConstructor, ReactElement, ReactNode } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
 import type { Position } from "@canonical/react-components";
-import { ContextualMenu } from "@canonical/react-components";
+import { ContextualMenu, Icon } from "@canonical/react-components";
 
 import { BREAKPOINT_PX } from "@/constants";
 
@@ -16,7 +16,7 @@ export interface ResponsiveTableFiltersProps {
     JSXElementConstructor<{ name: string }>
   >[];
   readonly collapseFrom?: keyof typeof BREAKPOINT_PX;
-  readonly menuLabel?: string;
+  readonly menuLabel?: ReactNode;
   readonly className?: string;
   readonly menuPosition?: Position;
   readonly isCollapsed?: boolean;
@@ -25,10 +25,15 @@ export interface ResponsiveTableFiltersProps {
 const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
   filters,
   collapseFrom = "md",
-  menuLabel = "Filters",
   className,
   menuPosition = "right",
   isCollapsed = false,
+  menuLabel = (
+    <>
+      <Icon name="filter" />
+      <span>Filters</span>
+    </>
+  ),
 }) => {
   const isLarge = useMediaQuery(
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
