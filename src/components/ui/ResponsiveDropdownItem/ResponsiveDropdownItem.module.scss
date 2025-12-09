@@ -1,3 +1,5 @@
+@import "vanilla-framework/scss/settings_colors";
+
 .root {
   position: relative;
 }
@@ -27,4 +29,12 @@
   min-width: 15rem;
   right: 100%;
   top: 0;
+}
+
+.isOpen {
+  background-color: $colors--theme--background-active;
+
+  &:hover {
+    background-color: $colors--theme--background-active;
+  }
 }

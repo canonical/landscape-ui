@@ -48,7 +48,7 @@ const ResponsiveDropdownItem: FC<ResponsiveDropdownItemProps> = ({
       <Button
         type="button"
         appearance="base"
-        className={classes.label}
+        className={classNames(classes.label, { [classes.isOpen]: isOpen })}
         onClick={toggle}
         disabled={disabled}
       >
