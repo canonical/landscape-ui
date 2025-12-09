@@ -5,6 +5,7 @@ import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useGetPendingInstances } from "../../api";
+import classes from "./PendingInstancesNotification.module.scss";
 
 const PendingInstanceList = lazy(
   async () => import("@/pages/dashboard/instances/PendingInstancesForm"),
@@ -30,7 +31,11 @@ const PendingInstancesNotification: FC = () => {
   };
 
   return (
-    <Notification severity="information" title="Pending instances">
+    <Notification
+      severity="information"
+      title="Pending instances"
+      className={classes.notification}
+    >
       <span>
         {`You currently have ${pendingInstances.length} pending
           	${pluralize(pendingInstances.length, "instance")}

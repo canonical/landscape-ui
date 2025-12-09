@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import { useSavedSearches } from "../../hooks";
+import { useGetSavedSearches } from "../../api";
 import SavedSearchList from "../SavedSearchList";
 import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
@@ -24,7 +24,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   const [inputText, setInputText] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const { getSavedSearchesQuery } = useSavedSearches();
+  const { savedSearches, isLoadingSavedSearches } = useGetSavedSearches();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const chipsContainerRef = useRef<HTMLDivElement>(null);
@@ -39,19 +39,14 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
   useOnClickOutside(containerRef, handleDropdownClose);
 
-  const {
-    data: getSavedSearchesQueryResult,
-    isLoading: getSavedSearchesQueryLoading,
-  } = getSavedSearchesQuery();
-
   const filteredSearches = useMemo(
     () =>
       getFilteredSavedSearches({
         inputText,
-        savedSearches: getSavedSearchesQueryResult?.data,
+        savedSearches,
         search: query,
       }),
-    [getSavedSearchesQueryResult, inputText, query],
+    [savedSearches, inputText, query],
   );
 
   const handleSearch = () => {
@@ -61,7 +56,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
     const searches = getFilteredSavedSearches({
       inputText: "",
-      savedSearches: getSavedSearchesQueryResult?.data,
+      savedSearches,
       search: query,
     });
 
@@ -147,8 +142,8 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
         </Form>
         <SearchInfoBox onHelpButtonClick={onHelpButtonClick} />
       </div>
-      {showDropdown && getSavedSearchesQueryLoading && <LoadingState />}
-      {showDropdown && !getSavedSearchesQueryLoading && (
+      {showDropdown && isLoadingSavedSearches && <LoadingState />}
+      {showDropdown && !isLoadingSavedSearches && (
         <div className="p-search-and-filter__panel">
           <SearchPrompt
             onSearchSave={() => {
@@ -159,6 +154,9 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
           <SavedSearchList
             onSavedSearchClick={handleSavedSearchClick}
+            onManageSearches={() => {
+              setShowDropdown(false);
+            }}
             onSavedSearchRemove={() => {
               setShowDropdown(true);
             }}

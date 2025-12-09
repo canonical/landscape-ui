@@ -4,13 +4,13 @@ import { describe, it } from "vitest";
 import CreateScriptForm from "./CreateScriptForm";
 
 describe("CreateScriptForm", () => {
-  it("should display create script form", async () => {
+  it("should display add script form", async () => {
     renderWithProviders(<CreateScriptForm />);
 
     expect(screen.getByText(/title/i)).toBeInTheDocument();
     expect(screen.getByText(/code/i)).toBeInTheDocument();
     expect(screen.getByText("Access group")).toBeInTheDocument();
     expect(screen.getByText(/list of attachments/i)).toBeInTheDocument();
-    expect(screen.getByText(/create script/i)).toBeInTheDocument();
+    expect(screen.getByText(/add script/i)).toBeInTheDocument();
   });
 });
