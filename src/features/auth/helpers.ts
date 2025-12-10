@@ -1,3 +1,4 @@
+import { hasProperty } from "@/utils/_helpers";
 import { SUPPORTED_PROVIDERS } from "./constants";
 
 export const redirectToExternalUrl = (
@@ -12,7 +13,7 @@ export const redirectToExternalUrl = (
 };
 
 export const getProviderIcon = (slug: string) => {
-  return slug in SUPPORTED_PROVIDERS
+  return hasProperty(SUPPORTED_PROVIDERS, slug)
     ? SUPPORTED_PROVIDERS[slug].icon
     : SUPPORTED_PROVIDERS.default.icon;
 };

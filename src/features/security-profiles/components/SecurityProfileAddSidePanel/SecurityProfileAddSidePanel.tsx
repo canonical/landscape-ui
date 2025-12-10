@@ -12,6 +12,7 @@ import { notifyCreation } from "../../helpers";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
 import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddSidePanel.module.scss";
+import type { StepIndex } from "./types";
 
 interface SecurityProfileAddSidePanelProps {
   readonly onSuccess: (values: SecurityProfileFormValues) => void;
@@ -26,7 +27,7 @@ const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
   const { addSecurityProfile, isSecurityProfileAdding } =
     useAddSecurityProfile();
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState<StepIndex>(0);
 
   const { formik, steps } = useSecurityProfileForm({
     formMode: "add",
@@ -72,12 +73,14 @@ const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
   });
 
   const goBack = () => {
-    setStep(step - 1);
+    if (step !== 0) {
+      setStep((step - 1) as StepIndex);
+    }
   };
 
   const submit = () => {
     if (step < steps.length - 1) {
-      setStep(step + 1);
+      setStep((step + 1) as StepIndex);
     } else {
       formik.handleSubmit();
     }

@@ -48,7 +48,7 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
   };
 
   useEffect(() => {
-    if (CHANNEL_OPTIONS.length > 0) {
+    if (CHANNEL_OPTIONS[0]) {
       setSelectedChannel(CHANNEL_OPTIONS[0].value);
     }
   }, [CHANNEL_OPTIONS]);

@@ -38,9 +38,9 @@ export default [
     },
   ),
 
-  http.get(
+  http.get<{ name: string }>(
     `${API_URL}computers/:computerId/snaps/:name/info`,
-    async ({ request }) => {
+    async ({ params }) => {
       const endpointStatus = getEndpointStatus();
       if (endpointStatus.status === "error") {
         return HttpResponse.json(
@@ -54,12 +54,10 @@ export default [
         );
       }
 
-      const url = new URL(request.url);
-      const pathParts = url.pathname.split("/");
-      const encodedName = pathParts[pathParts.length - 2]; // Get the second to last element
-      const name = decodeURIComponent(encodedName);
       return HttpResponse.json(
-        availableSnapInfo.find((snap) => snap.name === name) || null,
+        availableSnapInfo.find(
+          (snap) => snap.name === decodeURIComponent(params.name),
+        ) || null,
       );
     },
   ),

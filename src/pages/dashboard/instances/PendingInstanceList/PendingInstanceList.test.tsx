@@ -1,11 +1,11 @@
+import { accessGroups } from "@/tests/mocks/accessGroup";
+import { pendingInstances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import PendingInstanceList from "./PendingInstanceList";
-import PendingInstancesForm from "./../PendingInstancesForm";
-import { accessGroups } from "@/tests/mocks/accessGroup";
 import userEvent from "@testing-library/user-event";
-import { pendingInstances } from "@/tests/mocks/instance";
+import { describe, expect, it, vi } from "vitest";
+import PendingInstancesForm from "./../PendingInstancesForm";
+import PendingInstanceList from "./PendingInstanceList";
 
 describe("PendingInstanceList", () => {
   const mockAccessGroupOptions = accessGroups.map((group) => ({
@@ -51,8 +51,9 @@ describe("PendingInstanceList", () => {
         selectedIds={[]}
       />,
     );
-    const [, checkbox] = screen.getAllByRole("checkbox");
-    await user.click(checkbox);
+    const checkboxes = screen.getAllByRole("checkbox");
+    assert(checkboxes[1]);
+    await user.click(checkboxes[1]);
     expect(mockOnSelectedIdsChange).toHaveBeenCalledWith([
       pendingInstances[0].id,
     ]);
@@ -109,6 +110,7 @@ describe("PendingInstanceList", () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
+    assert(checkboxes[1]);
     await user.click(checkboxes[1]);
 
     const approveButton = screen.getByRole("button", { name: /approve/i });
@@ -135,6 +137,7 @@ describe("PendingInstanceList", () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
+    assert(checkboxes[1]);
     await user.click(checkboxes[1]);
 
     const approveButton = screen.getByRole("button", { name: /^approve$/i });
@@ -150,6 +153,7 @@ describe("PendingInstanceList", () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
+    assert(checkboxes[1]);
     await user.click(checkboxes[1]);
 
     const approveButton = screen.getByRole("button", { name: /^approve$/i });
@@ -176,6 +180,7 @@ describe("PendingInstanceList", () => {
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
+    assert(checkboxes[2]);
     await user.click(checkboxes[2]);
 
     const rejectButton = screen.getByRole("button", { name: /reject/i });

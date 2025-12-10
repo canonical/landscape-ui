@@ -1,6 +1,6 @@
 import type { Account } from "@/features/auth";
 
-export const accountsDefault: Account[] = [
+export const accountsDefault = [
   {
     default: true,
     name: "non-subdomain-test-account",
@@ -23,7 +23,7 @@ export const accountsDefault: Account[] = [
     subdomain: null,
     classic_dashboard_url: "http://landscape.yuriy.works/account/upside",
   },
-];
+] as const satisfies Account[];
 
 export const accountsForSubdomain: Account[] = [
   {

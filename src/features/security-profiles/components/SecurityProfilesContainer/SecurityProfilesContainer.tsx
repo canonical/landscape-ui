@@ -4,6 +4,7 @@ import { TablePagination } from "@/components/layout/TablePagination";
 import { useGetActivities } from "@/features/activities";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
 import usePageParams from "@/hooks/usePageParams";
+import { hasOneItem } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
@@ -145,7 +146,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
         </Notification>
       )}
 
-      {overLimitSecurityProfiles.length === 1 && (
+      {hasOneItem(overLimitSecurityProfiles) && (
         <Notification
           severity="negative"
           inline
@@ -220,7 +221,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
         </Notification>
       )}
 
-      {activities.length == 1 && (
+      {hasOneItem(activities) && (
         <Notification
           inline
           title="Your audit is ready for download:"

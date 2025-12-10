@@ -6,22 +6,28 @@ import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
 import PackageList from "./PackageList";
 
+const mirrorPocket = pockets.find((p) => p.mode === "mirror");
+assert(mirrorPocket);
 const mirrorPocketProps: ComponentProps<typeof PackageList> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket: pockets.find((p) => p.mode === "mirror") ?? pockets[0],
+  pocket: mirrorPocket,
 };
 
+const uploadPocket = pockets.find((p) => p.mode === "upload");
+assert(uploadPocket);
 const uploadPocketProps: ComponentProps<typeof PackageList> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket: pockets.find((p) => p.mode === "upload") ?? pockets[0],
+  pocket: uploadPocket,
 };
 
+const pullPocket = pockets.find((p) => p.mode === "pull" && p.filter_type);
+assert(pullPocket);
 const pullPocketProps: ComponentProps<typeof PackageList> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket: pockets.find((p) => p.mode === "pull" && p.filter_type) ?? pockets[0],
+  pocket: pullPocket,
 };
 
 describe("PackageList", () => {

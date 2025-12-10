@@ -1,6 +1,6 @@
+import type { ApiError } from "@/types/api/ApiError";
 import type { AxiosError } from "axios";
 import { isAxiosError } from "axios";
-import type { ApiError } from "@/types/api/ApiError";
 import type { AutoinstallOverrideWarning } from "./types";
 
 export const areTextsIdentical = (
@@ -25,5 +25,5 @@ export const parseFields = (
 ): string[] => {
   const match = error.response?.data.message.match(/overrides fields (.+)$/);
 
-  return match ? match[1].split(",").map((field) => field.trim()) : [];
+  return match?.[1] ? match[1].split(",").map((field) => field.trim()) : [];
 };

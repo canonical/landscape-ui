@@ -5,6 +5,7 @@ import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ROUTES } from "@/libs/routes";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Button,
@@ -42,7 +43,6 @@ import {
   getValidationSchema,
   removeFileExtension,
 } from "./helpers";
-import { ROUTES } from "@/libs/routes";
 
 interface EditScriptFormProps {
   readonly script: Script;
@@ -110,8 +110,12 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const handleInputChange = async ({
     target: { files },
   }: React.ChangeEvent<HTMLInputElement>) => {
-    if (!files) return;
-    const [file] = files;
+    const file = files?.[0];
+
+    if (!file) {
+      return;
+    }
+
     const contentsPromise = formik.setFieldValue("code", await file.text());
     if (formik.values.title) {
       await contentsPromise;

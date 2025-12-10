@@ -1,5 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useSidePanel from "@/hooks/useSidePanel";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { Button, ModularTable } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
 import { lazy, Suspense, useMemo, useState } from "react";
@@ -8,8 +10,6 @@ import { useGetScriptVersions } from "../../api";
 import { getAuthorInfo } from "../../helpers";
 import type { SingleScript, TruncatedScriptVersion } from "../../types";
 import classes from "./ScriptsVersionHistory.module.scss";
-import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const ScriptVersionHistoryDetails = lazy(
   async () => import("../ScriptVersionHistoryDetails"),
@@ -25,7 +25,7 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
   viewVersionHistory,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 
   const { setSidePanelContent } = useSidePanel();
   const { versions, isVersionsLoading, count } = useGetScriptVersions({

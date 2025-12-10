@@ -8,9 +8,15 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
+import type { Activity } from "../../types";
 import Activities from "./Activities";
 
-const mockActivities = activities.slice(0, 3);
+const mockActivities = [
+  activities[0],
+  activities[1],
+  activities[2],
+] as const satisfies Activity[];
+
 const setSelectedActivities = vi.fn();
 const defaultProps: ComponentProps<typeof Activities> = {
   activities: mockActivities,
@@ -74,6 +80,7 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const checkboxes = screen.getAllByRole("checkbox");
+      assert(checkboxes[1]);
       await user.click(checkboxes[1]);
 
       expect(setSelectedActivities).toHaveBeenCalledWith([mockActivities[0]]);
@@ -83,6 +90,7 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const [headerCheckbox] = screen.getAllByRole("checkbox");
+      assert(headerCheckbox);
       await user.click(headerCheckbox);
 
       expect(setSelectedActivities).toHaveBeenCalledWith(mockActivities);
@@ -96,6 +104,7 @@ describe("Activities", () => {
       const activityButtons = screen.getAllByRole("button", {
         name: mockActivities[0].summary,
       });
+      assert(activityButtons[0]);
       await user.click(activityButtons[0]);
 
       expect(

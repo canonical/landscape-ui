@@ -12,6 +12,7 @@ export default function useSecurityProfileFormConfirmationStep<
 >(formik: FormikContextType<T>) {
   return {
     isValid: true,
+    isLoading: false,
     description: `This will ${phrase(
       [
         formik.values.mode != "audit" ? "apply fixes" : null,

@@ -19,6 +19,7 @@ const securityPackage = instancePackages.find(
 );
 const [installedPackage] = instancePackages;
 
+assert(installedPackage);
 assert(packageWithUpgrade);
 assert(securityPackage);
 

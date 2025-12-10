@@ -16,11 +16,26 @@ const actionsHaveSameIdentity = (left: Action, right: Action): boolean =>
 export const actionListsAreEqual = (
   leftList: Action[],
   rightList: Action[],
-): boolean =>
-  leftList.length === rightList.length &&
-  leftList.every((leftAction, index) =>
-    actionsHaveSameIdentity(leftAction, rightList[index]),
-  );
+): boolean => {
+  if (leftList.length !== rightList.length) {
+    return false;
+  }
+
+  for (const i in leftList) {
+    const left = leftList[i];
+    const right = rightList[i];
+
+    if (left === undefined || right === undefined) {
+      return false;
+    }
+
+    if (!actionsHaveSameIdentity(left, right)) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 export const bucketsHaveAnyCollapsed = (bucket: {
   destructive: Action[];

@@ -1,3 +1,4 @@
+import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling/helpers";
 import { DAY_OPTIONS } from "@/components/form/ScheduleBlock/components/ScheduleBlockBase/constants";
 import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
@@ -13,7 +14,6 @@ import useSecurityProfileFormBenchmarkStep from "./useSecurityProfileFormBenchma
 import useSecurityProfileFormConfirmationStep from "./useSecurityProfileFormConfirmationStep";
 import useSecurityProfileFormNameStep from "./useSecurityProfileFormNameStep";
 import useSecurityProfileFormScheduleStep from "./useSecurityProfileFormScheduleStep";
-import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling/helpers";
 
 export interface UseSecurityProfileFormProps {
   initialValues: SecurityProfileFormValues;
@@ -139,8 +139,10 @@ const useSecurityProfileForm = ({
 
               case "day-of-week": {
                 const ordinalWeek = Math.ceil(dayOfMonth / 7);
+                const day = date.getDay();
+
                 scheduleRuleParts.push(
-                  `BYDAY=${ordinalWeek > 4 ? -1 : ordinalWeek}${DAY_OPTIONS[date.getDay()].value}`,
+                  `BYDAY=${ordinalWeek > 4 ? -1 : ordinalWeek}${DAY_OPTIONS[day as 0 | 1 | 2 | 3 | 4 | 5 | 6].value}`,
                 );
                 break;
               }
@@ -209,19 +211,19 @@ const useSecurityProfileForm = ({
   const associationStep = useSecurityProfileFormAssociationStep(formik);
   const confirmationStep = useSecurityProfileFormConfirmationStep(formik);
 
-  const steps: {
-    isLoading?: boolean;
-    isValid?: boolean;
-    description: string;
-    content: ReactNode;
-    submitButtonText: string;
-  }[] = [
+  const steps = [
     nameStep,
     benchmarkStep,
     scheduleStep,
     associationStep,
     confirmationStep,
-  ];
+  ] as const satisfies {
+    isLoading: boolean;
+    isValid: boolean;
+    description: string;
+    content: ReactNode;
+    submitButtonText: string;
+  }[];
 
   return { formik, steps };
 };

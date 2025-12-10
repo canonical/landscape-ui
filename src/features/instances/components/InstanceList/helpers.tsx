@@ -1,8 +1,9 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import NoData from "@/components/layout/NoData";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
+import { getAlertStatus } from "@/features/alert-notifications";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type {
@@ -88,38 +89,30 @@ export const getStatusCellIconAndLabel = (
     };
   }
 
-  if (1 === filteredAlerts.length) {
+  if (hasOneItem(filteredAlerts)) {
     return {
-      icon: `${ALERT_STATUSES[filteredAlerts[0].type].icon.color ?? ALERT_STATUSES.Unknown.icon.color}`,
-      label: (
-        <>
-          {ALERT_STATUSES[filteredAlerts[0].type].alternateLabel ??
-            ALERT_STATUSES[filteredAlerts[0].type].label ??
-            filteredAlerts[0].summary}
-        </>
-      ),
+      icon: getAlertStatus(filteredAlerts[0].type).icon.color,
+      label: <>{filteredAlerts[0].summary}</>,
     };
   }
 
   return {
     label: (
       <span className={classes.statusContainer}>
-        {filteredAlerts.map(({ type, summary }) => (
-          <span className={classes.statusListItem} key={type}>
-            <Tooltip
-              message={
-                ALERT_STATUSES[type].alternateLabel ??
-                ALERT_STATUSES[type].label ??
-                summary
-              }
-            >
-              <Icon
-                className="u-no-margin--left"
-                name={`${ALERT_STATUSES[type]?.icon.color ?? ALERT_STATUSES.Unknown.icon.color}`}
-              />
-            </Tooltip>
-          </span>
-        ))}
+        {filteredAlerts.map(({ type, summary }) => {
+          const alertStatus = getAlertStatus(type);
+
+          return (
+            <span className={classes.statusListItem} key={type}>
+              <Tooltip message={summary}>
+                <Icon
+                  className="u-no-margin--left"
+                  name={alertStatus.icon.color ?? alertStatus.icon.gray}
+                />
+              </Tooltip>
+            </span>
+          );
+        })}
       </span>
     ),
   };

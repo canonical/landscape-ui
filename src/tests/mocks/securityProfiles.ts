@@ -1,6 +1,6 @@
 import type { SecurityProfile } from "@/features/security-profiles";
 
-export const securityProfiles: SecurityProfile[] = [
+export const securityProfiles = [
   {
     access_group: "global",
     account_id: 0,
@@ -271,4 +271,4 @@ export const securityProfiles: SecurityProfile[] = [
     restart_deliver_delay_window: 2,
     restart_deliver_delay: 1,
   },
-];
+] as const satisfies SecurityProfile[];

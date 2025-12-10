@@ -4,7 +4,7 @@ import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeArray } from "@/utils/_helpers";
 import {
   ConfirmationModal,
   Icon,
@@ -22,7 +22,7 @@ interface TagsAddConfirmationModalProps
     "children" | "confirmButtonLabel" | "title"
   > {
   readonly instances: InstanceWithoutRelation[];
-  readonly tags: string[];
+  readonly tags: readonly string[];
 }
 
 const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
@@ -109,7 +109,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
   return (
     <ConfirmationModal
-      title={`Add ${pluralize(tags.length, `"${tags[0]}" tag`, `${tags.length} tags`)} to ${pluralize(instances.length, `"${instances[0].title}"`, `${instances.length} instances`)}`}
+      title={`Add ${pluralize(tags.length, `"${tags[0]}" tag`, `${tags.length} tags`)} to ${pluralizeArray(instances, (instance) => `"${instance.title}"`, `${instances.length} instances`)}`}
       confirmButtonLabel="Add tags"
       {...props}
     >
@@ -123,9 +123,9 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           `these ${tags.length} tags`,
         )}{" "}
         to{" "}
-        {pluralize(
-          instances.length,
-          `the ${instances[0].title} instance`,
+        {pluralizeArray(
+          instances,
+          (instance) => `the ${instance.title} instance`,
           `${instances.length} instances`,
         )}{" "}
         will associate the {pluralize(instances.length, "instance")} with the

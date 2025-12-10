@@ -1,13 +1,13 @@
-import type { FC } from "react";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useReports from "@/hooks/useReports";
-import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
-import { Col, Row } from "@canonical/react-components";
-import classes from "./ReportView.module.scss";
-import classNames from "classnames";
 import useSidePanel from "@/hooks/useSidePanel";
 import ReportForm from "@/pages/dashboard/instances/ReportForm";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
 import { pluralize } from "@/utils/_helpers";
+import { Col, Row } from "@canonical/react-components";
+import classNames from "classnames";
+import type { FC } from "react";
+import classes from "./ReportView.module.scss";
 
 interface ReportViewProps {
   readonly instanceIds: number[];
@@ -49,11 +49,11 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     });
 
   const securityUpgradesInstanceCount = {
-    month: getUsnTimeToFixResult?.data["30"].length || 0,
-    old: getUsnTimeToFixResult?.data["60"].length || 0,
+    month: getUsnTimeToFixResult?.data["30"]?.length || 0,
+    old: getUsnTimeToFixResult?.data["60"]?.length || 0,
     pending: getUsnTimeToFixResult?.data.pending.length || 0,
-    recent: getUsnTimeToFixResult?.data["2"].length || 0,
-    twoWeeks: getUsnTimeToFixResult?.data["14"].length || 0,
+    recent: getUsnTimeToFixResult?.data["2"]?.length || 0,
+    twoWeeks: getUsnTimeToFixResult?.data["14"]?.length || 0,
   };
 
   const periodToDays = {

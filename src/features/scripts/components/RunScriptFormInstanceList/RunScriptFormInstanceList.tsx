@@ -17,7 +17,7 @@ const RunScriptFormInstanceList: FC<RunScriptFormInstanceListProps> = ({
   instances,
 }) => {
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 
   const columns = useMemo<Column<Instance>[]>(
     () => [

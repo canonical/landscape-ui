@@ -105,6 +105,8 @@ export default defineConfig(
         },
       ],
       "no-nested-ternary": "warn",
+      "@typescript-eslint/no-non-null-assertion": "warn",
+      "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],

@@ -2,38 +2,46 @@ import { pockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
-import EditPocketForm from "./EditPocketForm";
 import { DEFAULT_SNAPSHOT_URI } from "../../constants";
+import EditPocketForm from "./EditPocketForm";
 
+const mirrorPocket = pockets.find(
+  (p) => p.mode === "mirror" && !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI),
+);
+assert(mirrorPocket);
 const mirrorPocketProps: ComponentProps<typeof EditPocketForm> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket:
-    pockets.find(
-      (p) =>
-        p.mode === "mirror" && !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI),
-    ) ?? pockets[0],
+  pocket: mirrorPocket,
 };
 
+const uploadPocket = pockets.find((p) => p.mode === "upload");
+assert(uploadPocket);
 const uploadPocketProps: ComponentProps<typeof EditPocketForm> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket: pockets.find((p) => p.mode === "upload") ?? pockets[0],
+  pocket: uploadPocket,
 };
 
+const pullPocketWithFilterType = pockets.find(
+  (p) => p.mode === "pull" && p.filter_type,
+);
+assert(pullPocketWithFilterType);
 const pullPocketWithFilterTypeProps: ComponentProps<typeof EditPocketForm> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket: pockets.find((p) => p.mode === "pull" && p.filter_type) ?? pockets[0],
+  pocket: pullPocketWithFilterType,
 };
 
+const pullPocketWithoutFilterType = pockets.find(
+  (p) => p.mode === "pull" && p.filter_type === null,
+);
+assert(pullPocketWithoutFilterType);
 const pullPocketWithoutFilterTypeProps: ComponentProps<typeof EditPocketForm> =
   {
     distributionName: "Ubuntu",
     seriesName: "Focal Fossa",
-    pocket:
-      pockets.find((p) => p.mode === "pull" && p.filter_type === null) ??
-      pockets[0],
+    pocket: pullPocketWithoutFilterType,
   };
 
 describe("EditPocketForm", () => {

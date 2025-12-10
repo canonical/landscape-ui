@@ -12,7 +12,7 @@ import {
 import NewSeriesForm from "./NewSeriesForm";
 import { getStrippedUrl } from "./helpers";
 
-const distribution = distributions[0];
+const [distribution] = distributions;
 
 const props: ComponentProps<typeof NewSeriesForm> = {
   distribution: distribution,
@@ -64,7 +64,7 @@ describe("NewSeriesForm", () => {
     PRE_SELECTED_POCKETS.ubuntu.forEach((component) => {
       expect(
         screen.getByRole("checkbox", {
-          name: component[0].toUpperCase() + component.slice(1),
+          name: component.charAt(0).toUpperCase() + component.slice(1),
         }),
       ).toBeChecked();
     });
@@ -95,7 +95,7 @@ describe("NewSeriesForm", () => {
     PRE_SELECTED_POCKETS.ubuntu.forEach((component) => {
       expect(
         screen.getByRole("checkbox", {
-          name: component[0].toUpperCase() + component.slice(1),
+          name: component.charAt(0).toUpperCase() + component.slice(1),
         }),
       ).toBeChecked();
     });

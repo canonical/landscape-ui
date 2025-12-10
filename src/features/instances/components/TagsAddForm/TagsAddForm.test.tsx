@@ -1,6 +1,7 @@
 import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
+import type { Instance } from "@/types/Instance";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TagsAddForm from "./TagsAddForm";
@@ -57,7 +58,7 @@ describe("TagsAddForm", async () => {
   });
 
   it("should add selected tags to the single instance", async () => {
-    const selectedInstances = instances.slice(0, 1);
+    const selectedInstances = [instances[0]] as const satisfies Instance[];
 
     renderWithProviders(<TagsAddForm selected={selectedInstances} />);
     await expectLoadingState();

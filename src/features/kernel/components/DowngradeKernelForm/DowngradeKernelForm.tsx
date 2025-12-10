@@ -1,3 +1,7 @@
+import {
+  DeliveryBlock,
+  RandomizationBlock,
+} from "@/components/form/DeliveryScheduling";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
@@ -5,6 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import type { UrlParams } from "@/types/UrlParams";
+import { hasOneItem } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -24,10 +29,6 @@ import {
   SECURITY_WARNING,
 } from "./constants";
 import type { FormProps } from "./types";
-import {
-  RandomizationBlock,
-  DeliveryBlock,
-} from "@/components/form/DeliveryScheduling";
 
 interface DowngradeKernelFormProps {
   readonly currentKernelVersion: string;
@@ -66,10 +67,9 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
     randomize_delivery: false,
     deliver_delay_window: 0,
     deliver_after: "",
-    new_kernel_version_id:
-      downgradeKernelVersions.length === 1
-        ? downgradeKernelVersions[0].id.toString()
-        : "",
+    new_kernel_version_id: hasOneItem(downgradeKernelVersions)
+      ? downgradeKernelVersions[0].id.toString()
+      : "",
     reboot_after: false,
   };
 
@@ -129,7 +129,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
         <InfoGrid.Item
           label="Kernel version"
           value={
-            downgradeKernelVersions.length === 1 ? (
+            hasOneItem(downgradeKernelVersions) ? (
               <span>{downgradeKernelVersions[0].version_rounded}</span>
             ) : (
               <Select

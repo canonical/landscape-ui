@@ -4,6 +4,7 @@ import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSidePanel from "@/hooks/useSidePanel";
 import { accountsDefault, accountsForSubdomain } from "@/tests/mocks/accounts";
 import { renderWithProviders } from "@/tests/render";
+import { map } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
@@ -21,17 +22,17 @@ const subdomainAccounts: AccountsContextProps = {
   handleAccountSwitch: vi.fn(),
 };
 
-const defaultAccounts: AccountsContextProps = {
+const defaultAccounts = {
   currentAccount: accountsDefault.find(
     (account) => !!account.default,
   ) as Account,
   isOnSubdomain: false,
-  options: accountsDefault.map(({ name, title }) => ({
+  options: map(accountsDefault, ({ name, title }) => ({
     label: title,
     value: name,
   })),
   handleAccountSwitch: vi.fn(),
-};
+} satisfies AccountsContextProps;
 
 const closeSidePanel = vi.fn();
 

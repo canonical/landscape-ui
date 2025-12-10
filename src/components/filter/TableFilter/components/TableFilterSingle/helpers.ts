@@ -7,7 +7,7 @@ export const getToggleLabel = ({
   otherProps,
 }: {
   label: ReactNode;
-  options: GroupedOption[];
+  options: readonly GroupedOption[];
   otherProps: Pick<
     SingleFilterProps,
     "showSelectionOnToggleLabel" | "selectedItem"

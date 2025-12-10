@@ -1,4 +1,4 @@
-export const SUPPORTED_PROVIDERS: Record<string, Record<"icon", string>> = {
+export const SUPPORTED_PROVIDERS = {
   okta: {
     icon: "okta",
   },

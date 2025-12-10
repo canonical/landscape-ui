@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, vi } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import type { AuthStateResponse } from "@/features/auth";
-import { authUser } from "@/tests/mocks/auth";
 import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
 import type { EnvContextState } from "@/context/env";
+import type { AuthStateResponse } from "@/features/auth";
 import useEnv from "@/hooks/useEnv";
+import { authUser } from "@/tests/mocks/auth";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, vi } from "vitest";
 
 const redirectToExternalUrl = vi.fn();
 const navigate = vi.fn();
@@ -113,6 +113,8 @@ describe("UbuntuOneAuthPage", () => {
       vi.resetModules();
 
       const taskId = Number(id.substring(id.length - 1));
+
+      assert(responsesToMock[taskId]);
       mockTestParams(responsesToMock[taskId]);
 
       const { default: Component } = await import("./UbuntuOneAuthPage");

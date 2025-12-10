@@ -21,6 +21,7 @@ export default function useSecurityProfileFormBenchmarkStep<
 
   return {
     isValid: !formik.errors.benchmark && !formik.errors.mode,
+    isLoading: false,
     description:
       "Select a security profile benchmark, choose the profile mode, and optionally upload a tailoring file to customize the security profile.",
     content: (

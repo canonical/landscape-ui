@@ -2,7 +2,7 @@
 
 import type { WslProfile } from "@/features/wsl-profiles";
 
-export const wslProfiles: WslProfile[] = [
+export const wslProfiles = [
   {
     id: 2,
     name: "stock-ubuntu-2404",
@@ -49,4 +49,4 @@ export const wslProfiles: WslProfile[] = [
     },
     only_landscape_created: true,
   },
-];
+] as const satisfies WslProfile[];

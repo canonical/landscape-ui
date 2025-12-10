@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, vi } from "vitest";
+import { HOMEPAGE_PATH } from "@/constants";
+import { authUser } from "@/tests/mocks/auth";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithProviders } from "@/tests/render";
-import { authUser } from "@/tests/mocks/auth";
-import { HOMEPAGE_PATH } from "@/constants";
+import { beforeEach, describe, expect, vi } from "vitest";
 
 const user = {
   email: "john@example.com",
@@ -97,14 +97,14 @@ describe("LoginForm", () => {
   });
 
   describe("with additional test params", () => {
-    const testSearchParams: Record<string, string>[] = [
+    const testSearchParams = [
       { "redirect-to": "/dashboard" },
       {
         external: "true",
         "redirect-to": "https://example.com",
       },
       { external: "true" },
-    ];
+    ] as const;
 
     beforeEach(async ({ task: { id } }) => {
       vi.doUnmock("react-router");

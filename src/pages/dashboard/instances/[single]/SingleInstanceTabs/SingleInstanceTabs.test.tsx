@@ -30,6 +30,7 @@ const validateTabs = (instance: Instance, tabNames: string[]) => {
   const tabs = screen.getByRole("list");
 
   for (const index in [...tabs.childNodes]) {
+    assert(tabNames[index] !== undefined);
     expect(tabs.childNodes[index]).toHaveTextContent(tabNames[index]);
   }
 };

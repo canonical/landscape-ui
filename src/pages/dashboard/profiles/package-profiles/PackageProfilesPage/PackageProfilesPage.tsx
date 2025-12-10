@@ -85,9 +85,10 @@ const PackageProfilesPage: FC = () => {
         onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
         isOpen={!!sidePath.length}
         size={
-          ["add", "add-constraints", "edit-constraints", "view"].includes(
-            lastSidePathSegment,
-          )
+          lastSidePathSegment === "add" ||
+          lastSidePathSegment === "add-constraints" ||
+          lastSidePathSegment === "edit-constraints" ||
+          lastSidePathSegment === "view"
             ? "medium"
             : undefined
         }

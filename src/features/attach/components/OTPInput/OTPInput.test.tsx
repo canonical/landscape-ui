@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
-import OTPInput from "./OTPInput";
 import { OTP_LENGTH } from "../../constants";
+import OTPInput from "./OTPInput";
 
 describe("OTPInput", () => {
   const props: ComponentProps<typeof OTPInput> = {
@@ -43,6 +43,7 @@ describe("OTPInput", () => {
     const { rerender } = render(<OTPInput {...props} />);
     const inputs = screen.getAllByRole("textbox");
 
+    assert(inputs[0]);
     await userEvent.type(inputs[0], "1");
 
     const newValue = ["1", "", "", "", "", ""];
@@ -60,6 +61,7 @@ describe("OTPInput", () => {
 
     expect(props.onComplete).not.toHaveBeenCalled();
 
+    assert(inputs[5]);
     await userEvent.type(inputs[5], "6");
 
     expect(props.onComplete).toHaveBeenCalled();
@@ -69,6 +71,7 @@ describe("OTPInput", () => {
     render(<OTPInput {...props} value={["1", "2", "", "", "", ""]} />);
     const inputs = screen.getAllByRole("textbox");
 
+    assert(inputs[2]);
     inputs[2].focus();
     expect(inputs[2]).toHaveFocus();
 
@@ -84,6 +87,7 @@ describe("OTPInput", () => {
     render(<OTPInput {...props} />);
     const [firstInput] = screen.getAllByRole("textbox");
 
+    assert(firstInput);
     fireEvent.paste(firstInput, {
       clipboardData: { getData: () => pastedValue },
     });
@@ -99,6 +103,7 @@ describe("OTPInput", () => {
     const inputs = screen.getAllByRole("textbox");
     const [firstInput] = inputs;
 
+    assert(firstInput);
     fireEvent.paste(firstInput, {
       clipboardData: { getData: () => pastedValue },
     });
@@ -116,6 +121,7 @@ describe("OTPInput", () => {
     render(<OTPInput {...props} />);
     const [firstInput] = screen.getAllByRole("textbox");
 
+    assert(firstInput);
     fireEvent.paste(firstInput, {
       clipboardData: { getData: () => pastedValue },
     });
@@ -130,6 +136,7 @@ describe("OTPInput", () => {
     render(<OTPInput {...props} />);
     const [firstInput] = screen.getAllByRole("textbox");
 
+    assert(firstInput);
     fireEvent.paste(firstInput, {
       clipboardData: { getData: () => pastedValue },
     });

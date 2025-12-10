@@ -1,19 +1,19 @@
 /* eslint @typescript-eslint/prefer-readonly-parameter-types: 0 */
 
-import { renderWithProviders } from "@/tests/render";
-import TagsAddConfirmationModal from "./TagsAddConfirmationModal";
-import { screen } from "@testing-library/react";
-import { instances } from "@/tests/mocks/instance";
-import type { ComponentProps } from "react";
-import { profileChanges, tags } from "@/tests/mocks/tag";
-import { pluralize } from "@/utils/_helpers";
 import { expectLoadingState } from "@/tests/helpers";
+import { instances } from "@/tests/mocks/instance";
+import { profileChanges, tags } from "@/tests/mocks/tag";
+import { renderWithProviders } from "@/tests/render";
+import { pluralize } from "@/utils/_helpers";
+import { screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
+import TagsAddConfirmationModal from "./TagsAddConfirmationModal";
 
-const props: ComponentProps<typeof TagsAddConfirmationModal> = {
-  instances: instances.slice(0, 2),
+const props = {
+  instances: [instances[0], instances[1]] as const,
   tags: tags,
   onConfirm: vi.fn(),
-};
+} satisfies ComponentProps<typeof TagsAddConfirmationModal>;
 
 describe("TagsAddConfirmationModal", () => {
   beforeEach(() => {

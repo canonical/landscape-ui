@@ -74,12 +74,24 @@ export const handleParams = ({
   return paramsToPass;
 };
 
+export const hasOneItem = <T>(array: T[]): array is [T] => {
+  return array.length === 1;
+};
+
 export const pluralize = (
   count: number,
   singularForm: string,
   pluralForm?: string,
 ) => {
   return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
+};
+
+export const pluralizeArray = <T>(
+  items: T[],
+  getSingularForm: (item: T) => string,
+  pluralForm: string,
+) => {
+  return hasOneItem(items) ? getSingularForm(items[0]) : pluralForm;
 };
 
 export const getTitleByName = (
@@ -97,4 +109,18 @@ export const getTitleByName = (
   }
 
   return name;
+};
+
+export const map = <TArray extends readonly unknown[], TResult>(
+  items: TArray,
+  toItem: (item: TArray[number]) => TResult,
+) => {
+  return items.map(toItem) as { [K in keyof TArray]: TResult };
+};
+
+export const hasProperty = <T extends object>(
+  obj: T,
+  prop: PropertyKey,
+): prop is keyof T => {
+  return prop in obj;
 };

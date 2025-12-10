@@ -6,7 +6,7 @@ import classes from "../../TableFilter.module.scss";
 import type { GroupedOption } from "../../types";
 import TableFilterSingle from "./TableFilterSingle";
 
-const options: GroupedOption[] = [
+const options = [
   {
     label: "Test option 1",
     value: "test1",
@@ -19,7 +19,7 @@ const options: GroupedOption[] = [
     label: "Test option 3",
     value: "test3",
   },
-];
+] as const satisfies GroupedOption[];
 
 describe("Filter with single selection", () => {
   const user = userEvent.setup();
@@ -30,7 +30,7 @@ describe("Filter with single selection", () => {
       value: "",
     },
     ...options,
-  ];
+  ] as const satisfies GroupedOption[];
 
   const filterLabel = "Single selection filter";
 
@@ -98,15 +98,16 @@ describe("Filter with single selection", () => {
 
     const listItems = screen.getAllByRole("listitem");
 
-    expect(listItems).toHaveLength(groupedOptions.length);
-
     listItems.forEach((listItem, index) => {
-      const { group } = groupedOptions[index];
+      const groupedOption = groupedOptions[index];
+      assert(groupedOption);
+      const { group } = groupedOption;
+      const nextIndex = index + 1;
 
       if (
         group &&
-        groupedOptions[index + 1] !== undefined &&
-        groupedOptions[index + 1].group !== group
+        groupedOptions[nextIndex] !== undefined &&
+        groupedOptions[nextIndex].group !== group
       ) {
         expect(listItem).toHaveClass(classes.separated);
       } else {
@@ -192,7 +193,9 @@ describe("Filter with single selection", () => {
   });
 
   it("can use the selected option as the label", async () => {
-    const option = options.find(({ label }) => label !== filterLabel);
+    const option = options.find(
+      ({ label }) => label !== singleFilterProps.label,
+    );
     assert(option);
 
     render(

@@ -1,6 +1,6 @@
 import type { Process } from "@/features/processes";
 
-export const processes: Process[] = [
+export const processes = [
   {
     id: 99,
     computer_id: 1,
@@ -177,4 +177,4 @@ export const processes: Process[] = [
     vm_size: 6220,
     cpu_utilisation: 0.14,
   },
-];
+] as const satisfies Process[];

@@ -1,6 +1,6 @@
 import type { RepositoryProfile } from "@/features/repository-profiles";
 
-export const repositoryProfiles: RepositoryProfile[] = [
+export const repositoryProfiles = [
   {
     id: 1,
     name: "repo-profile-1",
@@ -145,4 +145,4 @@ export const repositoryProfiles: RepositoryProfile[] = [
     tags: ["web", "prod"],
     pending_count: 0,
   },
-];
+] as const satisfies RepositoryProfile[];

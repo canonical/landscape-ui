@@ -8,8 +8,8 @@ import {
 } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse, isAction } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { generatePaginatedResponse, isAction } from "./_helpers";
 
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
 
@@ -105,13 +105,16 @@ export default [
     },
   ),
 
-  http.get<never, never, string[]>(API_URL_OLD, async ({ request }) => {
-    if (!isAction(request, "GetActivityTypes")) {
-      return;
-    }
+  http.get<never, never, readonly string[]>(
+    API_URL_OLD,
+    async ({ request }) => {
+      if (!isAction(request, "GetActivityTypes")) {
+        return;
+      }
 
-    return HttpResponse.json(activityTypes);
-  }),
+      return HttpResponse.json(activityTypes);
+    },
+  ),
 
   http.get<never, never, number[]>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "CancelActivities")) {

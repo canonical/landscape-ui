@@ -9,7 +9,7 @@ import type {
   InstanceChild,
   WindowsInstanceWithoutRelation,
 } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeArray } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -70,7 +70,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       );
 
       notify.success({
-        title: `You have successfully queued ${pluralize(selectedWslInstances.length, `${selectedWslInstances[0].name}`, `${selectedWslInstances.length} instances`)} to be installed.`,
+        title: `You have successfully queued ${pluralizeArray(selectedWslInstances, (instance) => `${instance.name}`, `${selectedWslInstances.length} instances`)} to be installed.`,
         message: "An activity has been queued to install it.",
       });
     } catch (error) {

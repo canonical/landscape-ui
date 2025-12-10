@@ -1,9 +1,9 @@
+import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import AttachTokenForm from "./AttachTokenForm";
-import { instances } from "@/tests/mocks/instance";
 import { UBUNTU_PRO_DASHBOARD_URL } from "../TokenFormBase";
+import AttachTokenForm from "./AttachTokenForm";
 
 describe("AttachTokenForm", () => {
   it("renders with instances without tokens", () => {
@@ -54,6 +54,7 @@ describe("AttachTokenForm", () => {
         instance.ubuntu_pro_info?.result === "success" &&
         instance.ubuntu_pro_info.attached,
     );
+    assert(withToken);
     const withoutTokens = instances
       .filter(
         (instance) =>

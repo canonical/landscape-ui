@@ -1,9 +1,9 @@
+import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import { instances } from "@/tests/mocks/instance";
 import UbuntuProEmptyState from "./UbuntuProEmptyState";
 
 describe("UbuntuProEmptyState", () => {
@@ -12,6 +12,7 @@ describe("UbuntuProEmptyState", () => {
       instance.ubuntu_pro_info?.result === "success" &&
       !instance.ubuntu_pro_info.attached,
   );
+  assert(instanceWithoutToken);
 
   const props: ComponentProps<typeof UbuntuProEmptyState> = {
     instance: instanceWithoutToken,
@@ -78,6 +79,7 @@ describe("UbuntuProEmptyState", () => {
         instance.ubuntu_pro_info?.result === "success" &&
         !instance.ubuntu_pro_info.attached,
     );
+    assert(customInstance);
 
     renderWithProviders(<UbuntuProEmptyState instance={customInstance} />);
 

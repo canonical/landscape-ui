@@ -18,7 +18,7 @@ export function useExpandableRow<T extends HTMLElement>() {
       current:
         expandedRowIndex == null
           ? null
-          : tableRowsRef.current[expandedRowIndex],
+          : tableRowsRef.current[expandedRowIndex]!,
     },
     () => {
       setExpandedRowIndex(null);

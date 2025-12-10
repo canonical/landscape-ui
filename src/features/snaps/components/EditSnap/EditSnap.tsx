@@ -1,8 +1,13 @@
+import {
+  DeliveryBlock,
+  RandomizationBlock,
+} from "@/components/form/DeliveryScheduling";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
@@ -16,11 +21,6 @@ import type { InstalledSnap } from "../../types";
 import classes from "./EditSnap.module.scss";
 import { getEditSnapValidationSchema, getSnapMessage } from "./helpers";
 import type { SnapFormProps } from "./types";
-import {
-  DeliveryBlock,
-  RandomizationBlock,
-} from "@/components/form/DeliveryScheduling";
-import { getFormikError } from "@/utils/formikErrors";
 
 interface EditSnapProps {
   readonly type: EditSnapType;
@@ -39,7 +39,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const { data: snapInfoData } = getAvailableSnapInfo(
     {
       instance_id: instanceId,
-      name: installedSnaps[0].snap.name,
+      name: installedSnaps[0]!.snap.name,
     },
     {
       enabled: type === EditSnapType.Switch,

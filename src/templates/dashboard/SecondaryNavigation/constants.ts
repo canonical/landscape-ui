@@ -1,7 +1,7 @@
 import { ROUTES } from "@/libs/routes";
 import type { MenuItem } from "../Navigation/types";
 
-export const ACCOUNT_SETTINGS: MenuItem = {
+export const ACCOUNT_SETTINGS = {
   label: "Account settings",
   path: ROUTES.account.root(),
   items: [
@@ -17,5 +17,5 @@ export const ACCOUNT_SETTINGS: MenuItem = {
       label: "API credentials",
       path: ROUTES.account.apiCredentials(),
     },
-  ],
-};
+  ] as const,
+} satisfies MenuItem;

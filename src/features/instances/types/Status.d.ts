@@ -1,4 +1,7 @@
-type Icon = { gray: string; color?: string } | { gray?: string; color: string };
+type Icon =
+  | { gray: string; color: string }
+  | { gray: string; color: undefined }
+  | { gray: undefined; color: string };
 
 export interface Status {
   icon: Icon;
@@ -6,5 +9,5 @@ export interface Status {
   alertType: string;
   label: string;
   query: string;
-  alternateLabel?: string;
+  alternateLabel: string | undefined;
 }

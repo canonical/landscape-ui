@@ -27,12 +27,14 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ROUTES } from "@/libs/routes";
 import type {
   Instance,
   InstanceChild,
   WindowsInstance,
   WslInstance,
 } from "@/types/Instance";
+import { hasOneItem } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Button,
@@ -55,7 +57,6 @@ import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceKeyForRemount } from "./helpers";
 import classes from "./InfoPanel.module.scss";
 import type { ModalConfirmationFormProps } from "./types";
-import { ROUTES } from "@/libs/routes";
 
 const EditInstance = lazy(
   async () =>
@@ -416,8 +417,9 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             <InfoGrid.Item
               label="Profiles"
               value={
-                !instance.profiles?.length ? null : instance.profiles.length ===
-                  1 ? (
+                !instance.profiles?.length ? null : hasOneItem(
+                    instance.profiles,
+                  ) ? (
                   <ProfileLink profile={instance.profiles[0]} />
                 ) : (
                   <Button

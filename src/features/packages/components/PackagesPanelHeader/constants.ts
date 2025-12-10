@@ -1,6 +1,6 @@
 import type { SelectOption } from "@/types/SelectOption";
 
-export const STATUS_OPTIONS: SelectOption[] = [
+export const STATUS_OPTIONS = [
   {
     label: "All",
     value: "",
@@ -17,4 +17,4 @@ export const STATUS_OPTIONS: SelectOption[] = [
     label: "Held",
     value: "held",
   },
-];
+] as const satisfies SelectOption[];

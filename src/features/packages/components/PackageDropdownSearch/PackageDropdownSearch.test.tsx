@@ -1,11 +1,11 @@
+import { ROUTES } from "@/libs/routes";
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
-import type { ComponentProps } from "react";
-import { ROUTES } from "@/libs/routes";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
@@ -43,6 +43,7 @@ describe("PackageDropdownSearch", () => {
   describe("Search functionality", () => {
     it("shows matching packages after searching", async () => {
       const searchBox = screen.getByRole("searchbox");
+      assert(availablePackages[0]);
       await user.type(searchBox, availablePackages[0].name);
 
       const matchingPackage = await screen.findByText(
@@ -64,6 +65,7 @@ describe("PackageDropdownSearch", () => {
 
   describe("Package selection", () => {
     it("adds package to selected items when clicked", async () => {
+      assert(availablePackages[0]);
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, availablePackages[0].name);
 
@@ -74,6 +76,7 @@ describe("PackageDropdownSearch", () => {
     });
 
     it("clears search box after selecting a package", async () => {
+      assert(availablePackages[0]);
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, availablePackages[0].name);
 
@@ -102,6 +105,7 @@ describe("PackageDropdownSearch", () => {
   describe("Selected packages display", () => {
     it("displays selected packages in the result list", () => {
       const [selectedPackage] = availablePackages;
+      assert(selectedPackage);
       renderWithProviders(
         <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
         undefined,
@@ -117,6 +121,7 @@ describe("PackageDropdownSearch", () => {
 
     it("removes package when delete button is clicked", async () => {
       const [selectedPackage] = availablePackages;
+      assert(selectedPackage);
       renderWithProviders(
         <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
         undefined,

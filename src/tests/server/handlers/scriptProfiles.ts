@@ -50,35 +50,32 @@ export default [
     );
   }),
 
-  http.get(`${API_URL}script-profiles/:profileId`, ({ params }) => {
-    const endpointStatus = getEndpointStatus();
+  http.get<{ profileId: string }>(
+    `${API_URL}script-profiles/:profileId`,
+    ({ params }) => {
+      const endpointStatus = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes("script-profiles/:profileId"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (
+        !endpointStatus.path ||
+        (endpointStatus.path &&
+          endpointStatus.path.includes("script-profiles/:profileId"))
+      ) {
+        if (endpointStatus.status === "error") {
+          throw new HttpResponse(null, { status: 500 });
+        }
+
+        if (endpointStatus.status === "empty") {
+          return HttpResponse.json(undefined);
+        }
       }
 
-      if (endpointStatus.status === "empty") {
-        return HttpResponse.json(undefined);
-      }
-    }
-
-    return HttpResponse.json(
-      scriptProfiles.find(
-        (scriptProfile) =>
-          scriptProfile.id ===
-          parseInt(
-            typeof params.profileId === "string"
-              ? params.profileId
-              : params.profileId[0],
-          ),
-      ),
-    );
-  }),
+      return HttpResponse.json(
+        scriptProfiles.find(
+          (scriptProfile) => scriptProfile.id === parseInt(params.profileId),
+        ),
+      );
+    },
+  ),
 
   http.get(`${API_URL}script-profiles/:profileId/activities`, ({ request }) => {
     const { searchParams } = new URL(request.url);

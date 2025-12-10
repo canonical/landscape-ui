@@ -1,8 +1,8 @@
+import { users } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
-import EditUserForm from "./EditUserForm";
 import userEvent from "@testing-library/user-event";
-import { users } from "@/tests/mocks/user";
+import EditUserForm from "./EditUserForm";
 
 const props = {
   instanceId: 1,
@@ -52,6 +52,7 @@ describe("EditUserForm", () => {
         props.user.username,
       );
       [username] = inputs;
+      assert(username !== undefined);
     } else {
       username = await within(form).findByDisplayValue(props.user.username);
     }

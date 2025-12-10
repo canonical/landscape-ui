@@ -3,6 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import type { Activity } from "../../types";
 import ActivitiesActions from "./ActivitiesActions";
 
 describe("ActivitiesActions", () => {
@@ -25,7 +26,7 @@ describe("ActivitiesActions", () => {
         revertable: true,
       },
     },
-  ];
+  ] as const satisfies Activity[];
 
   describe("Approve button", () => {
     it("should be disabled when no activities are selected", () => {

@@ -19,6 +19,7 @@ export default function useSecurityProfileFormScheduleStep<
       !formik.errors.end_date &&
       !formik.errors.deliver_delay_window &&
       !formik.errors.restart_deliver_delay,
+    isLoading: false,
     description:
       "Add a schedule for the security profile. Select a specific date or a recurring schedule for continuous audit generation.",
     content: (

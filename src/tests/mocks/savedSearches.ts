@@ -1,6 +1,6 @@
 import type { SavedSearch } from "@/features/saved-searches";
 
-export const savedSearches: SavedSearch[] = [
+export const savedSearches = [
   {
     name: "package-upgrades",
     title: "Computers with upgrades",
@@ -52,6 +52,6 @@ export const savedSearches: SavedSearch[] = [
     title: "Machines Needing Reboot",
     search: "reboot-required:true",
   },
-];
+] as const satisfies SavedSearch[];
 
 export const [savedSearch] = savedSearches;

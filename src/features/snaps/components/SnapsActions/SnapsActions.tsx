@@ -3,7 +3,6 @@ import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import { Suspense } from "react";
 import {
@@ -64,7 +63,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
           type="button"
           onClick={handleInstallSnap}
           hasIcon
-          className={classNames("u-no-margin--bottom")}
+          className="u-no-margin--bottom"
         >
           <Icon name={ICONS.plus} />
           <span>Install</span>

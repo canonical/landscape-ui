@@ -1,10 +1,10 @@
-import type { ComponentProps } from "react";
-import { describe, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { instances } from "@/tests/mocks/instance";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { describe, expect, vi } from "vitest";
 import UsnList from "./UsnList";
 
 const mockedUsns = usns.slice(0, 5);
@@ -75,7 +75,9 @@ describe("UsnList", () => {
   it("should expand and collapse packages list", async () => {
     renderWithProviders(<UsnList {...expandableProps} />);
 
-    await userEvent.click(screen.getAllByText(/show packages/i)[0]);
+    const [button] = screen.getAllByText(/show packages/i);
+    assert(button);
+    await userEvent.click(button);
 
     expect(screen.getByText(/hide packages/i)).toBeInTheDocument();
   });

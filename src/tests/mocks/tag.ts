@@ -34,7 +34,7 @@ export const tags = [
   // "webfarm",
   // "windows",
   // "wsl",
-];
+] as const satisfies string[];
 
 export const profileChanges: ProfileChange[] = [
   {

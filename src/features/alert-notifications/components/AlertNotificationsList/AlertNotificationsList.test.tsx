@@ -1,12 +1,12 @@
+import { ALERT_STATUSES } from "@/features/instances";
+import { ROUTES } from "@/libs/routes";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
+import { pluralize } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import AlertNotificationsList from "./AlertNotificationsList";
-import { pluralize } from "@/utils/_helpers";
-import { ALERT_STATUSES } from "@/features/instances";
-import { ROUTES } from "@/libs/routes";
 import { getRouteParams } from "./helpers";
 
 const alertsWithoutPending = alertsSummary.filter(
@@ -36,10 +36,8 @@ describe("AlertNotificationsList", () => {
     const listItems = screen.getAllByRole("listitem");
 
     listItems.forEach((item) => {
-      const match = alertsWithoutPending.find((alert) =>
-        alert.alert_type !== "PendingComputersAlert"
-          ? alert.summary === item.textContent
-          : null,
+      const match = alertsWithoutPending.find(
+        (alert) => alert.summary === item.textContent,
       );
 
       if (match) {

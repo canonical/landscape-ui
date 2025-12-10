@@ -49,6 +49,7 @@ describe("PackageList", () => {
     );
 
     const [firstPackage] = packagesWithUpgrade;
+    assert(firstPackage);
     const packageButton = screen.getByRole("button", {
       name: firstPackage.name,
     });

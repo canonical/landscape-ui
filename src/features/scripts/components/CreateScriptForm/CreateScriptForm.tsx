@@ -71,8 +71,12 @@ const CreateScript: FC = () => {
   const handleInputChange = async ({
     target: { files },
   }: React.ChangeEvent<HTMLInputElement>) => {
-    if (!files) return;
-    const [file] = files;
+    const file = files?.[0];
+
+    if (!file) {
+      return;
+    }
+
     const contentsPromise = formik.setFieldValue("code", await file.text());
     if (formik.values.title) {
       await contentsPromise;

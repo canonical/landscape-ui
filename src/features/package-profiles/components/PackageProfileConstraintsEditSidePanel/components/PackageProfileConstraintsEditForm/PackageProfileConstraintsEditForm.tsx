@@ -3,6 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import type { FormikHelpers } from "formik";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -17,7 +18,6 @@ import PackageProfileConstraintsEditFormActions from "../../../PackageProfileCon
 import PackageProfileConstraintsEditFormTable from "../../../PackageProfileConstraintsEditFormTable";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./PackageProfileConstraintsEditForm.module.scss";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 interface PackageProfileConstraintsEditFormProps {
   readonly profile: PackageProfile;
@@ -28,7 +28,7 @@ const PackageProfileConstraintsEditForm: FC<
 > = ({ profile }) => {
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
   const [constraintType, setConstraintType] = useState<
     PackageProfileConstraintType | ""

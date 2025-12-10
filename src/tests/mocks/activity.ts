@@ -1,6 +1,6 @@
 import type { Activity } from "@/features/activities";
 
-export const activities: Activity[] = [
+export const activities = [
   {
     id: 1010,
     actions: {
@@ -249,9 +249,9 @@ export const activities: Activity[] = [
     activity_status: "unapproved",
     children: [],
   },
-];
+] as const satisfies Activity[];
 
-export const activityTypes: string[] = [
+export const activityTypes = [
   "ActivityGroup",
   "AddGroupMemberRequest",
   "ChangePackageProfilesRequest",
@@ -298,6 +298,6 @@ export const activityTypes: string[] = [
   "UnlockUserRequest",
   "UpgradeAllPackagesRequest",
   "UpgradeKernelPackageRequest",
-];
+] as const;
 
 export const INVALID_ACTIVITY_SEARCH_QUERY = "invalid_search_query";

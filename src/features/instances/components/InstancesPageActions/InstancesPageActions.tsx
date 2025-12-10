@@ -2,11 +2,13 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
+import { DetachTokenModal } from "@/features/ubuntupro";
+import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
@@ -14,13 +16,11 @@ import {
   Icon,
 } from "@canonical/react-components";
 import { lazy, memo, Suspense, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
-import { createPortal } from "react-dom";
-import { DetachTokenModal } from "@/features/ubuntupro";
-import useAuth from "@/hooks/useAuth";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -277,7 +277,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <Icon name="restart" />
             <span>Restart</span>
           </Button>,
-          proServicesLinks.length === 1 ? (
+          hasOneItem(proServicesLinks) ? (
             <Button
               key="pro-services"
               type="button"

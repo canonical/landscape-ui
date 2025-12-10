@@ -14,7 +14,6 @@ import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import ContractExpiryFilter from "../ContractExpiryFilter";
-import OsFilter from "../OsFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import WslFilter from "../WslFilter";
@@ -91,7 +90,12 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               label="Status"
               options={statusOptions}
             />,
-            <OsFilter key="os" label="OS" options={osOptions} />,
+            <PageParamFilter
+              key="os"
+              label="OS"
+              options={osOptions}
+              pageParamKey="os"
+            />,
             <AvailabilityZoneFilter
               key="availability-zone"
               label="Availability zones"

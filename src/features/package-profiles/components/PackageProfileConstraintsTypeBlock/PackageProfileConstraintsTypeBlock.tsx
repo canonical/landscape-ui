@@ -1,6 +1,7 @@
 import FileInput from "@/components/form/FileInput";
 import { useGetInstances } from "@/features/instances";
 import type { SelectOption } from "@/types/SelectOption";
+import { getFormikError } from "@/utils/formikErrors";
 import { Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
@@ -8,7 +9,6 @@ import type { AddFormProps } from "../../types";
 import PackageProfileConstraintsBlock from "../PackageProfileConstraintsBlock";
 import { CONSTRAINTS_TYPE_OPTIONS } from "./constants";
 import classes from "./PackageProfileConstraintsTypeBlock.module.scss";
-import { getFormikError } from "@/utils/formikErrors";
 
 interface PackageProfileConstraintsTypeBlockProps {
   readonly formik: FormikContextType<AddFormProps>;
@@ -28,6 +28,10 @@ const PackageProfileConstraintsTypeBlock: FC<
   instanceOptions.unshift({ label: "Select instance", value: "" });
 
   const handleFileUpload = async (files: File[]) => {
+    if (!files[0]) {
+      return;
+    }
+
     await formik.setFieldValue("csvFile", files[0]);
     const material = await files[0].text();
     await formik.setFieldValue("material", material);

@@ -9,9 +9,10 @@ const handleClose = vi.fn();
 
 describe("AccessGroupDeleteModal", () => {
   it("should render with required text input and default warning", async () => {
-    const [accessGroup] = accessGroups.filter(
+    const accessGroup = accessGroups.find(
       (value) => value.name == "empty-access-group",
     );
+    assert(accessGroup);
 
     renderWithProviders(
       <AccessGroupDeleteModal
@@ -62,9 +63,10 @@ describe("AccessGroupDeleteModal", () => {
   });
 
   it("should render a specific warning for a single affected instance", async () => {
-    const [accessGroup] = accessGroups.filter(
+    const accessGroup = accessGroups.find(
       (value) => value.name == "singular-access-group",
     );
+    assert(accessGroup);
 
     renderWithProviders(
       <AccessGroupDeleteModal

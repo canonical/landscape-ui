@@ -1,8 +1,8 @@
+import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
+import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
-import type { PermissionOption } from "@/pages/dashboard/settings/roles/types";
 import type { CellProps, Column } from "react-table";
-import { CheckboxInput, ModularTable } from "@canonical/react-components";
 import classes from "./PermissionBlock.module.scss";
 
 interface PermissionBlockProps {
@@ -39,8 +39,8 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
   const isOptionDisabled = (option: PermissionOption) => {
     return (
       option.values.view === "" ||
-      permissions.includes(
-        options.filter(({ label }) => label === option.label)[0]?.values.manage,
+      (permissions as unknown[]).includes(
+        options.find(({ label }) => label === option.label)?.values.manage,
       )
     );
   };

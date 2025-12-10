@@ -1,15 +1,15 @@
-import { describe, it, vi, expect, beforeEach } from "vitest";
+import { accessGroups } from "@/tests/mocks/accessGroup";
+import { renderWithProviders } from "@/tests/render";
+import { map } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import AccessGroupFilter from "./AccessGroupFilter";
-import { accessGroups } from "@/tests/mocks/accessGroup";
-import type { SelectOption } from "@/types/SelectOption";
-import { renderWithProviders } from "@/tests/render";
 import type { ComponentProps } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import AccessGroupFilter from "./AccessGroupFilter";
 
-const options: SelectOption[] = accessGroups.map((group) => ({
-  label: group.title,
-  value: group.name,
+const options = map(accessGroups, (accessGroup) => ({
+  label: accessGroup.title,
+  value: accessGroup.name,
 }));
 const label = "Access Groups";
 

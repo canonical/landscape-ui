@@ -1,7 +1,8 @@
 export const parseSchedule = (schedule: string) => {
   const map = new Map(
     schedule.split(";").map((part) => {
-      const [key, value] = part.split("=");
+      const [key, value] = part.split("=", 2) as [string, string | undefined];
+
       return [key.toUpperCase(), value];
     }),
   );

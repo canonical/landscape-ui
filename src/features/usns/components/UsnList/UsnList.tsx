@@ -1,19 +1,21 @@
+import ExpandableTable from "@/components/layout/ExpandableTable";
+import LoadingState from "@/components/layout/LoadingState";
+import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import SelectAllButton from "@/components/layout/SelectAllButton";
+import { TablePagination } from "@/components/layout/TablePagination";
+import TruncatedCell from "@/components/layout/TruncatedCell";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import type { ExpandedCell } from "@/types/ExpandedCell";
+import type { Instance } from "@/types/Instance";
+import type { Usn } from "@/types/Usn";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment/moment";
 import type { FC } from "react";
 import { useMemo, useRef, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
-import { Button, CheckboxInput } from "@canonical/react-components";
-import ExpandableTable from "@/components/layout/ExpandableTable";
-import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
-import SelectAllButton from "@/components/layout/SelectAllButton";
-import { TablePagination } from "@/components/layout/TablePagination";
-import TruncatedCell from "@/components/layout/TruncatedCell";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import type { Instance } from "@/types/Instance";
-import type { Usn } from "@/types/Usn";
 import UsnPackagesContainer from "../UsnPackagesContainer";
 import {
   getTableRows,
@@ -21,9 +23,7 @@ import {
   handleCellProps,
   handleRowProps,
 } from "./helpers";
-import type { ExpandedCell } from "@/types/ExpandedCell";
 import classes from "./UsnList.module.scss";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 
 type UsnListProps = {
   readonly instances: Instance[];
@@ -63,7 +63,7 @@ const UsnList: FC<UsnListProps> = ({
     {
       current:
         expandedCell?.column === "cves"
-          ? tableRowsRef.current[expandedCell.row]
+          ? tableRowsRef.current[expandedCell.row]!
           : null,
     },
     () => {
@@ -192,7 +192,7 @@ const UsnList: FC<UsnListProps> = ({
                       ? "packages"
                       : "instances"
                   }
-                  usn={securityIssues[expandedCell.row].usn}
+                  usn={securityIssues[expandedCell.row]!.usn}
                 />
               );
             }

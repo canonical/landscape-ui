@@ -1,10 +1,10 @@
+import { setScreenSize } from "@/tests/helpers";
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PackageActions from "./PackageActions";
-import { setScreenSize } from "@/tests/helpers";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
@@ -18,6 +18,7 @@ const packageWithoutUpgrade = instancePackages.find(
 const heldPackage = instancePackages.find((pkg) => pkg.status === "held");
 const [installedPackage] = instancePackages;
 
+assert(installedPackage);
 assert(packageWithUpgrade);
 assert(packageWithoutUpgrade);
 assert(heldPackage);

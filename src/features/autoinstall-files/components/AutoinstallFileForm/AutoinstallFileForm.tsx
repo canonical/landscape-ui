@@ -15,6 +15,11 @@ import {
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useRef, useState } from "react";
+import { useBoolean } from "usehooks-ts";
+import {
+  useValidateAutoinstallFile,
+  type AddAutoinstallFileParams,
+} from "../../api";
 import {
   AUTOINSTALL_FILE_EXTENSION,
   AUTOINSTALL_FILE_LANGUAGE,
@@ -23,17 +28,12 @@ import {
 import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
-import type { FormikProps } from "./types";
-import {
-  useValidateAutoinstallFile,
-  type AddAutoinstallFileParams,
-} from "../../api";
 import {
   areTextsIdentical,
   isAutoinstallOverrideWarning,
   parseFields,
 } from "./helpers";
-import { useBoolean } from "usehooks-ts";
+import type { FormikProps } from "./types";
 
 interface AutoinstallFileFormProps {
   readonly buttonText: "Add" | "Save changes";
@@ -122,10 +122,12 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
   const handleInputChange = async ({
     target: { files },
   }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
-    if (!files) {
+    const file = files?.[0];
+
+    if (!file) {
       return;
     }
-    const [file] = files;
+
     const contentsPromise = formik.setFieldValue("contents", await file.text());
 
     if (formik.values.filename) {

@@ -1,12 +1,12 @@
-import type { FC } from "react";
-import { useState } from "react";
-import { useParams } from "react-router";
 import LoadingState from "@/components/layout/LoadingState";
 import { useUsns } from "@/features/usns";
 import type { Instance } from "@/types/Instance";
+import type { UrlParams } from "@/types/UrlParams";
+import type { FC } from "react";
+import { useState } from "react";
+import { useParams } from "react-router";
 import UsnInstanceList from "../UsnInstanceList";
 import UsnPackageList from "../UsnPackageList";
-import type { UrlParams } from "@/types/UrlParams";
 
 interface UsnPackagesContainerProps {
   readonly instances: Instance[];
@@ -53,7 +53,7 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
       )}
       {!getAffectedPackagesQueryLoading && listType === "packages" && (
         <UsnPackageList
-          instanceTitle={instances[0].title}
+          instanceTitle={instances[0]!.title}
           limit={limit}
           onLimitChange={() => {
             setLimit((prevState) => prevState + 5);

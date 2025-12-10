@@ -35,7 +35,7 @@ describe("RunInstanceScriptForm", () => {
     await user.type(scriptInput, script.title);
 
     const options = await screen.findAllByRole("option");
-
+    assert(options[0]);
     await user.click(options[0]);
     expect(screen.getByText(script.title)).toBeInTheDocument();
   });

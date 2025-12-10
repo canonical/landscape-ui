@@ -1,11 +1,18 @@
-import type { PageParams } from "@/libs/pageParamsManager";
-import type { AlertSummary } from "../../types";
 import { ALERT_STATUSES, STATUS_FILTERS } from "@/features/instances";
+import type { PageParams } from "@/libs/pageParamsManager";
+import { hasProperty } from "@/utils/_helpers";
+import type { AlertSummary } from "../../types";
+
+export const getAlertStatus = (type: string) => {
+  if (hasProperty(ALERT_STATUSES, type)) {
+    return ALERT_STATUSES[type];
+  } else {
+    return ALERT_STATUSES.Unknown;
+  }
+};
 
 export const getRouteParams = (alert: AlertSummary): Partial<PageParams> => {
-  const alertStatus =
-    ALERT_STATUSES[alert.alert_type] || ALERT_STATUSES.Unknown;
-
+  const alertStatus = getAlertStatus(alert.alert_type);
   const isStatusFilter = alert.alert_type in STATUS_FILTERS;
   const isContractExpiryFilter =
     alert.alert_type === "UbuntuProContractExpirationAlert";

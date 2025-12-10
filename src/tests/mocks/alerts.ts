@@ -1,7 +1,7 @@
 import type { AlertSummary } from "@/features/alert-notifications";
 import type { Alert } from "@/features/alerts";
 
-export const alerts: Alert[] = [
+export const alerts = [
   {
     id: 11,
     alert_type: "ComputerDuplicateAlert",
@@ -124,9 +124,9 @@ export const alerts: Alert[] = [
     tags: [],
     label: "Ubuntu Pro Contract Expiration Alert",
   },
-];
+] as const satisfies Alert[];
 
-export const alertsSummary: AlertSummary[] = [
+export const alertsSummary = [
   {
     id: 1,
     alert_type: "ComputerDuplicateAlert",
@@ -201,4 +201,4 @@ export const alertsSummary: AlertSummary[] = [
       "2 Ubuntu Pro contracts are nearing expiration: ABC123 (30 days), DEF456 (7 days)",
     activation_time: "2025-10-16 12:00:00.000000",
   },
-];
+] as const satisfies AlertSummary[];

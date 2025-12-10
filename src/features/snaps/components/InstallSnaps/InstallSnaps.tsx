@@ -3,13 +3,13 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
+import { pluralizeArray } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { useSnaps } from "../../hooks";
 import type { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";
-import { pluralize } from "@/utils/_helpers";
 
 const InstallSnaps: FC = () => {
   const [selectedSnaps, setSelectedSnaps] = useState<SelectedSnaps[]>([]);
@@ -38,7 +38,7 @@ const InstallSnaps: FC = () => {
       });
       closeSidePanel();
       notify.success({
-        message: `You queued ${pluralize(selectedSnaps.length, `snap ${selectedSnaps[0].name}`, `${selectedSnaps.length} snaps`)} to be installed.`,
+        message: `You queued ${pluralizeArray(selectedSnaps, (snap) => `snap ${snap.name}`, `${selectedSnaps.length} snaps`)} to be installed.`,
       });
       setSelectedSnaps([]);
     } catch (error) {

@@ -1,6 +1,6 @@
 import type { EventLog } from "@/features/events-log";
 
-export const eventsLog: EventLog[] = [
+export const eventsLog = [
   {
     id: 3105,
     person_id: 1,
@@ -202,4 +202,4 @@ export const eventsLog: EventLog[] = [
     creation_time: "2024-06-10T22:27:26Z",
     entity_type: "Computer",
   },
-];
+] as const satisfies EventLog[];

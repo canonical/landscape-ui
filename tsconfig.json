@@ -18,7 +18,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": { "@/*": ["src/*"] },
-    "types": ["vitest/globals", "vitest/jsdom"]
+    "types": ["vitest/globals", "vitest/jsdom"],
+    "noUncheckedIndexedAccess": true
   },
   "include": ["src", "playwright.config.ts", "vitest.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]

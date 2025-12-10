@@ -26,7 +26,7 @@ describe("TableFilterChips", () => {
     const chipTexts = [
       screen.getByText("Availability z.: zone1"),
       screen.getByText("Availability z.: zone2"),
-    ];
+    ] as const;
 
     expect(chipTexts[0]).toBeInTheDocument();
     expect(chipTexts[1]).toBeInTheDocument();
@@ -48,6 +48,9 @@ describe("TableFilterChips", () => {
 describe("parseSearchQuery", () => {
   it("returns a list of query parts", () => {
     const queryParts = parseSearchQuery("abc,def");
+
+    assert(queryParts[0]);
+    assert(queryParts[1]);
 
     expect(queryParts[0].label).toBe("'abc'");
     expect(queryParts[0].value).toBe("abc");

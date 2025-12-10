@@ -5,16 +5,20 @@ import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import TableFilterChipsBase from "./TableFilterChipsBase";
 
+type Filter = ComponentProps<typeof TableFilterChipsBase>["filters"][number];
+
 describe("TableFilterChipsBase", () => {
   const user = userEvent.setup();
 
-  const props: ComponentProps<typeof TableFilterChipsBase> = {
+  const singleFilter: Filter = {
+    label: "Label 1",
+    item: "Item 1",
+    clear: vi.fn(),
+  };
+
+  const props = {
     filters: [
-      {
-        label: "Label 1",
-        item: "Item 1",
-        clear: vi.fn(),
-      },
+      singleFilter,
       {
         label: "Label 2",
         multiple: true,
@@ -32,7 +36,7 @@ describe("TableFilterChipsBase", () => {
         remove: vi.fn(),
       },
     ],
-  };
+  } satisfies ComponentProps<typeof TableFilterChipsBase>;
 
   it("renders nothing", () => {
     renderWithProviders(<TableFilterChipsBase filters={[]} />);
@@ -41,12 +45,12 @@ describe("TableFilterChipsBase", () => {
   });
 
   it("renders one chip", () => {
-    renderWithProviders(<TableFilterChipsBase filters={[props.filters[0]]} />);
+    renderWithProviders(<TableFilterChipsBase filters={[singleFilter]} />);
 
-    assert(!props.filters[0].multiple);
+    assert(!singleFilter.multiple);
 
     expect(
-      screen.getByText(`${props.filters[0].label}: ${props.filters[0].item}`),
+      screen.getByText(`${singleFilter.label}: ${singleFilter.item}`),
     ).toBeInTheDocument();
 
     expect(
