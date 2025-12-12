@@ -11,7 +11,8 @@ Sentry.init({
   dsn: "https://55a60b44ddfd4ca5a94a8a3bac2d5052@sentry.is.canonical.com/85",
   release: APP_VERSION || "local-dev",
   environment: IS_DEV_ENV ? "development" : "production",
-  debug: IS_DEV_ENV,
+  // debug: IS_DEV_ENV,
+  debug: false,
 });
 
 const initApp = async () => {

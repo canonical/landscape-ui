@@ -6,8 +6,8 @@ import NotifyProvider from "@/context/notify";
 import ReactQueryProvider from "@/context/reactQuery";
 import AuthProvider from "@/context/auth";
 import AccountsProvider from "@/context/accounts";
-import FetchProvider from "@/context/fetch";
-import FetchOldProvider from "@/context/fetchOld";
+import FetchProvider from "@/api/fetch";
+import FetchOldProvider from "@/api/fetchOld";
 import { ROOT_PATH } from "@/constants";
 
 interface Props {

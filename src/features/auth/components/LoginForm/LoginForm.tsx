@@ -1,4 +1,5 @@
 import { HOMEPAGE_PATH } from "@/constants";
+import { useLogin } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
@@ -11,7 +12,6 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import * as Yup from "yup";
-import { useUnsigned } from "../../hooks";
 import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
 
@@ -28,15 +28,13 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
   const [searchParams] = useSearchParams();
 
   const debug = useDebug();
-  const { signInWithEmailAndPasswordQuery } = useUnsigned();
-  const { redirectToExternalUrl, setAuthLoading, setUser } = useAuth();
+  const { login: signInWithEmailAndPassword, isLoggingIn } = useLogin();
+
+  const { redirectToExternalUrl, setUser } = useAuth();
   const navigate = useNavigate();
 
   const redirectTo = searchParams.get("redirect-to");
   const isExternalRedirect = searchParams.has("external");
-
-  const { mutateAsync: signInWithEmailAndPassword } =
-    signInWithEmailAndPasswordQuery;
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -55,7 +53,11 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
             .test({
               message: "Please provide a valid email address",
               test: (value) => {
-                if (value.match(/\.\./)) {
+                if (value?.match(/\.\./)) {
+                  return false;
+                }
+
+                if (!value) {
                   return false;
                 }
 
@@ -91,7 +93,6 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           redirectToExternalUrl(redirectTo, { replace: true });
         } else {
           if ("current_account" in data) {
-            setAuthLoading(true);
             setUser(data);
           }
 
@@ -125,7 +126,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
         <Button
           type="submit"
           appearance="positive"
-          disabled={formik.isSubmitting || !formik.isValid}
+          disabled={formik.isSubmitting || !formik.isValid || isLoggingIn}
           className="u-no-margin--bottom"
         >
           Sign in

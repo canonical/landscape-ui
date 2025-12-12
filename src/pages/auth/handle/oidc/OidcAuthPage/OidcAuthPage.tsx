@@ -6,7 +6,7 @@ import {
   GENERIC_DOMAIN,
   HOMEPAGE_PATH,
 } from "@/constants";
-import { useUnsigned } from "@/features/auth";
+import { useGetOidcAuth } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { useGetStandaloneAccount } from "@/features/account-creation";
@@ -16,8 +16,7 @@ import { ROUTES } from "@/libs/routes";
 const OidcAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
 
-  const { redirectToExternalUrl, setAuthLoading, setUser } = useAuth();
-  const { getAuthStateWithOidcQuery } = useUnsigned();
+  const { redirectToExternalUrl, setUser } = useAuth();
   const { isSelfHosted, isSaas } = useEnv();
   const { accountExists } = useGetStandaloneAccount();
   const navigate = useNavigate();
@@ -25,18 +24,17 @@ const OidcAuthPage: FC = () => {
   const code = searchParams.get("code") ?? "";
   const state = searchParams.get("state") ?? "";
 
-  const { data: getAuthStateQueryResult, isLoading: getAuthStateQueryLoading } =
-    getAuthStateWithOidcQuery({ code, state }, { enabled: !!code && !!state });
+  const { authData, isLoading } = useGetOidcAuth(
+    { code, state },
+    !!code && !!state,
+  );
 
   useEffect(() => {
-    if (
-      !getAuthStateQueryResult ||
-      !("current_account" in getAuthStateQueryResult.data)
-    ) {
+    if (!authData || !("current_account" in authData)) {
       return;
     }
 
-    if (getAuthStateQueryResult.data.attach_code) {
+    if (authData.attach_code) {
       navigate(ROUTES.auth.attach(), {
         replace: true,
         state: { success: true },
@@ -44,24 +42,24 @@ const OidcAuthPage: FC = () => {
       return;
     }
 
-    setAuthLoading(true);
-    setUser(getAuthStateQueryResult.data);
+    setUser(authData);
 
-    if (getAuthStateQueryResult.data.invitation_id) {
+    if (authData.invitation_id) {
       navigate(
         ROUTES.auth.invitation({
-          secureId: getAuthStateQueryResult.data.invitation_id,
+          secureId: authData.invitation_id,
         }),
         { replace: true },
       );
       return;
     }
 
-    if (getAuthStateQueryResult.data.accounts.length === 0) {
-      if (
-        (isSaas && window.location.hostname === GENERIC_DOMAIN) ||
-        (isSelfHosted && !accountExists)
-      ) {
+    if (authData.accounts.length === 0) {
+      const isPublicSaas =
+        isSaas && window.location.hostname === GENERIC_DOMAIN;
+      const isPrivateInstance = isSelfHosted && !accountExists;
+
+      if (isPublicSaas || isPrivateInstance) {
         navigate(ROUTES.auth.createAccount(), { replace: true });
       } else {
         navigate(ROUTES.auth.noAccess(), { replace: true });
@@ -69,25 +67,20 @@ const OidcAuthPage: FC = () => {
       return;
     }
 
-    const returnToUrl = getAuthStateQueryResult.data.return_to?.url;
+    const returnToUrl = authData.return_to?.url;
 
-    if (
-      getAuthStateQueryResult.data.return_to?.external &&
-      getAuthStateQueryResult.data.return_to.url
-    ) {
-      redirectToExternalUrl(getAuthStateQueryResult.data.return_to.url, {
+    if (authData.return_to?.external && authData.return_to.url) {
+      redirectToExternalUrl(authData.return_to.url, {
         replace: true,
       });
     } else {
       const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
-
       navigate(url.toString().replace(url.origin, ""), { replace: true });
     }
   }, [
-    getAuthStateQueryResult,
+    authData,
     redirectToExternalUrl,
     navigate,
-    setAuthLoading,
     setUser,
     isSelfHosted,
     accountExists,
@@ -96,7 +89,7 @@ const OidcAuthPage: FC = () => {
 
   return (
     <div className={classes.container}>
-      {getAuthStateQueryLoading ? (
+      {isLoading ? (
         <div className="u-align-text--center">
           <span role="status" style={{ marginRight: "1rem" }}>
             <span className="u-off-screen">Loading...</span>

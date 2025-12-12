@@ -6,82 +6,71 @@ import {
   GENERIC_DOMAIN,
   HOMEPAGE_PATH,
 } from "@/constants";
-import { useUnsigned } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { useGetStandaloneAccount } from "@/features/account-creation";
 import classes from "./UbuntuOneAuthPage.module.scss";
 import { ROUTES } from "@/libs/routes";
+import { useGetUbuntuOneCompletion } from "@/features/auth";
 
 const UbuntuOneAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
-
-  const { redirectToExternalUrl, setAuthLoading, setUser } = useAuth();
-  const { getAuthStateWithUbuntuOneQuery } = useUnsigned();
-  const { isSelfHosted, isSaas } = useEnv();
-  const { accountExists } = useGetStandaloneAccount();
   const navigate = useNavigate();
 
-  const {
-    data: getUbuntuOneStateQueryResult,
-    isLoading: getUbuntuOneStateQueryLoading,
-  } = getAuthStateWithUbuntuOneQuery(
-    { url: window.location.toString() },
-    { enabled: searchParams.size > 0 },
+  const { redirectToExternalUrl, setUser } = useAuth();
+  const { isSelfHosted, isSaas } = useEnv();
+  const { accountExists } = useGetStandaloneAccount();
+
+  const { authData, isLoading } = useGetUbuntuOneCompletion(
+    window.location.toString(),
+    searchParams.size > 0,
   );
 
   useEffect(() => {
-    if (
-      !getUbuntuOneStateQueryResult ||
-      !("current_account" in getUbuntuOneStateQueryResult.data)
-    ) {
+    if (!authData || !("current_account" in authData)) {
       return;
     }
 
-    if (
-      getUbuntuOneStateQueryResult.data.return_to?.external &&
-      getUbuntuOneStateQueryResult.data.return_to.url
-    ) {
-      redirectToExternalUrl(getUbuntuOneStateQueryResult.data.return_to.url, {
+    if (authData.return_to?.external && authData.return_to.url) {
+      redirectToExternalUrl(authData.return_to.url, {
         replace: true,
       });
-    } else {
-      setAuthLoading(true);
-      setUser(getUbuntuOneStateQueryResult.data);
-
-      if (getUbuntuOneStateQueryResult.data.invitation_id) {
-        navigate(
-          ROUTES.auth.invitation({
-            secureId: getUbuntuOneStateQueryResult.data.invitation_id,
-          }),
-          { replace: true },
-        );
-        return;
-      }
-
-      if (getUbuntuOneStateQueryResult.data.accounts.length === 0) {
-        if (
-          (isSaas && window.location.hostname === GENERIC_DOMAIN) ||
-          (isSelfHosted && !accountExists)
-        ) {
-          navigate(ROUTES.auth.createAccount(), { replace: true });
-        } else {
-          navigate(ROUTES.auth.noAccess(), { replace: true });
-        }
-        return;
-      }
-
-      const returnToUrl = getUbuntuOneStateQueryResult.data.return_to?.url;
-
-      const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
-
-      navigate(url.toString().replace(url.origin, ""), { replace: true });
+      return;
     }
+
+    setUser(authData);
+
+    if (authData.invitation_id) {
+      navigate(
+        ROUTES.auth.invitation({
+          secureId: authData.invitation_id,
+        }),
+        { replace: true },
+      );
+      return;
+    }
+
+    if (authData.accounts.length === 0) {
+      const isPublicSaas =
+        isSaas && window.location.hostname === GENERIC_DOMAIN;
+      const isPrivateInstance = isSelfHosted && !accountExists;
+
+      if (isPublicSaas || isPrivateInstance) {
+        navigate(ROUTES.auth.createAccount(), { replace: true });
+      } else {
+        navigate(ROUTES.auth.noAccess(), { replace: true });
+      }
+      return;
+    }
+
+    const returnToUrl = authData.return_to?.url;
+    const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
+
+    navigate(url.toString().replace(url.origin, ""), { replace: true });
   }, [
-    getUbuntuOneStateQueryResult,
+    authData,
     redirectToExternalUrl,
     navigate,
-    setAuthLoading,
     setUser,
     isSelfHosted,
     accountExists,
@@ -90,7 +79,7 @@ const UbuntuOneAuthPage: FC = () => {
 
   return (
     <div className={classes.container}>
-      {getUbuntuOneStateQueryLoading ? (
+      {isLoading ? (
         <div className="u-align-text--center">
           <span role="status" style={{ marginRight: "1rem" }}>
             <span className="u-off-screen">Loading...</span>

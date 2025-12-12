@@ -1,31 +1,34 @@
 import { Button, Icon } from "@canonical/react-components";
+import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { getProviderIcon, redirectToExternalUrl } from "../../helpers";
-import type { GetUbuntuOneUrlParams } from "../../hooks";
-import { useInvitation, useUnsigned } from "../../hooks";
 import type { IdentityProvider } from "../../types";
+import {
+  type GetUbuntuOneUrlParams,
+  useGetUbuntuOneUrl,
+} from "@/features/auth";
+import { useInvitation } from "../../hooks";
+import { type GetOidcUrlParams, useGetOidcUrlQuery } from "../../api";
 import classes from "./AvailableProviderList.module.scss";
-import classNames from "classnames";
-import type { GetOidcUrlParams } from "../../api";
-import { useGetOidcUrlQuery } from "../../api";
 
-interface AvailableProviderListProps {
+export interface AvailableProviderListProps {
   readonly isStandaloneOidcEnabled: boolean;
   readonly isUbuntuOneEnabled: boolean;
   readonly oidcProviders: IdentityProvider[];
 }
 
-const AvailableProviderList: FC<AvailableProviderListProps> = ({
+export const AvailableProviderList: FC<AvailableProviderListProps> = ({
   isStandaloneOidcEnabled,
   isUbuntuOneEnabled,
   oidcProviders,
 }) => {
   const [providerId, setProviderId] = useState(0);
+  const [isUbuntuOneRequested, setIsUbuntuOneRequested] = useState(false);
+
   const [searchParams] = useSearchParams();
   const { invitationId } = useInvitation();
-  const { getUbuntuOneUrlQuery } = useUnsigned();
 
   const redirectTo = searchParams.get("redirect-to");
   const external = searchParams.has("external");
@@ -62,7 +65,6 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     if (!oidcUrlLocation) {
       return;
     }
-
     redirectToExternalUrl(oidcUrlLocation);
   }, [oidcUrlLocation]);
 
@@ -81,18 +83,15 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     ubuntuOneParams.external = true;
   }
 
-  const {
-    data: getUbuntuOneUrlQueryResult,
-    refetch: refetchGetUbuntuOneUrlQuery,
-  } = getUbuntuOneUrlQuery(ubuntuOneParams, { enabled: false });
+  const { location: ubuntuOneUrl, isLoading: isUbuntuOneLoading } =
+    useGetUbuntuOneUrl(ubuntuOneParams, isUbuntuOneRequested);
 
   useEffect(() => {
-    if (!getUbuntuOneUrlQueryResult) {
+    if (!ubuntuOneUrl) {
       return;
     }
-
-    redirectToExternalUrl(getUbuntuOneUrlQueryResult.data.location);
-  }, [getUbuntuOneUrlQueryResult]);
+    redirectToExternalUrl(ubuntuOneUrl);
+  }, [ubuntuOneUrl]);
 
   return (
     <>
@@ -112,7 +111,10 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
             <Button
               type="button"
               hasIcon
-              onClick={refetchGetUbuntuOneUrlQuery}
+              disabled={isUbuntuOneLoading}
+              onClick={() => {
+                setIsUbuntuOneRequested(true);
+              }}
               className={classes.button}
             >
               <Icon
@@ -163,5 +165,3 @@ const AvailableProviderList: FC<AvailableProviderListProps> = ({
     </>
   );
 };
-
-export default AvailableProviderList;

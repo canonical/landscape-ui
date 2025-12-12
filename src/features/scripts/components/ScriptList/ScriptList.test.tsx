@@ -20,7 +20,6 @@ const authContextValues: AuthContextProps = {
   logout: vi.fn(),
   authorized: true,
   authLoading: false,
-  setAuthLoading: vi.fn(),
   setUser: vi.fn(),
   user: null,
   redirectToExternalUrl: vi.fn(),

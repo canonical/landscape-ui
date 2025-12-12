@@ -1,14 +1,15 @@
-import { beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { AuthStateResponse } from "@/features/auth";
 import { authUser } from "@/tests/mocks/auth";
-import { HOMEPAGE_PATH } from "@/constants";
+import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
 import type { EnvContextState } from "@/context/env";
 import useEnv from "@/hooks/useEnv";
 
 const redirectToExternalUrl = vi.fn();
 const navigate = vi.fn();
+const setUser = vi.fn();
 
 vi.mock("@/hooks/useEnv");
 
@@ -39,46 +40,40 @@ const mockTestParams = (response: AuthStateResponse | Error) => {
     useNavigate: () => navigate,
   }));
 
-  vi.doMock("@/features/auth", () => ({
-    useUnsigned: () => ({
-      getAuthStateWithUbuntuOneQuery: () =>
-        response instanceof Error
-          ? {
-              data: undefined,
-              error: response,
-              isLoading: false,
-            }
-          : {
-              data: { data: response },
-              error: null,
-              isLoading: false,
-            },
-    }),
-  }));
+  vi.doMock("@/features/auth", async () => {
+    const actual = await vi.importActual("@/features/auth");
+
+    return {
+      ...actual,
+      useGetUbuntuOneCompletion: () => {
+        if (response instanceof Error) {
+          return { authData: undefined, isLoading: false, error: response };
+        }
+        return { authData: response, isLoading: false, error: null };
+      },
+    };
+  });
 
   vi.doMock("@/hooks/useAuth", async () => ({
-    default: () => ({
-      setAuthLoading: vi.fn(),
-      setUser: vi.fn(),
-      redirectToExternalUrl,
-    }),
+    default: () => ({ setUser, redirectToExternalUrl }),
   }));
 };
 
 describe("UbuntuOneAuthPage", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
   it("should render error message when there is no search params", async () => {
+    mockTestParams(new Error("No params"));
+
     const { default: Component } = await import("./UbuntuOneAuthPage");
 
     renderWithProviders(<Component />);
 
     expect(
-      screen.getByText("Please wait while your request is being processed..."),
-    ).toBeInTheDocument();
-
-    expect(
-      await screen.findByText(
-        "Something went wrong. Please try again or contact our support team.",
-      ),
+      await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE),
     ).toBeInTheDocument();
 
     expect(
@@ -107,7 +102,6 @@ describe("UbuntuOneAuthPage", () => {
         ...authUser,
         return_to: null,
       },
-
       {
         ...authUser,
         invitation_id: "test-secure-id",
@@ -115,29 +109,19 @@ describe("UbuntuOneAuthPage", () => {
     ];
 
     beforeEach(async ({ task: { id } }) => {
-      vi.doUnmock("react-router");
-      vi.doUnmock("@/features/auth");
-      vi.doUnmock("@/hooks/useAuth");
+      vi.doUnmock("@/features/auth/hooks/useUbuntuOneAuth");
       vi.resetModules();
 
       const taskId = Number(id.substring(id.length - 1));
-
       mockTestParams(responsesToMock[taskId]);
 
       const { default: Component } = await import("./UbuntuOneAuthPage");
-
       renderWithProviders(<Component />);
     });
 
     it("should render error message when an error occurs", async () => {
       expect(
-        screen.getByText(
-          "Something went wrong. Please try again or contact our support team.",
-        ),
-      ).toBeInTheDocument();
-
-      expect(
-        screen.getByRole("link", { name: "Back to login" }),
+        screen.getByText(CONTACT_SUPPORT_TEAM_MESSAGE),
       ).toBeInTheDocument();
     });
 
@@ -148,7 +132,7 @@ describe("UbuntuOneAuthPage", () => {
       );
     });
 
-    it("should redirect to internal URL when return_to is not external", async () => {
+    it("should redirect to internal URL when return_to is not external", () => {
       expect(navigate).toHaveBeenCalledWith("/dashboard", { replace: true });
     });
 
@@ -160,14 +144,6 @@ describe("UbuntuOneAuthPage", () => {
     });
 
     it("should redirect to invitation when invitation_id is present", async () => {
-      mockTestParams({
-        ...authUser,
-        accounts: [],
-        current_account: "",
-        return_to: null,
-        invitation_id: "test-secure-id",
-      });
-
       expect(navigate).toHaveBeenCalledWith(
         "/accept-invitation/test-secure-id",
         { replace: true },
@@ -182,21 +158,20 @@ describe("UbuntuOneAuthPage", () => {
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: false }),
       }));
-
       vi.doMock("@/constants", async (importOriginal) => ({
         ...(await importOriginal()),
         GENERIC_DOMAIN: "localhost",
       }));
+    });
 
+    it("should redirect to create-account when user has no accounts and GENERIC_DOMAIN matches hostname", async () => {
       mockTestParams({
         ...authUser,
         accounts: [],
         current_account: "",
         return_to: null,
       });
-    });
 
-    it("should redirect to create-account when user has no accounts and GENERIC_DOMAIN matches hostname", async () => {
       const { default: Component } = await import("./UbuntuOneAuthPage");
       renderWithProviders(<Component />);
 
@@ -232,20 +207,19 @@ describe("UbuntuOneAuthPage", () => {
     beforeEach(() => {
       vi.resetModules();
       vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
-
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: false }),
       }));
+    });
 
+    it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
       mockTestParams({
         ...authUser,
         accounts: [],
         current_account: "",
         return_to: null,
       });
-    });
 
-    it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
       const { default: Component } = await import("./UbuntuOneAuthPage");
       renderWithProviders(<Component />);
 
@@ -256,7 +230,6 @@ describe("UbuntuOneAuthPage", () => {
 
     it("should redirect to no-access when accountExists is true", async () => {
       vi.resetModules();
-      vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: true }),
       }));
