@@ -3,6 +3,7 @@ import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
+import { PackagesInstallForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
@@ -193,6 +194,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
+  const openInstallPackagesForm = () => {
+    setSidePanelContent(
+      "Install packages",
+      <Suspense fallback={<LoadingState />}>
+        <PackagesInstallForm
+          instanceIds={selectedInstances.map(({ id }) => id)}
+        />
+      </Suspense>,
+    );
+  };
+
   const handleReportView = () => {
     setSidePanelContent(
       `Report for ${pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}`,
@@ -262,6 +274,68 @@ const InstancesPageActions = memo(function InstancesPageActions({
         }
       : {},
   ].filter((link) => link.children);
+
+  const managePackagesLinks = [
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Upgrade</span>
+        </>
+      ),
+      onClick: handleUpgradesRequest,
+      disabled: selectedInstances.every(
+        (instance) => !hasUpgrades(instance.alerts),
+      ),
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="begin-downloading" />
+          <span>Install</span>
+        </>
+      ),
+      onClick: openInstallPackagesForm,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Uninstall</span>
+        </>
+      ),
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-down" />
+          <span>Downgrade</span>
+        </>
+      ),
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="pause" />
+          <span>Hold</span>
+        </>
+      ),
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="play" />
+          <span>Unhold</span>
+        </>
+      ),
+      hasIcon: true,
+    },
+  ];
 
   return (
     <>
@@ -343,20 +417,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <Icon name="code" />
             <span>Run script</span>
           </Button>,
-          <Button
+          <ContextualMenu
             key="upgrade-instances"
-            type="button"
-            hasIcon
-            onClick={handleUpgradesRequest}
-            disabled={
+            hasToggleIcon
+            links={managePackagesLinks}
+            position="right"
+            toggleLabel={<span>Manage packages</span>}
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={
+              !selectedInstances.length ||
               selectedInstances.every(
-                (instance) => !hasUpgrades(instance.alerts),
-              ) || isGettingInstances
+                (instance) => !getFeatures(instance).packages,
+              )
             }
-          >
-            <Icon name="change-version" />
-            <span>Upgrade</span>
-          </Button>,
+            dropdownProps={{ style: { zIndex: 10 } }}
+          />,
           <Button
             key="remove"
             type="button"

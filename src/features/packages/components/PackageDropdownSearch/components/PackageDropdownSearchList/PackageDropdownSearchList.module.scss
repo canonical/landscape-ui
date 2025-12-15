@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.pointer {
+  cursor: pointer;
+  padding: $spv--small;
+}
+
+.highlighted {
+  background-color: $colors--theme--background-alt;
+}
