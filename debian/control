@@ -1,0 +1,17 @@
+Source: landscape-dashboard
+Section: net
+Priority: optional
+Maintainer: Landscape Team <landscape-team@canonical.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://ubuntu.com/landscape
+Vcs-Browser: https://github.com/canonical/landscape-ui
+Vcs-Git: https://github.com/canonical/landscape-ui.git
+Rules-Requires-Root: no
+
+Package: landscape-dashboard
+Architecture: all
+Depends: ${misc:Depends}
+Description: SPA frontend dashboard for landscape-server
+ This package provides the transpiled, minified static and asset files
+ intended to front landscape-server 24.04 and higher.

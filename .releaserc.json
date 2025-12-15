@@ -5,11 +5,29 @@
     "@semantic-release/release-notes-generator",
     "@semantic-release/changelog",
     "@semantic-release/npm",
-    "@semantic-release/github",
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "./scripts/debian-build.sh ${nextRelease.version}"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          "landscape-dashboard_*-0landscape0_source.build",
+          "landscape-dashboard_*-0landscape0_source.buildinfo",
+          "landscape-dashboard_*-0landscape0_source.changes",
+          "landscape-dashboard_*-0landscape0.debian.tar.xz",
+          "landscape-dashboard_*-0landscape0.dsc",
+          "landscape-dashboard_*.orig.tar.gz"
+        ]
+      }
+    ],
     [
       "@semantic-release/git",
       {
-        "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
+        "assets": ["CHANGELOG.md", "package.json", "debian/changelog"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
