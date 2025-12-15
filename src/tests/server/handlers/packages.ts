@@ -1,15 +1,15 @@
-import { http, HttpResponse } from "msw";
 import { API_URL, API_URL_OLD } from "@/constants";
-import type { GetPackagesParams, Package } from "@/features/packages";
 import type { Activity } from "@/features/activities";
+import type { GetPackagesParams, Package } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
 import {
   downgradePackageVersions,
   getInstancePackages,
   packages,
 } from "@/tests/mocks/packages";
-import { activities } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 
 const parseBooleanParam = (value: string | null): boolean | undefined => {
@@ -37,12 +37,18 @@ export default [
       const url = new URL(request.url);
       const limit = Number(url.searchParams.get("limit"));
       const offset = Number(url.searchParams.get("offset")) || 0;
+      const search = url.searchParams.get("search") || "";
+      const names = url.searchParams.getAll("names");
 
       return HttpResponse.json(
         generatePaginatedResponse<Package>({
-          data: packages,
+          data: names.length
+            ? packages.filter(({ name }) => names.includes(name))
+            : packages,
           limit,
           offset,
+          search,
+          searchFields: ["name"],
         }),
       );
     },

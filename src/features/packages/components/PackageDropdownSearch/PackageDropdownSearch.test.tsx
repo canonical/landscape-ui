@@ -18,8 +18,8 @@ const availablePackages = instancePackages.filter(
 );
 
 const props: ComponentProps<typeof PackageDropdownSearch> = {
-  selectedItems: [],
-  setSelectedItems: vi.fn(),
+  selectedPackages: [],
+  setSelectedPackages: vi.fn(),
 };
 
 describe("PackageDropdownSearch", () => {
@@ -72,7 +72,7 @@ describe("PackageDropdownSearch", () => {
       const packageItem = await screen.findByText(availablePackages[0].name);
       await user.click(packageItem);
 
-      expect(props.setSelectedItems).toHaveBeenCalled();
+      expect(props.setSelectedPackages).toHaveBeenCalled();
     });
 
     it("clears search box after selecting a package", async () => {
@@ -107,7 +107,7 @@ describe("PackageDropdownSearch", () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);
       renderWithProviders(
-        <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
+        <PackageDropdownSearch {...props} selectedPackages={[selectedPackage]} />,
         undefined,
         instancePageUrl,
         instancePath,
@@ -123,7 +123,7 @@ describe("PackageDropdownSearch", () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);
       renderWithProviders(
-        <PackageDropdownSearch {...props} selectedItems={[selectedPackage]} />,
+        <PackageDropdownSearch {...props} selectedPackages={[selectedPackage]} />,
         undefined,
         instancePageUrl,
         instancePath,
@@ -136,7 +136,7 @@ describe("PackageDropdownSearch", () => {
       assert(deleteButton);
       await user.click(deleteButton);
 
-      expect(props.setSelectedItems).toHaveBeenCalled();
+      expect(props.setSelectedPackages).toHaveBeenCalled();
     });
   });
 });

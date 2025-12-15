@@ -86,6 +86,14 @@ export const pluralize = (
   return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
 };
 
+export const pluralizeWithCount = (
+  count: number,
+  singularForm: string,
+  pluralForm?: string,
+) => {
+  return `${count} ${pluralize(count, singularForm, pluralForm)}`;
+};
+
 export const pluralizeArray = <T>(
   items: T[],
   getSingularForm: (item: T) => string,

@@ -1,6 +1,11 @@
-export const DEBOUNCE_DELAY = 200;
+import type { FC } from "react";
 
-export const boldSubstring = (text: string, substring: string) => {
+interface BoldSubstringProps {
+  readonly text: string;
+  readonly substring: string;
+}
+
+const BoldSubstring: FC<BoldSubstringProps> = ({ text, substring }) => {
   const lowerText = text.toLowerCase();
   const lowerSubstring = substring.toLowerCase();
   const index = lowerText.indexOf(lowerSubstring);
@@ -15,3 +20,5 @@ export const boldSubstring = (text: string, substring: string) => {
   }
   return text;
 };
+
+export default BoldSubstring;

@@ -1,28 +1,29 @@
-import type { FC } from "react";
-import { useState } from "react";
-import { useParams } from "react-router";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import type { FC } from "react";
+import { useState } from "react";
 import { usePackages } from "../../hooks";
-import type { InstancePackage } from "../../types";
+import type { Package } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
-import type { UrlParams } from "@/types/UrlParams";
-import { pluralize } from "@/utils/_helpers";
 
-const PackagesInstallForm: FC = () => {
-  const [selected, setSelected] = useState<InstancePackage[]>([]);
+interface PackagesInstallFormProps {
+  readonly instanceIds: number[];
+}
 
-  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
+  const [selectedPackages, setSelectedPackages] = useState<Package[]>([]);
+  const [step, setStep] = useState<"install" | "summary">("install");
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { packagesActionQuery } = usePackages();
   const { closeSidePanel } = useSidePanel();
   const { openActivityDetails } = useActivities();
-
-  const instanceId = Number(childInstanceId ?? urlInstanceId);
+  const { setSidePanelTitle } = useSidePanel();
 
   const {
     mutateAsync: installPackages,
@@ -33,15 +34,15 @@ const PackagesInstallForm: FC = () => {
     try {
       const { data: activity } = await installPackages({
         action: "install",
-        computer_ids: [instanceId],
-        package_ids: selected.map(({ id }) => id),
+        computer_ids: instanceIds,
+        package_ids: selectedPackages.map(({ id }) => id),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selected.length, `package ${selected[0]?.name ?? ""}`, `${selected.length} packages`)} to be installed.`,
-        message: `${pluralize(selected.length, `${selected[0]?.name ?? ""} package`, `${selected.length} selected packages`)} will be installed and ${pluralize(selected.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0]?.name ?? ""}`, `${selectedPackages.length} packages`)} to be installed.`,
+        message: `${pluralize(selectedPackages.length, `${selectedPackages[0]?.name ?? ""} package`, `${selectedPackages.length} selected packages`)} will be installed and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -56,24 +57,49 @@ const PackagesInstallForm: FC = () => {
     }
   };
 
-  return (
-    <>
-      <PackageDropdownSearch
-        selectedItems={selected}
-        setSelectedItems={(items) => {
-          setSelected(items);
-        }}
-      />
-      <SidePanelFormButtons
-        submitButtonDisabled={
-          installPackagesQueryLoading || selected.length === 0
-        }
-        submitButtonText="Install packages"
-        submitButtonAppearance="positive"
-        onSubmit={handleSubmit}
-      />
-    </>
-  );
+  switch (step) {
+    case "install":
+      return (
+        <>
+          <PackageDropdownSearch
+            instanceIds={instanceIds}
+            selectedPackages={selectedPackages}
+            setSelectedPackages={(items) => {
+              setSelectedPackages(items);
+            }}
+          />
+          <SidePanelFormButtons
+            submitButtonDisabled={selectedPackages.length === 0}
+            submitButtonText="Next"
+            submitButtonAppearance="positive"
+            onSubmit={() => {
+              setStep("summary");
+              setSidePanelTitle("Summary");
+            }}
+          />
+        </>
+      );
+
+    case "summary":
+      return (
+        <>
+          <SidePanelFormButtons
+            submitButtonLoading={installPackagesQueryLoading}
+            submitButtonText={`Install ${pluralizeWithCount(
+              selectedPackages.length,
+              "package",
+            )}`}
+            submitButtonAppearance="positive"
+            onSubmit={handleSubmit}
+            hasBackButton
+            onBackButtonPress={() => {
+              setStep("install");
+              setSidePanelTitle("Install packages");
+            }}
+          />
+        </>
+      );
+  }
 };
 
 export default PackagesInstallForm;
