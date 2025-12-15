@@ -6,10 +6,7 @@ import type { SecurityProfile } from "../types";
 
 export interface UpdateSecurityProfileParams
   extends Partial<
-    Pick<
-      SecurityProfile,
-      "access_group" | "all_computers" | "schedule" | "tags" | "title"
-    >
+    Pick<SecurityProfile, "all_computers" | "schedule" | "tags" | "title">
   > {
   id: number;
   restart_deliver_delay_window?: number;

@@ -6,7 +6,6 @@ import type { RebootProfile } from "../types";
 
 interface EditRebootProfileParams {
   id: number;
-  access_group?: string;
   at_hour?: number;
   at_minute?: number;
   deliver_delay_window?: number;

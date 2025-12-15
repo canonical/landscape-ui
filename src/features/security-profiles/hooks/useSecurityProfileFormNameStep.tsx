@@ -9,7 +9,7 @@ import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormV
 
 export default function useSecurityProfileFormNameStep<
   T extends SecurityProfileFormValues,
->(formik: FormikContextType<T>) {
+>(formik: FormikContextType<T>, formMode: "add" | "edit") {
   const { isSelfHosted } = useEnv();
 
   const { getOrganisationPreferences } = useOrgSettings();
@@ -18,7 +18,7 @@ export default function useSecurityProfileFormNameStep<
   const {
     data: getAccessGroupQueryResponse,
     isLoading: isLoadingAccessGroups,
-  } = getAccessGroupQuery();
+  } = getAccessGroupQuery({}, { enabled: formMode === "add" });
 
   const {
     data: getOrganisationPreferencesResponse,
@@ -50,7 +50,6 @@ export default function useSecurityProfileFormNameStep<
           error={getFormikError(formik, "title")}
           required
         />
-
         <Select
           label="Access group"
           options={getAccessGroupQueryResponse?.data.map((group) => ({
@@ -60,7 +59,7 @@ export default function useSecurityProfileFormNameStep<
           {...formik.getFieldProps("access_group")}
           error={getFormikError(formik, "access_group")}
           required
-          disabled={isLoadingAccessGroups}
+          disabled={isLoadingAccessGroups || formMode === "edit"}
         />
 
         {isSelfHosted && (

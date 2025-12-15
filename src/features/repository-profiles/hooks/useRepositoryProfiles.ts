@@ -26,7 +26,6 @@ export interface CreateRepositoryProfileParams {
 
 interface EditRepositoryProfileParams {
   name: string;
-  access_group?: string;
   all_computers?: boolean;
   apt_sources?: number[];
   description?: string;

@@ -7,7 +7,6 @@ import type { WslProfile } from "../types";
 
 interface EditWslProfileParams {
   name: string;
-  access_group?: string;
   all_computers?: boolean;
   description?: string;
   tags?: string[];

@@ -3,8 +3,10 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
+import { type SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Input } from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { usePackageProfiles } from "../../../../hooks";
@@ -22,8 +24,16 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
   const { editPackageProfileQuery } = usePackageProfiles();
+  const { getAccessGroupQuery } = useRoles();
 
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
+
+  const accessGroupOptions: SelectOption[] =
+    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
+      label: title,
+      value: name,
+    })) ?? [];
 
   const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
@@ -71,6 +81,13 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
         type="text"
         label="Description"
         {...formik.getFieldProps("description")}
+      />
+
+      <Select
+        label="Access group"
+        disabled
+        options={accessGroupOptions}
+        value={profile.access_group}
       />
 
       <AssociationBlock formik={formik} />

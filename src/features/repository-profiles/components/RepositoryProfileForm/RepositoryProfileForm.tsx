@@ -45,14 +45,16 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   const { data: getDistributionsResult } = getDistributionsQuery();
   const { data: getAPTSourcesResult } = getAPTSourcesQuery();
-  const { data: accessGroupsResult } = getAccessGroupQuery();
+  const { data: accessGroupsResult } = getAccessGroupQuery(
+    {},
+    { enabled: props.action === "add" },
+  );
 
   const { mutateAsync: createRepositoryProfile } = createRepositoryProfileQuery;
   const { mutateAsync: editRepositoryProfile } = editRepositoryProfileQuery;
 
   const handleSubmit = async (values: RepositoryProfileFormValues) => {
     const valuesToSubmit: CreateRepositoryProfileParams = {
-      access_group: values.access_group,
       all_computers: values.all_computers,
       apt_sources: values.apt_sources,
       description: values.description,
@@ -66,7 +68,10 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
     try {
       if (props.action === "add") {
-        await createRepositoryProfile(valuesToSubmit);
+        await createRepositoryProfile({
+          access_group: values.access_group,
+          ...valuesToSubmit,
+        });
       } else {
         await editRepositoryProfile({
           name: props.profile.name,
@@ -124,6 +129,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           <RepositoryProfileFormDetailsPanel
             accessGroups={accessGroupsResult?.data ?? []}
             isTitleRequired={props.action === "add"}
+            isAccessGroupDisabled={props.action === "edit"}
             formik={formik}
           />
         )}

@@ -33,7 +33,10 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     useRemovalProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+  const { data: getAccessGroupQueryResult } = getAccessGroupQuery(
+    {},
+    { enabled: props.action === "add" },
+  );
 
   const accessGroupOptions =
     getAccessGroupQueryResult?.data.map(({ name, title }) => ({
@@ -50,7 +53,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     const valuesToSubmit: CreateRemovalProfileParams = {
       title: values.title,
       days_without_exchange: values.days_without_exchange as number,
-      access_group: values.access_group,
+      access_group: values.access_group as string,
       all_computers: values.all_computers,
     };
 
@@ -86,7 +89,6 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     initialValues:
       props.action === "edit"
         ? {
-            access_group: props.profile.access_group,
             all_computers: props.profile.all_computers,
             days_without_exchange: props.profile.days_without_exchange,
             tags: props.profile.tags,
@@ -125,6 +127,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
       <Select
         label="Access group"
         options={accessGroupOptions}
+        disabled={props.action === "edit"}
         {...formik.getFieldProps("access_group")}
         error={getFormikError(formik, "access_group")}
       />

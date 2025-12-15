@@ -29,6 +29,7 @@ const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
   const [step, setStep] = useState(0);
 
   const { formik, steps } = useSecurityProfileForm({
+    formMode: "add",
     initialValues: {
       all_computers: false,
       access_group: DEFAULT_ACCESS_GROUP_NAME,

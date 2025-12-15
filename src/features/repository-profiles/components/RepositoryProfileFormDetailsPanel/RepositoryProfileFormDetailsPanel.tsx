@@ -10,11 +10,17 @@ interface RepositoryProfileFormDetailsPanelProps {
   readonly accessGroups: AccessGroup[];
   readonly formik: FormikContextType<RepositoryProfileFormValues>;
   readonly isTitleRequired?: boolean;
+  readonly isAccessGroupDisabled?: boolean;
 }
 
 const RepositoryProfileFormDetailsPanel: FC<
   RepositoryProfileFormDetailsPanelProps
-> = ({ accessGroups, formik, isTitleRequired = false }) => {
+> = ({
+  accessGroups,
+  formik,
+  isTitleRequired = false,
+  isAccessGroupDisabled = false,
+}) => {
   const accessGroupOptions = accessGroups.map(({ name, title }) => ({
     label: title,
     value: name,
@@ -40,6 +46,7 @@ const RepositoryProfileFormDetailsPanel: FC<
       <Select
         label="Access group"
         options={accessGroupOptions}
+        disabled={isAccessGroupDisabled}
         error={getFormikError(formik, "access_group")}
         {...formik.getFieldProps("access_group")}
       />
