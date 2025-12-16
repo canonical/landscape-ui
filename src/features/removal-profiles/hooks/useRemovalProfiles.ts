@@ -9,7 +9,7 @@ export interface CreateRemovalProfileParams {
   all_computers: boolean;
   days_without_exchange: number;
   title: string;
-  access_group?: string;
+  access_group: string;
   tags?: string[];
 }
 

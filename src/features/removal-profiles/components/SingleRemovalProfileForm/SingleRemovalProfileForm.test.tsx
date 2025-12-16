@@ -46,4 +46,18 @@ describe("SingleRemovalProfileForm", () => {
       await screen.findByText(/this field is required/i),
     ).toBeInTheDocument();
   });
+
+  it("shows enabled access group field in add mode", () => {
+    renderWithProviders(<SingleRemovalProfileForm action="add" />);
+
+    expect(screen.getByLabelText(/access group/i)).toBeEnabled();
+  });
+
+  it("shows disabled access group field in edit mode", () => {
+    renderWithProviders(
+      <SingleRemovalProfileForm action="edit" profile={profile} />,
+    );
+
+    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+  });
 });

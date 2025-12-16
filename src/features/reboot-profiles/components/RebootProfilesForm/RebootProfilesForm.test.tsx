@@ -68,4 +68,16 @@ describe("RebootProfilesForm", () => {
       await screen.findByText("'Expires after' must be at least 0."),
     ).toBeInTheDocument();
   });
+
+  it("shows enabled access group field in add mode", () => {
+    renderWithProviders(<RebootProfilesForm action="add" />);
+
+    expect(screen.getByLabelText(/access group/i)).toBeEnabled();
+  });
+
+  it("shows disabled access group field in edit mode", () => {
+    renderWithProviders(<RebootProfilesForm action="edit" profile={profile} />);
+
+    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+  });
 });

@@ -65,4 +65,18 @@ describe("RepositoryProfileForm", () => {
     await user.click(screen.getByRole("tab", { name: "Details" }));
     expect(screen.getByLabelText("Title")).toBeInTheDocument();
   });
+
+  it("shows enabled access group field in add mode", async () => {
+    renderWithProviders(<RepositoryProfileForm action="add" />);
+
+    expect(screen.getByLabelText(/access group/i)).toBeEnabled();
+  });
+
+  it("shows disabled access group field in edit mode", async () => {
+    renderWithProviders(
+      <RepositoryProfileForm action="edit" profile={repositoryProfiles[0]} />,
+    );
+
+    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+  });
 });

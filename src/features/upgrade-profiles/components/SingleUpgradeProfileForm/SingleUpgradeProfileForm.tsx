@@ -50,7 +50,6 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateUpgradeProfileParams = {
-      access_group: values.access_group,
       all_computers: values.all_computers,
       at_minute: values.at_minute as number,
       autoremove: values.autoremove,
@@ -60,6 +59,10 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       title: values.title,
       upgrade_type: values.upgrade_type,
     };
+
+    if (props.action === "add") {
+      valuesToSubmit.access_group = values.access_group;
+    }
 
     if (values.every === "week") {
       valuesToSubmit.at_hour = values.at_hour as number;
@@ -108,7 +111,6 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     initialValues:
       props.action === "edit"
         ? {
-            access_group: props.profile.access_group,
             all_computers: props.profile.all_computers,
             at_hour: props.profile.at_hour
               ? parseInt(props.profile.at_hour)
@@ -165,6 +167,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         label="Access group"
         aria-label="Access group"
         options={accessGroupOptions}
+        disabled={props.action === "edit"}
         {...formik.getFieldProps("access_group")}
         error={getFormikError(formik, "access_group")}
       />

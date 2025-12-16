@@ -21,7 +21,6 @@ interface WslProfileEditFormProps {
 
 interface FormProps {
   title: string;
-  access_group: string;
   description: string;
   instanceType: string;
   customImageName: string;
@@ -66,7 +65,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       await editWslProfile({
         name: profile.name,
         title: values.title,
-        access_group: values.access_group,
         description: values.description,
         all_computers: values.all_computers,
         tags: values.tags,
@@ -86,7 +84,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const formik = useFormik({
     initialValues: {
       title: profile.title,
-      access_group: profile.access_group,
       description: profile.description,
       instanceType: profile.image_source ? "custom" : profile.image_name,
       customImageName: profile.image_source ? profile.image_name : "",
@@ -102,8 +99,8 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Notification severity="caution" title="Editing unavailable">
         <span>
-          You cannot edit rootfs image, cloud-init file, or compliance settings.
-          To modify these fields, create a new profile.
+          You cannot edit access group, rootfs image, cloud-init file, or
+          compliance settings. To modify these fields, create a new profile.
         </span>
       </Notification>
 
@@ -127,9 +124,8 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         label="Access group"
         aria-label="Access group"
         options={accessGroupResultOptions}
+        disabled
         required
-        {...formik.getFieldProps("access_group")}
-        error={getFormikError(formik, "access_group")}
       />
 
       <div className={classes.block}>

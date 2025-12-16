@@ -25,6 +25,7 @@ const SecurityProfileDuplicateSidePanel: FC = () => {
       <SidePanel.Header>Duplicate {securityProfile.title}</SidePanel.Header>
       <SidePanel.Content>
         <SecurityProfileForm
+          formMode="add"
           confirmationStepDescription="To duplicate the profile, you need to run it."
           initialValues={{
             ...getInitialValues(securityProfile),

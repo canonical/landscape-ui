@@ -55,7 +55,6 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
     enableReinitialize: true,
     onSubmit: async (values) => {
       const params = {
-        access_group: values.access_group,
         all_computers: values.all_computers,
         at_hour: Number(values.at_hour),
         at_minute: Number(values.at_minute),
@@ -74,7 +73,10 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
             ...params,
           });
         } else {
-          await createRebootProfile(params);
+          await createRebootProfile({
+            access_group: values.access_group,
+            ...params,
+          });
         }
 
         closeSidePanel();
@@ -111,6 +113,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
           label="Access group"
           aria-label="Access group"
           options={accessGroupOptions}
+          disabled={props.action === "edit"}
           {...formik.getFieldProps("access_group")}
           error={getFormikError(formik, "access_group")}
         />

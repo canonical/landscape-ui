@@ -83,4 +83,18 @@ describe("SingleUpgradeProfileForm", () => {
       await screen.findByText(/upgrade profile updated/i),
     ).toBeInTheDocument();
   });
+
+  it("shows enabled access group field in add mode", () => {
+    renderWithProviders(<SingleUpgradeProfileForm action="add" />);
+
+    expect(screen.getByLabelText(/access group/i)).toBeEnabled();
+  });
+
+  it("shows disabled access group field in edit mode", () => {
+    renderWithProviders(
+      <SingleUpgradeProfileForm action="edit" profile={upgradeProfiles[0]} />,
+    );
+
+    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+  });
 });

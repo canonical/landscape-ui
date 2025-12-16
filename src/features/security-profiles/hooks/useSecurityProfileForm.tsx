@@ -30,6 +30,7 @@ export interface UseSecurityProfileFormProps {
   ) => Promise<unknown>;
   benchmarkStepDisabled?: boolean;
   onSuccess?: (values: SecurityProfileFormValues) => void;
+  formMode: "add" | "edit";
 }
 
 const useSecurityProfileForm = ({
@@ -37,6 +38,7 @@ const useSecurityProfileForm = ({
   mutate,
   benchmarkStepDisabled,
   onSuccess = () => undefined,
+  formMode,
 }: UseSecurityProfileFormProps) => {
   const debug = useDebug();
   const { setPageParams } = usePageParams();
@@ -198,7 +200,7 @@ const useSecurityProfileForm = ({
     },
   });
 
-  const nameStep = useSecurityProfileFormNameStep(formik);
+  const nameStep = useSecurityProfileFormNameStep(formik, formMode);
   const benchmarkStep = useSecurityProfileFormBenchmarkStep(
     formik,
     benchmarkStepDisabled,

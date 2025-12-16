@@ -9,6 +9,7 @@ import SecurityProfileForm from "./SecurityProfileForm";
 
 describe("SecurityProfileForm", () => {
   const props: ComponentProps<typeof SecurityProfileForm> = {
+    formMode: "add",
     initialValues: {
       access_group: DEFAULT_ACCESS_GROUP_NAME,
       all_computers: false,

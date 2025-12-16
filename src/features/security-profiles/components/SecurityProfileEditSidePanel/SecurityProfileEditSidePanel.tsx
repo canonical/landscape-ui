@@ -25,6 +25,7 @@ const SecurityProfileEditSidePanel: FC = () => {
       <SidePanel.Header>Edit {securityProfile.title}</SidePanel.Header>
       <SidePanel.Content>
         <SecurityProfileForm
+          formMode="edit"
           benchmarkStepDisabled
           confirmationStepDescription="To save your changes, you need to run the profile."
           getConfirmationStepDisabled={(values) => values.mode == "audit"}
@@ -32,7 +33,6 @@ const SecurityProfileEditSidePanel: FC = () => {
           mutate={async (values) => {
             updateSecurityProfile({
               id: securityProfile.id,
-              access_group: values.access_group,
               all_computers: values.all_computers,
               restart_deliver_delay: values.restart_deliver_delay,
               restart_deliver_delay_window: values.restart_deliver_delay_window,
