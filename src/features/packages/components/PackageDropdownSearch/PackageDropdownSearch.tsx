@@ -24,12 +24,20 @@ interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
   readonly selectedPackages: Package[];
   readonly setSelectedPackages: (packages: Package[]) => void;
+  readonly available?: boolean;
+  readonly installed?: boolean;
+  readonly upgrade?: boolean;
+  readonly held?: boolean;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   instanceIds,
   selectedPackages,
   setSelectedPackages,
+  available,
+  installed,
+  upgrade,
+  held,
 }) => {
   const authFetch = useFetch();
 
@@ -41,10 +49,10 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const queryParams: GetPackagesParams = {
     query: instanceIds.map((id) => `id:${id}`).join(" OR "),
-    available: true,
-    installed: false,
-    upgrade: false,
-    held: false,
+    available: available,
+    installed: installed,
+    upgrade: upgrade,
+    held: held,
     limit: QUERY_LIMIT,
   };
 

@@ -1,6 +1,7 @@
 export { default as PackageList } from "./components/PackageList";
 export { default as PackagesInstallButton } from "./components/PackagesInstallButton";
 export { default as PackagesInstallForm } from "./components/PackagesInstallForm";
+export { default as PackagesUninstallForm } from "./components/PackagesUninstallForm";
 export { default as PackagesPanelHeader } from "./components/PackagesPanelHeader";
 export { usePackages } from "./hooks";
 export type { GetPackagesParams, InstancePackagesToExclude } from "./hooks";
