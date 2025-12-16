@@ -2,7 +2,10 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
-import { PackagesInstallForm } from "@/features/packages";
+import {
+  PackagesInstallForm,
+  PackagesUninstallForm,
+} from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
@@ -180,6 +183,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
+  const openUninstallPackagesForm = () => {
+    setSidePanelContent(
+      "Uninstall packages",
+      <Suspense fallback={<LoadingState />}>
+        <PackagesUninstallForm
+          instanceIds={selectedInstances.map(({ id }) => id)}
+        />
+      </Suspense>,
+    );
+  };
+
   const handleReportView = () => {
     setSidePanelContent(
       `Report for ${pluralize(selectedInstances.length, selectedInstances[0]?.title ?? "1 instance", `${selectedInstances.length} instances`)}`,
@@ -283,6 +297,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Uninstall</span>
         </>
       ),
+      onClick: openUninstallPackagesForm,
       hasIcon: true,
     },
     {

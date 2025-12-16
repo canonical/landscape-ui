@@ -10,13 +10,15 @@ import { usePackages } from "../../hooks";
 import type { Package } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 
-interface PackagesInstallFormProps {
+interface PackagesUninstallFormProps {
   readonly instanceIds: number[];
 }
 
-const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
+const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
+  instanceIds,
+}) => {
   const [selectedPackages, setSelectedPackages] = useState<Package[]>([]);
-  const [step, setStep] = useState<"install" | "summary">("install");
+  const [step, setStep] = useState<"uninstall" | "summary">("uninstall");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -26,14 +28,14 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
   const { setSidePanelTitle } = useSidePanel();
 
   const {
-    mutateAsync: installPackages,
-    isPending: installPackagesQueryLoading,
+    mutateAsync: uninstallPackages,
+    isPending: uninstallPackagesQueryLoading,
   } = packagesActionQuery;
 
   const handleSubmit = async () => {
     try {
-      const { data: activity } = await installPackages({
-        action: "install",
+      const { data: activity } = await uninstallPackages({
+        action: "remove",
         computer_ids: instanceIds,
         package_ids: selectedPackages.map(({ id }) => id),
       });
@@ -41,8 +43,8 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0]?.name ?? ""}`, `${selectedPackages.length} packages`)} to be installed.`,
-        message: `${pluralize(selectedPackages.length, `${selectedPackages[0]?.name ?? ""} package`, `${selectedPackages.length} selected packages`)} will be installed and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0]?.name ?? ""}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
+        message: `${pluralize(selectedPackages.length, `${selectedPackages[0]?.name ?? ""} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -58,7 +60,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
   };
 
   switch (step) {
-    case "install":
+    case "uninstall":
       return (
         <>
           <PackageDropdownSearch
@@ -67,10 +69,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
             setSelectedPackages={(items) => {
               setSelectedPackages(items);
             }}
-            available={true}
-            installed={false}
-            held={false}
-            upgrade={false}
+            installed
           />
           <SidePanelFormButtons
             submitButtonDisabled={selectedPackages.length === 0}
@@ -88,17 +87,17 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
       return (
         <>
           <SidePanelFormButtons
-            submitButtonLoading={installPackagesQueryLoading}
-            submitButtonText={`Install ${pluralizeWithCount(
+            submitButtonLoading={uninstallPackagesQueryLoading}
+            submitButtonText={`Uninstall ${pluralizeWithCount(
               selectedPackages.length,
               "package",
             )}`}
-            submitButtonAppearance="positive"
+            submitButtonAppearance="negative"
             onSubmit={handleSubmit}
             hasBackButton
             onBackButtonPress={() => {
-              setStep("install");
-              setSidePanelTitle("Install packages");
+              setStep("uninstall");
+              setSidePanelTitle("Uninstall packages");
             }}
           />
         </>
@@ -106,4 +105,4 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
   }
 };
 
-export default PackagesInstallForm;
+export default PackagesUninstallForm;
