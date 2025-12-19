@@ -11,7 +11,7 @@ import {
 import type { FC } from "react";
 import { useState } from "react";
 import { usePackages } from "../../hooks";
-import type { Package } from "../../types";
+import type { SelectedPackage } from "../../types/SelectedPackage";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 
 interface PackagesInstallFormProps {
@@ -19,7 +19,9 @@ interface PackagesInstallFormProps {
 }
 
 const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
-  const [selectedPackages, setSelectedPackages] = useState<Package[]>([]);
+  const [selectedPackages, setSelectedPackages] = useState<SelectedPackage[]>(
+    [],
+  );
   const [step, setStep] = useState<"install" | "summary">("install");
 
   const debug = useDebug();
@@ -39,14 +41,14 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
       const { data: activity } = await installPackages({
         action: "install",
         computer_ids: instanceIds,
-        package_ids: selectedPackages.map(({ id }) => id),
+        package_ids: selectedPackages.map(({ package: { id } }) => id),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, `packages`)} to be installed.`,
-        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, `selected packages`)} will be installed and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.package.name}`, `packages`)} to be installed.`,
+        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.package.name} package`, `selected packages`)} will be installed and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -68,9 +70,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
           <PackageDropdownSearch
             instanceIds={instanceIds}
             selectedPackages={selectedPackages}
-            setSelectedPackages={(items) => {
-              setSelectedPackages(items);
-            }}
+            setSelectedPackages={setSelectedPackages}
             available={true}
             installed={false}
             held={false}

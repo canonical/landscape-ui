@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import type { GetPackagesParams } from "../../hooks";
 import type { Package } from "../../types";
+import type { SelectedPackage } from "../../types/SelectedPackage";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
@@ -22,8 +23,8 @@ import classes from "./PackageDropdownSearch.module.scss";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
-  readonly selectedPackages: Package[];
-  readonly setSelectedPackages: (packages: Package[]) => void;
+  readonly selectedPackages: SelectedPackage[];
+  readonly setSelectedPackages: (packages: SelectedPackage[]) => void;
   readonly available?: boolean;
   readonly installed?: boolean;
   readonly upgrade?: boolean;
@@ -47,8 +48,10 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
+  const query = instanceIds.map((id) => `id:${id}`).join(" OR ");
+
   const queryParams: GetPackagesParams = {
-    query: instanceIds.map((id) => `id:${id}`).join(" OR "),
+    query,
     available: available,
     installed: installed,
     upgrade: upgrade,
@@ -104,7 +107,10 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       return;
     }
 
-    setSelectedPackages([...selectedPackages, item]);
+    setSelectedPackages([
+      ...selectedPackages,
+      { package: item, selectedVersions: [] },
+    ]);
     clearSearchBox();
     close();
   };
@@ -182,17 +188,44 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
       <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
         {selectedPackages.length
-          ? selectedPackages.map((item, index) => {
+          ? selectedPackages.map((selectedPackage, index) => {
               const handleDelete = () => {
                 setSelectedPackages(selectedPackages.toSpliced(index, 1));
               };
 
               return (
                 <PackageDropdownSearchItem
-                  key={`${item.id}${index}`}
-                  item={item}
+                  key={`${selectedPackage.package.id}${index}`}
+                  selectedPackage={selectedPackage}
                   onDelete={handleDelete}
-                  install={!installed}
+                  onSelectVersion={(version) => {
+                    setSelectedPackages([
+                      ...selectedPackages.slice(0, index),
+                      {
+                        package: selectedPackage.package,
+                        selectedVersions: [
+                          ...selectedPackage.selectedVersions,
+                          version,
+                        ],
+                      },
+                      ...selectedPackages.slice(index + 1),
+                    ]);
+                  }}
+                  onDeselectVersion={(version) => {
+                    setSelectedPackages([
+                      ...selectedPackages.slice(0, index),
+                      {
+                        package: selectedPackage.package,
+                        selectedVersions:
+                          selectedPackage.selectedVersions.filter(
+                            (v) => v !== version,
+                          ),
+                      },
+                      ...selectedPackages.slice(index + 1),
+                    ]);
+                  }}
+                  query={query}
+                  type={installed ? "uninstall" : "install"}
                 />
               );
             })
