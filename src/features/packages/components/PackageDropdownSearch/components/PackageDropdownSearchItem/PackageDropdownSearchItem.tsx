@@ -8,19 +8,28 @@ import classes from "./PackageDropdownSearchItem.module.scss";
 interface PackageDropdownSearchItemProps {
   readonly item: Package;
   readonly onDelete: () => void;
+  readonly install: boolean;
 }
 
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   item,
   onDelete,
+  install,
 }) => {
   const [version, setVersion] = useState("");
 
+  const versionAll = install
+    ? {
+        label: "Latest available version",
+        value: "latest",
+      }
+    : {
+        label: "All versions",
+        value: "all",
+      };
+
   const options = [
-    {
-      label: "Latest available version",
-      value: "latest",
-    },
+    versionAll,
     ...[
       ...new Set(
         item.computers
@@ -60,7 +69,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
         <Button
           type="button"
           appearance="link"
-          className="u-no-margin--bottom"
+          className="u-no-margin--bottom u-no-padding--top"
           aria-label={`Delete ${item.name}`}
           onClick={onDelete}
         >

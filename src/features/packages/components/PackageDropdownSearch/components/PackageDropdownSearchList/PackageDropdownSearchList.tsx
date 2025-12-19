@@ -88,11 +88,11 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   }
 
   if (!exact) {
-    return <span>No packages found</span>;
+    return <div className={classes.empty}>No packages found</div>;
   }
 
   if (search) {
-    return <span>Package not found</span>;
+    return <div className={classes.empty}>Package not found</div>;
   }
 };
 

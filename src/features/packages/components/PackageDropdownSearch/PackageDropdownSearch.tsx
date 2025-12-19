@@ -110,6 +110,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   };
 
   const isOverLimit = selectedPackages.length >= MAX_SELECTED_PACKAGES;
+  const packagesSearched = installed ? "installed" : "available";
 
   return (
     <div className={classes.container}>
@@ -123,7 +124,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
           <div className="p-autocomplete">
             <SearchBox
               {...downshiftOptions.getInputProps()}
-              placeholder="Search available packages"
+              placeholder={`Search ${packagesSearched} packages`}
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -138,7 +139,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               <span className="p-form-help-text">
                 You can install a maximum of{" "}
                 {pluralizeWithCount(MAX_SELECTED_PACKAGES, "package")} in one
-                single operation.{" "}
+                single operation.
               </span>
             )}
 
@@ -191,6 +192,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   key={`${item.id}${index}`}
                   item={item}
                   onDelete={handleDelete}
+                  install={!installed}
                 />
               );
             })
