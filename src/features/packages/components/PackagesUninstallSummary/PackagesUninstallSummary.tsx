@@ -1,10 +1,10 @@
-import type { FC } from "react";
-import type { Package } from "../../types";
 import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import type { SelectedPackage } from "../../types";
 import classes from "./PackagesUninstallSummary.module.scss";
 
 interface PackagesUninstallSummaryProps {
-  readonly selectedPackages: Package[];
+  readonly selectedPackages: SelectedPackage[];
   readonly instanceIds: number[];
 }
 
@@ -13,7 +13,7 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
   instanceIds,
 }) => {
   const changingInstances = selectedPackages.flatMap((pkg) =>
-    pkg.computers
+    pkg.package.computers
       .filter((instance) => instance.status == "installed")
       .map((instance) => instance.id),
   );
@@ -24,8 +24,8 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
   return (
     <ul className="p-list u-no-margin--bottom">
       {selectedPackages.map((pkg) => (
-        <li key={pkg.name} className={classes.package}>
-          <strong className={classes.title}>{pkg.name}</strong>
+        <li key={pkg.package.name} className={classes.package}>
+          <strong className={classes.title}>{pkg.package.name}</strong>
           <div className={classes.row}>
             <Button
               type="button"
@@ -35,7 +35,7 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
               {changingInstances.length} instances
             </Button>
             <span>
-              will uninstall <code>{pkg.name}</code>
+              will uninstall <code>{pkg.package.name}</code>
             </span>
           </div>
           <div className={classes.row}>
@@ -47,7 +47,7 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
               {unchangingInstances.length} instances
             </Button>
             <span>
-              don&apos;t have <code>{pkg.name}</code> installed
+              don&apos;t have <code>{pkg.package.name}</code> installed
             </span>
           </div>
         </li>

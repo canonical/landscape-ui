@@ -7,7 +7,7 @@ import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
 import { usePackages } from "../../hooks";
-import type { Package } from "../../types";
+import type { SelectedPackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesUninstallSummary from "../PackagesUninstallSummary";
 
@@ -18,7 +18,9 @@ interface PackagesUninstallFormProps {
 const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
   instanceIds,
 }) => {
-  const [selectedPackages, setSelectedPackages] = useState<Package[]>([]);
+  const [selectedPackages, setSelectedPackages] = useState<SelectedPackage[]>(
+    [],
+  );
   const [step, setStep] = useState<"uninstall" | "summary">("uninstall");
 
   const debug = useDebug();
@@ -38,14 +40,14 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
       const { data: activity } = await uninstallPackages({
         action: "remove",
         computer_ids: instanceIds,
-        package_ids: selectedPackages.map(({ id }) => id),
+        package_ids: selectedPackages.map(({ package: { id } }) => id),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0]?.name ?? ""}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
-        message: `${pluralize(selectedPackages.length, `${selectedPackages[0]?.name ?? ""} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0].package.name}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
+        message: `${pluralize(selectedPackages.length, `${selectedPackages[0].package.name} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",

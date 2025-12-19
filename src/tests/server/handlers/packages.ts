@@ -131,6 +131,15 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
+  http.get(`${API_URL}packages/:id/available_versions`, () => {
+    return HttpResponse.json<{ name: string; num_computers: number }[]>([
+      { name: "1.0.1", num_computers: 5 },
+      { name: "1.0.2", num_computers: 3 },
+      { name: "1.1.0", num_computers: 8 },
+      { name: "2.0.0", num_computers: 2 },
+    ]);
+  }),
+
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "UpgradePackages")) {
       return;
