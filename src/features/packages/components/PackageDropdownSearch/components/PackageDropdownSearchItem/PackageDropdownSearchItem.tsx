@@ -10,6 +10,7 @@ import {
 import classNames from "classnames";
 import { type FC } from "react";
 import type { SelectedPackage } from "../../../../types";
+import InstancesWithoutVersionCount from "../InstancesWithoutVersionCount";
 import classes from "./PackageDropdownSearchItem.module.scss";
 
 interface PackageDropdownSearchItemProps {
@@ -19,6 +20,7 @@ interface PackageDropdownSearchItemProps {
   readonly onDeselectVersion: (version: string) => void;
   readonly query: string;
   readonly type: "install" | "uninstall" | "hold" | "unhold";
+  readonly instanceCount: number;
 }
 
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
@@ -27,6 +29,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   onSelectVersion,
   onDeselectVersion,
   query,
+  instanceCount,
 }) => {
   const { isPending, data, error } = useGetAvailablePackageVersions({
     id: selectedPackage.package.id,
@@ -63,27 +66,45 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
         {isPending ? (
           <LoadingState />
         ) : (
-          data.data.map((packageVersion) => (
-            <CheckboxInput
-              key={packageVersion.name}
-              label={
-                <>
-                  Install version <code>{packageVersion.name}</code> on{" "}
-                  {pluralizeWithCount(packageVersion.num_computers, "instance")}
-                </>
-              }
-              checked={selectedPackage.selectedVersions.includes(
-                packageVersion.name,
-              )}
-              onChange={(checked) => {
-                if (checked) {
-                  onSelectVersion(packageVersion.name);
-                } else {
-                  onDeselectVersion(packageVersion.name);
+          <>
+            {data.data.map((packageVersion) => (
+              <div key={packageVersion.name}>
+                <CheckboxInput
+                  labelClassName="u-no-padding--top u-no-margin--bottom"
+                  label={
+                    <>
+                      Install version <code>{packageVersion.name}</code> on{" "}
+                      {pluralizeWithCount(
+                        packageVersion.num_computers,
+                        "instance",
+                      )}
+                    </>
+                  }
+                  checked={selectedPackage.selectedVersions.includes(
+                    packageVersion.name,
+                  )}
+                  onChange={({ currentTarget: { checked } }) => {
+                    if (checked) {
+                      onSelectVersion(packageVersion.name);
+                    } else {
+                      onDeselectVersion(packageVersion.name);
+                    }
+                  }}
+                />
+              </div>
+            ))}
+
+            {
+              <InstancesWithoutVersionCount
+                count={
+                  instanceCount -
+                  data.data.reduce((previousCount, currentVersion) => {
+                    return previousCount + currentVersion.num_computers;
+                  }, 0)
                 }
-              }}
-            />
-          ))
+              />
+            }
+          </>
         )}
       </div>
     </li>

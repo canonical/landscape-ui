@@ -1,9 +1,14 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
-.pointer {
+.listItem {
   cursor: pointer;
-  padding: $spv--small;
+  padding: $sph--small $spv--large;
+
+  &.disabled {
+    color: $colors--theme--text-muted;
+    cursor: not-allowed;
+  }
 }
 
 .highlighted {

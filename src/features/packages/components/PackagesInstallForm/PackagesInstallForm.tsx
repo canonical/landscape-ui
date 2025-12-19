@@ -73,7 +73,12 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
             upgrade={false}
           />
           <SidePanelFormButtons
-            submitButtonDisabled={selectedPackages.length === 0}
+            submitButtonDisabled={
+              !selectedPackages.length ||
+              selectedPackages.some(
+                ({ selectedVersions }) => !selectedVersions.length,
+              )
+            }
             submitButtonText="Next"
             submitButtonAppearance="positive"
             onSubmit={() => {

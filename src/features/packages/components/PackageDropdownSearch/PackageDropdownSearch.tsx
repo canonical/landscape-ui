@@ -179,6 +179,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   hasOneInstance={instanceIds.length === 1}
                   queryResult={packagesQueryResult}
                   search={search}
+                  selectedPackages={selectedPackages}
                 />
               </div>
             )}
@@ -196,6 +197,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
               return (
                 <PackageDropdownSearchItem
                   key={`${selectedPackage.package.id}${index}`}
+                  instanceCount={instanceIds.length}
                   selectedPackage={selectedPackage}
                   onDelete={handleDelete}
                   onSelectVersion={(version) => {
