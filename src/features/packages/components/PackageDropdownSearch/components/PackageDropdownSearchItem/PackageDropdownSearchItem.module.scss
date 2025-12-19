@@ -2,7 +2,7 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .topRow {
-  align-items: center;
+  align-items: end;
   border-bottom: 1px solid $colors--theme--border-default;
   display: flex;
   justify-content: space-between;
