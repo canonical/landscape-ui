@@ -16,11 +16,13 @@
 }
 
 .version {
-  align-items: center;
-  gap: $sph--x-large;
+  display: flex;
+  flex-direction: column;
+  gap: $spv--large;
 
-  :last-child {
-    flex-grow: 1;
+  :not(:last-child) {
+    border-bottom: 1px solid $colors--theme--border-low-contrast;
+    padding-bottom: $spv--large;
   }
 }
 

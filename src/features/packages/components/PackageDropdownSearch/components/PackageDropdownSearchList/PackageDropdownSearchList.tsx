@@ -11,6 +11,7 @@ import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
+import type { SelectedPackage } from "../../../../types";
 import classes from "./PackageDropdownSearchList.module.scss";
 
 interface PackageDropdownSearchListProps {
@@ -21,6 +22,7 @@ interface PackageDropdownSearchListProps {
     InfiniteData<AxiosResponse<ApiPaginatedResponse<Package>>>
   > & { isError: false };
   readonly search: string;
+  readonly selectedPackages: SelectedPackage[];
 }
 
 const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
@@ -29,6 +31,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   hasOneInstance,
   queryResult,
   search,
+  selectedPackages,
 }) => {
   const { ref: loadingStateRef } = useIntersectionObserver({
     onChange: (isIntersecting) => {
@@ -56,30 +59,39 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
             "p-list u-no-margin p-autocomplete__suggestions",
           )}
         >
-          {results.map((item: Package, index: number) => (
-            <li
-              className={classNames("p-list__item", classes.pointer, {
-                [classes.highlighted]:
-                  downshiftOptions.highlightedIndex === index,
-              })}
-              key={item.name}
-              {...downshiftOptions.getItemProps({
-                item,
-                index,
-              })}
-            >
-              <div className="u-truncate" data-testid="dropdownElement">
-                <BoldSubstring text={item.name} substring={search} />
-              </div>
-              {hasOneInstance && (
-                <div>
-                  <small className="u-text-muted">
-                    {item.computers[0].available_version}
-                  </small>
+          {results.map((item: Package, index: number) => {
+            const disabled = selectedPackages.some(
+              ({ package: selectedPackage }) => item.id === selectedPackage.id,
+            );
+
+            return (
+              <li
+                className={classNames("p-list__item", classes.listItem, {
+                  [classes.highlighted]:
+                    downshiftOptions.highlightedIndex === index,
+                  [classes.disabled]: disabled,
+                })}
+                key={item.name}
+                {...(disabled
+                  ? []
+                  : downshiftOptions.getItemProps({
+                      item,
+                      index,
+                    }))}
+              >
+                <div className="u-truncate" data-testid="dropdownElement">
+                  <BoldSubstring text={item.name} substring={search} />
                 </div>
-              )}
-            </li>
-          ))}
+                {hasOneInstance && (
+                  <div>
+                    <small className="u-text-muted">
+                      {item.computers[0].available_version}
+                    </small>
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </ul>
 
         {queryResult.hasNextPage && <LoadingState ref={loadingStateRef} />}
