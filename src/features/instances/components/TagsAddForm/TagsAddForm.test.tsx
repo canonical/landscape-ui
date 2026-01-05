@@ -1,7 +1,6 @@
 import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import type { Instance } from "@/types/Instance";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TagsAddForm from "./TagsAddForm";
@@ -58,9 +57,9 @@ describe("TagsAddForm", async () => {
   });
 
   it("should add selected tags to the single instance", async () => {
-    const selectedInstances = [instances[0]] as const satisfies Instance[];
+    const [selectedInstance] = instances;
 
-    renderWithProviders(<TagsAddForm selected={selectedInstances} />);
+    renderWithProviders(<TagsAddForm selected={[selectedInstance]} />);
     await expectLoadingState();
 
     await Promise.all(
@@ -77,7 +76,7 @@ describe("TagsAddForm", async () => {
     await userEvent.click(screen.getByRole("button", { name: /add tags/i }));
     expect(
       await screen.findByText(
-        `Tags successfully assigned to "${selectedInstances[0].title}" instance`,
+        `Tags successfully assigned to "${selectedInstance.title}" instance`,
       ),
     ).toBeInTheDocument();
   });

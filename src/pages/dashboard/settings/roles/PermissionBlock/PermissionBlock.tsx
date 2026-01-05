@@ -38,10 +38,7 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
 
   const isOptionDisabled = (option: PermissionOption) => {
     return (
-      option.values.view === "" ||
-      (permissions as unknown[]).includes(
-        options.find(({ label }) => label === option.label)?.values.manage,
-      )
+      option.values.view === "" || permissions.includes(option.values.manage)
     );
   };
 

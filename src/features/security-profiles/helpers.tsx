@@ -231,3 +231,7 @@ export const getNotificationMessage = (
       return "Applying remediation fixes and generating an audit have been queued in Activities.";
   }
 };
+
+export const getDayOfWeek = (date: Date) => {
+  return date.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+};

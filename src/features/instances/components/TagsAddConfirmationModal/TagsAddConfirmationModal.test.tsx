@@ -1,5 +1,3 @@
-/* eslint @typescript-eslint/prefer-readonly-parameter-types: 0 */
-
 import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
 import { profileChanges, tags } from "@/tests/mocks/tag";
@@ -10,7 +8,7 @@ import type { ComponentProps } from "react";
 import TagsAddConfirmationModal from "./TagsAddConfirmationModal";
 
 const props = {
-  instances: [instances[0], instances[1]] as const,
+  instances,
   tags: tags,
   onConfirm: vi.fn(),
 } satisfies ComponentProps<typeof TagsAddConfirmationModal>;

@@ -4,7 +4,7 @@ import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useSidePanel from "@/hooks/useSidePanel";
 import { accountsDefault, accountsForSubdomain } from "@/tests/mocks/accounts";
 import { renderWithProviders } from "@/tests/render";
-import { map } from "@/utils/_helpers";
+import { mapTuple } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
@@ -27,7 +27,7 @@ const defaultAccounts = {
     (account) => !!account.default,
   ) as Account,
   isOnSubdomain: false,
-  options: map(accountsDefault, ({ name, title }) => ({
+  options: mapTuple(accountsDefault, ({ name, title }) => ({
     label: title,
     value: name,
   })),

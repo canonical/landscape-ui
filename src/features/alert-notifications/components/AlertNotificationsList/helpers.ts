@@ -6,9 +6,9 @@ import type { AlertSummary } from "../../types";
 export const getAlertStatus = (type: string) => {
   if (hasProperty(ALERT_STATUSES, type)) {
     return ALERT_STATUSES[type];
-  } else {
-    return ALERT_STATUSES.Unknown;
   }
+
+  return ALERT_STATUSES.Unknown;
 };
 
 export const getRouteParams = (alert: AlertSummary): Partial<PageParams> => {

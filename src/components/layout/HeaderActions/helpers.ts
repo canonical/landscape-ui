@@ -21,20 +21,15 @@ export const actionListsAreEqual = (
     return false;
   }
 
-  for (const i in leftList) {
-    const left = leftList[i];
-    const right = rightList[i];
+  return leftList.every((leftAction, index) => {
+    const rightAction = rightList[index];
 
-    if (left === undefined || right === undefined) {
+    if (rightAction === undefined) {
       return false;
     }
 
-    if (!actionsHaveSameIdentity(left, right)) {
-      return false;
-    }
-  }
-
-  return true;
+    return actionsHaveSameIdentity(leftAction, rightAction);
+  });
 };
 
 export const bucketsHaveAnyCollapsed = (bucket: {

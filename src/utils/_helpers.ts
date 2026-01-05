@@ -111,7 +111,7 @@ export const getTitleByName = (
   return name;
 };
 
-export const map = <TArray extends readonly unknown[], TResult>(
+export const mapTuple = <TArray extends readonly unknown[], TResult>(
   items: TArray,
   toItem: (item: TArray[number]) => TResult,
 ) => {

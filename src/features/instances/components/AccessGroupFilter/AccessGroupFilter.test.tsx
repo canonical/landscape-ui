@@ -1,13 +1,13 @@
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { renderWithProviders } from "@/tests/render";
-import { map } from "@/utils/_helpers";
+import { mapTuple } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AccessGroupFilter from "./AccessGroupFilter";
 
-const options = map(accessGroups, (accessGroup) => ({
+const options = mapTuple(accessGroups, (accessGroup) => ({
   label: accessGroup.title,
   value: accessGroup.name,
 }));

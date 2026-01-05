@@ -8,18 +8,11 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
-import type { Activity } from "../../types";
 import Activities from "./Activities";
-
-const mockActivities = [
-  activities[0],
-  activities[1],
-  activities[2],
-] as const satisfies Activity[];
 
 const setSelectedActivities = vi.fn();
 const defaultProps: ComponentProps<typeof Activities> = {
-  activities: mockActivities,
+  activities,
   activitiesCount: 3,
   isGettingActivities: false,
   selectedActivities: [],
@@ -72,28 +65,30 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const checkboxes = screen.getAllByRole("checkbox");
-      const checkboxesIncludingHeaderLength = mockActivities.length + 1;
+      const checkboxesIncludingHeaderLength = activities.length + 1;
       expect(checkboxes).toHaveLength(checkboxesIncludingHeaderLength);
     });
 
     it("should call setSelectedActivities when individual checkbox is clicked", async () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
-      const checkboxes = screen.getAllByRole("checkbox");
-      assert(checkboxes[1]);
-      await user.click(checkboxes[1]);
+      const checkbox = screen.getByRole("checkbox", {
+        name: activities[0].summary,
+      });
+      await user.click(checkbox);
 
-      expect(setSelectedActivities).toHaveBeenCalledWith([mockActivities[0]]);
+      expect(setSelectedActivities).toHaveBeenCalledWith([activities[0]]);
     });
 
     it("should toggle all checkboxes when header checkbox is clicked", async () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
-      const [headerCheckbox] = screen.getAllByRole("checkbox");
-      assert(headerCheckbox);
+      const headerCheckbox = screen.getByRole("checkbox", {
+        name: /toggle all/i,
+      });
       await user.click(headerCheckbox);
 
-      expect(setSelectedActivities).toHaveBeenCalledWith(mockActivities);
+      expect(setSelectedActivities).toHaveBeenCalledWith(activities);
     });
   });
 
@@ -101,14 +96,13 @@ describe("Activities", () => {
     it("should open activity details side panel when description is clicked", async () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
-      const activityButtons = screen.getAllByRole("button", {
-        name: mockActivities[0].summary,
+      const activityButton = screen.getByRole("button", {
+        name: activities[0].summary,
       });
-      assert(activityButtons[0]);
-      await user.click(activityButtons[0]);
+      await user.click(activityButton);
 
       expect(
-        screen.getByRole("heading", { name: mockActivities[0].summary }),
+        screen.getByRole("heading", { name: activities[0].summary }),
       ).toBeInTheDocument();
     });
   });
@@ -154,9 +148,9 @@ describe("Activities", () => {
   describe("Status icons", () => {
     it("should render status with appropriate icon", () => {
       const activitiesWithDifferentStatuses = [
-        { ...mockActivities[0], activity_status: "succeeded" as const },
-        { ...mockActivities[1], activity_status: "failed" as const },
-        { ...mockActivities[2], activity_status: "waiting" as const },
+        { ...activities[0], activity_status: "succeeded" as const },
+        { ...activities[1], activity_status: "failed" as const },
+        { ...activities[2], activity_status: "waiting" as const },
       ];
 
       renderWithProviders(

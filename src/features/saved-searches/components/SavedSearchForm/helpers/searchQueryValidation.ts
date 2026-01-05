@@ -184,7 +184,7 @@ const validateAnnotationToken = (val: string): ValidationResult => {
 };
 
 const validateKeyToken = (
-  parts: [string, string, string?, string?],
+  parts: [string, string],
   config: ValidationConfig,
 ): ValidationResult => {
   const [key, val] = parts;
@@ -253,12 +253,11 @@ export const validateSearchQuery = (
   const tokens = query.match(QUERY_TOKEN_REGEX) ?? [];
   const lastIndex = tokens.length - 1;
 
-  for (let i = 0; i < tokens.length; i++) {
+  for (const [i, token] of tokens.entries()) {
     if (!shouldValidateToken(i, lastIndex, isSubmit, hasTrailingSpace)) {
       continue;
     }
 
-    const token = tokens[i]!;
     const cleanToken = token.replace(DOUBLE_QUOTE_REGEX, "");
     const error = validateToken(cleanToken, i, config);
 

@@ -90,8 +90,6 @@ export const getAccessGroupOptions = (accessGroups: AccessGroup[]) => {
 
         if (option) {
           option.children.push(name);
-        } else {
-          throw new Error();
         }
       }
     }

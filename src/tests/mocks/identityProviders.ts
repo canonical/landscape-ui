@@ -3,7 +3,7 @@ import type {
   IdentityProvider,
   SupportedIdentityProvider,
 } from "@/features/auth";
-import { map } from "@/utils/_helpers";
+import { mapTuple } from "@/utils/_helpers";
 
 export const identityProviders = [
   {
@@ -38,12 +38,15 @@ const oktaProviderConfiguration = {
   scopes: ["openid", "email"],
 };
 
-export const singleIdentityProviders = map(identityProviders, (provider) => ({
-  configuration: { ...oktaProviderConfiguration, name: provider.name },
-  enabled: provider.enabled,
-  id: provider.id,
-  redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/oidc",
-}));
+export const singleIdentityProviders = mapTuple(
+  identityProviders,
+  (provider) => ({
+    configuration: { ...oktaProviderConfiguration, name: provider.name },
+    enabled: provider.enabled,
+    id: provider.id,
+    redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/oidc",
+  }),
+);
 
 export const supportedProviders = [
   {

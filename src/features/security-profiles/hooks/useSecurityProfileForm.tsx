@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import moment from "moment";
 import type { ReactNode } from "react";
 import * as Yup from "yup";
+import { getDayOfWeek } from "../helpers";
 import type { SecurityProfile } from "../types";
 import type { SecurityProfileFormValues } from "../types/SecurityProfileAddFormValues";
 import useSecurityProfileFormAssociationStep from "./useSecurityProfileFormAssociationStep";
@@ -139,10 +140,10 @@ const useSecurityProfileForm = ({
 
               case "day-of-week": {
                 const ordinalWeek = Math.ceil(dayOfMonth / 7);
-                const day = date.getDay();
+                const day = getDayOfWeek(date);
 
                 scheduleRuleParts.push(
-                  `BYDAY=${ordinalWeek > 4 ? -1 : ordinalWeek}${DAY_OPTIONS[day as 0 | 1 | 2 | 3 | 4 | 5 | 6].value}`,
+                  `BYDAY=${ordinalWeek > 4 ? -1 : ordinalWeek}${DAY_OPTIONS[day].value}`,
                 );
                 break;
               }
