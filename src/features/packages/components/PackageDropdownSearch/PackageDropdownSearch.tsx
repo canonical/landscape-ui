@@ -166,7 +166,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                     checked={exact}
                   />
 
-                  {!(isPendingPackages || exact) && (
+                  {!isPendingPackages && (
                     <PackageDropdownSearchCount
                       count={packagesResponse.pages.at(-1)?.data.count}
                     />

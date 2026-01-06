@@ -14,6 +14,10 @@
     }
 
     > :global(.p-contextual-menu):not(:last-child) {
+      > :global(.p-button) {
+        border-right-width: 0;
+      }
+
       > :global(.p-button)::after {
         background-color: var(--vf-color-border-low-contrast);
         bottom: 0;
