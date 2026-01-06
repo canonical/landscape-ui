@@ -7,6 +7,7 @@ export { default as PackagesUninstallForm } from "./components/PackagesUninstall
 export { usePackages } from "./hooks";
 export type { GetPackagesParams, InstancePackagesToExclude } from "./hooks";
 export type {
+  AvailableVersion,
   DowngradePackageVersion,
   InstancePackage,
   Package,

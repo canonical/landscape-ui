@@ -16,3 +16,5 @@ export {
 } from "./InstalledPackageAction";
 
 export * from "./SelectedPackage";
+
+export * from "./AvailableVersion";
