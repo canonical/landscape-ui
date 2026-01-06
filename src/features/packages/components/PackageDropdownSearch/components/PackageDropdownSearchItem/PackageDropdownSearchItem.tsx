@@ -29,6 +29,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   onSelectVersion,
   onDeselectVersion,
   query,
+  type,
   instanceCount,
 }) => {
   const { isPending, data, error } = useGetAvailablePackageVersions({
@@ -39,6 +40,8 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   if (error) {
     throw error;
   }
+
+  const action = type[0].toUpperCase() + type.substring(1);
 
   return (
     <li
@@ -73,7 +76,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                   labelClassName="u-no-padding--top u-no-margin--bottom"
                   label={
                     <>
-                      Install version <code>{packageVersion.name}</code> on{" "}
+                      {action} version <code>{packageVersion.name}</code> on{" "}
                       {pluralizeWithCount(
                         packageVersion.num_computers,
                         "instance",
