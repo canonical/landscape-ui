@@ -135,7 +135,7 @@ export default [
     return HttpResponse.json<{ name: string; num_computers: number }[]>([
       { name: "1.0.1", num_computers: 5 },
       { name: "1.0.2", num_computers: 3 },
-      { name: "1.1.0", num_computers: 8 },
+      { name: "0.1.9-1", num_computers: 8 },
       { name: "2.0.0", num_computers: 2 },
     ]);
   }),
