@@ -1,10 +1,11 @@
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import { useState, type FC } from "react";
-import type { SelectedPackage } from "../../types";
-import classes from "./PackagesUninstallSummary.module.scss";
 import { useBoolean } from "usehooks-ts";
+import type { SelectedPackage } from "../../types";
+import type { AvailableVersion } from "../../types/AvailableVersion";
 import PackagesUninstallSummaryDetails from "../PackagesUninstallSummaryDetails";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import classes from "./PackagesUninstallSummary.module.scss";
 
 interface PackagesUninstallSummaryProps {
   readonly selectedPackages: SelectedPackage[];
@@ -20,18 +21,10 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
-  const [selectedSummary, setSelectedSummary] = useState("");
+  const [selectedSummary, setSelectedSummary] =
+    useState<AvailableVersion | null>(null);
 
-  const changingInstances = selectedPackages.flatMap((pkg) =>
-    pkg.package.computers
-      .filter((instance) => instance.status == "installed")
-      .map((instance) => instance.id),
-  );
-  const unchangingInstances = instanceIds.filter(
-    (id) => !changingInstances.includes(id),
-  );
-
-  const selectSummary = (version: string) => {
+  const selectSummary = (version: AvailableVersion) => {
     setSelectedSummary(version);
     openModal();
   };
@@ -41,28 +34,10 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
       {selectedPackages.map((pkg) => (
         <li key={pkg.package.name} className={classes.package}>
           <strong className={classes.title}>{pkg.package.name}</strong>
-          {pkg.selectedVersions.map((version) => (
-            <>
-              <div className={classes.row} key={version}>
-                <Button
-                  type="button"
-                  appearance="link"
-                  className={classes.instances}
-                  onClick={() => {
-                    selectSummary(version);
-                  }}
-                >
-                  {pluralizeWithCount(changingInstances.length, "instance")}
-                </Button>
-                <span>
-                  Will uninstall{" "}
-                  <code>
-                    {pkg.package.name} {version}
-                  </code>
-                </span>
-              </div>
-              {unchangingInstances.length > 0 && (
-                <div className={classes.row}>
+          {pkg.selectedVersions.map((version) => {
+            return (
+              <>
+                <div className={classes.row} key={version.name}>
                   <Button
                     type="button"
                     appearance="link"
@@ -71,26 +46,42 @@ const PackagesUninstallSummary: FC<PackagesUninstallSummaryProps> = ({
                       selectSummary(version);
                     }}
                   >
-                    {pluralizeWithCount(changingInstances.length, "instance")}
+                    {pluralizeWithCount(version.num_computers, "instance")}
                   </Button>
                   <span>
-                    Don&apos;t have{" "}
+                    Will uninstall{" "}
                     <code>
-                      {pkg.package.name} {version}
-                    </code>{" "}
-                    installed
+                      {pkg.package.name} {version.name}
+                    </code>
                   </span>
                 </div>
-              )}
-              <PackagesUninstallSummaryDetails
-                opened={isModalOpen}
-                pkg={pkg}
-                instanceIds={instanceIds}
-                close={closeModal}
-                selectedVersion={selectedSummary}
-              />
-            </>
-          ))}
+                <PackagesUninstallSummaryDetails
+                  opened={isModalOpen}
+                  pkg={pkg}
+                  instanceIds={instanceIds}
+                  close={closeModal}
+                  selectedVersion={selectedSummary}
+                />
+              </>
+            );
+          })}
+          <div className={classes.row}>
+            <Button
+              type="button"
+              appearance="link"
+              className={classes.instances}
+            >
+              {pluralizeWithCount(0, "instance")}
+            </Button>
+            <span>
+              Will not uninstall{" "}
+              <code>
+                {pkg.package.name}
+                {pkg.selectedVersions.length === 1 &&
+                  ` ${pkg.selectedVersions[0].name}`}
+              </code>
+            </span>
+          </div>
         </li>
       ))}
     </ul>

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { usePackages } from "../../hooks";
 import type { SelectedPackage } from "../../types/SelectedPackage";
 import PackageDropdownSearch from "../PackageDropdownSearch";
+import PackagesUninstallSummary from "../PackagesUninstallSummary";
 
 interface PackagesInstallFormProps {
   readonly instanceIds: number[];
@@ -92,6 +93,10 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
     case "summary":
       return (
         <>
+          <PackagesUninstallSummary
+            instanceIds={instanceIds}
+            selectedPackages={selectedPackages}
+          />
           <SidePanelFormButtons
             submitButtonLoading={installPackagesQueryLoading}
             submitButtonText={`Install ${pluralizeWithCount(

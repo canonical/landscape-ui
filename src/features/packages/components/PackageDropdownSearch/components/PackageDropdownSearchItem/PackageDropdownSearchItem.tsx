@@ -10,17 +10,17 @@ import {
 import classNames from "classnames";
 import { type FC } from "react";
 import type { SelectedPackage } from "../../../../types";
+import type { AvailableVersion } from "../../../../types/AvailableVersion";
 import InstancesWithoutVersionCount from "../InstancesWithoutVersionCount";
 import classes from "./PackageDropdownSearchItem.module.scss";
 
 interface PackageDropdownSearchItemProps {
   readonly selectedPackage: SelectedPackage;
   readonly onDelete: () => void;
-  readonly onSelectVersion: (version: string) => void;
-  readonly onDeselectVersion: (version: string) => void;
+  readonly onSelectVersion: (version: AvailableVersion) => void;
+  readonly onDeselectVersion: (version: AvailableVersion) => void;
   readonly query: string;
   readonly type: "install" | "uninstall" | "hold" | "unhold";
-  readonly instanceCount: number;
 }
 
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
@@ -30,7 +30,6 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   onDeselectVersion,
   query,
   type,
-  instanceCount,
 }) => {
   const { isPending, data, error } = useGetAvailablePackageVersions({
     id: selectedPackage.package.id,
@@ -70,7 +69,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
           <LoadingState />
         ) : (
           <>
-            {data.data.map((packageVersion) => (
+            {data.data.versions.map((packageVersion) => (
               <div key={packageVersion.name}>
                 <CheckboxInput
                   labelClassName="u-no-padding--top u-no-margin--bottom"
@@ -83,30 +82,22 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                       )}
                     </>
                   }
-                  checked={selectedPackage.selectedVersions.includes(
-                    packageVersion.name,
+                  checked={selectedPackage.selectedVersions.some(
+                    (selectedVersion) =>
+                      selectedVersion.name === packageVersion.name,
                   )}
                   onChange={({ currentTarget: { checked } }) => {
                     if (checked) {
-                      onSelectVersion(packageVersion.name);
+                      onSelectVersion(packageVersion);
                     } else {
-                      onDeselectVersion(packageVersion.name);
+                      onDeselectVersion(packageVersion);
                     }
                   }}
                 />
               </div>
             ))}
 
-            {
-              <InstancesWithoutVersionCount
-                count={
-                  instanceCount -
-                  data.data.reduce((previousCount, currentVersion) => {
-                    return previousCount + currentVersion.num_computers;
-                  }, 0)
-                }
-              />
-            }
+            {<InstancesWithoutVersionCount count={data.data.without_version} />}
           </>
         )}
       </div>

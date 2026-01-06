@@ -2,6 +2,7 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import type { AvailableVersion } from "../types/AvailableVersion";
 
 interface GetAvailablePackageVersionsParams {
   id: number;
@@ -15,12 +16,7 @@ export function useGetAvailablePackageVersions({
   const authFetch = useFetch();
 
   return useQuery<
-    AxiosResponse<
-      {
-        name: string;
-        num_computers: number;
-      }[]
-    >,
+    AxiosResponse<{ without_version: number; versions: AvailableVersion[] }>,
     AxiosError<ApiError>
   >({
     queryKey: ["packages", id, queryParams],

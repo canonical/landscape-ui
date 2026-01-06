@@ -1,21 +1,22 @@
-import { useMemo, useState, type FC } from "react";
-import type { SelectedPackage } from "../../types";
-import { Modal, SearchBox } from "@canonical/react-components";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { usePackages } from "../../hooks";
 import LoadingState from "@/components/layout/LoadingState";
-import type { InstancePackageInfoWithInstanceId } from "../../types/Package";
-import type { CellProps } from "react-table";
-import type { InstanceColumn } from "./types";
-import classes from "./PackagesUninstallSummaryDetails.module.scss";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
+import { Modal, SearchBox } from "@canonical/react-components";
+import { useMemo, useState, type FC } from "react";
+import type { CellProps } from "react-table";
+import { usePackages } from "../../hooks";
+import type { SelectedPackage } from "../../types";
+import type { AvailableVersion } from "../../types/AvailableVersion";
+import type { InstancePackageInfoWithInstanceId } from "../../types/Package";
+import classes from "./PackagesUninstallSummaryDetails.module.scss";
+import type { InstanceColumn } from "./types";
 
 interface PackagesUninstallSummaryDetailsProps {
   readonly pkg: SelectedPackage;
   readonly instanceIds: number[];
   readonly opened: boolean;
   readonly close: () => void;
-  readonly selectedVersion: string;
+  readonly selectedVersion: AvailableVersion | null;
 }
 
 const PackagesUninstallSummaryDetails: FC<

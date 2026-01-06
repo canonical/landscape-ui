@@ -1,6 +1,10 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
-import type { GetPackagesParams, Package } from "@/features/packages";
+import type {
+  AvailableVersion,
+  GetPackagesParams,
+  Package,
+} from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
@@ -132,12 +136,18 @@ export default [
   }),
 
   http.get(`${API_URL}packages/:id/available_versions`, () => {
-    return HttpResponse.json<{ name: string; num_computers: number }[]>([
-      { name: "1.0.1", num_computers: 5 },
-      { name: "1.0.2", num_computers: 3 },
-      { name: "0.1.9-1", num_computers: 8 },
-      { name: "2.0.0", num_computers: 2 },
-    ]);
+    return HttpResponse.json<{
+      without_version: number;
+      versions: AvailableVersion[];
+    }>({
+      without_version: 4,
+      versions: [
+        { name: "1.0.1", num_computers: 5 },
+        { name: "1.0.2", num_computers: 3 },
+        { name: "0.1.9-1", num_computers: 8 },
+        { name: "2.0.0", num_computers: 2 },
+      ],
+    });
   }),
 
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
