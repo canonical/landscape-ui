@@ -1,6 +1,5 @@
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { setScreenSize } from "@/tests/helpers";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
@@ -10,7 +9,7 @@ import { describe, expect, vi } from "vitest";
 import SnapsList from "./SnapsList";
 
 async function findSnapByName(name: string) {
-  return await screen.findByRole("button", {
+  return screen.findByRole("button", {
     name: `Show details of snap ${name}`,
   });
 }
@@ -126,8 +125,6 @@ describe("SnapsList", () => {
       renderWithProviders(<SnapsList {...props} />);
 
       await clickSnapOnTable(selectedSnap.snap.name);
-
-      setScreenSize("lg");
     });
 
     it("should open side panel when snap in table is clicked", async () => {

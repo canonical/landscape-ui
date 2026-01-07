@@ -1,5 +1,10 @@
 import type { FC, ReactNode } from "react";
-import React, { useContext, useLayoutEffect, useMemo, useRef } from "react";
+import React, {
+  useContext,
+  useEffectEvent,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 import type { AxiosInstance } from "axios";
 import axios from "axios";
 import { API_URL_OLD } from "@/constants";
@@ -18,30 +23,26 @@ interface FetchProviderProps {
 const FetchOldProvider: FC<FetchProviderProps> = ({ children }) => {
   const { user, logout } = useContext(AuthContext);
 
-  const tokenRef = useRef(user?.token);
-  const logoutRef = useRef(logout);
-
   const authFetch = useMemo(() => {
     return axios.create({ baseURL: API_URL_OLD });
   }, []);
 
-  useLayoutEffect(() => {
-    tokenRef.current = user?.token;
-    logoutRef.current = logout;
+  const getLatestToken = useEffectEvent(() => {
+    return user?.token;
   });
 
-  // 4. Attach Interceptors synchronously before children mount/update
+  const onLogout = useEffectEvent(() => {
+    logout();
+  });
+
   useLayoutEffect(() => {
     const cleanupRequest = setupRequestInterceptor(
       authFetch,
-      () => tokenRef.current,
+      getLatestToken,
       true,
     );
 
-    const cleanupResponse = setupResponseInterceptor(
-      authFetch,
-      () => logoutRef.current,
-    );
+    const cleanupResponse = setupResponseInterceptor(authFetch, () => onLogout);
 
     return () => {
       cleanupRequest();

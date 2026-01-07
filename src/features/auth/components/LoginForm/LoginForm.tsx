@@ -3,7 +3,7 @@ import { useLogin } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import {
-  Button,
+  ActionButton,
   Form,
   Input,
   PasswordToggle,
@@ -123,14 +123,15 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
       />
 
       <div className={classes.buttonRow}>
-        <Button
+        <ActionButton
           type="submit"
           appearance="positive"
+          loading={formik.isSubmitting || isLoggingIn}
           disabled={formik.isSubmitting || !formik.isValid || isLoggingIn}
           className="u-no-margin--bottom"
         >
           Sign in
-        </Button>
+        </ActionButton>
       </div>
     </Form>
   );
