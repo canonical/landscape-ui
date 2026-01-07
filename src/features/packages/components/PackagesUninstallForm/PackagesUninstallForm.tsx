@@ -35,6 +35,10 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
     isPending: uninstallPackagesQueryLoading,
   } = packagesActionQuery;
 
+  const disableButton = selectedPackages.some(
+    ({ selectedVersions }) => selectedVersions.length == 0,
+  );
+
   const handleSubmit = async () => {
     try {
       const { data: activity } = await uninstallPackages({
@@ -75,7 +79,7 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
             installed
           />
           <SidePanelFormButtons
-            submitButtonDisabled={selectedPackages.length === 0}
+            submitButtonDisabled={disableButton}
             submitButtonText="Next"
             submitButtonAppearance="positive"
             onSubmit={() => {
