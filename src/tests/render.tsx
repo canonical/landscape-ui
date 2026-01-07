@@ -36,14 +36,12 @@ export const renderWithProviders = (
   routePath?: string,
   routePattern?: string,
 ) => {
-  const testClient = new QueryClient(testQueryClientConfig);
-
   const Wrapper: FC<WrapperProps> = ({ children }) => {
     const initialEntries = routePath ? [routePath] : undefined;
 
     return (
       <MemoryRouter initialEntries={initialEntries}>
-        <AppProviders queryClient={testClient}>
+        <AppProviders>
           <NotifyContext.Consumer>
             {({ notify }) => (
               <>

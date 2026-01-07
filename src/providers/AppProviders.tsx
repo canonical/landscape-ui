@@ -1,5 +1,4 @@
 import type { FC, ReactNode } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AuthProvider from "@/context/auth";
 import FetchProvider from "@/api/fetch";
 import FetchOldProvider from "@/api/fetchOld";
@@ -8,23 +7,18 @@ import SidePanelProvider from "@/context/sidePanel";
 import EnvProvider from "@/context/env";
 import ThemeProvider from "@/context/theme";
 import AccountsProvider from "@/context/accounts";
+import ReactQueryProvider from "@/context/reactQuery";
 
 interface AppProvidersProps {
   readonly children: ReactNode;
-  readonly queryClient?: QueryClient;
 }
 
-const defaultClient = new QueryClient();
-
-export const AppProviders: FC<AppProvidersProps> = ({
-  children,
-  queryClient = defaultClient,
-}) => {
+export const AppProviders: FC<AppProvidersProps> = ({ children }) => {
   return (
     <ThemeProvider>
       <EnvProvider>
         <NotifyProvider>
-          <QueryClientProvider client={queryClient}>
+          <ReactQueryProvider>
             <AuthProvider>
               <AccountsProvider>
                 <FetchOldProvider>
@@ -34,7 +28,7 @@ export const AppProviders: FC<AppProvidersProps> = ({
                 </FetchOldProvider>
               </AccountsProvider>
             </AuthProvider>
-          </QueryClientProvider>
+          </ReactQueryProvider>
         </NotifyProvider>
       </EnvProvider>
     </ThemeProvider>
