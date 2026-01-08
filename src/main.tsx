@@ -1,7 +1,7 @@
 import "./styles/index.scss";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import * as Sentry from "@sentry/browser";
+import * as Sentry from "@sentry/react";
 import {
   APP_VERSION,
   IS_DEV_ENV,
@@ -14,10 +14,10 @@ import App from "./App";
 import { BrowserRouter } from "react-router";
 
 Sentry.init({
-  dsn: "https://55a60b44ddfd4ca5a94a8a3bac2d5052@sentry.is.canonical.com/85",
+  dsn: "https://774322e0f66e6944afb57769632eca62@o4510662863749120.ingest.de.sentry.io/4510674271338576",
   release: APP_VERSION || "local-dev",
   environment: IS_DEV_ENV ? "development" : "production",
-  debug: IS_DEV_ENV,
+  enabled: !IS_DEV_ENV,
 });
 
 const initApp = async () => {

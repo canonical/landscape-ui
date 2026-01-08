@@ -3,8 +3,8 @@ import type { SidePanelProps as SidePanelBaseProps } from "@canonical/react-comp
 import { SidePanel as SidePanelBase } from "@canonical/react-components";
 import classNames from "classnames";
 import type { ReactNode } from "react";
-import { useContext, type FC } from "react";
-import { ErrorBoundary } from "react-error-boundary";
+import { type FC, useContext } from "react";
+import * as Sentry from "@sentry/react";
 import { FallbackComponent } from "../AppErrorBoundary/FallbackComponent";
 import CloseContext from "./CloseContext";
 import Content from "./Content";
@@ -40,18 +40,18 @@ const SidePanel: FC<SidePanelProps> & {
       {...props}
     >
       <CloseContext value={onClose}>
-        <ErrorBoundary
-          FallbackComponent={(fallbackProps) => (
+        <Sentry.ErrorBoundary
+          fallback={(errorData) => (
             <>
               <Header />
               <Content>
-                <FallbackComponent {...fallbackProps} />
+                <FallbackComponent {...errorData} />
               </Content>
             </>
           )}
         >
           {children}
-        </ErrorBoundary>
+        </Sentry.ErrorBoundary>
       </CloseContext>
     </SidePanelBase>
   );
