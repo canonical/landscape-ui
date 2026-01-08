@@ -56,12 +56,12 @@ const InstanceList = memo(function InstanceList({
     return false;
   });
 
-  const toggleAll = () => {
-    setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
-  };
+  const columns = useMemo<InstanceColumn[]>(() => {
+    const toggleAll = () => {
+      setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
+    };
 
-  const columns = useMemo<InstanceColumn[]>(
-    () => [
+    return [
       {
         accessor: "title",
         canBeHidden: false,
@@ -242,13 +242,18 @@ const InstanceList = memo(function InstanceList({
           </>
         ),
       },
-    ],
-    [selectedInstances.length, instances, expandedRowIndex],
-  );
+    ];
+  }, [
+    instances,
+    expandedRowIndex,
+    handleExpand,
+    selectedInstances,
+    setSelectedInstances,
+  ]);
 
   useEffect(() => {
     setColumnFilterOptions(getColumnFilterOptions(columns));
-  }, []);
+  }, [columns, setColumnFilterOptions]);
 
   const filteredColumns = useMemo<Column<Instance>[]>(
     () =>
@@ -256,7 +261,7 @@ const InstanceList = memo(function InstanceList({
         ({ accessor }) =>
           typeof accessor === "string" && !disabledColumns.includes(accessor),
       ),
-    [disabledColumns.length, columns],
+    [disabledColumns, columns],
   );
 
   return (
