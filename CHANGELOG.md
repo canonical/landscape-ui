@@ -1,3 +1,26 @@
+# [1.23.0](https://github.com/canonical/landscape-ui/compare/v1.22.0...v1.23.0) (2026-01-08)
+
+
+### Bug Fixes
+
+* add missing ubuntu pro info ([#426](https://github.com/canonical/landscape-ui/issues/426)) ([425b1c7](https://github.com/canonical/landscape-ui/commit/425b1c7496ac5a32a7c8f2c149c63d8a401a8bc1))
+* change cve links to ubuntu.com ([#384](https://github.com/canonical/landscape-ui/issues/384)) ([fabf4d0](https://github.com/canonical/landscape-ui/commit/fabf4d029516aaade9096cef992464afec02e290))
+* Instance page filters changes ([#432](https://github.com/canonical/landscape-ui/issues/432)) ([57914ed](https://github.com/canonical/landscape-ui/commit/57914ede35259904104f4fc6fd9add1deee67c01))
+* prevent submitting login form twice if error occurs ([#438](https://github.com/canonical/landscape-ui/issues/438)) ([5b1fbd9](https://github.com/canonical/landscape-ui/commit/5b1fbd912a8c0190c5cac2aa19c105f07fd09b23))
+* remove access group field from edit mode in profiles ([#434](https://github.com/canonical/landscape-ui/issues/434)) ([00ec586](https://github.com/canonical/landscape-ui/commit/00ec5861a3f5a29955b14362e04c8207fea091ff))
+* revert TagMultiSelect component ([#424](https://github.com/canonical/landscape-ui/issues/424)) ([c132b71](https://github.com/canonical/landscape-ui/commit/c132b711b4b17f0282dc7abe53ae9e3249f2a602))
+* wsl profile remove tags ([#407](https://github.com/canonical/landscape-ui/issues/407)) ([776ab31](https://github.com/canonical/landscape-ui/commit/776ab31b3bdac8a2b23d32c560d99d472d1b5a16))
+
+
+### Features
+
+* add associated instance links for upgrade and removal profiles ([#404](https://github.com/canonical/landscape-ui/issues/404)) ([e8a92d7](https://github.com/canonical/landscape-ui/commit/e8a92d72170ea67116f739ecb708436a07f1825d))
+* add warnings for wsl profiles ([#416](https://github.com/canonical/landscape-ui/issues/416)) ([b2e3efe](https://github.com/canonical/landscape-ui/commit/b2e3efec0ffb4d2ced83d090a4c100a59692cd4a))
+* allow wsl profiles to use only_landscape_created ([#401](https://github.com/canonical/landscape-ui/issues/401)) ([99b5ea0](https://github.com/canonical/landscape-ui/commit/99b5ea0b10eebe031c77f2d9cacb5ee8fb57b2dd))
+* improve saved searches user experience ([#430](https://github.com/canonical/landscape-ui/issues/430)) ([c63c1a5](https://github.com/canonical/landscape-ui/commit/c63c1a583edd4df42142302ce460bce5a3926dcf))
+* rename instance statuses ([#417](https://github.com/canonical/landscape-ui/issues/417)) ([0324c54](https://github.com/canonical/landscape-ui/commit/0324c542eca091c70f3fb01bde00d9161301e2f9))
+* update confirmation modal for deleting access group ([#431](https://github.com/canonical/landscape-ui/issues/431)) ([3ac0310](https://github.com/canonical/landscape-ui/commit/3ac03106be0ee94ac93682a20d1929d4d2596e10))
+
 # [1.22.0](https://github.com/canonical/landscape-ui/compare/v1.21.0...v1.22.0) (2025-10-24)
 
 
