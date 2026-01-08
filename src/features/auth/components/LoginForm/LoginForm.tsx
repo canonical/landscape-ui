@@ -53,11 +53,11 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
             .test({
               message: "Please provide a valid email address",
               test: (value) => {
-                if (value?.match(/\.\./)) {
+                if (!value) {
                   return false;
                 }
 
-                if (!value) {
+                if (value.match(/\.\./)) {
                   return false;
                 }
 
