@@ -1,11 +1,11 @@
-import { renderWithProviders } from "@/tests/render";
-import InfoTablesContainer from "./InfoTablesContainer";
-import { screen } from "@testing-library/react";
+import { activities } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
-import userEvent from "@testing-library/user-event";
 import { packages } from "@/tests/mocks/packages";
 import { usns } from "@/tests/mocks/usn";
-import { activities } from "@/tests/mocks/activity";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import InfoTablesContainer from "./InfoTablesContainer";
 
 const LIST_LIMIT = 10;
 
@@ -84,7 +84,9 @@ describe("InfoTablesContainer", () => {
       });
       await userEvent.click(activitiesInProgressTab);
 
-      const shownActivitiesInProgress = activities.slice(0, LIST_LIMIT);
+      const shownActivitiesInProgress = activities
+        .filter((activity) => activity.activity_status === "delivered")
+        .slice(0, LIST_LIMIT);
       for (const activity of shownActivitiesInProgress) {
         const activitySummary = await screen.findAllByText(activity.summary);
         expect(activitySummary.length).toBeGreaterThan(0);

@@ -233,7 +233,7 @@ export const activities = [
       id: 1,
     },
     type: "StopChildComputerActivity",
-    summary: "Stop instance Bionic WSL",
+    summary: "Stop instance Bionic WSL 7",
     result_text: null,
     computer_id: 6,
     approval_time: null,
