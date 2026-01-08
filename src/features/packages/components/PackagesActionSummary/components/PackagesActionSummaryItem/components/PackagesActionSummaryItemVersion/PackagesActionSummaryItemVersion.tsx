@@ -1,0 +1,56 @@
+import { pluralizeWithCount } from "@/utils/_helpers";
+import { Button } from "@canonical/react-components";
+import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import PackagesUninstallSummaryDetails from "../../../../../../components/PackagesUninstallSummaryDetails";
+import type {
+  AvailableVersion,
+  PackageAction,
+  SelectedPackage,
+} from "../../../../../../types";
+import classes from "../../PackagesActionSummaryItem.module.scss";
+
+interface PackagesActionSummaryItemVersionProps {
+  readonly action: PackageAction;
+  readonly instanceIds: number[];
+  readonly selectedPackage: SelectedPackage;
+  readonly version: AvailableVersion;
+}
+
+const PackagesActionSummaryItemVersion: FC<
+  PackagesActionSummaryItemVersionProps
+> = ({ action, instanceIds, selectedPackage, version }) => {
+  const {
+    value: isModalOpen,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean();
+
+  return (
+    <div className={classes.row} key={version.name}>
+      <Button
+        type="button"
+        appearance="link"
+        className={classes.instances}
+        onClick={openModal}
+      >
+        {pluralizeWithCount(version.num_computers, "instance")}
+      </Button>
+      <span>
+        Will {action}{" "}
+        <code>
+          {selectedPackage.name} {version.name}
+        </code>
+      </span>
+      <PackagesUninstallSummaryDetails
+        opened={isModalOpen}
+        pkg={selectedPackage}
+        instanceIds={instanceIds}
+        close={closeModal}
+        summaryVersion={version.name}
+      />
+    </div>
+  );
+};
+
+export default PackagesActionSummaryItemVersion;

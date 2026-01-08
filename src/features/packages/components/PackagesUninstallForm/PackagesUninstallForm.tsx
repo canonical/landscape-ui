@@ -9,7 +9,7 @@ import { useState } from "react";
 import { usePackages } from "../../hooks";
 import type { SelectedPackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
-import PackagesUninstallSummary from "../PackagesUninstallSummary";
+import PackagesActionSummary from "../PackagesActionSummary";
 
 interface PackagesUninstallFormProps {
   readonly instanceIds: number[];
@@ -93,7 +93,8 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
     case "summary":
       return (
         <>
-          <PackagesUninstallSummary
+          <PackagesActionSummary
+            action="uninstall"
             selectedPackages={selectedPackages}
             instanceIds={instanceIds}
           />
