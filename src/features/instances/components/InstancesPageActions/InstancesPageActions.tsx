@@ -289,10 +289,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
             </Button>
           ) : (
             <ContextualMenu
+              position="left"
               key="pro-services"
               hasToggleIcon
               links={proServicesLinks}
-              position="right"
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
               toggleDisabled={0 === selectedInstances.length}

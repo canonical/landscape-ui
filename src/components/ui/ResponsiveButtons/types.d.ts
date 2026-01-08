@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { MenuLink } from "@canonical/react-components";
+import type { MenuLink, Position } from "@canonical/react-components";
 
 export interface ButtonLikeProps {
   children?: ReactNode;
@@ -16,7 +16,7 @@ export interface ContextualMenuProps {
   toggleDisabled?: boolean;
   toggleClassName?: string;
   hasToggleIcon?: boolean;
-  position?: string;
+  position?: Position;
   dropdownProps?: Record<string, unknown>;
   className?: string;
 }
@@ -26,6 +26,8 @@ export interface CollapsedNode {
   label: ReactNode;
   content: ReactNode;
   disabled?: boolean;
+  className?: string;
+  position?: Position;
 }
 
 export type CollapsedLink = MenuLink & { key: string };

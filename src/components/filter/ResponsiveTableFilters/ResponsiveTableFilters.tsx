@@ -26,7 +26,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
   filters,
   collapseFrom = "md",
   className,
-  menuPosition = "right",
+  menuPosition = "left",
   isCollapsed = false,
   menuLabel = (
     <>

@@ -82,6 +82,8 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
             label: menuProps.toggleLabel,
             content,
             disabled: menuProps.toggleDisabled,
+            className: menuProps.className,
+            position: menuProps.position,
           });
         }
         return;
@@ -163,6 +165,8 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
                       el={item.content}
                       label={item.label}
                       disabled={item.disabled}
+                      className={item.className}
+                      position={item.position}
                       onMenuClose={close}
                     />
                   );

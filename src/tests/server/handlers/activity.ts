@@ -1,11 +1,32 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity, GetActivitiesParams } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { activities, activityTypes } from "@/tests/mocks/activity";
+import {
+  activities,
+  activityTypes,
+  INVALID_ACTIVITY_SEARCH_QUERY,
+} from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+
+const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
+
+const parseActivitiesQuery = (
+  rawQuery: string,
+): { status?: string; searchQuery: string } => {
+  const statusMatch = rawQuery.match(STATUS_QUERY_REGEX);
+
+  if (!statusMatch) {
+    return { searchQuery: rawQuery };
+  }
+
+  return {
+    status: statusMatch[1],
+    searchQuery: rawQuery.replace(statusMatch[0], "").trim(),
+  };
+};
 
 export default [
   http.get<never, GetActivitiesParams, ApiPaginatedResponse<Activity>>(
@@ -20,15 +41,30 @@ export default [
       const url = new URL(request.url);
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || 1;
-      const search = url.searchParams.get("search") ?? "";
+      const query = url.searchParams.get("query") ?? "";
+
+      if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
+        throw HttpResponse.json(
+          {
+            error: "InvalidQueryError",
+            message: "The search query provided is invalid.",
+          },
+          { status: 400 },
+        );
+      }
+
+      const { status, searchQuery } = parseActivitiesQuery(query);
+      const filteredActivities = status
+        ? activities.filter((activity) => activity.activity_status === status)
+        : activities;
 
       return HttpResponse.json(
         generatePaginatedResponse<Activity>({
-          data: activities,
+          data: filteredActivities,
           limit,
           offset,
-          search,
-          searchFields: ["name"],
+          search: searchQuery,
+          searchFields: ["summary"],
         }),
       );
     },

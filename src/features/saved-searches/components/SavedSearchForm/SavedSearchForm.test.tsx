@@ -1,9 +1,13 @@
+import type { AuthContextProps } from "@/context/auth";
+import useAuth from "@/hooks/useAuth";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import SavedSearchForm from "./SavedSearchForm";
+
+vi.mock("@/hooks/useAuth");
 
 vi.mock("@/components/filter/SearchQueryEditor", () => {
   return {
@@ -36,6 +40,18 @@ vi.mock("@/components/filter/SearchQueryEditor", () => {
   };
 });
 
+const authContextValues: AuthContextProps = {
+  logout: vi.fn(),
+  authorized: true,
+  authLoading: false,
+  setAuthLoading: vi.fn(),
+  setUser: vi.fn(),
+  user: null,
+  redirectToExternalUrl: vi.fn(),
+  isFeatureEnabled: vi.fn(() => false),
+  hasAccounts: true,
+};
+
 describe("SavedSearchForm", () => {
   const user = userEvent.setup();
 
@@ -47,6 +63,10 @@ describe("SavedSearchForm", () => {
     onSubmit: vi.fn(),
     mode: "edit",
   };
+
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
+  });
 
   it("should render form with title and search query fields", () => {
     renderWithProviders(<SavedSearchForm {...defaultProps} mode="create" />);
@@ -230,5 +250,216 @@ describe("SavedSearchForm", () => {
     await user.type(titleInput, "Test Title");
 
     expect(titleInput).toHaveValue("Test Title");
+  });
+
+  describe("feature flag integration", () => {
+    it("should validate profile:script queries when script-profiles feature is enabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn((key) => key === "script-profiles"),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:script:123 ",
+          }}
+        />,
+      );
+
+      const searchField = screen.getByLabelText(/search query/i);
+      expect(searchField).toHaveValue("profile:script:123 ");
+      expect(
+        screen.queryByText(/invalid profile type/i),
+      ).not.toBeInTheDocument();
+    });
+
+    it("should show error for profile:security queries when usg-profiles feature is disabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn(() => false),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:security:1:pass ",
+          }}
+        />,
+      );
+
+      const searchField = screen.getByLabelText(/search query/i);
+      expect(searchField).toHaveValue("profile:security:1:pass ");
+      expect(
+        screen.getByText('"profile" has invalid profile type "security".'),
+      ).toBeInTheDocument();
+    });
+
+    it("should validate profile:wsl queries when wsl-child-instance-profiles feature is enabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn((key) => key === "wsl-child-instance-profiles"),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:wsl:1:compliant ",
+          }}
+        />,
+      );
+
+      const searchField = screen.getByLabelText(/search query/i);
+      expect(searchField).toHaveValue("profile:wsl:1:compliant ");
+      expect(
+        screen.queryByText(/invalid profile type/i),
+      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/invalid.*status/i)).not.toBeInTheDocument();
+    });
+
+    it("should handle all features enabled correctly", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn(() => true),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:script:1 AND profile:security:2:pass ",
+          }}
+        />,
+      );
+
+      const searchField = screen.getByLabelText(/search query/i);
+      expect(searchField).toHaveValue(
+        "profile:script:1 AND profile:security:2:pass ",
+      );
+      expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
+    });
+
+    it("should handle no features enabled correctly", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn(() => false),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:package:1 ",
+          }}
+        />,
+      );
+
+      const searchField = screen.getByLabelText(/search query/i);
+      expect(searchField).toHaveValue("profile:package:1 ");
+      expect(
+        screen.queryByText(/invalid profile type/i),
+      ).not.toBeInTheDocument();
+    });
+
+    it("should reject profile:script when script-profiles feature is disabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn(() => false),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:script:1 ",
+          }}
+        />,
+      );
+
+      expect(
+        screen.getByText('"profile" has invalid profile type "script".'),
+      ).toBeInTheDocument();
+    });
+
+    it("should reject profile:wsl when wsl-child-instance-profiles feature is disabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn(() => false),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:wsl:1:compliant ",
+          }}
+        />,
+      );
+
+      expect(
+        screen.getByText('"profile" has invalid profile type "wsl".'),
+      ).toBeInTheDocument();
+    });
+
+    it("should reject invalid security status when usg-profiles feature is disabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn(() => false),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:security:1:pass ",
+          }}
+        />,
+      );
+
+      expect(
+        screen.getByText('"profile" has invalid profile type "security".'),
+      ).toBeInTheDocument();
+    });
+
+    it("should reject invalid wsl status when wsl-child-instance-profiles feature is disabled", async () => {
+      vi.mocked(useAuth).mockReturnValue({
+        ...authContextValues,
+        isFeatureEnabled: vi.fn((key) => key === "usg-profiles"),
+      });
+
+      renderWithProviders(
+        <SavedSearchForm
+          {...defaultProps}
+          mode="create"
+          initialValues={{
+            title: "Test",
+            search: "profile:wsl:1:compliant ",
+          }}
+        />,
+      );
+
+      expect(
+        screen.getByText('"profile" has invalid profile type "wsl".'),
+      ).toBeInTheDocument();
+    });
   });
 });

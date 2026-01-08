@@ -9,8 +9,37 @@ import {
   validateSearchQuery,
   validateSearchField,
 } from "./searchQueryValidation";
+import { useInstanceSearchHelpTerms } from "@/features/instances";
+import { renderHook } from "@testing-library/react";
+import { renderHookWithProviders } from "@/tests/render";
 
 describe("validateSearchQuery", () => {
+  it("validates keys using real hook data", () => {
+    const { result } = renderHook(() => useInstanceSearchHelpTerms(), {
+      wrapper: renderHookWithProviders(),
+    });
+
+    const terms = result.current;
+    const keys = terms
+      .filter((t) => t.term.includes(":"))
+      .map((t) => t.term.split(":")[0]);
+
+    keys.forEach((key) => {
+      const error = validateSearchQuery(`${key}:dummy-value `);
+      const isKeyInvalid = error === `"${key}" is not a valid query key.`;
+
+      if (key === "search") {
+        expect(isKeyInvalid, 'Expected "search" to be strictly rejected').toBe(
+          true,
+        );
+      } else {
+        expect(isKeyInvalid, `Expected key "${key}" to be recognized`).toBe(
+          false,
+        );
+      }
+    });
+  });
+
   it("handles typing vs finished tokens and per-key rules", () => {
     expect(validateSearchQuery("alert:compu")).toBeUndefined();
 
@@ -49,6 +78,9 @@ describe("validateSearchQuery", () => {
     expect(validateSearchQuery("needs:other ")).toBe(
       '"needs" has invalid value "other".',
     );
+
+    expect(validateSearchQuery("upgrade-profile:daily ")).toBeUndefined();
+    expect(validateSearchQuery("removal-profile:2 ")).toBeUndefined();
   });
 
   it("validates profile tokens and statuses", () => {
@@ -125,6 +157,165 @@ describe("validateSearchField", () => {
     expect(validateSearchField("", "typing")).toBe("This field is required.");
     expect(validateSearchField("   ", "strict")).toBe(
       "This field is required.",
+    );
+  });
+});
+
+describe("validateSearchQuery with ValidationConfig", () => {
+  it("should accept profile types from config", () => {
+    const config = {
+      profileTypes: ["package", "removal"],
+    };
+
+    expect(
+      validateSearchQuery("profile:package:1 ", false, config),
+    ).toBeUndefined();
+    expect(
+      validateSearchQuery("profile:removal:1 ", false, config),
+    ).toBeUndefined();
+  });
+
+  it("should reject profile types not in config", () => {
+    const config = {
+      profileTypes: ["package", "removal"],
+    };
+
+    expect(validateSearchQuery("profile:script:1 ", false, config)).toBe(
+      '"profile" has invalid profile type "script".',
+    );
+
+    expect(validateSearchQuery("profile:security:1:pass ", false, config)).toBe(
+      '"profile" has invalid profile type "security".',
+    );
+
+    expect(validateSearchQuery("profile:wsl:1:compliant ", false, config)).toBe(
+      '"profile" has invalid profile type "wsl".',
+    );
+  });
+
+  it("should accept USG statuses from config", () => {
+    const config = {
+      profileTypes: ["security"],
+      usgStatuses: ["pass", "fail"],
+    };
+
+    expect(
+      validateSearchQuery("profile:security:1:pass ", false, config),
+    ).toBeUndefined();
+    expect(
+      validateSearchQuery("profile:security:1:fail ", false, config),
+    ).toBeUndefined();
+  });
+
+  it("should reject USG statuses not in config", () => {
+    const config = {
+      profileTypes: ["security"],
+      usgStatuses: ["pass"],
+    };
+
+    expect(validateSearchQuery("profile:security:1:fail ", false, config)).toBe(
+      '"profile:security" has invalid security status "fail".',
+    );
+
+    expect(
+      validateSearchQuery("profile:security:1:in-progress ", false, config),
+    ).toBe('"profile:security" has invalid security status "in-progress".');
+  });
+
+  it("should accept WSL statuses from config", () => {
+    const config = {
+      profileTypes: ["wsl"],
+      wslStatuses: ["compliant"],
+    };
+
+    expect(
+      validateSearchQuery("profile:wsl:1:compliant ", false, config),
+    ).toBeUndefined();
+  });
+
+  it("should reject WSL statuses not in config", () => {
+    const config = {
+      profileTypes: ["wsl"],
+      wslStatuses: ["compliant"],
+    };
+
+    expect(
+      validateSearchQuery("profile:wsl:1:noncompliant ", false, config),
+    ).toBe('"profile:wsl" has invalid WSL status "noncompliant".');
+  });
+
+  it("should reject profile type when empty config provided", () => {
+    const config = {
+      profileTypes: [],
+    };
+
+    expect(validateSearchQuery("profile:package:1 ", false, config)).toBe(
+      '"profile" has invalid profile type "package".',
+    );
+  });
+
+  it("should use default values when no config provided", () => {
+    expect(validateSearchQuery("profile:package:1 ")).toBeUndefined();
+    expect(validateSearchQuery("profile:script:1 ")).toBeUndefined();
+    expect(validateSearchQuery("profile:security:1:pass ")).toBeUndefined();
+    expect(validateSearchQuery("profile:wsl:1:compliant ")).toBeUndefined();
+  });
+});
+
+describe("validateSearchField with ValidationConfig", () => {
+  it("should pass config through to validateSearchQuery in typing mode", () => {
+    const config = {
+      profileTypes: ["package"],
+    };
+
+    expect(
+      validateSearchField("profile:package:1 ", "typing", config),
+    ).toBeUndefined();
+
+    expect(validateSearchField("profile:script:1 ", "typing", config)).toBe(
+      '"profile" has invalid profile type "script".',
+    );
+  });
+
+  it("should pass config through to validateSearchQuery in strict mode", () => {
+    const config = {
+      profileTypes: ["package"],
+    };
+
+    expect(
+      validateSearchField("profile:package:1 ", "strict", config),
+    ).toBeUndefined();
+
+    expect(validateSearchField("profile:script:1 ", "strict", config)).toBe(
+      '"profile" has invalid profile type "script".',
+    );
+  });
+
+  it("should validate with mixed config settings", () => {
+    const config = {
+      profileTypes: ["security", "wsl"],
+      usgStatuses: ["pass"],
+      wslStatuses: ["compliant"],
+    };
+
+    expect(
+      validateSearchField("profile:security:1:pass ", "strict", config),
+    ).toBeUndefined();
+
+    expect(
+      validateSearchField("profile:security:1:fail ", "strict", config),
+    ).toBe('"profile:security" has invalid security status "fail".');
+
+    expect(
+      validateSearchField("profile:wsl:1:compliant ", "strict", config),
+    ).toBeUndefined();
+
+    expect(
+      validateSearchField("profile:wsl:1:noncompliant ", "strict", config),
+    ).toBe('"profile:wsl" has invalid WSL status "noncompliant".');
+
+    expect(validateSearchField("profile:package:1 ", "strict", config)).toBe(
+      '"profile" has invalid profile type "package".',
     );
   });
 });

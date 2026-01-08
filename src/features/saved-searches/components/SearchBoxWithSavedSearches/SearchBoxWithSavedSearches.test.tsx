@@ -157,14 +157,15 @@ describe("SearchBoxWithSavedSearches", () => {
 
   it("should submit search when Enter key is pressed in dropdown", async () => {
     renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+    const textToSearch = "test";
 
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
-    await user.type(searchBox, "test");
+    await user.type(searchBox, textToSearch);
 
     await user.keyboard("{Enter}");
 
-    expect(searchBox).toHaveValue("");
+    expect(searchBox).toHaveValue(textToSearch);
   });
 
   it("should open dropdown when search box gets focus", async () => {

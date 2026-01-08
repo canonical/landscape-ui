@@ -6,7 +6,7 @@
 }
 
 .medium {
-  max-width: 43rem !important;
+  width: min(43rem, 100%) !important;
 }
 
 .header {

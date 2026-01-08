@@ -24,16 +24,28 @@ import type {
   WslStatus,
 } from "../types";
 
+export interface ValidationConfig {
+  profileTypes?: readonly string[];
+  usgStatuses?: readonly string[];
+  wslStatuses?: readonly string[];
+}
+
 const isInteger = (val: string) => INTEGER_REGEX.test(val);
 
-const isUsgStatus = (s: string): s is UsgStatus =>
-  USG_STATUSES.includes(s as UsgStatus);
+const isUsgStatus = (
+  s: string,
+  allowedStatuses: readonly string[],
+): s is UsgStatus => allowedStatuses.includes(s);
 
-const isWslStatus = (s: string): s is WslStatus =>
-  WSL_STATUSES.includes(s as WslStatus);
+const isWslStatus = (
+  s: string,
+  allowedStatuses: readonly string[],
+): s is WslStatus => allowedStatuses.includes(s);
 
-const isProfileType = (t: string): t is ProfileType =>
-  PROFILE_TYPES.includes(t as ProfileType);
+const isProfileType = (
+  t: string,
+  allowedTypes: readonly string[],
+): t is ProfileType => allowedTypes.includes(t);
 
 const isLicenseType = (t: string): t is LicenseType =>
   LICENSE_TYPES.includes(t as LicenseType);
@@ -112,7 +124,10 @@ const validateNeedsToken = (val: string): ValidationResult => {
   return keyError("needs", `has invalid value "${val}".`);
 };
 
-const validateProfileToken = (parts: string[]): ValidationResult => {
+const validateProfileToken = (
+  parts: string[],
+  config: ValidationConfig,
+): ValidationResult => {
   const typeIndex = 1;
   const idIndex = 2;
   const statusIndex = 3;
@@ -122,7 +137,11 @@ const validateProfileToken = (parts: string[]): ValidationResult => {
   const id = parts[idIndex];
   const status = parts[statusIndex];
 
-  if (!isProfileType(type)) {
+  const allowedTypes = config.profileTypes ?? PROFILE_TYPES;
+  const allowedUsgStatuses = config.usgStatuses ?? USG_STATUSES;
+  const allowedWslStatuses = config.wslStatuses ?? WSL_STATUSES;
+
+  if (!isProfileType(type, allowedTypes)) {
     return keyError(key, `has invalid profile type "${type}".`);
   }
   if (!id || !id.trim()) {
@@ -137,14 +156,14 @@ const validateProfileToken = (parts: string[]): ValidationResult => {
       return keyError(`${key}:${type}`, "requires a status.");
     }
 
-    if (type === "security" && !isUsgStatus(status)) {
+    if (type === "security" && !isUsgStatus(status, allowedUsgStatuses)) {
       return keyError(
         `${key}:${type}`,
         `has invalid security status "${status}".`,
       );
     }
 
-    if (type === "wsl" && !isWslStatus(status)) {
+    if (type === "wsl" && !isWslStatus(status, allowedWslStatuses)) {
       return keyError(`${key}:${type}`, `has invalid WSL status "${status}".`);
     }
   }
@@ -171,7 +190,10 @@ const validateAnnotationToken = (val: string): ValidationResult => {
   return keyError("annotation", "key cannot be empty.");
 };
 
-const validateKeyToken = (parts: string[]): ValidationResult => {
+const validateKeyToken = (
+  parts: string[],
+  config: ValidationConfig,
+): ValidationResult => {
   const keyIndex = 0;
   const valIndex = 1;
   const key = parts[keyIndex];
@@ -199,7 +221,7 @@ const validateKeyToken = (parts: string[]): ValidationResult => {
       return validateNeedsToken(val);
 
     case "profile":
-      return validateProfileToken(parts);
+      return validateProfileToken(parts, config);
 
     case "annotation":
       return validateAnnotationToken(val);
@@ -215,18 +237,23 @@ const validateKeyToken = (parts: string[]): ValidationResult => {
   }
 };
 
-const validateToken = (cleanToken: string, index: number): ValidationResult => {
+const validateToken = (
+  cleanToken: string,
+  index: number,
+  config: ValidationConfig,
+): ValidationResult => {
   if (!cleanToken.includes(":")) {
     return validateBareToken(cleanToken, index);
   }
 
   const parts = cleanToken.split(":");
-  return validateKeyToken(parts);
+  return validateKeyToken(parts, config);
 };
 
 export const validateSearchQuery = (
   query: string | undefined,
   isSubmit = false,
+  config: ValidationConfig = {},
 ): string | undefined => {
   if (!query || !query.trim()) {
     return undefined;
@@ -243,7 +270,7 @@ export const validateSearchQuery = (
 
     const token = tokens[i];
     const cleanToken = token.replace(DOUBLE_QUOTE_REGEX, "");
-    const error = validateToken(cleanToken, i);
+    const error = validateToken(cleanToken, i, config);
 
     if (error) {
       return error;
@@ -256,14 +283,15 @@ export const validateSearchQuery = (
 export const validateSearchField = (
   query: string | undefined,
   mode: "typing" | "strict",
+  config: ValidationConfig = {},
 ): string | undefined => {
   if (!query || !query.trim()) {
     return "This field is required.";
   }
 
   if (mode === "typing") {
-    return validateSearchQuery(query, false);
+    return validateSearchQuery(query, false, config);
   }
 
-  return validateSearchQuery(query, true);
+  return validateSearchQuery(query, true, config);
 };

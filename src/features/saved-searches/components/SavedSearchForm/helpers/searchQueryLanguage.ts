@@ -1,9 +1,6 @@
 import type { Monaco } from "@monaco-editor/react";
 import {
   ALERT_TYPES,
-  PROFILE_TYPES,
-  USG_STATUSES,
-  WSL_STATUSES,
   LICENSE_TYPES,
   BOOLEANS,
   LOGICAL_OPERATORS,
@@ -18,9 +15,20 @@ import {
 } from "../constants";
 import type { MonacoRange } from "../types";
 
+interface LanguageConfig {
+  profileTypes: readonly string[];
+  usgStatuses: readonly string[];
+  wslStatuses: readonly string[];
+}
+
+interface LanguageData {
+  terms: string[];
+  config: LanguageConfig;
+}
+
 const registeredLanguages = new Set<string>();
 const registeredCompletionProviders = new Set<string>();
-const languageTerms: Record<string, string[]> = {};
+const languageTerms: Record<string, LanguageData> = {};
 
 const escapeRegExp = (value: string) =>
   value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -33,6 +41,7 @@ const getProfileSuggestions = (
   depth: number,
   range: MonacoRange,
   monaco: Monaco,
+  config: LanguageConfig,
 ) => {
   const createItem = (label: string, detail: string, isKeyword = false) => ({
     label,
@@ -53,7 +62,7 @@ const getProfileSuggestions = (
   });
 
   if (depth === 1) {
-    return PROFILE_TYPES.map((t) => createItem(t, "Profile Type"));
+    return config.profileTypes.map((t) => createItem(t, "Profile Type"));
   }
 
   const profileTypeIndex = 1;
@@ -64,11 +73,11 @@ const getProfileSuggestions = (
   }
 
   if (depth === 3) {
-    if (profileType === "security") {
-      return USG_STATUSES.map((s) => createItem(s, "Audit Result"));
+    if (profileType === "security" && config.usgStatuses.length > 0) {
+      return config.usgStatuses.map((s) => createItem(s, "Audit Result"));
     }
-    if (profileType === "wsl") {
-      return WSL_STATUSES.map((s) => createItem(s, "Compliance Status"));
+    if (profileType === "wsl" && config.wslStatuses.length > 0) {
+      return config.wslStatuses.map((s) => createItem(s, "Compliance Status"));
     }
   }
 
@@ -116,13 +125,14 @@ const getDeepSuggestions = (
   segments: string[],
   range: MonacoRange,
   monaco: Monaco,
+  config: LanguageConfig,
 ) => {
   const [rootKey] = segments;
   const depth = segments.length - 1;
 
   switch (rootKey) {
     case "profile":
-      return getProfileSuggestions(segments, depth, range, monaco);
+      return getProfileSuggestions(segments, depth, range, monaco, config);
 
     case "alert":
       if (depth === 1) {
@@ -175,10 +185,11 @@ export const configureSearchLanguage = (
   monaco: Monaco,
   languageId: string,
   terms: string[],
+  config: LanguageConfig,
 ) => {
   const cleanedTerms = terms.map((t) => t.trim()).filter(Boolean);
   const uniqueTerms = Array.from(new Set(cleanedTerms));
-  languageTerms[languageId] = uniqueTerms;
+  languageTerms[languageId] = { terms: uniqueTerms, config };
 
   const termPattern =
     uniqueTerms.length > 0
@@ -227,12 +238,24 @@ export const configureSearchLanguage = (
         const segments = fullToken.split(":");
         const isValueContext = segments.length > 1;
 
+        const languageData = languageTerms[languageId];
+        const storedConfig = languageData?.config ?? {
+          profileTypes: [],
+          usgStatuses: [],
+          wslStatuses: [],
+        };
+
         if (isValueContext) {
-          const suggestions = getDeepSuggestions(segments, range, monaco);
+          const suggestions = getDeepSuggestions(
+            segments,
+            range,
+            monaco,
+            storedConfig,
+          );
           return { suggestions };
         }
 
-        const currentTerms = languageTerms[languageId] ?? [];
+        const currentTerms = languageData?.terms ?? [];
 
         const termSuggestions = currentTerms.map((term) => ({
           label: term,

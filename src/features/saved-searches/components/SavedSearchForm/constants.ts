@@ -12,6 +12,8 @@ export const VALID_ROOT_KEYS = [
   "title",
   "alert",
   "access-group",
+  "upgrade-profile",
+  "removal-profile",
   "id",
   "mac",
   "ip",

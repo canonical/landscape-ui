@@ -1,5 +1,8 @@
 import { ROUTES } from "@/libs/routes";
-import { activities } from "@/tests/mocks/activity";
+import {
+  activities,
+  INVALID_ACTIVITY_SEARCH_QUERY,
+} from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -18,6 +21,8 @@ const defaultProps: ComponentProps<typeof Activities> = {
 };
 
 describe("Activities", () => {
+  const user = userEvent.setup();
+
   describe("Table rendering", () => {
     it("should render activities table with correct columns", () => {
       renderWithProviders(<Activities {...defaultProps} />);
@@ -46,6 +51,14 @@ describe("Activities", () => {
         ),
       ).toBeInTheDocument();
     });
+
+    it("should display empty message when invalid search query is used", async () => {
+      renderWithProviders(<Activities {...defaultProps} />);
+
+      const searchInput = screen.getByPlaceholderText("Search");
+      await user.clear(searchInput);
+      await user.type(searchInput, INVALID_ACTIVITY_SEARCH_QUERY);
+    });
   });
 
   describe("Checkbox selection", () => {
@@ -61,7 +74,7 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const checkboxes = screen.getAllByRole("checkbox");
-      await userEvent.click(checkboxes[1]);
+      await user.click(checkboxes[1]);
 
       expect(setSelectedActivities).toHaveBeenCalledWith([mockActivities[0]]);
     });
@@ -70,7 +83,7 @@ describe("Activities", () => {
       renderWithProviders(<Activities {...defaultProps} />);
 
       const [headerCheckbox] = screen.getAllByRole("checkbox");
-      await userEvent.click(headerCheckbox);
+      await user.click(headerCheckbox);
 
       expect(setSelectedActivities).toHaveBeenCalledWith(mockActivities);
     });
@@ -83,7 +96,7 @@ describe("Activities", () => {
       const activityButtons = screen.getAllByRole("button", {
         name: mockActivities[0].summary,
       });
-      await userEvent.click(activityButtons[0]);
+      await user.click(activityButtons[0]);
 
       expect(
         screen.getByRole("heading", { name: mockActivities[0].summary }),

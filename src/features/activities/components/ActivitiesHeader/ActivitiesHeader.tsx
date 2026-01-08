@@ -5,7 +5,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { useActivities } from "../../hooks";
 import type { ActivityCommon } from "../../types";
@@ -43,6 +43,10 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
     value: activityType,
   }));
 
+  useEffect(() => {
+    setSearchText(query ?? "");
+  }, [query]);
+
   const ACTIVITY_TYPE_OPTIONS = [
     { label: "All", value: "" },
     ...activityResultOptions,
@@ -51,14 +55,12 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   const IS_PANEL = !!instanceId;
 
   const handleSearch = () => {
-    if (!searchText) {
+    const nextQuery = searchText.trim();
+    if (!nextQuery) {
       return;
     }
 
-    setPageParams({
-      query: query ? `${query},${searchText}` : `${searchText}`,
-    });
-    setSearchText("");
+    setPageParams({ query: nextQuery });
     resetSelectedIds();
   };
 
@@ -104,7 +106,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         }}
       />
       <TableFilterChips
-        filtersToDisplay={["status", "type", "fromDate", "toDate", "query"]}
+        filtersToDisplay={["status", "type", "fromDate", "toDate"]}
         statusOptions={ACTIVITY_STATUS_OPTIONS}
         typeOptions={ACTIVITY_TYPE_OPTIONS}
       />

@@ -6,6 +6,7 @@ declare const styles: {
   readonly "listItem": string;
   readonly "row": string;
   readonly "search": string;
+  readonly "searchQuery": string;
   readonly "truncated": string;
 };
 export = styles;

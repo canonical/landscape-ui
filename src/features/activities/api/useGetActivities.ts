@@ -8,6 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { Activity, GetActivitiesParams } from "../types";
 
+const EMPTY_ACTIVITIES: Activity[] = [];
+
 const useGetActivities = (
   params?: GetActivitiesParams,
   config?: PaginatedGetHookParams,
@@ -88,7 +90,7 @@ const useGetActivities = (
   });
 
   return {
-    activities: response?.data.results ?? [],
+    activities: response?.data?.results ?? EMPTY_ACTIVITIES,
     activitiesCount: response?.data.count,
     isFetchingActivities: isFetching,
     isGettingActivities: isPending,
