@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProviders } from "@/providers/AppProviders";
 import { NotifyContext } from "@/context/notify";
 import AppNotification from "@/components/layout/AppNotification";
+import AuthProvider from "@/context/auth";
 
 interface WrapperProps {
   readonly children: ReactNode;
@@ -25,7 +26,11 @@ export function renderHookWithProviders() {
 
   return function Wrapper({ children }: { readonly children: ReactNode }) {
     return (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <MemoryRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryClientProvider>
+      </MemoryRouter>
     );
   };
 }

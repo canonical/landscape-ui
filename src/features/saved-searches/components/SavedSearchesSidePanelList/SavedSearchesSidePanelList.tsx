@@ -45,7 +45,7 @@ const SavedSearchesSidePanelList: FC<SavedSearchesSidePanelListProps> = ({
         Header: "Search Query",
         Cell: ({ row: { original, index } }: CellProps<SavedSearch>) => (
           <TruncatedCell
-            content={original.search}
+            content={<code>{original.search}</code>}
             isExpanded={index === expandedRowIndex}
             onExpand={() => {
               handleExpand(index);

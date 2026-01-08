@@ -68,7 +68,10 @@ describe("InfoTablesContainer", () => {
     });
 
     it("renders unapproved activities list", async () => {
-      const shownActivities = activities.slice(0, LIST_LIMIT);
+      const shownActivities = activities
+        .filter((activity) => activity.activity_status === "unapproved")
+        .slice(0, LIST_LIMIT);
+      expect(shownActivities.length).toBeGreaterThan(0);
       for (const activity of shownActivities) {
         const activitySummary = await screen.findAllByText(activity.summary);
         expect(activitySummary.length).toBeGreaterThan(0);

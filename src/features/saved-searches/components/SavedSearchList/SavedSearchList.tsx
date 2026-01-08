@@ -8,6 +8,8 @@ import ManageSavedSearchesSidePanel from "../ManageSavedSeachesSidePanel";
 import classes from "./SavedSearchList.module.scss";
 import SavedSearchActions from "../SavedSearchActions";
 import { SIDEPANEL_SIZE } from "../../constants";
+import { useMediaQuery } from "usehooks-ts";
+import { BREAKPOINT_PX } from "@/constants";
 
 interface SavedSearchListProps {
   readonly onSavedSearchClick: (search: SavedSearch) => void;
@@ -23,6 +25,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
   onSavedSearchRemove,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+  const isLargeScreen = useMediaQuery(`(min-width: ${BREAKPOINT_PX["lg"]}px)`);
 
   if (!savedSearches.length) {
     return null;
@@ -80,12 +83,17 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
                       <span>{savedSearch.title}</span>
                     </Tooltip>
                   </Col>
-                  <Col size={8}>
+                  <Col
+                    size={8}
+                    className={classNames(
+                      !isLargeScreen && classes.searchQuery,
+                    )}
+                  >
                     <Tooltip
                       message={savedSearch.search}
                       positionElementClassName={classes.truncated}
                     >
-                      <span>{savedSearch.search}</span>
+                      <code>{savedSearch.search}</code>
                     </Tooltip>
                   </Col>
                 </Row>

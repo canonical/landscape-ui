@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type { FC, KeyboardEvent } from "react";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { Form, SearchBox } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
@@ -21,7 +21,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   onHelpButtonClick,
 }) => {
   const { query, setPageParams } = usePageParams();
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState(query ?? "");
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { savedSearches, isLoadingSavedSearches } = useGetSavedSearches();
@@ -39,6 +39,10 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
   useOnClickOutside(containerRef, handleDropdownClose);
 
+  useEffect(() => {
+    setInputText(query ?? "");
+  }, [query]);
+
   const filteredSearches = useMemo(
     () =>
       getFilteredSavedSearches({
@@ -50,7 +54,8 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   );
 
   const handleSearch = () => {
-    if (!inputText) {
+    const nextQuery = inputText.trim();
+    if (!nextQuery) {
       return;
     }
 
@@ -61,24 +66,16 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     });
 
     const prefix = searches.some(
-      ({ name }) => name.toLowerCase() === inputText.trim().toLowerCase(),
+      ({ name }) => name.toLowerCase() === nextQuery.toLowerCase(),
     )
       ? "search:"
       : "";
 
-    setPageParams({
-      query: query ? `${query},${prefix}${inputText}` : `${prefix}${inputText}`,
-    });
-
-    setInputText("");
+    setPageParams({ query: `${prefix}${nextQuery}` });
   };
 
   const handleSavedSearchClick = (savedSearch: SavedSearch) => {
-    setPageParams({
-      query: query
-        ? `${query},search:${savedSearch.name}`
-        : `search:${savedSearch.name}`,
-    });
+    setPageParams({ query: `search:${savedSearch.name}` });
   };
 
   const handleKeysOnSearchBox = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -131,6 +128,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
               }}
               onClear={() => {
                 setInputText("");
+                setPageParams({ query: "" });
               }}
               onSearch={handleSearch}
               onClick={() => {

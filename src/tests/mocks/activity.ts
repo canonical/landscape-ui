@@ -218,6 +218,37 @@ export const activities: Activity[] = [
     activity_status: "delivered",
     children: [],
   },
+  {
+    id: 731,
+    actions: {
+      approvable: true,
+      cancelable: true,
+      reappliable: true,
+      revertable: true,
+    },
+    creation_time: "2024-03-22T08:47:22Z",
+    creator: {
+      name: "John Smith",
+      email: "john@example.com",
+      id: 1,
+    },
+    type: "StopChildComputerActivity",
+    summary: "Stop instance Bionic WSL",
+    result_text: null,
+    computer_id: 6,
+    approval_time: null,
+    delivery_time: "2024-03-22T08:47:53Z",
+    deliver_after_time: null,
+    deliver_before_time: null,
+    parent_id: 726,
+    modification_time: "2024-03-22T08:47:53Z",
+    completion_time: null,
+    schedule_before_time: null,
+    schedule_after_time: null,
+    result_code: null,
+    activity_status: "unapproved",
+    children: [],
+  },
 ];
 
 export const activityTypes: string[] = [
@@ -268,3 +299,5 @@ export const activityTypes: string[] = [
   "UpgradeAllPackagesRequest",
   "UpgradeKernelPackageRequest",
 ];
+
+export const INVALID_ACTIVITY_SEARCH_QUERY = "invalid_search_query";

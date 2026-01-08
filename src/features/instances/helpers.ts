@@ -51,3 +51,27 @@ export const instancesToAssignCount = (
   instances.filter((instance) =>
     profile.tags.every((tag) => !instance.tags.includes(tag)),
   ).length;
+
+export const getProfileTypes = (featureFlags: {
+  isScriptProfilesEnabled: boolean;
+  isUsgProfilesEnabled: boolean;
+  isWslProfilesEnabled: boolean;
+}): readonly string[] => {
+  const profileTypes = ["package", "reboot", "removal", "repository"];
+
+  if (featureFlags.isScriptProfilesEnabled) {
+    profileTypes.push("script");
+  }
+
+  if (featureFlags.isUsgProfilesEnabled) {
+    profileTypes.push("security");
+  }
+
+  profileTypes.push("upgrade");
+
+  if (featureFlags.isWslProfilesEnabled) {
+    profileTypes.push("wsl");
+  }
+
+  return profileTypes;
+};

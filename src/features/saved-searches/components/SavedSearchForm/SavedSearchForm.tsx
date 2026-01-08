@@ -4,12 +4,17 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import SearchQueryEditor from "@/components/filter/SearchQueryEditor";
-import { useInstanceSearchHelpTerms } from "@/features/instances";
+import {
+  getProfileTypes,
+  useInstanceSearchHelpTerms,
+} from "@/features/instances";
 import type { FormProps } from "./types";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { VALIDATION_SCHEMA } from "./helpers/searchQuerySchema";
 import { validateSearchField } from "./helpers/searchQueryValidation";
 import { configureSearchLanguage } from "./helpers/searchQueryLanguage";
+import { USG_STATUSES, WSL_STATUSES } from "./constants";
+import useAuth from "@/hooks/useAuth";
 
 const INSTANCE_SEARCH_LANGUAGE_ID = "instance-search-query";
 
@@ -27,11 +32,29 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
   onBackButtonPress,
 }) => {
   const instanceSearchHelpTerms = useInstanceSearchHelpTerms();
+  const { isFeatureEnabled } = useAuth();
+
+  const isScriptProfilesEnabled = isFeatureEnabled("script-profiles");
+  const isUsgProfilesEnabled = isFeatureEnabled("usg-profiles");
+  const isWslProfilesEnabled = isFeatureEnabled("wsl-child-instance-profiles");
+
+  const validationConfig = useMemo(
+    () => ({
+      profileTypes: getProfileTypes({
+        isScriptProfilesEnabled,
+        isUsgProfilesEnabled,
+        isWslProfilesEnabled,
+      }),
+      usgStatuses: isUsgProfilesEnabled ? USG_STATUSES : [],
+      wslStatuses: isWslProfilesEnabled ? WSL_STATUSES : [],
+    }),
+    [isScriptProfilesEnabled, isUsgProfilesEnabled, isWslProfilesEnabled],
+  );
 
   const hasInitialSearch = Boolean(initialValues.search?.trim());
 
   const initialSearchError = hasInitialSearch
-    ? validateSearchField(initialValues.search, "strict")
+    ? validateSearchField(initialValues.search, "strict", validationConfig)
     : undefined;
 
   const [searchError, setSearchError] = useState<string | undefined>(
@@ -70,7 +93,11 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
   const handleSearchBlur = () => {
     formik.setFieldTouched("search", true, false);
 
-    const strictError = validateSearchField(formik.values.search, "strict");
+    const strictError = validateSearchField(
+      formik.values.search,
+      "strict",
+      validationConfig,
+    );
     setSearchError(strictError);
   };
 
@@ -80,6 +107,7 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
     const strictSearchError = validateSearchField(
       formik.values.search,
       "strict",
+      validationConfig,
     );
     setSearchError(strictSearchError);
 
@@ -112,13 +140,18 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
         value={formik.values.search}
         onBlur={handleSearchBlur}
         configureSearchLanguage={configureSearchLanguage}
+        languageConfig={validationConfig}
         onChange={(value) => {
           const newValue = value ?? "";
 
           formik.setFieldValue("search", newValue);
           formik.setFieldTouched("search", true, false);
 
-          const typingError = validateSearchField(newValue, "typing");
+          const typingError = validateSearchField(
+            newValue,
+            "typing",
+            validationConfig,
+          );
           setSearchError(typingError);
         }}
         error={formik.touched.search ? searchError : undefined}

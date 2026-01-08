@@ -126,7 +126,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "availabilityZones",
           "status",
           "tags",
-          "query",
           "wsl",
           "contractExpiryDays",
         ]}

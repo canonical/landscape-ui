@@ -84,7 +84,7 @@ const CreateSavedSearchButton: FC<CreateSavedSearchButtonProps> = ({
       className={className}
       hasIcon={isInSidePanel}
     >
-      {isInSidePanel && <Icon name="plus" light />}
+      {isInSidePanel && <Icon name="plus" />}
       {<span>{buttonLabel}</span>}
     </Button>
   );

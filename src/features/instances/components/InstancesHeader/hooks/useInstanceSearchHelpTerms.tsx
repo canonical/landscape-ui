@@ -1,24 +1,15 @@
 import useAuth from "@/hooks/useAuth";
+import { getProfileTypes } from "@/features/instances";
 import type { ReactElement } from "react";
 
 const useInstanceSearchHelpTerms = () => {
   const { isFeatureEnabled } = useAuth();
 
-  const profileTypes = ["package", "reboot", "removal", "repository"];
-
-  if (isFeatureEnabled("script-profiles")) {
-    profileTypes.push("script");
-  }
-
-  if (isFeatureEnabled("usg-profiles")) {
-    profileTypes.push("security");
-  }
-
-  profileTypes.push("upgrade");
-
-  if (isFeatureEnabled("wsl-child-instance-profiles")) {
-    profileTypes.push("wsl");
-  }
+  const profileTypes = getProfileTypes({
+    isScriptProfilesEnabled: isFeatureEnabled("script-profiles"),
+    isUsgProfilesEnabled: isFeatureEnabled("usg-profiles"),
+    isWslProfilesEnabled: isFeatureEnabled("wsl-child-instance-profiles"),
+  });
 
   const instanceSearchHelpTerms: {
     term: string;
