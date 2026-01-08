@@ -1,7 +1,13 @@
 import type { AvailableVersion } from "./AvailableVersion";
-import type { Package } from "./Package";
 
 export interface SelectedPackage {
-  package: Package;
-  selectedVersions: AvailableVersion[];
+  name: string;
+  id: number;
+  versions: string[];
+}
+
+export interface PackageVersionsInstanceCount {
+  name: string;
+  id: number;
+  versions: AvailableVersion[];
 }

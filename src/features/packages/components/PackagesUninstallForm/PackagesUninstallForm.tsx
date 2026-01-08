@@ -36,7 +36,7 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
   } = packagesActionQuery;
 
   const disableButton = selectedPackages.some(
-    ({ selectedVersions }) => selectedVersions.length == 0,
+    ({ versions }) => versions.length == 0,
   );
 
   const handleSubmit = async () => {
@@ -44,14 +44,14 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
       const { data: activity } = await uninstallPackages({
         action: "remove",
         computer_ids: instanceIds,
-        package_ids: selectedPackages.map(({ package: { id } }) => id),
+        package_ids: selectedPackages.map(({ id }) => id),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0].package.name}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
-        message: `${pluralize(selectedPackages.length, `${selectedPackages[0].package.name} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0].name}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
+        message: `${pluralize(selectedPackages.length, `${selectedPackages[0].name} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",

@@ -8,11 +8,13 @@ export {
   PocketPackageName,
   PocketPackagesList,
   PocketPackageVersion,
+  PackageInstance,
 } from "./Package";
 
 export {
   InstalledPackageAction,
   InstalledPackageActionAppearance,
+  PackageAction,
 } from "./InstalledPackageAction";
 
 export * from "./SelectedPackage";

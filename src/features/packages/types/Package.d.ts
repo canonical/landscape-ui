@@ -33,6 +33,12 @@ interface InstancePackageInfoWithInstanceId extends InstancePackageInfo {
   id: number;
 }
 
+export interface PackageInstance extends Record<string, unknown> {
+  name: string;
+  latest_available_version: string;
+  installed_version: string;
+}
+
 export interface Package extends CommonPackageInfo {
   computers: InstancePackageInfoWithInstanceId[];
 }
