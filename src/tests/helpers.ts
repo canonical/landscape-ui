@@ -1,4 +1,4 @@
-import { expect } from "vitest";
+import { expect, vi } from "vitest";
 import { screen, waitForElementToBeRemoved } from "@testing-library/react";
 import { BREAKPOINT_PX } from "@/constants";
 
@@ -15,25 +15,29 @@ export const expectErrorNotification = async (): Promise<void> => {
   expect(errorNotificationCount).toBeGreaterThanOrEqual(1);
 };
 
-const originalMatchMedia = window.matchMedia;
+const getDefaultMatchMediaImplementation = (
+  query: string,
+  matches = false,
+) => ({
+  matches,
+  media: query,
+  onchange: null,
+  addListener: vi.fn(),
+  removeListener: vi.fn(),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+});
 
 const mockMatchMedia = (
-  queries: { query: string; matches: boolean }[],
+  queries: { query: string; matches: boolean }[] = [],
 ): void => {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: (q: string) => {
-      const match = queries.find((m) => m.query === q);
-      return {
-        matches: match ? match.matches : false,
-        media: q,
-        onchange: null,
-        addListener: vi.fn(), // Deprecated
-        removeListener: vi.fn(), // Deprecated
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      };
+    configurable: true,
+    value: (query: string) => {
+      const match = queries.find((m) => m.query === query);
+      return getDefaultMatchMediaImplementation(query, match?.matches);
     },
   });
 };
@@ -41,17 +45,18 @@ const mockMatchMedia = (
 const originalGetBoundingClientRect = Range.prototype.getBoundingClientRect;
 
 export const mockRangeBoundingClientRect = (
-  mockFn: () => DOMRect = () => ({
-    x: 0,
-    y: 0,
-    top: 0,
-    left: 0,
-    bottom: 10,
-    right: 100,
-    width: 100,
-    height: 10,
-    toJSON: () => null,
-  }),
+  mockFn: () => DOMRect = () =>
+    ({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      bottom: 10,
+      right: 100,
+      width: 100,
+      height: 10,
+      toJSON: () => null,
+    }) as DOMRect,
 ): void => {
   Object.defineProperty(Range.prototype, "getBoundingClientRect", {
     configurable: true,
@@ -70,19 +75,16 @@ export const restoreRangeBoundingClientRect = (): void => {
 
 export const setScreenSize = (bp: keyof typeof BREAKPOINT_PX): void => {
   const currentWidth = BREAKPOINT_PX[bp];
-
   if (currentWidth === undefined) {
     throw new Error(`Unknown breakpoint "${bp}"`);
   }
-
   const mediaConfig = Object.entries(BREAKPOINT_PX).map(([_, px]) => ({
     query: `(min-width: ${px}px)`,
     matches: currentWidth >= px,
   }));
-
   mockMatchMedia(mediaConfig);
 };
 
 export function resetScreenSize(): void {
-  window.matchMedia = originalMatchMedia;
+  mockMatchMedia([]);
 }

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { FetchContext } from "@/context/fetchOld";
+import { FetchContext } from "@/api/fetchOld";
 
 export default function useFetchOld() {
   const fetch = useContext(FetchContext);

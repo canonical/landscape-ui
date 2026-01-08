@@ -1,23 +1,15 @@
-import { isAxiosError } from "axios";
 import type { FC, ReactNode } from "react";
-import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useCallback, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import useNotify from "@/hooks/useNotify";
 import type { AuthUser } from "@/features/auth";
-import { redirectToExternalUrl, useUnsigned } from "@/features/auth";
+import { redirectToExternalUrl, useGetAuthState } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
 import type { FeatureKey } from "@/types/FeatureKey";
 import useFeatures from "@/hooks/useFeatures";
 import { ROUTES } from "@/libs/routes";
 
-const NOT_AUTHORIZED_CODE = 401;
+const AUTH_QUERY_KEY = ["authUser"];
 
 export interface AuthContextProps {
   authLoading: boolean;
@@ -25,7 +17,6 @@ export interface AuthContextProps {
   hasAccounts: boolean;
   logout: () => void;
   redirectToExternalUrl: (url: string, options?: { replace: boolean }) => void;
-  setAuthLoading: (loading: boolean) => void;
   setUser: (user: AuthUser) => void;
   user: AuthUser | null;
   isFeatureEnabled: (feature: FeatureKey) => boolean;
@@ -37,7 +28,6 @@ const initialState: AuthContextProps = {
   hasAccounts: false,
   logout: () => undefined,
   redirectToExternalUrl: () => undefined,
-  setAuthLoading: () => undefined,
   setUser: () => undefined,
   isFeatureEnabled: () => false,
   user: null,
@@ -51,81 +41,37 @@ interface AuthProviderProps {
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const queryClient = useQueryClient();
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { notify } = useNotify();
-  const { getAuthStateQuery } = useUnsigned();
+
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  const isGetAuthStateQueryEnabled = !pathname.includes("handle-auth");
+
+  const { user, isLoading: isAuthLoading } = useGetAuthState({
+    enabled: isGetAuthStateQueryEnabled,
+  });
+
   const { isFeatureEnabled, isFeaturesLoading } = useFeatures(
     user?.email ?? null,
   );
 
-  const isGetAuthStateQueryEnabled = !pathname.includes("handle-auth");
-
-  useEffect(() => {
-    if (isGetAuthStateQueryEnabled) {
-      return;
-    }
-
-    setLoading(false);
-  }, [isGetAuthStateQueryEnabled]);
-
-  useEffect(() => {
-    if (!loading) {
-      return;
-    }
-
-    setLoading(false);
-  }, [loading, pathname]);
-
-  const { data: getAuthStateQueryResult } = getAuthStateQuery(
-    {},
-    { enabled: isGetAuthStateQueryEnabled },
-  );
-
-  useEffect(() => {
-    if (!getAuthStateQueryResult) {
-      return;
-    }
-
-    if (
-      "current_account" in getAuthStateQueryResult.data &&
-      getAuthStateQueryResult.data.attach_code === null
-    ) {
-      setUser(getAuthStateQueryResult.data);
-    }
-
-    setLoading(false);
-  }, [getAuthStateQueryResult]);
-
-  const isAuthError = useMemo(
-    () =>
-      isAxiosError(notify.notification?.error) &&
-      notify.notification.error.response?.status === NOT_AUTHORIZED_CODE,
-    [notify.notification],
-  );
-
   const handleLogout = useCallback(() => {
-    setUser(null);
+    queryClient.setQueryData(AUTH_QUERY_KEY, null);
+
     navigate(ROUTES.auth.login(), { replace: true });
+
     queryClient.removeQueries({
-      predicate: (query) => query.queryKey[0] !== "authUser",
+      predicate: (query) => query.queryKey[0] !== AUTH_QUERY_KEY[0],
     });
   }, [navigate, queryClient]);
 
-  useEffect(() => {
-    if (!isAuthError) {
-      return;
-    }
-
-    handleLogout();
-  }, [handleLogout, isAuthError]);
-
-  const handleSetUser = (newUser: AuthUser) => {
-    setUser(newUser);
-  };
+  const handleSetUser = useCallback(
+    (newUser: AuthUser) => {
+      queryClient.setQueryData(AUTH_QUERY_KEY, newUser);
+    },
+    [queryClient],
+  );
 
   const handleExternalRedirect = useCallback(
     (url: string, options?: { replace: boolean }) => {
@@ -134,10 +80,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     },
     [],
   );
-
-  const handleAuthLoading = useCallback((newState: boolean) => {
-    setLoading(newState);
-  }, []);
 
   if (isRedirecting) {
     return <Redirecting />;
@@ -148,12 +90,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       value={{
         isFeatureEnabled,
         user,
-        authLoading: loading || isFeaturesLoading,
+        authLoading: isAuthLoading || isFeaturesLoading,
         authorized: null !== user,
         hasAccounts: !!user?.accounts.length,
         logout: handleLogout,
         redirectToExternalUrl: handleExternalRedirect,
-        setAuthLoading: handleAuthLoading,
         setUser: handleSetUser,
       }}
     >

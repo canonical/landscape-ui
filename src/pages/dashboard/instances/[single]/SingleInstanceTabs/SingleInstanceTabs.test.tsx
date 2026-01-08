@@ -43,7 +43,6 @@ describe("SingleInstanceTabs", () => {
         isFeatureEnabled: () => true,
         logout: vi.fn(),
         redirectToExternalUrl: vi.fn(),
-        setAuthLoading: vi.fn(),
         setUser: vi.fn(),
         user: authUser,
         hasAccounts: true,

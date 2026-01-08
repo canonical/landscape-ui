@@ -1,34 +1,38 @@
-import PasswordConstraints from "@/components/form/PasswordConstraints";
-import useDebug from "@/hooks/useDebug";
-import AuthTemplate from "@/templates/auth/AuthTemplate";
-import { getFormikError } from "@/utils/formikErrors";
+import type { FC } from "react";
+import classNames from "classnames";
+import { useFormik } from "formik";
+import { useNavigate } from "react-router";
 import {
   ActionButton,
   Form,
   Input,
   PasswordToggle,
 } from "@canonical/react-components";
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useNavigate } from "react-router";
-import { useCreateStandaloneAccount } from "../../api";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { ROUTES } from "@/libs/routes";
-import type { FormValues } from "./types";
+
+import PasswordConstraints from "@/components/form/PasswordConstraints";
+import AuthTemplate from "@/templates/auth/AuthTemplate";
 import useAuth from "@/hooks/useAuth";
+import useDebug from "@/hooks/useDebug";
 import { HOMEPAGE_PATH } from "@/constants";
-import { useUnsigned } from "@/features/auth";
-import classNames from "classnames";
+import { ROUTES } from "@/libs/routes";
+import { getFormikError } from "@/utils/formikErrors";
+
+import { useLogin } from "@/features/auth";
+import { useCreateStandaloneAccount } from "../../api";
+
+import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import type { FormValues } from "./types";
 import classes from "./AccountCreationSelfHostedForm.module.scss";
 
 const AccountCreationSelfHostedForm: FC = () => {
   const debug = useDebug();
   const navigate = useNavigate();
+  const { setUser } = useAuth();
+
   const { createStandaloneAccount, isCreatingStandaloneAccount } =
     useCreateStandaloneAccount();
-  const { setUser } = useAuth();
-  const { signInWithEmailAndPasswordQuery } = useUnsigned();
-  const { mutateAsync: signIn } = signInWithEmailAndPasswordQuery;
+
+  const { login: signIn } = useLogin();
 
   const handleSubmit = async (values: FormValues) => {
     try {

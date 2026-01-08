@@ -3,9 +3,9 @@ import * as matchers from "@testing-library/jest-dom/matchers";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
-import "./global";
 import {
   mockRangeBoundingClientRect,
+  resetScreenSize,
   restoreRangeBoundingClientRect,
 } from "./helpers";
 import "./matcher";
@@ -24,6 +24,7 @@ vi.stubGlobal("ResizeObserver", ResizeObserver);
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
   mockRangeBoundingClientRect();
+  resetScreenSize();
 });
 
 afterAll(() => {
@@ -35,4 +36,5 @@ afterEach(() => {
   setEndpointStatus("default");
   server.resetHandlers();
   cleanup();
+  resetScreenSize();
 });

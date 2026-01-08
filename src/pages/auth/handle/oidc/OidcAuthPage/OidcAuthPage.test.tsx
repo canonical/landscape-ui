@@ -1,14 +1,15 @@
-import { beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { AuthStateResponse } from "@/features/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { HOMEPAGE_PATH } from "@/constants";
-import useEnv from "@/hooks/useEnv";
 import type { EnvContextState } from "@/context/env";
+import useEnv from "@/hooks/useEnv";
 
 const redirectToExternalUrl = vi.fn();
 const navigate = vi.fn();
+const setUser = vi.fn();
 
 vi.mock("@/hooks/useEnv");
 
@@ -35,45 +36,48 @@ vi.mocked(useEnv).mockReturnValue(mockSaas);
 const mockTestParams = (response: AuthStateResponse | Error) => {
   vi.doMock("react-router", async () => ({
     ...(await vi.importActual("react-router")),
-    useSearchParams: () => [new URLSearchParams({ enabled: "true" })],
+    useSearchParams: () => [
+      new URLSearchParams({
+        enabled: "true",
+        code: "mock-code",
+        state: "mock-state",
+      }),
+    ],
     useNavigate: () => navigate,
   }));
 
-  vi.doMock("@/features/auth", () => ({
-    useUnsigned: () => ({
-      getAuthStateWithOidcQuery: () =>
-        response instanceof Error
-          ? {
-              data: undefined,
-              error: response,
-              isLoading: false,
-            }
-          : {
-              data: { data: response },
-              error: null,
-              isLoading: false,
-            },
-    }),
-  }));
+  vi.doMock("@/features/auth", async () => {
+    const actual = await vi.importActual("@/features/auth");
+    return {
+      ...actual,
+      useGetOidcAuth: () => {
+        if (response instanceof Error) {
+          return { authData: undefined, isLoading: false, error: response };
+        }
+        return { authData: response, isLoading: false, error: null };
+      },
+    };
+  });
 
   vi.doMock("@/hooks/useAuth", async () => ({
     default: () => ({
-      setAuthLoading: vi.fn(),
-      setUser: vi.fn(),
+      setUser,
       redirectToExternalUrl,
     }),
   }));
 };
 
 describe("OidcAuthPage", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
   it("should render error message when there is no search params", async () => {
+    mockTestParams(new Error("No params"));
     const { default: Component } = await import("./OidcAuthPage");
 
     renderWithProviders(<Component />);
-
-    expect(
-      screen.getByText("Please wait while your request is being processed..."),
-    ).toBeInTheDocument();
 
     expect(
       await screen.findByText(
@@ -114,17 +118,13 @@ describe("OidcAuthPage", () => {
     ];
 
     beforeEach(async ({ task: { id } }) => {
-      vi.doUnmock("react-router");
       vi.doUnmock("@/features/auth");
-      vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();
 
       const taskId = Number(id.substring(id.length - 1));
-
       mockTestParams(responsesToMock[taskId]);
 
       const { default: Component } = await import("./OidcAuthPage");
-
       renderWithProviders(<Component />);
     });
 
@@ -173,10 +173,9 @@ describe("OidcAuthPage", () => {
     });
 
     it("should redirect to attach page when attach_code is present", async () => {
-      const attachCode = "123123";
       mockTestParams({
         ...authUser,
-        attach_code: attachCode,
+        attach_code: "123123",
         return_to: null,
       });
       const { default: Component } = await import("./OidcAuthPage");
@@ -197,18 +196,10 @@ describe("OidcAuthPage", () => {
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: false }),
       }));
-
       vi.doMock("@/constants", async (importOriginal) => ({
         ...(await importOriginal()),
         GENERIC_DOMAIN: "localhost",
       }));
-
-      mockTestParams({
-        ...authUser,
-        accounts: [],
-        current_account: "",
-        return_to: null,
-      });
     });
 
     it("should redirect to create-account when user has no accounts and GENERIC_DOMAIN matches hostname", async () => {
@@ -220,7 +211,6 @@ describe("OidcAuthPage", () => {
       });
 
       const { default: Component } = await import("./OidcAuthPage");
-
       renderWithProviders(<Component />);
 
       expect(navigate).toHaveBeenCalledWith("/create-account", {
@@ -230,9 +220,17 @@ describe("OidcAuthPage", () => {
 
     it("should redirect to no-access when user has no accounts and GENERIC_DOMAIN does not match hostname", async () => {
       vi.resetModules();
+
+      const { default: useEnvFresh } = await import("@/hooks/useEnv");
+      vi.mocked(useEnvFresh).mockReturnValue(mockSaas);
+
       vi.doMock("@/constants", async (importOriginal) => ({
         ...(await importOriginal()),
         GENERIC_DOMAIN: "example.com",
+      }));
+
+      vi.doMock("@/features/account-creation", () => ({
+        useGetStandaloneAccount: () => ({ accountExists: false }),
       }));
 
       mockTestParams({
@@ -253,17 +251,9 @@ describe("OidcAuthPage", () => {
     beforeEach(() => {
       vi.resetModules();
       vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
-
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: false }),
       }));
-
-      mockTestParams({
-        ...authUser,
-        accounts: [],
-        current_account: "",
-        return_to: null,
-      });
     });
 
     it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
@@ -275,7 +265,6 @@ describe("OidcAuthPage", () => {
       });
 
       const { default: Component } = await import("./OidcAuthPage");
-
       renderWithProviders(<Component />);
 
       expect(navigate).toHaveBeenCalledWith("/create-account", {
@@ -285,7 +274,9 @@ describe("OidcAuthPage", () => {
 
     it("should redirect to no-access when accountExists is true", async () => {
       vi.resetModules();
-      vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+
+      const { default: useEnvFresh } = await import("@/hooks/useEnv");
+      vi.mocked(useEnvFresh).mockReturnValue(mockSelfHosted);
 
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: true }),

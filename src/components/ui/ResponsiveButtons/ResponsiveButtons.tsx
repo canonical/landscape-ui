@@ -1,8 +1,8 @@
 import {
   decorateNode,
-  textFromNode,
-  isContextualMenu,
   getContextualMenuProps,
+  isContextualMenu,
+  textFromNode,
 } from "@/components/ui/ResponsiveButtons/helpers";
 import { BREAKPOINT_PX } from "@/constants";
 import type {

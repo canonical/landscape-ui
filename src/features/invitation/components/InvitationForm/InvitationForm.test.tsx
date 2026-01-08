@@ -2,8 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe } from "vitest";
-import { vi } from "vitest";
+import { describe, vi } from "vitest";
 import InvitationForm from "./InvitationForm";
 import useAuth from "@/hooks/useAuth";
 import { PATHS } from "@/libs/routes";
@@ -17,7 +16,6 @@ const authProps: AuthContextProps = {
   logout: vi.fn(),
   authorized: true,
   authLoading: false,
-  setAuthLoading: vi.fn(),
   setUser: vi.fn(),
   user: { ...authUser },
   redirectToExternalUrl: vi.fn(),

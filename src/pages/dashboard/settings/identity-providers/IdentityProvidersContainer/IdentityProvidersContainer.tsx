@@ -3,41 +3,36 @@ import LoadingState from "@/components/layout/LoadingState";
 import {
   ProviderList,
   ProvidersEmptyState,
-  useUnsigned,
+  useGetLoginMethods,
 } from "@/features/auth";
 
 const IdentityProvidersContainer: FC = () => {
-  const { getLoginMethodsQuery } = useUnsigned();
+  const { loginMethods, loginMethodsLoading } = useGetLoginMethods();
 
-  const { data: getLoginMethodsQueryResult, isLoading } =
-    getLoginMethodsQuery();
+  if (loginMethodsLoading) {
+    return <LoadingState />;
+  }
+
+  if (!loginMethods) {
+    return <ProvidersEmptyState />;
+  }
+
+  const { ubuntu_one, oidc } = loginMethods;
+
+  const isUbuntuOneAvailable = ubuntu_one?.available;
+  const isOidcAvailable = oidc?.available && oidc?.configurations?.length > 0;
+
+  if (!isUbuntuOneAvailable && !isOidcAvailable) {
+    return <ProvidersEmptyState />;
+  }
 
   return (
-    <>
-      {isLoading && <LoadingState />}
-      {!isLoading &&
-        (!getLoginMethodsQueryResult ||
-          (!getLoginMethodsQueryResult.data.ubuntu_one.available &&
-            getLoginMethodsQueryResult.data.oidc.configurations.length ===
-              0)) && <ProvidersEmptyState />}
-      {!isLoading &&
-        getLoginMethodsQueryResult &&
-        (getLoginMethodsQueryResult.data.ubuntu_one.available ||
-          (getLoginMethodsQueryResult.data.oidc.available &&
-            getLoginMethodsQueryResult.data.oidc.configurations.length >
-              0)) && (
-          <ProviderList
-            oidcAvailable={getLoginMethodsQueryResult.data.oidc.available}
-            oidcProviders={getLoginMethodsQueryResult.data.oidc.configurations}
-            ubuntuOneAvailable={
-              getLoginMethodsQueryResult.data.ubuntu_one.available
-            }
-            ubuntuOneEnabled={
-              getLoginMethodsQueryResult.data.ubuntu_one.enabled
-            }
-          />
-        )}
-    </>
+    <ProviderList
+      oidcAvailable={!!oidc?.available}
+      oidcProviders={oidc?.configurations ?? []}
+      ubuntuOneAvailable={!!ubuntu_one?.available}
+      ubuntuOneEnabled={!!ubuntu_one?.enabled}
+    />
   );
 };
 

@@ -2,19 +2,16 @@ import type { RenderOptions } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import type { FC, ReactNode } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
-import NotifyProvider, { NotifyContext } from "@/context/notify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AuthProvider from "@/context/auth";
-import FetchProvider from "@/context/fetch";
-import FetchOldProvider from "@/context/fetchOld";
-import SidePanelProvider from "@/context/sidePanel";
+import { AppProviders } from "@/providers/AppProviders";
+import { NotifyContext } from "@/context/notify";
 import AppNotification from "@/components/layout/AppNotification";
 
 interface WrapperProps {
   readonly children: ReactNode;
 }
 
-const queryClientConfig = {
+const testQueryClientConfig = {
   defaultOptions: {
     queries: {
       retry: false,
@@ -24,7 +21,7 @@ const queryClientConfig = {
 };
 
 export function renderHookWithProviders() {
-  const queryClient = new QueryClient(queryClientConfig);
+  const queryClient = new QueryClient(testQueryClientConfig);
 
   return function Wrapper({ children }: { readonly children: ReactNode }) {
     return (
@@ -39,37 +36,27 @@ export const renderWithProviders = (
   routePath?: string,
   routePattern?: string,
 ) => {
-  const queryClient = new QueryClient(queryClientConfig);
-
   const Wrapper: FC<WrapperProps> = ({ children }) => {
     const initialEntries = routePath ? [routePath] : undefined;
 
     return (
       <MemoryRouter initialEntries={initialEntries}>
-        <QueryClientProvider client={queryClient}>
-          <NotifyProvider>
-            <NotifyContext.Consumer>
-              {({ notify }) => (
-                <AuthProvider>
-                  <FetchOldProvider>
-                    <FetchProvider>
-                      <AppNotification notify={notify} />
-                      <SidePanelProvider>
-                        {routePattern ? (
-                          <Routes>
-                            <Route path={routePattern} element={children} />
-                          </Routes>
-                        ) : (
-                          children
-                        )}
-                      </SidePanelProvider>
-                    </FetchProvider>
-                  </FetchOldProvider>
-                </AuthProvider>
-              )}
-            </NotifyContext.Consumer>
-          </NotifyProvider>
-        </QueryClientProvider>
+        <AppProviders>
+          <NotifyContext.Consumer>
+            {({ notify }) => (
+              <>
+                <AppNotification notify={notify} />
+                {routePattern ? (
+                  <Routes>
+                    <Route path={routePattern} element={children} />
+                  </Routes>
+                ) : (
+                  children
+                )}
+              </>
+            )}
+          </NotifyContext.Consumer>
+        </AppProviders>
       </MemoryRouter>
     );
   };

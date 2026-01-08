@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect, vi } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "@/tests/render";
@@ -12,12 +12,9 @@ const user = {
 
 const navigate = vi.fn();
 const redirectToExternalUrl = vi.fn();
-const setAuthLoading = vi.fn();
 const setUser = vi.fn();
-const signInWithEmailAndPassword = vi
-  .fn()
-  .mockResolvedValue({ data: authUser })
-  .mockRejectedValueOnce(new Error("Invalid credentials"));
+
+const loginSpy = vi.fn().mockResolvedValue({ data: authUser });
 
 const mockTestParams = (searchParams?: Record<string, string>) => {
   vi.doMock("react-router", async () => ({
@@ -29,18 +26,21 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
   vi.doMock("@/hooks/useAuth", () => ({
     default: () => ({
       redirectToExternalUrl,
-      setAuthLoading,
       setUser,
     }),
   }));
 
-  vi.doMock("../../hooks", () => ({
-    useUnsigned: () => ({
-      signInWithEmailAndPasswordQuery: {
-        mutateAsync: signInWithEmailAndPassword,
-      },
-    }),
-  }));
+  vi.doMock("@/features/auth", async () => {
+    const actual = await vi.importActual("@/features/auth");
+    return {
+      ...actual,
+      useLogin: () => ({
+        login: loginSpy,
+        isLoggingIn: false,
+        error: null,
+      }),
+    };
+  });
 };
 
 describe("LoginForm", () => {
@@ -49,8 +49,15 @@ describe("LoginForm", () => {
       vi.doUnmock("react-router");
       vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();
+      vi.clearAllMocks();
 
       const taskId = Number(id.substring(id.length - 1));
+
+      if (taskId === 0) {
+        loginSpy.mockRejectedValueOnce(new Error("Invalid credentials"));
+      } else {
+        loginSpy.mockResolvedValue({ data: authUser });
+      }
 
       mockTestParams();
 
@@ -69,7 +76,7 @@ describe("LoginForm", () => {
     });
 
     it("should not sign in", async () => {
-      expect(signInWithEmailAndPassword).toHaveBeenCalledWith({
+      expect(loginSpy).toHaveBeenCalledWith({
         email: user.email.slice(1),
         password: user.password,
       });
@@ -84,8 +91,7 @@ describe("LoginForm", () => {
         { replace: true },
       );
 
-      expect(signInWithEmailAndPassword).toHaveBeenCalledWith(user);
-      expect(setAuthLoading).toHaveBeenCalledWith(true);
+      expect(loginSpy).toHaveBeenCalledWith(user);
       expect(setUser).toHaveBeenCalledWith(authUser);
     });
   });
@@ -104,6 +110,9 @@ describe("LoginForm", () => {
       vi.doUnmock("react-router");
       vi.doUnmock("@/hooks/useAuth");
       vi.resetModules();
+      vi.clearAllMocks();
+
+      loginSpy.mockResolvedValue({ data: authUser });
 
       const taskId = Number(id.substring(id.length - 1));
 
@@ -113,21 +122,17 @@ describe("LoginForm", () => {
 
       renderWithProviders(<Component isIdentityAvailable={false} />);
 
-      await userEvent.type(
-        screen.getByTestId("email"),
-        taskId > 0 ? user.email : user.email.slice(1),
-      );
+      await userEvent.type(screen.getByTestId("email"), user.email);
 
       await userEvent.type(screen.getByTestId("password"), user.password);
 
       await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
-      expect(signInWithEmailAndPassword).toHaveBeenCalledWith(user);
-      expect(setAuthLoading).toHaveBeenCalledWith(true);
-      expect(setUser).toHaveBeenCalledWith(authUser);
+      expect(loginSpy).toHaveBeenCalledWith(user);
     });
 
     it("should sign in and redirect to provided url", async () => {
+      expect(setUser).toHaveBeenCalledWith(authUser);
       expect(navigate).toHaveBeenCalledWith(
         testSearchParams[0]["redirect-to"],
         { replace: true },
