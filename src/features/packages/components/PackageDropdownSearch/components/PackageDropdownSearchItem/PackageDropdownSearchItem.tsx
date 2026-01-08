@@ -32,7 +32,8 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   type,
 }) => {
   const { isPending, data, error } = useGetAvailablePackageVersions({
-    id: selectedPackage.package.id,
+    id: selectedPackage.id,
+    action: type,
     query,
   });
 
@@ -48,17 +49,15 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
         "p-autocomplete__result p-list__item p-card u-no-margin--bottom",
         classes.selectedContainer,
       )}
-      key={selectedPackage.package.id}
+      key={selectedPackage.id}
     >
       <div className={classes.topRow}>
-        <h5 className="u-no-margin u-no-padding">
-          {selectedPackage.package.name}
-        </h5>
+        <h5 className="u-no-margin u-no-padding">{selectedPackage.name}</h5>
         <Button
           type="button"
           appearance="link"
           className="u-no-margin--bottom u-no-padding--top"
-          aria-label={`Delete ${selectedPackage.package.name}`}
+          aria-label={`Delete ${selectedPackage.name}`}
           onClick={onDelete}
         >
           <Icon name={ICONS.delete} />
@@ -82,9 +81,9 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                       )}
                     </>
                   }
-                  checked={selectedPackage.selectedVersions.some(
+                  checked={selectedPackage.versions.some(
                     (selectedVersion) =>
-                      selectedVersion.name === packageVersion.name,
+                      selectedVersion === packageVersion.name,
                   )}
                   onChange={({ currentTarget: { checked } }) => {
                     if (checked) {

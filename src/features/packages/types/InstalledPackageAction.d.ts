@@ -5,4 +5,6 @@ export type InstalledPackageAction =
   | "unhold"
   | "upgrade";
 
+export type PackageAction = InstalledPackageAction | "install" | "uninstall";
+
 export type InstalledPackageActionAppearance = "positive" | "negative";

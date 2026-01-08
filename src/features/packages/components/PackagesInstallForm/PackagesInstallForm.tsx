@@ -38,14 +38,14 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
       const { data: activity } = await installPackages({
         action: "install",
         computer_ids: instanceIds,
-        package_ids: selectedPackages.map(({ package: { id } }) => id),
+        package_ids: selectedPackages.map(({ id }) => id),
       });
 
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0].package.name}`, `${selectedPackages.length} packages`)} to be installed.`,
-        message: `${pluralize(selectedPackages.length, `${selectedPackages[0].package.name} package`, `${selectedPackages.length} selected packages`)} will be installed and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0].name}`, `${selectedPackages.length} packages`)} to be installed.`,
+        message: `${pluralize(selectedPackages.length, `${selectedPackages[0].name} package`, `${selectedPackages.length} selected packages`)} will be installed and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -76,9 +76,7 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
           <SidePanelFormButtons
             submitButtonDisabled={
               !selectedPackages.length ||
-              selectedPackages.some(
-                ({ selectedVersions }) => !selectedVersions.length,
-              )
+              selectedPackages.some(({ versions }) => !versions.length)
             }
             submitButtonText="Next"
             submitButtonAppearance="positive"

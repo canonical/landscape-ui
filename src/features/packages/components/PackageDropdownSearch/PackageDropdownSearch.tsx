@@ -109,7 +109,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
     setSelectedPackages([
       ...selectedPackages,
-      { package: item, selectedVersions: [] },
+      { name: item.name, id: item.id, versions: [] },
     ]);
     clearSearchBox();
     close();
@@ -196,19 +196,16 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
 
               return (
                 <PackageDropdownSearchItem
-                  key={`${selectedPackage.package.id}${index}`}
-                  instanceCount={instanceIds.length}
+                  key={`${selectedPackage.id}${index}`}
                   selectedPackage={selectedPackage}
                   onDelete={handleDelete}
                   onSelectVersion={(version) => {
                     setSelectedPackages([
                       ...selectedPackages.slice(0, index),
                       {
-                        package: selectedPackage.package,
-                        selectedVersions: [
-                          ...selectedPackage.selectedVersions,
-                          version,
-                        ],
+                        name: selectedPackage.name,
+                        id: selectedPackage.id,
+                        versions: [...selectedPackage.versions, version.name],
                       },
                       ...selectedPackages.slice(index + 1),
                     ]);
@@ -217,11 +214,11 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                     setSelectedPackages([
                       ...selectedPackages.slice(0, index),
                       {
-                        package: selectedPackage.package,
-                        selectedVersions:
-                          selectedPackage.selectedVersions.filter(
-                            (v) => v !== version,
-                          ),
+                        name: selectedPackage.name,
+                        id: selectedPackage.id,
+                        versions: selectedPackage.versions.filter(
+                          (v) => v !== version.name,
+                        ),
                       },
                       ...selectedPackages.slice(index + 1),
                     ]);

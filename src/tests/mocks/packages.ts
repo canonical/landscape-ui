@@ -2,6 +2,7 @@ import type {
   DowngradePackageVersion,
   InstancePackage,
   Package,
+  PackageInstance,
 } from "@/features/packages";
 
 export const packages = [
@@ -358,3 +359,66 @@ export const downgradePackageVersions = [
     version: "0.1.7-3",
   },
 ] as const satisfies DowngradePackageVersion[];
+
+export const packageInstances: PackageInstance[] = [
+  {
+    name: "instance 1",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 2",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 3",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 4",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 5",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 6",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 7",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 8",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 9",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 10",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 11",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+  {
+    name: "instance 12",
+    installed_version: "0.1.9-1",
+    latest_available_version: "1.0.1",
+  },
+];

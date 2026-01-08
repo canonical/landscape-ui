@@ -13,4 +13,6 @@ export type {
   Package,
   PackageDiff,
   PackageObject,
+  PackageInstance,
+  PackageVersionsInstanceCount,
 } from "./types";
