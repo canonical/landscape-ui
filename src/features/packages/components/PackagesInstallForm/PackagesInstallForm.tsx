@@ -9,7 +9,7 @@ import { useState } from "react";
 import { usePackages } from "../../hooks";
 import type { SelectedPackage } from "../../types/SelectedPackage";
 import PackageDropdownSearch from "../PackageDropdownSearch";
-import PackagesUninstallSummary from "../PackagesUninstallSummary";
+import PackagesActionSummary from "../PackagesActionSummary";
 
 interface PackagesInstallFormProps {
   readonly instanceIds: number[];
@@ -91,7 +91,8 @@ const PackagesInstallForm: FC<PackagesInstallFormProps> = ({ instanceIds }) => {
     case "summary":
       return (
         <>
-          <PackagesUninstallSummary
+          <PackagesActionSummary
+            action="install"
             instanceIds={instanceIds}
             selectedPackages={selectedPackages}
           />

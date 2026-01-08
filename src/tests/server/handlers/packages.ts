@@ -1,18 +1,18 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
-import type {
-  AvailableVersion,
-  GetPackagesParams,
-  Package,
-  PackageVersionsInstanceCount,
+import type { GetDryRunInstancesParams } from "@/features/packages";
+import {
+  type AvailableVersion,
+  type GetPackagesParams,
+  type Package,
 } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
   downgradePackageVersions,
   getInstancePackages,
-  packages,
   packageInstances,
+  packages,
 } from "@/tests/mocks/packages";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
@@ -152,40 +152,34 @@ export default [
     });
   }),
 
-  http.get(`${API_URL}packages/dry-run`, () => {
-    return HttpResponse.json<PackageVersionsInstanceCount[]>([
-      {
-        name: "libthai0",
-        id: 123,
-        versions: [
-          { name: "1.0.1", num_computers: 5 },
-          { name: "1.0.2", num_computers: 3 },
-          { name: "0.1.9-1", num_computers: 8 },
-          { name: "2.0.0", num_computers: 2 },
-        ],
-      },
-    ]);
-  }),
-
-  http.get(
-    `${API_URL}packages/dry-run/:packageName/computers`,
-    ({ request }) => {
-      const url = new URL(request.url);
-      const limit = Number(url.searchParams.get("limit"));
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const search = url.searchParams.get("search") || "";
-
-      return HttpResponse.json(
-        generatePaginatedResponse({
-          data: packageInstances,
-          limit,
-          offset,
-          search,
-          searchFields: ["name"],
-        }),
-      );
+  http.get<never, GetDryRunInstancesParams, AvailableVersion[]>(
+    `${API_URL}packages/:packageId/dry-run`,
+    () => {
+      return HttpResponse.json<AvailableVersion[]>([
+        { name: "1.0.1", num_computers: 5 },
+        { name: "1.0.2", num_computers: 3 },
+        { name: "0.1.9-1", num_computers: 8 },
+        { name: "2.0.0", num_computers: 2 },
+      ]);
     },
   ),
+
+  http.get(`${API_URL}packages/:packageId/dry-run/computers`, ({ request }) => {
+    const url = new URL(request.url);
+    const limit = Number(url.searchParams.get("limit"));
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const search = url.searchParams.get("search") || "";
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: packageInstances,
+        limit,
+        offset,
+        search,
+        searchFields: ["name"],
+      }),
+    );
+  }),
 
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "UpgradePackages")) {

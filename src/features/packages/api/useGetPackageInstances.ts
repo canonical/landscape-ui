@@ -1,16 +1,12 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { AvailableVersion, PackageAction } from "../types";
 import type { PackageInstance } from "../types/Package";
-import type {
-  PackageAction,
-  PackageVersionsInstanceCount,
-  SelectedPackage,
-} from "../types";
 
-interface GetPackageInstancesParams {
+export interface GetPackageInstancesParams {
   id: number;
   action: PackageAction;
   selected_versions: string[];
@@ -21,9 +17,10 @@ interface GetPackageInstancesParams {
   query: string;
 }
 
-interface GetDryRunInstancesParams {
+export interface GetDryRunInstancesParams {
+  id: number;
   action: PackageAction;
-  packages: SelectedPackage[];
+  versions: string[];
   query: string;
 }
 
@@ -39,24 +36,22 @@ export function useGetPackageInstances({
   >({
     queryKey: ["packages", id, queryParams],
     queryFn: async () =>
-      authFetch.get(`packages/dry-run/${id}/computers`, {
+      authFetch.get(`packages/${id}/dry-run/computers`, {
         params: queryParams,
       }),
   });
 }
 
 export function useGetDryRunInstances({
+  id,
   ...queryParams
 }: GetDryRunInstancesParams) {
   const authFetch = useFetch();
 
-  return useQuery<
-    AxiosResponse<PackageVersionsInstanceCount[]>,
-    AxiosError<ApiError>
-  >({
+  return useQuery<AxiosResponse<AvailableVersion[]>, AxiosError<ApiError>>({
     queryKey: ["packages", queryParams],
     queryFn: async () =>
-      authFetch.get(`packages/dry-run`, {
+      authFetch.get(`packages/${id}/dry-run/`, {
         params: queryParams,
       }),
   });

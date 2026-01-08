@@ -60,9 +60,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           )}
         >
           {results.map((item: Package, index: number) => {
-            const disabled = selectedPackages.some(
-              ({ package: selectedPackage }) => item.id === selectedPackage.id,
-            );
+            const disabled = selectedPackages.some(({ id }) => item.id === id);
 
             return (
               <li

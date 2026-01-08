@@ -10,21 +10,21 @@
 .row {
   align-items: start;
   border-bottom: 1px solid $colors--theme--border-default;
-  padding: $sph--small $spv--small;
+  column-gap: $spv--x-large;
   display: grid;
   grid-column: 1 / 3;
   grid-template-columns: subgrid;
-  column-gap: $spv--x-large;
+  padding: $sph--small $spv--small;
 }
 
 .package {
-  margin-bottom: 2rem;
   display: grid;
   grid-template-columns: max-content auto;
+  margin-bottom: 2rem;
 }
 
 .instances {
-  padding: 0;
   margin-bottom: 0;
+  padding: 0;
   text-align: left;
 }
