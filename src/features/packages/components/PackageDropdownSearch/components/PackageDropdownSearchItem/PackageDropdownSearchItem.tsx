@@ -41,7 +41,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
     throw error;
   }
 
-  const action = type[0].toUpperCase() + type.substring(1);
+  const action = type.charAt(0).toUpperCase() + type.substring(1);
 
   return (
     <li

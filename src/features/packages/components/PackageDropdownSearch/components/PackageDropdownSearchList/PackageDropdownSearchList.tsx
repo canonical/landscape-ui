@@ -2,6 +2,7 @@ import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
 import type { Package } from "@/features/packages";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import { hasOneItem } from "@/utils/_helpers";
 import type {
   InfiniteData,
   UseInfiniteQueryResult,
@@ -80,7 +81,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
                 <div className="u-truncate" data-testid="dropdownElement">
                   <BoldSubstring text={item.name} substring={search} />
                 </div>
-                {hasOneInstance && (
+                {hasOneInstance && hasOneItem(item.computers) && (
                   <div>
                     <small className="u-text-muted">
                       {item.computers[0].available_version}
