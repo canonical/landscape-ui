@@ -82,13 +82,15 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
           </code>
         </span>
       </div>
-      <PackagesUninstallSummaryDetails
-        opened={isModalOpen}
-        pkg={selectedPackage}
-        instanceIds={instanceIds}
-        close={closeModal}
-        summaryVersion=""
-      />
+      {isModalOpen && (
+        <PackagesUninstallSummaryDetails
+          pkg={selectedPackage}
+          instanceIds={instanceIds}
+          close={closeModal}
+          summaryVersion=""
+          action={action}
+        />
+      )}
     </li>
   );
 };

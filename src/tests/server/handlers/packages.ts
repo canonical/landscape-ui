@@ -154,13 +154,17 @@ export default [
 
   http.get<never, GetDryRunInstancesParams, AvailableVersion[]>(
     `${API_URL}packages/:packageId/dry-run`,
-    () => {
-      return HttpResponse.json<AvailableVersion[]>([
+    ({ request }) => {
+      const url = new URL(request.url);
+      const versions = url.searchParams.get("versions")?.split(",") || [];
+      const results = [
         { name: "1.0.1", num_computers: 5 },
         { name: "1.0.2", num_computers: 3 },
         { name: "0.1.9-1", num_computers: 8 },
         { name: "2.0.0", num_computers: 2 },
-      ]);
+      ].filter(({ name }) => versions.includes(name));
+
+      return HttpResponse.json<AvailableVersion[]>(results);
     },
   ),
 

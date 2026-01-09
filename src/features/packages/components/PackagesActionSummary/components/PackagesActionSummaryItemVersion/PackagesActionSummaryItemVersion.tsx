@@ -42,13 +42,15 @@ const PackagesActionSummaryItemVersion: FC<
           {selectedPackage.name} {version.name}
         </code>
       </span>
-      <PackagesActionSummaryDetails
-        opened={isModalOpen}
-        pkg={selectedPackage}
-        instanceIds={instanceIds}
-        close={closeModal}
-        summaryVersion={version.name}
-      />
+      {isModalOpen && (
+        <PackagesActionSummaryDetails
+          pkg={selectedPackage}
+          instanceIds={instanceIds}
+          close={closeModal}
+          summaryVersion={version.name}
+          action={action}
+        />
+      )}
     </div>
   );
 };
