@@ -1,13 +1,13 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useGetDryRunInstances } from "../../../../api";
 import type { PackageAction, SelectedPackage } from "../../../../types";
 import PackagesUninstallSummaryDetails from "../PackagesActionSummaryDetails";
-import classes from "./PackagesActionSummaryItem.module.scss";
 import PackagesActionSummaryItemVersion from "../PackagesActionSummaryItemVersion";
+import classes from "./PackagesActionSummaryItem.module.scss";
 
 interface PackagesActionSummaryItemProps {
   readonly action: PackageAction;
@@ -77,7 +77,7 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
           Will not {action}{" "}
           <code>
             {selectedPackage.name}
-            {packageVersionsResult.data.length === 1 &&
+            {hasOneItem(packageVersionsResult.data) &&
               ` ${packageVersionsResult.data[0].name}`}
           </code>
         </span>

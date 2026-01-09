@@ -3,7 +3,11 @@ import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import {
+  pluralize,
+  pluralizeArray,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
 import { usePackages } from "../../hooks";
@@ -50,8 +54,8 @@ const PackagesUninstallForm: FC<PackagesUninstallFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selectedPackages.length, `package ${selectedPackages[0].name}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
-        message: `${pluralize(selectedPackages.length, `${selectedPackages[0].name} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, `${selectedPackages.length} packages`)} to be uninstalled.`,
+        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, `${selectedPackages.length} selected packages`)} will be uninstalled and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
