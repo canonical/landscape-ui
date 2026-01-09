@@ -5,9 +5,9 @@ import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useGetDryRunInstances } from "../../../../api";
 import type { PackageAction, SelectedPackage } from "../../../../types";
-import PackagesUninstallSummaryDetails from "../../../PackagesUninstallSummaryDetails";
+import PackagesUninstallSummaryDetails from "../PackagesActionSummaryDetails";
 import classes from "./PackagesActionSummaryItem.module.scss";
-import PackagesActionSummaryItemVersion from "./components/PackagesActionSummaryItemVersion";
+import PackagesActionSummaryItemVersion from "../PackagesActionSummaryItemVersion";
 
 interface PackagesActionSummaryItemProps {
   readonly action: PackageAction;

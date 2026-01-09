@@ -2,13 +2,13 @@ import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import PackagesUninstallSummaryDetails from "../../../../../../components/PackagesUninstallSummaryDetails";
 import type {
   AvailableVersion,
   PackageAction,
   SelectedPackage,
-} from "../../../../../../types";
-import classes from "../../PackagesActionSummaryItem.module.scss";
+} from "../../../../types";
+import classes from "../PackagesActionSummaryItem/PackagesActionSummaryItem.module.scss";
+import PackagesActionSummaryDetails from "../PackagesActionSummaryDetails";
 
 interface PackagesActionSummaryItemVersionProps {
   readonly action: PackageAction;
@@ -42,7 +42,7 @@ const PackagesActionSummaryItemVersion: FC<
           {selectedPackage.name} {version.name}
         </code>
       </span>
-      <PackagesUninstallSummaryDetails
+      <PackagesActionSummaryDetails
         opened={isModalOpen}
         pkg={selectedPackage}
         instanceIds={instanceIds}

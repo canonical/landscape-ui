@@ -107,7 +107,10 @@ describe("PackageDropdownSearch", () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);
       renderWithProviders(
-        <PackageDropdownSearch {...props} selectedPackages={[selectedPackage]} />,
+        <PackageDropdownSearch
+          {...props}
+          selectedPackages={[selectedPackage]}
+        />,
         undefined,
         instancePageUrl,
         instancePath,
@@ -123,7 +126,10 @@ describe("PackageDropdownSearch", () => {
       const [selectedPackage] = availablePackages;
       assert(selectedPackage);
       renderWithProviders(
-        <PackageDropdownSearch {...props} selectedPackages={[selectedPackage]} />,
+        <PackageDropdownSearch
+          {...props}
+          selectedPackages={[selectedPackage]}
+        />,
         undefined,
         instancePageUrl,
         instancePath,
