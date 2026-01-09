@@ -1,9 +1,9 @@
+import { PATHS } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import InstallSnaps from "./InstallSnaps";
-import { PATHS } from "@/libs/routes";
 
 describe("InstallSnaps", () => {
   beforeEach(async () => {
@@ -67,6 +67,7 @@ describe("InstallSnaps", () => {
     await userEvent.click(secondButton);
 
     const listItems = screen.getAllByRole("listitem");
+    assert(listItems[0]);
     const deleteButton = within(listItems[0]).getByRole("button");
     expect(deleteButton).toBeInTheDocument();
 

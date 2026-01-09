@@ -224,16 +224,16 @@ const PackageList: FC<PackageListProps> = ({
       return pocketPackages;
     }
 
-    pocketPackages.forEach((pocketPackage, index) => {
+    pocketPackages.forEach((pocketPackage) => {
       const alteredPackage = diffPullPocket.find(
         ({ packageName }) => pocketPackage.packageName === packageName,
       );
 
       if (alteredPackage) {
-        pocketPackages[index].difference = alteredPackage.difference;
+        pocketPackage.difference = alteredPackage.difference;
 
         if ("" !== alteredPackage.newVersion) {
-          pocketPackages[index].newVersion = alteredPackage.newVersion;
+          pocketPackage.newVersion = alteredPackage.newVersion;
         }
       }
     });

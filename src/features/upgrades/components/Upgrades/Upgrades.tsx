@@ -23,7 +23,9 @@ interface UpgradesProps {
 }
 
 const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
-  const [activeTabLinkId, setActiveTabLinkId] = useState(TAB_LINKS[0].id);
+  const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
+    TAB_LINKS[0].id,
+  );
 
   const affectedInstances = selectedInstances.filter(({ alerts }) =>
     hasUpgrades(alerts),

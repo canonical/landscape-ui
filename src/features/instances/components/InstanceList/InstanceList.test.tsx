@@ -26,11 +26,15 @@ describe("InstanceList", () => {
     for (const row of screen
       .getAllByRole<HTMLTableRowElement>("row")
       .slice(1)) {
-      const instance = instances.find((instance) => {
-        return row.cells[0].textContent?.includes(instance.title);
+      const [titleCell] = row.cells;
+      assert(titleCell);
+
+      const instance = instances.find(({ title }) => {
+        return titleCell.textContent?.includes(title);
       });
 
       assert(instance);
+      assert(row.cells[3]);
 
       expect(
         within(row.cells[3]).getByText(
@@ -52,13 +56,17 @@ describe("InstanceList", () => {
     for (const row of screen
       .getAllByRole<HTMLTableRowElement>("row")
       .slice(1)) {
+      const [firstCell] = row.cells;
+      assert(firstCell);
+
       const instance = instances.find((rowInstance) => {
-        return row.cells[0].textContent?.includes(rowInstance.title);
+        return firstCell.textContent?.includes(rowInstance.title);
       });
 
       assert(instance);
 
       if (instance.archived) {
+        assert(row.cells[1]);
         expect(within(row.cells[1]).getByText("Archived")).toBeInTheDocument();
       }
     }

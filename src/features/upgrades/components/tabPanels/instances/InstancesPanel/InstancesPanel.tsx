@@ -43,7 +43,7 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
     isLoading: getInstancePackagesLoading,
   } = getInstancePackagesQuery(
     {
-      instance_id: instances[expandedRow]?.id,
+      instance_id: instances[expandedRow]?.id!,
       limit: 5,
       offset,
       upgrade: true,

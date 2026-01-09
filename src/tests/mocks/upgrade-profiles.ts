@@ -1,6 +1,6 @@
 import type { UpgradeProfile } from "@/features/upgrade-profiles";
 
-export const upgradeProfiles: UpgradeProfile[] = [
+export const upgradeProfiles = [
   {
     id: 12,
     title: "Test",
@@ -19,7 +19,7 @@ export const upgradeProfiles: UpgradeProfile[] = [
     computers: {
       num_associated_computers: 1,
     },
-  },
+  } satisfies UpgradeProfile as UpgradeProfile,
   {
     id: 1,
     title: "Web daily",
@@ -37,7 +37,7 @@ export const upgradeProfiles: UpgradeProfile[] = [
     computers: {
       num_associated_computers: 1,
     },
-  },
+  } satisfies UpgradeProfile as UpgradeProfile,
   {
     id: 12,
     title: "Test 2",
@@ -57,5 +57,5 @@ export const upgradeProfiles: UpgradeProfile[] = [
     computers: {
       num_associated_computers: 1,
     },
-  },
-];
+  } satisfies UpgradeProfile as UpgradeProfile,
+] as const satisfies UpgradeProfile[];

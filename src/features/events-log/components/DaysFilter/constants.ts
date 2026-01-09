@@ -23,4 +23,4 @@ export const DAYS_FILTER_OPTIONS = [
     label: "365 days",
     value: "365",
   },
-];
+] as const;

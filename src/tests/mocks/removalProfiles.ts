@@ -1,6 +1,6 @@
 import type { RemovalProfile } from "@/features/removal-profiles";
 
-export const removalProfiles: RemovalProfile[] = [
+export const removalProfiles = [
   {
     id: 1,
     name: "profile-1",
@@ -27,4 +27,4 @@ export const removalProfiles: RemovalProfile[] = [
       num_associated_computers: 1,
     },
   },
-];
+] as const satisfies RemovalProfile[];

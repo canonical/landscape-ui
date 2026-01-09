@@ -1,5 +1,7 @@
 /* eslint @typescript-eslint/no-magic-numbers: 0 */
 
+import { hasOneItem } from "@/utils/_helpers";
+
 interface CronRange {
   start: number;
   end: number;
@@ -172,9 +174,9 @@ const toCronRanges = (
         },
       );
 
-      if (startAndEndString.includes("-")) {
-        const [start, end] = startAndEndString.split("-").map(toInteger);
+      const [start, end] = startAndEndString.split("-").map(toInteger);
 
+      if (start !== undefined && end !== undefined) {
         if (end < start) {
           throw new Error(
             "The end of a range must not be less than the start.",
@@ -190,8 +192,9 @@ const toCronRanges = (
       }
     };
 
-    if (rangeString.includes("/")) {
-      const [startAndEndString, stepString] = rangeString.split("/");
+    const [startAndEndString, stepString] = rangeString.split("/");
+
+    if (startAndEndString !== undefined && stepString !== undefined) {
       range.step = toInteger(stepString);
       setStartAndEnd(startAndEndString);
     } else {
@@ -271,9 +274,9 @@ export const toCronPhrase = (interval: string) => {
   }
 
   if (
-    minuteRanges.length == 1 &&
+    hasOneItem(minuteRanges) &&
     minuteRanges[0].start == minuteRanges[0].end &&
-    hourRanges.length == 1 &&
+    hasOneItem(hourRanges) &&
     hourRanges[0].start == hourRanges[0].end
   ) {
     phrase += `${hourRanges[0].start.toString().padStart(2, "0")}:${minuteRanges[0].start.toString().padStart(2, "0")}`;

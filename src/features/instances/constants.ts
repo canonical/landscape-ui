@@ -1,8 +1,8 @@
 import type { ListFilter } from "@/types/Filters";
 import type { SelectOption } from "@/types/SelectOption";
-import type { Status } from "./types/Status";
+import type { Status } from "./types";
 
-export const STATUS_FILTERS: Record<string, Status> = {
+export const STATUS_FILTERS = {
   Online: {
     alertType: "ComputerOnlineAlert",
     label: "Online instances",
@@ -55,18 +55,21 @@ export const STATUS_FILTERS: Record<string, Status> = {
   PackageProfilesAlert: {
     alertType: "PackageProfilesAlert",
     label: "Package profile alert",
+    alternateLabel: undefined,
     filterValue: "package-profiles",
     query: "alert:package-profiles",
     icon: {
+      gray: undefined,
       color: "package-profiles-alert",
     },
   },
   PackageReporterAlert: {
     alertType: "PackageReporterAlert",
     label: "Package reporter alert",
+    alternateLabel: undefined,
     filterValue: "package-reporter",
     query: "alert:package-reporter",
-    icon: { color: "package-reporter-alert" },
+    icon: { gray: undefined, color: "package-reporter-alert" },
   },
   PackageUpgradesAlert: {
     alertType: "PackageUpgradesAlert",
@@ -74,7 +77,7 @@ export const STATUS_FILTERS: Record<string, Status> = {
     alternateLabel: "Regular",
     filterValue: "package-upgrades",
     query: "alert:package-upgrades",
-    icon: { color: "regular-upgrades" },
+    icon: { gray: undefined, color: "regular-upgrades" },
   },
   SecurityUpgradesAlert: {
     alertType: "SecurityUpgradesAlert",
@@ -82,14 +85,15 @@ export const STATUS_FILTERS: Record<string, Status> = {
     alternateLabel: "Security",
     filterValue: "security-upgrades",
     query: "alert:security-upgrades",
-    icon: { color: "security-upgrades" },
+    icon: { gray: undefined, color: "security-upgrades" },
   },
   UnapprovedActivitiesAlert: {
     alertType: "UnapprovedActivitiesAlert",
     label: "Unapproved activities alert",
+    alternateLabel: undefined,
     filterValue: "unapproved-activities",
     query: "alert:unapproved-activities",
-    icon: { gray: "status-queued" },
+    icon: { gray: "status-queued", color: "package-profiles-alert" },
   },
   UpToDate: {
     alertType: "UpToDate",
@@ -97,7 +101,7 @@ export const STATUS_FILTERS: Record<string, Status> = {
     alternateLabel: "Up to date",
     filterValue: "up-to-date",
     query: "NOT alert:package-upgrades",
-    icon: { color: "up-to-date" },
+    icon: { gray: undefined, color: "up-to-date" },
   },
   ChildInstanceProfileAlert: {
     alertType: "ChildInstanceProfileAlert",
@@ -105,11 +109,11 @@ export const STATUS_FILTERS: Record<string, Status> = {
     alternateLabel: "WSL profile alert",
     filterValue: "child-instance-profiles",
     query: "alert:child-instance-profiles",
-    icon: { gray: "machines" },
+    icon: { gray: "machines", color: "package-profiles-alert" },
   },
-};
+} satisfies Record<string, Status>;
 
-export const ALERT_STATUSES: Record<string, Status> = {
+export const ALERT_STATUSES = {
   ...STATUS_FILTERS,
   PendingComputersAlert: {
     alertType: "PendingComputersAlert",
@@ -125,7 +129,7 @@ export const ALERT_STATUSES: Record<string, Status> = {
     alternateLabel: "Ubuntu Pro expiring",
     filterValue: "90",
     query: "contract-expires-within-days:90",
-    icon: { color: "contract-expiration-alert" },
+    icon: { gray: undefined, color: "contract-expiration-alert" },
   },
   Unknown: {
     alertType: "",
@@ -133,9 +137,9 @@ export const ALERT_STATUSES: Record<string, Status> = {
     alternateLabel: "-",
     filterValue: "",
     query: "",
-    icon: { color: "package-profiles-alert" },
+    icon: { gray: undefined, color: "package-profiles-alert" },
   },
-};
+} satisfies Record<string, Status>;
 
 const ARCHIVED_STATUS_OPTION: SelectOption = {
   label: "Archived",
@@ -144,7 +148,7 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
 
 type FilterKey = "os" | "groupBy" | "status" | "wsl" | "contractExpiryDays";
 
-export const FILTERS: Record<FilterKey, ListFilter> = {
+export const FILTERS = {
   os: {
     slug: "os",
     label: "OS",
@@ -217,4 +221,4 @@ export const FILTERS: Record<FilterKey, ListFilter> = {
       },
     ],
   },
-};
+} as const satisfies Record<FilterKey, ListFilter>;

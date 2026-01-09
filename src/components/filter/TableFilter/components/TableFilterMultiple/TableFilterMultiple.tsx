@@ -30,34 +30,38 @@ const TableFilterMultiple: FC<MultipleFilterProps> = ({
       <span className={classes.container}>
         {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
         <ul className={commonClasses.list}>
-          {options.map(({ label: optLabel, value, group }, i) => (
-            <li
-              key={value}
-              className={classNames(commonClasses.listItem, {
-                [commonClasses.separated]:
-                  group &&
-                  options[i + 1] !== undefined &&
-                  options[i + 1].group !== group,
-              })}
-            >
-              <Input
-                type="checkbox"
-                label={optLabel}
-                labelClassName="u-no-padding--top u-no-margin--bottom"
-                value={value}
-                checked={selectedItems.includes(value)}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  const next = e.target.checked
-                    ? [...selectedItems, value]
-                    : selectedItems.filter((val) => val !== value);
-                  onItemsSelect(next);
-                }}
-                disabled={disabledOptions?.some(
-                  (option) => option.value === value,
-                )}
-              />
-            </li>
-          ))}
+          {options.map(({ label: optLabel, value, group }, i) => {
+            const nextIndex = i + 1;
+
+            return (
+              <li
+                key={value}
+                className={classNames(commonClasses.listItem, {
+                  [commonClasses.separated]:
+                    group &&
+                    options[nextIndex] !== undefined &&
+                    options[nextIndex].group !== group,
+                })}
+              >
+                <Input
+                  type="checkbox"
+                  label={optLabel}
+                  labelClassName="u-no-padding--top u-no-margin--bottom"
+                  value={value}
+                  checked={selectedItems.includes(value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const next = e.target.checked
+                      ? [...selectedItems, value]
+                      : selectedItems.filter((val) => val !== value);
+                    onItemsSelect(next);
+                  }}
+                  disabled={disabledOptions?.some(
+                    (option) => option.value === value,
+                  )}
+                />
+              </li>
+            );
+          })}
         </ul>
       </span>
       <span

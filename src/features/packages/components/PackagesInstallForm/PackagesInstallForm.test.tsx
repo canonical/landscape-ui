@@ -51,6 +51,7 @@ describe("PackagesInstallForm", () => {
     it("enables install button when packages are selected", async () => {
       const packages = getInstancePackages(instanceId);
       const [firstPackage] = packages;
+      assert(firstPackage);
 
       renderWithProviders(
         <PackagesInstallForm />,
@@ -74,6 +75,7 @@ describe("PackagesInstallForm", () => {
     it("submits form and shows success notification for single package", async () => {
       const packages = getInstancePackages(instanceId);
       const [firstPackage] = packages;
+      assert(firstPackage);
 
       renderWithProviders(
         <PackagesInstallForm />,
@@ -111,6 +113,7 @@ describe("PackagesInstallForm", () => {
   it("allows removing selected packages", async () => {
     const packages = getInstancePackages(instanceId);
     const [firstPackage] = packages;
+    assert(firstPackage);
 
     renderWithProviders(
       <PackagesInstallForm />,

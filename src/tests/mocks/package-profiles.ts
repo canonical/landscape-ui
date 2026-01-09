@@ -2,7 +2,7 @@
 
 import type { PackageProfile } from "@/features/package-profiles";
 
-export const packageProfiles: PackageProfile[] = [
+export const packageProfiles = [
   {
     id: 40,
     name: "profile-from-a-file",
@@ -331,4 +331,4 @@ export const packageProfiles: PackageProfile[] = [
     all_computers: false,
     access_group: "global",
   },
-];
+] as const satisfies PackageProfile[];

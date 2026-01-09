@@ -1,11 +1,11 @@
 import { ROOT_PATH } from "@/constants";
 import type {
   IdentityProvider,
-  SingleIdentityProvider,
   SupportedIdentityProvider,
 } from "@/features/auth";
+import { mapTuple } from "@/utils/_helpers";
 
-export const identityProviders: IdentityProvider[] = [
+export const identityProviders = [
   {
     name: "Okta Enabled",
     provider: "okta",
@@ -24,7 +24,7 @@ export const identityProviders: IdentityProvider[] = [
     enabled: true,
     id: 3,
   },
-];
+] as const satisfies IdentityProvider[];
 
 const oktaProviderConfiguration = {
   _schema: "",
@@ -38,15 +38,17 @@ const oktaProviderConfiguration = {
   scopes: ["openid", "email"],
 };
 
-export const singleIdentityProviders: SingleIdentityProvider[] =
-  identityProviders.map((provider) => ({
+export const singleIdentityProviders = mapTuple(
+  identityProviders,
+  (provider) => ({
     configuration: { ...oktaProviderConfiguration, name: provider.name },
     enabled: provider.enabled,
     id: provider.id,
     redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/oidc",
-  }));
+  }),
+);
 
-export const supportedProviders: SupportedIdentityProvider[] = [
+export const supportedProviders = [
   {
     provider_slug: "okta",
     provider_label: "Okta",
@@ -59,6 +61,6 @@ export const supportedProviders: SupportedIdentityProvider[] = [
     redirect_uri: "http://onward.landscape.yuriy.works/handle-auth/ubuntu-one",
     supported_features: [],
   },
-];
+] as const satisfies SupportedIdentityProvider[];
 
 export const oidcLocationToRedirectTo = `${ROOT_PATH}handle-auth/oidc?code=oidc-code&state=state123`;

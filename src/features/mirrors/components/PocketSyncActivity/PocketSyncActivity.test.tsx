@@ -1,56 +1,65 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, NOT_AVAILABLE } from "@/constants";
+import { ACTIVITY_STATUSES } from "@/features/activities";
 import { pockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import moment from "moment";
 import type { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
-import PocketSyncActivity from "./PocketSyncActivity";
 import type { MirrorPocket, PullPocket } from "../../types/Pocket";
-import { ACTIVITY_STATUSES } from "@/features/activities";
+import PocketSyncActivity from "./PocketSyncActivity";
 
 const commonProps = {
   syncPocketRefs: [],
   syncPocketRefAdd: vi.fn(),
 };
 
+const uploadPocket = pockets.find((p) => p.mode === "upload");
+assert(uploadPocket);
 const propsWithUploadPocket: ComponentProps<typeof PocketSyncActivity> = {
   ...commonProps,
-  pocket: pockets.find((p) => p.mode === "upload") ?? pockets[0],
+  pocket: uploadPocket,
 };
 
+const pocketWithNoLastSyncStatus = pockets.find(
+  (p) => p.mode !== "upload" && !p.last_sync_status,
+);
+assert(pocketWithNoLastSyncStatus);
 const propsWithNoLastSyncStatus: ComponentProps<typeof PocketSyncActivity> = {
   ...commonProps,
-  pocket:
-    pockets.find((p) => p.mode !== "upload" && !p.last_sync_status) ??
-    pockets[0],
+  pocket: pocketWithNoLastSyncStatus,
 };
 
+const pocketWithScynedLastSyncStatus = pockets.find(
+  (p) => p.mode !== "upload" && p.last_sync_time,
+);
+assert(pocketWithScynedLastSyncStatus);
 const propsWithSyncedLastSyncStatus: ComponentProps<typeof PocketSyncActivity> =
   {
     ...commonProps,
-    pocket:
-      pockets.find((p) => p.mode !== "upload" && p.last_sync_time) ??
-      pockets[0],
+    pocket: pocketWithScynedLastSyncStatus,
   };
 
+const pocketWithInProgressLastSyncStatus = pockets.find(
+  (p) =>
+    p.mode !== "upload" &&
+    p.last_sync_status === "in progress" &&
+    p.last_sync_activity !== null,
+);
+assert(pocketWithInProgressLastSyncStatus);
 const propsWithInProgressLastSyncStatus: ComponentProps<
   typeof PocketSyncActivity
 > = {
   ...commonProps,
-  pocket:
-    pockets.find(
-      (p) =>
-        p.mode !== "upload" &&
-        p.last_sync_status === "in progress" &&
-        p.last_sync_activity !== null,
-    ) ?? pockets[0],
+  pocket: pocketWithInProgressLastSyncStatus,
 };
 
+const mirrorPocket = pockets.find((p) => p.mode === "mirror");
+assert(mirrorPocket);
 const propsWithMirrorPocket: ComponentProps<typeof PocketSyncActivity> = {
   ...commonProps,
-  pocket: pockets.find((p) => p.mode === "mirror") ?? pockets[0],
+  pocket: mirrorPocket,
 };
 
 describe("PocketSyncActivity", () => {

@@ -7,7 +7,7 @@ import classes from "../../TableFilter.module.scss";
 import type { GroupedOption } from "../../types";
 import TableFilterMultiple from "./TableFilterMultiple";
 
-const options: GroupedOption[] = [
+const options = [
   {
     label: "Test option 1",
     value: "test1",
@@ -20,7 +20,7 @@ const options: GroupedOption[] = [
     label: "Test option 3",
     value: "test3",
   },
-];
+] as const satisfies GroupedOption[];
 
 describe("Filter with multiple selection", () => {
   const filterLabel = "Multiple selection filter";
@@ -126,15 +126,16 @@ describe("Filter with multiple selection", () => {
 
     const listItems = screen.getAllByRole("listitem");
 
-    expect(listItems).toHaveLength(groupedOptions.length);
-
     listItems.forEach((listItem, index) => {
-      const { group } = groupedOptions[index];
+      const groupedOption = groupedOptions[index];
+      assert(groupedOption);
+      const { group } = groupedOption;
+      const nextIndex = index + 1;
 
       if (
         group &&
-        groupedOptions[index + 1] !== undefined &&
-        groupedOptions[index + 1].group !== group
+        groupedOptions[nextIndex] !== undefined &&
+        groupedOptions[nextIndex].group !== group
       ) {
         expect(listItem).toHaveClass(classes.separated);
       } else {

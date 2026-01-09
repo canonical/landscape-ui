@@ -1,11 +1,12 @@
 import type { ScriptProfile } from "@/features/script-profiles";
+import { activities } from "./activity";
 import { detailedScriptsData } from "./script";
 
-export const scriptProfiles: ScriptProfile[] = [
+export const scriptProfiles = [
   {
     access_group: "global",
     activities: {
-      last_activity: null,
+      last_activity: activities[0],
     },
     all_computers: false,
     archived: false,
@@ -23,7 +24,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -45,7 +46,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -67,7 +68,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -89,7 +90,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -111,7 +112,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -133,7 +134,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -160,7 +161,7 @@ export const scriptProfiles: ScriptProfile[] = [
     },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -182,7 +183,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -204,7 +205,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -231,7 +232,7 @@ export const scriptProfiles: ScriptProfile[] = [
     },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -253,7 +254,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -275,7 +276,7 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
+  } satisfies ScriptProfile as ScriptProfile,
   {
     access_group: "global",
     activities: {
@@ -297,5 +298,5 @@ export const scriptProfiles: ScriptProfile[] = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  },
-];
+  } satisfies ScriptProfile as ScriptProfile,
+] as const satisfies ScriptProfile[];

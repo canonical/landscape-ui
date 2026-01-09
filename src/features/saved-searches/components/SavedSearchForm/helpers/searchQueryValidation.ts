@@ -1,16 +1,16 @@
 import {
   ALERT_TYPES,
-  PROFILE_TYPES,
-  USG_STATUSES,
-  WSL_STATUSES,
-  LICENSE_TYPES,
   BOOLEANS,
-  LOGICAL_OPERATORS,
-  VALID_ROOT_KEYS,
-  INTEGER_REGEX,
-  TRAILING_WHITESPACE_REGEX,
-  QUERY_TOKEN_REGEX,
   DOUBLE_QUOTE_REGEX,
+  INTEGER_REGEX,
+  LICENSE_TYPES,
+  LOGICAL_OPERATORS,
+  PROFILE_TYPES,
+  QUERY_TOKEN_REGEX,
+  TRAILING_WHITESPACE_REGEX,
+  USG_STATUSES,
+  VALID_ROOT_KEYS,
+  WSL_STATUSES,
 } from "../constants";
 
 import type {
@@ -125,17 +125,10 @@ const validateNeedsToken = (val: string): ValidationResult => {
 };
 
 const validateProfileToken = (
-  parts: string[],
+  [, type, id, status]: [unknown, string, string?, string?],
   config: ValidationConfig,
 ): ValidationResult => {
-  const typeIndex = 1;
-  const idIndex = 2;
-  const statusIndex = 3;
   const key = "profile";
-
-  const type = parts[typeIndex];
-  const id = parts[idIndex];
-  const status = parts[statusIndex];
 
   const allowedTypes = config.profileTypes ?? PROFILE_TYPES;
   const allowedUsgStatuses = config.usgStatuses ?? USG_STATUSES;
@@ -191,13 +184,10 @@ const validateAnnotationToken = (val: string): ValidationResult => {
 };
 
 const validateKeyToken = (
-  parts: string[],
+  parts: [string, string],
   config: ValidationConfig,
 ): ValidationResult => {
-  const keyIndex = 0;
-  const valIndex = 1;
-  const key = parts[keyIndex];
-  const val = parts[valIndex];
+  const [key, val] = parts;
 
   if (!isValidRootKey(key)) {
     return keyError(key, "is not a valid query key.");
@@ -247,7 +237,7 @@ const validateToken = (
   }
 
   const parts = cleanToken.split(":");
-  return validateKeyToken(parts, config);
+  return validateKeyToken(parts as [string, string], config);
 };
 
 export const validateSearchQuery = (
@@ -263,12 +253,11 @@ export const validateSearchQuery = (
   const tokens = query.match(QUERY_TOKEN_REGEX) ?? [];
   const lastIndex = tokens.length - 1;
 
-  for (let i = 0; i < tokens.length; i++) {
+  for (const [i, token] of tokens.entries()) {
     if (!shouldValidateToken(i, lastIndex, isSubmit, hasTrailingSpace)) {
       continue;
     }
 
-    const token = tokens[i];
     const cleanToken = token.replace(DOUBLE_QUOTE_REGEX, "");
     const error = validateToken(cleanToken, i, config);
 

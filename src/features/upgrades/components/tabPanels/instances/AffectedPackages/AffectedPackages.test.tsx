@@ -1,14 +1,15 @@
-import type { ComponentProps } from "react";
-import { describe, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import type { InstancePackagesToExclude } from "@/features/packages";
 import { instances } from "@/tests/mocks/instance";
 import { getInstancePackages } from "@/tests/mocks/packages";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { describe, vi } from "vitest";
 import AffectedPackages from "./AffectedPackages";
 
 const increasedLimit = 10;
-const instance = instances[instances.length - 2]; // the last one is Ubuntu Core instance now
+const instanceIndex = 14;
+const instance = instances[instanceIndex];
 const limit = 5;
 const excludedPackages: InstancePackagesToExclude[] = [
   { id: instance.id, exclude_packages: [] },
@@ -16,11 +17,13 @@ const excludedPackages: InstancePackagesToExclude[] = [
 const onExcludedPackagesChange = vi.fn();
 const onLimitChange = vi.fn();
 const packages = getInstancePackages(instance.id);
+const increasedPackage = packages[increasedLimit - 1];
+assert(increasedPackage);
 const newExcludedPackages = excludedPackages.map((instanceExcludedPackages) =>
   instance.id === instanceExcludedPackages.id
     ? {
         id: instanceExcludedPackages.id,
-        exclude_packages: [packages[increasedLimit - 1].id],
+        exclude_packages: [increasedPackage.id],
       }
     : instanceExcludedPackages,
 );
@@ -85,9 +88,7 @@ describe("AffectedPackages", () => {
     });
 
     await userEvent.click(
-      screen.getByLabelText(
-        `Toggle ${packages[increasedLimit - 1].name} package`,
-      ),
+      screen.getByLabelText(`Toggle ${increasedPackage.name} package`),
     );
 
     expect(onExcludedPackagesChange).toHaveBeenCalledWith(newExcludedPackages);
@@ -108,9 +109,7 @@ describe("AffectedPackages", () => {
         .indeterminate,
     ).toBeTruthy();
     expect(
-      screen.getByLabelText(
-        `Toggle ${packages[increasedLimit - 1].name} package`,
-      ),
+      screen.getByLabelText(`Toggle ${increasedPackage.name} package`),
     ).not.toBeChecked();
   });
 

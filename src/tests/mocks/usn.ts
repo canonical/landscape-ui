@@ -2,7 +2,7 @@
 
 import type { Usn, UsnPackage } from "@/types/Usn";
 
-export const usns: Usn[] = [
+export const usns = [
   {
     usn: "6557-1",
     usn_link: "https://ubuntu.com/security/notices/USN-6557-1",
@@ -764,7 +764,7 @@ export const usns: Usn[] = [
     computers_count: 1,
     packages: [],
   },
-];
+] as const satisfies Usn[];
 
 export const usnPackages: UsnPackage[] = [
   {

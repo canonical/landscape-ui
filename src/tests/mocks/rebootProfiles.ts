@@ -1,6 +1,6 @@
 import type { RebootProfile } from "@/features/reboot-profiles";
 
-export const rebootProfiles: RebootProfile[] = [
+export const rebootProfiles = [
   {
     id: 1,
     title: "Reboot profile test edited 5",
@@ -49,4 +49,4 @@ export const rebootProfiles: RebootProfile[] = [
     num_computers: 0,
     schedule: "FREQ=WEEKLY;BYDAY=mo,tu;BYHOUR=12;BYMINUTE=50",
   },
-];
+] as const satisfies RebootProfile[];

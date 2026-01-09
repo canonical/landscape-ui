@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router";
 
 interface UsePageParamsReturnType extends PageParams {
   setPageParams: (newParams: Partial<PageParams>) => void;
-  lastSidePathSegment: string;
+  lastSidePathSegment: string | undefined;
   popSidePath: () => void;
   createSidePathPusher: (value: string) => () => void;
   createPageParamsSetter: (newParams: Partial<PageParams>) => () => void;

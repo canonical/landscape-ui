@@ -10,12 +10,13 @@ import {
 } from "../../constants";
 import NewPocketForm from "./NewPocketForm";
 
+const distribution = distributions.find((d) => d.series.length > 0);
+assert(distribution);
+const [series] = distribution.series;
+assert(series);
 const props: ComponentProps<typeof NewPocketForm> = {
-  distribution:
-    distributions.find((d) => d.series.length > 0) ?? distributions[0],
-  series:
-    distributions.find((d) => d.series.length > 0)?.series[0] ??
-    distributions[0].series[0],
+  distribution,
+  series,
 };
 
 describe("NewPocketForm", () => {

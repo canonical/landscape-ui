@@ -1,6 +1,6 @@
-import type { FC, FocusEventHandler, ReactNode } from "react";
-import classNames from "classnames";
 import type { SelectOption } from "@/types/SelectOption";
+import classNames from "classnames";
+import type { FC, FocusEventHandler, ReactNode } from "react";
 
 interface EmptyOption {
   enabled: boolean;
@@ -82,8 +82,8 @@ const SelectGrouped: FC<SelectGroupedProps> = ({
             className={classNames("p-form-validation__input", className)}
             onChange={(event) => {
               onChange(
-                event.target[event.target.selectedIndex].dataset.value ?? "",
-                event.target[event.target.selectedIndex].dataset.group ?? "",
+                event.target[event.target.selectedIndex]?.dataset.value ?? "",
+                event.target[event.target.selectedIndex]?.dataset.group ?? "",
               );
             }}
             onBlur={onBlur}

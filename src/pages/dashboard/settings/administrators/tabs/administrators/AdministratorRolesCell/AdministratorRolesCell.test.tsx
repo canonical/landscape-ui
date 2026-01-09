@@ -1,22 +1,23 @@
-import { renderWithProviders } from "@/tests/render";
-import AdministratorRolesCell from "./AdministratorRolesCell";
-import type { ComponentProps } from "react";
 import { administrators } from "@/tests/mocks/administrators";
 import { roles } from "@/tests/mocks/roles";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import AdministratorRolesCell from "./AdministratorRolesCell";
 
 const roleOptions = roles.map((role) => ({
   label: role.name,
   value: role.name,
 }));
 
-const administratorIndexWithoutAllRoles = administrators.findIndex(
+const administratorWithoutAllRoles = administrators.find(
   (admin) => admin.roles.length < roles.length,
 );
+assert(administratorWithoutAllRoles);
 
 const props: ComponentProps<typeof AdministratorRolesCell> = {
-  administrator: administrators[administratorIndexWithoutAllRoles],
+  administrator: administratorWithoutAllRoles,
   roleOptions: roleOptions,
 };
 

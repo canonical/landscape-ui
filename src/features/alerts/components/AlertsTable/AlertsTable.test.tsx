@@ -1,10 +1,10 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import AlertsTable from "./AlertsTable";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 
 const mockAvailableTagOptions = [
   { value: "All", label: "All instances" },
@@ -71,6 +71,7 @@ describe("AlertsTable", () => {
     });
 
     const [disabledSwitch] = disabledSwitches;
+    assert(disabledSwitch);
 
     expect(disabledSwitch).not.toBeChecked();
 
@@ -92,7 +93,8 @@ describe("AlertsTable", () => {
       name: /yes/i,
     });
 
-    const enabledSwitch = enabledSwitches[0];
+    const [enabledSwitch] = enabledSwitches;
+    assert(enabledSwitch);
 
     expect(enabledSwitch).toBeChecked();
 

@@ -1,16 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import AvailabilityZoneFilter from "./AvailabilityZoneFilter";
 import type { GroupedOption } from "@/components/filter";
 import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import AvailabilityZoneFilter from "./AvailabilityZoneFilter";
 
-const options: GroupedOption[] = [
+const options = [
   { label: "Zone A", value: "zone-a" },
   { label: "Zone B", value: "zone-b" },
   { label: "Without zones", value: "none" },
-];
+] as const satisfies GroupedOption[];
 
 const label = "Availability Zones";
 

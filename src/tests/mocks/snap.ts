@@ -119,7 +119,7 @@ export const availableSnaps: AvailableSnap[] = [
   },
 ];
 
-export const installedSnaps: InstalledSnap[] = [
+export const installedSnaps = [
   {
     version: "20230801",
     revision: "2015",
@@ -172,9 +172,9 @@ export const installedSnaps: InstalledSnap[] = [
       summary: "Extra tooling for helpful actions",
     },
   },
-];
+] as const satisfies InstalledSnap[];
 
-export const availableSnapInfo: AvailableSnapInfo[] = [
+export const availableSnapInfo = [
   {
     name: "Snap 2",
     "snap-id": "1",
@@ -298,7 +298,7 @@ export const availableSnapInfo: AvailableSnapInfo[] = [
       },
     },
   },
-];
+] as const satisfies AvailableSnapInfo[];
 
 export const successfulSnapInstallResponse = {
   id: 1000,

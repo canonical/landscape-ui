@@ -1,7 +1,7 @@
 import type { Administrator } from "@/types/Administrator";
 import { administratorRoles } from "./roles";
 
-export const administrators: Administrator[] = [
+export const administrators = [
   {
     name: "Bob Mellow",
     email: "bob@example.com",
@@ -32,4 +32,4 @@ export const administrators: Administrator[] = [
     id: 6,
     roles: administratorRoles.slice(0, 3),
   },
-];
+] as const satisfies Administrator[];

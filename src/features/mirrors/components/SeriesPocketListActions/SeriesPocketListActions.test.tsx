@@ -8,38 +8,34 @@ import SeriesPocketListActions from "./SeriesPocketListActions";
 
 const user = userEvent.setup();
 
+const pockets = distributions
+  .find((distribution) => distribution.series.length > 0)
+  ?.series.flatMap((series) => series.pockets);
+assert(pockets);
+
+const mirrorPocket = pockets.find((pocket) => pocket.mode === "mirror");
+assert(mirrorPocket);
 const propsWithMirrorPocket: ComponentProps<typeof SeriesPocketListActions> = {
   distributionName: "Ubuntu",
-  pocket:
-    distributions
-      .find((d) => d.series.length > 0)
-      ?.series.find((s) => s.pockets.some((p) => p.mode === "mirror"))
-      ?.pockets.find((p) => p.mode === "mirror") ??
-    distributions[0].series[0].pockets[0],
+  pocket: mirrorPocket,
   seriesName: "Focal Fossa",
   syncPocketRefs: [],
 };
 
+const pullPocket = pockets.find((pocket) => pocket.mode === "pull");
+assert(pullPocket);
 const propsWithPullPocket: ComponentProps<typeof SeriesPocketListActions> = {
   distributionName: "Ubuntu",
-  pocket:
-    distributions
-      .find((d) => d.series.length > 0)
-      ?.series.find((s) => s.pockets.some((p) => p.mode === "pull"))
-      ?.pockets.find((p) => p.mode === "pull") ??
-    distributions[0].series[0].pockets[0],
+  pocket: pullPocket,
   seriesName: "Focal Fossa",
   syncPocketRefs: [],
 };
 
+const uploadPocket = pockets.find((pocket) => pocket.mode === "upload");
+assert(uploadPocket);
 const propsWithUploadPocket: ComponentProps<typeof SeriesPocketListActions> = {
   distributionName: "Ubuntu",
-  pocket:
-    distributions
-      .find((d) => d.series.length > 0)
-      ?.series.find((s) => s.pockets.some((p) => p.mode === "upload"))
-      ?.pockets.find((p) => p.mode === "upload") ??
-    distributions[0].series[0].pockets[0],
+  pocket: uploadPocket,
   seriesName: "Focal Fossa",
   syncPocketRefs: [],
 };

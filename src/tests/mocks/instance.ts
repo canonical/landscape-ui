@@ -405,7 +405,7 @@ export const debianInstance: Instance = {
   registered_at: "2023-11-29T18:29:25Z",
 };
 
-export const instances: Instance[] = [
+export const instances = [
   ubuntuInstance,
   {
     id: 2,
@@ -445,7 +445,7 @@ export const instances: Instance[] = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 11,
     title: "Bionic WSL",
@@ -512,7 +512,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 65,
     title: "Bionic WSL 2",
@@ -675,7 +675,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 7,
     title: "Custom Web Server",
@@ -710,7 +710,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 3,
     title: "Database Server 1",
@@ -749,7 +749,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 8,
     title: "HP Z400 Desktop",
@@ -784,7 +784,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 5,
     title: "Jane's Laptop",
@@ -823,7 +823,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 4,
     title: "John's Laptop",
@@ -862,7 +862,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 9,
     title: "KVM Guest",
@@ -901,7 +901,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 10,
     title: "LXC Container",
@@ -936,7 +936,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: true,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   windowsInstance,
   {
     id: 20,
@@ -1081,7 +1081,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 12,
     title: "Fresh Instance",
@@ -1115,7 +1115,7 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   {
     id: 21,
     title: "usn-security.lxd",
@@ -1191,11 +1191,11 @@ export const instances: Instance[] = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-  },
+  } as Instance,
   ubuntuCoreInstance,
-];
+] as const satisfies Instance[];
 
-export const pendingInstances: PendingInstance[] = [
+export const pendingInstances = [
   {
     id: 28,
     title: "eee",
@@ -1229,4 +1229,4 @@ export const pendingInstances: PendingInstance[] = [
     client_tags: [],
     access_group: null,
   },
-];
+] as const satisfies PendingInstance[];

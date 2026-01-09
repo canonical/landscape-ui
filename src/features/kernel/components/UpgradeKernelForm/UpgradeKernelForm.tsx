@@ -1,3 +1,7 @@
+import {
+  DeliveryBlock,
+  RandomizationBlock,
+} from "@/components/form/DeliveryScheduling";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
@@ -5,6 +9,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import type { UrlParams } from "@/types/UrlParams";
+import { hasOneItem } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -24,10 +29,6 @@ import {
   UPGRADE_MESSAGE_WITHOUT_REBOOT,
 } from "./constants";
 import type { FormProps } from "./types";
-import {
-  DeliveryBlock,
-  RandomizationBlock,
-} from "@/components/form/DeliveryScheduling";
 
 interface UpgradeKernelFormProps {
   readonly currentKernelVersion: string;
@@ -66,10 +67,9 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
     randomize_delivery: false,
     deliver_delay_window: 0,
     deliver_after: "",
-    new_kernel_version_id:
-      upgradeKernelVersions.length === 1
-        ? upgradeKernelVersions[0].id.toString()
-        : "",
+    new_kernel_version_id: hasOneItem(upgradeKernelVersions)
+      ? upgradeKernelVersions[0].id.toString()
+      : "",
     reboot_after: false,
   };
 
@@ -129,7 +129,7 @@ const UpgradeKernelForm: FC<UpgradeKernelFormProps> = ({
         <InfoGrid.Item
           label="New version"
           value={
-            upgradeKernelVersions.length === 1 ? (
+            hasOneItem(upgradeKernelVersions) ? (
               <span>{upgradeKernelVersions[0].version_rounded}</span>
             ) : (
               <Select

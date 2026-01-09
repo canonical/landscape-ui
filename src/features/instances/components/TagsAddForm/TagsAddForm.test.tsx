@@ -57,9 +57,9 @@ describe("TagsAddForm", async () => {
   });
 
   it("should add selected tags to the single instance", async () => {
-    const selectedInstances = instances.slice(0, 1);
+    const [selectedInstance] = instances;
 
-    renderWithProviders(<TagsAddForm selected={selectedInstances} />);
+    renderWithProviders(<TagsAddForm selected={[selectedInstance]} />);
     await expectLoadingState();
 
     await Promise.all(
@@ -76,7 +76,7 @@ describe("TagsAddForm", async () => {
     await userEvent.click(screen.getByRole("button", { name: /add tags/i }));
     expect(
       await screen.findByText(
-        `Tags successfully assigned to "${selectedInstances[0].title}" instance`,
+        `Tags successfully assigned to "${selectedInstance.title}" instance`,
       ),
     ).toBeInTheDocument();
   });

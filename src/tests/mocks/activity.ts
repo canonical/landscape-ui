@@ -1,6 +1,6 @@
 import type { Activity } from "@/features/activities";
 
-export const activities: Activity[] = [
+export const activities = [
   {
     id: 1010,
     actions: {
@@ -47,7 +47,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StartChildComputerActivity",
-    summary: "Start instance Bionic WSL",
+    summary: "Start instance Bionic WSL 1",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -78,7 +78,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StartChildComputerActivity",
-    summary: "Start instance Bionic WSL",
+    summary: "Start instance Bionic WSL 2",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -109,7 +109,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StartChildComputerActivity",
-    summary: "Start instance Bionic WSL",
+    summary: "Start instance Bionic WSL 3",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -140,7 +140,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StartChildComputerActivity",
-    summary: "Start instance Bionic WSL",
+    summary: "Start instance Bionic WSL 4",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -171,7 +171,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StartChildComputerActivity",
-    summary: "Start instance Bionic WSL",
+    summary: "Start instance Bionic WSL 5",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -202,7 +202,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StopChildComputerActivity",
-    summary: "Stop instance Bionic WSL",
+    summary: "Stop instance Bionic WSL 6",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -233,7 +233,7 @@ export const activities: Activity[] = [
       id: 1,
     },
     type: "StopChildComputerActivity",
-    summary: "Stop instance Bionic WSL",
+    summary: "Stop instance Bionic WSL 7",
     result_text: null,
     computer_id: 6,
     approval_time: null,
@@ -249,9 +249,9 @@ export const activities: Activity[] = [
     activity_status: "unapproved",
     children: [],
   },
-];
+] as const satisfies Activity[];
 
-export const activityTypes: string[] = [
+export const activityTypes = [
   "ActivityGroup",
   "AddGroupMemberRequest",
   "ChangePackageProfilesRequest",
@@ -298,6 +298,6 @@ export const activityTypes: string[] = [
   "UnlockUserRequest",
   "UpgradeAllPackagesRequest",
   "UpgradeKernelPackageRequest",
-];
+] as const;
 
 export const INVALID_ACTIVITY_SEARCH_QUERY = "invalid_search_query";

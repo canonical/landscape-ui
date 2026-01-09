@@ -8,7 +8,7 @@ export interface GroupedOption extends SelectOption {
 
 export interface BaseFilterProps {
   label: ReactNode;
-  options: GroupedOption[];
+  options: readonly GroupedOption[];
   disabledOptions?: SelectOption[];
   hasBadge?: boolean;
   hasToggleIcon?: boolean;

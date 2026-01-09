@@ -1,7 +1,4 @@
-import type { FormikContextType, FormikTouched } from "formik";
-import type { FC } from "react";
-import { useEffect, useMemo } from "react";
-import type { CellProps, Column } from "react-table";
+import CellInput from "@/components/form/CellInput";
 import {
   Button,
   Icon,
@@ -9,7 +6,10 @@ import {
   ModularTable,
   Select,
 } from "@canonical/react-components";
-import CellInput from "@/components/form/CellInput";
+import type { FormikContextType, FormikTouched } from "formik";
+import type { FC } from "react";
+import { useEffect, useMemo } from "react";
+import type { CellProps, Column } from "react-table";
 import {
   CONSTRAINT_OPTIONS,
   CONSTRAINT_RULE_OPTIONS,
@@ -172,8 +172,10 @@ const PackageProfileConstraintsBlock: FC<
       const touchedConstraints: FormikTouched<Omit<Constraint, "id">>[] = [];
 
       for (let i = formik.values.constraints.length; i > 0; i--) {
-        if (formik.touched.constraints[i - 1]) {
-          touchedConstraints[i] = formik.touched.constraints[i - 1];
+        const touchedConstraint = formik.touched.constraints[i - 1];
+
+        if (touchedConstraint) {
+          touchedConstraints[i] = touchedConstraint;
         }
       }
 

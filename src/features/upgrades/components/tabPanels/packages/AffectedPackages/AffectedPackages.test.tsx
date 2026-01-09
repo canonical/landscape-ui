@@ -1,24 +1,26 @@
-import type { ComponentProps } from "react";
-import { describe, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { instances } from "@/tests/mocks/instance";
 import { packages } from "@/tests/mocks/packages";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { describe, vi } from "vitest";
 import AffectedPackages from "./AffectedPackages";
 
 const excludedPackages = instances.map(({ id }) => ({
   id,
   exclude_packages: [],
 }));
-const increasedLimit = 10;
+const increasedIndex = 9;
+const increasedLimit = increasedIndex + 1;
+const increasedPackage = packages[increasedIndex];
 const limit = 5;
 const newExcludedPackages = excludedPackages.map((instanceExcludedPackages) =>
-  packages[increasedLimit - 1].computers.some(
+  increasedPackage.computers.some(
     ({ id }) => id === instanceExcludedPackages.id,
   )
     ? {
         id: instanceExcludedPackages.id,
-        exclude_packages: [packages[increasedLimit - 1].id],
+        exclude_packages: [increasedPackage.id],
       }
     : instanceExcludedPackages,
 );
@@ -89,11 +91,11 @@ describe("AffectedPackages", () => {
       ),
     ).toBeInTheDocument();
 
-    await userEvent.click(
-      screen.getAllByLabelText(
-        `Toggle ${packages[increasedLimit - 1].name} package`,
-      )[0],
+    const [toggleButton] = screen.getAllByLabelText(
+      `Toggle ${increasedPackage.name} package`,
     );
+    assert(toggleButton);
+    await userEvent.click(toggleButton);
 
     expect(onExcludedPackagesChange).toHaveBeenCalledWith(newExcludedPackages);
   });
@@ -114,7 +116,7 @@ describe("AffectedPackages", () => {
     ).toBe(true);
 
     screen
-      .getAllByLabelText(`Toggle ${packages[increasedLimit - 1].name} package`)
+      .getAllByLabelText(`Toggle ${increasedPackage.name} package`)
       .forEach((checkbox) => {
         expect(checkbox).not.toBeChecked();
       });

@@ -115,6 +115,8 @@ describe("EditSnap", () => {
       expect(releaseSelect).toBeInTheDocument();
 
       const options: HTMLOptionElement[] = await screen.findAllByRole("option");
+      assert(options[0]);
+      assert(options[1]);
       await userEvent.selectOptions(releaseSelect, options[1]);
       expect(options[0].selected).toBeFalsy();
       expect(options[1].selected).toBeTruthy();

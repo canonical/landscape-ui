@@ -1,7 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import InviteAdministratorForm from "./InviteAdministratorForm";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import InviteAdministratorForm from "./InviteAdministratorForm";
 
 describe("InviteAdministratorForm", () => {
   const user = userEvent.setup();
@@ -31,6 +31,7 @@ describe("InviteAdministratorForm", () => {
 
     const checkboxes = screen.getAllByRole("checkbox");
 
+    assert(checkboxes[0]);
     await user.click(checkboxes[0]);
     expect(checkboxes[0]).toBeChecked();
   });

@@ -17,6 +17,7 @@ const packageWithoutUpgrade = instancePackages.find(
 const heldPackage = instancePackages.find((pkg) => pkg.status === "held");
 const [installedPackage] = instancePackages;
 
+assert(installedPackage);
 assert(packageWithUpgrade);
 assert(packageWithoutUpgrade);
 assert(heldPackage);

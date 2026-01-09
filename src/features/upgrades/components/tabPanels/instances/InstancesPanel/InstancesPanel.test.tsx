@@ -1,10 +1,10 @@
-import type { ComponentProps } from "react";
-import { describe, vi } from "vitest";
-import { screen, within } from "@testing-library/react";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import InstancesPanel from "./InstancesPanel";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { describe, vi } from "vitest";
+import InstancesPanel from "./InstancesPanel";
 
 const affectedInstances = instances.filter(
   ({ upgrades }) => upgrades?.security || upgrades?.regular,
@@ -30,10 +30,12 @@ describe("InstancesPanel", () => {
       screen.getByText(/Showing \d+ of \d+ instances/i),
     ).toBeInTheDocument();
 
+    const [firstAffectInstance] = affectedInstances;
+    assert(firstAffectInstance);
+
     const rows = screen.getAllByRole("row");
     const firstInstanceRow = rows.find(
-      ({ firstChild }) =>
-        firstChild?.textContent === affectedInstances[0].title,
+      ({ firstChild }) => firstChild?.textContent === firstAffectInstance.title,
     );
 
     assert(firstInstanceRow);

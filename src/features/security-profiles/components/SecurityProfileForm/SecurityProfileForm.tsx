@@ -55,7 +55,8 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
   };
 
   if (isReadyToSubmit) {
-    const step = steps[steps.length - 1];
+    const confirmationStepIndex = 4;
+    const step = steps[confirmationStepIndex];
 
     return (
       <>

@@ -36,7 +36,7 @@ const OTPInput: FC<OTPInputProps> = ({
         const caretPos = inputElem.selectionStart;
         newChar =
           caretPos && caretPos > 0
-            ? rawValue[caretPos - 1]
+            ? rawValue.charAt(caretPos - 1)
             : rawValue.slice(-1);
       }
       const newValue = [...value];

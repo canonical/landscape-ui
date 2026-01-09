@@ -91,7 +91,7 @@ export const invitations: Invitation[] = [
   },
 ];
 
-export const invitationsSummary: InvitationSummary[] = [
+export const invitationsSummary = [
   {
     account_title: "Onward, Inc.",
     secure_id: "1",
@@ -104,4 +104,4 @@ export const invitationsSummary: InvitationSummary[] = [
     account_title: "Onward, Inc.",
     secure_id: "3",
   },
-];
+] as const satisfies InvitationSummary[];

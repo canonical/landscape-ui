@@ -1,13 +1,13 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { distributions } from "@/tests/mocks/distributions";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_SNAPSHOT_URI } from "../../constants";
-import SeriesCard from "./SeriesCard";
-import userEvent from "@testing-library/user-event";
 import type { Distribution } from "../../types";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import SeriesCard from "./SeriesCard";
 
 const checkModalActions = async ({
   isLarge,
@@ -76,18 +76,19 @@ const findDistributionWithoutSnapshot = (): Distribution => {
       ),
     ),
   );
-  return dist ?? distributions[0];
+  assert(dist);
+  return dist;
 };
 
 const distributionWithoutSnapshot = findDistributionWithoutSnapshot();
 
-const seriesWithoutSnapshot =
-  distributionWithoutSnapshot.series.find((s) =>
-    s.pockets.some(
-      (p) =>
-        p.mode === "mirror" && !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI),
-    ),
-  ) ?? distributionWithoutSnapshot.series[0];
+const seriesWithoutSnapshot = distributionWithoutSnapshot.series.find((s) =>
+  s.pockets.some(
+    (p) =>
+      p.mode === "mirror" && !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI),
+  ),
+);
+assert(seriesWithoutSnapshot);
 
 const propsWithoutSnapshotDate: ComponentProps<typeof SeriesCard> = {
   distribution: distributionWithoutSnapshot,

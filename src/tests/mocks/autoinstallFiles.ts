@@ -1,6 +1,6 @@
 import type { AutoinstallFile } from "@/features/autoinstall-files";
 
-export const autoinstallFiles: AutoinstallFile[] = [
+export const autoinstallFiles = [
   {
     id: 1,
     contents: "echo 'Hello World'",
@@ -28,7 +28,7 @@ export const autoinstallFiles: AutoinstallFile[] = [
     created_at: "2025-02-02T17:55:23.806269",
     last_modified_at: "2025-02-07T17:55:23.806269",
   },
-];
+] as const satisfies AutoinstallFile[];
 
 export const autoinstallFileCode = `#cloud-config
 autoinstall:

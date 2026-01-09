@@ -5,11 +5,12 @@ import type { ComponentProps } from "react";
 import { vi } from "vitest";
 import SeriesPocketList from "./SeriesPocketList";
 
+const series = distributions.find((d) => d.series.length > 0)?.series[0];
+assert(series);
+
 const props: ComponentProps<typeof SeriesPocketList> = {
   distributionName: "Ubuntu",
-  series:
-    distributions.find((d) => d.series.length > 0)?.series[0] ??
-    distributions[0].series[0],
+  series,
   syncPocketRefAdd: vi.fn(),
   syncPocketRefs: [],
 };

@@ -1,7 +1,7 @@
-import type { User } from "@/types/User";
 import type { UserDetails } from "@/features/general-settings";
+import type { User } from "@/types/User";
 
-export const users: User[] = [
+export const users = [
   {
     name: "user1",
     enabled: true,
@@ -11,7 +11,7 @@ export const users: User[] = [
     home_phone: "1234567890",
     location: "location1",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user2",
     enabled: false,
@@ -21,7 +21,7 @@ export const users: User[] = [
     home_phone: "1234567890",
     location: "location2",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user3",
     enabled: true,
@@ -31,7 +31,7 @@ export const users: User[] = [
     home_phone: "1234567890",
     location: "location3",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user4",
     enabled: true,
@@ -41,7 +41,7 @@ export const users: User[] = [
     home_phone: "1234567890",
     location: "location4",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user5",
     enabled: false,
@@ -51,7 +51,7 @@ export const users: User[] = [
     home_phone: "1234567890",
     location: "location5",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user6",
     enabled: false,
@@ -60,7 +60,7 @@ export const users: User[] = [
     username: "user6",
     location: "location6",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user7",
     enabled: true,
@@ -69,7 +69,7 @@ export const users: User[] = [
     username: "user7",
     home_phone: "1234567890",
     location: "location7",
-  },
+  } satisfies User as User,
   {
     name: "user8",
     enabled: true,
@@ -78,15 +78,15 @@ export const users: User[] = [
     username: "user8",
     home_phone: "1234567890",
     work_phone: "1234567890",
-  },
+  } satisfies User as User,
   {
     name: "user9",
     enabled: true,
     primary_gid: 9,
     uid: 9,
     username: "user9",
-  },
-];
+  } satisfies User as User,
+] as const satisfies User[];
 
 const accountName = "test-account";
 const email = "example@mail.com";

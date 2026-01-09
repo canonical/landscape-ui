@@ -1,6 +1,6 @@
 import type { ScriptTab } from "../../types/ScriptTab";
 
-export const SCRIPT_TABS: ScriptTab[] = [
+export const SCRIPT_TABS = [
   {
     id: "info",
     label: "Info",
@@ -13,4 +13,4 @@ export const SCRIPT_TABS: ScriptTab[] = [
     id: "version-history",
     label: "Version history",
   },
-];
+] as const satisfies ScriptTab[];

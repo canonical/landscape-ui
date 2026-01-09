@@ -14,10 +14,10 @@ export const PRE_SELECTED_ARCHITECTURES: PreSelected = {
   thirdParty: ["amd64"],
 };
 
-export const PRE_SELECTED_POCKETS: PreSelected = {
+export const PRE_SELECTED_POCKETS = {
   ubuntu: ["release", "security", "updates"],
   thirdParty: ["release"],
-};
+} as const satisfies PreSelected;
 
 export const COMPONENT_OPTIONS: SelectOption[] = [
   {

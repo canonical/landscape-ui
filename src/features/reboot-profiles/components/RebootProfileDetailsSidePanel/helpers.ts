@@ -1,7 +1,8 @@
+import { hasProperty } from "@/utils/_helpers";
 import { parseSchedule } from "../../helpers";
 import type { RebootProfile } from "../../types";
 
-const WEEKDAY_MAP: Record<string, string> = {
+const WEEKDAY_MAP = {
   mo: "Monday",
   tu: "Tuesday",
   we: "Wednesday",
@@ -25,7 +26,10 @@ export const formatWeeklyRebootSchedule = (profile: RebootProfile): string => {
     return "One-time";
   }
 
-  const days = on_days.map((code) => WEEKDAY_MAP[code.toLowerCase()]);
+  const days = on_days
+    .map((code) => code.toLowerCase())
+    .filter((code) => hasProperty(WEEKDAY_MAP, code))
+    .map((code) => WEEKDAY_MAP[code]);
   const readableDays = concatenateDays(days);
 
   return `Every week on ${readableDays}`;

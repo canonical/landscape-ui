@@ -1,10 +1,10 @@
 import type {
+  DowngradePackageVersion,
   InstancePackage,
   Package,
-  DowngradePackageVersion,
 } from "@/features/packages";
 
-export const packages: Package[] = [
+export const packages = [
   {
     id: 15,
     name: "libthai0",
@@ -319,7 +319,7 @@ export const packages: Package[] = [
       },
     ],
   },
-];
+] as const satisfies Package[];
 
 export const getInstancePackages = (instanceId: number): InstancePackage[] => {
   return packages
@@ -331,7 +331,7 @@ export const getInstancePackages = (instanceId: number): InstancePackage[] => {
     );
 };
 
-export const downgradePackageVersions: DowngradePackageVersion[] = [
+export const downgradePackageVersions = [
   {
     id: 1,
     name: "libthai0",
@@ -344,4 +344,4 @@ export const downgradePackageVersions: DowngradePackageVersion[] = [
     summary: "Thai language support library",
     version: "0.1.7-3",
   },
-];
+] as const satisfies DowngradePackageVersion[];

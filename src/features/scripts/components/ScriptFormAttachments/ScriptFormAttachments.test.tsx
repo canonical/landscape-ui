@@ -1,9 +1,9 @@
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import type { Attachment } from "../../types";
 import ScriptFormAttachments from "./ScriptFormAttachments";
-import { renderWithProviders } from "@/tests/render";
 
 describe("ScriptFormAttachments", () => {
   const getFileInputError = vi.fn();
@@ -25,7 +25,7 @@ describe("ScriptFormAttachments", () => {
     onInitialAttachmentDelete,
   };
 
-  const fullAttachments: Attachment[] = [
+  const fullAttachments = [
     {
       id: 1,
       filename: "first",
@@ -46,7 +46,7 @@ describe("ScriptFormAttachments", () => {
       id: 5,
       filename: "fifth",
     },
-  ];
+  ] as const satisfies Attachment[];
 
   it("should render file inputs only", () => {
     renderWithProviders(<ScriptFormAttachments {...props} />);
@@ -108,14 +108,12 @@ describe("ScriptFormAttachments", () => {
     renderWithProviders(
       <ScriptFormAttachments
         {...props}
-        initialAttachments={fullAttachments.slice(-1)}
+        initialAttachments={[fullAttachments[4]]}
       />,
     );
 
     expect(
-      screen.getByLabelText(
-        `Remove ${fullAttachments[fullAttachments.length - 1].filename} attachment`,
-      ),
+      screen.getByLabelText(`Remove ${fullAttachments[4].filename} attachment`),
     ).toBeInTheDocument();
 
     for (const attachment of fullAttachments.slice(1)) {

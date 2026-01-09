@@ -114,9 +114,10 @@ describe("ApiCredentialsTables", () => {
       <ApiCredentialsTables user={mockUser} credentials={mockCredentials} />,
     );
 
-    const regenerateButton = screen.getAllByText(
+    const [regenerateButton] = screen.getAllByText(
       "Regenerate API credentials",
-    )[0];
+    );
+    assert(regenerateButton);
     await userEvent.click(regenerateButton);
   });
 });

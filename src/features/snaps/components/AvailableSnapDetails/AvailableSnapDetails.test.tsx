@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import AvailableSnapDetails from "./AvailableSnapDetails";
 
-const chosenSnap = availableSnapInfo[0];
+const [chosenSnap] = availableSnapInfo;
 
 const props = {
   instanceId: 1,
@@ -38,12 +38,12 @@ describe("AvailableSnap", () => {
         chosenSnap["channel-map"].find(
           (channel) => channel.confinement === "strict",
         ) ?? chosenSnap["channel-map"][0];
-      const strictOption: HTMLOptionElement =
-        options.find((option) =>
-          option.textContent?.includes(
-            `${strictConfinement.channel.name} - ${strictConfinement.channel.architecture}`,
-          ),
-        ) ?? options[0];
+      const strictOption = options.find((option) =>
+        option.textContent?.includes(
+          `${strictConfinement.channel.name} - ${strictConfinement.channel.architecture}`,
+        ),
+      );
+      assert(strictOption);
       await userEvent.selectOptions(selectRelease, strictOption);
 
       expect(strictOption.selected).toBeTruthy();
@@ -56,12 +56,12 @@ describe("AvailableSnap", () => {
         chosenSnap["channel-map"].find(
           (channel) => channel.confinement === "classic",
         ) ?? chosenSnap["channel-map"][0];
-      const classicOption =
-        options.find((option) =>
-          option.textContent?.includes(
-            `${classicConfinement.channel.name} - ${classicConfinement.channel.architecture}`,
-          ),
-        ) ?? options[0];
+      const classicOption = options.find((option) =>
+        option.textContent?.includes(
+          `${classicConfinement.channel.name} - ${classicConfinement.channel.architecture}`,
+        ),
+      );
+      assert(classicOption);
 
       await userEvent.selectOptions(selectRelease, classicOption);
       expect(classicOption.selected).toBeTruthy();
@@ -80,6 +80,7 @@ describe("AvailableSnap", () => {
     it("should add snap to selected items", async () => {
       const button = screen.getByRole("button", { name: /Add/i });
       const options = screen.getAllByRole("option");
+      assert(options[0]);
       const selectedChannel = options[0].textContent;
       await userEvent.click(button);
       expect(props.handleAddToSelectedItems).toHaveBeenCalledWith({

@@ -1,6 +1,6 @@
 import type { AccessGroup } from "@/features/access-groups";
 
-export const accessGroups: AccessGroup[] = [
+export const accessGroups = [
   {
     name: "global",
     title: "Global access",
@@ -55,4 +55,4 @@ export const accessGroups: AccessGroup[] = [
     parent: "global",
     children: "",
   },
-];
+] as const satisfies AccessGroup[];

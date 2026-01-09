@@ -14,7 +14,7 @@ export const TAB_LINKS = [
     id: "tab-link-usns",
     label: "USNs",
   },
-];
+] as const;
 
 export const TAB_PANELS = {
   instances: lazy(() => import("../tabPanels/instances")),

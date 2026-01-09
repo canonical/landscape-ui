@@ -9,4 +9,4 @@ export const TABS = [
     id: "tab-link-profiles",
     role: "tab",
   },
-];
+] as const;

@@ -1,12 +1,12 @@
-import type { ComponentProps } from "react";
-import { describe, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { instances } from "@/tests/mocks/instance";
 import { packages } from "@/tests/mocks/packages";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { describe, vi } from "vitest";
 import AffectedInstances from "./AffectedInstances";
 
-const currentPackage = packages[0];
+const [currentPackage] = packages;
 const excludedPackages = instances.map(({ id }) => ({
   id,
   exclude_packages: [],
@@ -20,6 +20,7 @@ const increasedInstanceCount = Math.min(
 const lastInstance = instances.filter((instance) =>
   currentPackage.computers.some(({ id }) => id === instance.id),
 )[increasedInstanceCount - 1];
+assert(lastInstance);
 const newExcludedPackages = excludedPackages.map((instanceExcludedPackages) =>
   lastInstance.id === instanceExcludedPackages.id
     ? {

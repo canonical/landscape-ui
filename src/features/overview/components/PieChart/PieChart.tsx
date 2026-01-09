@@ -1,14 +1,14 @@
+import { useTheme } from "@/context/theme";
 import type { ActiveElement, ChartData } from "chart.js";
 import { Chart, registerables } from "chart.js";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Pie } from "react-chartjs-2";
-import Legend from "../Legend";
-import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
-import classes from "./PieChart.module.scss";
 import type { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
-import { useTheme } from "@/context/theme";
+import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
+import Legend from "../Legend";
+import classes from "./PieChart.module.scss";
 
 Chart.register(...registerables);
 
@@ -57,7 +57,7 @@ const PieChart: FC<PieChartProps> = ({ data }) => {
               },
               cutout: "40%",
               onHover: (_, elements: ActiveElement[], chart: Chart) => {
-                if (elements.length > 0) {
+                if (elements[0]) {
                   handleChartMouseOver(
                     chart,
                     elements[0].datasetIndex,

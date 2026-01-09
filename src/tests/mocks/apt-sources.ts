@@ -1,6 +1,6 @@
 import type { APTSource } from "@/features/apt-sources";
 
-export const aptSources: APTSource[] = [
+export const aptSources = [
   {
     id: 1,
     access_group: "group1",
@@ -19,7 +19,7 @@ export const aptSources: APTSource[] = [
       "repo-profile-10",
       "repo-profile-11",
       "repo-profile-12",
-    ],
+    ] as string[],
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key2",
     line: "deb http://example.com/ubuntu focal main",
     name: "source2",
-    profiles: ["repo-profile-1"],
+    profiles: ["repo-profile-1"] as string[],
   },
   {
     id: 3,
@@ -35,7 +35,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key3",
     line: "deb http://example.com/ubuntu focal main",
     name: "source3",
-    profiles: [],
+    profiles: [] as string[],
   },
   {
     id: 4,
@@ -43,7 +43,7 @@ export const aptSources: APTSource[] = [
     gpg_key: "key4",
     line: "deb http://example.com/ubuntu focal main",
     name: "source4",
-    profiles: [],
+    profiles: [] as string[],
   },
   {
     id: 5,
@@ -51,6 +51,6 @@ export const aptSources: APTSource[] = [
     gpg_key: "key5",
     line: "deb http://example.com/ubuntu focal main",
     name: "source5",
-    profiles: [],
+    profiles: [] as string[],
   },
-];
+] as const satisfies APTSource[];

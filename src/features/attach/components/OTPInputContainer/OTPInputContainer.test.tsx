@@ -21,6 +21,7 @@ describe("OTPInputContainer", () => {
     renderWithProviders(<OTPInputContainer />);
 
     const inputs = screen.getAllByRole("textbox");
+    assert(inputs[0]);
     await user.type(inputs[0], "1");
 
     const submitButton = screen.getByRole("button", { name: /next/i });

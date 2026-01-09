@@ -19,7 +19,7 @@ const PackageProfileDetailsConstraints: FC<
   PackageProfileDetailsConstraintsProps
 > = ({ profile }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
 
   const { createSidePathPusher } = usePageParams();

@@ -1,14 +1,14 @@
+import {
+  deliveryValidationSchema,
+  randomizationValidationSchema,
+} from "@/components/form/DeliveryScheduling";
 import { formatCountableNoun } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelActionButtons/helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import moment from "moment";
 import * as Yup from "yup";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
 import type { InstalledSnap } from "../../types";
 import type { FormValidationSchemaShape } from "./types";
-import { pluralize } from "@/utils/_helpers";
-import {
-  deliveryValidationSchema,
-  randomizationValidationSchema,
-} from "@/components/form/DeliveryScheduling";
 
 const commonValidationSchema = {
   ...deliveryValidationSchema,
@@ -75,9 +75,12 @@ export const getSnapMessage = (
     return null;
   }
   const { held, unheld } = getSnapUpgradeCounts(installedSnaps);
-  const message = messages[installedSnaps.length === 1 ? "single" : "multiple"][
-    type
-  ].replaceAll("{snapName}", installedSnaps[0].snap.name);
+  const message = hasOneItem(installedSnaps)
+    ? messages.single[type].replaceAll(
+        "{snapName}",
+        installedSnaps[0].snap.name,
+      )
+    : messages.multiple[type];
 
   if (
     type === EditSnapType.Refresh ||

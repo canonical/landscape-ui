@@ -1,18 +1,19 @@
+import NoData from "@/components/layout/NoData";
 import { administrators } from "@/tests/mocks/administrators";
+import { roles } from "@/tests/mocks/roles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import EditAdministratorForm from "./EditAdministratorForm";
-import userEvent from "@testing-library/user-event";
-import NoData from "@/components/layout/NoData";
-import { roles } from "@/tests/mocks/roles";
 
-const indexOfAdministratorWithoutAllRoles = administrators.findIndex(
+const administratorWithoutAllRoles = administrators.find(
   (administrator) => administrator.roles.length < roles.length,
 );
+assert(administratorWithoutAllRoles);
 
 const props: ComponentProps<typeof EditAdministratorForm> = {
-  administrator: administrators[indexOfAdministratorWithoutAllRoles],
+  administrator: administratorWithoutAllRoles,
 };
 
 describe("EditAdministratorForm", () => {

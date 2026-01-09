@@ -1,12 +1,13 @@
+import { tags } from "@/tests/mocks/tag";
 import { renderWithProviders } from "@/tests/render";
+import { mapTuple } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import TagFilter from "./TagFilter";
-import { tags } from "@/tests/mocks/tag";
 
-const options = tags.map((tag) => ({
+const options = mapTuple(tags, (tag) => ({
   label: tag,
   value: tag,
 }));

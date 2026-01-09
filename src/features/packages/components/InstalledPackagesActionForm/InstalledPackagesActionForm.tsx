@@ -1,8 +1,7 @@
-import type { AxiosResponse } from "axios";
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { useParams } from "react-router";
-import { Col, Form, Row, Select } from "@canonical/react-components";
+import {
+  DeliveryBlock,
+  RandomizationBlock,
+} from "@/components/form/DeliveryScheduling";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
 import type { Activity } from "@/features/activities";
@@ -10,6 +9,12 @@ import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { UrlParams } from "@/types/UrlParams";
+import { Col, Form, Row, Select } from "@canonical/react-components";
+import type { AxiosResponse } from "axios";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useParams } from "react-router";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import { usePackages } from "../../hooks";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
@@ -21,11 +26,6 @@ import {
   getValidationSchema,
 } from "./helpers";
 import type { FormProps } from "./types";
-import type { UrlParams } from "@/types/UrlParams";
-import {
-  DeliveryBlock,
-  RandomizationBlock,
-} from "@/components/form/DeliveryScheduling";
 
 interface InstalledPackagesActionFormProps {
   readonly action: InstalledPackageAction;
@@ -54,7 +54,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
     getDowngradePackageVersionsQuery(
       {
         instanceId,
-        packageName: packages[0].name,
+        packageName: packages[0]!.name,
       },
       {
         enabled: action === "downgrade",
@@ -105,7 +105,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
     } else if (action === "downgrade") {
       promise = downgradePackageVersion({
         instanceId,
-        package_name: packages[0].name,
+        package_name: packages[0]!.name,
         package_version: values.version,
       });
     } else {
@@ -151,7 +151,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           <Col size={6}>
             <InfoItem
               label="Current version"
-              value={packages[0].current_version}
+              value={packages[0]!.current_version}
             />
           </Col>
           <Col size={6}>

@@ -1,9 +1,6 @@
 import type { ScheduleBlockFormProps } from "../../types";
 
-export const DAY_OPTIONS: readonly {
-  label: string;
-  value: ScheduleBlockFormProps["days"][number];
-}[] = [
+export const DAY_OPTIONS = [
   { label: "Sundays", value: "SU" },
   { label: "Mondays", value: "MO" },
   { label: "Tuesdays", value: "TU" },
@@ -11,7 +8,10 @@ export const DAY_OPTIONS: readonly {
   { label: "Thursdays", value: "TH" },
   { label: "Fridays", value: "FR" },
   { label: "Saturdays", value: "SA" },
-];
+] as const satisfies {
+  label: string;
+  value: ScheduleBlockFormProps["days"][number];
+}[];
 
 export const MONTH_OPTIONS: readonly {
   label: string;

@@ -1,9 +1,9 @@
-import type { Permission } from "@/types/Permission";
+import type { AccessGroup } from "@/features/access-groups";
 import type {
   AccessGroupOption,
   PermissionOption,
 } from "@/pages/dashboard/settings/roles/types";
-import type { AccessGroup } from "@/features/access-groups";
+import type { Permission } from "@/types/Permission";
 
 export const getPermissionOptions = (permissions: Permission[]) => {
   return permissions.reduce((acc, { global, name, title }) => {
@@ -84,9 +84,13 @@ export const getAccessGroupOptions = (accessGroups: AccessGroup[]) => {
       });
 
       for (const currentOptionParent of currentOptionParents) {
-        accessGroupsByDepth.options
-          .filter(({ value }) => value === currentOptionParent)[0]
-          .children.push(name);
+        const option = accessGroupsByDepth.options.find(
+          ({ value }) => value === currentOptionParent,
+        );
+
+        if (option) {
+          option.children.push(name);
+        }
       }
     }
   }
@@ -99,9 +103,15 @@ const getParentByDepth = (
   depth: number,
   options: AccessGroupOption[],
 ): string => {
-  return options
-    .filter((option) => option.depth === depth)
-    .filter(({ value }) => parents.includes(value))[0].value;
+  const parent = options.find(
+    (option) => option.depth === depth && parents.includes(option.value),
+  );
+
+  if (parent) {
+    return parent.value;
+  } else {
+    throw new Error();
+  }
 };
 
 export const getSortedOptions = (

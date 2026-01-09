@@ -8,7 +8,7 @@ import type { ProfileChange } from "../types/ProfileChange";
 
 export interface UseGetProfileChangesParams {
   instance_ids: number[];
-  tags: string[];
+  tags: readonly string[];
   limit?: number;
   offset?: number;
 }

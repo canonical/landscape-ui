@@ -1,20 +1,24 @@
+import { pockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import SeriesPocketDetailsButton from "./SeriesPocketDetailsButton";
 import type { ComponentProps } from "react";
-import { pockets } from "@/tests/mocks/pockets";
+import SeriesPocketDetailsButton from "./SeriesPocketDetailsButton";
 
+const mirrorPocket = pockets.find((p) => p.mode === "mirror");
+assert(mirrorPocket);
 const propsWithMirrorPocket: ComponentProps<typeof SeriesPocketDetailsButton> =
   {
     distributionName: "Ubuntu",
     seriesName: "Focal Fossa",
-    pocket: pockets.find((p) => p.mode === "mirror") ?? pockets[0],
+    pocket: mirrorPocket,
   };
 
+const pullPocket = pockets.find((p) => p.mode === "pull");
+assert(pullPocket);
 const propsWithPullPocket: ComponentProps<typeof SeriesPocketDetailsButton> = {
   distributionName: "Ubuntu",
   seriesName: "Focal Fossa",
-  pocket: pockets.find((p) => p.mode === "pull") ?? pockets[0],
+  pocket: pullPocket,
 };
 
 describe("SeriesPocketDetailsButton", () => {

@@ -55,6 +55,12 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
         ...containerRef.current.querySelectorAll<HTMLSpanElement>(".p-chip"),
       ];
 
+      if (!chips[0]) {
+        collapse();
+        setHiddenChipCount(0);
+        return;
+      }
+
       const top = chips[0].offsetTop;
 
       const hiddenChipsLength = chips.filter(
@@ -99,7 +105,7 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
     }
   }, [hasMultipleChips, calculateOverflowingChips]);
 
-  if (!flatFilters.length) {
+  if (!flatFilters[0]) {
     return null;
   }
 

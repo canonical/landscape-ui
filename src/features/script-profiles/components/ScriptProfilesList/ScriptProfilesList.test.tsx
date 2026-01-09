@@ -1,8 +1,10 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import moment from "moment";
 import { describe, expect, it } from "vitest";
 import { getTriggerText } from "../../helpers";
 import ScriptProfileList from "./ScriptProfilesList";
@@ -73,7 +75,9 @@ describe("ScriptProfileList", () => {
       });
       if (scriptProfile.activities.last_activity) {
         expect(lastRunCell).toHaveTextContent(
-          scriptProfile.activities.last_activity.creation_time,
+          moment(scriptProfile.activities.last_activity.creation_time)
+            .utc()
+            .format(DISPLAY_DATE_TIME_FORMAT),
         );
       } else {
         expect(lastRunCell).toHaveTextContent(NO_DATA_TEXT);

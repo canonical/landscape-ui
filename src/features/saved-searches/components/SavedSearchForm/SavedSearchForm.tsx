@@ -1,20 +1,20 @@
+import SearchQueryEditor from "@/components/filter/SearchQueryEditor";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import {
+  getProfileTypes,
+  useInstanceSearchHelpTerms,
+} from "@/features/instances";
+import useAuth from "@/hooks/useAuth";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
-import SearchQueryEditor from "@/components/filter/SearchQueryEditor";
-import {
-  getProfileTypes,
-  useInstanceSearchHelpTerms,
-} from "@/features/instances";
-import type { FormProps } from "./types";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { USG_STATUSES, WSL_STATUSES } from "./constants";
+import { configureSearchLanguage } from "./helpers/searchQueryLanguage";
 import { VALIDATION_SCHEMA } from "./helpers/searchQuerySchema";
 import { validateSearchField } from "./helpers/searchQueryValidation";
-import { configureSearchLanguage } from "./helpers/searchQueryLanguage";
-import { USG_STATUSES, WSL_STATUSES } from "./constants";
-import useAuth from "@/hooks/useAuth";
+import type { FormProps } from "./types";
 
 const INSTANCE_SEARCH_LANGUAGE_ID = "instance-search-query";
 
@@ -83,7 +83,7 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
             term
               .split(/\s+OR\s+/i)
               .map((part) => part.split(":")[0])
-              .filter(Boolean),
+              .filter((part) => part !== undefined),
           ),
         ),
       ),

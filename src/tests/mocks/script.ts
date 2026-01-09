@@ -4,7 +4,7 @@ import type {
   TruncatedScriptVersion,
 } from "@/features/scripts";
 
-export const scripts: Script[] = [
+export const scripts = [
   {
     id: 30,
     title: "new v2 script",
@@ -232,7 +232,7 @@ export const scripts: Script[] = [
     is_editable: true,
     is_executable: true,
   },
-];
+] as const satisfies Script[];
 
 export const scriptCodes: {
   script_id: number;
@@ -307,7 +307,7 @@ export const activeScriptDetails: SingleScript = {
   version_number: 1,
 };
 
-export const detailedScriptsData: SingleScript[] = [
+export const detailedScriptsData = [
   {
     ...scripts[0],
     status: "ACTIVE",
@@ -326,7 +326,7 @@ export const detailedScriptsData: SingleScript[] = [
     code: "#!/bin/shell\nls /tmp",
     version_number: 1,
   },
-];
+] as const;
 
 export const scriptVersions: TruncatedScriptVersion[] = [
   {

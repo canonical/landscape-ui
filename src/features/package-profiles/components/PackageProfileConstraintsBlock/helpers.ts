@@ -1,3 +1,4 @@
+import type { FormikContextType } from "formik";
 import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
 import type {
@@ -6,7 +7,6 @@ import type {
   ConstraintsFormProps,
 } from "../../types";
 import classes from "./PackageProfileConstraintsBlock.module.scss";
-import type { FormikContextType } from "formik";
 
 const handleConstraintPropChange = async (
   formik:
@@ -27,7 +27,7 @@ const handleConstraintPropChange = async (
   if (value !== "") {
     await formik.setFieldValue(`constraints[${index}].notAnyVersion`, true);
   } else if (
-    formik.values.constraints[index][prop === "rule" ? "version" : "rule"] ===
+    formik.values.constraints[index]?.[prop === "rule" ? "version" : "rule"] ===
     ""
   ) {
     await formik.setFieldValue(`constraints[${index}].notAnyVersion`, false);

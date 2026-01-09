@@ -30,34 +30,38 @@ const TableFilterSingle: FC<SingleFilterProps> = ({
     >
       {onSearch && <SearchBoxWithForm onSearch={onSearch} />}
       <ul className={commonClasses.list}>
-        {options.map(({ label: optLabel, value, group }, i) => (
-          <li
-            key={value}
-            className={classNames({
-              [commonClasses.separated]:
-                group &&
-                options[i + 1] !== undefined &&
-                options[i + 1].group !== group,
-            })}
-          >
-            {selectedItem === value ? (
-              <span className={classes.selected}>{optLabel}</span>
-            ) : (
-              <Button
-                type="button"
-                appearance="base"
-                className={classes.button}
-                onClick={() => {
-                  onItemSelect(value);
-                  handleCloseMenu?.();
-                }}
-                disabled={disabledOptions?.some((o) => o.value === value)}
-              >
-                {optLabel}
-              </Button>
-            )}
-          </li>
-        ))}
+        {options.map(({ label: optLabel, value, group }, i) => {
+          const nextIndex = i + 1;
+
+          return (
+            <li
+              key={value}
+              className={classNames({
+                [commonClasses.separated]:
+                  group &&
+                  options[nextIndex] !== undefined &&
+                  options[nextIndex].group !== group,
+              })}
+            >
+              {selectedItem === value ? (
+                <span className={classes.selected}>{optLabel}</span>
+              ) : (
+                <Button
+                  type="button"
+                  appearance="base"
+                  className={classes.button}
+                  onClick={() => {
+                    onItemSelect(value);
+                    handleCloseMenu?.();
+                  }}
+                  disabled={disabledOptions?.some((o) => o.value === value)}
+                >
+                  {optLabel}
+                </Button>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </span>
   );
