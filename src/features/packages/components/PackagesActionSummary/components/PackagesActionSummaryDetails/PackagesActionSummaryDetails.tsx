@@ -4,11 +4,11 @@ import { TablePagination } from "@/components/layout/TablePagination";
 import { Modal, SearchBox } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps } from "react-table";
-import type { SelectedPackage } from "../../types";
-import type { PackageInstance } from "../../types/Package";
-import classes from "./PackagesUninstallSummaryDetails.module.scss";
+import type { SelectedPackage } from "../../../../types";
+import type { PackageInstance } from "../../../../types/Package";
+import classes from "./PackagesActionSummaryDetails.module.scss";
 import type { InstanceColumn } from "./types";
-import { useGetPackageInstances } from "../../api/useGetPackageInstances";
+import { useGetPackageInstances } from "../../../../api/useGetPackageInstances";
 import usePageParams from "@/hooks/usePageParams";
 
 interface PackagesUninstallSummaryDetailsProps {
