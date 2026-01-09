@@ -3,6 +3,7 @@ import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { http, HttpResponse } from "msw";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import { generatePaginatedResponse } from "./_helpers";
 
 export default [
@@ -61,7 +62,7 @@ export default [
           endpointStatus.path.includes("script-profiles/:profileId"))
       ) {
         if (endpointStatus.status === "error") {
-          throw new HttpResponse(null, { status: 500 });
+          throw ENDPOINT_STATUS_API_ERROR;
         }
 
         if (endpointStatus.status === "empty") {

@@ -93,7 +93,7 @@ export const STATUS_FILTERS = {
     alternateLabel: undefined,
     filterValue: "unapproved-activities",
     query: "alert:unapproved-activities",
-    icon: { gray: "status-queued", color: undefined },
+    icon: { gray: "status-queued", color: "package-profiles-alert" },
   },
   UpToDate: {
     alertType: "UpToDate",
@@ -109,7 +109,7 @@ export const STATUS_FILTERS = {
     alternateLabel: "WSL profile alert",
     filterValue: "child-instance-profiles",
     query: "alert:child-instance-profiles",
-    icon: { gray: "machines", color: undefined },
+    icon: { gray: "machines", color: "package-profiles-alert" },
   },
 } satisfies Record<string, Status>;
 

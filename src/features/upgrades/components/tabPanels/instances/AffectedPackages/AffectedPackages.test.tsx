@@ -8,7 +8,7 @@ import { describe, vi } from "vitest";
 import AffectedPackages from "./AffectedPackages";
 
 const increasedLimit = 10;
-const instanceIndex = 13;
+const instanceIndex = 14;
 const instance = instances[instanceIndex];
 const limit = 5;
 const excludedPackages: InstancePackagesToExclude[] = [

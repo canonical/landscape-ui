@@ -1,7 +1,7 @@
-type Icon =
-  | { gray: string; color: string }
-  | { gray: string; color: undefined }
-  | { gray: undefined; color: string };
+interface Icon {
+  gray: string | undefined;
+  color: string;
+}
 
 export interface Status {
   icon: Icon;
