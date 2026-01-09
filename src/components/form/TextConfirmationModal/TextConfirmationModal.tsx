@@ -2,8 +2,9 @@ import { ConfirmationModal, Form, Input } from "@canonical/react-components";
 import { type ComponentProps, type FC, useState } from "react";
 import classes from "./TextConfirmationModal.module.scss";
 
-export interface TextConfirmationModalProps
-  extends ComponentProps<typeof ConfirmationModal> {
+export interface TextConfirmationModalProps extends ComponentProps<
+  typeof ConfirmationModal
+> {
   readonly confirmationText: string;
   readonly close: () => void;
   readonly onConfirm: () => Promise<void>;

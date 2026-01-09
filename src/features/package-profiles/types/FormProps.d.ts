@@ -14,8 +14,10 @@ interface Constraint extends PackageProfileConstraint {
   notAnyVersion: boolean;
 }
 
-export interface AddFormProps
-  extends Omit<Required<CreatePackageProfileParams>, "constraints"> {
+export interface AddFormProps extends Omit<
+  Required<CreatePackageProfileParams>,
+  "constraints"
+> {
   constraints: Omit<Constraint, "id">[];
   constraintsType: string;
   csvFile: File | null;

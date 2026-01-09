@@ -9,7 +9,8 @@ import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFo
 import classes from "./SecurityProfileForm.module.scss";
 
 interface SecurityProfileFormProps
-  extends UseSecurityProfileFormProps,
+  extends
+    UseSecurityProfileFormProps,
     Pick<
       ComponentProps<typeof SidePanelFormButtons>,
       "hasBackButton" | "onBackButtonPress"

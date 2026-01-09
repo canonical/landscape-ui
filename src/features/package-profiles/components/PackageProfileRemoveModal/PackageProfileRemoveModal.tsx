@@ -7,8 +7,10 @@ import type { FC } from "react";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
 
-interface PackageProfileRemoveModalProps
-  extends Pick<TextConfirmationModalProps, "close" | "isOpen"> {
+interface PackageProfileRemoveModalProps extends Pick<
+  TextConfirmationModalProps,
+  "close" | "isOpen"
+> {
   readonly packageProfile: PackageProfile;
 }
 

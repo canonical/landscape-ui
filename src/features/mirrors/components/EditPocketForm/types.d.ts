@@ -5,7 +5,8 @@ import type {
 } from "../../types";
 
 export interface FormProps
-  extends Required<EditMirrorPocketParams>,
+  extends
+    Required<EditMirrorPocketParams>,
     Required<EditPullPocketParams>,
     Required<EditUploadPocketParams> {
   filters: string[];

@@ -36,8 +36,10 @@ export interface CustomFilterComponentProps {
   closeMenu?: () => void;
 }
 
-export interface CustomFilterProps
-  extends Omit<BaseFilterProps, "options" | "disabledOptions" | "onSearch"> {
+export interface CustomFilterProps extends Omit<
+  BaseFilterProps,
+  "options" | "disabledOptions" | "onSearch"
+> {
   type: "custom";
   customComponent: FC<CustomFilterComponentProps>;
 }

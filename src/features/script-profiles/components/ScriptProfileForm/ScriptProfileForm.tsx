@@ -38,11 +38,10 @@ export type ScriptProfileFormSubmitValues = Pick<
   | "username"
 >;
 
-interface ScriptProfileFormProps
-  extends Pick<
-    ComponentProps<typeof SidePanelFormButtons>,
-    "submitButtonText"
-  > {
+interface ScriptProfileFormProps extends Pick<
+  ComponentProps<typeof SidePanelFormButtons>,
+  "submitButtonText"
+> {
   readonly onSubmit: (
     values: ScriptProfileFormSubmitValues,
   ) => Promise<unknown>;

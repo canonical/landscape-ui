@@ -13,8 +13,9 @@ export interface CreateRemovalProfileParams {
   tags?: string[];
 }
 
-interface EditRemovalProfileParams
-  extends Partial<Omit<CreateRemovalProfileParams, "access_group">> {
+interface EditRemovalProfileParams extends Partial<
+  Omit<CreateRemovalProfileParams, "access_group">
+> {
   name: string;
 }
 

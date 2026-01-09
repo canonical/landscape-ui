@@ -10,9 +10,7 @@ import AdministratorsTabs from "@/pages/dashboard/settings/administrators/Admini
 
 const InviteAdministratorForm = lazy(
   () =>
-    import(
-      "@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"
-    ),
+    import("@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"),
 );
 
 const AdministratorsPage: FC = () => {

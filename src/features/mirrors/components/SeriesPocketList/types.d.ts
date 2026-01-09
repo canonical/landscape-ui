@@ -7,7 +7,8 @@ import type {
 } from "../../types";
 
 export interface CommonPocket
-  extends Record<string, unknown>,
+  extends
+    Record<string, unknown>,
     PocketCommonProps,
     Partial<PocketLastSyncProps>,
     Partial<Omit<PocketMirrorProps, "mode">>,

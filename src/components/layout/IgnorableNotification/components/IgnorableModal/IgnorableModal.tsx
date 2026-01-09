@@ -2,11 +2,10 @@ import { CheckboxInput, ConfirmationModal } from "@canonical/react-components";
 import type { ComponentProps, FC, MouseEvent, ReactNode } from "react";
 import { useState } from "react";
 
-interface IgnorableModalProps
-  extends Omit<
-    ComponentProps<typeof ConfirmationModal>,
-    "children" | "close" | "onConfirm"
-  > {
+interface IgnorableModalProps extends Omit<
+  ComponentProps<typeof ConfirmationModal>,
+  "children" | "close" | "onConfirm"
+> {
   readonly hideModal: () => void;
   readonly hideNotification: (event: MouseEvent<HTMLElement>) => void;
   readonly ignore: (event: MouseEvent<HTMLElement>) => void;

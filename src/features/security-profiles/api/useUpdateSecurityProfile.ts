@@ -4,10 +4,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type { SecurityProfile } from "../types";
 
-export interface UpdateSecurityProfileParams
-  extends Partial<
-    Pick<SecurityProfile, "all_computers" | "schedule" | "tags" | "title">
-  > {
+export interface UpdateSecurityProfileParams extends Partial<
+  Pick<SecurityProfile, "all_computers" | "schedule" | "tags" | "title">
+> {
   id: number;
   restart_deliver_delay_window?: number;
   restart_deliver_delay?: number;

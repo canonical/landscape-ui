@@ -4,8 +4,10 @@ import classNames from "classnames";
 import type { InputProps } from "@canonical/react-components";
 import { Button, Icon, Input } from "@canonical/react-components";
 
-interface FileInputProps
-  extends Omit<InputProps, "multiple" | "onChange" | "type" | "value"> {
+interface FileInputProps extends Omit<
+  InputProps,
+  "multiple" | "onChange" | "type" | "value"
+> {
   readonly onFileRemove: () => Promise<void>;
   readonly onFileUpload: (files: File[]) => Promise<void>;
   readonly value: File | null;

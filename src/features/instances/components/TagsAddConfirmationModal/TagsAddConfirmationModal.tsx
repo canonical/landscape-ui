@@ -16,11 +16,10 @@ import type { CellProps, Column } from "react-table";
 import { useCounter } from "usehooks-ts";
 import { getRowProps } from "./helpers";
 
-interface TagsAddConfirmationModalProps
-  extends Omit<
-    ComponentProps<typeof ConfirmationModal>,
-    "children" | "confirmButtonLabel" | "title"
-  > {
+interface TagsAddConfirmationModalProps extends Omit<
+  ComponentProps<typeof ConfirmationModal>,
+  "children" | "confirmButtonLabel" | "title"
+> {
   readonly instances: InstanceWithoutRelation[];
   readonly tags: readonly string[];
 }

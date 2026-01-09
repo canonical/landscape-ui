@@ -9,9 +9,7 @@ import AdministratorsPanelContent from "@/pages/dashboard/settings/administrator
 
 const InviteAdministratorForm = lazy(
   () =>
-    import(
-      "@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"
-    ),
+    import("@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"),
 );
 
 const AdministratorsPanel: FC = () => {

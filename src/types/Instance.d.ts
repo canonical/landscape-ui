@@ -241,26 +241,22 @@ export type UbuntuInstanceWithoutRelation =
 
 export type UbuntuInstance = WithRelation<UbuntuInstanceWithoutRelation>;
 
-export interface WslInstanceWithoutRelation
-  extends UbuntuInstanceWithoutRelation {
+export interface WslInstanceWithoutRelation extends UbuntuInstanceWithoutRelation {
   is_default_child: boolean;
   is_wsl_instance: true;
 }
 
-export interface WindowsInstanceWithoutRelation
-  extends WithDistribution<InstanceWithoutRelation> {
+export interface WindowsInstanceWithoutRelation extends WithDistribution<InstanceWithoutRelation> {
   is_default_child: null;
   is_wsl_instance: false;
 }
 
 export interface WslInstance
-  extends WithRelation<WslInstanceWithoutRelation>,
-    UbuntuInstance {
+  extends WithRelation<WslInstanceWithoutRelation>, UbuntuInstance {
   parent: WindowsInstanceWithoutRelation;
 }
 
-export interface WindowsInstance
-  extends WithRelation<WindowsInstanceWithoutRelation> {
+export interface WindowsInstance extends WithRelation<WindowsInstanceWithoutRelation> {
   parent: null;
 }
 

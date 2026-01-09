@@ -5,7 +5,8 @@ import type { AxiosError } from "axios";
 import type { SecurityProfile } from "../types";
 
 export interface AddSecurityProfileParams
-  extends Pick<SecurityProfile, "benchmark" | "mode" | "schedule" | "title">,
+  extends
+    Pick<SecurityProfile, "benchmark" | "mode" | "schedule" | "title">,
     Partial<Pick<SecurityProfile, "access_group" | "all_computers" | "tags">> {
   start_date: string;
   restart_deliver_delay_window?: number;

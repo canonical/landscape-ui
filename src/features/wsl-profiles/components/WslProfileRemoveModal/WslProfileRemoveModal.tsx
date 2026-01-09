@@ -6,11 +6,10 @@ import type { ComponentProps, FC } from "react";
 import { useDeleteWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
 
-interface WslProfileRemoveModalProps
-  extends Omit<
-    ComponentProps<typeof TextConfirmationModal>,
-    "children" | "confirmationText" | "confirmButtonLabel" | "onConfirm"
-  > {
+interface WslProfileRemoveModalProps extends Omit<
+  ComponentProps<typeof TextConfirmationModal>,
+  "children" | "confirmationText" | "confirmButtonLabel" | "onConfirm"
+> {
   readonly wslProfile: WslProfile;
 }
 

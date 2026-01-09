@@ -5,7 +5,8 @@ import type {
 } from "../../types";
 
 interface FormProps
-  extends Omit<CreateMirrorPocketParams, "mode">,
+  extends
+    Omit<CreateMirrorPocketParams, "mode">,
     Omit<CreatePullPocketParams, "mode" | "filter_type">,
     Omit<CreateUploadPocketParams, "mode"> {
   type: "ubuntu" | "third-party";

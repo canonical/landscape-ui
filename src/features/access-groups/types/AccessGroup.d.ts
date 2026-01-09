@@ -6,7 +6,6 @@ export interface AccessGroup {
 }
 
 export interface AccessGroupWithInstancesCount
-  extends AccessGroup,
-    Record<string, unknown> {
+  extends AccessGroup, Record<string, unknown> {
   instancesCount: number;
 }

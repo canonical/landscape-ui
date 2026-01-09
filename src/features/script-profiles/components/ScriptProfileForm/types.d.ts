@@ -2,7 +2,8 @@ import type { Script } from "@/features/scripts";
 import type { ScriptProfile } from "../../types";
 
 export interface ScriptProfileFormValues
-  extends Pick<
+  extends
+    Pick<
       ScriptProfile,
       "all_computers" | "title" | "tags" | "time_limit" | "username"
     >,

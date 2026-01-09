@@ -7,8 +7,10 @@ import type { FC } from "react";
 import { useUpgradeProfiles } from "../../hooks";
 import type { UpgradeProfile } from "../../types";
 
-interface UpgradeProfileRemoveModalProps
-  extends Pick<TextConfirmationModalProps, "close" | "isOpen"> {
+interface UpgradeProfileRemoveModalProps extends Pick<
+  TextConfirmationModalProps,
+  "close" | "isOpen"
+> {
   readonly upgradeProfile: UpgradeProfile;
 }
 

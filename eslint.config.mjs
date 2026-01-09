@@ -1,7 +1,6 @@
 // @ts-check
 
 import eslint from "@eslint/js";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import { defineConfig } from "eslint/config";
@@ -46,8 +45,6 @@ export default defineConfig(
       },
     },
   },
-
-  eslintPluginPrettierRecommended,
 
   {
     files: ["**/*.{ts,tsx}"],

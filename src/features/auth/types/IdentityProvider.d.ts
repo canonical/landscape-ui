@@ -13,8 +13,7 @@ export interface SupportedIdentityProviderBase {
   supported_features: IdentityProviderFeature[];
 }
 
-export interface SupportedIdentityProvider
-  extends SupportedIdentityProviderBase {
+export interface SupportedIdentityProvider extends SupportedIdentityProviderBase {
   redirect_uri: string;
 }
 

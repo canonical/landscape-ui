@@ -3,8 +3,10 @@ import type { ComponentProps, MouseEvent } from "react";
 import { useState, type FC } from "react";
 import IgnorableModal from "../IgnorableModal";
 
-interface SecurityProfileAuditRetentionNotificationProps
-  extends Omit<ComponentProps<typeof Notification>, "onDismiss"> {
+interface SecurityProfileAuditRetentionNotificationProps extends Omit<
+  ComponentProps<typeof Notification>,
+  "onDismiss"
+> {
   readonly hide: (event: MouseEvent<HTMLElement>) => void;
   readonly storageKey: string;
   readonly modalProps?: Omit<
