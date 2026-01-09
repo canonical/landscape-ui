@@ -11,6 +11,7 @@ import type { InstanceColumn } from "./types";
 import { useGetPackageInstances } from "../../../../api/useGetPackageInstances";
 import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
+import { mapSummaryActionToPast } from "./helpers";
 
 const pageSize = 10;
 
@@ -21,21 +22,6 @@ interface PackagesActionSummaryDetailsProps {
   readonly summaryVersion: string;
   readonly action: PackageAction;
 }
-
-const mapSummaryActionToPast = (action: PackageAction) => {
-  if (action == "downgrade" || action == "upgrade" || action == "remove") {
-    return action + "d";
-  }
-  if (action == "hold") {
-    return "held";
-  }
-  if (action == "unhold") {
-    return "unheld";
-  }
-  if (action == "install" || action == "uninstall") {
-    return action + "ed";
-  }
-};
 
 const PackagesUninstallSummaryDetails: FC<
   PackagesActionSummaryDetailsProps
