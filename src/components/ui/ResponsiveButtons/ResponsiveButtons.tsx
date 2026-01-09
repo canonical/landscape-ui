@@ -69,6 +69,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
                       }
                     }}
                     disabled={link.disabled}
+                    hasIcon={link.hasIcon}
                   >
                     {link.children}
                   </Button>
