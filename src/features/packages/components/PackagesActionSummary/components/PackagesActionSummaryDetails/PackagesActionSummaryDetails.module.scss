@@ -1,3 +1,22 @@
 .table {
   width: 100% !important;
 }
+
+.tableContainer {
+  flex: 1;
+}
+
+.modal section {
+  height: 80%;
+  padding-bottom: 0;
+}
+
+.modal section > div {
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+}
+
+.modal section > div > div:last-child {
+  padding-bottom: 2rem;
+}
