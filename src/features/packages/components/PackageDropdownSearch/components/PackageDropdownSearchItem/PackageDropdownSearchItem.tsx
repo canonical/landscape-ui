@@ -9,7 +9,7 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { type FC } from "react";
-import type { SelectedPackage } from "../../../../types";
+import type { PackageActionFormType, SelectedPackage } from "../../../../types";
 import type { AvailableVersion } from "../../../../types/AvailableVersion";
 import InstancesWithoutVersionCount from "../InstancesWithoutVersionCount";
 import classes from "./PackageDropdownSearchItem.module.scss";
@@ -20,7 +20,7 @@ interface PackageDropdownSearchItemProps {
   readonly onSelectVersion: (version: AvailableVersion) => void;
   readonly onDeselectVersion: (version: AvailableVersion) => void;
   readonly query: string;
-  readonly type: "install" | "uninstall" | "hold" | "unhold";
+  readonly type: PackageActionFormType;
 }
 
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
@@ -33,15 +33,13 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
 }) => {
   const { isPending, data, error } = useGetAvailablePackageVersions({
     id: selectedPackage.id,
-    action: type,
+    action: type.action,
     query,
   });
 
   if (error) {
     throw error;
   }
-
-  const action = type.charAt(0).toUpperCase() + type.substring(1);
 
   return (
     <li
@@ -74,7 +72,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                   labelClassName="u-no-padding--top u-no-margin--bottom"
                   label={
                     <>
-                      {action} version <code>{packageVersion.name}</code> on{" "}
+                      {type.title} version <code>{packageVersion.name}</code> on{" "}
                       {pluralizeWithCount(
                         packageVersion.num_computers,
                         "instance",
@@ -96,7 +94,12 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
               </div>
             ))}
 
-            {<InstancesWithoutVersionCount count={data.data.without_version} />}
+            {
+              <InstancesWithoutVersionCount
+                count={data.data.without_version}
+                type={type.search}
+              />
+            }
           </>
         )}
       </div>

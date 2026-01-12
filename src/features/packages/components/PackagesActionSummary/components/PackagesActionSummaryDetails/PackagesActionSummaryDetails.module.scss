@@ -2,21 +2,22 @@
   width: 100% !important;
 }
 
-.tableContainer {
-  flex: 1;
-}
-
-.modal section {
+.modal > section {
   height: 80%;
+  max-width: 45rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
   padding-bottom: 0;
 }
 
-.modal section > div {
+.modal > section > div {
   display: flex;
   flex-direction: column;
   height: inherit;
 }
 
-.modal section > div > div:last-child {
+.modal > section > div > div:last-child {
   padding-bottom: 2rem;
 }

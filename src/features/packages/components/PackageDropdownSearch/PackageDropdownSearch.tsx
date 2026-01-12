@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import type { GetPackagesParams } from "../../hooks";
 import type { Package } from "../../types";
-import type { SelectedPackage } from "../../types/SelectedPackage";
+import type { SelectedPackage, PackageActionFormType } from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
@@ -29,6 +29,7 @@ interface PackageDropdownSearchProps {
   readonly installed?: boolean;
   readonly upgrade?: boolean;
   readonly held?: boolean;
+  readonly type: PackageActionFormType;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
@@ -39,6 +40,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   installed,
   upgrade,
   held,
+  type,
 }) => {
   const authFetch = useFetch();
 
@@ -116,7 +118,6 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   };
 
   const isOverLimit = selectedPackages.length >= MAX_SELECTED_PACKAGES;
-  const packagesSearched = installed ? "installed" : "available";
 
   return (
     <div className={classes.container}>
@@ -130,7 +131,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
           <div className="p-autocomplete">
             <SearchBox
               {...downshiftOptions.getInputProps()}
-              placeholder={`Search ${packagesSearched} packages`}
+              placeholder={`Search ${type.search} packages`}
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -143,7 +144,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
             />
             {isOverLimit && (
               <span className="p-form-help-text">
-                You can install a maximum of{" "}
+                You can {type.action} a maximum of{" "}
                 {pluralizeWithCount(MAX_SELECTED_PACKAGES, "package")} in one
                 single operation.
               </span>
@@ -224,7 +225,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                     ]);
                   }}
                   query={query}
-                  type={installed ? "uninstall" : "install"}
+                  type={type}
                 />
               );
             })

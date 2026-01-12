@@ -1,9 +1,9 @@
 export * from "./api";
 export { default as PackageList } from "./components/PackageList";
 export { default as PackagesInstallButton } from "./components/PackagesInstallButton";
-export { default as PackagesInstallForm } from "./components/PackagesInstallForm";
 export { default as PackagesPanelHeader } from "./components/PackagesPanelHeader";
-export { default as PackagesUninstallForm } from "./components/PackagesUninstallForm";
+export { default as PackagesActionForm } from "./components/PackagesActionForm";
+export { PACKAGE_ACTION_TYPES } from "./constants";
 export { usePackages } from "./hooks";
 export type { GetPackagesParams, InstancePackagesToExclude } from "./hooks";
 export type {
@@ -15,4 +15,5 @@ export type {
   PackageObject,
   PackageInstance,
   PackageVersionsInstanceCount,
+  PackageActionFormType,
 } from "./types";
