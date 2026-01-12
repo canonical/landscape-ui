@@ -60,7 +60,7 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
       parent_access_group: parentAccessGroup,
     },
     {
-      enabled: search.length > 2,
+      enabled: search.length > 0,
     },
   );
 
@@ -84,18 +84,12 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
   };
 
   const handleDropdownState = () => {
-    if (inputValue.length > 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
+    setOpen(Boolean(inputValue.length));
   };
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    if (value.length > 2) {
-      setSearch(value);
-    }
+    setSearch(value);
   };
 
   const debouncedSearch = useDebounceCallback(() => {
@@ -124,9 +118,6 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
   };
 
   const getHelpText = () => {
-    if (inputValue.length < 3) {
-      return "Min 3. characters";
-    }
     if (scripts.length === 0 && search && !isScriptsLoading) {
       return `No scripts found by "${search}"`;
     }

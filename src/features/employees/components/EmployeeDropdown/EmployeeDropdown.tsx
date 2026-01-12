@@ -31,7 +31,7 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   const { employees, isFetching } = useGetEmployees(
     { listenToUrlParams: false },
     { search: search },
-    { enabled: search.length > 2 },
+    { enabled: search.length > 0 },
   );
 
   const getAvailableEmployeeSuggestions = (item: Employee): boolean => {
@@ -54,18 +54,12 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   };
 
   const handleDropdownState = () => {
-    if (inputValue.length > 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
+    setOpen(Boolean(inputValue.length));
   };
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    if (value.length > 2) {
-      setSearch(value);
-    }
+    setSearch(value);
   };
 
   const debouncedSearch = useDebounceCallback(() => {
@@ -94,9 +88,6 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   };
 
   const getHelpText = () => {
-    if (!open && inputValue.length < 3) {
-      return "Min 3. characters";
-    }
     if (employees.length === 0 && search && !isFetching) {
       return `No employees found by "${search}"`;
     }
