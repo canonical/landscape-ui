@@ -2,10 +2,6 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
-import {
-  PackagesInstallForm,
-  PackagesUninstallForm,
-} from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
@@ -25,6 +21,11 @@ import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
+import {
+  PackagesActionForm,
+  type PackageActionFormType,
+} from "@/features/packages";
+import { PACKAGE_ACTION_TYPES } from "@/features/packages";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -172,23 +173,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const openInstallPackagesForm = () => {
+  const openPackagesActionForm = (type: PackageActionFormType) => {
     setSidePanelContent(
-      "Install packages",
+      `${type.title} packages`,
       <Suspense fallback={<LoadingState />}>
-        <PackagesInstallForm
+        <PackagesActionForm
           instanceIds={selectedInstances.map(({ id }) => id)}
-        />
-      </Suspense>,
-    );
-  };
-
-  const openUninstallPackagesForm = () => {
-    setSidePanelContent(
-      "Uninstall packages",
-      <Suspense fallback={<LoadingState />}>
-        <PackagesUninstallForm
-          instanceIds={selectedInstances.map(({ id }) => id)}
+          type={type}
         />
       </Suspense>,
     );
@@ -287,7 +278,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Install</span>
         </>
       ),
-      onClick: openInstallPackagesForm,
+      onClick: () => {
+        openPackagesActionForm(PACKAGE_ACTION_TYPES.install);
+      },
       hasIcon: true,
     },
     {
@@ -297,7 +290,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Uninstall</span>
         </>
       ),
-      onClick: openUninstallPackagesForm,
+      onClick: () => {
+        openPackagesActionForm(PACKAGE_ACTION_TYPES.uninstall);
+      },
       hasIcon: true,
     },
     {
@@ -316,6 +311,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Hold</span>
         </>
       ),
+      onClick: () => {
+        openPackagesActionForm(PACKAGE_ACTION_TYPES.hold);
+      },
       hasIcon: true,
     },
     {
@@ -325,6 +323,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Unhold</span>
         </>
       ),
+      onClick: () => {
+        openPackagesActionForm(PACKAGE_ACTION_TYPES.unhold);
+      },
       hasIcon: true,
     },
   ];

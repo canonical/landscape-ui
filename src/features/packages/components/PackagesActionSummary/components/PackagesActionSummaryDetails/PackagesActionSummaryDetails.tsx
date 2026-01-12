@@ -13,8 +13,6 @@ import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import { mapSummaryActionToPast } from "./helpers";
 
-const pageSize = 10;
-
 interface PackagesActionSummaryDetailsProps {
   readonly pkg: SelectedPackage;
   readonly instanceIds: number[];
@@ -26,7 +24,7 @@ interface PackagesActionSummaryDetailsProps {
 const PackagesUninstallSummaryDetails: FC<
   PackagesActionSummaryDetailsProps
 > = ({ pkg, instanceIds, close, summaryVersion, action }) => {
-  const { setPageParams, currentPage } = usePageParams();
+  const { setPageParams, currentPage, pageSize } = usePageParams();
 
   const actionPast = mapSummaryActionToPast(action);
   const title = summaryVersion
@@ -95,7 +93,7 @@ const PackagesUninstallSummaryDetails: FC<
   return (
     <Modal close={close} title={title} className={classes.modal}>
       <SearchBox
-        placeholder={`Search packages`}
+        placeholder={`Search instances`}
         shouldRefocusAfterReset
         externallyControlled
         value={inputText}
@@ -108,7 +106,7 @@ const PackagesUninstallSummaryDetails: FC<
       {isPending ? (
         <LoadingState />
       ) : (
-        <div className={classes.tableContainer}>
+        <div>
           <ResponsiveTable
             columns={columns}
             data={instances}
