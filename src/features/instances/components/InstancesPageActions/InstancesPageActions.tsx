@@ -3,11 +3,8 @@ import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
-import {
-  PACKAGE_ACTION_TYPES,
-  PackagesActionForm,
-  type PackageActionFormType,
-} from "@/features/packages";
+import type { PackageAction } from "@/features/packages";
+import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
@@ -15,6 +12,7 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
+  capitalize,
   hasOneItem,
   pluralizeArray,
   pluralizeWithCount,
@@ -198,13 +196,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const openPackagesActionForm = (type: PackageActionFormType) => {
+  const openPackagesActionForm = (action: PackageAction) => {
     setSidePanelContent(
-      `${type.title} packages`,
+      `${capitalize(action)} packages`,
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
           instanceIds={selectedInstances.map(({ id }) => id)}
-          type={type}
+          action={action}
         />
       </Suspense>,
     );
@@ -302,7 +300,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.install);
+        openPackagesActionForm("install");
       },
       hasIcon: true,
     },
@@ -314,7 +312,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.uninstall);
+        openPackagesActionForm("uninstall");
       },
       hasIcon: true,
     },
@@ -335,7 +333,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.hold);
+        openPackagesActionForm("hold");
       },
       hasIcon: true,
     },
@@ -347,7 +345,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.unhold);
+        openPackagesActionForm("unhold");
       },
       hasIcon: true,
     },

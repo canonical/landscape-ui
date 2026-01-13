@@ -11,25 +11,22 @@ import type { InstanceColumn } from "./types";
 import { useGetPackageInstances } from "../../../../api/useGetPackageInstances";
 import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
-import { mapSummaryActionToPast } from "./helpers";
+import { mapSummaryToTitle } from "../../../../helpers";
 
 interface PackagesActionSummaryDetailsProps {
   readonly pkg: SelectedPackage;
   readonly instanceIds: number[];
   readonly close: () => void;
-  readonly summaryVersion: string;
+  readonly summaryVersion?: string;
   readonly action: PackageAction;
 }
 
-const PackagesUninstallSummaryDetails: FC<
+const PackagesActionSummaryDetails: FC<
   PackagesActionSummaryDetailsProps
 > = ({ pkg, instanceIds, close, summaryVersion, action }) => {
   const { setPageParams, currentPage, pageSize } = usePageParams();
 
-  const actionPast = mapSummaryActionToPast(action);
-  const title = summaryVersion
-    ? `Instances with ${pkg.name} ${summaryVersion} ${actionPast}`
-    : `Instances that can't ${action} ${pkg.name}`;
+  const title = mapSummaryToTitle(pkg.name, action, summaryVersion);
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
 
@@ -124,4 +121,4 @@ const PackagesUninstallSummaryDetails: FC<
   );
 };
 
-export default PackagesUninstallSummaryDetails;
+export default PackagesActionSummaryDetails;

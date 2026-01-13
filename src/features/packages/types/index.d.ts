@@ -15,7 +15,6 @@ export {
   InstalledPackageAction,
   InstalledPackageActionAppearance,
   PackageAction,
-  PackageActionFormType,
 } from "./PackageAction";
 
 export * from "./SelectedPackage";
