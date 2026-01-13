@@ -115,8 +115,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
         ) ? (
           <div className={classes.warning}>
             <p>
-              You selected {selectedInstances.length} instances. This script
-              will:
+              You selected{" "}
+              {pluralizeWithCount(selectedInstances.length, "instance")}. This
+              script will:
             </p>
 
             <ul>
@@ -188,9 +189,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      "Upgrades",
+      `Upgrade ${pluralizeWithCount(selectedInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades selectedInstances={selectedInstances} />
+        <Upgrades />
       </Suspense>,
       "large",
     );
@@ -210,7 +211,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}`,
+      `Report for ${pluralizeArray(selectedInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,
@@ -351,6 +352,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
     },
   ];
 
+  const disabled = !selectedInstances.length || isGettingInstances;
+
   return (
     <>
       <ResponsiveButtons
@@ -407,12 +410,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             />
           ),
           REPORT_VIEW_ENABLED && (
-            <Button
-              key="report-view"
-              type="button"
-              onClick={handleReportView}
-              disabled={0 === selectedInstances.length}
-            >
+            <Button key="report-view" type="button" onClick={handleReportView}>
               <Icon name="status" />
               <span>View report</span>
             </Button>
@@ -422,11 +420,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
             type="button"
             hasIcon
             onClick={handleRunScript}
-            disabled={
-              selectedInstances.every((instance) => {
-                return !getFeatures(instance).scripts;
-              }) || isGettingInstances
-            }
+            disabled={selectedInstances.every((instance) => {
+              return !getFeatures(instance).scripts;
+            })}
           >
             <Icon name="code" />
             <span>Run script</span>
@@ -438,12 +434,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel={<span>Manage packages</span>}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={
-              !selectedInstances.length ||
-              selectedInstances.every(
-                (instance) => !getFeatures(instance).packages,
-              )
-            }
+            toggleDisabled={selectedInstances.every(
+              (instance) => !getFeatures(instance).packages,
+            )}
             dropdownProps={{ style: { zIndex: 10 } }}
           />,
           <Button
@@ -477,8 +470,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <span>Assign</span>
           </>
         }
+        toggleDisabled={disabled}
         toggleClassName="u-no-margin--bottom"
-        toggleDisabled={0 === selectedInstances.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
       {rebootModalOpen &&
