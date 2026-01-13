@@ -8,6 +8,7 @@
 
 .suggestionsContainer {
   max-height: 20rem;
+  overflow-y: auto;
   position: absolute;
   width: 100%;
   z-index: var(--z-dropdown);

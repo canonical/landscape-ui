@@ -1,15 +1,14 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
-import React, { useState } from "react";
-import { useDebounceCallback } from "usehooks-ts";
-import { useGetEmployees } from "../../api";
+import React, { useRef, useState } from "react";
+import { useBoolean, useDebounceValue } from "usehooks-ts";
+import { useGetEmployeesInfinite } from "../../api";
 import type { Employee } from "../../types";
 import classes from "./EmployeeDropdown.module.scss";
-import { DEBOUNCE_DELAY } from "./constants";
+import { DEBOUNCE_DELAY, NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
 import { boldSubstring } from "./helpers";
 
 interface EmployeeDropdown {
@@ -23,16 +22,31 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
   setEmployee,
   error,
 }) => {
-  const [search, setSearch] = useState<string>("");
-  const [open, setOpen] = useState(false);
+  const {
+    value: isOpen,
+    setTrue: openDropdown,
+    setFalse: closeDropdown,
+  } = useBoolean(false);
   const [inputValue, setInputValue] = useState<string>("");
+  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const debug = useDebug();
-  const { employees, isFetching } = useGetEmployees(
-    { listenToUrlParams: false },
-    { search: search },
-    { enabled: search.length > 0 },
-  );
+  const {
+    employees,
+    isPending: isEmployeesPending,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error: employeesError,
+  } = useGetEmployeesInfinite({
+    search,
+    limit: QUERY_LIMIT,
+    enabled: isOpen,
+  });
+
+  if (employeesError) {
+    throw employeesError;
+  }
 
   const getAvailableEmployeeSuggestions = (item: Employee): boolean => {
     return employee?.id !== item.id;
@@ -44,51 +58,52 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
     setEmployee(null);
   };
 
-  const closeDropdown = () => {
-    setOpen(false);
-  };
-
-  const handleClearSearch = () => {
+  const handleClearSearch = (reopen = true) => {
     setInputValue("");
+    setSearch.cancel();
     setSearch("");
+    if (reopen) {
+      openDropdown();
+    }
   };
 
   const handleDropdownState = () => {
-    setOpen(Boolean(inputValue.length));
+    openDropdown();
   };
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    setSearch(value);
-  };
-
-  const debouncedSearch = useDebounceCallback(() => {
-    try {
-      handleDropdownState();
-    } catch (err) {
-      debug(err);
+    if (!value) {
+      setSearch.cancel();
+      setSearch("");
+      openDropdown();
+      return;
     }
-  }, DEBOUNCE_DELAY);
+    setSearch(value);
+    openDropdown();
+  };
 
   const handleSelectItem = (item: Employee | null) => {
     if (!item) {
       return;
     }
     setEmployee(item);
-    setOpen(false);
-    handleClearSearch();
+    closeDropdown();
+    handleClearSearch(false);
+    inputRef.current?.blur();
   };
 
-  const handleOnKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      event.currentTarget.blur();
-    } else {
-      debouncedSearch();
+  const handleScroll = (event: React.UIEvent<HTMLUListElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    const nearBottom =
+      scrollHeight - scrollTop <= clientHeight * NEAR_BOTTOM_RATIO;
+    if (nearBottom && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
   };
 
   const getHelpText = () => {
-    if (employees.length === 0 && search && !isFetching) {
+    if (employees.length === 0 && search && !isEmployeesPending) {
       return `No employees found by "${search}"`;
     }
     return null;
@@ -100,8 +115,9 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
     <div className={classNames(classes.container, { "is-error": !!error })}>
       <Downshift
         onSelect={handleSelectItem}
-        itemToString={() => ""}
-        isOpen={open}
+        itemToString={(item) => (item ? item.name : "")}
+        isOpen={isOpen}
+        onOuterClick={closeDropdown}
       >
         {({ getInputProps, getItemProps, getMenuProps, highlightedIndex }) => (
           <div className="p-autocomplete">
@@ -121,42 +137,53 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
               externallyControlled
               autocomplete="off"
               value={inputValue}
+              ref={inputRef}
               onChange={handleSearchBoxChange}
               onClear={handleClearSearch}
               onBlur={closeDropdown}
               onFocus={handleDropdownState}
-              onKeyUp={handleOnKeyUp}
             />
             {helpText ? (
               <span className="p-form-help-text">{helpText}</span>
             ) : null}
-            {open && (suggestions.length > 0 || isFetching) ? (
+            {isOpen && (suggestions.length > 0 || isEmployeesPending) ? (
               <ul
                 className={classNames(
                   "p-list p-card--highlighted u-no-padding u-no-margin--bottom p-autocomplete__suggestions",
                   classes.suggestionsContainer,
                 )}
                 {...getMenuProps()}
+                onScroll={handleScroll}
               >
-                {isFetching ? (
+                {isEmployeesPending ? (
                   <LoadingState />
                 ) : (
-                  suggestions.map((item: Employee, index: number) => (
-                    <li
-                      className={classNames("p-list__item", classes.pointer, {
-                        [classes.highlighted]: highlightedIndex === index,
-                      })}
-                      key={item.id}
-                      {...getItemProps({
-                        item,
-                        index,
-                      })}
-                    >
-                      <div className="u-truncate" data-testid="dropdownElement">
-                        {boldSubstring(item.name, search)}
-                      </div>
-                    </li>
-                  ))
+                  <>
+                    {suggestions.map((item: Employee, index: number) => (
+                      <li
+                        className={classNames("p-list__item", classes.pointer, {
+                          [classes.highlighted]: highlightedIndex === index,
+                        })}
+                        key={item.id}
+                        {...getItemProps({
+                          item,
+                          index,
+                        })}
+                      >
+                        <div
+                          className="u-truncate"
+                          data-testid="dropdownElement"
+                        >
+                          {boldSubstring(item.name, inputValue)}
+                        </div>
+                      </li>
+                    ))}
+                    {isFetchingNextPage && (
+                      <li className="p-list__item u-align--center">
+                        <LoadingState />
+                      </li>
+                    )}
+                  </>
                 )}
               </ul>
             ) : null}
