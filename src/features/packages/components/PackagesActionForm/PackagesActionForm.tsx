@@ -11,11 +11,11 @@ import {
 } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
+import { mapActionToPast } from "../../helpers";
 import { usePackages } from "../../hooks";
 import type { PackageAction, SelectedPackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
-import { mapActionToPast } from "../../helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -55,8 +55,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, `${selectedPackages.length} packages`)} to be ${actionPast}.`,
-        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, `${selectedPackages.length} selected packages`)} will be ${actionPast} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, "packages")} to be ${actionPast}.`,
+        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, "selected packages")} will be ${actionPast} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",

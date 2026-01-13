@@ -70,7 +70,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       );
 
       notify.success({
-        title: `You have successfully queued ${pluralizeArray(selectedWslInstances, (instance) => `${instance.name}`, `${selectedWslInstances.length} instances`)} to be installed.`,
+        title: `You have successfully queued ${pluralizeArray(selectedWslInstances, (instance) => `${instance.name}`, "instances")} to be installed.`,
         message: "An activity has been queued to install it.",
       });
     } catch (error) {

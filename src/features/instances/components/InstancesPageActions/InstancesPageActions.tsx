@@ -2,13 +2,21 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
+import type { PackageAction } from "@/features/packages";
+import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { capitalize, hasOneItem, pluralize } from "@/utils/_helpers";
+import {
+  capitalize,
+  hasOneItem,
+  pluralize,
+  pluralizeArray,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
@@ -21,8 +29,6 @@ import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
-import type { PackageAction } from "@/features/packages";
-import { PackagesActionForm } from "@/features/packages";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -89,8 +95,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
         ) ? (
           <div className={classes.warning}>
             <p>
-              You selected {selectedInstances.length} instances. This script
-              will:
+              You selected{" "}
+              {pluralizeWithCount(selectedInstances.length, "instance")}. This
+              script will:
             </p>
 
             <ul>
@@ -162,9 +169,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      "Upgrades",
+      `Upgrade ${pluralizeWithCount(selectedInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades selectedInstances={selectedInstances} />
+        <Upgrades />
       </Suspense>,
       "large",
     );
@@ -184,7 +191,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralize(selectedInstances.length, selectedInstances[0]?.title ?? "1 instance", `${selectedInstances.length} instances`)}`,
+      `Report for ${pluralizeArray(selectedInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,
@@ -212,7 +219,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      `Attach Ubuntu Pro token to ${pluralizeWithCount(selectedInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
         <AttachTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
@@ -221,7 +228,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      `Replace Ubuntu Pro token for ${pluralizeWithCount(selectedInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
         <ReplaceTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
@@ -327,20 +334,19 @@ const InstancesPageActions = memo(function InstancesPageActions({
     },
   ];
 
+  const disabled = !selectedInstances.length || isGettingInstances;
+
   return (
     <>
       <ResponsiveButtons
         collapseFrom="xl"
+        disabled={disabled}
         buttons={[
           <Button
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={
-              isShuttingDownInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={isShuttingDownInstances}
             onClick={() => {
               setShutdownModalOpen(true);
             }}
@@ -352,11 +358,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={
-              isRestartingInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={isRestartingInstances}
             onClick={() => {
               setRebootModalOpen(true);
             }}
@@ -370,7 +372,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={0 === selectedInstances.length}
             >
               {proServicesLinks[0].children}
             </Button>
@@ -382,17 +383,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={0 === selectedInstances.length}
               dropdownProps={{ style: { zIndex: 10 } }}
             />
           ),
           REPORT_VIEW_ENABLED && (
-            <Button
-              key="report-view"
-              type="button"
-              onClick={handleReportView}
-              disabled={0 === selectedInstances.length}
-            >
+            <Button key="report-view" type="button" onClick={handleReportView}>
               <Icon name="status" />
               <span>View report</span>
             </Button>
@@ -402,11 +397,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
             type="button"
             hasIcon
             onClick={handleRunScript}
-            disabled={
-              selectedInstances.every((instance) => {
-                return !getFeatures(instance).scripts;
-              }) || isGettingInstances
-            }
+            disabled={selectedInstances.every((instance) => {
+              return !getFeatures(instance).scripts;
+            })}
           >
             <Icon name="code" />
             <span>Run script</span>
@@ -418,12 +411,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel={<span>Manage packages</span>}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={
-              !selectedInstances.length ||
-              selectedInstances.every(
-                (instance) => !getFeatures(instance).packages,
-              )
-            }
+            toggleDisabled={selectedInstances.every(
+              (instance) => !getFeatures(instance).packages,
+            )}
             dropdownProps={{ style: { zIndex: 10 } }}
           />,
         ]}
@@ -447,8 +437,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <span>Assign</span>
           </>
         }
+        toggleDisabled={disabled}
         toggleClassName="u-no-margin--bottom"
-        toggleDisabled={0 === selectedInstances.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
       {rebootModalOpen &&
@@ -465,8 +455,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onConfirm={handleRebootInstance}
           >
             <p>
-              Are you sure you want to restart {selectedInstances.length}
-              {pluralize(selectedInstances.length, "instance")}?
+              Are you sure you want to restart{" "}
+              {pluralizeWithCount(selectedInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
@@ -485,8 +475,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onConfirm={handleShutdownInstance}
           >
             <p>
-              Are you sure you want to shut down {selectedInstances.length}{" "}
-              {pluralize(selectedInstances.length, "instance")}?
+              Are you sure you want to shut down{" "}
+              {pluralizeWithCount(selectedInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
