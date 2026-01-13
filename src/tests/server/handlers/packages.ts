@@ -1,10 +1,11 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type { GetDryRunInstancesParams } from "@/features/packages";
-import {
-  type AvailableVersion,
-  type GetPackagesParams,
-  type Package,
+import type {
+  AvailableVersion,
+  GetPackagesParams,
+  Package,
+  VersionCount
 } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
@@ -137,19 +138,25 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
-  http.get(`${API_URL}packages/:id/available_versions`, () => {
-    return HttpResponse.json<{
-      without_version: number;
-      versions: AvailableVersion[];
-    }>({
-      without_version: 4,
+  http.get(`${API_URL}packages/:id/available_versions`, ({ request }) => {
+    const url = new URL(request.url);
+    const action = url.searchParams.get("action");
+
+    const response: VersionCount = {
+      out_of_scope: 4,
       versions: [
         { name: "1.0.1", num_computers: 5 },
         { name: "1.0.2", num_computers: 3 },
         { name: "0.1.9-1", num_computers: 8 },
         { name: "2.0.0", num_computers: 2 },
       ],
-    });
+    };
+
+    if (action == "hold" || action == "unhold") {
+      response.uninstalled = 1;
+    } 
+
+    return HttpResponse.json<VersionCount>(response);
   }),
 
   http.get<never, GetDryRunInstancesParams, AvailableVersion[]>(

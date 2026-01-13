@@ -8,7 +8,7 @@ import { lazy, Suspense, type FC } from "react";
 import { useParams } from "react-router";
 import classes from "./PackagesInstallButton.module.scss";
 
-const PackagesInstallForm = lazy(async () => import("../PackagesInstallForm"));
+const PackagesActionForm = lazy(async () => import("../PackagesActionForm"));
 
 type PackagesInstallButtonProps = Pick<ButtonProps, "appearance">;
 
@@ -29,7 +29,7 @@ const PackagesInstallButton: FC<PackagesInstallButtonProps> = ({
     setSidePanelContent(
       "Install packages",
       <Suspense fallback={<LoadingState />}>
-        <PackagesInstallForm instanceIds={[parseInt(instanceId)]} />
+        <PackagesActionForm instanceIds={[parseInt(instanceId)]} action={"install"}/>
       </Suspense>,
     );
   };

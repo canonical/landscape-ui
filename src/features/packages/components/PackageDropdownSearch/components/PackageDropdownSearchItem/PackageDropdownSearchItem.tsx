@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { useGetAvailablePackageVersions } from "@/features/packages";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { capitalize, pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
   CheckboxInput,
@@ -9,10 +9,11 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { type FC } from "react";
-import type { PackageActionFormType, SelectedPackage } from "../../../../types";
+import type { PackageAction, SelectedPackage } from "../../../../types";
 import type { AvailableVersion } from "../../../../types/AvailableVersion";
 import InstancesWithoutVersionCount from "../InstancesWithoutVersionCount";
 import classes from "./PackageDropdownSearchItem.module.scss";
+import { mapActionToSearch } from "../../../../helpers";
 
 interface PackageDropdownSearchItemProps {
   readonly selectedPackage: SelectedPackage;
@@ -20,7 +21,7 @@ interface PackageDropdownSearchItemProps {
   readonly onSelectVersion: (version: AvailableVersion) => void;
   readonly onDeselectVersion: (version: AvailableVersion) => void;
   readonly query: string;
-  readonly type: PackageActionFormType;
+  readonly action: PackageAction;
 }
 
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
@@ -29,17 +30,19 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   onSelectVersion,
   onDeselectVersion,
   query,
-  type,
+  action,
 }) => {
   const { isPending, data, error } = useGetAvailablePackageVersions({
     id: selectedPackage.id,
-    action: type.action,
-    query,
+    action: action,
+    query: query,
   });
 
   if (error) {
     throw error;
   }
+
+  const versions = data?.data.versions || [];
 
   return (
     <li
@@ -66,14 +69,19 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
           <LoadingState />
         ) : (
           <>
-            {data.data.versions.map((packageVersion) => (
+            {versions.map((packageVersion) => (
               <div key={packageVersion.name}>
                 <CheckboxInput
                   labelClassName="u-no-padding--top u-no-margin--bottom"
                   label={
                     <>
-                      {type.title} version <code>{packageVersion.name}</code> on{" "}
-                      {pluralizeWithCount(
+                      {capitalize(action)}{" "}
+                      {packageVersion.name ? (
+                        <>version <code>{packageVersion.name}</code></>
+                      ) : (
+                         <>as not installed</>
+                      )}
+                      {" "}on {pluralizeWithCount(
                         packageVersion.num_computers,
                         "instance",
                       )}
@@ -96,8 +104,8 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
 
             {
               <InstancesWithoutVersionCount
-                count={data.data.without_version}
-                type={type.search}
+                count={data.data.out_of_scope}
+                type={mapActionToSearch(action)}
               />
             }
           </>

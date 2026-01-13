@@ -38,9 +38,11 @@ const PackagesActionSummaryItemVersion: FC<
       </Button>
       <span>
         Will {action}{" "}
-        <code>
-          {selectedPackage.name} {version.name}
-        </code>
+        {version.name ? (
+          <code>{selectedPackage.name} {version.name}</code>
+        ) : (
+          <span>as not installed</span>
+        )}
       </span>
       {isModalOpen && (
         <PackagesActionSummaryDetails

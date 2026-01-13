@@ -1,8 +1,6 @@
 import type {
   InstalledPackageAction,
   InstalledPackageActionAppearance,
-  PackageAction,
-  PackageActionFormType,
 } from "./types";
 
 export const INSTALLED_PACKAGE_ACTIONS: Record<
@@ -43,35 +41,5 @@ export const INSTALLED_PACKAGE_ACTIONS: Record<
     icon: "change-version",
     label: "Upgrade",
     order: 5,
-  },
-};
-
-export const PACKAGE_ACTION_TYPES: Record<
-  PackageAction,
-  PackageActionFormType
-> = {
-  install: {
-    action: "install",
-    title: "Install",
-    past: "installed",
-    search: "available",
-  },
-  uninstall: {
-    action: "uninstall",
-    title: "Uninstall",
-    past: "uninstalled",
-    search: "installed",
-  },
-  hold: {
-    action: "hold",
-    title: "Hold",
-    past: "held",
-    search: "available",
-  },
-  unhold: {
-    action: "unhold",
-    title: "Unhold",
-    past: "unheld",
-    search: "held",
   },
 };

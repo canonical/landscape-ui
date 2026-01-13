@@ -102,8 +102,8 @@ export const pluralizeArray = <T>(
   return hasOneItem(items) ? getSingularForm(items[0]) : pluralForm;
 };
 
-export const capitalizeWord = (word: string) => {
-  return word.charAt(0).toUpperCase() + word.substring(1);
+export const capitalize = (words: string) => {
+  return words.split(" ").map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
 };
 
 export const getTitleByName = (

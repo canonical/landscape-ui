@@ -87,7 +87,6 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
           pkg={selectedPackage}
           instanceIds={instanceIds}
           close={closeModal}
-          summaryVersion=""
           action={action}
         />
       )}

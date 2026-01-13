@@ -9,8 +9,8 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import type { GetPackagesParams } from "../../hooks";
-import type { Package } from "../../types";
-import type { SelectedPackage, PackageActionFormType } from "../../types";
+import type { Package, PackageAction } from "../../types";
+import type { SelectedPackage } from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
@@ -20,27 +20,20 @@ import {
   QUERY_LIMIT,
 } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
+import { mapActionToQueryParams, mapActionToSearch } from "../../helpers";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
   readonly selectedPackages: SelectedPackage[];
   readonly setSelectedPackages: (packages: SelectedPackage[]) => void;
-  readonly available?: boolean;
-  readonly installed?: boolean;
-  readonly upgrade?: boolean;
-  readonly held?: boolean;
-  readonly type: PackageActionFormType;
+  readonly action: PackageAction;
 }
 
 const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   instanceIds,
   selectedPackages,
   setSelectedPackages,
-  available,
-  installed,
-  upgrade,
-  held,
-  type,
+  action,
 }) => {
   const authFetch = useFetch();
 
@@ -51,6 +44,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
   const query = instanceIds.map((id) => `id:${id}`).join(" OR ");
+  const { available, installed, upgrade, held } = mapActionToQueryParams(action);
 
   const queryParams: GetPackagesParams = {
     query,
@@ -131,7 +125,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
           <div className="p-autocomplete">
             <SearchBox
               {...downshiftOptions.getInputProps()}
-              placeholder={`Search ${type.search} packages`}
+              placeholder={`Search ${mapActionToSearch(action)} packages`}
               className="u-no-margin--bottom"
               shouldRefocusAfterReset
               externallyControlled
@@ -144,7 +138,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
             />
             {isOverLimit && (
               <span className="p-form-help-text">
-                You can {type.action} a maximum of{" "}
+                You can {action} a maximum of{" "}
                 {pluralizeWithCount(MAX_SELECTED_PACKAGES, "package")} in one
                 single operation.
               </span>
@@ -224,8 +218,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                       ...selectedPackages.slice(index + 1),
                     ]);
                   }}
-                  query={query}
-                  type={type}
+                   query={query}
+                  action={action}
                 />
               );
             })

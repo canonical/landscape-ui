@@ -4,6 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import {
+  capitalize,
   pluralize,
   pluralizeArray,
   pluralizeWithCount,
@@ -11,18 +12,19 @@ import {
 import type { FC } from "react";
 import { useState } from "react";
 import { usePackages } from "../../hooks";
-import type { SelectedPackage, PackageActionFormType } from "../../types";
+import type { PackageAction, SelectedPackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
+import { mapActionToPast } from "../../helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
-  readonly type: PackageActionFormType;
+  readonly action: PackageAction;
 }
 
 const PackagesActionForm: FC<PackagesActionFormProps> = ({
   instanceIds,
-  type,
+  action,
 }) => {
   const [selectedPackages, setSelectedPackages] = useState<SelectedPackage[]>(
     [],
@@ -39,7 +41,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   const { mutateAsync: changePackages, isPending: changePackagesQueryLoading } =
     packagesActionQuery;
 
-  const requestAction = type.action == "uninstall" ? "remove" : type.action;
+  const requestAction = action == "uninstall" ? "remove" : action;
+  const actionPast = mapActionToPast(action);
 
   const handleSubmit = async () => {
     try {
@@ -52,8 +55,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, `${selectedPackages.length} packages`)} to be ${type.past}.`,
-        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, `${selectedPackages.length} selected packages`)} will be ${type.past} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, `${selectedPackages.length} packages`)} to be ${actionPast}.`,
+        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, `${selectedPackages.length} selected packages`)} will be ${actionPast} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -68,8 +71,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
     }
   };
 
-  const actionButtonAppearance =
-    type.action == "install" ? "positive" : "negative";
+  const title = capitalize(action);
+  const actionButtonAppearance = action == "install" ? "positive" : "negative";
 
   switch (step) {
     case "form":
@@ -79,7 +82,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             instanceIds={instanceIds}
             selectedPackages={selectedPackages}
             setSelectedPackages={setSelectedPackages}
-            type={type}
+            action={action}
           />
           <SidePanelFormButtons
             submitButtonDisabled={
@@ -100,13 +103,13 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
       return (
         <>
           <PackagesActionSummary
-            action={type.action}
+            action={action}
             instanceIds={instanceIds}
             selectedPackages={selectedPackages}
           />
           <SidePanelFormButtons
             submitButtonLoading={changePackagesQueryLoading}
-            submitButtonText={`${type.title} ${pluralizeWithCount(
+            submitButtonText={`${title} ${pluralizeWithCount(
               selectedPackages.length,
               "package",
             )}`}
@@ -115,7 +118,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             hasBackButton
             onBackButtonPress={() => {
               setStep("form");
-              setSidePanelTitle(`${type.title} packages`);
+              setSidePanelTitle(`${title} packages`);
             }}
           />
         </>

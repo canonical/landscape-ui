@@ -8,7 +8,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
+import { capitalize, hasOneItem, pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
@@ -21,11 +21,8 @@ import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
-import {
-  PackagesActionForm,
-  type PackageActionFormType,
-} from "@/features/packages";
-import { PACKAGE_ACTION_TYPES } from "@/features/packages";
+import type { PackageAction } from "@/features/packages";
+import { PackagesActionForm } from "@/features/packages";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -173,13 +170,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const openPackagesActionForm = (type: PackageActionFormType) => {
+  const openPackagesActionForm = (action: PackageAction) => {
     setSidePanelContent(
-      `${type.title} packages`,
+      `${capitalize(action)} packages`,
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
           instanceIds={selectedInstances.map(({ id }) => id)}
-          type={type}
+          action={action}
         />
       </Suspense>,
     );
@@ -279,7 +276,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.install);
+        openPackagesActionForm("install");
       },
       hasIcon: true,
     },
@@ -291,7 +288,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.uninstall);
+        openPackagesActionForm("uninstall");
       },
       hasIcon: true,
     },
@@ -312,7 +309,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.hold);
+        openPackagesActionForm("hold");
       },
       hasIcon: true,
     },
@@ -324,7 +321,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: () => {
-        openPackagesActionForm(PACKAGE_ACTION_TYPES.unhold);
+        openPackagesActionForm("unhold");
       },
       hasIcon: true,
     },
