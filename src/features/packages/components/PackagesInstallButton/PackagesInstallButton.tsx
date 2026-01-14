@@ -29,7 +29,10 @@ const PackagesInstallButton: FC<PackagesInstallButtonProps> = ({
     setSidePanelContent(
       "Install packages",
       <Suspense fallback={<LoadingState />}>
-        <PackagesActionForm instanceIds={[parseInt(instanceId)]} action={"install"}/>
+        <PackagesActionForm
+          instanceIds={[parseInt(instanceId)]}
+          action={"install"}
+        />
       </Suspense>,
     );
   };

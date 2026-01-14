@@ -44,7 +44,8 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
   const query = instanceIds.map((id) => `id:${id}`).join(" OR ");
-  const { available, installed, upgrade, held } = mapActionToQueryParams(action);
+  const { available, installed, upgrade, held } =
+    mapActionToQueryParams(action);
 
   const queryParams: GetPackagesParams = {
     query,
@@ -218,7 +219,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                       ...selectedPackages.slice(index + 1),
                     ]);
                   }}
-                   query={query}
+                  query={query}
                   action={action}
                 />
               );

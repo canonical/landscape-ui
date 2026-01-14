@@ -42,7 +42,12 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
     throw error;
   }
 
-  const versions = data?.data.versions || [];
+  const versions = data?.data.uninstalled
+    ? [
+        ...data.data.versions,
+        { name: "", num_computers: data.data.uninstalled },
+      ]
+    : data?.data.versions || [];
 
   return (
     <li
@@ -77,11 +82,14 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                     <>
                       {capitalize(action)}{" "}
                       {packageVersion.name ? (
-                        <>version <code>{packageVersion.name}</code></>
+                        <>
+                          version <code>{packageVersion.name}</code>
+                        </>
                       ) : (
-                         <>as not installed</>
-                      )}
-                      {" "}on {pluralizeWithCount(
+                        <>as not installed</>
+                      )}{" "}
+                      on{" "}
+                      {pluralizeWithCount(
                         packageVersion.num_computers,
                         "instance",
                       )}
