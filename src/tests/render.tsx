@@ -1,11 +1,12 @@
+import AppNotification from "@/components/layout/AppNotification";
+import { NotifyContext } from "@/context/notify";
+import SidePanelProvider from "@/context/sidePanel";
+import { AppProviders } from "@/providers/AppProviders";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { RenderOptions } from "@testing-library/react";
 import { render } from "@testing-library/react";
 import type { FC, ReactNode } from "react";
 import { MemoryRouter, Route, Routes } from "react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppProviders } from "@/providers/AppProviders";
-import { NotifyContext } from "@/context/notify";
-import AppNotification from "@/components/layout/AppNotification";
 
 interface WrapperProps {
   readonly children: ReactNode;
@@ -42,20 +43,22 @@ export const renderWithProviders = (
     return (
       <MemoryRouter initialEntries={initialEntries}>
         <AppProviders>
-          <NotifyContext.Consumer>
-            {({ notify }) => (
-              <>
-                <AppNotification notify={notify} />
-                {routePattern ? (
-                  <Routes>
-                    <Route path={routePattern} element={children} />
-                  </Routes>
-                ) : (
-                  children
-                )}
-              </>
-            )}
-          </NotifyContext.Consumer>
+          <SidePanelProvider>
+            <NotifyContext.Consumer>
+              {({ notify }) => (
+                <>
+                  <AppNotification notify={notify} />
+                  {routePattern ? (
+                    <Routes>
+                      <Route path={routePattern} element={children} />
+                    </Routes>
+                  ) : (
+                    children
+                  )}
+                </>
+              )}
+            </NotifyContext.Consumer>
+          </SidePanelProvider>
         </AppProviders>
       </MemoryRouter>
     );
