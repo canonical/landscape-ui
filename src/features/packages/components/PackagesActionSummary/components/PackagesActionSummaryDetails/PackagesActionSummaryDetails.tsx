@@ -21,9 +21,13 @@ interface PackagesActionSummaryDetailsProps {
   readonly action: PackageAction;
 }
 
-const PackagesActionSummaryDetails: FC<
-  PackagesActionSummaryDetailsProps
-> = ({ pkg, instanceIds, close, summaryVersion, action }) => {
+const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
+  pkg,
+  instanceIds,
+  close,
+  summaryVersion,
+  action,
+}) => {
   const { setPageParams, currentPage, pageSize } = usePageParams();
 
   const title = mapSummaryToTitle(pkg.name, action, summaryVersion);

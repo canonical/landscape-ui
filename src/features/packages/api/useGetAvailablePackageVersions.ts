@@ -17,10 +17,7 @@ export function useGetAvailablePackageVersions({
 }: GetAvailablePackageVersionsParams) {
   const authFetch = useFetch();
 
-  return useQuery<
-    AxiosResponse<VersionCount>,
-    AxiosError<ApiError>
-  >({
+  return useQuery<AxiosResponse<VersionCount>, AxiosError<ApiError>>({
     queryKey: ["packages", id, queryParams],
     queryFn: async () =>
       authFetch.get(`packages/${id}/available_versions`, {
