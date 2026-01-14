@@ -3,7 +3,6 @@ import AuthProvider from "@/context/auth";
 import FetchProvider from "@/api/fetch";
 import FetchOldProvider from "@/api/fetchOld";
 import NotifyProvider from "@/context/notify";
-import SidePanelProvider from "@/context/sidePanel";
 import EnvProvider from "@/context/env";
 import ThemeProvider from "@/context/theme";
 import AccountsProvider from "@/context/accounts";
@@ -22,9 +21,7 @@ export const AppProviders: FC<AppProvidersProps> = ({ children }) => {
             <AuthProvider>
               <AccountsProvider>
                 <FetchOldProvider>
-                  <FetchProvider>
-                    <SidePanelProvider>{children}</SidePanelProvider>
-                  </FetchProvider>
+                  <FetchProvider>{children}</FetchProvider>
                 </FetchOldProvider>
               </AccountsProvider>
             </AuthProvider>
