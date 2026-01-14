@@ -4,7 +4,7 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Employee } from "../../types";
+import type { Employee } from "../types";
 import usePageParams from "@/hooks/usePageParams";
 
 const getStatus = (status: string) => {
@@ -18,7 +18,7 @@ const getStatus = (status: string) => {
   }
 };
 
-const useGetEmployees = (
+export const useGetEmployees = (
   options: Omit<
     UseQueryOptions<
       AxiosResponse<ApiPaginatedResponse<Employee>, AxiosError<ApiError>>
@@ -53,5 +53,3 @@ const useGetEmployees = (
     count: data?.data?.count,
   };
 };
-
-export default useGetEmployees;

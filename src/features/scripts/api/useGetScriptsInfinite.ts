@@ -59,9 +59,7 @@ export const useGetScriptsInfinite = ({
     enabled,
   });
 
-  const scripts = data
-    ? data.pages.flatMap((page) => page.data.results)
-    : [];
+  const scripts = data ? data.pages.flatMap((page) => page.data.results) : [];
 
   return {
     scripts,

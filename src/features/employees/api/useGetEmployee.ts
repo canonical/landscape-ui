@@ -3,9 +3,9 @@ import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Employee, GetEmployeeParams } from "../../types";
+import type { Employee, GetEmployeeParams } from "../types";
 
-const useGetEmployee = (
+export const useGetEmployee = (
   queryParams: GetEmployeeParams,
   config: Omit<
     UseQueryOptions<AxiosResponse<Employee, AxiosError<ApiError>>>,
@@ -28,5 +28,3 @@ const useGetEmployee = (
     isGettingEmployee: isLoading,
   };
 };
-
-export default useGetEmployee;

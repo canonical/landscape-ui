@@ -2,9 +2,9 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Employee, PatchEmployeeParams } from "../../types";
+import type { Employee, PatchEmployeeParams } from "../types";
 
-const usePatchEmployee = () => {
+export const usePatchEmployee = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -25,5 +25,3 @@ const usePatchEmployee = () => {
     isPending,
   };
 };
-
-export default usePatchEmployee;

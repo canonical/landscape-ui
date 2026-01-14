@@ -3,7 +3,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { type InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Employee } from "../../types";
+import type { Employee } from "../types";
 
 type EmployeesPage = AxiosResponse<ApiPaginatedResponse<Employee>>;
 
@@ -13,7 +13,7 @@ interface UseGetEmployeesInfiniteParams {
   readonly enabled: boolean;
 }
 
-const useGetEmployeesInfinite = ({
+export const useGetEmployeesInfinite = ({
   search,
   limit,
   enabled,
@@ -66,5 +66,3 @@ const useGetEmployeesInfinite = ({
     error,
   };
 };
-
-export default useGetEmployeesInfinite;
