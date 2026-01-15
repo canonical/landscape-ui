@@ -23,6 +23,12 @@
   }
 }
 
+.l-navigation-bar {
+  @media (width >= 620px) {
+    width: 3rem;
+  }
+}
+
 .divided-blocks {
   display: flex;
   justify-content: end;
