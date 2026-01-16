@@ -363,11 +363,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={
-              isShuttingDownInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={disabled || isShuttingDownInstances}
             onClick={openShutdownModal}
           >
             <Icon name="power-off" />
@@ -377,11 +373,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={
-              isRestartingInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={disabled || isRestartingInstances}
             onClick={openRebootModal}
           >
             <Icon name="restart" />
@@ -393,7 +385,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={0 === selectedInstances.length}
+              disabled={disabled}
             >
               {proServicesLinks[0].children}
             </Button>
@@ -405,8 +397,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={0 === selectedInstances.length}
               dropdownProps={{ style: { zIndex: 10 } }}
+              toggleDisabled={disabled}
             />
           ),
           REPORT_VIEW_ENABLED && (

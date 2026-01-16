@@ -3,12 +3,14 @@ import type { Activity } from "@/features/activities";
 import type {
   AvailableVersion,
   GetDryRunInstancesParams,
-} from "@/features/packages";
-import type {
   GetPackagesParams,
   Package,
   VersionCount,
 } from "@/features/packages";
+import type {
+  GetPackageUpgradeParams,
+  PackageUpgrade,
+} from "@/features/upgrades";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
@@ -16,6 +18,7 @@ import {
   getInstancePackages,
   packageInstances,
   packages,
+  upgradePackages,
 } from "@/tests/mocks/packages";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
@@ -191,6 +194,54 @@ export default [
         offset,
         search,
         searchFields: ["name"],
+      }),
+    );
+  }),
+
+  http.get<
+    never,
+    GetPackageUpgradeParams,
+    ApiPaginatedResponse<PackageUpgrade>
+  >(`${API_URL}packages/upgrades`, ({ request }) => {
+    const url = new URL(request.url);
+    const limit = Number(url.searchParams.get("limit"));
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const search = url.searchParams.get("search") || "";
+    const priorities = url.searchParams.get("priorities")?.split(",");
+    const severities = url.searchParams.get("severities")?.split(",");
+    const upgradeType = url.searchParams.get("upgrade_type") || "all";
+
+    let filteredPackages = upgradePackages.filter((upgradePackage) =>
+      upgradePackage.name.toLowerCase().includes(search.toLowerCase()),
+    );
+
+    if (priorities) {
+      filteredPackages = filteredPackages.filter((upgradePackage) =>
+        upgradePackage.priority
+          ? priorities.includes(upgradePackage.priority)
+          : false,
+      );
+    }
+
+    if (severities) {
+      filteredPackages = filteredPackages.filter((upgradePackage) =>
+        upgradePackage.severity
+          ? severities.includes(upgradePackage.severity)
+          : false,
+      );
+    }
+
+    if (upgradeType === "security") {
+      filteredPackages = filteredPackages.filter(
+        (upgradePackage) => upgradePackage.usn,
+      );
+    }
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: filteredPackages,
+        limit,
+        offset,
       }),
     );
   }),

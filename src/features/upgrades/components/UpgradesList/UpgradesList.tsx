@@ -1,24 +1,26 @@
 import ListTitle from "@/components/layout/ListTitle";
+import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import type { Package } from "@/features/packages";
-import useSelection from "@/hooks/useSelection";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import { CheckboxInput } from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import { useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
+import type { PackageUpgrade } from "../../types/PackageUpgrade";
+import { PRIORITY_OPTIONS, SEVERITY_OPTIONS } from "../Upgrades/constants";
 import classes from "./UpgradesList.module.scss";
 
 interface UpgradesListProps {
-  readonly packages: Package[];
+  readonly packages: PackageUpgrade[];
+  readonly selectedPackages: PackageUpgrade[];
+  readonly setSelectedPackages: (packages: PackageUpgrade[]) => void;
 }
 
-const UpgradesList: FC<UpgradesListProps> = ({ packages }) => {
-  const {
-    selectedItems: selectedPackages,
-    setSelectedItems: setSelectedPackages,
-  } = useSelection(packages);
-
-  const columns = useMemo<Column<Package>[]>(
+const UpgradesList: FC<UpgradesListProps> = ({
+  packages,
+  selectedPackages,
+  setSelectedPackages,
+}) => {
+  const columns = useMemo<Column<PackageUpgrade>[]>(
     () => [
       {
         accessor: "name",
@@ -46,55 +48,75 @@ const UpgradesList: FC<UpgradesListProps> = ({ packages }) => {
             </div>
           </div>
         ),
-        Cell: ({ row: { original: pkg } }: CellProps<Package>) => (
+        Cell: ({
+          row: { original: upgradePackage },
+        }: CellProps<PackageUpgrade>) => (
           <div className={classes.rowHeader}>
             <CheckboxInput
               inline
-              label={<span className="u-off-screen">Select {pkg.name}</span>}
+              label={
+                <span className="u-off-screen">
+                  Select {upgradePackage.name}
+                </span>
+              }
               labelClassName="u-no-padding"
-              checked={selectedPackages.includes(pkg)}
+              checked={selectedPackages.includes(upgradePackage)}
               onChange={({ currentTarget: { checked } }) => {
                 setSelectedPackages(
                   checked
-                    ? [...selectedPackages, pkg]
-                    : selectedPackages.filter((i) => i !== pkg),
+                    ? [...selectedPackages, upgradePackage]
+                    : selectedPackages.filter((i) => i !== upgradePackage),
                 );
               }}
             />
 
             <ListTitle>
-              {pkg.name}
-              <span className="u-text--muted">{pkg.summary}</span>
+              {upgradePackage.name}
+              <span className="u-text--muted">{upgradePackage.details}</span>
             </ListTitle>
           </div>
         ),
       },
       {
-        accessor: "version",
+        accessor: "versions",
         Header: (
           <div className={classes.stacked}>
             Newest version
             <span className="u-text--muted">Current version</span>
           </div>
         ),
-        Cell: () => (
+        Cell: ({
+          row: { original: upgradePackage },
+        }: CellProps<PackageUpgrade>) => (
           <div className={classes.stacked}>
-            2.4.6
-            <span className="u-text--muted">2.3.0</span>
+            {upgradePackage.versions.newest}
+            <span className="u-text--muted">
+              {upgradePackage.versions.current}
+            </span>
           </div>
         ),
       },
       {
-        accessor: "instances",
+        accessor: "affected_instance_count",
         Header: (
           <div className={classes.stacked}>
             Affected instances
             <span className="u-text--muted">OS</span>
           </div>
         ),
-        Cell: () => (
+        Cell: ({
+          row: { original: upgradePackage },
+        }: CellProps<PackageUpgrade>) => (
           <div className={classes.stacked}>
-            {pluralizeWithCount(10000, "instance")}
+            <Button
+              className="u-no-padding--top u-no-margin--bottom u-align-text--left"
+              appearance="link"
+            >
+              {pluralizeWithCount(
+                upgradePackage.affected_instance_count,
+                "instance",
+              )}
+            </Button>
             <span className="u-text--muted">Ubuntu 22.04</span>
           </div>
         ),
@@ -107,10 +129,34 @@ const UpgradesList: FC<UpgradesListProps> = ({ packages }) => {
             <span className="u-text--muted">CVE</span>
           </div>
         ),
-        Cell: () => (
+        Cell: ({
+          row: { original: upgradePackage },
+        }: CellProps<PackageUpgrade>) => (
           <div className={classes.stacked}>
-            3809-2
-            <span className="u-text--muted">CVE-2021-3733</span>
+            {upgradePackage.usn ? (
+              <a
+                href={`https://ubuntu.com/security/notices/USN-${upgradePackage.usn}`}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+              >
+                {upgradePackage.usn}
+              </a>
+            ) : (
+              <NoData />
+            )}
+            {upgradePackage.cve ? (
+              <a
+                href={`https://ubuntu.com/security/CVE-${upgradePackage.cve}`}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+              >
+                CVE-{upgradePackage.cve}
+              </a>
+            ) : (
+              <span className="u-text--muted">
+                <NoData />
+              </span>
+            )}
           </div>
         ),
       },
@@ -122,10 +168,26 @@ const UpgradesList: FC<UpgradesListProps> = ({ packages }) => {
             <span className="u-text--muted">Priority</span>
           </div>
         ),
-        Cell: () => (
+        Cell: ({
+          row: { original: upgradePackage },
+        }: CellProps<PackageUpgrade>) => (
           <div className={classes.stacked}>
-            Critical
-            <span className="u-text--muted">Critical</span>
+            {upgradePackage.severity ? (
+              SEVERITY_OPTIONS.find(
+                (option) => option.value === upgradePackage.severity,
+              )?.label || upgradePackage.severity
+            ) : (
+              <NoData />
+            )}
+            <span className="u-text--muted">
+              {upgradePackage.priority ? (
+                PRIORITY_OPTIONS.find(
+                  (option) => option.value === upgradePackage.priority,
+                )?.label || upgradePackage.priority
+              ) : (
+                <NoData />
+              )}
+            </span>
           </div>
         ),
       },
@@ -137,7 +199,7 @@ const UpgradesList: FC<UpgradesListProps> = ({ packages }) => {
     <ResponsiveTable
       columns={columns}
       data={packages}
-      emptyMsg="No Windows instances found according to your search parameters."
+      emptyMsg="No packages found according to your search parameters."
     />
   );
 };
