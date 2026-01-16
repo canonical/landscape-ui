@@ -346,7 +346,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={isShuttingDownInstances}
+            disabled={disabled || isShuttingDownInstances}
             onClick={() => {
               setShutdownModalOpen(true);
             }}
@@ -358,7 +358,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={isRestartingInstances}
+            disabled={disabled || isRestartingInstances}
             onClick={() => {
               setRebootModalOpen(true);
             }}
@@ -372,6 +372,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
+              disabled={disabled}
             >
               {proServicesLinks[0].children}
             </Button>
@@ -384,6 +385,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
               dropdownProps={{ style: { zIndex: 10 } }}
+              toggleDisabled={disabled}
             />
           ),
           REPORT_VIEW_ENABLED && (
