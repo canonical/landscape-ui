@@ -1,0 +1,1 @@
+import{f as u,c as o}from"./index-CNSDWj8Q.js";const i=({instanceId:e,...t},s)=>{const n=u(),{data:a,isLoading:c}=o({queryKey:["instances",e,t],queryFn:async()=>n.get(`computers/${e}`,{params:t}),...s});return{instance:a?.data,isGettingInstance:c}};export{i as u};

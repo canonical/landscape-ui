@@ -1,3 +1,9 @@
+landscape-dashboard (1.23.0-0landscape0) noble; urgency=medium
+
+  * Release 1.23.0 for noble
+
+ -- David McLain <david.mclain@canonical.com>  Fri, 16 Jan 2026 19:39:37 -0600
+
 landscape-dashboard (1.22.0-0landscape0) jammy; urgency=medium
 
   * Release 1.22.0 for jammy

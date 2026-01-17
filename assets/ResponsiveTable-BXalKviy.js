@@ -1,0 +1,1 @@
+import{j as s,d as n}from"./index-CNSDWj8Q.js";const i="_responsiveTable_1sy5o_1",l={responsiveTable:i};function p({ref:e,style:o,minWidth:a=1024,...r}){return s.jsx("div",{className:l.responsiveTable,style:o,children:s.jsx(n.ModularTable,{ref:e,style:{minWidth:a},...r})})}export{p as R};
