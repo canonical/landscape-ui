@@ -1,4 +1,8 @@
-export { useGetScripts, useGetSingleScript } from "./api";
+export {
+  useGetScripts,
+  useGetScriptsInfinite,
+  useGetSingleScript,
+} from "./api";
 export { default as RunInstanceScriptForm } from "./components/RunInstanceScriptForm";
 export { default as ScriptList } from "./components/ScriptList";
 export { default as ScriptsContainer } from "./components/ScriptsContainer";

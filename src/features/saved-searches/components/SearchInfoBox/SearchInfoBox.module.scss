@@ -26,7 +26,7 @@
   display: block;
   height: calc(
     /* stylelint-disable-next-line */
-      (2 * $spv-nudge + map-get($line-heights, default-text)) -
+    (2 * $spv-nudge + map-get($line-heights, default-text)) -
       (2 * $bar-thickness)
   );
   margin-bottom: 0;

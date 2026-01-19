@@ -1,18 +1,17 @@
 import LoadingState from "@/components/layout/LoadingState";
 import {
-  useGetScripts,
+  useGetScriptsInfinite,
   useGetSingleScript,
   type Script,
 } from "@/features/scripts";
-import useDebug from "@/hooks/useDebug";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
-import React, { useEffect, useState } from "react";
-import { useDebounceCallback } from "usehooks-ts";
+import React, { useEffect, useRef, useState } from "react";
+import { useBoolean, useDebounceValue } from "usehooks-ts";
 import classes from "./ScriptDropdown.module.scss";
-import { DEBOUNCE_DELAY } from "./constants";
+import { DEBOUNCE_DELAY, NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
 import { boldSubstring } from "./helpers";
 
 interface ScriptDropdownProps {
@@ -30,9 +29,14 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
   errorMessage,
   parentAccessGroup,
 }) => {
-  const [search, setSearch] = useState<string>("");
-  const [open, setOpen] = useState(false);
+  const {
+    value: isOpen,
+    setTrue: openDropdown,
+    setFalse: closeDropdown,
+  } = useBoolean(false);
   const [inputValue, setInputValue] = useState<string>("");
+  const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const { script: existingScript, isScriptLoading } = useGetSingleScript(
     existingScriptId || 0,
@@ -47,22 +51,23 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
     }
   }, [existingScript]);
 
-  const debug = useDebug();
-  const { scripts, isScriptsLoading } = useGetScripts(
-    {
-      listenToUrlParams: false,
-    },
-    {
-      search: search,
-      script_type: "active",
-      limit: 20,
-      offset: 0,
-      parent_access_group: parentAccessGroup,
-    },
-    {
-      enabled: search.length > 2,
-    },
-  );
+  const {
+    scripts,
+    isPending: isScriptsPending,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+    error: scriptsError,
+  } = useGetScriptsInfinite({
+    search,
+    limit: QUERY_LIMIT,
+    enabled: isOpen || search.length > 0,
+    parentAccessGroup,
+  });
+
+  if (scriptsError) {
+    throw scriptsError;
+  }
 
   const getAvailableScriptSuggestions = (item: Script): boolean => {
     return script?.id !== item.id;
@@ -74,60 +79,52 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
     setScript(null);
   };
 
-  const closeDropdown = () => {
-    setOpen(false);
-  };
-
-  const handleClearSearch = () => {
+  const handleClearSearch = (reopen = true) => {
     setInputValue("");
+    setSearch.cancel();
     setSearch("");
+    if (reopen) {
+      openDropdown();
+    }
   };
 
   const handleDropdownState = () => {
-    if (inputValue.length > 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
+    openDropdown();
   };
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    if (value.length > 2) {
-      setSearch(value);
+    if (!value) {
+      setSearch.cancel();
+      setSearch("");
+      openDropdown();
+      return;
     }
+    setSearch(value);
+    openDropdown();
   };
-
-  const debouncedSearch = useDebounceCallback(() => {
-    try {
-      handleDropdownState();
-    } catch (err) {
-      debug(err);
-    }
-  }, DEBOUNCE_DELAY);
 
   const handleSelectItem = (item: Script | null) => {
     if (!item) {
       return;
     }
     setScript(item);
-    setOpen(false);
-    handleClearSearch();
+    closeDropdown();
+    handleClearSearch(false);
+    inputRef.current?.blur();
   };
 
-  const handleOnKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Escape") {
-      event.currentTarget.blur();
-    } else {
-      debouncedSearch();
+  const handleScroll = (event: React.UIEvent<HTMLUListElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    const nearBottom =
+      scrollHeight - scrollTop <= clientHeight * NEAR_BOTTOM_RATIO;
+    if (nearBottom && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
   };
 
   const getHelpText = () => {
-    if (inputValue.length < 3) {
-      return "Min 3. characters";
-    }
-    if (scripts.length === 0 && search && !isScriptsLoading) {
+    if (scripts.length === 0 && search && !isScriptsPending) {
       return `No scripts found by "${search}"`;
     }
 
@@ -156,8 +153,9 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
       {!existingScriptId && (
         <Downshift
           onSelect={handleSelectItem}
-          itemToString={() => ""}
-          isOpen={open}
+          itemToString={(item) => (item ? item.title : "")}
+          isOpen={isOpen}
+          onOuterClick={closeDropdown}
         >
           {({
             getInputProps,
@@ -176,17 +174,17 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
                 externallyControlled
                 autocomplete="off"
                 value={inputValue}
+                ref={inputRef}
                 onChange={handleSearchBoxChange}
                 onClear={handleClearSearch}
                 onBlur={closeDropdown}
                 onFocus={handleDropdownState}
-                onKeyUp={handleOnKeyUp}
               />
               {helpText ? (
                 <span className="p-form-help-text">{helpText}</span>
               ) : null}
 
-              {errorMessage && !open ? (
+              {errorMessage && !isOpen ? (
                 <div className="is-error">
                   <span
                     className="p-form-validation__message"
@@ -197,36 +195,48 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
                 </div>
               ) : null}
 
-              {open && (suggestions.length > 0 || isScriptsLoading) ? (
+              {isOpen && (suggestions.length > 0 || isScriptsPending) ? (
                 <ul
                   className={classNames(
                     "p-list p-card--highlighted u-no-padding u-no-margin--bottom p-autocomplete__suggestions",
                     classes.suggestionsContainer,
                   )}
                   {...getMenuProps()}
+                  onScroll={handleScroll}
                 >
-                  {isScriptsLoading ? (
+                  {isScriptsPending ? (
                     <LoadingState />
                   ) : (
-                    suggestions.map((item: Script, index: number) => (
-                      <li
-                        className={classNames("p-list__item", classes.pointer, {
-                          [classes.highlighted]: highlightedIndex === index,
-                        })}
-                        key={item.id}
-                        {...getItemProps({
-                          item,
-                          index,
-                        })}
-                      >
-                        <div
-                          className="u-truncate"
-                          data-testid="dropdownElement"
+                    <>
+                      {suggestions.map((item: Script, index: number) => (
+                        <li
+                          className={classNames(
+                            "p-list__item",
+                            classes.pointer,
+                            {
+                              [classes.highlighted]: highlightedIndex === index,
+                            },
+                          )}
+                          key={item.id}
+                          {...getItemProps({
+                            item,
+                            index,
+                          })}
                         >
-                          {boldSubstring(item.title, search)}
-                        </div>
-                      </li>
-                    ))
+                          <div
+                            className="u-truncate"
+                            data-testid="dropdownElement"
+                          >
+                            {boldSubstring(item.title, inputValue)}
+                          </div>
+                        </li>
+                      ))}
+                      {isFetchingNextPage && (
+                        <li className="p-list__item u-align--center">
+                          <LoadingState />
+                        </li>
+                      )}
+                    </>
                   )}
                 </ul>
               ) : null}

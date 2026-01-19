@@ -3,6 +3,7 @@ export { default as EmployeeList } from "./components/EmployeeList";
 export type { Employee, RecoveryKey, GetEmployeesParams } from "./types";
 export {
   useGetEmployees,
+  useGetEmployeesInfinite,
   useAssociateEmployeeWithInstance,
   useDisassociateEmployeeFromInstance,
   useGetEmployee,

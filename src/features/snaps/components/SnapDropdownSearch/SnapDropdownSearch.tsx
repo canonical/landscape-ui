@@ -44,7 +44,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
       query: search,
     },
     {
-      enabled: search.length > 2,
+      enabled: search.length > 0,
     },
   );
 
@@ -88,18 +88,12 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   };
 
   const handleDropdownState = () => {
-    if (inputValue.length > 2) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
+    setOpen(Boolean(inputValue.length));
   };
 
   const handleSearchBoxChange = (value: string) => {
     setInputValue(value);
-    if (value.length > 2) {
-      setSearch(value);
-    }
+    setSearch(value);
   };
 
   const debouncedSearch = useDebounceCallback(() => {
@@ -132,9 +126,6 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
   };
 
   const getHelpText = () => {
-    if (!open && inputValue.length < 3) {
-      return "Min 3. characters";
-    }
     if (snapsData.length === 0 && search && !isFetching) {
       return `No snaps found by "${search}"`;
     }

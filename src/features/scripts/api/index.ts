@@ -1,5 +1,6 @@
 export { useGetScripts } from "./useGetScripts";
 export { useGetSingleScript } from "./useGetSingleScript";
+export { useGetScriptsInfinite } from "./useGetScriptsInfinite";
 export { useGetSingleScriptAttachment } from "./useGetSingleScriptAttachment";
 export { useGetScriptVersions } from "./useGetScriptVersions";
 export { useGetScriptVersion } from "./useGetScriptVersion";

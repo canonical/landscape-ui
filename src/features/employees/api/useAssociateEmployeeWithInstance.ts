@@ -2,10 +2,10 @@ import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { EmployeeActionWithInstanceParams } from "../../types";
+import type { EmployeeActionWithInstanceParams } from "../types";
 import type { Instance } from "@/types/Instance";
 
-const useAssociateEmployeeWithInstance = () => {
+export const useAssociateEmployeeWithInstance = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -29,5 +29,3 @@ const useAssociateEmployeeWithInstance = () => {
     isAssociating: isPending,
   };
 };
-
-export default useAssociateEmployeeWithInstance;
