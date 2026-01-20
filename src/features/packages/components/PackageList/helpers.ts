@@ -27,7 +27,10 @@ export const getPackageStatusInfo = (pkg: InstancePackage) => {
     pkgStatusInfo.label = "Security upgrade";
     pkgStatusInfo.icon = "status-failed-small";
   } else if (pkg.status === "installed") {
-    if (pkg.available_version !== pkg.current_version) {
+    if (
+      !!pkg.available_version &&
+      pkg.available_version !== pkg.current_version
+    ) {
       pkgStatusInfo.label = "Regular upgrade";
       pkgStatusInfo.icon = "status-waiting-small";
     } else {
