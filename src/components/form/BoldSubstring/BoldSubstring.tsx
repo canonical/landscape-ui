@@ -9,7 +9,7 @@ const BoldSubstring: FC<BoldSubstringProps> = ({ text, substring }) => {
   const lowerText = text.toLowerCase();
   const lowerSubstring = substring.toLowerCase();
   const index = lowerText.indexOf(lowerSubstring);
-  if (index >= 0) {
+  if (substring && index >= 0) {
     return (
       <>
         {text.substring(0, index)}

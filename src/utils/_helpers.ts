@@ -105,7 +105,10 @@ export const pluralizeArray = <T>(
 };
 
 export const capitalize = (words: string) => {
-  return words.split(" ").map((word) => word.charAt(0).toUpperCase() + word.substring(1)).join(" ");
+  return words
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
+    .join(" ");
 };
 
 export const getTitleByName = (

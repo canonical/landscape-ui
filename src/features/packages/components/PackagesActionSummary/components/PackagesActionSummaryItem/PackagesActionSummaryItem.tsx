@@ -45,6 +45,13 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
     return <LoadingState />;
   }
 
+  const outOfScope = packageVersionsResult.data.reduce(
+    (instanceCount, version) => {
+      return instanceCount - version.num_computers;
+    },
+    instanceIds.length,
+  );
+
   return (
     <li key={selectedPackage.name} className={classes.package}>
       <strong className={classes.title}>{selectedPackage.name}</strong>
@@ -59,32 +66,29 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
           />
         );
       })}
-      <div className={classes.row}>
-        <Button
-          type="button"
-          appearance="link"
-          className={classes.instances}
-          onClick={openModal}
-        >
-          {pluralizeWithCount(
-            packageVersionsResult.data.reduce((instanceCount, version) => {
-              return instanceCount - version.num_computers;
-            }, instanceIds.length),
-            "instance",
-          )}
-        </Button>
-        <span>
-          Will not {action}{" "}
-          <code>
-            {selectedPackage.name}
-            {hasOneItem(packageVersionsResult.data) &&
-              ` ${packageVersionsResult.data[0].name}`}
-          </code>
-        </span>
-      </div>
+      {outOfScope > 0 && (
+        <div className={classes.row}>
+          <Button
+            type="button"
+            appearance="link"
+            className={classes.instances}
+            onClick={openModal}
+          >
+            {pluralizeWithCount(outOfScope, "instance")}
+          </Button>
+          <span>
+            Will not {action}{" "}
+            <code>
+              {selectedPackage.name}
+              {hasOneItem(packageVersionsResult.data) &&
+                ` ${packageVersionsResult.data[0].name}`}
+            </code>
+          </span>
+        </div>
+      )}
       {isModalOpen && (
         <PackagesUninstallSummaryDetails
-          pkg={selectedPackage}
+          selectedPackage={selectedPackage}
           instanceIds={instanceIds}
           close={closeModal}
           action={action}

@@ -109,13 +109,10 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                 />
               </div>
             ))}
-
-            {
-              <InstancesWithoutVersionCount
-                count={data.data.out_of_scope}
-                type={mapActionToSearch(action)}
-              />
-            }
+            <InstancesWithoutVersionCount
+              count={data.data.out_of_scope}
+              type={mapActionToSearch(action)}
+            />
           </>
         )}
       </div>

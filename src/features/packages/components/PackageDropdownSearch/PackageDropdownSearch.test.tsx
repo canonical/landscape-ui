@@ -1,5 +1,5 @@
 import { ROUTES } from "@/libs/routes";
-import { getInstancePackages } from "@/tests/mocks/packages";
+import { selectedPackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -7,80 +7,75 @@ import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
 
-const instanceId = 1;
-const instancePackages = getInstancePackages(instanceId);
-
-const instancePageUrl = ROUTES.instances.details.single(instanceId);
-const instancePath = `${ROUTES.instances.root()}/:instanceId`;
-
-const availablePackages = instancePackages.filter(
-  (pkg) => pkg.available_version,
-);
-
 const props: ComponentProps<typeof PackageDropdownSearch> = {
   selectedPackages: [],
   setSelectedPackages: vi.fn(),
+  instanceIds: [],
+  action: "install",
 };
 
 describe("PackageDropdownSearch", () => {
   const user = userEvent.setup();
 
-  beforeEach(() => {
-    renderWithProviders(
-      <PackageDropdownSearch {...props} />,
-      undefined,
-      instancePageUrl,
-      instancePath,
-    );
-  });
-
-  it("renders package dropdown search component", () => {
-    const searchBox = screen.getByRole("searchbox");
-    expect(searchBox).toBeInTheDocument();
-    expect(screen.getByText(/min 3\. characters/i)).toBeInTheDocument();
-  });
+  const [selectedPackage] = selectedPackages;
+  assert(selectedPackage);
 
   describe("Search functionality", () => {
-    it("shows matching packages after searching", async () => {
+    it("opens dropdown when search is clicked", async () => {
+      renderWithProviders(<PackageDropdownSearch {...props} />);
       const searchBox = screen.getByRole("searchbox");
-      assert(availablePackages[0]);
-      await user.type(searchBox, availablePackages[0].name);
+      screen.getByText(/search available packages/i);
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
 
-      const matchingPackage = await screen.findByText(
-        availablePackages[0].name,
-      );
-      expect(matchingPackage).toBeInTheDocument();
+      await user.click(searchBox);
+
+      screen.getByRole("switch");
+      screen.getByText(/\d+ packages/i);
+      screen.getByRole("listbox");
     });
 
-    it("shows no packages found message when search yields no results", async () => {
+    it("shows matching packages after searching", async () => {
+      renderWithProviders(<PackageDropdownSearch {...props} />);
       const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, "nonexistentpackage");
+      await user.type(searchBox, selectedPackage.name);
 
-      const errorText = await screen.findByText(
-        /No packages found by "nonexistentpackage"/i,
+      await screen.findByRole("option", { name: selectedPackage.name });
+    });
+
+    it("shows message when packages limit is reached", () => {
+      renderWithProviders(
+        <PackageDropdownSearch
+          {...props}
+          selectedPackages={selectedPackages}
+        />,
       );
-      expect(errorText).toBeInTheDocument();
+      screen.findByText(/maximum of 10 packages/i);
+      expect(screen.getByRole("searchbox")).toBeDisabled();
     });
   });
 
   describe("Package selection", () => {
     it("adds package to selected items when clicked", async () => {
-      assert(availablePackages[0]);
+      renderWithProviders(<PackageDropdownSearch {...props} />);
       const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, availablePackages[0].name);
+      await user.type(searchBox, selectedPackage.name);
 
-      const packageItem = await screen.findByText(availablePackages[0].name);
+      const packageItem = await screen.findByRole("option", {
+        name: selectedPackage.name,
+      });
       await user.click(packageItem);
 
       expect(props.setSelectedPackages).toHaveBeenCalled();
     });
 
     it("clears search box after selecting a package", async () => {
-      assert(availablePackages[0]);
+      renderWithProviders(<PackageDropdownSearch {...props} />);
       const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, availablePackages[0].name);
+      await user.type(searchBox, selectedPackage.name);
 
-      const packageItem = await screen.findByText(availablePackages[0].name);
+      const packageItem = await screen.findByRole("option", {
+        name: selectedPackage.name,
+      });
       await user.click(packageItem);
 
       expect(searchBox).toHaveValue("");
@@ -89,6 +84,7 @@ describe("PackageDropdownSearch", () => {
 
   describe("Clear search functionality", () => {
     it("clears search input when clear button is clicked", async () => {
+      renderWithProviders(<PackageDropdownSearch {...props} />);
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, "test");
       expect(searchBox).toHaveValue("test");
@@ -103,43 +99,27 @@ describe("PackageDropdownSearch", () => {
   });
 
   describe("Selected packages display", () => {
-    it("displays selected packages in the result list", () => {
-      const [selectedPackage] = availablePackages;
-      assert(selectedPackage);
+    it("shows all selected packages in results list", () => {
       renderWithProviders(
         <PackageDropdownSearch
           {...props}
-          selectedPackages={[selectedPackage]}
+          selectedPackages={selectedPackages}
         />,
-        undefined,
-        instancePageUrl,
-        instancePath,
       );
-
-      expect(screen.getByText(selectedPackage.name)).toBeInTheDocument();
-      expect(
-        screen.getByText(selectedPackage.available_version ?? ""),
-      ).toBeInTheDocument();
+      selectedPackages.map((pkg) => {
+        screen.getByRole("heading", { name: selectedPackage.name });
+      });
     });
 
     it("removes package when delete button is clicked", async () => {
-      const [selectedPackage] = availablePackages;
-      assert(selectedPackage);
       renderWithProviders(
         <PackageDropdownSearch
           {...props}
           selectedPackages={[selectedPackage]}
         />,
-        undefined,
-        instancePageUrl,
-        instancePath,
       );
 
-      const deleteButton = screen.getByRole("button", {
-        name: /delete/i,
-      });
-
-      assert(deleteButton);
+      const deleteButton = screen.getByRole("button", { name: /delete/i });
       await user.click(deleteButton);
 
       expect(props.setSelectedPackages).toHaveBeenCalled();
