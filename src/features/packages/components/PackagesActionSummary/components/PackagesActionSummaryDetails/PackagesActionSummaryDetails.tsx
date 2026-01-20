@@ -14,7 +14,7 @@ import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import { mapSummaryToTitle } from "../../../../helpers";
 
 interface PackagesActionSummaryDetailsProps {
-  readonly pkg: SelectedPackage;
+  readonly selectedPackage: SelectedPackage;
   readonly instanceIds: number[];
   readonly close: () => void;
   readonly summaryVersion?: string;
@@ -22,7 +22,7 @@ interface PackagesActionSummaryDetailsProps {
 }
 
 const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
-  pkg,
+  selectedPackage,
   instanceIds,
   close,
   summaryVersion,
@@ -30,7 +30,7 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
 }) => {
   const { setPageParams, currentPage, pageSize } = usePageParams();
 
-  const title = mapSummaryToTitle(pkg.name, action, summaryVersion);
+  const title = mapSummaryToTitle(selectedPackage.name, action, summaryVersion);
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
 
@@ -40,10 +40,10 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
     setPageParams({ currentPage: DEFAULT_CURRENT_PAGE });
   };
 
-  const selectedVersions = pkg.versions.map((version) => version);
+  const selectedVersions = selectedPackage.versions.map((version) => version);
 
   const { isPending, data, error } = useGetPackageInstances({
-    id: pkg.id,
+    id: selectedPackage.id,
     action: action,
     selected_versions: selectedVersions,
     summary_version: summaryVersion,
@@ -69,15 +69,15 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
         },
       },
       {
-        accessor: "installed version",
+        accessor: "installed",
         Header: "Installed Version",
         Cell: ({ row }: CellProps<PackageInstance>) => {
           return <span>{row.original.installed_version}</span>;
         },
       },
       {
-        accessor: "available version",
-        Header: "Latest Available Version",
+        accessor: "available",
+        Header: "Latest Version Available",
         Cell: ({ row }: CellProps<PackageInstance>) => {
           return <span>{row.original.latest_available_version}</span>;
         },

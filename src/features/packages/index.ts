@@ -16,4 +16,5 @@ export type {
   PackageVersionsInstanceCount,
   PackageAction,
   VersionCount,
+  SelectedPackage,
 } from "./types";

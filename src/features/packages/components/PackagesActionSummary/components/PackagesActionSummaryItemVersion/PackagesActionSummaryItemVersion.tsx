@@ -43,14 +43,14 @@ const PackagesActionSummaryItemVersion: FC<
             {selectedPackage.name} {version.name}
           </code>
         ) : (
-          <span>
+          <>
             <code>{selectedPackage.name}</code> as not installed
-          </span>
+          </>
         )}
       </span>
       {isModalOpen && (
         <PackagesActionSummaryDetails
-          pkg={selectedPackage}
+          selectedPackage={selectedPackage}
           instanceIds={instanceIds}
           close={closeModal}
           summaryVersion={version.name}

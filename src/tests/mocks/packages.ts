@@ -1,8 +1,10 @@
 import type {
+  AvailableVersion,
   DowngradePackageVersion,
   InstancePackage,
   Package,
   PackageInstance,
+  SelectedPackage,
 } from "@/features/packages";
 import type { PackageUpgrade } from "@/features/upgrades";
 
@@ -857,3 +859,63 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
 ];
+
+export const availableVersions: AvailableVersion[] = [
+  { name: "1.0.1", num_computers: 5 },
+  { name: "1.0.2", num_computers: 3 },
+  { name: "0.1.9-1", num_computers: 8 },
+  { name: "2.0.0", num_computers: 2 },
+];
+
+export const selectedPackages = [
+  {
+    name: "libthai0",
+    id: 15,
+    versions: availableVersions.map(({ name }) => name),
+  },
+  {
+    name: "libbinutils",
+    id: 9779,
+    versions: ["2.38-4ubuntu2.3"],
+  },
+  {
+    id: 58667,
+    name: "binutils-common",
+    versions: ["2.38-4ubuntu2.3", "2.38-4ubuntu2.4"],
+  },
+  {
+    id: 174788,
+    name: "accountsservice",
+    versions: ["0.6.55-0ubuntu11", "0.6.55-0ubuntu12~20.04.6"],
+  },
+  {
+    id: 141906,
+    name: "alsa-ucm-conf",
+    versions: ["1.2.2-1", "1.2.2-1ubuntu0.13"],
+  },
+  {
+    id: 117729,
+    name: "base-files",
+    versions: ["11ubuntu5", "11ubuntu5.7"],
+  },
+  {
+    id: 119557,
+    name: "bash",
+    versions: ["5.0-6ubuntu1", "5.0-6ubuntu1.2"],
+  },
+  {
+    id: 112691,
+    name: "bcache-tools",
+    versions: ["1.0.8-3", "1.0.8-3ubuntu0.1"],
+  },
+  {
+    id: 114990,
+    name: "bind9-dnsutils",
+    versions: ["1:9.16.1-0ubuntu2.1", "1:9.16.1-0ubuntu2.16"],
+  },
+  {
+    id: 160136,
+    name: "bsdutils",
+    versions: ["1:2.34-0.1ubuntu9", "1:2.34-0.1ubuntu9.4"],
+  },
+] as const satisfies SelectedPackage[];

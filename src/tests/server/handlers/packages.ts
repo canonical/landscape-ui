@@ -14,6 +14,7 @@ import type {
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
+  availableVersions,
   downgradePackageVersions,
   getInstancePackages,
   packageInstances,
@@ -149,12 +150,7 @@ export default [
 
     const response: VersionCount = {
       out_of_scope: 4,
-      versions: [
-        { name: "1.0.1", num_computers: 5 },
-        { name: "1.0.2", num_computers: 3 },
-        { name: "0.1.9-1", num_computers: 8 },
-        { name: "2.0.0", num_computers: 2 },
-      ],
+      versions: availableVersions,
     };
 
     if (action == "hold" || action == "unhold") {
@@ -170,10 +166,7 @@ export default [
       const url = new URL(request.url);
       const versions = url.searchParams.get("versions")?.split(",") || [];
       const response = [
-        { name: "1.0.1", num_computers: 5 },
-        { name: "1.0.2", num_computers: 3 },
-        { name: "0.1.9-1", num_computers: 8 },
-        { name: "2.0.0", num_computers: 2 },
+        ...availableVersions,
         { name: "", num_computers: 1 },
       ].filter(({ name }) => versions.includes(name));
 
