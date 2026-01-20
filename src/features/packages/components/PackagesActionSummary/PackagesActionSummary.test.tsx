@@ -19,7 +19,7 @@ describe("PackagesActionSummary", () => {
 
     const loadingItems = await screen.findAllByRole("status");
     await waitFor(() =>
-      loadingItems.map((loading) => expect(loading).not.toBeInTheDocument())
+      loadingItems.map((loading) => expect(loading).not.toBeInTheDocument()),
     );
     const items = await screen.findAllByRole("listitem");
     expect(items).toHaveLength(selectedPackages.length);
