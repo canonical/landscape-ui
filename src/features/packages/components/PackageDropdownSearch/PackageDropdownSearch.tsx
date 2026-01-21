@@ -195,26 +195,13 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                   key={`${selectedPackage.id}${index}`}
                   selectedPackage={selectedPackage}
                   onDelete={handleDelete}
-                  onSelectVersion={(version) => {
+                  onUpdateVersions={(versions) => {
                     setSelectedPackages([
                       ...selectedPackages.slice(0, index),
                       {
                         name: selectedPackage.name,
                         id: selectedPackage.id,
-                        versions: [...selectedPackage.versions, version.name],
-                      },
-                      ...selectedPackages.slice(index + 1),
-                    ]);
-                  }}
-                  onDeselectVersion={(version) => {
-                    setSelectedPackages([
-                      ...selectedPackages.slice(0, index),
-                      {
-                        name: selectedPackage.name,
-                        id: selectedPackage.id,
-                        versions: selectedPackage.versions.filter(
-                          (v) => v !== version.name,
-                        ),
+                        versions: versions,
                       },
                       ...selectedPackages.slice(index + 1),
                     ]);
