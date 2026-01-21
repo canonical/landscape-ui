@@ -16,7 +16,7 @@ dist-ssr
 .vite-node
 coverage
 
-# Cashe
+# Cache
 .eslintcache
 
 # Editor directories and files

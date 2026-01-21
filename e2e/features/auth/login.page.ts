@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { basePage } from "../basePage";
+import { basePage } from "../../support/pages/basePage";
 
 export class LoginPage extends basePage {
   readonly page: Page;

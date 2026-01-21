@@ -25,5 +25,5 @@ export async function waitForEnvironmentError(page: Page): Promise<void> {
 }
 
 export async function closeWelcomeModal(page: Page): Promise<void> {
-  await page.click("button:has-text('Got it')");
+  await page.getByRole("button", { name: /got it!/i }).click();
 }

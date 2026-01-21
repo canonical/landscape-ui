@@ -1,8 +1,9 @@
-import { expect, test } from "../../fixtures/auth";
-import { LoginPage } from "../../pages/auth/loginPage";
-import { USER } from "../../constants";
-import { navigateTo } from "../../helpers/navigation";
-import { login } from "../../helpers/auth";
+import { expect, test } from "../../support/fixtures/auth";
+import { LoginPage } from "./login.page";
+import { USER } from "../../support/constants";
+import { navigateTo } from "../../support/helpers/navigation";
+import { login } from "../../support/helpers/auth";
+import { closeWelcomeModal } from "../../support/helpers/utils";
 
 test("should log in successfully", async ({ page }) => {
   await navigateTo(page, "/login");
@@ -30,13 +31,12 @@ test("should have disclaimer popup after login", async ({ page }) => {
 
   await login(page, USER.email, USER.password);
 
-  await expect(
-    page.getByText("Welcome to the new Landscape web portal (Preview)"),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/overview/);
 
-  await page.click("button:has-text('Got it')");
+  const welcomeModal = page.getByText(
+    /This portal is still a work-in-progress/i,
+  );
 
-  await expect(
-    page.getByText("Welcome to the new Landscape web portal (Preview)"),
-  ).not.toBeVisible();
+  await closeWelcomeModal(page);
+  await expect(welcomeModal).not.toBeVisible();
 });
