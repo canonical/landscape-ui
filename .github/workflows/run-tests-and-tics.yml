@@ -6,18 +6,30 @@ on:
 
 jobs:
   e2e-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    name: e2e-tests (${{ matrix.target }})
+    runs-on: [self-hosted, Linux, large]
     container:
       image: mcr.microsoft.com/playwright:v1.45.1
     environment: dev
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: saas
+            self_hosted_env: "false"
+            msw_enabled: "true"
+          - target: self-hosted
+            self_hosted_env: "true"
+            msw_enabled: "false"
     env:
       VITE_API_URL: ${{ vars.API_URL }}
       VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
       VITE_APP_TITLE: Landscape
-      VITE_ROOT_PATH: /new_dashboard/
+      VITE_ROOT_PATH: /
       VITE_REPORT_VIEW_ENABLED: false
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
-      VITE_SELF_HOSTED_ENV: true
+      VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
+      VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
       DEBUG: "pw:webserver"
     steps:
       - name: Checkout repository
@@ -34,33 +46,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build the project
-        run: pnpm run build
+        run: pnpm run build:e2e
+        env:
+          VITE_ROOT_PATH: /
+          VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
+          VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
 
-      - name: Run common tests
-        run: pnpm exec playwright test --project=common
-
-      - name: Run self-hosted tests
-        run: pnpm exec playwright test --project=self-hosted
+      - name: Run ${{ matrix.target }} tests
+        run: pnpm exec playwright test --project=${{ matrix.target }}
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.target }}
           path: playwright-report
           retention-days: 30
 
   unit-tests:
-    runs-on: [ self-hosted, Linux, large ]
+    runs-on: [self-hosted, Linux, large]
     permissions:
       contents: read
       pull-requests: write
@@ -86,7 +99,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -94,7 +107,7 @@ jobs:
       - name: Run tests with coverage
         run: pnpm exec vitest run --coverage
         env:
-          NODE_OPTIONS: '--max_old_space_size=4096'
+          NODE_OPTIONS: "--max_old_space_size=4096"
 
       - name: Upload test results
         if: always()

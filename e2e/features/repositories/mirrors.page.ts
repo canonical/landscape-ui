@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { basePage } from "../basePage";
+import { basePage } from "../../support/pages/basePage";
 
 export class MirrorsPage extends basePage {
   readonly page: Page;

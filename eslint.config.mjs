@@ -38,6 +38,14 @@ export default defineConfig(
   },
 
   {
+    files: ["e2e/**/*.{js,jsx,ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-floating-promises": "error",
+      "react-hooks/rules-of-hooks": "off",
+    },
+  },
+
+  {
     ...reactPlugin.configs.flat.recommended,
     settings: {
       react: {

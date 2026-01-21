@@ -7,14 +7,13 @@ interface CreateStandaloneAccountParams {
   password: string;
 }
 
-let standaloneAccountExists = false;
+let standaloneAccountExists = true;
 
 export default [
   http.get(`${API_URL}standalone-account`, () => {
     if (standaloneAccountExists) {
       return HttpResponse.json({ exists: true });
     }
-
     /**
      * Existing standalone account flow
      */

@@ -1,5 +1,5 @@
-import { expect } from "../fixtures/auth";
 import type { Page } from "@playwright/test";
+import { expect } from "../../support/fixtures/auth";
 
 export class TablePagination {
   constructor(public readonly page: Page) {}

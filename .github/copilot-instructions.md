@@ -377,10 +377,10 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 **Trigger:** PR → `dev`  
 **Jobs:**
 
-- **e2e-tests** (self-hosted runner, Playwright container): build → install browsers → run `common` and `self-hosted` projects → upload report.
+- **e2e-tests** (self-hosted runner, Playwright container): matrix for `saas` + `self-hosted`; each builds → installs browsers → runs matching Playwright project (untagged "common" tests run in both) → uploads report.
 - **unit-tests** (self-hosted): `vitest run --coverage` → upload coverage artifact to `reports/`.
 - **tics-report** (Ubuntu hosted): downloads `vitest-report` → runs TICS action with `installTics: true`.  
-  **Env (examples):** `VITE_API_URL`, `VITE_API_URL_OLD`, `VITE_ROOT_PATH=/new_dashboard/`, `VITE_SELF_HOSTED_ENV=true`.  
+  **Env (examples):** `VITE_API_URL`, `VITE_API_URL_OLD`, `VITE_ROOT_PATH=/`, `VITE_SELF_HOSTED_ENV=true/false`, `VITE_MSW_ENABLED=true/false`.  
   **Constraints:** keep memory flag `NODE_OPTIONS='--max_old_space_size=4096'`.
 
 ### Tests on Push (`.github/workflows/run-tests.yml`)
@@ -389,7 +389,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 **Jobs:**
 
 - **eslint-check:** `pnpm run lint:ci`.
-- **e2e-tests:** needs eslint; same pattern as PR e2e.
+- **e2e-tests:** needs eslint; same matrix pattern as PR e2e.
 - **unit-tests:** needs eslint; same pattern as PR unit tests; uploads `coverage-report`.
 
 ### PPA Build Commit (`.github/workflows/ppa-build.yml`)

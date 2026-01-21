@@ -38,7 +38,12 @@ export default defineConfig({
   /**
    * The directory where your test files are located.
    */
-  testDir: "e2e/tests",
+  testDir: "e2e/features",
+
+  /**
+   * Match all Playwright spec files under the feature-first layout.
+   */
+  testMatch: "**/*.spec.ts",
 
   /**
    * Run all tests in parallel.
@@ -71,8 +76,8 @@ export default defineConfig({
 
   webServer: {
     /**
-     * The command to start the web server. Uses 'preview' for CI after a build,
-     * and 'dev' for local development.
+     * CI: Use 'serve' on port 4173 (Production Build)
+     * Local: Use 'pnpm dev' on port 5173 (Development Server)
      */
     command: IS_CI ? "pnpm preview" : "pnpm dev",
 
@@ -98,6 +103,11 @@ export default defineConfig({
      */
     stdout: "pipe",
     stderr: "pipe",
+
+    env: {
+      VITE_ROOT_PATH: "/",
+      VITE_MSW_ENABLED: "false",
+    },
   },
 
   use: {
@@ -121,26 +131,22 @@ export default defineConfig({
      * Ignore HTTPS errors, which is often necessary for local development servers.
      */
     ignoreHTTPSErrors: true,
+
+    // Disable CORS for the test browser
+    launchOptions: {
+      args: ["--disable-web-security"],
+    },
   },
   projects: [
     {
       name: "saas",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "saas.spec.ts",
+      grepInvert: /@self-hosted/,
     },
     {
       name: "self-hosted",
       use: { ...devices["Desktop Chrome"] },
-      testMatch: "self-hosted.spec.ts",
-    },
-    {
-      name: "common",
-      use: { ...devices["Desktop Chrome"] },
-      testMatch: [
-        "auth/**/*.spec.ts",
-        "pages/**/*.spec.ts",
-        "components/**/*.spec.ts",
-      ],
+      grepInvert: /@saas/,
     },
   ],
 });
