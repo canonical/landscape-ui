@@ -10,7 +10,6 @@ import {
 import classNames from "classnames";
 import { type FC } from "react";
 import type { PackageAction, SelectedPackage } from "../../../../types";
-import type { AvailableVersion } from "../../../../types/AvailableVersion";
 import InstancesWithoutVersionCount from "../InstancesWithoutVersionCount";
 import classes from "./PackageDropdownSearchItem.module.scss";
 import { mapActionToSearch } from "../../../../helpers";
@@ -18,8 +17,7 @@ import { mapActionToSearch } from "../../../../helpers";
 interface PackageDropdownSearchItemProps {
   readonly selectedPackage: SelectedPackage;
   readonly onDelete: () => void;
-  readonly onSelectVersion: (version: AvailableVersion) => void;
-  readonly onDeselectVersion: (version: AvailableVersion) => void;
+  readonly onUpdateVersions: (versions: string[]) => void;
   readonly query: string;
   readonly action: PackageAction;
 }
@@ -27,8 +25,7 @@ interface PackageDropdownSearchItemProps {
 const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
   selectedPackage,
   onDelete,
-  onSelectVersion,
-  onDeselectVersion,
+  onUpdateVersions,
   query,
   action,
 }) => {
@@ -58,7 +55,25 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
       key={selectedPackage.id}
     >
       <div className={classes.topRow}>
-        <h5 className="u-no-margin u-no-padding">{selectedPackage.name}</h5>
+        <CheckboxInput
+          labelClassName="u-no-padding--top u-no-margin--bottom"
+          label={<strong>{selectedPackage.name}</strong>}
+          indeterminate={
+            selectedPackage.versions.length < versions.length &&
+            selectedPackage.versions.length > 0
+          }
+          checked={
+            selectedPackage.versions.length == versions.length &&
+            selectedPackage.versions.length > 0
+          }
+          onChange={() => {
+            onUpdateVersions(
+              selectedPackage.versions.length > 0
+                ? []
+                : versions.map(({ name }) => name),
+            );
+          }}
+        />
         <Button
           type="button"
           appearance="link"
@@ -101,9 +116,16 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                   )}
                   onChange={({ currentTarget: { checked } }) => {
                     if (checked) {
-                      onSelectVersion(packageVersion);
+                      onUpdateVersions([
+                        ...selectedPackage.versions,
+                        packageVersion.name,
+                      ]);
                     } else {
-                      onDeselectVersion(packageVersion);
+                      onUpdateVersions(
+                        selectedPackage.versions.filter(
+                          (version) => version != packageVersion.name,
+                        ),
+                      );
                     }
                   }}
                 />

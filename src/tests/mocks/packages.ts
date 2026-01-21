@@ -860,12 +860,12 @@ export const upgradePackages: PackageUpgrade[] = [
   },
 ];
 
-export const availableVersions: AvailableVersion[] = [
+export const availableVersions = [
   { name: "1.0.1", num_computers: 5 },
   { name: "1.0.2", num_computers: 3 },
   { name: "0.1.9-1", num_computers: 8 },
   { name: "2.0.0", num_computers: 2 },
-];
+] as const satisfies AvailableVersion[];
 
 export const selectedPackages = [
   {

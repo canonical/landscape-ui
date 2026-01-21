@@ -1,10 +1,9 @@
-import { ROUTES } from "@/libs/routes";
 import { selectedPackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import PackageDropdownSearch from "./PackageDropdownSearch";
 
 const props: ComponentProps<typeof PackageDropdownSearch> = {
@@ -23,6 +22,7 @@ describe("PackageDropdownSearch", () => {
   describe("Search functionality", () => {
     it("opens dropdown when search is clicked", async () => {
       renderWithProviders(<PackageDropdownSearch {...props} />);
+
       const searchBox = screen.getByRole("searchbox");
       screen.getByText(/search available packages/i);
       expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
@@ -36,6 +36,7 @@ describe("PackageDropdownSearch", () => {
 
     it("shows matching packages after searching", async () => {
       renderWithProviders(<PackageDropdownSearch {...props} />);
+
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, selectedPackage.name);
 
@@ -49,6 +50,7 @@ describe("PackageDropdownSearch", () => {
           selectedPackages={selectedPackages}
         />,
       );
+
       screen.findByText(/maximum of 10 packages/i);
       expect(screen.getByRole("searchbox")).toBeDisabled();
     });
@@ -57,6 +59,7 @@ describe("PackageDropdownSearch", () => {
   describe("Package selection", () => {
     it("adds package to selected items when clicked", async () => {
       renderWithProviders(<PackageDropdownSearch {...props} />);
+
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, selectedPackage.name);
 
@@ -70,6 +73,7 @@ describe("PackageDropdownSearch", () => {
 
     it("clears search box after selecting a package", async () => {
       renderWithProviders(<PackageDropdownSearch {...props} />);
+
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, selectedPackage.name);
 
@@ -85,6 +89,7 @@ describe("PackageDropdownSearch", () => {
   describe("Clear search functionality", () => {
     it("clears search input when clear button is clicked", async () => {
       renderWithProviders(<PackageDropdownSearch {...props} />);
+
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, "test");
       expect(searchBox).toHaveValue("test");
@@ -106,8 +111,9 @@ describe("PackageDropdownSearch", () => {
           selectedPackages={selectedPackages}
         />,
       );
-      selectedPackages.map((pkg) => {
-        screen.getByRole("heading", { name: selectedPackage.name });
+
+      selectedPackages.forEach((pkg) => {
+        screen.getByRole("checkbox", { name: pkg.name });
       });
     });
 
