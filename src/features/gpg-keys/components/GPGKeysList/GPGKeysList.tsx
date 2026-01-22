@@ -1,5 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import { ModularTable } from "@canonical/react-components";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -44,7 +44,7 @@ const GPGKeysList: FC<GPGKeysListProps> = ({ items }) => {
   );
 
   return (
-    <ModularTable
+    <ResponsiveTable
       columns={columns}
       data={gpgKeys}
       getCellProps={handleCellProps}

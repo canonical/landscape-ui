@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { BREAKPOINT_PX, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import { Button, CheckboxInput } from "@canonical/react-components";
@@ -11,6 +11,7 @@ import type { FC } from "react";
 import { lazy, Suspense, useCallback, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
+import { useMediaQuery } from "usehooks-ts";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useOpenActivityDetails } from "../../hooks";
 import type { ActivityCommon } from "../../types";
@@ -52,6 +53,8 @@ const Activities: FC<ActivitiesProps> = ({
     [setSidePanelContent],
   );
 
+  const isMedium = useMediaQuery(`(max-width: ${BREAKPOINT_PX.md}px)`);
+
   useOpenActivityDetails(handleActivityDetailsOpen);
 
   const handleClearSelection = useCallback(() => {
@@ -79,8 +82,8 @@ const Activities: FC<ActivitiesProps> = ({
     () =>
       [
         {
-          accessor: "description",
-          className: classes.description,
+          accessor: "summary",
+          className: isMedium ? undefined : classes.description,
           Header: (
             <>
               <CheckboxInput
@@ -183,6 +186,7 @@ const Activities: FC<ActivitiesProps> = ({
       handleToggleActivity,
       handleActivityDetailsOpen,
       instanceId,
+      isMedium,
     ],
   );
 

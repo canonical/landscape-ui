@@ -44,7 +44,7 @@ const SidePanel: FC<SidePanelProps> & {
           fallback={(errorData) => (
             <>
               <Header />
-              <Content className={classes.content}>
+              <Content>
                 <FallbackComponent {...errorData} />
               </Content>
             </>

@@ -23,19 +23,19 @@ export default function ResponsiveTable<
 }: ResponsiveTableProps<Row>): JSX.Element {
   const isSmall = useMediaQuery(`(max-width: ${BREAKPOINT_PX.sm}px)`);
 
-  const columns =
-    !isSmall && tableProps.columns[0]
-      ? [
-          {
-            ...tableProps.columns[0],
-            className: classNames(
-              tableProps.columns[0].className,
-              classes.firstColumn,
-            ),
-          },
-          ...tableProps.columns.slice(1),
-        ]
-      : tableProps.columns;
+  const [firstColumn, ...remainingColumns] = tableProps.columns;
+
+  const shouldDecorateFirstColumn = !isSmall && firstColumn;
+
+  const columns = shouldDecorateFirstColumn
+    ? [
+        {
+          ...firstColumn,
+          className: classNames(firstColumn.className, classes.firstColumn),
+        },
+        ...remainingColumns,
+      ]
+    : tableProps.columns;
 
   return (
     <div className={classes.responsiveTable} style={style}>

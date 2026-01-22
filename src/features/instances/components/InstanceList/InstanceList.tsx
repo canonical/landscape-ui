@@ -11,9 +11,10 @@ import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
 import { CheckboxInput } from "@canonical/react-components";
 import moment from "moment";
-import { memo, useEffect, useMemo } from "react";
+import { memo, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import {
+  createHeaderPropsGetter,
   getCellProps,
   getCheckboxState,
   getColumnFilterOptions,
@@ -21,7 +22,6 @@ import {
   getStatusCellIconAndLabel,
   getUpgradesCellIconAndLabel,
   handleCheckboxChange,
-  handleHeaderProps,
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
@@ -43,6 +43,8 @@ const InstanceList = memo(function InstanceList({
 
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
+
+  const titleId = useId();
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
     if (typeof filter === "string") {
@@ -80,11 +82,10 @@ const InstanceList = memo(function InstanceList({
                 selectedInstances.length < instances.length
               }
             />
-            <div>
-              <span id="column-1-label">Title</span>
-              <br />
+            <ListTitle>
+              <span id={titleId}>Title</span>
               <span className="u-text--muted">Hostname</span>
-            </div>
+            </ListTitle>
           </div>
         ),
         Cell: ({ row }: CellProps<Instance>) => {
@@ -268,7 +269,7 @@ const InstanceList = memo(function InstanceList({
       ref={getTableRowsRef}
       columns={filteredColumns}
       data={instances}
-      getHeaderProps={handleHeaderProps}
+      getHeaderProps={createHeaderPropsGetter(titleId)}
       getRowProps={getRowProps(expandedRowIndex)}
       getCellProps={getCellProps(expandedRowIndex)}
       minWidth={1400}
