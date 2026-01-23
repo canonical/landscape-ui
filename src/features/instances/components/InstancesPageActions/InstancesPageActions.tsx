@@ -261,6 +261,10 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : {},
   ].filter((link) => link.children);
 
+  const hasNoPackages = selectedInstances.every(
+    (instance) => !getFeatures(instance).packages,
+  );
+
   const managePackagesLinks = [
     {
       children: (
@@ -297,6 +301,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("uninstall");
       },
+      disabled: hasNoPackages,
       hasIcon: true,
     },
     {
@@ -306,6 +311,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Downgrade</span>
         </>
       ),
+      disabled: hasNoPackages,
       hasIcon: true,
     },
     {
@@ -318,6 +324,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("hold");
       },
+      disabled: hasNoPackages,
       hasIcon: true,
     },
     {
@@ -330,6 +337,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("unhold");
       },
+      disabled: hasNoPackages,
       hasIcon: true,
     },
   ];
@@ -389,7 +397,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             />
           ),
           REPORT_VIEW_ENABLED && (
-            <Button key="report-view" type="button" onClick={handleReportView}>
+            <Button key="report-view" type="button" onClick={handleReportView} disabled={disabled}>
               <Icon name="status" />
               <span>View report</span>
             </Button>
@@ -407,15 +415,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <span>Run script</span>
           </Button>,
           <ContextualMenu
-            key="upgrade-instances"
+            key="manage-packages"
             hasToggleIcon
             links={managePackagesLinks}
             position="right"
             toggleLabel={<span>Manage packages</span>}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={selectedInstances.every(
-              (instance) => !getFeatures(instance).packages,
-            )}
+            toggleDisabled={disabled}
             dropdownProps={{ style: { zIndex: 10 } }}
           />,
         ]}

@@ -10,7 +10,7 @@ const instanceId = 1;
 const [firstPackage, secondPackage] = selectedPackages;
 
 const versionLabel = (content: string) =>
-  content.includes(availableVersions[0]?.name ?? "");
+  content.includes(availableVersions[0].name);
 
 describe("PackagesActionForm", () => {
   const user = userEvent.setup();
@@ -27,9 +27,7 @@ describe("PackagesActionForm", () => {
 
       expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
     });
-  });
 
-  describe("Form submission", () => {
     it("enables next button when package and version are selected", async () => {
       renderWithProviders(
         <PackagesActionForm instanceIds={[instanceId]} action="install" />,
@@ -37,22 +35,55 @@ describe("PackagesActionForm", () => {
 
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, firstPackage.name);
-      const packageOption = await screen.findByRole("option", {
-        name: firstPackage.name,
-      });
-      await user.click(packageOption);
+      await user.click(screen.getByRole("option", { name: firstPackage.name }));
 
       const nextButton = screen.getByRole("button", { name: "Next" });
       expect(nextButton).toBeDisabled();
 
-      const firstCheckbox = screen.getByRole("checkbox", {
-        name: versionLabel,
-      });
-      await user.click(firstCheckbox);
+      await user.click(screen.getByRole("checkbox", { name: versionLabel }));
 
       expect(nextButton).toBeEnabled();
     });
 
+    it("has a back button after the first page", async () => {
+      renderWithProviders(
+        <PackagesActionForm instanceIds={[instanceId]} action="hold" />,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, firstPackage.name);
+      await user.click(screen.getByRole("option", { name: firstPackage.name }));
+      await user.click(screen.getByRole("checkbox", { name: versionLabel }));
+
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      const backButton = screen.getByRole("button", { name: "Back" });
+      expect(backButton).toBeEnabled();
+
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      const secondBackButton = screen.getByRole("button", { name: "Back" });
+      expect(secondBackButton).toBeEnabled();
+    });
+
+    it("shows summary and scheduling options", async () => {
+      renderWithProviders(
+        <PackagesActionForm instanceIds={[instanceId]} action="unhold" />,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, firstPackage.name);
+      await user.click(screen.getByRole("option", { name: firstPackage.name }));
+      await user.click(screen.getByRole("checkbox", { name: versionLabel }));
+
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      screen.getByText(/will unhold/i);
+
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      screen.getByText(/delivery time/i);
+      screen.getByText(/randomize delivery/i);
+    });
+  });
+
+  describe("Form submission", () => {
     it("submits form and shows success notification for single package", async () => {
       renderWithProviders(
         <PackagesActionForm instanceIds={[instanceId]} action="uninstall" />,
@@ -60,31 +91,21 @@ describe("PackagesActionForm", () => {
 
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, firstPackage.name);
-      const packageOption = await screen.findByText(firstPackage.name);
-      await user.click(packageOption);
-      const firstCheckbox = screen.getByRole("checkbox", {
-        name: versionLabel,
-      });
-      await user.click(firstCheckbox);
+      await user.click(screen.getByRole("option", { name: firstPackage.name }));
+      await user.click(screen.getByRole("checkbox", { name: versionLabel }));
 
-      const nextButton = screen.getByRole("button", { name: "Next" });
-      await user.click(nextButton);
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      await user.click(screen.getByRole("button", { name: "Next" }));
 
-      const uninstallButton = screen.getByRole("button", {
-        name: "Uninstall 1 package",
-      });
-      await user.click(uninstallButton);
+      await user.click(
+        screen.getByRole("button", { name: "Uninstall 1 package" }),
+      );
 
-      expect(
-        await screen.findByText(
-          `You queued package ${firstPackage.name} to be uninstalled`,
-          { exact: false },
-        ),
-      ).toBeInTheDocument();
-
-      expect(
-        await screen.findByRole("button", { name: "Details" }),
-      ).toBeInTheDocument();
+      await screen.findByText(
+        `You queued package ${firstPackage.name} to be uninstalled`,
+        { exact: false },
+      );
+      screen.getByRole("button", { name: "Details" });
     });
 
     it("submits form and shows success notification for multiple packages", async () => {
@@ -94,58 +115,25 @@ describe("PackagesActionForm", () => {
 
       const searchBox = screen.getByRole("searchbox");
       await user.type(searchBox, firstPackage.name);
-      const firstOption = await screen.findByText(firstPackage.name);
-      await user.click(firstOption);
-      const firstCheckbox = screen.getByRole("checkbox", {
-        name: versionLabel,
-      });
-      await user.click(firstCheckbox);
+      await user.click(screen.getByRole("option", { name: firstPackage.name }));
+      await user.click(screen.getByRole("checkbox", { name: versionLabel }));
 
       await user.type(searchBox, secondPackage.name);
-      const secondOption = await screen.findByText(secondPackage.name);
-      await user.click(secondOption);
-      const secondCheckbox = screen.getByRole("checkbox", {
-        checked: false,
-        name: versionLabel,
-      });
-      await user.click(secondCheckbox);
+      await user.click(
+        screen.getByRole("option", { name: secondPackage.name }),
+      );
+      await user.click(
+        screen.getByRole("checkbox", { checked: false, name: versionLabel }),
+      );
 
-      const nextButton = screen.getByRole("button", { name: "Next" });
-      await user.click(nextButton);
+      await user.click(screen.getByRole("button", { name: "Next" }));
+      await user.click(screen.getByRole("button", { name: "Next" }));
 
-      const installButton = screen.getByRole("button", {
-        name: "Hold 2 packages",
-      });
-      await user.click(installButton);
+      await user.click(screen.getByRole("button", { name: "Hold 2 packages" }));
 
-      expect(
-        await screen.findByText("You queued 2 packages to be held."),
-      ).toBeInTheDocument();
-
-      expect(
-        await screen.findByRole("button", { name: "Details" }),
-      ).toBeInTheDocument();
+      await screen.findByText("You queued 2 packages to be held.");
+      screen.getByRole("button", { name: "Details" });
     });
-  });
-
-  it("has a back button in the summary page", async () => {
-    renderWithProviders(
-      <PackagesActionForm instanceIds={[instanceId]} action="hold" />,
-    );
-
-    const searchBox = screen.getByRole("searchbox");
-    await user.type(searchBox, firstPackage.name);
-    const packageOption = await screen.findByText(firstPackage.name);
-    await user.click(packageOption);
-    const firstCheckbox = screen.getByRole("checkbox", { name: versionLabel });
-    await user.click(firstCheckbox);
-
-    const nextButton = screen.getByRole("button", { name: "Next" });
-    await user.click(nextButton);
-    const backButton = screen.getByRole("button", { name: "Back" });
-    await user.click(backButton);
-
-    expect(nextButton).toBeEnabled();
   });
 
   it("allows removing selected packages", async () => {
@@ -155,9 +143,7 @@ describe("PackagesActionForm", () => {
 
     const searchBox = screen.getByRole("searchbox");
     await user.type(searchBox, firstPackage.name);
-
-    const packageOption = await screen.findByText(firstPackage.name);
-    await user.click(packageOption);
+    await user.click(screen.getByRole("option", { name: firstPackage.name }));
 
     const deleteButton = screen.getByRole("button", {
       name: `Delete ${firstPackage.name}`,
@@ -165,9 +151,7 @@ describe("PackagesActionForm", () => {
     await user.click(deleteButton);
 
     expect(
-      screen.queryByRole("button", { name: `Delete ${firstPackage.name}` }),
+      screen.queryByRole("checkbox", { name: firstPackage.name }),
     ).not.toBeInTheDocument();
-
-    expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
   });
 });

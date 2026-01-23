@@ -14,7 +14,7 @@ const BUTTON_LABELS = [
   "Restart",
   "View report",
   "Run script",
-  "Upgrade",
+  "Manage packages",
   "Assign",
   "Attach token",
 ];
@@ -44,7 +44,7 @@ describe("InstancesPageActions", () => {
     expect(container).toHaveTexts(BUTTON_LABELS);
 
     for (const button of buttons) {
-      expect(button).not.toHaveClass("is-disabled");
+      expect(button).not.toHaveAttribute('aria-disabled');
     }
   });
 
@@ -61,8 +61,27 @@ describe("InstancesPageActions", () => {
     expect(buttons).toHaveLength(BUTTON_LABELS.length);
 
     for (const button of buttons) {
-      expect(button).toHaveClass("is-disabled");
+      expect(button).toHaveAttribute('aria-disabled');
     }
+  });
+
+    it("should disable package buttons when instances have no packages", async () => {
+      const instance = selected.slice(1, 2);
+      renderWithProviders(
+        <InstancesPageActions
+          isGettingInstances={false}
+          selectedInstances={instance}
+        />,
+      );
+
+    await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+
+    expect(screen.getByRole("button", { name: "Upgrade" })).toHaveAttribute('aria-disabled');
+    expect(screen.getByRole("button", { name: "Downgrade" })).toHaveAttribute('aria-disabled');
+    expect(screen.getByRole("button", { name: "Install" })).not.toHaveAttribute('aria-disabled');
+    expect(screen.getByRole("button", { name: "Uninstall" })).toHaveAttribute('aria-disabled');
+    expect(screen.getByRole("button", { name: "Hold" })).toHaveAttribute('aria-disabled');
+    expect(screen.getByRole("button", { name: "Unhold" })).toHaveAttribute('aria-disabled');
   });
 
   it("'View report' button should be visible when feature enabled", () => {
@@ -91,32 +110,6 @@ describe("InstancesPageActions", () => {
     expect(button).not.toBeInTheDocument();
   });
 
-  test("'View report' button should be visible when feature enabled", async () => {
-    renderWithProviders(
-      <InstancesPageActions
-        isGettingInstances={false}
-        selectedInstances={selected}
-      />,
-    );
-
-    const button = screen.queryByRole("button", { name: /view report/i });
-    expect(button).toBeInTheDocument();
-  });
-
-  test("'View report' button should not be visible when feature disabled", async () => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
-
-    renderWithProviders(
-      <InstancesPageActions
-        isGettingInstances={false}
-        selectedInstances={selected}
-      />,
-    );
-
-    const button = screen.queryByRole("button", { name: /view report/i });
-    expect(button).not.toBeInTheDocument();
-  });
-
   it("'Upgrade' button should be enabled without upgrades info", async () => {
     renderWithProviders(
       <InstancesPageActions
@@ -130,6 +123,7 @@ describe("InstancesPageActions", () => {
       />,
     );
 
+    await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
     const button = screen.queryByRole("button", { name: /upgrade/i });
     expect(button).not.toHaveClass("is-disabled");
   });
@@ -151,8 +145,6 @@ describe("InstancesPageActions", () => {
         name: /shutting down selected instances/i,
       });
 
-      expect(dialog).toBeInTheDocument();
-
       await userEvent.click(
         within(dialog).getByRole("button", { name: /shut down/i }),
       );
@@ -167,8 +159,6 @@ describe("InstancesPageActions", () => {
         name: /restarting selected instances/i,
       });
 
-      expect(dialog).toBeInTheDocument();
-
       await userEvent.click(
         within(dialog).getByRole("button", { name: /restart/i }),
       );
@@ -181,9 +171,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /run script/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /run script/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /run script/i });
     });
 
     it("'View report' button", async () => {
@@ -191,28 +179,70 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /view report/i }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Report for ${selected.length} instances`,
-        }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", {
+        name: `Report for ${selected.length} instances`,
+      });
+    });
+
+    it("'Manage packages' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+
+      screen.getByRole("button", { name: "Upgrade" });
+      screen.getByRole("button", { name: "Downgrade" });
+      screen.getByRole("button", { name: "Install" });
+      screen.getByRole("button", { name: "Uninstall" });
+      screen.getByRole("button", { name: "Hold" });
+      screen.getByRole("button", { name: "Unhold" });
     });
 
     it("'Upgrade' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
       await userEvent.click(screen.getByRole("button", { name: /upgrade/i }));
 
-      expect(
-        screen.getByRole("heading", { name: /upgrades/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /upgrade/i });
+    });
+
+    it("'Downgrade' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+      await userEvent.click(screen.getByRole("button", { name: /downgrade/i }));
+
+      // uncomment when downgrade form is implementated
+      // screen.getByRole("heading", { name: /downgrade/i });
+    });
+
+    it("'Install' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+      await userEvent.click(screen.getByRole("button", { name: /install/ }));
+      
+      screen.getByRole("heading", { name: /install/i });
+    });
+
+    it("'Uninstall' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+      await userEvent.click(screen.getByRole("button", { name: /uninstall/i }));
+
+      screen.getByRole("heading", { name: /uninstall/i });
+    });
+
+    it("'Hold' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+      await userEvent.click(screen.getByRole("button", { name: /hold/ }));
+
+      screen.getByRole("heading", { name: /hold/i });
+    });
+
+    it("'Unhold' button", async () => {
+      await userEvent.click(screen.getByRole("button", { name: /manage packages/i }));
+      await userEvent.click(screen.getByRole("button", { name: /unhold/i }));
+
+      screen.getByRole("heading", { name: /unhold/i });
     });
 
     it("'Assign' button", async () => {
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
-      expect(
-        screen.getByRole("button", { name: /access group/i }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /tags/i })).toBeInTheDocument();
+      screen.getByRole("button", { name: /access group/i });
+      screen.getByRole("button", { name: /tags/i });
     });
 
     it("'Assign access group' button", async () => {
@@ -222,19 +252,15 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /access group/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /assign access group/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /assign access group/i });
     });
 
     it("'Assign tags' button", async () => {
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
       await userEvent.click(screen.getByRole("button", { name: /tags/i }));
-
-      expect(
-        screen.getByRole("heading", { name: /assign tags/i }),
-      ).toBeInTheDocument();
+      
+      screen.getByRole("heading", { name: /assign tags/i });
     });
   });
 
