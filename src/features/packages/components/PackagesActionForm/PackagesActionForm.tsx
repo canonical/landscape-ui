@@ -16,6 +16,16 @@ import { usePackages } from "../../hooks";
 import type { PackageAction, SelectedPackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
+import {
+  DeliveryBlock,
+  deliveryValidationSchema,
+  RandomizationBlock,
+  randomizationValidationSchema,
+} from "@/components/form/DeliveryScheduling";
+import { useFormik } from "formik";
+import { INITIAL_VALUES } from "../InstalledPackagesActionForm/constants";
+import * as Yup from "yup";
+import { Form } from "@canonical/react-components";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -29,7 +39,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   const [selectedPackages, setSelectedPackages] = useState<SelectedPackage[]>(
     [],
   );
-  const [step, setStep] = useState<"form" | "summary">("form");
+  const [step, setStep] = useState<"form" | "summary" | "schedule">("form");
 
   const debug = useDebug();
   const { notify } = useNotify();
@@ -56,7 +66,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
 
       notify.success({
         title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, "packages")} to be ${actionPast}.`,
-        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name} package`, "selected packages")} will be ${actionPast} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name}`, "selected packages")} will be ${actionPast} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -73,6 +83,15 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
 
   const title = capitalize(action);
   const actionButtonAppearance = action == "install" ? "positive" : "negative";
+
+  const formik = useFormik({
+    initialValues: INITIAL_VALUES,
+    validationSchema: Yup.object({
+      ...randomizationValidationSchema,
+      ...deliveryValidationSchema,
+    }),
+    onSubmit: handleSubmit,
+  });
 
   switch (step) {
     case "form":
@@ -93,7 +112,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             submitButtonAppearance="positive"
             onSubmit={() => {
               setStep("summary");
-              setSidePanelTitle("Summary");
+              setSidePanelTitle(`${title} packages: Summary`);
             }}
           />
         </>
@@ -109,12 +128,12 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
           />
           <SidePanelFormButtons
             submitButtonLoading={changePackagesQueryLoading}
-            submitButtonText={`${title} ${pluralizeWithCount(
-              selectedPackages.length,
-              "package",
-            )}`}
-            submitButtonAppearance={actionButtonAppearance}
-            onSubmit={handleSubmit}
+            submitButtonText="Next"
+            submitButtonAppearance="positive"
+            onSubmit={() => {
+              setStep("schedule");
+              setSidePanelTitle(`${title} packages: Schedule delivery`);
+            }}
             hasBackButton
             onBackButtonPress={() => {
               setStep("form");
@@ -122,6 +141,27 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             }}
           />
         </>
+      );
+
+    case "schedule":
+      return (
+        <Form onSubmit={formik.handleSubmit} noValidate>
+          <DeliveryBlock formik={formik} />
+          <RandomizationBlock formik={formik} />
+          <SidePanelFormButtons
+            submitButtonDisabled={!formik.isValid || formik.isSubmitting}
+            submitButtonText={`${title} ${pluralizeWithCount(
+              selectedPackages.length,
+              "package",
+            )}`}
+            submitButtonAppearance={actionButtonAppearance}
+            hasBackButton
+            onBackButtonPress={() => {
+              setStep("summary");
+              setSidePanelTitle(`${title} packages: Summary`);
+            }}
+          />
+        </Form>
       );
   }
 };
