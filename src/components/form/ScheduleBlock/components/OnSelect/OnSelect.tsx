@@ -12,9 +12,9 @@ interface OnSelectProps<T extends ScheduleBlockFormProps> {
 }
 
 const OnSelect = <T extends ScheduleBlockFormProps>({
-  formik: { values, ...formik },
+  formik,
 }: OnSelectProps<T>): ReactNode => {
-  const fullFormik = { values, ...formik };
+  const { values } = formik;
   switch (values.unit_of_time) {
     case "WEEKLY": {
       return (
@@ -34,7 +34,7 @@ const OnSelect = <T extends ScheduleBlockFormProps>({
           isSortedAlphabetically={false}
           hasSelectedItemsFirst={false}
           required
-          error={getFormikError(fullFormik, "days")}
+          error={getFormikError(formik, "days")}
         />
       );
     }
