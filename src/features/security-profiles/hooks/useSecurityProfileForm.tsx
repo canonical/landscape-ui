@@ -107,6 +107,17 @@ const useSecurityProfileForm = ({
       start_date: Yup.string().required("This field is required."),
 
       title: Yup.string().required("This field is required."),
+
+      days: Yup.array().when(
+        ["start_type", "unit_of_time"],
+        ([start_type, unit_of_time], schema) =>
+          start_type === "recurring" && unit_of_time === "WEEKLY"
+            ? schema.max(
+                1,
+                "Select only one day to maintain a minimum 7-day interval.",
+              )
+            : schema,
+      ),
     }),
 
     onSubmit: async (values) => {

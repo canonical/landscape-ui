@@ -99,4 +99,55 @@ describe("SecurityProfileForm", () => {
       await screen.findByRole("button", { name: "Submit" }),
     ).toBeDisabled();
   });
+
+  it("should prevent weekly schedules with multiple days", async () => {
+    const testProps = {
+      ...props,
+      initialValues: {
+        ...props.initialValues,
+        start_type: "recurring",
+        unit_of_time: "WEEKLY",
+        every: 1,
+        days: ["MO", "TU"], // Two days selected
+      },
+    };
+
+    renderWithProviders(<SecurityProfileForm {...testProps} />);
+
+    // Wait for form to render
+    await screen.findByRole("combobox", { name: "On" });
+
+    // Wait for any loading to complete and find submit button  
+    const submitButton = await screen.findByRole("button", {
+      name: props.submitButtonText,
+    }, {timeout: 3000});
+    
+    // Submit button should be disabled due to validation error
+    expect(submitButton).toBeDisabled();
+  });
+
+  it("should allow weekly schedules with a single day", async () => {
+    const testProps = {
+      ...props,
+      initialValues: {
+        ...props.initialValues,
+        start_type: "recurring",
+        unit_of_time: "WEEKLY",
+        every: 1,
+        days: ["MO"], // Single day selected
+      },
+    };
+
+    renderWithProviders(<SecurityProfileForm {...testProps} />);
+
+    // Wait for form to render
+    await screen.findByRole("combobox", { name: "On" });
+
+    // No error should appear
+    expect(
+      screen.queryByText(
+        "Select only one day to maintain a minimum 7-day interval.",
+      ),
+    ).not.toBeInTheDocument();
+  });
 });
