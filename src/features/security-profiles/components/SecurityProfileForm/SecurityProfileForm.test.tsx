@@ -105,10 +105,10 @@ describe("SecurityProfileForm", () => {
       ...props,
       initialValues: {
         ...props.initialValues,
-        start_type: "recurring",
-        unit_of_time: "WEEKLY",
+        start_type: "recurring" as const,
+        unit_of_time: "WEEKLY" as const,
         every: 1,
-        days: ["MO", "TU"], // Two days selected
+        days: ["MO", "TU"] as ("SU" | "MO" | "TU" | "WE" | "TH" | "FR" | "SA")[], // Two days selected
       },
     };
 
@@ -120,7 +120,7 @@ describe("SecurityProfileForm", () => {
     // Wait for any loading to complete and find submit button  
     const submitButton = await screen.findByRole("button", {
       name: props.submitButtonText,
-    }, {timeout: 3000});
+    }, { timeout: 3000 });
     
     // Submit button should be disabled due to validation error
     expect(submitButton).toBeDisabled();
@@ -131,10 +131,10 @@ describe("SecurityProfileForm", () => {
       ...props,
       initialValues: {
         ...props.initialValues,
-        start_type: "recurring",
-        unit_of_time: "WEEKLY",
+        start_type: "recurring" as const,
+        unit_of_time: "WEEKLY" as const,
         every: 1,
-        days: ["MO"], // Single day selected
+        days: ["MO"] as ("SU" | "MO" | "TU" | "WE" | "TH" | "FR" | "SA")[], // Single day selected
       },
     };
 
