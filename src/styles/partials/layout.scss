@@ -61,3 +61,7 @@
   background-color: $colors--theme--background-default;
   z-index: var(--z-dropdown);
 }
+
+.p-tabs {
+  overflow: visible;
+}

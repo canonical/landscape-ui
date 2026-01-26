@@ -41,9 +41,8 @@ const InstancesPage: FC = () => {
             selectedInstances={selectedInstances}
           />,
         ]}
-        sticky
       />
-      <PageContent>
+      <PageContent hasTable>
         <InstancesContainer
           instanceCount={instancesCount}
           instances={instances}

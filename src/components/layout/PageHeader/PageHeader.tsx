@@ -1,9 +1,9 @@
-import { type FC, type ReactNode, useLayoutEffect, useRef } from "react";
-import classes from "./PageHeader.module.scss";
 import classNames from "classnames";
+import { type FC, type ReactNode, useLayoutEffect, useRef } from "react";
 import { Link } from "react-router";
-import type { Breadcrumb } from "../../../types/Breadcrumb";
 import { useMediaQuery } from "usehooks-ts";
+import type { Breadcrumb } from "../../../types/Breadcrumb";
+import classes from "./PageHeader.module.scss";
 
 interface PageHeaderProps {
   readonly title: string;
@@ -12,7 +12,6 @@ interface PageHeaderProps {
   readonly actions?: ReactNode[];
   readonly className?: string;
   readonly visualTitle?: string;
-  readonly sticky?: boolean;
   readonly helperContent?: ReactNode;
 }
 
@@ -24,7 +23,6 @@ const PageHeader: FC<PageHeaderProps> = ({
   actions,
   breadcrumbs,
   helperContent,
-  sticky = false,
 }) => {
   const isSmallerScreen = useMediaQuery("(max-width: 619px)");
   const headerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +45,6 @@ const PageHeader: FC<PageHeaderProps> = ({
       className={classNames(
         "p-panel__header",
         {
-          [classes.sticky]: sticky,
           "u-no-padding--right": helperContent !== undefined,
         },
         className,

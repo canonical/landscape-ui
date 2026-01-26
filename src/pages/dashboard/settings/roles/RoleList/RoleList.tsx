@@ -118,14 +118,13 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
   );
 
   return (
-    <div ref={getTableRows(tableRowsRef)}>
-      <ResponsiveTable
-        columns={columns}
-        data={roles}
-        getCellProps={handleCellProps(expandedCell)}
-        getRowProps={handleRowProps(expandedCell?.rowIndex)}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRows(tableRowsRef)}
+      columns={columns}
+      data={roles}
+      getCellProps={handleCellProps(expandedCell)}
+      getRowProps={handleRowProps(expandedCell?.rowIndex)}
+    />
   );
 };
 

@@ -7,6 +7,8 @@ import { useKernel } from "@/features/kernel";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 import useAuth from "@/hooks/useAuth";
+import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 import SingleInstanceEmptyState from "@/pages/dashboard/instances/[single]/SingleInstanceEmptyState";
 import SingleInstanceTabs from "@/pages/dashboard/instances/[single]/SingleInstanceTabs";
 import type { UrlParams } from "@/types/UrlParams";
@@ -28,10 +30,10 @@ import {
   isLivepatchInfoQueryEnabled,
   isUsnQueryEnabled,
 } from "./helpers";
-import { ROUTES } from "@/libs/routes";
 
 const SingleInstanceContainer: FC = () => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
+  const { tab } = usePageParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { getUsnsQuery } = useUsns();
@@ -131,7 +133,19 @@ const SingleInstanceContainer: FC = () => {
         hideTitle
         breadcrumbs={getBreadcrumbs(instance)}
       />
-      <PageContent>
+      <PageContent
+        hasTable={[
+          "wsl",
+          "activities",
+          "kernel",
+          "security-issues",
+          "packages",
+          "snaps",
+          "processes",
+          "ubuntu-pro",
+          "users",
+        ].includes(tab)}
+      >
         {isGettingInstance ? (
           <LoadingState />
         ) : (

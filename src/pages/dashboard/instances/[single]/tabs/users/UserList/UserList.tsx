@@ -3,14 +3,14 @@ import ListActions, {
 } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { User } from "@/types/User";
 import { Button, CheckboxInput, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense, useMemo } from "react";
-import classes from "./UserList.module.scss";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { CellProps, Column } from "react-table";
+import classes from "./UserList.module.scss";
 
 const EditUserForm = lazy(
   async () =>
@@ -64,55 +64,53 @@ const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
     () => [
       {
         accessor: "checkbox",
-        className: "checkbox-column",
         Header: (
-          <CheckboxInput
-            label={<span className="u-off-screen">Toggle all</span>}
-            labelClassName="u-no-margin--bottom u-no-padding--top"
-            onChange={toggleAll}
-            checked={users.length > 0 && selected.length === users.length}
-            indeterminate={
-              selected.length > 0 && selected.length < users.length
-            }
-            disabled={users.length === 0}
-          />
+          <>
+            <CheckboxInput
+              label={<span className="u-off-screen">Toggle all</span>}
+              labelClassName="u-no-margin--bottom u-no-padding--top"
+              onChange={toggleAll}
+              checked={users.length > 0 && selected.length === users.length}
+              indeterminate={
+                selected.length > 0 && selected.length < users.length
+              }
+              disabled={users.length === 0}
+              inline
+            />
+            Username
+          </>
         ),
         Cell: ({ row: { original } }: CellProps<User>) => (
-          <CheckboxInput
-            inline
-            label={
-              <span className="u-off-screen">
-                Select user {original.username}
-              </span>
-            }
-            disabled={users.length === 0}
-            checked={selected.includes(original.uid)}
-            onChange={() => {
-              handleSelectionChange(original.uid);
-            }}
-          />
-        ),
-      },
-      {
-        Header: "username",
-        role: "rowheader",
-        Cell: ({ row: { original } }: CellProps<User>) => (
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => {
-              handleShowUserDetails(original);
-            }}
-            aria-label={`Show details of user ${original.username}`}
-          >
-            {original.username}
-          </Button>
+          <>
+            <CheckboxInput
+              inline
+              label={
+                <span className="u-off-screen">
+                  Select user {original.username}
+                </span>
+              }
+              disabled={users.length === 0}
+              checked={selected.includes(original.uid)}
+              onChange={() => {
+                handleSelectionChange(original.uid);
+              }}
+            />
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top"
+              onClick={() => {
+                handleShowUserDetails(original);
+              }}
+              aria-label={`Show details of user ${original.username}`}
+            >
+              {original.username}
+            </Button>
+          </>
         ),
       },
       {
         Header: "status",
-        className: classes.statusCell,
         Cell: ({ row: { original } }: CellProps<User>) => (
           <div className={classes.status}>
             {original.enabled ? (

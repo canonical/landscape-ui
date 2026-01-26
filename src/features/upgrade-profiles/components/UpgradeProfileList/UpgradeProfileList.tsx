@@ -139,15 +139,14 @@ const UpgradeProfileList: FC<UpgradeProfileListProps> = ({ profiles }) => {
   );
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        columns={columns}
-        data={filteredProfiles}
-        emptyMsg={`No upgrade profiles found with the search: "${search}"`}
-        getCellProps={getCellProps(expandedRowIndex)}
-        getRowProps={getRowProps(expandedRowIndex)}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRowsRef}
+      columns={columns}
+      data={filteredProfiles}
+      emptyMsg={`No upgrade profiles found with the search: "${search}"`}
+      getCellProps={getCellProps(expandedRowIndex)}
+      getRowProps={getRowProps(expandedRowIndex)}
+    />
   );
 };
 

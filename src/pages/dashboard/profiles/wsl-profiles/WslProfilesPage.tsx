@@ -84,7 +84,7 @@ const WslProfilesPage: FC = () => {
             ]}
           />
 
-          <PageContent>
+          <PageContent hasTable>
             {!unfilteredWslProfilesCount ? (
               <WslProfilesEmptyState />
             ) : isGettingWslLimits ? (

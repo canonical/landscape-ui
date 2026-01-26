@@ -14,7 +14,7 @@ const props = {
 
 const columns = [
   {
-    label: "Name",
+    label: "Title",
     checkboxLabel: "Instance name",
     canBeHidden: false,
   },

@@ -1,9 +1,9 @@
-import { describe } from "vitest";
-import InstancesHeader from "./InstancesHeader";
 import { renderWithProviders } from "@/tests/render";
-import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
+import { describe } from "vitest";
+import InstancesHeader from "./InstancesHeader";
 
 const props: ComponentProps<typeof InstancesHeader> = {
   columnFilterOptions: [
@@ -36,7 +36,7 @@ describe("InstancesHeader", async () => {
     const helpButton = screen.getByRole("button", { name: /search help/i });
     expect(helpButton).toBeInTheDocument();
 
-    const osFilter = screen.getByRole("button", { name: /os/i });
+    const osFilter = screen.getByRole("button", { name: /OS/ });
     expect(osFilter).toBeInTheDocument();
 
     const accessGroupFilter = screen.getByRole("button", {

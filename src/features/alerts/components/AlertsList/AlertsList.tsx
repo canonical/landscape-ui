@@ -1,9 +1,11 @@
-import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
+import { seriesCardClasses } from "@/features/mirrors";
 import useAuth from "@/hooks/useAuth";
 import type { MultiSelectItem } from "@canonical/react-components";
+import classNames from "classnames";
 import type { FC } from "react";
 import type { Alert } from "../../types";
 import AlertsTable from "../AlertsTable";
+import classes from "./AlertsList.module.scss";
 
 interface AlertsListProps {
   readonly alerts: Alert[];
@@ -16,19 +18,15 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, availableTagOptions }) => {
     (account) => account.name === user.current_account,
   );
   return (
-    <div className={distributionCardClasses.item}>
-      <div className={seriesCardClasses.card}>
-        <div className={seriesCardClasses.header}>
-          <p className={seriesCardClasses.title}>
-            {account?.title || "Alerts"}
-          </p>
-        </div>
-        <div className={seriesCardClasses.content}>
-          <AlertsTable
-            alerts={alerts}
-            availableTagOptions={availableTagOptions}
-          />
-        </div>
+    <div className={classNames(seriesCardClasses.card, classes.card)}>
+      <div className={seriesCardClasses.header}>
+        <p className={seriesCardClasses.title}>{account?.title || "Alerts"}</p>
+      </div>
+      <div className={classNames(seriesCardClasses.content, classes.content)}>
+        <AlertsTable
+          alerts={alerts}
+          availableTagOptions={availableTagOptions}
+        />
       </div>
     </div>
   );

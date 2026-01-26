@@ -38,7 +38,7 @@ const AlertsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader title="Alerts" />
-      <PageContent>
+      <PageContent hasTable>
         {isLoading && <LoadingState />}
         {!isLoading && alerts && (
           <AlertsList

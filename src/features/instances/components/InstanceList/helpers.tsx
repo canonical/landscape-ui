@@ -199,16 +199,18 @@ export const getUpgradesCellIconAndLabel = (instance: Instance) => {
   };
 };
 
-export const handleHeaderProps = ({ id }: HeaderGroup<Instance>) => {
-  const headerProps: Partial<
-    TableHeaderProps & HTMLProps<HTMLTableCellElement>
-  > = {};
+export const createHeaderPropsGetter = (titleId: string) => {
+  return ({ id }: HeaderGroup<Instance>) => {
+    const headerProps: Partial<
+      TableHeaderProps & HTMLProps<HTMLTableCellElement>
+    > = {};
 
-  if (id === "title") {
-    headerProps["aria-labelledby"] = "column-1-label";
-  }
+    if (id === "title") {
+      headerProps["aria-labelledby"] = titleId;
+    }
 
-  return headerProps;
+    return headerProps;
+  };
 };
 
 export const getCellProps = (expandedRowIndex: number | null) => {

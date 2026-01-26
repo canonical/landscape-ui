@@ -12,6 +12,7 @@ interface MediumContainer {
 
 interface BasePageContentProps {
   children: ReactNode;
+  hasTable?: boolean;
 }
 
 export type PageContentProps = BasePageContentProps &

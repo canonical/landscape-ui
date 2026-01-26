@@ -24,7 +24,11 @@
 }
 
 .innerTable {
-  background-color: $colors--theme--background-alt;
+  background-color: $colors--theme--background-alt !important;
+
+  thead {
+    background-color: initial;
+  }
 }
 
 .row,

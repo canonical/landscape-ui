@@ -40,7 +40,6 @@ const EventsLogPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        sticky
         title="Events log"
         actions={[
           <Button
@@ -57,7 +56,7 @@ const EventsLogPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <EventsLogHeader />
         {isLoading && <LoadingState />}
         {!isLoading && eventsLog && <EventsLogList eventsLog={eventsLog} />}

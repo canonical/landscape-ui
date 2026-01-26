@@ -37,7 +37,6 @@ const ActivitiesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Activities"
-        sticky
         actions={
           unfilteredActivitiesCount
             ? [
@@ -49,7 +48,7 @@ const ActivitiesPage: FC = () => {
             : undefined
         }
       />
-      <PageContent>
+      <PageContent hasTable>
         {isGettingUnfilteredActivities ? (
           <LoadingState />
         ) : !unfilteredActivitiesCount ? (

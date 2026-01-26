@@ -1,9 +1,9 @@
+import type { ExpandedCell } from "@/types/ExpandedCell";
+import type { Usn } from "@/types/Usn";
 import type { HTMLProps, RefObject } from "react";
 import type { Cell, Row, TableCellProps, TableRowProps } from "react-table";
-import type { Usn } from "@/types/Usn";
 import { EMPTY_USN } from "./constants";
 import classes from "./UsnList.module.scss";
-import type { ExpandedCell } from "@/types/ExpandedCell";
 
 export const getUsnsWithExpanded = ({
   expandedCell,
@@ -54,7 +54,7 @@ export const handleCellProps =
         ["computers_count", "release_packages"].includes(expandedCell.column))
     ) {
       if (column.id === "usn") {
-        cellProps.colSpan = 5;
+        cellProps.colSpan = 4;
         if (
           expandedCell?.row === index - 1 &&
           ["computers_count", "release_packages"].includes(expandedCell.column)

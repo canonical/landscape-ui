@@ -1,11 +1,11 @@
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { processes } from "@/tests/mocks/process";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import moment from "moment/moment";
 import { describe, expect, vi } from "vitest";
 import ProcessesList from "./ProcessesList";
-import moment from "moment/moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 const processIds = processes.map((process) => process.pid);
 
@@ -38,7 +38,7 @@ describe("ProcessesList", () => {
     renderWithProviders(<ProcessesList {...props} />);
     const [chosenProcess] = processes;
     const row = screen.getByRole("row", {
-      name: `Select process ${chosenProcess.name} ${chosenProcess.name} ${chosenProcess.state} ${chosenProcess.vm_size} ${(100 * chosenProcess.cpu_utilisation).toFixed(1)}% ${chosenProcess.pid} ${moment(chosenProcess.start_time).format(DISPLAY_DATE_TIME_FORMAT)} ${chosenProcess.gid}`,
+      name: `Select process ${chosenProcess.name}${chosenProcess.name} ${chosenProcess.state} ${chosenProcess.vm_size} ${(100 * chosenProcess.cpu_utilisation).toFixed(1)}% ${chosenProcess.pid} ${moment(chosenProcess.start_time).format(DISPLAY_DATE_TIME_FORMAT)} ${chosenProcess.gid}`,
     });
     const processCheckbox = await within(row).findByRole("checkbox", {
       name: `Select process ${chosenProcess.name}`,

@@ -107,7 +107,7 @@ const SecurityProfilesPage: FC = () => {
         }
       />
 
-      <PageContent>
+      <PageContent hasTable>
         {isInitialSecurityProfilesLoading && <LoadingState />}
         {!isInitialSecurityProfilesLoading &&
           initialSecurityProfilesCount === 0 && (

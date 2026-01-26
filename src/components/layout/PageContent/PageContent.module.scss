@@ -6,6 +6,10 @@
   overflow: visible;
 }
 
+.hasTable {
+  min-height: 0;
+}
+
 .innerDiv {
   display: flex;
   flex-direction: column;

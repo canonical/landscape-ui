@@ -48,7 +48,7 @@ const GPGKeysPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         {isLoading && <LoadingState />}
         {!isLoading && items.length === 0 && (
           <EmptyState

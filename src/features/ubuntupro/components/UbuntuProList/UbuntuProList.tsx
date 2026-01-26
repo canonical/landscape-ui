@@ -1,10 +1,10 @@
-import { ModularTable } from "@canonical/react-components";
+import NoData from "@/components/layout/NoData";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import type { UbuntuProService } from "@/types/Instance";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import classes from "./UbuntuProList.module.scss";
-import type { UbuntuProService } from "@/types/Instance";
-import NoData from "@/components/layout/NoData";
 
 interface UbuntuProServicesListProps {
   readonly services: UbuntuProService[];
@@ -52,7 +52,7 @@ const UbuntuProList: FC<UbuntuProServicesListProps> = ({ services }) => {
   return (
     <>
       <span className="p-heading--5">Services</span>
-      <ModularTable
+      <ResponsiveTable
         columns={columns}
         data={servicesData}
         getCellProps={({ column }) => {

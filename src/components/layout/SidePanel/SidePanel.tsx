@@ -1,10 +1,10 @@
 import ApplicationIdContext from "@/context/applicationId";
 import type { SidePanelProps as SidePanelBaseProps } from "@canonical/react-components";
 import { SidePanel as SidePanelBase } from "@canonical/react-components";
+import * as Sentry from "@sentry/react";
 import classNames from "classnames";
 import type { ReactNode } from "react";
 import { type FC, useContext } from "react";
-import * as Sentry from "@sentry/react";
 import { FallbackComponent } from "../AppErrorBoundary/FallbackComponent";
 import CloseContext from "./CloseContext";
 import Content from "./Content";

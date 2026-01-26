@@ -1,0 +1,10 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.content {
+  display: flex;
+  min-height: 0;
+}

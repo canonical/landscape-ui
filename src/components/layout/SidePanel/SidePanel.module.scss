@@ -1,8 +1,14 @@
 .content {
-  overflow: initial !important;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: visible;
 }
 
 .sidePanel {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
   padding-bottom: 0;
 }
 

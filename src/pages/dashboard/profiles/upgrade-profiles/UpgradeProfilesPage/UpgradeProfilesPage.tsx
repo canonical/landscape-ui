@@ -50,7 +50,7 @@ const UpgradeProfilesPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <UpgradeProfilesContainer />
       </PageContent>
 

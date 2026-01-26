@@ -3,7 +3,6 @@ import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescr
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
-import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -68,11 +67,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   return (
     <>
-      <div
-        className={classNames(classes.top, {
-          [classes.sticky]: !IS_PANEL,
-        })}
-      >
+      <div className={classes.top}>
         <SearchBoxWithDescriptionButton
           inputValue={searchText}
           onInputChange={(inputValue) => {

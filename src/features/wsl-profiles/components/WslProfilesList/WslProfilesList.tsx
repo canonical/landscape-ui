@@ -231,16 +231,15 @@ const WslProfilesList: FC = () => {
   }
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        columns={columns}
-        data={wslProfiles}
-        emptyMsg="No WSL profiles found according to your search parameters."
-        getCellProps={getCellProps(expandedRowIndex, expandedColumnId)}
-        getRowProps={getRowProps(expandedRowIndex)}
-        minWidth={1200}
-      />
-    </div>
+    <ResponsiveTable
+      ref={getTableRowsRef}
+      columns={columns}
+      data={wslProfiles}
+      emptyMsg="No WSL profiles found according to your search parameters."
+      getCellProps={getCellProps(expandedRowIndex, expandedColumnId)}
+      getRowProps={getRowProps(expandedRowIndex)}
+      minWidth={1200}
+    />
   );
 };
 

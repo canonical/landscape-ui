@@ -7,12 +7,14 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
 import { CheckboxInput } from "@canonical/react-components";
 import moment from "moment";
-import { memo, useEffect, useMemo } from "react";
+import { memo, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import {
+  createHeaderPropsGetter,
   getCellProps,
   getCheckboxState,
   getColumnFilterOptions,
@@ -20,11 +22,9 @@ import {
   getStatusCellIconAndLabel,
   getUpgradesCellIconAndLabel,
   handleCheckboxChange,
-  handleHeaderProps,
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
-import { ROUTES } from "@/libs/routes";
 
 interface InstanceListProps {
   readonly instances: Instance[];
@@ -43,6 +43,8 @@ const InstanceList = memo(function InstanceList({
 
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
+
+  const titleId = useId();
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
     if (typeof filter === "string") {
@@ -65,7 +67,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: false,
         optionLabel: "Instance name",
         Header: (
-          <>
+          <div className={classes.rowHeader}>
             <CheckboxInput
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
@@ -80,8 +82,11 @@ const InstanceList = memo(function InstanceList({
                 selectedInstances.length < instances.length
               }
             />
-            <span id="column-1-label">Name</span>
-          </>
+            <ListTitle>
+              <span id={titleId}>Title</span>
+              <span className="u-text--muted">Hostname</span>
+            </ListTitle>
+          </div>
         ),
         Cell: ({ row }: CellProps<Instance>) => {
           return (
@@ -255,21 +260,20 @@ const InstanceList = memo(function InstanceList({
   );
 
   return (
-    <div ref={getTableRowsRef}>
-      <ResponsiveTable
-        emptyMsg={
-          isFilteringInstances
-            ? "No instances found according to your search parameters."
-            : "No instances found"
-        }
-        columns={filteredColumns}
-        data={instances}
-        getHeaderProps={handleHeaderProps}
-        getRowProps={getRowProps(expandedRowIndex)}
-        getCellProps={getCellProps(expandedRowIndex)}
-        minWidth={1400}
-      />
-    </div>
+    <ResponsiveTable
+      emptyMsg={
+        isFilteringInstances
+          ? "No instances found according to your search parameters."
+          : "No instances found"
+      }
+      ref={getTableRowsRef}
+      columns={filteredColumns}
+      data={instances}
+      getHeaderProps={createHeaderPropsGetter(titleId)}
+      getRowProps={getRowProps(expandedRowIndex)}
+      getCellProps={getCellProps(expandedRowIndex)}
+      minWidth={1400}
+    />
   );
 });
 

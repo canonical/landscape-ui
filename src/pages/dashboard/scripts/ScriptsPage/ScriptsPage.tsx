@@ -7,36 +7,42 @@ import useAuth from "@/hooks/useAuth";
 import useFetch from "@/hooks/useFetch";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
+import { useBoolean } from "usehooks-ts";
 
 const ScriptsPage: FC = () => {
   const { isFeatureEnabled } = useAuth();
   const authFetch = useFetch();
 
+  const { value: isNotificationVisible, setFalse: hideNotification } =
+    useBoolean(true);
+
   return (
     <PageMain>
       <PageHeader title="Scripts" />
-      <PageContent>
-        <Notification severity="caution">
-          <strong>This page only displays v2 scripts.</strong> Older (v1)
-          scripts can be found in{" "}
-          <Button
-            appearance="link"
-            onClick={async () => {
-              redirectToExternalUrl(
-                `${
-                  (
-                    await authFetch.get<{ url: string }>(
-                      "classic_dashboard_url",
-                    )
-                  ).data.url
-                }/scripts`,
-              );
-            }}
-          >
-            the legacy web portal
-          </Button>
-          .
-        </Notification>
+      <PageContent hasTable>
+        {isNotificationVisible && (
+          <Notification onDismiss={hideNotification} severity="caution">
+            <strong>This page only displays v2 scripts.</strong> Older (v1)
+            scripts can be found in{" "}
+            <Button
+              appearance="link"
+              onClick={async () => {
+                redirectToExternalUrl(
+                  `${
+                    (
+                      await authFetch.get<{ url: string }>(
+                        "classic_dashboard_url",
+                      )
+                    ).data.url
+                  }/scripts`,
+                );
+              }}
+            >
+              the legacy web portal
+            </Button>
+            .
+          </Notification>
+        )}
 
         {isFeatureEnabled("script-profiles") ? (
           <ScriptsTabs />

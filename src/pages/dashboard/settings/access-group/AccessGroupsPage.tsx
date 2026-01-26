@@ -29,7 +29,6 @@ const AccessGroupsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        sticky
         title="Access groups"
         actions={[
           <Button
@@ -43,7 +42,7 @@ const AccessGroupsPage: FC = () => {
           </Button>,
         ]}
       />
-      <PageContent>
+      <PageContent hasTable>
         <AccessGroupContainer />
       </PageContent>
     </PageMain>
