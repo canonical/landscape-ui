@@ -16,15 +16,21 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: [resolve(__dirname, "src/tests/setup.ts")],
+    alias: [
+      {
+        find: /^.*\.(css|scss|sass)$/,
+        replacement: resolve(__dirname, "src/tests/styleMock.ts"),
+      },
+    ],
     deps: {
       optimizer: {
-        web: {
+        client: {
           enabled: true,
           include: ["@canonical/react-components"],
         },
       },
     },
-    pool: "vmForks",
+    pool: "threads",
     testTimeout: 30000,
     coverage: {
       provider: "v8",
