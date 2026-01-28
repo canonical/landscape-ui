@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import classes from "./PermissionBlock.module.scss";
+import { isOptionDisabled } from "./helpers";
 
 interface PermissionBlockProps {
   readonly description: string;
@@ -35,12 +36,6 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
       }),
     [options],
   );
-
-  const isOptionDisabled = (option: PermissionOption) => {
-    return (
-      option.values.view === "" || permissions.includes(option.values.manage)
-    );
-  };
 
   const handlePermissionChange = (
     permissionOption: PermissionOption,
@@ -93,7 +88,7 @@ const PermissionBlock: FC<PermissionBlockProps> = ({
             }
             name="permissions"
             value={row.original.values.view}
-            disabled={isOptionDisabled(row.original)}
+            disabled={isOptionDisabled({ option: row.original, permissions })}
             checked={
               row.original.values.view === "" ||
               permissions.includes(row.original.values.view)
