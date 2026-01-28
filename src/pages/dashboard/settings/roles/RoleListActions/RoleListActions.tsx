@@ -55,7 +55,7 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
           {
             icon: "edit",
             label: "Edit",
-            "aria-label": `Edit "${role.group}" role`,
+            "aria-label": `Edit "${role.name}" role`,
             onClick: edit,
           },
         ]}
@@ -63,7 +63,7 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
           {
             icon: "delete",
             label: "Remove",
-            "aria-label": `Remove "${role.group}" role`,
+            "aria-label": `Remove "${role.name}" role`,
             onClick: openModal,
           },
         ]}
