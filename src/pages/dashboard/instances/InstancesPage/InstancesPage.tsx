@@ -1,12 +1,19 @@
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances } from "@/features/instances";
+import {
+  InstanceList,
+  InstancesHeader,
+  InstancesPageActions,
+  useGetInstances,
+} from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { useCallback, useState, type FC } from "react";
-import InstancesContainer from "../InstancesContainer";
+import { useState, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
@@ -23,11 +30,21 @@ const InstancesPage: FC = () => {
     wsl_parents: wsl.includes("parent"),
   });
 
-  const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
+  const {
+    value: allInstancesSelected,
+    setTrue: selectAllInstances,
+    setFalse: deselectAllInstances,
+  } = useBoolean();
 
-  const clearSelection = useCallback(() => {
-    setSelectedInstances([]);
-  }, []);
+  const [toggledInstances, setToggledInstances] = useState<Instance[]>([]);
+
+  const [columnFilterOptions, setColumnFilterOptions] = useState<
+    ColumnFilterOption[]
+  >([]);
+
+  const clearSelection = () => {
+    setToggledInstances([]);
+  };
 
   return (
     <PageMain>
@@ -37,18 +54,30 @@ const InstancesPage: FC = () => {
           <InstancesPageActions
             key="actions"
             isGettingInstances={isGettingInstances}
-            selectedInstances={selectedInstances}
+            selectedInstances={toggledInstances}
           />,
         ]}
       />
       <PageContent hasTable>
-        <InstancesContainer
+        <InstancesHeader
+          columnFilterOptions={columnFilterOptions}
+          onChangeFilter={clearSelection}
+        />
+        <InstanceList
           instanceCount={instancesCount}
           instances={instances}
           isGettingInstances={isGettingInstances}
-          selectedInstances={selectedInstances}
-          setSelectedInstances={setSelectedInstances}
-          onChangeFilter={clearSelection}
+          toggledInstances={toggledInstances}
+          setToggledInstances={setToggledInstances}
+          areAllInstancesSelected={allInstancesSelected}
+          selectAllInstances={selectAllInstances}
+          deselectAllInstances={deselectAllInstances}
+          setColumnFilterOptions={setColumnFilterOptions}
+        />
+        <TablePagination
+          totalItems={instancesCount}
+          handleClearSelection={clearSelection}
+          currentItemCount={instances.length}
         />
       </PageContent>
     </PageMain>

@@ -17,7 +17,6 @@ export interface ContextualMenuProps {
   toggleClassName?: string;
   hasToggleIcon?: boolean;
   position?: Position;
-  dropdownProps?: Record<string, unknown>;
   className?: string;
 }
 
