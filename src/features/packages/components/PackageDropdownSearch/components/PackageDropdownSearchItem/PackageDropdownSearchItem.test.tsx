@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { getByRole, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PackageDropdownSearchItem from "./PackageDropdownSearchItem";
 import { ICONS } from "@canonical/react-components";
@@ -36,9 +36,11 @@ describe("PackageDropdownSearchItem", () => {
     expect(title).not.toBeChecked();
     expect(screen.getByRole("button")).toHaveIcon(ICONS.delete);
 
-    checkboxes.forEach(async (checkbox) => {
-      await waitFor(() => expect(checkbox).not.toBeChecked());
-    });
+    for (const checkbox of checkboxes) {
+      expect(checkbox).not.toBeChecked();
+    }
+
+    await screen.findByText("4 instances don't have this package held");
   });
 
   it("deletes package when delete button is clicked", async () => {

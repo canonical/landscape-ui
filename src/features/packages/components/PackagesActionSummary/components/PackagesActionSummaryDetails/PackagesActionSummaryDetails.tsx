@@ -103,23 +103,24 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
         }}
         onClear={clearSearchBox}
         onSearch={handleSearch}
+        className={classes.search}
       />
       {isPending ? (
         <LoadingState />
       ) : (
-        <div>
-          <ResponsiveTable
-            columns={columns}
-            data={instances}
-            emptyMsg={"No instances found according to your search parameters."}
-            minWidth={400}
-            className={classes.table}
-          />
-        </div>
+        <ResponsiveTable
+          columns={columns}
+          data={instances}
+          emptyMsg={"No instances found according to your search parameters."}
+          minWidth={400}
+          className={classes.table}
+          style={{ flex: 1 }}
+        />
       )}
       <TablePagination
         totalItems={data?.data.count}
         currentItemCount={instances.length}
+        className="u-no-margin--bottom"
       />
     </Modal>
   );

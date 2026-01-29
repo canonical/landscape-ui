@@ -9,8 +9,7 @@ import {
   pluralizeArray,
   pluralizeWithCount,
 } from "@/utils/_helpers";
-import type { FC } from "react";
-import { useState } from "react";
+import { type FC, useState } from "react";
 import { mapActionToPast } from "../../helpers";
 import { usePackages } from "../../hooks";
 import type { PackageAction, SelectedPackage } from "../../types";
@@ -60,6 +59,12 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
         action: requestAction,
         computer_ids: instanceIds,
         package_ids: selectedPackages.map(({ id }) => id),
+        deliver_after: formik.values.deliver_immediately
+          ? undefined
+          : `${formik.values.deliver_after}:00Z`,
+        deliver_delay_window: !formik.values.randomize_delivery
+          ? undefined
+          : formik.values.deliver_delay_window,
       });
 
       closeSidePanel();
@@ -132,7 +137,7 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             submitButtonAppearance="positive"
             onSubmit={() => {
               setStep("schedule");
-              setSidePanelTitle(`${title} packages: Schedule delivery`);
+              setSidePanelTitle(`${title} packages: Delivery`);
             }}
             hasBackButton
             onBackButtonPress={() => {
