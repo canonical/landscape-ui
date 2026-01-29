@@ -26,7 +26,7 @@ import {
 import { lazy, memo, Suspense, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRestartInstances, useShutDownInstances } from "../../api";
-import { getFeatures, hasUpgrades } from "../../helpers";
+import { getFeatures, hasSecurityUpgrades, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
 
@@ -261,7 +261,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : {},
   ].filter((link) => link.children);
 
-  const hasNoPackages = selectedInstances.every(
+  const noInstanceHasUpgrades = selectedInstances.every(
+    (instance) => !hasUpgrades(instance.alerts),
+  );
+
+  const noInstanceHasPackageFeature = selectedInstances.every(
     (instance) => !getFeatures(instance).packages,
   );
 
@@ -270,12 +274,34 @@ const InstancesPageActions = memo(function InstancesPageActions({
       children: (
         <>
           <Icon name="arrow-up" />
-          <span>Upgrade</span>
+          <span>Apply upgrades (advanced)</span>
         </>
       ),
       onClick: handleUpgradesRequest,
+      disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Apply all upgrades</span>
+        </>
+      ),
+      onClick: undefined,
+      disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="security" />
+          <span>Apply all security upgrades</span>
+        </>
+      ),
+      onClick: undefined,
       disabled: selectedInstances.every(
-        (instance) => !hasUpgrades(instance.alerts),
+        (instance) => !hasSecurityUpgrades(instance.alerts),
       ),
       hasIcon: true,
     },
@@ -286,6 +312,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Install</span>
         </>
       ),
+      disabled: noInstanceHasPackageFeature,
       onClick: () => {
         openPackagesActionForm("install");
       },
@@ -301,7 +328,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("uninstall");
       },
-      disabled: hasNoPackages,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -311,7 +338,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Downgrade</span>
         </>
       ),
-      disabled: hasNoPackages,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -324,7 +351,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("hold");
       },
-      disabled: hasNoPackages,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -337,7 +364,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("unhold");
       },
-      disabled: hasNoPackages,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
   ];
@@ -392,7 +419,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
-              dropdownProps={{ style: { zIndex: 10 } }}
               toggleDisabled={disabled}
             />
           ),
@@ -427,7 +453,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
             toggleLabel={<span>Manage packages</span>}
             toggleClassName="u-no-margin--bottom"
             toggleDisabled={disabled}
-            dropdownProps={{ style: { zIndex: 10 } }}
           />,
         ]}
       />
@@ -452,7 +477,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
         }
         toggleDisabled={disabled}
         toggleClassName="u-no-margin--bottom"
-        dropdownProps={{ style: { zIndex: 10 } }}
       />
       {rebootModalOpen &&
         createPortal(

@@ -23,7 +23,7 @@ describe("InstancesPage", () => {
     renderWithProviders(
       <InstancesContainer
         {...props}
-        setSelectedInstances={setSelectedInstances}
+        setToggledInstances={setSelectedInstances}
       />,
     );
 
@@ -37,7 +37,7 @@ describe("InstancesPage", () => {
     renderWithProviders(
       <InstancesContainer
         {...props}
-        setSelectedInstances={setSelectedInstances}
+        setToggledInstances={setSelectedInstances}
       />,
     );
 

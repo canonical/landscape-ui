@@ -1,34 +1,50 @@
+import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances } from "@/features/instances";
+import {
+  InstanceList,
+  InstancesHeader,
+  InstancesPageActions,
+  useGetInstances,
+} from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
-import useSelection from "@/hooks/useSelection";
-import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
 import type { Instance } from "@/types/Instance";
-import { type FC } from "react";
+import { useState, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
 
-  const { instances, instancesCount, isGettingInstances, isErrorInstances } =
-    useGetInstances({
-      query: getQuery(filters),
-      archived_only: filters.status === "archived",
-      with_alerts: true,
-      with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-      wsl_children: wsl.includes("child"),
-      wsl_parents: wsl.includes("parent"),
-    });
+  const { instances, instancesCount, isGettingInstances } = useGetInstances({
+    query: getQuery(filters),
+    archived_only: filters.status === "archived",
+    with_alerts: true,
+    with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+    wsl_children: wsl.includes("child"),
+    wsl_parents: wsl.includes("parent"),
+  });
 
   const {
-    selectedItems: selectedInstances,
-    setSelectedItems: setSelectedInstances,
-  } = useSelection<Instance>(instances, isGettingInstances || isErrorInstances);
+    value: allInstancesSelected,
+    setTrue: selectAllInstances,
+    setFalse: deselectAllInstances,
+  } = useBoolean();
+
+  const [toggledInstances, setToggledInstances] = useState<Instance[]>([]);
+
+  const [columnFilterOptions, setColumnFilterOptions] = useState<
+    ColumnFilterOption[]
+  >([]);
+
+  const handleClearSelection = () => {
+    setToggledInstances([]);
+  };
 
   return (
     <PageMain>
@@ -38,17 +54,27 @@ const InstancesPage: FC = () => {
           <InstancesPageActions
             key="actions"
             isGettingInstances={isGettingInstances}
-            selectedInstances={selectedInstances}
+            selectedInstances={toggledInstances}
           />,
         ]}
       />
       <PageContent hasTable>
-        <InstancesContainer
+        <InstancesHeader columnFilterOptions={columnFilterOptions} />
+        <InstanceList
           instanceCount={instancesCount}
           instances={instances}
           isGettingInstances={isGettingInstances}
-          selectedInstances={selectedInstances}
-          setSelectedInstances={setSelectedInstances}
+          toggledInstances={toggledInstances}
+          setToggledInstances={setToggledInstances}
+          areAllInstancesSelected={allInstancesSelected}
+          selectAllInstances={selectAllInstances}
+          deselectAllInstances={deselectAllInstances}
+          setColumnFilterOptions={setColumnFilterOptions}
+        />
+        <TablePagination
+          totalItems={instancesCount}
+          handleClearSelection={handleClearSelection}
+          currentItemCount={instances.length}
         />
       </PageContent>
     </PageMain>

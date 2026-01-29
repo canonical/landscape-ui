@@ -82,7 +82,7 @@ describe("InstanceList", () => {
 
     expect(props.setSelectedInstances).toHaveBeenCalledWith(instances);
 
-    rerender(<InstanceList {...props} selectedInstances={instances} />);
+    rerender(<InstanceList {...props} toggledInstances={instances} />);
     const checkedCheckboxes = screen.getAllByRole("checkbox", {
       checked: true,
     });
