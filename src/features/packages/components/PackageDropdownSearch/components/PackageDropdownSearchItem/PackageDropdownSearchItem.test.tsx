@@ -30,7 +30,9 @@ describe("PackageDropdownSearchItem", () => {
     await screen.findByLabelText("Unhold as not installed on 1 instance");
 
     const [title, ...checkboxes] = await screen.findAllByRole("checkbox");
-    await waitFor(() => expect(checkboxes).toHaveLength(5));
+    await waitFor(() => {
+      expect(checkboxes).toHaveLength(5);
+    });
 
     expect(title).toHaveAccessibleName(props.selectedPackage.name);
     expect(title).not.toBeChecked();

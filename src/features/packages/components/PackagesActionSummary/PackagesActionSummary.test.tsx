@@ -3,11 +3,8 @@ import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PackagesActionSummary from "./PackagesActionSummary";
 import { selectedPackages } from "@/tests/mocks/packages";
-import userEvent from "@testing-library/user-event";
 
 describe("PackagesActionSummary", () => {
-  const user = userEvent.setup();
-
   it("should render all selected packages", async () => {
     renderWithProviders(
       <PackagesActionSummary
@@ -19,7 +16,9 @@ describe("PackagesActionSummary", () => {
 
     const loadingItems = await screen.findAllByRole("status");
     await waitFor(() =>
-      loadingItems.map((loading) => expect(loading).not.toBeInTheDocument()),
+      loadingItems.map((loading) => {
+        expect(loading).not.toBeInTheDocument();
+      }),
     );
     const items = await screen.findAllByRole("listitem");
     expect(items).toHaveLength(selectedPackages.length);
@@ -34,6 +33,6 @@ describe("PackagesActionSummary", () => {
       />,
     );
 
-    expect(screen.findByRole("listitem")).not.toBeInTheDocument;
+    expect(screen.getByRole("listitem")).not.toBeInTheDocument();
   });
 });

@@ -25,6 +25,7 @@ import { useFormik } from "formik";
 import { INITIAL_VALUES } from "../InstalledPackagesActionForm/constants";
 import * as Yup from "yup";
 import { Form } from "@canonical/react-components";
+import type { FormProps } from "../InstalledPackagesActionForm/types";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -53,18 +54,18 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   const requestAction = action == "uninstall" ? "remove" : action;
   const actionPast = mapActionToPast(action);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values: FormProps) => {
     try {
       const { data: activity } = await changePackages({
         action: requestAction,
         computer_ids: instanceIds,
         package_ids: selectedPackages.map(({ id }) => id),
-        deliver_after: formik.values.deliver_immediately
+        deliver_after: values.deliver_immediately
           ? undefined
-          : `${formik.values.deliver_after}:00Z`,
-        deliver_delay_window: !formik.values.randomize_delivery
+          : `${values.deliver_after}:00Z`,
+        deliver_delay_window: !values.randomize_delivery
           ? undefined
-          : formik.values.deliver_delay_window,
+          : values.deliver_delay_window,
       });
 
       closeSidePanel();

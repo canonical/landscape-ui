@@ -1,15 +1,26 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, type Mock } from "vitest";
+import { describe, expect, it } from "vitest";
 import { packages } from "@/tests/mocks/packages";
 import PackageDropdownSearchList from "./PackageDropdownSearchList";
-import { AxiosHeaders } from "axios";
+import { AxiosHeaders, type AxiosResponse } from "axios";
 import classes from "./PackageDropdownSearchList.module.scss";
+import type { ControllerStateAndHelpers } from "downshift";
+import type { Package } from "@/features/packages";
+import type {
+  InfiniteData,
+  UseInfiniteQueryResult,
+} from "@tanstack/react-query";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+
+type QueryResultType = UseInfiniteQueryResult<
+  InfiniteData<AxiosResponse<ApiPaginatedResponse<Package>>>
+> & { isError: false };
 
 const mockDownshift = {
   highlightedIndex: -1,
   getItemProps: vi.fn(),
-} as any;
+} as unknown as ControllerStateAndHelpers<Package>;
 
 const mockQueryResult = {
   data: {
@@ -33,7 +44,7 @@ const mockQueryResult = {
   hasNextPage: false,
   isFetchingNextPage: false,
   fetchNextPage: vi.fn(),
-};
+} as unknown as QueryResultType;
 
 const selectedPackage = {
   name: "accountsservice",
@@ -43,7 +54,7 @@ const selectedPackage = {
 
 const props = {
   downshiftOptions: mockDownshift,
-  queryResult: mockQueryResult as any,
+  queryResult: mockQueryResult,
   selectedPackages: [selectedPackage],
   hasOneInstance: false,
   exact: false,
@@ -99,7 +110,10 @@ describe("PackageDropdownSearchList", () => {
   });
 
   it("renders empty message for exact search", async () => {
-    props.queryResult.data.pages = [];
+    props.queryResult.data = {
+      pages: [],
+      pageParams: [],
+    };
 
     renderWithProviders(
       <PackageDropdownSearchList
@@ -114,7 +128,10 @@ describe("PackageDropdownSearchList", () => {
   });
 
   it("renders empty message for non-exact search", async () => {
-    props.queryResult.data.pages = [];
+    props.queryResult.data = {
+      pages: [],
+      pageParams: [],
+    };
 
     renderWithProviders(
       <PackageDropdownSearchList
@@ -132,7 +149,7 @@ describe("PackageDropdownSearchList", () => {
     const queryResultPending = {
       ...mockQueryResult,
       isPending: true,
-    } as any;
+    } as QueryResultType;
 
     renderWithProviders(
       <PackageDropdownSearchList {...props} queryResult={queryResultPending} />,
