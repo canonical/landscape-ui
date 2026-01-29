@@ -54,9 +54,9 @@ describe("PackageDropdownSearchList", () => {
   it("renders list of packages when query is completed", () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
-    packages.forEach(({ name }) => {
-      screen.getByText(name);
-    });
+    for (const pkg of packages) {
+      screen.getByText(pkg.name);
+    }
   });
 
   it("renders selected packages disabled in dropdown", () => {

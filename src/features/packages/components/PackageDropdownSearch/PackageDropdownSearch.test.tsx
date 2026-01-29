@@ -112,9 +112,9 @@ describe("PackageDropdownSearch", () => {
         />,
       );
 
-      selectedPackages.forEach((pkg) => {
+      for (const pkg of selectedPackages) {
         screen.getByRole("checkbox", { name: pkg.name });
-      });
+      }
     });
 
     it("removes package when delete button is clicked", async () => {

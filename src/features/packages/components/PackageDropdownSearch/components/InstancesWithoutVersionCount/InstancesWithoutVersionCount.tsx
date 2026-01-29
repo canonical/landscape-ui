@@ -14,7 +14,7 @@ const InstancesWithoutVersionCount: FC<InstancesWithoutVersionCountProps> = ({
     return (
       <div>
         {pluralizeWithCount(count, "instance")} don&apos;t have this package{" "}
-        {type}.
+        {type}
       </div>
     );
   }

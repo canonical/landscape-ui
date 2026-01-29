@@ -1,23 +1,23 @@
-.table {
-  width: 100% !important;
-}
+@import "vanilla-framework/scss/settings_spacing";
 
-.modal > section {
-  height: 80%;
-  max-width: 45rem;
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin: auto;
-  padding-bottom: 0;
-}
+.modal {
+  & > section {
+    max-width: 45rem;
+    margin: auto;
 
-.modal > section > div {
-  display: flex;
-  flex-direction: column;
-  height: inherit;
-}
+    & > div {
+      display: flex;
+      flex-direction: column;
+      height: 65svh;
+      padding-top: $spv--large;
+    }
+  }
 
-.modal > section > div > div:last-child {
-  padding-bottom: 2rem;
+  & .search {
+    margin-bottom: $spv--large;
+  }
+
+  & .table {
+    width: 100%;
+  }
 }
