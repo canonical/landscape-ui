@@ -397,7 +397,12 @@ const InstancesPageActions = memo(function InstancesPageActions({
             />
           ),
           REPORT_VIEW_ENABLED && (
-            <Button key="report-view" type="button" onClick={handleReportView} disabled={disabled}>
+            <Button
+              key="report-view"
+              type="button"
+              onClick={handleReportView}
+              disabled={disabled}
+            >
               <Icon name="status" />
               <span>View report</span>
             </Button>
