@@ -7,7 +7,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect } from "vitest";
 
-const redirectToExternalUrl = vi.fn();
+const safeRedirect = vi.fn();
 const navigate = vi.fn();
 const setUser = vi.fn();
 
@@ -62,7 +62,7 @@ const mockTestParams = (response: AuthStateResponse | Error) => {
   vi.doMock("@/hooks/useAuth", async () => ({
     default: () => ({
       setUser,
-      redirectToExternalUrl,
+      safeRedirect,
     }),
   }));
 };
@@ -142,22 +142,25 @@ describe("OidcAuthPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("should redirect to external URL when return_to is external", async () => {
-      expect(redirectToExternalUrl).toHaveBeenCalledWith(
-        "https://example.com",
-        { replace: true },
-      );
+    it("should request external redirect when return_to is external", async () => {
+      expect(safeRedirect).toHaveBeenCalledWith("https://example.com", {
+        external: true,
+        replace: true,
+      });
     });
 
     it("should redirect to internal URL when return_to is not external", async () => {
-      expect(navigate).toHaveBeenCalledWith("/dashboard", { replace: true });
+      expect(safeRedirect).toHaveBeenCalledWith("/dashboard", {
+        external: false,
+        replace: true,
+      });
     });
 
     it("should redirect to internal URL when return_to is not provided", async () => {
-      expect(navigate).toHaveBeenCalledWith(
-        new URL(HOMEPAGE_PATH, location.origin).pathname,
-        { replace: true },
-      );
+      expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        external: false,
+        replace: true,
+      });
     });
 
     it("should redirect to invitation when invitation_id is present", async () => {

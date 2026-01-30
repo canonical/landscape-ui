@@ -47,6 +47,7 @@ const authContextValues: AuthContextProps = {
   setUser: vi.fn(),
   user: null,
   redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn(() => false),
   hasAccounts: true,
 };

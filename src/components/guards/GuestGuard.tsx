@@ -11,8 +11,7 @@ interface Props {
 }
 
 export const GuestGuard: FC<Props> = ({ children }) => {
-  const { authorized, authLoading, hasAccounts, redirectToExternalUrl } =
-    useAuth();
+  const { authorized, authLoading, hasAccounts, safeRedirect } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -27,18 +26,17 @@ export const GuestGuard: FC<Props> = ({ children }) => {
       return;
     }
 
-    if (searchParams.has("external")) {
-      redirectToExternalUrl(redirectTo, { replace: true });
-    } else {
-      navigate(redirectTo, { replace: true });
-    }
+    safeRedirect(redirectTo, {
+      external: searchParams.has("external"),
+      replace: true,
+    });
   }, [
     authorized,
     authLoading,
     hasAccounts,
     searchParams,
     navigate,
-    redirectToExternalUrl,
+    safeRedirect,
   ]);
 
   if (authLoading) return <LoadingState />;
