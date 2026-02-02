@@ -3,9 +3,9 @@
 .modal {
   & > section {
     margin: auto;
-    max-width: 45rem;
+    max-width: 40rem;
 
-    & > div {
+    & > :last-child {
       display: flex;
       flex-direction: column;
       height: 65svh;
