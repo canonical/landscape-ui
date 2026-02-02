@@ -23,7 +23,7 @@ import {
   ContextualMenu,
   Icon,
 } from "@canonical/react-components";
-import { lazy, memo, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
 import { useRestartInstances, useShutDownInstances } from "../../api";
@@ -60,13 +60,17 @@ const ReplaceTokenForm = lazy(async () =>
 
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
-  readonly selectedInstances: Instance[];
+  readonly toggledInstances: Instance[];
+  readonly areAllInstancesSelected: boolean;
+  readonly instanceCount: number;
 }
 
-const InstancesPageActions = memo(function InstancesPageActions({
+const InstancesPageActions = ({
   isGettingInstances,
-  selectedInstances,
-}: InstancesPageActionsProps) {
+  toggledInstances,
+  areAllInstancesSelected,
+  instanceCount,
+}: InstancesPageActionsProps) => {
   const debug = useDebug();
   const { isFeatureEnabled } = useAuth();
   const { notify } = useNotify();
@@ -110,13 +114,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        {selectedInstances.some(
-          (instance) => !getFeatures(instance).scripts,
-        ) ? (
+        {toggledInstances.some((instance) => !getFeatures(instance).scripts) ? (
           <div className={classes.warning}>
             <p>
               You selected{" "}
-              {pluralizeWithCount(selectedInstances.length, "instance")}. This
+              {pluralizeWithCount(toggledInstances.length, "instance")}. This
               script will:
             </p>
 
@@ -124,7 +126,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter(
+                  toggledInstances.filter(
                     (instance) => getFeatures(instance).scripts,
                   ),
                 )}
@@ -132,7 +134,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               <li>
                 not run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter(
+                  toggledInstances.filter(
                     (instance) => !getFeatures(instance).scripts,
                   ),
                 )}
@@ -141,7 +143,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           </div>
         ) : null}
         <RunInstanceScriptForm
-          query={selectedInstances.map(({ id }) => `id:${id}`).join(" OR ")}
+          query={toggledInstances.map(({ id }) => `id:${id}`).join(" OR ")}
         />
       </Suspense>,
     );
@@ -150,7 +152,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const handleShutdownInstance = async () => {
     try {
       const { data: shutdownActivity } = await shutDownInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
+        computer_ids: toggledInstances.map(({ id }) => id),
       });
 
       notify.success(
@@ -159,7 +161,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           onDetailsClick: () => {
             openActivityDetails(shutdownActivity);
           },
-          selected: selectedInstances,
+          selected: toggledInstances,
         }),
       );
     } catch (error) {
@@ -170,7 +172,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const handleRebootInstance = async () => {
     try {
       const { data: rebootActivity } = await restartInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
+        computer_ids: toggledInstances.map(({ id }) => id),
       });
 
       notify.success(
@@ -179,7 +181,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           onDetailsClick: () => {
             openActivityDetails(rebootActivity);
           },
-          selected: selectedInstances,
+          selected: toggledInstances,
         }),
       );
     } catch (error) {
@@ -189,7 +191,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Upgrade ${pluralizeWithCount(selectedInstances.length, "instance")}`,
+      `Upgrade ${pluralizeWithCount(toggledInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
         <Upgrades />
       </Suspense>,
@@ -202,7 +204,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       `${capitalize(action)} packages`,
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
-          instanceIds={selectedInstances.map(({ id }) => id)}
+          instanceIds={toggledInstances.map(({ id }) => id)}
           action={action}
         />
       </Suspense>,
@@ -211,9 +213,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralizeArray(selectedInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
+      `Report for ${pluralizeArray(toggledInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
+        <ReportView instanceIds={toggledInstances.map(({ id }) => id)} />
       </Suspense>,
       "medium",
     );
@@ -223,7 +225,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Assign access group",
       <Suspense fallback={<LoadingState />}>
-        <AccessGroupChange selected={selectedInstances} />
+        <AccessGroupChange selected={toggledInstances} />
       </Suspense>,
     );
   };
@@ -232,30 +234,30 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Assign tags",
       <Suspense fallback={<LoadingState />}>
-        <TagsAddForm selected={selectedInstances} />
+        <TagsAddForm selected={toggledInstances} />
       </Suspense>,
     );
   };
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralizeWithCount(selectedInstances.length, "instance")}`,
+      `Attach Ubuntu Pro token to ${pluralizeWithCount(toggledInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={selectedInstances} />
+        <AttachTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
     );
   };
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralizeWithCount(selectedInstances.length, "instance")}`,
+      `Replace Ubuntu Pro token for ${pluralizeWithCount(toggledInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={selectedInstances} />
+        <ReplaceTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
     );
   };
 
-  const allInstancesHaveToken = selectedInstances.every(
+  const allInstancesHaveToken = toggledInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
@@ -279,13 +281,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : {},
   ].filter((link) => link.children);
 
-  const noInstanceHasUpgrades = selectedInstances.every(
-    (instance) => !hasUpgrades(instance.alerts),
-  );
+  const noInstanceHasUpgrades =
+    !areAllInstancesSelected &&
+    toggledInstances.every((instance) => !hasUpgrades(instance.alerts));
 
-  const noInstanceHasPackageFeature = selectedInstances.every(
-    (instance) => !getFeatures(instance).packages,
-  );
+  const noInstanceHasPackageFeature =
+    !areAllInstancesSelected &&
+    toggledInstances.every((instance) => !getFeatures(instance).packages);
 
   const managePackagesLinks = [
     {
@@ -318,9 +320,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
         </>
       ),
       onClick: undefined,
-      disabled: selectedInstances.every(
-        (instance) => !hasSecurityUpgrades(instance.alerts),
-      ),
+      disabled:
+        !areAllInstancesSelected &&
+        toggledInstances.every(
+          (instance) => !hasSecurityUpgrades(instance.alerts),
+        ),
       hasIcon: true,
     },
     {
@@ -330,7 +334,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Install</span>
         </>
       ),
-      disabled: noInstanceHasPackageFeature,
+      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
       onClick: () => {
         openPackagesActionForm("install");
       },
@@ -346,7 +350,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("uninstall");
       },
-      disabled: noInstanceHasPackageFeature,
+      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -356,7 +360,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           <span>Downgrade</span>
         </>
       ),
-      disabled: noInstanceHasPackageFeature,
+      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -369,7 +373,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("hold");
       },
-      disabled: noInstanceHasPackageFeature,
+      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -382,12 +386,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: () => {
         openPackagesActionForm("unhold");
       },
-      disabled: noInstanceHasPackageFeature,
+      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
       hasIcon: true,
     },
   ];
 
-  const disabled = !selectedInstances.length || isGettingInstances;
+  const disabled =
+    (!areAllInstancesSelected && toggledInstances.length <= 0) ||
+    (areAllInstancesSelected && toggledInstances.length >= instanceCount) ||
+    isGettingInstances;
+
+  const nonBulkActionDisabled = disabled || areAllInstancesSelected;
 
   return (
     <>
@@ -398,7 +407,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={disabled || isShuttingDownInstances}
+            disabled={nonBulkActionDisabled || isShuttingDownInstances}
             onClick={openShutdownModal}
           >
             <Icon name="power-off" />
@@ -408,7 +417,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={disabled || isRestartingInstances}
+            disabled={nonBulkActionDisabled || isRestartingInstances}
             onClick={openRebootModal}
           >
             <Icon name="restart" />
@@ -420,7 +429,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={disabled}
+              disabled={nonBulkActionDisabled}
             >
               {proServicesLinks[0].children}
             </Button>
@@ -432,7 +441,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={disabled}
+              toggleDisabled={nonBulkActionDisabled}
             />
           ),
           REPORT_VIEW_ENABLED && (
@@ -440,7 +449,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               key="report-view"
               type="button"
               onClick={handleReportView}
-              disabled={disabled}
+              disabled={nonBulkActionDisabled}
             >
               <Icon name="status" />
               <span>View report</span>
@@ -451,9 +460,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
             type="button"
             hasIcon
             onClick={handleRunScript}
-            disabled={selectedInstances.every((instance) => {
-              return !getFeatures(instance).scripts;
-            })}
+            disabled={
+              toggledInstances.every((instance) => {
+                return !getFeatures(instance).scripts;
+              }) || areAllInstancesSelected
+            }
           >
             <Icon name="code" />
             <span>Run script</span>
@@ -472,7 +483,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             type="button"
             hasIcon
             onClick={openRemoveModal}
-            disabled={!selectedInstances.length || isGettingInstances}
+            disabled={nonBulkActionDisabled}
           >
             <Icon name="delete" />
             <span>Remove from Landscape</span>
@@ -498,7 +509,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <span>Assign</span>
           </>
         }
-        toggleDisabled={disabled}
+        toggleDisabled={nonBulkActionDisabled}
         toggleClassName="u-no-margin--bottom"
       />
       {rebootModalOpen &&
@@ -514,7 +525,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           >
             <p>
               Are you sure you want to restart{" "}
-              {pluralizeWithCount(selectedInstances.length, "instance")}?
+              {pluralizeWithCount(toggledInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
@@ -532,7 +543,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           >
             <p>
               Are you sure you want to shut down{" "}
-              {pluralizeWithCount(selectedInstances.length, "instance")}?
+              {pluralizeWithCount(toggledInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
@@ -541,16 +552,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
         <DetachTokenModal
           isOpen={detachModalOpen}
           onClose={closeDetachModal}
-          computerIds={selectedInstances.map(({ id }) => id)}
+          computerIds={toggledInstances.map(({ id }) => id)}
         />
       )}
       <InstanceRemoveFromLandscapeModal
         close={closeRemoveModal}
-        instances={selectedInstances}
+        instances={toggledInstances}
         isOpen={removeModalOpen}
       />
     </>
   );
-});
+};
 
 export default InstancesPageActions;

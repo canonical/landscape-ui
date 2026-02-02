@@ -43,7 +43,7 @@ describe("InstancesPageActions", () => {
     const { container } = renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
       />,
     );
 
@@ -60,10 +60,7 @@ describe("InstancesPageActions", () => {
 
   it("should disable buttons", () => {
     renderWithProviders(
-      <InstancesPageActions
-        isGettingInstances={false}
-        selectedInstances={[]}
-      />,
+      <InstancesPageActions isGettingInstances={false} toggledInstances={[]} />,
     );
 
     const buttons = screen.getAllByRole("button");
@@ -80,7 +77,7 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={instance}
+        toggledInstances={instance}
       />,
     );
 
@@ -103,7 +100,7 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
       />,
     );
 
@@ -117,7 +114,7 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
       />,
     );
 
@@ -129,7 +126,7 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={[
+        toggledInstances={[
           {
             ...ubuntuInstance,
             upgrades: undefined,
@@ -150,7 +147,7 @@ describe("InstancesPageActions", () => {
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={selected}
+          toggledInstances={selected}
         />,
       );
     });
@@ -303,7 +300,7 @@ describe("InstancesPageActions", () => {
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={instances.slice(startIdx, endIdx)}
+          toggledInstances={instances.slice(startIdx, endIdx)}
         />,
       );
 

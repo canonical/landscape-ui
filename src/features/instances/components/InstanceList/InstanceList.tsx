@@ -65,6 +65,11 @@ const InstanceList = ({
     return false;
   });
 
+  const clearSelection = useCallback(() => {
+    deselectAllInstances();
+    setToggledInstances([]);
+  }, [deselectAllInstances, setToggledInstances]);
+
   const isToggled = useCallback(
     (instance: Instance) =>
       toggledInstances.some(
@@ -96,12 +101,25 @@ const InstanceList = ({
 
   const toggle = useCallback(
     (...instances: Instance[]) => {
-      setToggledInstances([
-        ...toggledInstances,
-        ...instances.filter(isNotToggled),
-      ]);
+      const untoggledInstances = instances.filter(isNotToggled);
+
+      if (
+        areAllInstancesSelected &&
+        toggledInstances.length + untoggledInstances.length >= instanceCount
+      ) {
+        clearSelection();
+      } else {
+        setToggledInstances([...toggledInstances, ...untoggledInstances]);
+      }
     },
-    [setToggledInstances, toggledInstances, isNotToggled],
+    [
+      setToggledInstances,
+      toggledInstances,
+      isNotToggled,
+      clearSelection,
+      areAllInstancesSelected,
+      instanceCount,
+    ],
   );
 
   const toggleAll = useCallback(() => {
@@ -342,10 +360,7 @@ const InstanceList = ({
           <Button
             className="u-no-padding u-no-margin"
             appearance="link"
-            onClick={() => {
-              clearToggledInstances();
-              deselectAllInstances();
-            }}
+            onClick={clearSelection}
           >
             Clear selection
           </Button>
@@ -366,7 +381,9 @@ const InstanceList = ({
               Select all instances on this page
             </Button>
           )}
-          {!areAllInstancesSelected && (
+          {((!areAllInstancesSelected &&
+            toggledInstances.length < instanceCount) ||
+            (areAllInstancesSelected && toggledInstances.length > 0)) && (
             <Button
               className="u-no-padding u-no-margin"
               appearance="link"
