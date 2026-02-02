@@ -31,7 +31,7 @@ const InstancesPage: FC = () => {
   });
 
   const {
-    value: allInstancesSelected,
+    value: areAllInstancesSelected,
     setTrue: selectAllInstances,
     setFalse: deselectAllInstances,
   } = useBoolean();
@@ -42,10 +42,6 @@ const InstancesPage: FC = () => {
     ColumnFilterOption[]
   >([]);
 
-  const handleClearSelection = () => {
-    setToggledInstances([]);
-  };
-
   return (
     <PageMain>
       <PageHeader
@@ -54,7 +50,9 @@ const InstancesPage: FC = () => {
           <InstancesPageActions
             key="actions"
             isGettingInstances={isGettingInstances}
-            selectedInstances={toggledInstances}
+            toggledInstances={toggledInstances}
+            areAllInstancesSelected={areAllInstancesSelected}
+            instanceCount={instancesCount}
           />,
         ]}
       />
@@ -66,14 +64,13 @@ const InstancesPage: FC = () => {
           isGettingInstances={isGettingInstances}
           toggledInstances={toggledInstances}
           setToggledInstances={setToggledInstances}
-          areAllInstancesSelected={allInstancesSelected}
+          areAllInstancesSelected={areAllInstancesSelected}
           selectAllInstances={selectAllInstances}
           deselectAllInstances={deselectAllInstances}
           setColumnFilterOptions={setColumnFilterOptions}
         />
         <TablePagination
           totalItems={instancesCount}
-          handleClearSelection={handleClearSelection}
           currentItemCount={instances.length}
         />
       </PageContent>
