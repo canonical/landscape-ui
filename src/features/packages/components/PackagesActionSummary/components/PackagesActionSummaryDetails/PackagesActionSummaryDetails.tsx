@@ -12,6 +12,7 @@ import { useGetPackageInstances } from "../../../../api/useGetPackageInstances";
 import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import { mapSummaryToTitle } from "../../../../helpers";
+import { createPortal } from "react-dom";
 
 interface PackagesActionSummaryDetailsProps {
   readonly selectedPackage: SelectedPackage;
@@ -91,38 +92,44 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
     setSearch(value);
   };
 
+  const mainNode =
+    document.getElementsByClassName("l-main").item(0) ?? document.body;
+
   return (
-    <Modal close={close} title={title} className={classes.modal}>
-      <SearchBox
-        placeholder={`Search instances`}
-        shouldRefocusAfterReset
-        externallyControlled
-        value={inputText}
-        onChange={(value) => {
-          setInputText(value);
-        }}
-        onClear={clearSearchBox}
-        onSearch={handleSearch}
-        className={classes.search}
-      />
-      {isPending ? (
-        <LoadingState />
-      ) : (
-        <ResponsiveTable
-          columns={columns}
-          data={instances}
-          emptyMsg={"No instances found according to your search parameters."}
-          minWidth={400}
-          className={classes.table}
-          style={{ flex: 1 }}
+    createPortal(
+      <Modal close={close} title={title} className={classes.modal}>
+        <SearchBox
+          placeholder={`Search instances`}
+          shouldRefocusAfterReset
+          externallyControlled
+          value={inputText}
+          onChange={(value) => {
+            setInputText(value);
+          }}
+          onClear={clearSearchBox}
+          onSearch={handleSearch}
+          className={classes.search}
         />
-      )}
-      <TablePagination
-        totalItems={data?.data.count}
-        currentItemCount={instances.length}
-        className="u-no-margin--bottom"
-      />
-    </Modal>
+        {isPending ? (
+          <LoadingState />
+        ) : (
+          <ResponsiveTable
+            columns={columns}
+            data={instances}
+            emptyMsg={"No instances found according to your search parameters."}
+            minWidth={400}
+            className={classes.table}
+            style={{ flex: 1 }}
+          />
+        )}
+        <TablePagination
+          totalItems={data?.data.count}
+          currentItemCount={instances.length}
+          className="u-no-margin--bottom"
+        />
+      </Modal>,
+      mainNode,
+    )
   );
 };
 
