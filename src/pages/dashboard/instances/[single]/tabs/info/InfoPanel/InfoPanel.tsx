@@ -49,7 +49,7 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { Fragment, lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
 import ProfileLink from "../ProfileLink";
@@ -485,7 +485,21 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Blocks.Item>
         <Blocks.Item title="Other">
           <InfoGrid>
-            <InfoGrid.Item label="Annotations" value={null} />
+            <InfoGrid.Item
+              label="Annotations"
+              value={
+                instance.annotations
+                  ? Object.entries(instance.annotations).map(
+                      ([key, value], index, array) => (
+                        <Fragment key={key}>
+                          <span>{`${key}: ${value}`}</span>
+                          {index < array.length - 1 && <br />}
+                        </Fragment>
+                      ),
+                    )
+                  : null
+              }
+            />
             <InfoGrid.Item label="Comment" value={instance.comment} />
           </InfoGrid>
         </Blocks.Item>
