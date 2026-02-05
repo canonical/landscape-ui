@@ -5,7 +5,10 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DISPLAY_DATE_TIME_FORMAT,
+  SELECT_ALL_INSTANCES_ENABLED,
+} from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
@@ -383,18 +386,19 @@ const InstanceList = ({
           )}
           {((!areAllInstancesSelected &&
             toggledInstances.length < instanceCount) ||
-            (areAllInstancesSelected && toggledInstances.length > 0)) && (
-            <Button
-              className="u-no-padding u-no-margin"
-              appearance="link"
-              onClick={() => {
-                clearToggledInstances();
-                selectAllInstances();
-              }}
-            >
-              Select all instances on all pages
-            </Button>
-          )}
+            (areAllInstancesSelected && toggledInstances.length > 0)) &&
+            SELECT_ALL_INSTANCES_ENABLED && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={() => {
+                  clearToggledInstances();
+                  selectAllInstances();
+                }}
+              >
+                Select all instances on all pages
+              </Button>
+            )}
         </div>
       </td>
     );

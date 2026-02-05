@@ -21,6 +21,8 @@ export const CONTACT_SUPPORT_TEAM_MESSAGE =
   "Something went wrong. Please try again or contact our support team.";
 export const DETAILED_UPGRADES_VIEW_ENABLED =
   import.meta.env.VITE_DETAILED_UPGRADES_VIEW_ENABLED === "true";
+export const SELECT_ALL_INSTANCES_ENABLED =
+  import.meta.env.VITE_SELECT_ALL_INSTANCES_ENABLED === "true";
 export const IS_MSW_ENABLED = import.meta.env.VITE_MSW_ENABLED === "true";
 export const MSW_ENDPOINTS_TO_INTERCEPT =
   (import.meta.env.VITE_MSW_ENDPOINTS_TO_INTERCEPT ?? "")

@@ -50,6 +50,7 @@ jobs:
       VITE_ROOT_PATH: /
       VITE_REPORT_VIEW_ENABLED: false
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_SELECT_ALL_INSTANCES_ENABLED: false
       VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
       DEBUG: "pw:webserver"
     steps:
@@ -101,6 +102,7 @@ jobs:
       VITE_ROOT_PATH: /new_dashboard/
       VITE_REPORT_VIEW_ENABLED: false
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_SELECT_ALL_INSTANCES_ENABLED: false
       VITE_SELF_HOSTED_ENV: true
     steps:
       - name: Checkout repository
