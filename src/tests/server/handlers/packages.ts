@@ -6,6 +6,7 @@ import type {
   GetPackagesParams,
   Package,
   VersionCount,
+  DowngradeVersionCount,
 } from "@/features/packages";
 import type {
   GetPackageUpgradeParams,
@@ -16,6 +17,7 @@ import { activities } from "@/tests/mocks/activity";
 import {
   availableVersions,
   downgradePackageVersions,
+  downgradeVersions,
   getInstancePackages,
   packageInstances,
   packages,
@@ -158,6 +160,13 @@ export default [
     }
 
     return HttpResponse.json<VersionCount>(response);
+  }),
+
+  http.get(`${API_URL}packages/:id/downgrade_versions`, () => {
+    return HttpResponse.json<DowngradeVersionCount>({
+      out_of_scope: 4,
+      versions: downgradeVersions,
+    });
   }),
 
   http.get<never, GetDryRunInstancesParams, AvailableVersion[]>(

@@ -9,7 +9,11 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { type FC } from "react";
-import type { PackageAction, SelectedPackage } from "../../../../types";
+import type {
+  PackageAction,
+  SelectedPackage,
+  SelectedVersion,
+} from "../../../../types";
 import InstancesWithoutVersionCount from "../InstancesWithoutVersionCount";
 import classes from "./PackageDropdownSearchItem.module.scss";
 import { mapActionToSearch } from "../../../../helpers";
@@ -17,7 +21,7 @@ import { mapActionToSearch } from "../../../../helpers";
 interface PackageDropdownSearchItemProps {
   readonly selectedPackage: SelectedPackage;
   readonly onDelete: () => void;
-  readonly onUpdateVersions: (versions: string[]) => void;
+  readonly onUpdateVersions: (versions: SelectedVersion[]) => void;
   readonly query: string;
   readonly action: PackageAction;
 }
@@ -70,7 +74,7 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
             onUpdateVersions(
               selectedPackage.versions.length > 0
                 ? []
-                : versions.map(({ name }) => name),
+                : versions.map(({ name }) => ({ name })),
             );
           }}
         />
@@ -112,18 +116,18 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                   }
                   checked={selectedPackage.versions.some(
                     (selectedVersion) =>
-                      selectedVersion === packageVersion.name,
+                      selectedVersion.name === packageVersion.name,
                   )}
                   onChange={({ currentTarget: { checked } }) => {
                     if (checked) {
                       onUpdateVersions([
                         ...selectedPackage.versions,
-                        packageVersion.name,
+                        { name: packageVersion.name },
                       ]);
                     } else {
                       onUpdateVersions(
                         selectedPackage.versions.filter(
-                          (version) => version != packageVersion.name,
+                          (version) => version.name != packageVersion.name,
                         ),
                       );
                     }
