@@ -1,9 +1,9 @@
 declare const styles: {
   readonly "availableVersion": string;
+  readonly "downgrade": string;
+  readonly "row": string;
   readonly "selectedContainer": string;
   readonly "topRow": string;
-  readonly "row": string;
-  readonly "downgrade": string;
 };
 export = styles;
 
