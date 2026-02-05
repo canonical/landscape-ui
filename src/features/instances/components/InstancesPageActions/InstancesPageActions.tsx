@@ -343,6 +343,9 @@ const InstancesPageActions = ({
         </>
       ),
       disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("downgrade");
+      },
       hasIcon: true,
     },
     {
@@ -383,7 +386,7 @@ const InstancesPageActions = ({
   return (
     <>
       <ResponsiveButtons
-        collapseFrom="xl"
+        collapseFrom={REPORT_VIEW_ENABLED ? "xxl" : "xl"}
         disabled={disabled}
         buttons={[
           <Button

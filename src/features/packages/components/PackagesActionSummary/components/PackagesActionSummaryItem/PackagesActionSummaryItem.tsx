@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -33,7 +33,7 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
   } = useGetDryRunInstances({
     action,
     id: selectedPackage.id,
-    versions: selectedPackage.versions,
+    versions: selectedPackage.versions.map(({ name }) => name),
     query: instanceIds.map((instanceId) => `id:${instanceId}`).join(" OR "),
   });
 
@@ -77,12 +77,7 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
             {pluralizeWithCount(outOfScope, "instance")}
           </Button>
           <span>
-            Will not {action}{" "}
-            <code>
-              {selectedPackage.name}
-              {hasOneItem(packageVersionsResult.data) &&
-                ` ${packageVersionsResult.data[0].name}`}
-            </code>
+            Will not {action} <code>{selectedPackage.name}</code>
           </span>
         </div>
       )}

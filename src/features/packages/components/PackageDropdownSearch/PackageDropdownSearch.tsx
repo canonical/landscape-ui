@@ -9,7 +9,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import type { GetPackagesParams } from "../../hooks";
-import type { Package, PackageAction } from "../../types";
+import type { Package, PackageAction, SelectedVersion } from "../../types";
 import type { SelectedPackage } from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
@@ -21,6 +21,7 @@ import {
 } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
 import { mapActionToQueryParams, mapActionToSearch } from "../../helpers";
+import PackageSearchDowngradeItem from "./components/PackageSearchDowngradeItem";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
@@ -190,22 +191,32 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                 setSelectedPackages(selectedPackages.toSpliced(index, 1));
               };
 
-              return (
+              const handleUpdateVersions = (versions: SelectedVersion[]) => {
+                setSelectedPackages([
+                  ...selectedPackages.slice(0, index),
+                  {
+                    name: selectedPackage.name,
+                    id: selectedPackage.id,
+                    versions: versions,
+                  },
+                  ...selectedPackages.slice(index + 1),
+                ]);
+              };
+
+              return action == "downgrade" ? (
+                <PackageSearchDowngradeItem
+                  key={`${selectedPackage.id}${index}`}
+                  selectedPackage={selectedPackage}
+                  onDelete={handleDelete}
+                  onUpdateVersions={handleUpdateVersions}
+                  query={query}
+                />
+              ) : (
                 <PackageDropdownSearchItem
                   key={`${selectedPackage.id}${index}`}
                   selectedPackage={selectedPackage}
                   onDelete={handleDelete}
-                  onUpdateVersions={(versions) => {
-                    setSelectedPackages([
-                      ...selectedPackages.slice(0, index),
-                      {
-                        name: selectedPackage.name,
-                        id: selectedPackage.id,
-                        versions: versions,
-                      },
-                      ...selectedPackages.slice(index + 1),
-                    ]);
-                  }}
+                  onUpdateVersions={handleUpdateVersions}
                   query={query}
                   action={action}
                 />

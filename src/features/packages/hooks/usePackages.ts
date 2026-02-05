@@ -59,7 +59,7 @@ interface DowngradePackageVersionParams {
 }
 
 interface PackagesActionParams {
-  action: "install" | "remove" | "hold" | "unhold";
+  action: "install" | "remove" | "hold" | "unhold" | "downgrade";
   computer_ids: number[];
   package_ids: number[];
   deliver_after?: string;

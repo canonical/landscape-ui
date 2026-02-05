@@ -4,12 +4,12 @@ export const mapActionToQueryParams = (action: PackageAction) => {
   switch (action) {
     case "install":
       return { available: true, installed: false, held: false, upgrade: false };
-    case "uninstall":
-      return { installed: true, held: false, upgrade: false };
     case "hold":
       return { held: false };
     case "unhold":
       return { held: true };
+    default:
+      return { installed: true, held: false, upgrade: false };
   }
 };
 
@@ -19,6 +19,8 @@ export const mapActionToPast = (action: PackageAction) => {
       return "held";
     case "unhold":
       return "unheld";
+    case "downgrade":
+      return action + "d";
     default:
       return action + "ed";
   }
@@ -28,18 +30,25 @@ export const mapActionToSearch = (action: PackageAction) => {
   switch (action) {
     case "uninstall":
       return "installed";
+    case "downgrade":
+      return "installed";
     case "unhold":
       return "held";
     default:
       return "available";
   }
 };
+
 export const mapSummaryToTitle = (
   packageName: string,
   action: PackageAction,
   summaryVersion?: string,
 ) => {
   if (summaryVersion) {
+    if (action == "downgrade") {
+      return `Instances downgradable to ${packageName} ${summaryVersion}`;
+    }
+
     const status = action == "hold" ? "installed" : mapActionToSearch(action);
     return `Instances with ${packageName} ${summaryVersion} ${status}`;
   } else if (summaryVersion == "") {

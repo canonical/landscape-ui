@@ -37,7 +37,7 @@ const PackagesActionSummaryItemVersion: FC<
         {pluralizeWithCount(version.num_computers, "instance")}
       </Button>
       <span>
-        Will {action}{" "}
+        Will {action} {action == "downgrade" ? "to " : ""}
         {version.name ? (
           <code>
             {selectedPackage.name} {version.name}

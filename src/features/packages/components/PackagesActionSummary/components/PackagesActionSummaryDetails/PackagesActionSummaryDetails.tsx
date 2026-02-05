@@ -46,7 +46,7 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
   const { isPending, data, error } = useGetPackageInstances({
     id: selectedPackage.id,
     action: action,
-    selected_versions: selectedVersions,
+    selected_versions: selectedVersions.map(({ name }) => name),
     summary_version: summaryVersion,
     search: search,
     limit: pageSize,
@@ -92,44 +92,39 @@ const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
     setSearch(value);
   };
 
-  const mainNode =
-    document.getElementsByClassName("l-main").item(0) ?? document.body;
-
-  return (
-    createPortal(
-      <Modal close={close} title={title} className={classes.modal}>
-        <SearchBox
-          placeholder={`Search instances`}
-          shouldRefocusAfterReset
-          externallyControlled
-          value={inputText}
-          onChange={(value) => {
-            setInputText(value);
-          }}
-          onClear={clearSearchBox}
-          onSearch={handleSearch}
-          className={classes.search}
+  return createPortal(
+    <Modal close={close} title={title} className={classes.modal}>
+      <SearchBox
+        placeholder={`Search instances`}
+        shouldRefocusAfterReset
+        externallyControlled
+        value={inputText}
+        onChange={(value) => {
+          setInputText(value);
+        }}
+        onClear={clearSearchBox}
+        onSearch={handleSearch}
+        className={classes.search}
+      />
+      {isPending ? (
+        <LoadingState />
+      ) : (
+        <ResponsiveTable
+          columns={columns}
+          data={instances}
+          emptyMsg={"No instances found according to your search parameters."}
+          minWidth={400}
+          className={classes.table}
+          style={{ flex: 1 }}
         />
-        {isPending ? (
-          <LoadingState />
-        ) : (
-          <ResponsiveTable
-            columns={columns}
-            data={instances}
-            emptyMsg={"No instances found according to your search parameters."}
-            minWidth={400}
-            className={classes.table}
-            style={{ flex: 1 }}
-          />
-        )}
-        <TablePagination
-          totalItems={data?.data.count}
-          currentItemCount={instances.length}
-          className="u-no-margin--bottom"
-        />
-      </Modal>,
-      mainNode,
-    )
+      )}
+      <TablePagination
+        totalItems={data?.data.count}
+        currentItemCount={instances.length}
+        className="u-no-margin--bottom"
+      />
+    </Modal>,
+    document.body,
   );
 };
 
