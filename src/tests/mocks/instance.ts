@@ -49,6 +49,9 @@ export const ubuntuInstance: Instance = {
   employee_id: 1,
   archived: false,
   registered_at: "2023-11-29T18:29:25Z",
+  annotations: {
+    MockAnnotation: "MockValue",
+  },
 };
 
 export const ubuntuCoreInstance: Instance = {
