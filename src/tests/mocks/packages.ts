@@ -871,7 +871,7 @@ export const availableVersions = [
 export const downgradeVersions = [
   { name: "2.0.1", num_computers: 5, downgrades: availableVersions },
   { name: "2.0.2", num_computers: 3, downgrades: availableVersions },
-  { name: "1.0.1", num_computers: 8, downgrades: [] },
+  { name: "1.0.1", num_computers: 1, downgrades: [] },
 ] as const satisfies DowngradeVersion[];
 
 export const selectedPackages = [

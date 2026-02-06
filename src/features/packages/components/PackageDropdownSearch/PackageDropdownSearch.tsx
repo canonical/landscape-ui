@@ -185,44 +185,43 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       </Downshift>
 
       <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
-        {selectedPackages.length
-          ? selectedPackages.map((selectedPackage, index) => {
-              const handleDelete = () => {
-                setSelectedPackages(selectedPackages.toSpliced(index, 1));
-              };
+        {!!selectedPackages.length &&
+          selectedPackages.map((selectedPackage, index) => {
+            const handleDelete = () => {
+              setSelectedPackages(selectedPackages.toSpliced(index, 1));
+            };
 
-              const handleUpdateVersions = (versions: SelectedVersion[]) => {
-                setSelectedPackages([
-                  ...selectedPackages.slice(0, index),
-                  {
-                    name: selectedPackage.name,
-                    id: selectedPackage.id,
-                    versions: versions,
-                  },
-                  ...selectedPackages.slice(index + 1),
-                ]);
-              };
+            const handleUpdateVersions = (versions: SelectedVersion[]) => {
+              setSelectedPackages([
+                ...selectedPackages.slice(0, index),
+                {
+                  name: selectedPackage.name,
+                  id: selectedPackage.id,
+                  versions: versions,
+                },
+                ...selectedPackages.slice(index + 1),
+              ]);
+            };
 
-              return action == "downgrade" ? (
-                <PackageSearchDowngradeItem
-                  key={`${selectedPackage.id}${index}`}
-                  selectedPackage={selectedPackage}
-                  onDelete={handleDelete}
-                  onUpdateVersions={handleUpdateVersions}
-                  query={query}
-                />
-              ) : (
-                <PackageDropdownSearchItem
-                  key={`${selectedPackage.id}${index}`}
-                  selectedPackage={selectedPackage}
-                  onDelete={handleDelete}
-                  onUpdateVersions={handleUpdateVersions}
-                  query={query}
-                  action={action}
-                />
-              );
-            })
-          : null}
+            return action == "downgrade" ? (
+              <PackageSearchDowngradeItem
+                key={`${selectedPackage.id}${index}`}
+                selectedPackage={selectedPackage}
+                onDelete={handleDelete}
+                onUpdateVersions={handleUpdateVersions}
+                query={query}
+              />
+            ) : (
+              <PackageDropdownSearchItem
+                key={`${selectedPackage.id}${index}`}
+                selectedPackage={selectedPackage}
+                onDelete={handleDelete}
+                onUpdateVersions={handleUpdateVersions}
+                query={query}
+                action={action}
+              />
+            );
+          })}
       </ul>
     </div>
   );

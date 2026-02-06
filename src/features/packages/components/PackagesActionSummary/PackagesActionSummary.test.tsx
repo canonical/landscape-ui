@@ -33,6 +33,6 @@ describe("PackagesActionSummary", () => {
       />,
     );
 
-    expect(screen.getByRole("listitem")).not.toBeInTheDocument();
+    expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
   });
 });

@@ -53,7 +53,7 @@ describe("PackagesActionSummaryItem", () => {
     );
 
     expect(
-      screen.getByText("Will not unhold", { exact: false }),
+      screen.queryByText("Will not unhold", { exact: false }),
     ).not.toBeInTheDocument();
   });
 });
