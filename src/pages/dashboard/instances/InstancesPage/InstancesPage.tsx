@@ -42,6 +42,15 @@ const InstancesPage: FC = () => {
     ColumnFilterOption[]
   >([]);
 
+  const clearSelection = () => {
+    if (!areAllInstancesSelected && toggledInstances.length === 0) {
+      return;
+    }
+
+    setToggledInstances([]);
+    deselectAllInstances();
+  };
+
   return (
     <PageMain>
       <PageHeader
@@ -57,7 +66,10 @@ const InstancesPage: FC = () => {
         ]}
       />
       <PageContent hasTable>
-        <InstancesHeader columnFilterOptions={columnFilterOptions} />
+        <InstancesHeader
+          columnFilterOptions={columnFilterOptions}
+          onChangeFilter={clearSelection}
+        />
         <InstanceList
           instanceCount={instancesCount}
           instances={instances}
