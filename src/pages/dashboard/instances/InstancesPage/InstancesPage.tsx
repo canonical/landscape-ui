@@ -43,7 +43,12 @@ const InstancesPage: FC = () => {
   >([]);
 
   const clearSelection = () => {
+    if (!areAllInstancesSelected && toggledInstances.length === 0) {
+      return;
+    }
+
     setToggledInstances([]);
+    deselectAllInstances();
   };
 
   return (
