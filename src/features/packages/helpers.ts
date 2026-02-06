@@ -20,7 +20,7 @@ export const mapActionToPast = (action: PackageAction) => {
     case "unhold":
       return "unheld";
     case "downgrade":
-      return action + "d";
+      return "downgraded";
     default:
       return action + "ed";
   }
@@ -48,12 +48,10 @@ export const mapSummaryToTitle = (
     if (action == "downgrade") {
       return `Instances downgradable to ${packageName} ${summaryVersion}`;
     }
-
     const status = action == "hold" ? "installed" : mapActionToSearch(action);
     return `Instances with ${packageName} ${summaryVersion} ${status}`;
   } else if (summaryVersion == "") {
     return `Instances with ${packageName} not installed`;
-  } else {
-    return `Instances that won't ${action} ${packageName}`;
   }
+  return `Instances that won't ${action} ${packageName}`;
 };

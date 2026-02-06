@@ -17,7 +17,7 @@ const props = {
   query: "id:1",
 };
 
-const versionNames = availableVersions.map(({ name }) => name);
+const versionNames = availableVersions.map(({ name }) => ({ name: name }));
 
 describe("PackageDropdownSearchItem", () => {
   const user = userEvent.setup();
@@ -68,14 +68,15 @@ describe("PackageDropdownSearchItem", () => {
 
       await user.click(version);
       expect(props.onUpdateVersions).toBeCalledWith([
-        availableVersions[0].name,
+        {
+          name: availableVersions[0].name,
+        },
       ]);
     });
 
     it("removes a version when it is deselected", async () => {
       const selectedPackage = {
-        name: props.selectedPackage.name,
-        id: props.selectedPackage.id,
+        ...props.selectedPackage,
         versions: versionNames,
       };
 

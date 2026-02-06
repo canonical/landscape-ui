@@ -54,6 +54,21 @@ describe("PackageDropdownSearch", () => {
       screen.findByText(/maximum of 10 packages/i);
       expect(screen.getByRole("searchbox")).toBeDisabled();
     });
+
+    it("clears search input when clear button is clicked", async () => {
+      renderWithProviders(<PackageDropdownSearch {...props} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.type(searchBox, "test");
+      expect(searchBox).toHaveValue("test");
+
+      const clearButton = screen.getByRole("button", {
+        name: /clear search field/i,
+      });
+      await user.click(clearButton);
+
+      expect(searchBox).toHaveValue("");
+    });
   });
 
   describe("Package selection", () => {
@@ -86,23 +101,6 @@ describe("PackageDropdownSearch", () => {
     });
   });
 
-  describe("Clear search functionality", () => {
-    it("clears search input when clear button is clicked", async () => {
-      renderWithProviders(<PackageDropdownSearch {...props} />);
-
-      const searchBox = screen.getByRole("searchbox");
-      await user.type(searchBox, "test");
-      expect(searchBox).toHaveValue("test");
-
-      const clearButton = screen.getByRole("button", {
-        name: /clear search field/i,
-      });
-      await user.click(clearButton);
-
-      expect(searchBox).toHaveValue("");
-    });
-  });
-
   describe("Selected packages display", () => {
     it("shows all selected packages in results list", () => {
       renderWithProviders(
@@ -115,6 +113,19 @@ describe("PackageDropdownSearch", () => {
       for (const pkg of selectedPackages) {
         screen.getByRole("checkbox", { name: pkg.name });
       }
+    });
+
+    it("shows downgrade item", async () => {
+      renderWithProviders(
+        <PackageDropdownSearch
+          {...props}
+          action="downgrade"
+          selectedPackages={[selectedPackage]}
+        />,
+      );
+
+      screen.getByRole("heading", { name: selectedPackage.name });
+      await screen.findAllByText("Downgrade to:");
     });
 
     it("removes package when delete button is clicked", async () => {

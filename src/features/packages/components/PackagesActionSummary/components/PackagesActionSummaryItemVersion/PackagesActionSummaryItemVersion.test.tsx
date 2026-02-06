@@ -28,6 +28,20 @@ describe("PackagesActionSummaryItemVersion", () => {
     screen.getByRole("dialog");
   });
 
+  it("should render downgrade specific text", async () => {
+    renderWithProviders(
+      <PackagesActionSummaryItemVersion
+        action="downgrade"
+        instanceIds={[1, 2, 3]}
+        selectedPackage={selectedPackage}
+        version={{ name: "0.1.9-1", num_computers: 3 }}
+      />,
+    );
+
+    const text = screen.getByText("downgrade", { exact: false });
+    expect(text.textContent).toEqual("Will downgrade to libthai0 0.1.9-1");
+  });
+
   it("should render hold as not installed option", () => {
     renderWithProviders(
       <PackagesActionSummaryItemVersion
