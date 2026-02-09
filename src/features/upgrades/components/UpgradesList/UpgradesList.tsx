@@ -1,25 +1,113 @@
 import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, CheckboxInput } from "@canonical/react-components";
-import { useMemo, type FC } from "react";
+import { useCallback, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PackageUpgrade } from "../../types/PackageUpgrade";
 import { PRIORITY_OPTIONS, SEVERITY_OPTIONS } from "../Upgrades/constants";
 import classes from "./UpgradesList.module.scss";
 
 interface UpgradesListProps {
-  readonly packages: PackageUpgrade[];
-  readonly selectedPackages: PackageUpgrade[];
-  readonly setSelectedPackages: (packages: PackageUpgrade[]) => void;
+  readonly upgradeCount: number;
+  readonly currentUpgrades: PackageUpgrade[];
+  readonly toggledUpgrades: PackageUpgrade[];
+  readonly setToggledUpgrades: (packages: PackageUpgrade[]) => void;
+  readonly enableSelectAllUpgrades: () => void;
+  readonly disableSelectAllUpgrades: () => void;
+  readonly isSelectAllUpgradesEnabled: boolean;
 }
 
 const UpgradesList: FC<UpgradesListProps> = ({
-  packages,
-  selectedPackages,
-  setSelectedPackages,
+  currentUpgrades,
+  toggledUpgrades,
+  setToggledUpgrades,
+  isSelectAllUpgradesEnabled,
+  upgradeCount,
+  enableSelectAllUpgrades,
+  disableSelectAllUpgrades,
 }) => {
+  const compare = (upgrade1: PackageUpgrade, upgrade2: PackageUpgrade) => {
+    return (
+      upgrade1.name === upgrade2.name &&
+      upgrade1.versions.current === upgrade2.versions.current &&
+      upgrade1.versions.newest === upgrade2.versions.newest
+    );
+  };
+
+  const clearSelection = () => {
+    setToggledUpgrades([]);
+    disableSelectAllUpgrades();
+  };
+
+  const isToggled = useCallback(
+    (upgrade: PackageUpgrade) => {
+      const match = (toggledUpgrade: PackageUpgrade) => {
+        return compare(upgrade, toggledUpgrade);
+      };
+
+      return toggledUpgrades.some(match);
+    },
+    [toggledUpgrades],
+  );
+
+  const isNotToggled = useCallback(
+    (upgrade: PackageUpgrade) => {
+      return !isToggled(upgrade);
+    },
+    [isToggled],
+  );
+
+  const untoggle = useCallback(
+    (...upgrades: PackageUpgrade[]) => {
+      const doesNotMatchAny = (toggledUpgrade: PackageUpgrade) => {
+        const doesNotMatch = (upgrade: PackageUpgrade) => {
+          return !compare(upgrade, toggledUpgrade);
+        };
+
+        return upgrades.every(doesNotMatch);
+      };
+
+      const newUpgrades = toggledUpgrades.filter(doesNotMatchAny);
+
+      setToggledUpgrades(newUpgrades);
+    },
+    [setToggledUpgrades, toggledUpgrades],
+  );
+
+  const untoggleAll = useCallback(() => {
+    untoggle(...currentUpgrades);
+  }, [currentUpgrades, untoggle]);
+
+  const toggle = useCallback(
+    (...upgrades: PackageUpgrade[]) => {
+      const untoggledUpgrades = upgrades.filter(isNotToggled);
+
+      if (
+        isSelectAllUpgradesEnabled &&
+        toggledUpgrades.length + untoggledUpgrades.length >= upgradeCount
+      ) {
+        clearSelection();
+      } else {
+        setToggledUpgrades([...toggledUpgrades, ...untoggledUpgrades]);
+      }
+    },
+    [
+      clearSelection,
+      isNotToggled,
+      isSelectAllUpgradesEnabled,
+      setToggledUpgrades,
+      toggledUpgrades,
+      upgradeCount,
+    ],
+  );
+
+  const toggleAll = useCallback(() => {
+    toggle(...currentUpgrades);
+  }, [currentUpgrades, toggle]);
+
   const columns = useMemo<Column<PackageUpgrade>[]>(
     () => [
       {
@@ -30,16 +118,27 @@ const UpgradesList: FC<UpgradesListProps> = ({
               label={<span className="u-off-screen">Toggle all packages</span>}
               labelClassName="u-no-padding"
               inline
-              disabled={!packages.length}
+              disabled={!currentUpgrades.length}
               indeterminate={
-                !!selectedPackages.length &&
-                selectedPackages.length < packages.length
+                currentUpgrades.some(isToggled) &&
+                currentUpgrades.some(isNotToggled)
               }
               checked={
-                !!packages.length && selectedPackages.length === packages.length
+                isSelectAllUpgradesEnabled
+                  ? currentUpgrades.every(isNotToggled)
+                  : currentUpgrades.every(isToggled)
               }
-              onChange={({ currentTarget: { checked } }) => {
-                setSelectedPackages(checked ? packages : []);
+              onChange={() => {
+                if (
+                  (isSelectAllUpgradesEnabled &&
+                    currentUpgrades.every(isToggled)) ||
+                  (!isSelectAllUpgradesEnabled &&
+                    currentUpgrades.some(isToggled))
+                ) {
+                  untoggleAll();
+                } else {
+                  toggleAll();
+                }
               }}
             />
             <div className={classes.stacked}>
@@ -60,18 +159,22 @@ const UpgradesList: FC<UpgradesListProps> = ({
                 </span>
               }
               labelClassName="u-no-padding"
-              checked={selectedPackages.includes(upgradePackage)}
-              onChange={({ currentTarget: { checked } }) => {
-                setSelectedPackages(
-                  checked
-                    ? [...selectedPackages, upgradePackage]
-                    : selectedPackages.filter((i) => i !== upgradePackage),
-                );
+              checked={
+                isSelectAllUpgradesEnabled
+                  ? isNotToggled(upgradePackage)
+                  : isToggled(upgradePackage)
+              }
+              onChange={() => {
+                if (isToggled(upgradePackage)) {
+                  untoggle(upgradePackage);
+                } else {
+                  toggle(upgradePackage);
+                }
               }}
             />
 
             <ListTitle>
-              {upgradePackage.name}
+              <span>{upgradePackage.name}</span>
               <span className="u-text--muted">{upgradePackage.details}</span>
             </ListTitle>
           </div>
@@ -192,13 +295,75 @@ const UpgradesList: FC<UpgradesListProps> = ({
         ),
       },
     ],
-    [packages, selectedPackages, setSelectedPackages],
+    [
+      currentUpgrades,
+      isSelectAllUpgradesEnabled,
+      isNotToggled,
+      isToggled,
+      untoggleAll,
+      toggleAll,
+      toggle,
+      untoggle,
+    ],
   );
+
+  const subhead = (isSelectAllUpgradesEnabled || !!toggledUpgrades.length) &&
+    upgradeCount > currentUpgrades.length && (
+      <td colSpan={5} className="u-no-padding">
+        <ResponsiveTableSubhead>
+          <span>
+            {isSelectAllUpgradesEnabled
+              ? upgradeCount - toggledUpgrades.length
+              : toggledUpgrades.length}{" "}
+            of {upgradeCount} instances selected
+          </span>
+          <Button
+            className="u-no-padding u-no-margin"
+            appearance="link"
+            onClick={clearSelection}
+          >
+            Clear selection
+          </Button>
+          {((isSelectAllUpgradesEnabled && currentUpgrades.some(isToggled)) ||
+            (!isSelectAllUpgradesEnabled &&
+              currentUpgrades.some(isNotToggled))) && (
+            <Button
+              className="u-no-padding u-no-margin"
+              appearance="link"
+              onClick={() => {
+                if (isSelectAllUpgradesEnabled) {
+                  untoggleAll();
+                } else {
+                  toggleAll();
+                }
+              }}
+            >
+              Select all instances on this page
+            </Button>
+          )}
+          {((!isSelectAllUpgradesEnabled &&
+            toggledUpgrades.length < upgradeCount) ||
+            (isSelectAllUpgradesEnabled && toggledUpgrades.length > 0)) && (
+            <Button
+              className="u-no-padding u-no-margin"
+              appearance="link"
+              onClick={() => {
+                setToggledUpgrades([]);
+                enableSelectAllUpgrades();
+              }}
+            >
+              Select all instances on all pages
+            </Button>
+          )}
+        </ResponsiveTableSubhead>
+      </td>
+    );
 
   return (
     <ResponsiveTable
+      subhead={subhead}
       columns={columns}
-      data={packages}
+      data={currentUpgrades}
       emptyMsg="No packages found according to your search parameters."
     />
   );
