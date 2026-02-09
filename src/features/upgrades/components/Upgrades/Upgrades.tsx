@@ -72,9 +72,34 @@ const Upgrades: FC = () => {
     throw upgradesError;
   }
 
+  const clearSelection = () => {
+    setToggledUpgrades([]);
+    disableSelectAllUpgrades();
+  };
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    clearSelection();
+  };
+
   const clearSearch = () => {
     setInputValue("");
-    setSearch("");
+    handleSearch("");
+  };
+
+  const handleUpgradeTypeSelect = (value: string) => {
+    setUpgradeType(value);
+    clearSelection();
+  };
+
+  const handlePrioritiesSelect = (values: string[]) => {
+    setPriorities(values);
+    clearSelection();
+  };
+
+  const handleSeveritiesSelect = (values: string[]) => {
+    setSeverities(values);
+    clearSelection();
   };
 
   return (
@@ -86,7 +111,7 @@ const Upgrades: FC = () => {
           value={inputValue}
           onChange={setInputValue}
           onClear={clearSearch}
-          onSearch={setSearch}
+          onSearch={handleSearch}
           autoComplete="off"
         />
         <div className={classes.filters}>
@@ -94,7 +119,7 @@ const Upgrades: FC = () => {
             type="single"
             showSelectionOnToggleLabel
             label="Upgrade type"
-            onItemSelect={setUpgradeType}
+            onItemSelect={handleUpgradeTypeSelect}
             options={UPGRADE_TYPE_OPTIONS}
             selectedItem={upgradeType}
             hasBadge={upgradeType !== "all"}
@@ -102,7 +127,7 @@ const Upgrades: FC = () => {
           <TableFilter
             type="multiple"
             label="Priority"
-            onItemsSelect={setPriorities}
+            onItemsSelect={handlePrioritiesSelect}
             selectedItems={priorities}
             options={PRIORITY_OPTIONS}
             hasBadge={!!priorities.length}
@@ -110,7 +135,7 @@ const Upgrades: FC = () => {
           <TableFilter
             type="multiple"
             label="Severity"
-            onItemsSelect={setSeverities}
+            onItemsSelect={handleSeveritiesSelect}
             selectedItems={severities}
             options={SEVERITY_OPTIONS}
             hasBadge={!!severities.length}
@@ -128,7 +153,7 @@ const Upgrades: FC = () => {
             label: "Upgrades",
             item: upgradeType === "security" ? "Security" : undefined,
             clear: () => {
-              setUpgradeType("all");
+              handleUpgradeTypeSelect("all");
             },
           },
           {
@@ -143,11 +168,11 @@ const Upgrades: FC = () => {
               };
             }),
             clear: () => {
-              setPriorities([]);
+              handlePrioritiesSelect([]);
             },
             remove: (value: string) => {
-              setPriorities((previousPriorities) =>
-                previousPriorities.filter((priority) => priority !== value),
+              handlePrioritiesSelect(
+                priorities.filter((priority) => priority !== value),
               );
             },
           },
@@ -163,11 +188,11 @@ const Upgrades: FC = () => {
               };
             }),
             clear: () => {
-              setSeverities([]);
+              handleSeveritiesSelect([]);
             },
             remove: (value: string) => {
-              setSeverities((previousSeverities) =>
-                previousSeverities.filter((severity) => severity !== value),
+              handleSeveritiesSelect(
+                severities.filter((severity) => severity !== value),
               );
             },
           },
@@ -197,7 +222,10 @@ const Upgrades: FC = () => {
       <SidePanelFormButtons
         onCancel={closeSidePanel}
         submitButtonText="Next"
-        submitButtonDisabled={isPendingUpgrades || !toggledUpgrades.length}
+        submitButtonDisabled={
+          isPendingUpgrades ||
+          !(isSelectAllUpgradesEnabled || toggledUpgrades.length)
+        }
       />
     </>
   );

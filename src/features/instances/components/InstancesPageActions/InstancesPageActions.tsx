@@ -171,7 +171,7 @@ const InstancesPageActions = ({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Upgrade ${pluralizeWithCount(toggledInstances.length, "instance")}`,
+      `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <Upgrades />
       </Suspense>,

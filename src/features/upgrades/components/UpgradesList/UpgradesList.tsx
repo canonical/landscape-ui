@@ -37,10 +37,10 @@ const UpgradesList: FC<UpgradesListProps> = ({
     );
   };
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setToggledUpgrades([]);
     disableSelectAllUpgrades();
-  };
+  }, [disableSelectAllUpgrades, setToggledUpgrades]);
 
   const isToggled = useCallback(
     (upgrade: PackageUpgrade) => {
@@ -126,7 +126,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
               checked={
                 isSelectAllUpgradesEnabled
                   ? currentUpgrades.every(isNotToggled)
-                  : currentUpgrades.every(isToggled)
+                  : currentUpgrades.every(isToggled) && !!currentUpgrades.length
               }
               onChange={() => {
                 if (
@@ -315,7 +315,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
             {isSelectAllUpgradesEnabled
               ? upgradeCount - toggledUpgrades.length
               : toggledUpgrades.length}{" "}
-            of {upgradeCount} instances selected
+            of {upgradeCount} packages selected
           </span>
           <Button
             className="u-no-padding u-no-margin"
@@ -338,7 +338,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
                 }
               }}
             >
-              Select all instances on this page
+              Select all packages on this page
             </Button>
           )}
           {((!isSelectAllUpgradesEnabled &&
@@ -352,7 +352,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
                 enableSelectAllUpgrades();
               }}
             >
-              Select all instances on all pages
+              Select all packages on all pages
             </Button>
           )}
         </ResponsiveTableSubhead>

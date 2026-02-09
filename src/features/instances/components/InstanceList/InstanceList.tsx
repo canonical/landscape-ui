@@ -156,7 +156,8 @@ const InstanceList = ({
               checked={
                 areAllInstancesSelected
                   ? currentInstances.every(isNotToggled)
-                  : currentInstances.every(isToggled)
+                  : currentInstances.every(isToggled) &&
+                    !!currentInstances.length
               }
               indeterminate={
                 currentInstances.some(isToggled) &&
