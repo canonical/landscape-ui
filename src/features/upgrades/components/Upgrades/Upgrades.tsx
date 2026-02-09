@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
 import { useState, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
 import type { PackageUpgrade } from "../../types/PackageUpgrade";
 import UpgradesList from "../UpgradesList";
 import classes from "./Upgrades.module.scss";
@@ -30,9 +31,13 @@ const Upgrades: FC = () => {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
-  const [selectedPackages, setSelectedPackages] = useState<PackageUpgrade[]>(
-    [],
-  );
+  const [toggledUpgrades, setToggledUpgrades] = useState<PackageUpgrade[]>([]);
+
+  const {
+    value: isSelectAllUpgradesEnabled,
+    setTrue: enableSelectAllUpgrades,
+    setFalse: disableSelectAllUpgrades,
+  } = useBoolean();
 
   const [upgradeType, setUpgradeType] = useState("all");
   const [priorities, setPriorities] = useState<string[]>([]);
@@ -49,9 +54,9 @@ const Upgrades: FC = () => {
   };
 
   const {
-    data: packagesResponse,
-    isPending: isPendingPackages,
-    error: packagesError,
+    data: upgradesResponse,
+    isPending: isPendingUpgrades,
+    error: upgradesError,
   } = useQuery<
     AxiosResponse<ApiPaginatedResponse<PackageUpgrade>>,
     AxiosError<ApiError>
@@ -63,8 +68,8 @@ const Upgrades: FC = () => {
       }),
   });
 
-  if (packagesError) {
-    throw packagesError;
+  if (upgradesError) {
+    throw upgradesError;
   }
 
   const clearSearch = () => {
@@ -168,13 +173,17 @@ const Upgrades: FC = () => {
           },
         ]}
       />
-      {isPendingPackages ? (
+      {isPendingUpgrades ? (
         <LoadingState />
       ) : (
         <UpgradesList
-          packages={packagesResponse.data.results}
-          selectedPackages={selectedPackages}
-          setSelectedPackages={setSelectedPackages}
+          currentUpgrades={upgradesResponse.data.results}
+          toggledUpgrades={toggledUpgrades}
+          setToggledUpgrades={setToggledUpgrades}
+          upgradeCount={upgradesResponse.data.count}
+          isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
+          enableSelectAllUpgrades={enableSelectAllUpgrades}
+          disableSelectAllUpgrades={disableSelectAllUpgrades}
         />
       )}
       <SidePanelTablePagination
@@ -182,13 +191,13 @@ const Upgrades: FC = () => {
         pageSize={pageSize}
         paginate={setCurrentPage}
         setPageSize={setPageSize}
-        totalItems={packagesResponse?.data.count}
-        currentItemCount={packagesResponse?.data.results.length}
+        totalItems={upgradesResponse?.data.count}
+        currentItemCount={upgradesResponse?.data.results.length}
       />
       <SidePanelFormButtons
         onCancel={closeSidePanel}
         submitButtonText="Next"
-        submitButtonDisabled={isPendingPackages || !selectedPackages.length}
+        submitButtonDisabled={isPendingUpgrades || !toggledUpgrades.length}
       />
     </>
   );

@@ -27,11 +27,3 @@
   display: flex;
   transform: translateX(-1.5rem);
 }
-
-.subhead {
-  background: $colors--theme--background-alt;
-  border-bottom: 1px solid $colors--theme--border-low-contrast;
-  display: flex;
-  gap: $sph--large;
-  padding: $spv--small 0 $spv--small 2.5rem;
-}

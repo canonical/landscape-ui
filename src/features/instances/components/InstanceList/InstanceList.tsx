@@ -3,6 +3,7 @@ import ListTitle from "@/components/layout/ListTitle";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import {
@@ -353,7 +354,7 @@ const InstanceList = ({
   const subhead = (areAllInstancesSelected || !!toggledInstances.length) &&
     instanceCount > currentInstances.length && (
       <td colSpan={8} className="u-no-padding">
-        <div className={classes.subhead}>
+        <ResponsiveTableSubhead>
           <span>
             {areAllInstancesSelected
               ? instanceCount - toggledInstances.length
@@ -384,10 +385,10 @@ const InstanceList = ({
               Select all instances on this page
             </Button>
           )}
-          {((!areAllInstancesSelected &&
-            toggledInstances.length < instanceCount) ||
-            (areAllInstancesSelected && toggledInstances.length > 0)) &&
-            SELECT_ALL_INSTANCES_ENABLED && (
+          {SELECT_ALL_INSTANCES_ENABLED &&
+            ((!areAllInstancesSelected &&
+              toggledInstances.length < instanceCount) ||
+              (areAllInstancesSelected && toggledInstances.length > 0)) && (
               <Button
                 className="u-no-padding u-no-margin"
                 appearance="link"
@@ -399,7 +400,7 @@ const InstanceList = ({
                 Select all instances on all pages
               </Button>
             )}
-        </div>
+        </ResponsiveTableSubhead>
       </td>
     );
 
