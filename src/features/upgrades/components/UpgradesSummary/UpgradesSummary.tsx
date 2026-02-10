@@ -2,7 +2,10 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import { usePackages } from "@/features/packages";
+import useDebug from "@/hooks/useDebug";
 import useFetch from "@/hooks/useFetch";
+import useSidePanel from "@/hooks/useSidePanel";
 import {
   DEFAULT_CURRENT_PAGE,
   DEFAULT_PAGE_SIZE,
@@ -39,7 +42,15 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   query,
   onBackButtonPress,
 }) => {
+  const debug = useDebug();
   const authFetch = useFetch();
+  const { closeSidePanel } = useSidePanel();
+
+  const { upgradeInstancesPackagesQuery } = usePackages();
+  const {
+    mutateAsync: upgradeInstancesPackages,
+    isPending: isUpgradingInstancesPackages,
+  } = upgradeInstancesPackagesQuery;
 
   const [currentPage, setCurrentPage] = useState<number>(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
@@ -80,10 +91,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
       {
         Header: "Affected instances",
         Cell: ({ row: { original: upgrade } }: CellProps<PackageUpgrade>) => (
-          <AffectedInstancesLink
-            upgrade={upgrade}
-            query={query}
-          />
+          <AffectedInstancesLink upgrade={upgrade} query={query} />
         ),
       },
       {
@@ -107,6 +115,23 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   if (isPendingUpgrades) {
     return <LoadingState />;
   }
+
+  const submit = async () => {
+    try {
+      await upgradeInstancesPackages({
+        mode: isSelectAllUpgradesEnabled ? "exclude" : "include",
+        query,
+        packages: toggledUpgrades.map((upgrade) => upgrade.id),
+        security_only: upgradeType === "security",
+        priorities,
+        severities,
+      });
+
+      closeSidePanel();
+    } catch (error) {
+      debug(error);
+    }
+  };
 
   const upgradeCount = isSelectAllUpgradesEnabled
     ? upgradesResponse.data.count - toggledUpgrades.length
@@ -138,6 +163,8 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
         hasBackButton={!!onBackButtonPress}
         onBackButtonPress={onBackButtonPress}
         submitButtonText={`Upgrade ${pluralizeWithCount(upgradeCount, "package")}`}
+        submitButtonLoading={isUpgradingInstancesPackages}
+        onSubmit={submit}
       />
     </>
   );

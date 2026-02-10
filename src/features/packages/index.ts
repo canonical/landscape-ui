@@ -1,21 +1,21 @@
 export * from "./api";
 export { default as PackageList } from "./components/PackageList";
+export { default as PackagesActionForm } from "./components/PackagesActionForm";
 export { default as PackagesInstallButton } from "./components/PackagesInstallButton";
 export { default as PackagesPanelHeader } from "./components/PackagesPanelHeader";
-export { default as PackagesActionForm } from "./components/PackagesActionForm";
 export { usePackages } from "./hooks";
-export type { GetPackagesParams, InstancePackagesToExclude } from "./hooks";
+export type { GetPackagesParams } from "./hooks";
 export type {
   AvailableVersion,
   DowngradePackageVersion,
-  DowngradeVersionCount,
   DowngradeVersion,
+  DowngradeVersionCount,
   InstancePackage,
   Package,
-  PackageDiff,
-  PackageObject,
-  PackageInstance,
   PackageAction,
-  VersionCount,
+  PackageDiff,
+  PackageInstance,
+  PackageObject,
   SelectedPackage,
+  VersionCount,
 } from "./types";

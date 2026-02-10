@@ -2,11 +2,11 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
   AvailableVersion,
+  DowngradeVersionCount,
   GetDryRunInstancesParams,
   GetPackagesParams,
   Package,
   VersionCount,
-  DowngradeVersionCount,
 } from "@/features/packages";
 import type {
   GetPackageUpgradeParams,
@@ -246,6 +246,10 @@ export default [
         offset,
       }),
     );
+  }),
+
+  http.post(`${API_URL}computers/upgrade-packages`, async () => {
+    return HttpResponse.json();
   }),
 
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {

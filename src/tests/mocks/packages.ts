@@ -429,6 +429,7 @@ export const packageInstances: PackageInstance[] = [
 
 export const upgradePackages: PackageUpgrade[] = [
   {
+    id: 1,
     name: "libthai0",
     details: "Thai language support library",
     affected_instance_count: 6,
@@ -443,6 +444,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 2,
     name: "libthai0",
     details: "Thai language support library",
     affected_instance_count: 6,
@@ -457,6 +459,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 3,
     name: "binutils-common",
     details: "Common files for the GNU assembler, linker and binary utilities",
     affected_instance_count: 2,
@@ -471,6 +474,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 4,
     name: "libbinutils",
     details: "GNU binary utilities (private shared library)",
     affected_instance_count: 1,
@@ -485,6 +489,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 5,
     name: "accountsservice",
     details: "query and manipulate user account information",
     affected_instance_count: 1,
@@ -499,6 +504,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 6,
     name: "alsa-ucm-conf",
     details: "ALSA Use Case Manager configuration files",
     affected_instance_count: 2,
@@ -513,6 +519,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 7,
     name: "base-files",
     details: "Debian base system miscellaneous files",
     affected_instance_count: 1,
@@ -527,6 +534,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 8,
     name: "bash",
     details: "GNU Bourne Again SHell",
     affected_instance_count: 1,
@@ -542,6 +550,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 9,
     name: "bcache-tools",
     details: "bcache userspace tools",
     affected_instance_count: 1,
@@ -556,6 +565,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 10,
     name: "bind9-dnsutils",
     details: "Clients provided with BIND 9",
     affected_instance_count: 1,
@@ -571,6 +581,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 11,
     name: "bind9-libs",
     details: "Shared Libraries used by BIND 9",
     affected_instance_count: 1,
@@ -586,6 +597,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 12,
     name: "bsdutils",
     details: "basic utilities from 4.4BSD-Lite",
     affected_instance_count: 1,
@@ -600,6 +612,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 13,
     name: "busybox-static",
     details: "Standalone rescue shell with tons of builtin utilities",
     affected_instance_count: 1,
@@ -615,6 +628,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 14,
     name: "ca-certificates",
     details: "Common CA certificates",
     affected_instance_count: 1,
@@ -630,6 +644,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 15,
     name: "cloud-init",
     details: "initialization and customization tool for cloud instances",
     affected_instance_count: 1,
@@ -644,6 +659,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 16,
     name: "cloud-initramfs-dyn-netconf",
     details: "write a network interface file in /run for BOOTIF",
     affected_instance_count: 1,
@@ -658,6 +674,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 17,
     name: "cpio",
     details: "GNU cpio -- a program to manage archives of files",
     affected_instance_count: 1,
@@ -673,6 +690,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 18,
     name: "cryptsetup",
     details: "disk encryption support - startup scripts",
     affected_instance_count: 1,
@@ -688,6 +706,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 19,
     name: "cryptsetup-bin",
     details: "disk encryption support - command line tools",
     affected_instance_count: 1,
@@ -703,6 +722,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 20,
     name: "cryptsetup-run",
     details: "transitional dummy package for cryptsetup",
     affected_instance_count: 1,
@@ -717,6 +737,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 21,
     name: "curl",
     details: "command line tool for transferring data with URL syntax",
     affected_instance_count: 1,
@@ -731,6 +752,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 22,
     name: "architectures",
     details:
       "Qui quia veritatis amet repellat cupiditate quo deserunt reiciendis totam.",
@@ -746,6 +768,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 23,
     name: "architectures",
     details:
       "Qui quia veritatis amet repellat cupiditate quo deserunt reiciendis totam.",
@@ -761,6 +784,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 24,
     name: "assistant",
     details: "Eaque velit consequatur eaque rem qui voluptatem.",
     affected_instance_count: 80987,
@@ -775,6 +799,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 25,
     name: "cotton",
     details:
       "Voluptatem autem eius modi explicabo saepe possimus rerum culpa et.",
@@ -790,6 +815,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 26,
     name: "cross-platform",
     details: "Explicabo ducimus reprehenderit velit est ut quibusdam.",
     affected_instance_count: 80987,
@@ -804,6 +830,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: null,
   },
   {
+    id: 27,
     name: "ergonomic",
     details: "Molestiae nemo tenetur debitis maiores tempore possimus.",
     affected_instance_count: 80987,
@@ -818,6 +845,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 28,
     name: "malawi",
     details: "Id facere qui.",
     affected_instance_count: 80987,
@@ -832,6 +860,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 29,
     name: "new",
     details: "Temporibus adipisci exercitationem est et sunt ea id impedit.",
     affected_instance_count: 80987,
@@ -846,6 +875,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "critical",
   },
   {
+    id: 30,
     name: "pants",
     details: "Illo sapiente incidunt non voluptatem.",
     affected_instance_count: 80987,
@@ -860,6 +890,7 @@ export const upgradePackages: PackageUpgrade[] = [
     priority: "negligible",
   },
   {
+    id: 31,
     name: "paradigm",
     details: "Soluta reprehenderit hic et.",
     affected_instance_count: 80987,
