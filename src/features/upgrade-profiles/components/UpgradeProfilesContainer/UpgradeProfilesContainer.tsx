@@ -1,11 +1,9 @@
 import type { FC } from "react";
-import {
-  UpgradeProfileList,
-  UpgradeProfilesEmptyState,
-  UpgradeProfilesHeader,
-  useUpgradeProfiles,
-} from "@/features/upgrade-profiles";
 import LoadingState from "@/components/layout/LoadingState";
+import { useUpgradeProfiles } from "../../hooks";
+import UpgradeProfilesEmptyState from "../UpgradeProfilesEmptyState";
+import UpgradeProfilesHeader from "../UpgradeProfilesHeader";
+import UpgradeProfileList from "../UpgradeProfileList";
 
 const UpgradeProfilesContainer: FC = () => {
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();

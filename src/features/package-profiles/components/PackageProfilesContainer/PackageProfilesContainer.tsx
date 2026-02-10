@@ -1,10 +1,8 @@
 import type { FC } from "react";
-import {
-  PackageProfilesEmptyState,
-  usePackageProfiles,
-} from "@/features/package-profiles";
+import { usePackageProfiles } from "../../hooks";
+import PackageProfilesEmptyState from "../PackageProfilesEmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import PackageProfilesContent from "@/pages/dashboard/profiles/package-profiles/PackageProfilesContent";
+import PackageProfilesContent from "../PackageProfilesContent";
 
 const PackageProfilesContainer: FC = () => {
   const { getPackageProfilesQuery } = usePackageProfiles();
