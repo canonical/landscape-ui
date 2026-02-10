@@ -16,7 +16,9 @@ import type { AxiosError, AxiosResponse } from "axios";
 import classNames from "classnames";
 import { useState, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
+import type { GetPackageUpgradeParams } from "../../types/GetPackageUpgradeParams";
 import type { PackageUpgrade } from "../../types/PackageUpgrade";
+import type { PriorityOrSeverity } from "../../types/PriorityOrSeverity";
 import UpgradesList from "../UpgradesList";
 import UpgradesSummary from "../UpgradesSummary";
 import classes from "./Upgrades.module.scss";
@@ -42,8 +44,8 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
   const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [upgradeType, setUpgradeType] = useState("all");
-  const [priorities, setPriorities] = useState<string[]>([]);
-  const [severities, setSeverities] = useState<string[]>([]);
+  const [priorities, setPriorities] = useState<PriorityOrSeverity[]>([]);
+  const [severities, setSeverities] = useState<PriorityOrSeverity[]>([]);
   const [step, setStep] = useState<"list" | "summary">("list");
 
   const {
@@ -52,12 +54,12 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
     setFalse: disableSelectAllUpgrades,
   } = useBoolean();
 
-  const queryParams = {
+  const queryParams: GetPackageUpgradeParams = {
     offset: (currentPage - 1) * pageSize,
     limit: pageSize,
     priorities,
     severities,
-    upgrade_type: upgradeType,
+    security_only: upgradeType === "security",
     search,
     query,
   };
@@ -102,13 +104,25 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
     reset();
   };
 
+  const getIsPriorityOrSeverity = (value: string) => {
+    return (
+      value === "critical" ||
+      value === "high" ||
+      value === "medium" ||
+      value === "low" ||
+      value === "negligible"
+    );
+  };
+
   const handlePrioritiesSelect = (values: string[]) => {
-    setPriorities(values);
+    const filteredValues = values.filter(getIsPriorityOrSeverity);
+    setPriorities(filteredValues);
     reset();
   };
 
   const handleSeveritiesSelect = (values: string[]) => {
-    setSeverities(values);
+    const filteredValues = values.filter(getIsPriorityOrSeverity);
+    setSeverities(filteredValues);
     reset();
   };
 
