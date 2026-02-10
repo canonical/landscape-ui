@@ -5,7 +5,7 @@ import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useGetDryRunInstances } from "../../../../api";
 import type { PackageAction, SelectedPackage } from "../../../../types";
-import PackagesUninstallSummaryDetails from "../PackagesActionSummaryDetails";
+import PackagesActionSummaryDetails from "../PackagesActionSummaryDetails";
 import PackagesActionSummaryItemVersion from "../PackagesActionSummaryItemVersion";
 import classes from "./PackagesActionSummaryItem.module.scss";
 
@@ -82,7 +82,7 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
         </div>
       )}
       {isModalOpen && (
-        <PackagesUninstallSummaryDetails
+        <PackagesActionSummaryDetails
           selectedPackage={selectedPackage}
           instanceIds={instanceIds}
           close={closeModal}

@@ -2,11 +2,11 @@ import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
-import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import { useCallback, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PackageUpgrade } from "../../types/PackageUpgrade";
+import AffectedInstancesLink from "../AffectedInstancesLink";
 import { PRIORITY_OPTIONS, SEVERITY_OPTIONS } from "../Upgrades/constants";
 import classes from "./UpgradesList.module.scss";
 
@@ -18,6 +18,7 @@ interface UpgradesListProps {
   readonly enableSelectAllUpgrades: () => void;
   readonly disableSelectAllUpgrades: () => void;
   readonly isSelectAllUpgradesEnabled: boolean;
+  readonly query?: string;
 }
 
 const UpgradesList: FC<UpgradesListProps> = ({
@@ -28,6 +29,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
   upgradeCount,
   enableSelectAllUpgrades,
   disableSelectAllUpgrades,
+  query,
 }) => {
   const compare = (upgrade1: PackageUpgrade, upgrade2: PackageUpgrade) => {
     return (
@@ -211,15 +213,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
           row: { original: upgradePackage },
         }: CellProps<PackageUpgrade>) => (
           <div className={classes.stacked}>
-            <Button
-              className="u-no-padding--top u-no-margin--bottom u-align-text--left"
-              appearance="link"
-            >
-              {pluralizeWithCount(
-                upgradePackage.affected_instance_count,
-                "instance",
-              )}
-            </Button>
+            <AffectedInstancesLink upgrade={upgradePackage} query={query} />
             <span className="u-text--muted">Ubuntu 22.04</span>
           </div>
         ),
@@ -304,6 +298,7 @@ const UpgradesList: FC<UpgradesListProps> = ({
       toggleAll,
       toggle,
       untoggle,
+      query,
     ],
   );
 

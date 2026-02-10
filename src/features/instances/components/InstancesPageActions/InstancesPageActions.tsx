@@ -42,6 +42,11 @@ const Upgrades = lazy(async () =>
     default: module.Upgrades,
   })),
 );
+const UpgradesSummary = lazy(async () =>
+  import("@/features/upgrades").then((module) => ({
+    default: module.UpgradesSummary,
+  })),
+);
 const ReportView = lazy(
   async () => import("@/pages/dashboard/instances/ReportView"),
 );
@@ -63,6 +68,7 @@ interface InstancesPageActionsProps {
   readonly toggledInstances: Instance[];
   readonly areAllInstancesSelected: boolean;
   readonly instanceCount: number;
+  readonly query?: string;
 }
 
 const InstancesPageActions = ({
@@ -70,6 +76,7 @@ const InstancesPageActions = ({
   toggledInstances,
   areAllInstancesSelected,
   instanceCount,
+  query,
 }: InstancesPageActionsProps) => {
   const debug = useDebug();
   const { isFeatureEnabled } = useAuth();
@@ -193,9 +200,33 @@ const InstancesPageActions = ({
     setSidePanelContent(
       `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades />
+        <Upgrades query={query} toggledInstances={toggledInstances} />
       </Suspense>,
       "large",
+    );
+  };
+
+  const handleAllUpgradesRequest = () => {
+    setSidePanelContent(
+      "Apply all upgrades",
+      <Suspense fallback={<LoadingState />}>
+        <UpgradesSummary query={query} isSelectAllUpgradesEnabled />
+      </Suspense>,
+      "medium",
+    );
+  };
+
+  const handleAllSecurityUpgradesRequest = () => {
+    setSidePanelContent(
+      "Apply all security upgrades",
+      <Suspense fallback={<LoadingState />}>
+        <UpgradesSummary
+          query={query}
+          isSelectAllUpgradesEnabled
+          upgradeType="security"
+        />
+      </Suspense>,
+      "medium",
     );
   };
 
@@ -308,7 +339,7 @@ const InstancesPageActions = ({
           <span>Apply all upgrades</span>
         </>
       ),
-      onClick: undefined,
+      onClick: handleAllUpgradesRequest,
       disabled: noInstanceHasUpgrades,
       hasIcon: true,
     },
@@ -319,7 +350,7 @@ const InstancesPageActions = ({
           <span>Apply all security upgrades</span>
         </>
       ),
-      onClick: undefined,
+      onClick: handleAllSecurityUpgradesRequest,
       disabled:
         !areAllInstancesSelected &&
         toggledInstances.every(
