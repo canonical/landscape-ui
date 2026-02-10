@@ -14,14 +14,14 @@ export interface GetPackageInstancesParams {
   limit?: number;
   offset?: number;
   search: string;
-  query: string;
+  query?: string;
 }
 
 export interface GetDryRunInstancesParams {
   id: number;
   action: PackageAction;
   versions: string[];
-  query: string;
+  query?: string;
 }
 
 export function useGetPackageInstances({

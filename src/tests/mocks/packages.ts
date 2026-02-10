@@ -1,11 +1,11 @@
 import type {
   AvailableVersion,
   DowngradePackageVersion,
+  DowngradeVersion,
   InstancePackage,
   Package,
   PackageInstance,
   SelectedPackage,
-  DowngradeVersion,
 } from "@/features/packages";
 import type { PackageUpgrade } from "@/features/upgrades";
 
@@ -436,6 +436,20 @@ export const upgradePackages: PackageUpgrade[] = [
     versions: {
       current: "0.1.9-1",
       newest: "0.1.9-1-1",
+    },
+    usn: null,
+    cve: null,
+    severity: null,
+    priority: null,
+  },
+  {
+    name: "libthai0",
+    details: "Thai language support library",
+    affected_instance_count: 6,
+    os: "Ubuntu 22.04",
+    versions: {
+      current: "0.1.9-1",
+      newest: "0.1.9-1-2",
     },
     usn: null,
     cve: null,

@@ -1,6 +1,7 @@
 import type { PriorityOrSeverity } from "./PriorityOrSeverity";
 
 export interface PackageUpgrade extends Record<string, unknown> {
+  id: number;
   name: string;
   details: string;
   versions: {
