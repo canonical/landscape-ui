@@ -66,13 +66,14 @@ interface PackagesActionParams {
   deliver_delay_window?: number;
 }
 
-export interface InstancePackagesToExclude {
-  exclude_packages: number[];
-  id: number;
-}
-
 interface UpgradeInstancePackagesParams {
-  computers: InstancePackagesToExclude[];
+  mode: "include" | "exclude";
+  query?: string;
+  packages?: number[];
+  security_only?: boolean;
+  priorities?: string[];
+  severities?: string[];
+  search?: string;
 }
 
 export default function usePackages() {
