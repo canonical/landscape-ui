@@ -4,7 +4,7 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import PackageProfilesContainer from "@/pages/dashboard/profiles/package-profiles/PackageProfilesContainer";
+import { PackageProfilesContainer } from "@/features/package-profiles";
 import { Button } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 

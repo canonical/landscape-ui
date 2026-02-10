@@ -4,77 +4,75 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import RemovalProfileContainer from "@/pages/dashboard/profiles/removal-profiles/RemovalProfileContainer";
+import { UpgradeProfilesContainer } from "@/features/upgrade-profiles";
 import { Button } from "@canonical/react-components";
-import { lazy, type FC } from "react";
+import type { FC } from "react";
+import { lazy } from "react";
 
-const RemovalProfileAddSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileAddSidePanel,
+const UpgradeProfileAddSidePanel = lazy(() =>
+  import("@/features/upgrade-profiles").then((module) => ({
+    default: module.UpgradeProfileAddSidePanel,
   })),
 );
 
-const RemovalProfileDetailsSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileDetailsSidePanel,
+const UpgradeProfileDetailsSidePanel = lazy(() =>
+  import("@/features/upgrade-profiles").then((module) => ({
+    default: module.UpgradeProfileDetailsSidePanel,
   })),
 );
 
-const RemovalProfileEditSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileEditSidePanel,
+const UpgradeProfileEditSidePanel = lazy(() =>
+  import("@/features/upgrade-profiles").then((module) => ({
+    default: module.UpgradeProfileEditSidePanel,
   })),
 );
 
-const RemovalProfilesPage: FC = () => {
+const UpgradeProfilesPage: FC = () => {
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
-  const handleCreate = createPageParamsSetter({
-    sidePath: ["add"],
-    profile: "",
-  });
+  const handleAddUpgradeProfile = createPageParamsSetter({ sidePath: ["add"] });
 
   return (
     <PageMain>
       <PageHeader
-        title="Removal profiles"
+        title="Upgrade profiles"
         actions={[
           <Button
             key="add"
             type="button"
             appearance="positive"
-            onClick={handleCreate}
+            onClick={handleAddUpgradeProfile}
           >
-            Add removal profile
+            Add upgrade profile
           </Button>,
         ]}
       />
       <PageContent hasTable>
-        <RemovalProfileContainer />
+        <UpgradeProfilesContainer />
       </PageContent>
 
       <SidePanel
-        isOpen={!!sidePath.length}
         onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <RemovalProfileAddSidePanel />
+            <UpgradeProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <RemovalProfileEditSidePanel />
+            <UpgradeProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <RemovalProfileDetailsSidePanel />
+            <UpgradeProfileDetailsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>
@@ -82,4 +80,4 @@ const RemovalProfilesPage: FC = () => {
   );
 };
 
-export default RemovalProfilesPage;
+export default UpgradeProfilesPage;

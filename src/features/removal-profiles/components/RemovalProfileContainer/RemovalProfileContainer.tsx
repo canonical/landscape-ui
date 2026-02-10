@@ -1,11 +1,9 @@
 import type { FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import {
-  RemovalProfileList,
-  RemovalProfilesEmptyState,
-  RemovalProfilesHeader,
-  useRemovalProfiles,
-} from "@/features/removal-profiles";
+import { useRemovalProfiles } from "../../hooks";
+import RemovalProfilesEmptyState from "../RemovalProfilesEmptyState";
+import RemovalProfilesHeader from "../RemovalProfilesHeader";
+import RemovalProfileList from "../RemovalProfileList";
 
 const RemovalProfileContainer: FC = () => {
   const { getRemovalProfilesQuery } = useRemovalProfiles();
