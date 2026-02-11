@@ -5,7 +5,7 @@ import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { InstancesPageActions, useGetInstances } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { useState, type FC } from "react";
+import { useCallback, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
 import { getQuery } from "./helpers";
 
@@ -27,9 +27,9 @@ const InstancesPage: FC = () => {
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
 
-  const clearSelection = () => {
+  const clearSelection = useCallback(() => {
     setSelectedInstances([]);
-  };
+  }, []);
 
   return (
     <PageMain>
