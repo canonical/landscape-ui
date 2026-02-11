@@ -20,7 +20,7 @@ const InstancesContainer = memo(function InstancesContainer({
   isGettingInstances,
   selectedInstances,
   setSelectedInstances,
-  onChangeFilter
+  onChangeFilter,
 }: InstancesContainerProps) {
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
@@ -28,7 +28,7 @@ const InstancesContainer = memo(function InstancesContainer({
 
   const handleClearSelection = useCallback(() => {
     setSelectedInstances([]);
-  }, []);
+  }, [setSelectedInstances]);
 
   return (
     <>
