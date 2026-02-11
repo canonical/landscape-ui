@@ -13,6 +13,7 @@ const props: ComponentProps<typeof InstancesHeader> = {
       canBeHidden: true,
     },
   ],
+  onChangeFilter: vi.fn(),
 };
 
 describe("InstancesHeader", async () => {
