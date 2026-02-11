@@ -5,6 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
+import { getFeatures } from "../../helpers";
 import InstancesPageActions from "./InstancesPageActions";
 
 const selected = instances.slice(0, 2);
@@ -20,7 +21,9 @@ const BUTTON_LABELS = [
 ];
 
 const MANAGE_PACKAGE_BUTTON_LABELS = [
-  "Upgrade",
+  "Apply upgrades (advanced)",
+  "Apply all upgrades",
+  "Apply all security upgrades",
   "Install",
   "Uninstall",
   "Downgrade",
@@ -43,6 +46,7 @@ describe("InstancesPageActions", () => {
       <InstancesPageActions
         isGettingInstances={false}
         toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -59,7 +63,11 @@ describe("InstancesPageActions", () => {
 
   it("should disable buttons", () => {
     renderWithProviders(
-      <InstancesPageActions isGettingInstances={false} toggledInstances={[]} />,
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[]}
+        instanceCount={instances.length}
+      />,
     );
 
     const buttons = screen.getAllByRole("button");
@@ -67,16 +75,22 @@ describe("InstancesPageActions", () => {
     expect(buttons).toHaveLength(BUTTON_LABELS.length);
 
     for (const button of buttons) {
-      expect(button).toHaveAttribute("aria-disabled");
+      expect(button).toHaveAttribute("aria-disabled", "true");
     }
   });
 
-  it("should disable package buttons when instances have no packages", async () => {
-    const instance = selected.slice(1, 2);
+  it("should disable package buttons when instances do not have the package feature", async () => {
+    const toggledInstance = instances.find(
+      (instance) => !getFeatures(instance).packages,
+    );
+
+    assert(toggledInstance);
+
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        toggledInstances={instance}
+        toggledInstances={[toggledInstance]}
+        instanceCount={instances.length}
       />,
     );
 
@@ -86,12 +100,7 @@ describe("InstancesPageActions", () => {
 
     for (const label of MANAGE_PACKAGE_BUTTON_LABELS) {
       const button = screen.getByRole("button", { name: label });
-
-      if (label == "Install") {
-        expect(button).not.toHaveAttribute("aria-disabled");
-      } else {
-        expect(button).toHaveAttribute("aria-disabled");
-      }
+      expect(button).toHaveAttribute("aria-disabled", "true");
     }
   });
 
@@ -100,6 +109,7 @@ describe("InstancesPageActions", () => {
       <InstancesPageActions
         isGettingInstances={false}
         toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -114,6 +124,7 @@ describe("InstancesPageActions", () => {
       <InstancesPageActions
         isGettingInstances={false}
         toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -125,6 +136,7 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
+        instanceCount={instances.length}
         toggledInstances={[
           {
             ...ubuntuInstance,
@@ -137,7 +149,9 @@ describe("InstancesPageActions", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /manage packages/i }),
     );
-    const button = screen.queryByRole("button", { name: /upgrade/i });
+    const button = screen.queryByRole("button", {
+      name: /apply upgrades \(advanced\)/i,
+    });
     expect(button).not.toHaveClass("is-disabled");
   });
 
@@ -147,6 +161,7 @@ describe("InstancesPageActions", () => {
         <InstancesPageActions
           isGettingInstances={false}
           toggledInstances={selected}
+          instanceCount={instances.length}
         />,
       );
     });
@@ -202,19 +217,18 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /manage packages/i }),
       );
 
-      screen.getByRole("button", { name: "Upgrade" });
-      screen.getByRole("button", { name: "Downgrade" });
-      screen.getByRole("button", { name: "Install" });
-      screen.getByRole("button", { name: "Uninstall" });
-      screen.getByRole("button", { name: "Hold" });
-      screen.getByRole("button", { name: "Unhold" });
+      for (const label of MANAGE_PACKAGE_BUTTON_LABELS) {
+        screen.getByRole("button", { name: label });
+      }
     });
 
     it("'Upgrade' button", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: /manage packages/i }),
       );
-      await userEvent.click(screen.getByRole("button", { name: /upgrade/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /apply upgrades \(advanced\)/i }),
+      );
 
       screen.getByRole("heading", { name: /upgrade/i });
     });
@@ -300,6 +314,7 @@ describe("InstancesPageActions", () => {
         <InstancesPageActions
           isGettingInstances={false}
           toggledInstances={instances.slice(startIdx, endIdx)}
+          instanceCount={instances.length}
         />,
       );
 
