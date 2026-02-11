@@ -3,14 +3,18 @@ import { instances, ubuntuCoreInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 
-const props = {
+const props: ComponentProps<typeof InstanceList> = {
   instances,
-  selectedInstances: [],
+  toggledInstances: [],
   setColumnFilterOptions: vi.fn(),
-  setSelectedInstances: vi.fn(),
+  setToggledInstances: vi.fn(),
+  deselectAllInstances: vi.fn(),
+  selectAllInstances: vi.fn(),
+  instanceCount: instances.length,
 };
 
 describe("InstanceList", () => {
@@ -23,15 +27,14 @@ describe("InstanceList", () => {
       }),
     );
 
-    for (const row of screen
+    for (const [i, row] of screen
       .getAllByRole<HTMLTableRowElement>("row")
-      .slice(1)) {
+      .slice(1)
+      .entries()) {
       const [titleCell] = row.cells;
       assert(titleCell);
 
-      const instance = instances.find(({ title }) => {
-        return titleCell.textContent?.includes(title);
-      });
+      const instance = instances[i];
 
       assert(instance);
       assert(row.cells[3]);
@@ -80,7 +83,7 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setSelectedInstances).toHaveBeenCalledWith(instances);
+    expect(props.setToggledInstances).toHaveBeenCalledWith(instances);
 
     rerender(<InstanceList {...props} toggledInstances={instances} />);
     const checkedCheckboxes = screen.getAllByRole("checkbox", {

@@ -23,9 +23,13 @@ describe("PackagesActionForm", () => {
 
       screen.getByRole("searchbox");
 
-      expect(screen.getByRole("button", { name: "Next" })).toBeDisabled();
+      expect(screen.getByRole("button", { name: "Next" })).toHaveAttribute(
+        "aria-disabled",
+      );
 
-      expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: "Cancel" }),
+      ).not.toHaveAttribute("aria-disabled");
     });
 
     it("enables next button when package and version are selected", async () => {
@@ -38,11 +42,11 @@ describe("PackagesActionForm", () => {
       await user.click(screen.getByRole("option", { name: firstPackage.name }));
 
       const nextButton = screen.getByRole("button", { name: "Next" });
-      expect(nextButton).toBeDisabled();
+      expect(nextButton).toHaveAttribute("aria-disabled", "true");
 
       await user.click(screen.getByRole("checkbox", { name: versionLabel }));
 
-      expect(nextButton).toBeEnabled();
+      expect(nextButton).not.toHaveAttribute("aria-disabled");
     });
 
     it("has a back button after the first page", async () => {

@@ -1198,7 +1198,7 @@ export const instances = [
   ubuntuCoreInstance,
   {
     id: 200,
-    title: "Application Server 2",
+    title: "Application Server 3",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1237,7 +1237,7 @@ export const instances = [
   } as Instance,
   {
     id: 201,
-    title: "Application Server 2",
+    title: "Application Server 4",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1276,7 +1276,7 @@ export const instances = [
   } as Instance,
   {
     id: 202,
-    title: "Application Server 2",
+    title: "Application Server 5",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1315,7 +1315,7 @@ export const instances = [
   } as Instance,
   {
     id: 203,
-    title: "Application Server 2",
+    title: "Application Server 6",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1354,7 +1354,7 @@ export const instances = [
   } as Instance,
   {
     id: 204,
-    title: "Application Server 2",
+    title: "Application Server 7",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1393,7 +1393,7 @@ export const instances = [
   } as Instance,
   {
     id: 205,
-    title: "Application Server 2",
+    title: "Application Server 8",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1432,7 +1432,7 @@ export const instances = [
   } as Instance,
   {
     id: 206,
-    title: "Application Server 2",
+    title: "Application Server 9",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1471,7 +1471,7 @@ export const instances = [
   } as Instance,
   {
     id: 207,
-    title: "Application Server 2",
+    title: "Application Server 10",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1510,7 +1510,7 @@ export const instances = [
   } as Instance,
   {
     id: 208,
-    title: "Application Server 2",
+    title: "Application Server 11",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1549,7 +1549,7 @@ export const instances = [
   } as Instance,
   {
     id: 209,
-    title: "Application Server 2",
+    title: "Application Server 12",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",
@@ -1588,7 +1588,7 @@ export const instances = [
   } as Instance,
   {
     id: 210,
-    title: "Application Server 2",
+    title: "Application Server 13",
     comment: "",
     cloud_init: {},
     hostname: "appserv2",

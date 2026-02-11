@@ -66,8 +66,8 @@ const ReplaceTokenForm = lazy(async () =>
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
   readonly toggledInstances: Instance[];
-  readonly areAllInstancesSelected: boolean;
   readonly instanceCount: number;
+  readonly areAllInstancesSelected?: boolean;
   readonly query?: string;
 }
 
@@ -365,7 +365,7 @@ const InstancesPageActions = ({
           <span>Install</span>
         </>
       ),
-      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
+      disabled: noInstanceHasPackageFeature,
       onClick: () => {
         openPackagesActionForm("install");
       },
@@ -381,7 +381,7 @@ const InstancesPageActions = ({
       onClick: () => {
         openPackagesActionForm("uninstall");
       },
-      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -391,7 +391,7 @@ const InstancesPageActions = ({
           <span>Downgrade</span>
         </>
       ),
-      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
+      disabled: noInstanceHasPackageFeature,
       onClick: () => {
         openPackagesActionForm("downgrade");
       },
@@ -407,7 +407,7 @@ const InstancesPageActions = ({
       onClick: () => {
         openPackagesActionForm("hold");
       },
-      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
@@ -420,7 +420,7 @@ const InstancesPageActions = ({
       onClick: () => {
         openPackagesActionForm("unhold");
       },
-      disabled: !areAllInstancesSelected && noInstanceHasPackageFeature,
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
   ];
