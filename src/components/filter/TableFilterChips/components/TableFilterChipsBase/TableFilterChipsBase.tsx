@@ -109,7 +109,7 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
     if (flatFilters.length > 1) {
       calculateOverflowingChips();
     }
-  }, [flatFilters.length, calculateOverflowingChips]);
+  }, [flatFilters, calculateOverflowingChips]);
 
   if (!flatFilters[0]) {
     return null;
