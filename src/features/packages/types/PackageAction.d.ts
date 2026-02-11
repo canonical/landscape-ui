@@ -12,5 +12,4 @@ export type PackageAction =
   | "uninstall"
   | "hold"
   | "unhold"
-  | "downgrade"
-  | "upgrade";
+  | "downgrade";

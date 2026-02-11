@@ -63,7 +63,7 @@ const AffectedInstancesModal: FC<AffectedInstancesModalProps> = ({
         Cell: upgrade.versions.newest,
       },
     ],
-    [upgrade.versions.current, upgrade.versions.newest, upgrade.versions],
+    [upgrade.versions],
   );
 
   if (instancesError) {

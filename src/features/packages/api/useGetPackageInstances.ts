@@ -8,7 +8,7 @@ import type { PackageInstance } from "../types/Package";
 
 export interface GetPackageInstancesParams {
   id: number;
-  action: PackageAction;
+  action: PackageAction | "upgrade";
   selected_versions: string[];
   summary_version?: string;
   limit?: number;

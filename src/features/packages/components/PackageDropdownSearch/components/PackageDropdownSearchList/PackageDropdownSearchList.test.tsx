@@ -1,17 +1,18 @@
-import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import type { Package, SelectedPackage } from "@/features/packages";
 import { packages } from "@/tests/mocks/packages";
-import PackageDropdownSearchList from "./PackageDropdownSearchList";
-import { AxiosHeaders, type AxiosResponse } from "axios";
-import classes from "./PackageDropdownSearchList.module.scss";
-import type { ControllerStateAndHelpers } from "downshift";
-import type { Package } from "@/features/packages";
+import { renderWithProviders } from "@/tests/render";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type {
   InfiniteData,
   UseInfiniteQueryResult,
 } from "@tanstack/react-query";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import { screen } from "@testing-library/react";
+import { AxiosHeaders, type AxiosResponse } from "axios";
+import type { ControllerStateAndHelpers } from "downshift";
+import type { ComponentProps } from "react";
+import { describe, expect, it } from "vitest";
+import PackageDropdownSearchList from "./PackageDropdownSearchList";
+import classes from "./PackageDropdownSearchList.module.scss";
 
 type QueryResultType = UseInfiniteQueryResult<
   InfiniteData<AxiosResponse<ApiPaginatedResponse<Package>>>
@@ -49,8 +50,8 @@ const mockQueryResult = {
 const selectedPackage = {
   name: "accountsservice",
   id: 174788,
-  versions: ["0.6.55-0ubuntu12~20.04.6"],
-};
+  versions: [{ name: "0.6.55-0ubuntu12~20.04.6" }],
+} as const satisfies SelectedPackage;
 
 const props = {
   downshiftOptions: mockDownshift,
@@ -59,7 +60,7 @@ const props = {
   hasOneInstance: false,
   exact: false,
   search: "",
-};
+} as const satisfies ComponentProps<typeof PackageDropdownSearchList>;
 
 describe("PackageDropdownSearchList", () => {
   it("renders list of packages when query is completed", () => {
@@ -106,7 +107,7 @@ describe("PackageDropdownSearchList", () => {
 
     const { name, versions } = selectedPackage;
     screen.getByText(name);
-    screen.getByText(versions[0] ?? "");
+    screen.getByText(versions[0].name);
   });
 
   it("renders empty message for exact search", async () => {
