@@ -4,10 +4,20 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 
-const WslFilter: FC<FilterProps> = ({ label, options, inline = false }) => {
+const WslFilter: FC<FilterProps> = ({
+  label,
+  options,
+  inline = false,
+  onChange,
+}) => {
   const { wsl, setPageParams } = usePageParams();
 
   useSetDynamicFilterValidation("wsl", ["parent", "child"]);
+
+  const handleItemsSelect = (items: string[]) => {
+    setPageParams({ wsl: items });
+    onChange?.();
+  };
 
   return (
     <TableFilter
@@ -16,9 +26,7 @@ const WslFilter: FC<FilterProps> = ({ label, options, inline = false }) => {
       hasToggleIcon
       hasBadge
       options={options}
-      onItemsSelect={(items) => {
-        setPageParams({ wsl: items });
-      }}
+      onItemsSelect={handleItemsSelect}
       selectedItems={wsl}
       inline={inline}
     />

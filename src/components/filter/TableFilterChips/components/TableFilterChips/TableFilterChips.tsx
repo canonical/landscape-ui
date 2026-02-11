@@ -19,6 +19,7 @@ interface TableFilterChipsProps {
   readonly availabilityZonesOptions?: SelectOption[];
   readonly contractExpiryOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
+  readonly onChange?: () => void;
   readonly osOptions?: SelectOption[];
   readonly statusOptions?: SelectOption[];
   readonly tagOptions?: SelectOption[];
@@ -31,14 +32,14 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   availabilityZonesOptions,
   contractExpiryOptions,
   filtersToDisplay = defaultFiltersToDisplay,
+  onChange,
   osOptions,
   statusOptions,
   tagOptions,
   typeOptions,
   wslOptions,
 }) => {
-  const { setPageParams, createPageParamsSetter, ...pageParams } =
-    usePageParams();
+  const { setPageParams, ...pageParams } = usePageParams();
 
   const {
     accessGroups,
@@ -65,6 +66,14 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       setPageParams({
         [pageParamKey]: remove(pageParams[pageParamKey], value),
       });
+      onChange?.();
+    };
+  };
+
+  const createClearer = (newParams: Partial<PageParams>) => {
+    return () => {
+      setPageParams(newParams);
+      onChange?.();
     };
   };
 
@@ -76,7 +85,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         multiple: true as const,
         items: parseSearchQuery(query),
         remove: createRemover("query", filterSearchQuery),
-        clear: createPageParamsSetter({ query: "" }),
+        clear: createClearer({ query: "" }),
       },
     },
     {
@@ -84,7 +93,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "Search",
         item: search,
-        clear: createPageParamsSetter({ search: "" }),
+        clear: createClearer({ search: "" }),
       },
     },
     {
@@ -92,7 +101,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "Status",
         item: getItem(statusOptions, status),
-        clear: createPageParamsSetter({ status: "" }),
+        clear: createClearer({ status: "" }),
       },
     },
     {
@@ -100,7 +109,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "OS",
         item: getItem(osOptions, os),
-        clear: createPageParamsSetter({ os: "" }),
+        clear: createClearer({ os: "" }),
       },
     },
     {
@@ -112,7 +121,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         multiple: true as const,
         items: getItems(availabilityZonesOptions, availabilityZones),
         remove: createRemover("availabilityZones", filterItem),
-        clear: createPageParamsSetter({ availabilityZones: [] }),
+        clear: createClearer({ availabilityZones: [] }),
       },
     },
     {
@@ -122,7 +131,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         multiple: true as const,
         items: getItems(accessGroupOptions, accessGroups),
         remove: createRemover("accessGroups", filterItem),
-        clear: createPageParamsSetter({ accessGroups: [] }),
+        clear: createClearer({ accessGroups: [] }),
       },
     },
     {
@@ -132,7 +141,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         multiple: true as const,
         items: getItems(tagOptions, tags),
         remove: createRemover("tags", filterItem),
-        clear: createPageParamsSetter({ tags: [] }),
+        clear: createClearer({ tags: [] }),
       },
     },
     {
@@ -140,7 +149,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "From",
         item: fromDate,
-        clear: createPageParamsSetter({ fromDate: "" }),
+        clear: createClearer({ fromDate: "" }),
       },
     },
     {
@@ -148,7 +157,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "To",
         item: toDate,
-        clear: createPageParamsSetter({ toDate: "" }),
+        clear: createClearer({ toDate: "" }),
       },
     },
     {
@@ -156,7 +165,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "From pass rate",
         item: getPassRate(passRateFrom, 0),
-        clear: createPageParamsSetter({ passRateFrom: 0 }),
+        clear: createClearer({ passRateFrom: 0 }),
       },
     },
     {
@@ -164,7 +173,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "To",
         item: getPassRate(passRateTo, 100),
-        clear: createPageParamsSetter({ passRateTo: 100 }),
+        clear: createClearer({ passRateTo: 100 }),
       },
     },
     {
@@ -172,7 +181,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "Type",
         item: getItem(typeOptions, type),
-        clear: createPageParamsSetter({ type: "" }),
+        clear: createClearer({ type: "" }),
       },
     },
     {
@@ -182,7 +191,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         multiple: true as const,
         items: getItems(wslOptions, wsl),
         remove: createRemover("wsl", filterItem),
-        clear: createPageParamsSetter({ wsl: [] }),
+        clear: createClearer({ wsl: [] }),
       },
     },
     {
@@ -190,14 +199,14 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       value: {
         label: "Contract expiry",
         item: getItem(contractExpiryOptions, contractExpiryDays),
-        clear: createPageParamsSetter({ contractExpiryDays: "" }),
+        clear: createClearer({ contractExpiryDays: "" }),
       },
     },
   ]
     .filter(({ condition }) => condition)
     .map(({ value }) => value);
 
-  const clearAll = createPageParamsSetter({
+  const clearAll = createClearer({
     accessGroups: [],
     availabilityZones: [],
     contractExpiryDays: "",

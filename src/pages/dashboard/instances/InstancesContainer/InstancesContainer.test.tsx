@@ -2,14 +2,19 @@ import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { afterEach } from "vitest";
 import InstancesContainer from "./InstancesContainer";
 
-const props = {
+const props: Omit<
+  ComponentProps<typeof InstancesContainer>,
+  "setSelectedInstances"
+> = {
   instances: [],
   instanceCount: 0,
   isGettingInstances: false,
   selectedInstances: [],
+  onChangeFilter: vi.fn(),
 };
 
 const columns = [

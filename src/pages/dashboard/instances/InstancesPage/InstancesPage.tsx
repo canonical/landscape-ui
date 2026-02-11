@@ -4,31 +4,32 @@ import PageMain from "@/components/layout/PageMain";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { InstancesPageActions, useGetInstances } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
-import useSelection from "@/hooks/useSelection";
-import InstancesContainer from "@/pages/dashboard/instances/InstancesContainer/InstancesContainer";
 import type { Instance } from "@/types/Instance";
-import { type FC } from "react";
+import { useState, type FC } from "react";
+import InstancesContainer from "../InstancesContainer";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
 
-  const { instances, instancesCount, isGettingInstances, isErrorInstances } =
-    useGetInstances({
-      query: getQuery(filters),
-      archived_only: filters.status === "archived",
-      with_alerts: true,
-      with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-      wsl_children: wsl.includes("child"),
-      wsl_parents: wsl.includes("parent"),
-    });
+  const query = getQuery(filters);
 
-  const {
-    selectedItems: selectedInstances,
-    setSelectedItems: setSelectedInstances,
-  } = useSelection<Instance>(instances, isGettingInstances || isErrorInstances);
+  const { instances, instancesCount, isGettingInstances } = useGetInstances({
+    query,
+    archived_only: filters.status === "archived",
+    with_alerts: true,
+    with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+    wsl_children: wsl.includes("child"),
+    wsl_parents: wsl.includes("parent"),
+  });
+
+  const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
+
+  const clearSelection = () => {
+    setSelectedInstances([]);
+  };
 
   return (
     <PageMain>
@@ -49,6 +50,7 @@ const InstancesPage: FC = () => {
           isGettingInstances={isGettingInstances}
           selectedInstances={selectedInstances}
           setSelectedInstances={setSelectedInstances}
+          onChangeFilter={clearSelection}
         />
       </PageContent>
     </PageMain>
