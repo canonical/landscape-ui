@@ -1,15 +1,20 @@
 import { ubuntuInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
+import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import InstancesContainer from "../InstancesContainer";
 import InstancesPage from "./InstancesPage";
 
-const props = {
+const props: Omit<
+  ComponentProps<typeof InstancesContainer>,
+  "setSelectedInstances"
+> = {
   instances: [],
   instanceCount: 0,
   isGettingInstances: false,
   selectedInstances: [],
+  onChangeFilter: vi.fn(),
 };
 
 describe("InstancesPage", () => {

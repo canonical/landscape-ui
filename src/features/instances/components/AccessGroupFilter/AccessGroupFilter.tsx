@@ -1,19 +1,15 @@
-import type { FC } from "react";
 import type { GroupedOption } from "@/components/filter";
 import { TableFilter } from "@/components/filter";
-import usePageParams from "@/hooks/usePageParams";
+import type { FilterProps } from "@/components/filter/types";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import type { FC } from "react";
 
-interface AccessGroupFilterProps {
-  readonly options: GroupedOption[];
-  readonly label: string;
-  readonly inline?: boolean;
-}
-
-const AccessGroupFilter: FC<AccessGroupFilterProps> = ({
+const AccessGroupFilter: FC<FilterProps<GroupedOption>> = ({
   options,
   label,
   inline = false,
+  onChange,
 }) => {
   const { accessGroups, setPageParams } = usePageParams();
 
@@ -22,6 +18,11 @@ const AccessGroupFilter: FC<AccessGroupFilterProps> = ({
     options.map((opt) => opt.value),
   );
 
+  const handleItemsSelect = (items: string[]) => {
+    setPageParams({ accessGroups: items });
+    onChange?.();
+  };
+
   return (
     <TableFilter
       type="multiple"
@@ -29,9 +30,7 @@ const AccessGroupFilter: FC<AccessGroupFilterProps> = ({
       hasToggleIcon
       hasBadge
       options={options}
-      onItemsSelect={(items) => {
-        setPageParams({ accessGroups: items });
-      }}
+      onItemsSelect={handleItemsSelect}
       selectedItems={accessGroups}
       inline={inline}
     />

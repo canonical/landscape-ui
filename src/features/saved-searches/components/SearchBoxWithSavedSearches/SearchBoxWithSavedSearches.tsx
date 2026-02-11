@@ -1,24 +1,26 @@
+import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
+import { Form, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, KeyboardEvent } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
-import { Form, SearchBox } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
 import { useGetSavedSearches } from "../../api";
+import type { SavedSearch } from "../../types";
 import SavedSearchList from "../SavedSearchList";
 import SearchInfoBox from "../SearchInfoBox";
 import SearchPrompt from "../SearchPrompt";
-import type { SavedSearch } from "../../types";
-import classes from "./SearchBoxWithSavedSearches.module.scss";
-import usePageParams from "@/hooks/usePageParams";
 import { getFilteredSavedSearches } from "./helpers";
+import classes from "./SearchBoxWithSavedSearches.module.scss";
 
 interface SearchBoxWithSavedSearchesProps {
   readonly onHelpButtonClick: () => void;
+  readonly onChange?: () => void;
 }
 
 const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   onHelpButtonClick,
+  onChange,
 }) => {
   const { query, setPageParams } = usePageParams();
   const [inputText, setInputText] = useState(query ?? "");
@@ -55,9 +57,6 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
 
   const handleSearch = () => {
     const nextQuery = inputText.trim();
-    if (!nextQuery) {
-      return;
-    }
 
     const searches = getFilteredSavedSearches({
       inputText: "",
@@ -72,10 +71,12 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
       : "";
 
     setPageParams({ query: `${prefix}${nextQuery}` });
+    onChange?.();
   };
 
   const handleSavedSearchClick = (savedSearch: SavedSearch) => {
     setPageParams({ query: `search:${savedSearch.name}` });
+    onChange?.();
   };
 
   const handleKeysOnSearchBox = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -129,6 +130,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
               onClear={() => {
                 setInputText("");
                 setPageParams({ query: "" });
+                onChange?.();
               }}
               onSearch={handleSearch}
               onClick={() => {

@@ -11,6 +11,7 @@ interface InstancesContainerProps {
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
+  readonly onChangeFilter: () => void;
 }
 
 const InstancesContainer = memo(function InstancesContainer({
@@ -19,6 +20,7 @@ const InstancesContainer = memo(function InstancesContainer({
   isGettingInstances,
   selectedInstances,
   setSelectedInstances,
+  onChangeFilter
 }: InstancesContainerProps) {
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
@@ -30,7 +32,10 @@ const InstancesContainer = memo(function InstancesContainer({
 
   return (
     <>
-      <InstancesHeader columnFilterOptions={columnFilterOptions} />
+      <InstancesHeader
+        columnFilterOptions={columnFilterOptions}
+        onChangeFilter={onChangeFilter}
+      />
 
       {isGettingInstances ? (
         <LoadingState />

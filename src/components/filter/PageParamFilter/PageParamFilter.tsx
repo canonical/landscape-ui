@@ -17,6 +17,7 @@ const PageParamFilter: FC<PageParamFilterProps> = ({
   label,
   inline = false,
   pageParamKey,
+  onChange,
 }) => {
   const { setPageParams, ...pageParams } = usePageParams();
 
@@ -27,6 +28,7 @@ const PageParamFilter: FC<PageParamFilterProps> = ({
 
   const handleItemSelect = (item: string) => {
     setPageParams({ [pageParamKey]: item });
+    onChange?.();
   };
 
   return (
