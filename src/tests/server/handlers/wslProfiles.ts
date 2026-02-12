@@ -3,6 +3,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 
 export default [
   http.get(`${API_URL}child-instance-profiles`, ({ request }) => {
@@ -65,5 +66,13 @@ export default [
     return HttpResponse.json(
       wslProfiles.find((wslProfile) => wslProfile.name === params.name),
     );
+  }),
+
+  http.delete(`${API_URL}child-instance-profiles/:name`, () => {
+    const endpointStatus = getEndpointStatus();
+    if (endpointStatus.status === "error") {
+      throw ENDPOINT_STATUS_API_ERROR;
+    }
+    return HttpResponse.json();
   }),
 ];

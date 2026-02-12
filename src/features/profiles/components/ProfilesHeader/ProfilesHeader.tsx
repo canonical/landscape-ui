@@ -9,7 +9,11 @@ import classes from "./ProfilesHeader.module.scss";
 import { STATUS_OPTIONS } from "./constants";
 import { canArchiveProfile } from "../../helpers";
 
-const ProfilesHeader: FC<{ readonly type: ProfileType }> = ({ type }) => {
+interface ProfilesHeaderProps {
+  readonly type: ProfileType;
+}
+
+const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
   const hasFilters = canArchiveProfile(type);
 
   const filters: FilterKey[] = (() => {
