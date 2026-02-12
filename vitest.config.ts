@@ -48,7 +48,6 @@ export default defineConfig({
         "**/*.d.ts",
         "**/virtual:*",
         "**/__x00__*",
-        "**/\x00*",
         "**/*{.,-}{test,spec}.{ts,tsx}",
         "**/__tests__/**",
         "**/vitest.{workspace,projects}.ts",
