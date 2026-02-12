@@ -43,7 +43,7 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).toBeDisabled();
+      expect(installButton).toHaveAttribute("aria-disabled", "true");
     });
   });
 
@@ -69,6 +69,7 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
+      expect(installButton).not.toHaveAttribute("aria-disabled");
       expect(installButton).toBeEnabled();
     });
 
@@ -140,6 +141,6 @@ describe("PackagesInstallForm", () => {
     const installButton = screen.getByRole("button", {
       name: "Install packages",
     });
-    expect(installButton).toBeDisabled();
+    expect(installButton).toHaveAttribute("aria-disabled", "true");
   });
 });

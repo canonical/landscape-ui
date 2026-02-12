@@ -1,10 +1,10 @@
 import { alerts } from "@/tests/mocks/alerts";
+import { renderWithProviders } from "@/tests/render";
 import type { MultiSelectItem } from "@canonical/react-components";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import AlertTagsCell from "./AlertTagsCell";
-import { renderWithProviders } from "@/tests/render";
 
 const mockAlert = alerts[0];
 
@@ -33,7 +33,10 @@ describe("AlertTagsCell", () => {
     expect(screen.getByRole("combobox").textContent).not.toBe(
       initialComboBoxLabel,
     );
-    expect(screen.getByText("Save changes")).not.toBeDisabled();
+
+    const saveButton = screen.getByRole("button", { name: "Save changes" });
+    expect(saveButton).not.toHaveAttribute("aria-disabled");
+    expect(saveButton).toBeEnabled();
   });
 
   it("reverts changes when clicking the Revert button", async () => {
@@ -53,7 +56,10 @@ describe("AlertTagsCell", () => {
     expect(screen.getByRole("combobox").textContent).not.toBe(
       initialComboBoxLabel,
     );
-    expect(screen.getByText("Revert")).not.toBeDisabled();
+
+    const revertButton = screen.getByRole("button", { name: "Revert" });
+    expect(revertButton).not.toHaveAttribute("aria-disabled");
+    expect(revertButton).toBeEnabled();
 
     await userEvent.click(screen.getByText("Revert"));
     expect(screen.getByRole("combobox").textContent).toBe(initialComboBoxLabel);

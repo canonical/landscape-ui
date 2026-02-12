@@ -94,7 +94,9 @@ describe("PackageActions", () => {
         <PackageActions selectedPackages={[packageWithUpgrade]} />,
       );
 
-      expect(screen.getByRole("button", { name: /upgrade/i })).toBeEnabled();
+      const upgradeButton = screen.getByRole("button", { name: /upgrade/i });
+      expect(upgradeButton).not.toHaveAttribute("aria-disabled");
+      expect(upgradeButton).toBeEnabled();
     });
 
     it("disables hold button when all packages are already held", () => {
@@ -111,7 +113,9 @@ describe("PackageActions", () => {
         <PackageActions selectedPackages={[installedPackage]} />,
       );
 
-      expect(screen.getByRole("button", { name: "Hold" })).toBeEnabled();
+      const holdButton = screen.getByRole("button", { name: "Hold" });
+      expect(holdButton).not.toHaveAttribute("aria-disabled");
+      expect(holdButton).toBeEnabled();
     });
 
     it("disables unhold button when no packages are held", () => {
@@ -128,7 +132,9 @@ describe("PackageActions", () => {
     it("enables unhold button when packages are held", () => {
       renderWithProviders(<PackageActions selectedPackages={[heldPackage]} />);
 
-      expect(screen.getByRole("button", { name: /unhold/i })).toBeEnabled();
+      const unholdButton = screen.getByRole("button", { name: /unhold/i });
+      expect(unholdButton).not.toHaveAttribute("aria-disabled");
+      expect(unholdButton).toBeEnabled();
     });
   });
 

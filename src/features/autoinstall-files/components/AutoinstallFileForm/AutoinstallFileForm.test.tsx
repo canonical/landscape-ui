@@ -54,6 +54,6 @@ describe("AutoinstallFileForm", () => {
       name: createAutoinstallFileProps.buttonText,
     });
 
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveAttribute("aria-disabled", "true");
   });
 });

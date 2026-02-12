@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AccountCreationSelfHostedForm from "./AccountCreationSelfHostedForm";
 
 const createStandaloneAccountMock = vi.fn();
@@ -61,7 +61,7 @@ describe("AccountCreationSelfHostedForm", () => {
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
     const submitButton = screen.getByRole("button", { name: "Create account" });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveAttribute("aria-disabled", "true");
 
     await user.type(screen.getByLabelText("Full name"), "John Doe");
     await user.type(
@@ -70,6 +70,7 @@ describe("AccountCreationSelfHostedForm", () => {
     );
     await user.type(screen.getByLabelText("Password"), "Password1234");
 
+    expect(submitButton).not.toHaveAttribute("aria-disabled");
     expect(submitButton).toBeEnabled();
   });
 
