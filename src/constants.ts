@@ -12,7 +12,8 @@ export const INPUT_DATE_TIME_FORMAT = `${INPUT_DATE_FORMAT}THH:mm:ss`;
 export const DISPLAY_DATE_FORMAT = "MMM D, YYYY";
 export const DISPLAY_DATE_TIME_FORMAT = "MMM DD, YYYY, HH:mm";
 export const NOT_AVAILABLE = "N/A";
-export const APP_VERSION = __APP_VERSION__;
+export const APP_VERSION = import.meta.env.VITE_APP_VERSION;
+export const APP_COMMIT = import.meta.env.VITE_APP_COMMIT;
 export const FEEDBACK_LINK = "https://bugs.launchpad.net/landscape";
 export const REPORT_VIEW_ENABLED =
   import.meta.env.VITE_REPORT_VIEW_ENABLED === "true";

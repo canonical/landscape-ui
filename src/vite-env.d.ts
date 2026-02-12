@@ -10,10 +10,10 @@ interface ImportMetaEnv {
   readonly VITE_DETAILED_UPGRADES_VIEW_ENABLED: string;
   readonly VITE_MSW_ENABLED: string;
   readonly VITE_MSW_ENDPOINTS_TO_INTERCEPT: string;
+  readonly VITE_APP_VERSION: string;
+  readonly VITE_APP_COMMIT: string;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
-
-declare const __APP_VERSION__: string;

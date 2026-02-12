@@ -17,6 +17,7 @@ export default defineConfig(
       "playwright",
       "public",
       "src/**/*.module.scss.d.ts",
+      "scripts/*.cjs",
     ],
   },
 

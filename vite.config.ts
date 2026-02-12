@@ -1,14 +1,11 @@
-import react from "@vitejs/plugin-react";
 import fs from "fs";
 import * as path from "path";
 import { defineConfig } from "vite";
 import eslint from "vite-plugin-eslint";
-import packageJson from "./package.json";
 
 export default defineConfig(() => {
   return {
     plugins: [
-      react(),
       eslint(),
       {
         name: "exclude-msw",
@@ -25,9 +22,6 @@ export default defineConfig(() => {
       alias: {
         "@": path.resolve(__dirname, "src"),
       },
-    },
-    define: {
-      __APP_VERSION__: JSON.stringify(packageJson.version),
     },
     css: {
       preprocessorOptions: {

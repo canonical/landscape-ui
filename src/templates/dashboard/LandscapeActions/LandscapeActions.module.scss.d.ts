@@ -5,6 +5,7 @@ declare const styles: {
   readonly "title": string;
   readonly "titleRow": string;
   readonly "version": string;
+  readonly "commit": string;
 };
 export = styles;
 

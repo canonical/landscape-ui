@@ -36,6 +36,13 @@
   color: $color-mid-x-light;
 }
 
+.commit {
+  color: $color-mid-x-light;
+  display: inline-block;
+  font-size: 0.875rem;
+  margin-left: $spv--x-small;
+}
+
 .feedbackLink {
   &:visited {
     color: $color-link-dark;

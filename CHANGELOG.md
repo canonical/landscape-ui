@@ -1,3 +1,8 @@
+# Landscape Lifecycle Transition (February 2026)
+*Note: starting from this point, Landscape UI follows the Landscape Server Release Specification (CalVer YY.MM.Point.Patch).*
+
+---
+
 # [1.23.0](https://github.com/canonical/landscape-ui/compare/v1.22.0...v1.23.0) (2026-01-08)
 
 
