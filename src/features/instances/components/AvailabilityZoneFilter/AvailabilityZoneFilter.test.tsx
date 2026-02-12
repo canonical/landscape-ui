@@ -18,6 +18,7 @@ const props: ComponentProps<typeof AvailabilityZoneFilter> = {
   options,
   label,
   inline: false,
+  onChange: vi.fn(),
 };
 
 describe("AvailabilityZoneFilter", () => {
@@ -72,6 +73,7 @@ describe("AvailabilityZoneFilter", () => {
 
     await userEvent.click(checkbox);
     expect(checkbox).toBeChecked();
+    expect(props.onChange).toHaveBeenCalled();
   });
 
   it("handles selecting 'none' option", async () => {

@@ -3,7 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { InstanceList, InstancesHeader } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
-import { memo, useCallback, useState } from "react";
+import { memo, useState } from "react";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
@@ -26,10 +26,6 @@ const InstancesContainer = memo(function InstancesContainer({
     ColumnFilterOption[]
   >([]);
 
-  const handleClearSelection = useCallback(() => {
-    setSelectedInstances([]);
-  }, [setSelectedInstances]);
-
   return (
     <>
       <InstancesHeader
@@ -50,7 +46,7 @@ const InstancesContainer = memo(function InstancesContainer({
 
       <TablePagination
         totalItems={instanceCount}
-        handleClearSelection={handleClearSelection}
+        handleClearSelection={onChangeFilter}
         currentItemCount={instances.length}
       />
     </>

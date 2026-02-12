@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import TableFilterChips from "./TableFilterChips";
 import {
@@ -10,15 +11,18 @@ import {
   parseSearchQuery,
 } from "./helpers";
 
+const props: ComponentProps<typeof TableFilterChips> = {
+  filtersToDisplay: ["availabilityZones"],
+  availabilityZonesOptions: [],
+  onChange: vi.fn(),
+};
+
 describe("TableFilterChips", () => {
   const user = userEvent.setup();
 
   it("removes an availability zone chip", async () => {
     renderWithProviders(
-      <TableFilterChips
-        filtersToDisplay={["availabilityZones"]}
-        availabilityZonesOptions={[]}
-      />,
+      <TableFilterChips {...props} />,
       undefined,
       "/?availabilityZones=zone1,zone2",
     );
@@ -37,6 +41,27 @@ describe("TableFilterChips", () => {
     expect(
       screen.queryByText("Availability z.: zone1"),
     ).not.toBeInTheDocument();
+    expect(props.onChange).toHaveBeenCalled();
+  });
+
+  it("clears all", async () => {
+    renderWithProviders(
+      <TableFilterChips {...props} />,
+      undefined,
+      "/?availabilityZones=zone1,zone2",
+    );
+
+    const clearButton = screen.getByRole("button", {
+      name: "Clear all filters",
+    });
+    await user.click(clearButton);
+    expect(
+      screen.queryByText("Availability z.: zone1"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Availability z.: zone2"),
+    ).not.toBeInTheDocument();
+    expect(props.onChange).toHaveBeenCalled();
   });
 
   it("getPassRate returns a value", () => {
