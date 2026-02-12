@@ -18,6 +18,7 @@ const props: ComponentProps<typeof TagFilter> = {
   options,
   label,
   inline: false,
+  onChange: vi.fn(),
 };
 
 describe("TagFilter", () => {
@@ -65,6 +66,8 @@ describe("TagFilter", () => {
 
     expect(tag1).toBeChecked();
     expect(tag2).toBeChecked();
+
+    expect(props.onChange).toHaveBeenCalledTimes(2);
   });
 
   it("supports inline prop", () => {

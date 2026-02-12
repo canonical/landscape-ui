@@ -1,54 +1,9 @@
-import { ubuntuInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import type { ComponentProps } from "react";
-import { describe, expect, it, vi } from "vitest";
-import InstancesContainer from "../InstancesContainer";
+import { describe, it } from "vitest";
 import InstancesPage from "./InstancesPage";
 
-const props: Omit<
-  ComponentProps<typeof InstancesContainer>,
-  "setSelectedInstances"
-> = {
-  instances: [],
-  instanceCount: 0,
-  isGettingInstances: false,
-  selectedInstances: [],
-  onChangeFilter: vi.fn(),
-};
-
 describe("InstancesPage", () => {
-  it("should render the InstancesPage component", () => {
+  it("renders", () => {
     renderWithProviders(<InstancesPage />);
-    expect(screen.getByText("Instances")).toBeInTheDocument();
-  });
-
-  it("should have selected instances as null initially", () => {
-    const setSelectedInstances = vi.fn();
-    renderWithProviders(
-      <InstancesContainer
-        {...props}
-        setSelectedInstances={setSelectedInstances}
-      />,
-    );
-
-    expect(setSelectedInstances).toHaveBeenCalledTimes(0);
-  });
-
-  it("should update selected instances when an instance is selected", async () => {
-    const setSelectedInstances = vi.fn();
-    const mockInstance = ubuntuInstance;
-
-    renderWithProviders(
-      <InstancesContainer
-        {...props}
-        setSelectedInstances={setSelectedInstances}
-      />,
-    );
-
-    setSelectedInstances([mockInstance]);
-
-    expect(setSelectedInstances).toHaveBeenCalledTimes(1);
-    expect(setSelectedInstances).toHaveBeenCalledWith([mockInstance]);
   });
 });

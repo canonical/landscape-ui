@@ -12,10 +12,8 @@ import { getQuery } from "./helpers";
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
 
-  const query = getQuery(filters);
-
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
-    query,
+    query: getQuery(filters),
     archived_only: filters.status === "archived",
     with_alerts: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
