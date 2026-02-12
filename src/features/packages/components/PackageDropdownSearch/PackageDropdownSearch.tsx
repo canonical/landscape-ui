@@ -1,17 +1,18 @@
+import BoldSubstring from "@/components/form/BoldSubstring";
+import LoadingState from "@/components/layout/LoadingState";
+import useDebug from "@/hooks/useDebug";
+import type { UrlParams } from "@/types/UrlParams";
+import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
 import React, { useState } from "react";
 import { useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
-import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
 import { usePackages } from "../../hooks";
 import type { InstancePackage } from "../../types";
-import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
+import { DEBOUNCE_DELAY } from "./constants";
 import classes from "./PackageDropdownSearch.module.scss";
-import type { UrlParams } from "@/types/UrlParams";
 
 interface PackageDropdownSearchProps {
   readonly selectedItems: InstancePackage[];
@@ -173,7 +174,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                       })}
                     >
                       <div className="u-truncate" data-testid="dropdownElement">
-                        {boldSubstring(item.name, search)}
+                        <BoldSubstring text={item.name} substring={search} />
                       </div>
                       <div>
                         <small className="u-text-muted">

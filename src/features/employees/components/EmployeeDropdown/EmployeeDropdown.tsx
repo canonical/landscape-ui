@@ -1,3 +1,4 @@
+import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
 import classNames from "classnames";
@@ -9,7 +10,6 @@ import { useGetEmployeesInfinite } from "../../api";
 import type { Employee } from "../../types";
 import classes from "./EmployeeDropdown.module.scss";
 import { DEBOUNCE_DELAY, NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
-import { boldSubstring } from "./helpers";
 
 interface EmployeeDropdown {
   readonly employee: Employee | null;
@@ -174,7 +174,7 @@ const EmployeeDropdown: FC<EmployeeDropdown> = ({
                           className="u-truncate"
                           data-testid="dropdownElement"
                         >
-                          {boldSubstring(item.name, inputValue)}
+                          <BoldSubstring text={item.name} substring={search} />
                         </div>
                       </li>
                     ))}
