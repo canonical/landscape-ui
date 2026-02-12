@@ -1,7 +1,9 @@
-import { API_URL } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse } from "./_helpers";
+import { generatePaginatedResponse, isAction } from "./_helpers";
+import { getEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 
 export default [
   http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
@@ -27,5 +29,18 @@ export default [
 
   http.post(`${API_URL}repositoryprofiles`, async () => {
     return HttpResponse.json(repositoryProfiles[0], { status: 201 });
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "RemoveRepositoryProfile")) {
+      return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (endpointStatus.status === "error") {
+      throw ENDPOINT_STATUS_API_ERROR;
+    }
+
+    return HttpResponse.json();
   }),
 ];
