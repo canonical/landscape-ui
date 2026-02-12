@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters {
+  column-gap: $sph--small;
+  display: flex;
+}

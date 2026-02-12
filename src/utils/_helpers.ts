@@ -94,6 +94,13 @@ export const pluralizeArray = <T>(
   return hasOneItem(items) ? getSingularForm(items[0]) : pluralForm;
 };
 
+export const capitalize = (words: string) => {
+  return words
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
+    .join(" ");
+};
+
 export const getTitleByName = (
   name: string,
   response: AxiosResponse<{ name: string; title: string }[]> | undefined,
