@@ -54,7 +54,7 @@ If a critical bug affects an older LTS (e.g., `24.04`), follow this flow:
 
 ## 4. UI Version Identification
 
-You can verify the current version and build hash directly in the UI. We inject these values at build time to ensure the `LandscapeActions.tsx` component shows correct information in the sidebar.
+You can verify the current version and build hash directly in the UI. We inject these values at build time to ensure the `UserInfo.tsx` component shows correct information in the sidebar.
 
 **Reminder:** if the version in your UI ends in `-dev` or `-beta`, you are on a testing branch. Production environments should always show a clean `YY.04.X.X` version.
 

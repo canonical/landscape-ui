@@ -10,6 +10,7 @@ import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAuthHandle } from "@/features/auth";
 import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
+import { APP_COMMIT, APP_VERSION } from "@/constants";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -180,6 +181,9 @@ const UserInfo: FC = () => {
           </Button>
         </li>
       </ul>
+      <span className={classes.versionInfo}>
+        v{APP_VERSION} ({APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})
+      </span>
     </div>
   );
 };

@@ -21,26 +21,9 @@
   }
 }
 
-.titleRow {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-
 .title {
   font-weight: 550;
   margin-right: $spv--x-small;
-}
-
-.version {
-  color: $color-mid-x-light;
-}
-
-.commit {
-  color: $color-mid-x-light;
-  display: inline-block;
-  font-size: 0.875rem;
-  margin-left: $spv--x-small;
 }
 
 .feedbackLink {

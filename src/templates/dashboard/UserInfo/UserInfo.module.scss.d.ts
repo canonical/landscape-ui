@@ -1,4 +1,5 @@
 declare const styles: {
+  readonly "versionInfo": string;
   readonly "accordionButton": string;
   readonly "button": string;
   readonly "container": string;
