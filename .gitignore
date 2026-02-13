@@ -16,6 +16,7 @@ dist-ssr
 .vite-node
 coverage
 reports
+src/**/*.module.scss.d.ts
 
 # Cache
 .eslintcache

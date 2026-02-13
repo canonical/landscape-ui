@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "vite --host",
-    "build": "pnpm run lint:ci && tsc && vite build",
-    "build:e2e": "pnpm run lint:ci && tsc && vite build --mode e2e",
+    "build": "pnpm run lint:ci && pnpm run tcm:run && tsc && vite build",
+    "build:e2e": "pnpm run build --mode e2e",
     "lint:ci": "eslint --fix . --config eslint.ci.config.mjs --ext .ts,.tsx",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
