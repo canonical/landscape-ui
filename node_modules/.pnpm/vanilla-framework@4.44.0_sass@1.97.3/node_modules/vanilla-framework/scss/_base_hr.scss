@@ -1,0 +1,48 @@
+@import 'settings';
+
+%fixed-width-hr {
+  @mixin adjusted-width($size) {
+    $gutters-sizes: 2 * map-get($grid-margin-widths, $size);
+
+    max-width: calc($grid-max-width - $gutters-sizes);
+    width: calc(100% - $gutters-sizes);
+  }
+
+  margin-left: auto;
+  margin-right: auto;
+  @include adjusted-width(small);
+
+  @media (min-width: $threshold-4-6-col) {
+    @include adjusted-width(default);
+  }
+
+  .row &,
+  .grid-row &,
+  .u-fixed-width & {
+    width: 100%;
+  }
+}
+
+// Horizontal rule
+@mixin vf-b-hr {
+  // stylelint-disable selector-max-type -- base styles can use type selectors
+  hr {
+    @extend %hr;
+
+    // DEPRECATED: use `.p-rule--muted` instead
+    &.is-muted {
+      background-color: $colors--theme--border-low-contrast;
+    }
+
+    &.u-no-margin--bottom {
+      // compensate for hr thickness, to make sure it doesn't drift from baseline grid
+      @extend %u-no-margin--bottom--hr;
+    }
+
+    // DEPRECATED: use rule component inside of the grid instead
+    &.is-fixed-width {
+      @extend %fixed-width-hr;
+    }
+  }
+  // stylelint-enable selector-max-type
+}

@@ -1,0 +1,1 @@
+import{u as o}from"./useFetchOld-BGD2hIpr.js";import{v as c,w as u}from"./index-DYykpNVa.js";const m=()=>{const e=o(),s=c(),{isPending:n,mutateAsync:t}=u({mutationFn:async a=>e.get("RemoveComputers",{params:a}),onSuccess:async()=>s.invalidateQueries({queryKey:["instances"]})});return{removeInstancesFromLandscape:t,isRemovingInstancesFromLandscape:n}};export{m as u};

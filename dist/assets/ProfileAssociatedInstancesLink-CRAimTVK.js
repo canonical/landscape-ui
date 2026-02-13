@@ -1,0 +1,1 @@
+import{j as s,x as e,R as i}from"./index-DYykpNVa.js";import{N as n}from"./NoData-CT6SeJUX.js";import{S as o}from"./StaticLink-BX9qJBBO.js";const p=({count:r,profile:t,query:a})=>!t.tags.length&&!t.all_computers?s.jsx(n,{}):r===0?s.jsx(s.Fragment,{children:"0 instances"}):s.jsxs(o,{to:i.instances.root({query:`profile:${a}`}),children:[r," ",e(r,"instance")]});export{p as P};

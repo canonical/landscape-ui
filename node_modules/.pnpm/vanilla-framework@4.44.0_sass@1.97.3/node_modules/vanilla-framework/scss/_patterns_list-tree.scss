@@ -1,0 +1,93 @@
+@import 'settings';
+
+@mixin vf-p-list-tree {
+  $list-tree-toggle-icon-size: 1rem;
+  $list-tree-item-indent-size: calc($sph--x-large + map-get($icon-sizes, small) / 2);
+
+  %list-tree-icon {
+    content: ' ';
+    display: block;
+    height: $list-tree-toggle-icon-size;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0.3rem;
+    width: $list-tree-toggle-icon-size;
+  }
+
+  %list-tree-expand-icon {
+    @extend %list-tree-icon;
+    @include vf-icon-chevron-right-themed;
+  }
+
+  %list-tree-collapse-icon {
+    @extend %list-tree-icon;
+    @include vf-icon-chevron-down-themed;
+  }
+
+  .p-list-tree__link,
+  .p-list-tree__toggle {
+    color: $colors--theme--text-default;
+    cursor: pointer;
+
+    &:hover {
+      color: $colors--theme--link-default;
+      text-decoration: underline;
+    }
+
+    &.is-active {
+      color: $colors--theme--link-default;
+    }
+  }
+
+  .p-list-tree {
+    list-style-type: none;
+    margin-left: $sp-x-small;
+    padding-left: $sph--small;
+
+    .p-list-tree {
+      display: none;
+      margin: 0;
+      padding: 0;
+
+      &[aria-hidden='false'] {
+        display: block;
+      }
+
+      &[aria-hidden='false']::before {
+        @extend %list-tree-collapse-icon;
+      }
+    }
+  }
+
+  .p-list-tree__item {
+    @include vf-focus-themed;
+
+    margin-top: $sp-xx-small;
+    padding-left: $list-tree-item-indent-size;
+    position: relative;
+  }
+
+  .p-list-tree__toggle[aria-expanded='false'] {
+    &::before {
+      @extend %list-tree-expand-icon;
+    }
+  }
+
+  .p-list-tree__toggle {
+    @include vf-focus-themed;
+
+    background: transparent;
+    border: 0;
+    font-weight: normal;
+    margin: 0 0 0 (-$list-tree-item-indent-size);
+    padding: 0 $sph--small 0 $list-tree-item-indent-size;
+    transition-duration: 0s;
+
+    // Hide the default button styling for toggles
+    &[aria-expanded='true'],
+    &:hover {
+      background: $colors--theme--background-default;
+    }
+  }
+}

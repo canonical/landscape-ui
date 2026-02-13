@@ -1,0 +1,1 @@
+import{a as o,r as c,b as r,A as u,c as i}from"./index-DYykpNVa.js";const x=()=>{const{isSelfHosted:a}=o(),[s]=c.useState(()=>r.create({baseURL:u})),{data:e,isLoading:t,error:n}=i({queryKey:["standaloneAccount"],queryFn:async()=>await s.get("standalone-account"),retry:!1,enabled:a,staleTime:0,gcTime:0});return{accountExists:e?.data.exists??!1,isLoading:t,error:n}};export{x as u};

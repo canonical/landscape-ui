@@ -1,0 +1,1 @@
+import{j as c,I as o}from"./index-DYykpNVa.js";const n="_blocks_705cg_1",t={blocks:n},i="_item_1lxzy_1",l="_heading_1lxzy_6",a={item:i,heading:l},m=({children:s,title:e})=>c.jsxs("section",{className:a.item,children:[e&&c.jsx("h4",{className:o(a.heading,"p-heading--5"),children:e}),s]}),_=({children:s})=>c.jsx("div",{className:t.blocks,children:s});_.Item=m;export{_ as B};
