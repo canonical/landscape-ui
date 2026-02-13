@@ -1,0 +1,8 @@
+@import 'settings';
+
+// Positions element out of flow & off screen for screen readers
+@mixin vf-u-off-screen {
+  .u-off-screen {
+    @extend %u-off-screen;
+  }
+}

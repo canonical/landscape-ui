@@ -1,0 +1,1 @@
+import{u}from"./useFetchOld-BgGVMMmJ.js";import{v as c,w as r}from"./index-Dfc97QGW.js";const d=()=>{const t=u(),e=c(),{mutateAsync:i,isPending:s}=r({mutationKey:["scripts","edit"],mutationFn:async n=>t.get("EditScript",{params:n}),onSuccess:async()=>e.invalidateQueries({queryKey:["scripts"]})});return{editScript:i,isEditing:s}};export{d as u};

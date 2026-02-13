@@ -1,0 +1,1 @@
+import{j as s}from"./index-Dfc97QGW.js";import{c as e}from"./ListTitle-DsIgCqjQ.js";const r={accessor:"title",id:"title",Header:s.jsxs("div",{className:e.header,children:["Title",s.jsx("span",{className:"u-text--muted",children:"Name"})]})};export{r as L};

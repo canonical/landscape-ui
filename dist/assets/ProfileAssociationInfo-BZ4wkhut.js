@@ -1,0 +1,1 @@
+import{j as e}from"./index-Dfc97QGW.js";const n=({children:t,profile:s})=>s.all_computers?e.jsx("p",{children:"This profile has been associated with all instances."}):s.tags.length?t:e.jsx("p",{children:"This profile has not yet been associated with any instances."});export{n as P};

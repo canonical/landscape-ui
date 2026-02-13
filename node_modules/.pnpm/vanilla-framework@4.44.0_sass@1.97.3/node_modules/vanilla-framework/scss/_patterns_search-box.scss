@@ -1,0 +1,86 @@
+@mixin vf-p-search-box {
+  %search-box-button {
+    display: block;
+    height: calc((2 * $spv-nudge + map-get($settings-text-default, line-height)) - (2 * $bar-thickness)); // side padding + icon width - focus outline width * 2
+    margin: $bar-thickness 0;
+    position: relative;
+
+    &:hover {
+      background: inherit;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+
+    & [class*='p-icon'] {
+      vertical-align: 0; // reset vertical-align, as icon is aligned to the parent container, not the baseline of the text.
+
+      &:only-child {
+        margin-left: -$sph--small;
+        margin-right: -$sph--small;
+      }
+    }
+  }
+
+  .p-search-box {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: $input-margin-bottom;
+    position: relative;
+
+    .p-search-box__reset {
+      @extend %search-box-button;
+      @extend %transparent-button;
+    }
+
+    .p-search-box__input {
+      flex: 1 1 100%;
+      margin-bottom: 0;
+      padding-right: calc(2 * (2 * $spv-nudge + map-get($settings-text-default, line-height)));
+      position: absolute;
+      right: 0;
+
+      &:hover,
+      &:-webkit-autofill:hover {
+        background-color: $colors--theme--background-hover !important;
+      }
+
+      &:active,
+      &:focus,
+      &:-internal-autofill-selected,
+      &:-webkit-autofill,
+      &:-webkit-autofill:focus {
+        // XXX: remove important once the button {} selector is refactored to use themeing. At the moment, it trumps these.
+        background-color: $colors--theme--background-active !important;
+        border-color: $colors--theme--border-high-contrast !important;
+      }
+
+      &::-webkit-search-cancel-button {
+        -webkit-appearance: none; // stylelint-disable-line property-no-vendor-prefix
+      }
+
+      &:not(:valid) ~ .p-search-box__reset {
+        display: none;
+      }
+    }
+
+    .p-search-box__button {
+      @extend %search-box-button;
+      @extend %transparent-button;
+
+      border-left-style: solid;
+      border-left-width: 1px;
+    }
+  }
+
+  %transparent-button {
+    &,
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: transparent !important; //XXX: remove important once buttons have been themified
+      border-width: 0;
+    }
+  }
+}

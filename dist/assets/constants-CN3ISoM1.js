@@ -1,0 +1,1 @@
+import{p as e,n as a,i as r}from"./index-Dfc97QGW.js";import{r as o,d as t}from"./helpers-BbXQOWxJ.js";const s=e().shape({...t,...o,new_kernel_version_id:r().required("You have to select a kernel"),reboot_after:a()});export{s as K};

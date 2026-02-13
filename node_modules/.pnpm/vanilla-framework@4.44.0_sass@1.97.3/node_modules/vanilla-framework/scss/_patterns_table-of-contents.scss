@@ -1,0 +1,44 @@
+@import 'settings';
+
+@mixin vf-p-table-of-contents {
+  .p-table-of-contents {
+    @extend %vf-grid-container-padding;
+  }
+
+  .p-table-of-contents__header {
+    @extend %muted-heading;
+  }
+
+  .p-table-of-contents__section {
+    padding-bottom: $spv--large;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $colors--theme--border-low-contrast;
+    }
+  }
+
+  .p-table-of-contents__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    .p-table-of-contents__list {
+      margin-left: $sph--large;
+    }
+
+    .p-table-of-contents__link {
+      display: block;
+      // paddings based on side navigation
+      padding-bottom: $spv--x-small;
+      padding-top: $spv--x-small;
+
+      &.is-active {
+        font-weight: $font-weight-bold;
+      }
+
+      &:visited {
+        color: $colors--theme--link-default;
+      }
+    }
+  }
+}
