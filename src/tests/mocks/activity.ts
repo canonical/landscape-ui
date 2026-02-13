@@ -249,6 +249,25 @@ export const activities = [
     activity_status: "unapproved",
     children: [],
   },
+  {
+    computer_id: 2,
+    activity_status: "undelivered",
+    approval_time: null,
+    completion_time: null,
+    creation_time: "2026-01-13T21:57:57Z",
+    creator: {
+      email: "john@example.com",
+      id: 1,
+      name: "John Smith",
+    },
+    deliver_delay_window: 0,
+    id: 115,
+    parent_id: null,
+    result_code: null,
+    result_text: null,
+    summary: "Request computer 2 to generate a FDE recovery key.",
+    type: "GenerateFDERecoveryKeyRequest",
+  },
 ] as const satisfies Activity[];
 
 export const activityTypes = [
@@ -298,6 +317,7 @@ export const activityTypes = [
   "UnlockUserRequest",
   "UpgradeAllPackagesRequest",
   "UpgradeKernelPackageRequest",
+  "GenerateFDERecoveryKeyRequest",
 ] as const;
 
 export const INVALID_ACTIVITY_SEARCH_QUERY = "invalid_search_query";

@@ -9,7 +9,14 @@ import type {
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
-import { instances, pendingInstances } from "@/tests/mocks/instance";
+import {
+  instanceActivityNoKey,
+  instanceActivityWithKey,
+  instanceNoActivityNoKey,
+  instanceNoActivityWithKey,
+  instances,
+  pendingInstances,
+} from "@/tests/mocks/instance";
 import { userGroups } from "@/tests/mocks/userGroup";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance, PendingInstance } from "@/types/Instance";
@@ -133,6 +140,104 @@ export default [
     `${API_URL}computers/:computerId/sanitize`,
     async () => {
       return HttpResponse.json(activities[0]);
+    },
+  ),
+
+  http.post(
+    `${API_URL}computers/:computerId/recovery-key:generate`,
+    async ({ params }) => {
+      const computerId = Number(params.computerId);
+
+      return HttpResponse.json({
+        id: 115,
+        activity_status: "undelivered",
+        completion_time: null,
+        creation_time: "2026-01-13T21:57:57Z",
+        creator: {
+          email: "john@example.com",
+          id: 1,
+          name: "John Smith",
+        },
+        computer_id: computerId,
+        parent_id: null,
+        result_code: null,
+        result_text: null,
+        summary: `Request computer ${computerId} to generate a FDE recovery key.`,
+        type: "GenerateFDERecoveryKeyRequest",
+        deliver_delay_window: 0,
+      });
+    },
+  ),
+
+  http.get(
+    `${API_URL}computers/:computerId/recovery-key`,
+    async ({ params }) => {
+      const computerId = Number(params.computerId);
+      const hasInstance = instances.some((inst) => inst.id === computerId);
+
+      if (!hasInstance) {
+        return new HttpResponse(null, { status: 404 });
+      }
+
+      const activity = {
+        activity_status: "undelivered",
+        approval_time: null,
+        completion_time: null,
+        creation_time: "2026-01-13T21:57:57Z",
+        creator: {
+          email: "john@example.com",
+          id: 1,
+          name: "John Smith",
+        },
+        computer_id: computerId,
+        deliver_delay_window: 0,
+        id: 115,
+        parent_id: null,
+        result_code: null,
+        result_text: null,
+        summary: `Request computer ${computerId} to generate a FDE recovery key.`,
+        type: "GenerateFDERecoveryKeyRequest",
+      };
+
+      if (computerId === instanceNoActivityNoKey.id) {
+        return HttpResponse.json({
+          activity: null,
+          fde_recovery_key: null,
+        });
+      }
+
+      if (computerId === instanceNoActivityWithKey.id) {
+        return HttpResponse.json({
+          activity: null,
+          fde_recovery_key: "12345-12345-12345-12345-12345-12345-12345-12345",
+        });
+      }
+
+      if (computerId === instanceActivityWithKey.id) {
+        return HttpResponse.json({
+          activity,
+          fde_recovery_key: "12345-12345-12345-12345-12345-12345-12345-12345",
+        });
+      }
+
+      if (computerId === instanceActivityNoKey.id) {
+        return HttpResponse.json({
+          activity,
+          fde_recovery_key: null,
+        });
+      }
+
+      return HttpResponse.json({
+        activity,
+        fde_recovery_key: "12345-12345-12345-12345-12345-12345-12345-12345",
+      });
+    },
+  ),
+
+  http.delete<Record<"computerId", string>>(
+    `${API_URL}computers/:computerId/recovery-key`,
+    async () => {
+      return new HttpResponse(null, { status: 204 });
     },
   ),
 

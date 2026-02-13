@@ -37,6 +37,11 @@ describe("EmployeeInstancesTable", () => {
       });
       expect(statusCell).toBeInTheDocument();
 
+      const recoveryKeyCell = within(row).getByRole("cell", {
+        name: /recovery key/i,
+      });
+      expect(recoveryKeyCell).toBeInTheDocument();
+
       expect(
         within(row).getByLabelText(`${instance.title} profile actions`),
       ).toBeInTheDocument();
