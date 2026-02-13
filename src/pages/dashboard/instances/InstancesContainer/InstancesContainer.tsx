@@ -3,7 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { InstanceList, InstancesHeader } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
-import { memo, useCallback, useState } from "react";
+import { memo, useState } from "react";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
@@ -11,6 +11,7 @@ interface InstancesContainerProps {
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
+  readonly onChangeFilter: () => void;
 }
 
 const InstancesContainer = memo(function InstancesContainer({
@@ -19,18 +20,18 @@ const InstancesContainer = memo(function InstancesContainer({
   isGettingInstances,
   selectedInstances,
   setSelectedInstances,
+  onChangeFilter,
 }: InstancesContainerProps) {
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
   >([]);
 
-  const handleClearSelection = useCallback(() => {
-    setSelectedInstances([]);
-  }, []);
-
   return (
     <>
-      <InstancesHeader columnFilterOptions={columnFilterOptions} />
+      <InstancesHeader
+        columnFilterOptions={columnFilterOptions}
+        onChangeFilter={onChangeFilter}
+      />
 
       {isGettingInstances ? (
         <LoadingState />
@@ -45,7 +46,7 @@ const InstancesContainer = memo(function InstancesContainer({
 
       <TablePagination
         totalItems={instanceCount}
-        handleClearSelection={handleClearSelection}
+        handleClearSelection={onChangeFilter}
         currentItemCount={instances.length}
       />
     </>
