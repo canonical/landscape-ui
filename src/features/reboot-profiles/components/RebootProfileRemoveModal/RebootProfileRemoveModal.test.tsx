@@ -23,6 +23,7 @@ const remove = async () => {
     `remove ${props.rebootProfile.title}`,
   );
   const removeButton = screen.getByRole("button", { name: "Remove" });
+  expect(removeButton).not.toHaveAttribute("aria-disabled");
   expect(removeButton).toBeEnabled();
   await user.click(removeButton);
 };

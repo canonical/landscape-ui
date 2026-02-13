@@ -28,7 +28,7 @@ describe("TagsAddForm", async () => {
 
       const assignButton = screen.getByRole("button", { name: /assign/i });
 
-      expect(assignButton).toBeDisabled();
+      expect(assignButton).toHaveAttribute("aria-disabled", "true");
       await userEvent.click(assignButton);
       expect(screen.queryByText(/tags assigned/i)).not.toBeInTheDocument();
 
@@ -38,6 +38,7 @@ describe("TagsAddForm", async () => {
           .map((checkbox) => userEvent.click(checkbox)),
       );
 
+      expect(assignButton).not.toHaveAttribute("aria-disabled");
       expect(assignButton).toBeEnabled();
       await userEvent.click(assignButton);
 

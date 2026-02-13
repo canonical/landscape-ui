@@ -53,15 +53,16 @@ describe("EmployeeInstancesTableContextualMenu", () => {
     const confirmButton = within(modal).getByRole("button", {
       name: "Sanitize",
     });
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     const input = within(modal).getByRole("textbox");
     await user.clear(input);
     await user.type(input, "wrong text");
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(input);
     await user.type(input, `sanitize ${instance.title}`);
+    expect(confirmButton).not.toHaveAttribute("aria-disabled");
     expect(confirmButton).toBeEnabled();
 
     await user.click(confirmButton);
@@ -88,15 +89,16 @@ describe("EmployeeInstancesTableContextualMenu", () => {
     const confirmButton = within(modal).getByRole("button", {
       name: "Remove",
     });
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     const input = within(modal).getByRole("textbox");
     await user.clear(input);
     await user.type(input, "wrong text");
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(input);
     await user.type(input, `remove ${instance.title}`);
+    expect(confirmButton).not.toHaveAttribute("aria-disabled");
     expect(confirmButton).toBeEnabled();
 
     await user.click(confirmButton);

@@ -101,7 +101,7 @@ describe("PendingInstanceList", () => {
     const approveButton = screen.getByRole("button", { name: /approve/i });
     const rejectButton = screen.getByRole("button", { name: /reject/i });
 
-    expect(rejectButton).toBeDisabled();
+    expect(rejectButton).toHaveAttribute("aria-disabled", "true");
     expect(approveButton).toHaveAttribute("aria-disabled", "true");
   });
 
@@ -116,6 +116,8 @@ describe("PendingInstanceList", () => {
     const approveButton = screen.getByRole("button", { name: /approve/i });
     const rejectButton = screen.getByRole("button", { name: /reject/i });
 
+    expect(approveButton).not.toHaveAttribute("aria-disabled");
+    expect(rejectButton).not.toHaveAttribute("aria-disabled");
     expect(approveButton).toBeEnabled();
     expect(rejectButton).toBeEnabled();
   });

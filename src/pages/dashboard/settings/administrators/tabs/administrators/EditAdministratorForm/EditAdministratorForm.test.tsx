@@ -59,7 +59,7 @@ describe("EditAdministratorForm", () => {
   it("shows disabled save changes button unless a role is changed", () => {
     renderWithProviders(<EditAdministratorForm {...props} />);
     const saveButton = screen.getByRole("button", { name: /save changes/i });
-    expect(saveButton).toBeDisabled();
+    expect(saveButton).toHaveAttribute("aria-disabled", "true");
   });
 
   it("changes role of an admin", async () => {
@@ -79,6 +79,7 @@ describe("EditAdministratorForm", () => {
     await user.click(roleCheckbox);
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
+    expect(saveButton).not.toHaveAttribute("aria-disabled");
     expect(saveButton).toBeEnabled();
   });
 });

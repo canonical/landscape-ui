@@ -1,4 +1,5 @@
 import type { AuthContextProps } from "@/context/auth";
+import type { EnvContextState } from "@/context/env";
 import type { Account } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
@@ -17,7 +18,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUserGeneralSettings } from "../../hooks";
 import type { EditUserDetailsParams, UserDetails } from "../../types";
 import EditUserForm from "./EditUserForm";
-import type { EnvContextState } from "@/context/env";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -131,6 +131,7 @@ describe("EditUserForm", () => {
       await userEvent.type(nameInput, " Updated");
 
       const saveButton = screen.getByRole("button", { name: /save changes/i });
+      expect(saveButton).not.toHaveAttribute("aria-disabled");
       expect(saveButton).toBeEnabled();
 
       await userEvent.click(saveButton);
@@ -151,6 +152,7 @@ describe("EditUserForm", () => {
       await userEvent.type(nameInput, "error");
 
       const saveButton = screen.getByRole("button", { name: /save changes/i });
+      expect(saveButton).not.toHaveAttribute("aria-disabled");
       expect(saveButton).toBeEnabled();
 
       await userEvent.click(saveButton);

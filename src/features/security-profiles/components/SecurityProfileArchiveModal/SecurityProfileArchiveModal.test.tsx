@@ -13,18 +13,19 @@ describe("SecurityProfileArchiveModal", () => {
       <SecurityProfileArchiveModal profile={profile} opened close={vi.fn()} />,
     );
 
-    expect(
-      await screen.findByRole("button", { name: "Archive" }),
-    ).toBeDisabled();
+    const archiveButton = await screen.findByRole("button", {
+      name: "Archive",
+    });
+
+    expect(archiveButton).toHaveAttribute("aria-disabled", "true");
 
     await userEvent.type(
       screen.getByRole("textbox"),
       `archive ${profile.title}`,
     );
 
-    expect(
-      await screen.findByRole("button", { name: "Archive" }),
-    ).toBeEnabled();
+    expect(archiveButton).not.toHaveAttribute("aria-disabled");
+    expect(archiveButton).toBeEnabled();
 
     await userEvent.click(
       await screen.findByRole("button", { name: "Archive" }),

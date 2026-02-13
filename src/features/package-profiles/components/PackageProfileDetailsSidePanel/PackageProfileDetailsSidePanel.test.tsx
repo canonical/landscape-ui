@@ -26,11 +26,12 @@ const renderAndRemove = async () => {
   );
   const modal = screen.getByRole("dialog");
   const button = within(modal).getByRole("button", { name: "Remove" });
-  expect(button).toBeDisabled();
+  expect(button).toHaveAttribute("aria-disabled", "true");
   await user.type(
     within(modal).getByRole("textbox"),
     `remove ${packageProfiles[0].title}`,
   );
+  expect(button).not.toHaveAttribute("aria-disabled");
   expect(button).toBeEnabled();
   await user.click(button);
 };

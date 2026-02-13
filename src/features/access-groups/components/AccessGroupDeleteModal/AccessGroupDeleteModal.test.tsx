@@ -25,7 +25,7 @@ describe("AccessGroupDeleteModal", () => {
 
     expect(
       await screen.findByRole("button", { name: "Delete" }),
-    ).toBeDisabled();
+    ).toHaveAttribute("aria-disabled", "true");
 
     await screen.findByText(/profiles may be associated/i);
 
@@ -34,7 +34,9 @@ describe("AccessGroupDeleteModal", () => {
       `delete ${accessGroup.title}`,
     );
 
-    expect(await screen.findByRole("button", { name: "Delete" })).toBeEnabled();
+    const button = await screen.findByRole("button", { name: "Delete" });
+    expect(button).not.toHaveAttribute("aria-disabled");
+    expect(button).toBeEnabled();
 
     await userEvent.click(
       await screen.findByRole("button", { name: "Delete" }),

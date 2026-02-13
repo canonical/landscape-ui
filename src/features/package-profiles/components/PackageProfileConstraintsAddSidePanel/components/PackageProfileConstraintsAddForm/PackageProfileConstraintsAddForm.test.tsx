@@ -17,7 +17,7 @@ describe("PackageProfileConstraintsAddForm", () => {
     const submitButton = screen.getByRole("button", {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveAttribute("aria-disabled", "true");
     await user.tab();
     await user.selectOptions(
       screen.getByRole("combobox", {
@@ -32,6 +32,7 @@ describe("PackageProfileConstraintsAddForm", () => {
       "package",
     );
     await user.tab();
+    expect(submitButton).not.toHaveAttribute("aria-disabled");
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
   });
@@ -46,7 +47,7 @@ describe("PackageProfileConstraintsAddForm", () => {
     const submitButton = screen.getByRole("button", {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveAttribute("aria-disabled", "true");
     await user.tab();
     await user.selectOptions(
       screen.getByRole("combobox", {
@@ -61,6 +62,7 @@ describe("PackageProfileConstraintsAddForm", () => {
       "package",
     );
     await user.tab();
+    expect(submitButton).not.toHaveAttribute("aria-disabled");
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
     expect(
