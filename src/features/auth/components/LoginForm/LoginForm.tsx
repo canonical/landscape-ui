@@ -10,7 +10,7 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import * as Yup from "yup";
 import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
@@ -30,8 +30,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
   const debug = useDebug();
   const { login: signInWithEmailAndPassword, isLoggingIn } = useLogin();
 
-  const { redirectToExternalUrl, setUser } = useAuth();
-  const navigate = useNavigate();
+  const { safeRedirect, setUser } = useAuth();
 
   const redirectTo = searchParams.get("redirect-to");
   const isExternalRedirect = searchParams.has("external");
@@ -89,15 +88,14 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
           password: values.password,
         });
 
-        if (isExternalRedirect && redirectTo) {
-          redirectToExternalUrl(redirectTo, { replace: true });
-        } else {
-          if ("current_account" in data) {
-            setUser(data);
-          }
-
-          navigate(redirectTo ?? HOMEPAGE_PATH, { replace: true });
+        if ("current_account" in data) {
+          setUser(data);
         }
+
+        safeRedirect(redirectTo ?? HOMEPAGE_PATH, {
+          external: isExternalRedirect,
+          replace: true,
+        });
       } catch (error) {
         debug(error);
       }

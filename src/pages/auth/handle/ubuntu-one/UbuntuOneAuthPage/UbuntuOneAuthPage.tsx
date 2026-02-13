@@ -17,7 +17,7 @@ const UbuntuOneAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const { redirectToExternalUrl, setUser } = useAuth();
+  const { safeRedirect, setUser } = useAuth();
   const { isSelfHosted, isSaas } = useEnv();
   const { accountExists } = useGetStandaloneAccount();
 
@@ -28,13 +28,6 @@ const UbuntuOneAuthPage: FC = () => {
 
   useEffect(() => {
     if (!authData || !("current_account" in authData)) {
-      return;
-    }
-
-    if (authData.return_to?.external && authData.return_to.url) {
-      redirectToExternalUrl(authData.return_to.url, {
-        replace: true,
-      });
       return;
     }
 
@@ -63,14 +56,14 @@ const UbuntuOneAuthPage: FC = () => {
       return;
     }
 
-    const returnToUrl = authData.return_to?.url;
-    const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
-
-    navigate(url.toString().replace(url.origin, ""), { replace: true });
+    safeRedirect(authData.return_to?.url ?? HOMEPAGE_PATH, {
+      external: authData.return_to?.external ?? false,
+      replace: true,
+    });
   }, [
     authData,
-    redirectToExternalUrl,
     navigate,
+    safeRedirect,
     setUser,
     isSelfHosted,
     accountExists,

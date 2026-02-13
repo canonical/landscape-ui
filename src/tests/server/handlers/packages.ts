@@ -12,6 +12,18 @@ import { activities } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 
+const parseBooleanParam = (value: string | null): boolean | undefined => {
+  if (value === "true") {
+    return true;
+  }
+
+  if (value === "false") {
+    return false;
+  }
+
+  return undefined;
+};
+
 export default [
   http.get<never, GetPackagesParams, ApiPaginatedResponse<Package>>(
     `${API_URL}packages`,
@@ -41,9 +53,46 @@ export default [
     const limit = Number(url.searchParams.get("limit"));
     const offset = Number(url.searchParams.get("offset")) || 0;
     const search = url.searchParams.get("search") || "";
+    const available = parseBooleanParam(url.searchParams.get("available"));
+    const installed = parseBooleanParam(url.searchParams.get("installed"));
+    const upgrade = parseBooleanParam(url.searchParams.get("upgrade"));
+    const security = parseBooleanParam(url.searchParams.get("security"));
+    const held = parseBooleanParam(url.searchParams.get("held"));
     const instanceId = Number(params.id);
 
-    const instancePackages = getInstancePackages(instanceId);
+    const hasFilters = [upgrade, security, held, available].some(
+      (value) => value === true,
+    );
+
+    let instancePackages = getInstancePackages(instanceId);
+
+    if (!hasFilters && installed !== true) {
+      instancePackages = [];
+    }
+
+    if (upgrade === true) {
+      instancePackages = instancePackages.filter(
+        ({ available_version }) => available_version,
+      );
+    }
+
+    if (available === true) {
+      instancePackages = instancePackages.filter(
+        ({ available_version }) => available_version,
+      );
+    }
+
+    if (security === true) {
+      instancePackages = instancePackages.filter(
+        ({ status }) => status === "security",
+      );
+    }
+
+    if (held === true) {
+      instancePackages = instancePackages.filter(
+        ({ status }) => status === "held",
+      );
+    }
 
     return HttpResponse.json(
       generatePaginatedResponse({

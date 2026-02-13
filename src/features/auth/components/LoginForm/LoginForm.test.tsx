@@ -11,7 +11,7 @@ const user = {
 };
 
 const navigate = vi.fn();
-const redirectToExternalUrl = vi.fn();
+const safeRedirect = vi.fn();
 const setUser = vi.fn();
 
 const loginSpy = vi.fn().mockResolvedValue({ data: authUser });
@@ -25,7 +25,7 @@ const mockTestParams = (searchParams?: Record<string, string>) => {
 
   vi.doMock("@/hooks/useAuth", () => ({
     default: () => ({
-      redirectToExternalUrl,
+      safeRedirect,
       setUser,
     }),
   }));
@@ -82,17 +82,16 @@ describe("LoginForm", () => {
       });
 
       expect(navigate).not.toHaveBeenCalled();
-      expect(redirectToExternalUrl).not.toHaveBeenCalled();
+      expect(safeRedirect).not.toHaveBeenCalled();
     });
 
     it("should sign in and redirect to default url", async () => {
-      expect(navigate).toHaveBeenCalledWith(
-        new URL(HOMEPAGE_PATH, location.origin).pathname,
-        { replace: true },
-      );
-
       expect(loginSpy).toHaveBeenCalledWith(user);
       expect(setUser).toHaveBeenCalledWith(authUser);
+      expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        external: false,
+        replace: true,
+      });
     });
   });
 
@@ -133,24 +132,31 @@ describe("LoginForm", () => {
 
     it("should sign in and redirect to provided url", async () => {
       expect(setUser).toHaveBeenCalledWith(authUser);
-      expect(navigate).toHaveBeenCalledWith(
+      expect(safeRedirect).toHaveBeenCalledWith(
         testSearchParams[0]["redirect-to"],
-        { replace: true },
+        {
+          external: false,
+          replace: true,
+        },
       );
     });
 
-    it("should sign in and redirect to provided url", async () => {
-      expect(redirectToExternalUrl).toHaveBeenCalledWith(
+    it("should sign in and request external redirect", async () => {
+      expect(setUser).toHaveBeenCalledWith(authUser);
+      expect(safeRedirect).toHaveBeenCalledWith(
         testSearchParams[1]["redirect-to"],
-        { replace: true },
+        {
+          external: true,
+          replace: true,
+        },
       );
     });
 
     it("should sign in and redirect to default url", async () => {
-      expect(navigate).toHaveBeenCalledWith(
-        new URL(HOMEPAGE_PATH, location.origin).pathname,
-        { replace: true },
-      );
+      expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        external: true,
+        replace: true,
+      });
     });
   });
 });

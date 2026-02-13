@@ -12,6 +12,34 @@ export const redirectToExternalUrl = (
   }
 };
 
+export const getSameOriginUrl = (input?: string | null) => {
+  if (!input) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(input, window.location.origin);
+
+    if (parsed.origin !== window.location.origin) {
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+export const getSameOriginPath = (input?: string | null) => {
+  const parsed = getSameOriginUrl(input);
+
+  if (!parsed) {
+    return null;
+  }
+
+  return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+};
+
 export const getProviderIcon = (slug: string) => {
   return hasProperty(SUPPORTED_PROVIDERS, slug)
     ? SUPPORTED_PROVIDERS[slug].icon

@@ -26,6 +26,44 @@ test("should redirect after login if 'redirect-to' arg provided", async ({
   await expect(page).toHaveURL(/\/scripts/);
 });
 
+test("should ignore unsafe external redirect-to javascript scheme", async ({
+  page,
+}) => {
+  await navigateTo(page, "/login", {
+    "redirect-to": "javascript:alert(document.domain)",
+    external: "true",
+  });
+
+  const loginPage = new LoginPage(page);
+  await loginPage.login(USER.email, USER.password);
+
+  await expect(page).toHaveURL(/overview/);
+});
+
+test("should ignore cross-origin external redirect-to", async ({ page }) => {
+  await navigateTo(page, "/login", {
+    "redirect-to": "https://example.com",
+    external: "true",
+  });
+
+  const loginPage = new LoginPage(page);
+  await loginPage.login(USER.email, USER.password);
+
+  await expect(page).toHaveURL(/overview/);
+});
+
+test("should ignore unsafe external redirect when already authenticated", async ({
+  authenticatedPage,
+}) => {
+  await authenticatedPage.evaluate(() => {
+    const url = "/login?redirect-to=https%3A%2F%2Fexample.com&external=true";
+    window.history.pushState({}, "", url);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  });
+
+  await expect(authenticatedPage).toHaveURL(/overview/);
+});
+
 test("should have disclaimer popup after login", async ({ page }) => {
   await navigateTo(page, "/login");
 

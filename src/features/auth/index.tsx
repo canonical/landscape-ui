@@ -8,7 +8,11 @@ export { default as LoginForm } from "./components/LoginForm";
 export { default as ProvidersEmptyState } from "./components/ProvidersEmptyState";
 export { default as ProviderList } from "./components/ProviderList";
 export { default as ConsentBannerModal } from "./components/consent-banner/ConsentBannerModal";
-export { redirectToExternalUrl } from "./helpers";
+export {
+  redirectToExternalUrl,
+  getSameOriginPath,
+  getSameOriginUrl,
+} from "./helpers";
 export { useAuthHandle, useInvitation } from "./hooks";
 export { getProviderIcon } from "./helpers";
 export type {

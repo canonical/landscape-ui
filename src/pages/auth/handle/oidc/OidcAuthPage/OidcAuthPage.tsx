@@ -16,7 +16,7 @@ import { ROUTES } from "@/libs/routes";
 const OidcAuthPage: FC = () => {
   const [searchParams] = useSearchParams();
 
-  const { redirectToExternalUrl, setUser } = useAuth();
+  const { safeRedirect, setUser } = useAuth();
   const { isSelfHosted, isSaas } = useEnv();
   const { accountExists } = useGetStandaloneAccount();
   const navigate = useNavigate();
@@ -67,20 +67,14 @@ const OidcAuthPage: FC = () => {
       return;
     }
 
-    const returnToUrl = authData.return_to?.url;
-
-    if (authData.return_to?.external && authData.return_to.url) {
-      redirectToExternalUrl(authData.return_to.url, {
-        replace: true,
-      });
-    } else {
-      const url = new URL(returnToUrl ?? HOMEPAGE_PATH, location.origin);
-      navigate(url.toString().replace(url.origin, ""), { replace: true });
-    }
+    safeRedirect(authData.return_to?.url ?? HOMEPAGE_PATH, {
+      external: authData.return_to?.external ?? false,
+      replace: true,
+    });
   }, [
     authData,
-    redirectToExternalUrl,
     navigate,
+    safeRedirect,
     setUser,
     isSelfHosted,
     accountExists,

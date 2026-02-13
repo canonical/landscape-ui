@@ -46,6 +46,7 @@ describe("SingleInstanceTabs", () => {
         redirectToExternalUrl: vi.fn(),
         setUser: vi.fn(),
         user: authUser,
+        safeRedirect: vi.fn(),
         hasAccounts: true,
       });
     });

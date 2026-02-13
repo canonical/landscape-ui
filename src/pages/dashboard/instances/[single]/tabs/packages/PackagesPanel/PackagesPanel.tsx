@@ -32,6 +32,7 @@ const PackagesPanel: FC = () => {
   } = getInstancePackagesQuery({
     limit: 1,
     instance_id: instanceId,
+    installed: true,
   });
 
   const {

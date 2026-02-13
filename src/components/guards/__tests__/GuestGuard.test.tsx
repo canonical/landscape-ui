@@ -7,7 +7,7 @@ import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 
 const navigate = vi.fn();
-const redirectToExternalUrl = vi.fn();
+const safeRedirect = vi.fn();
 
 vi.mock("@/hooks/useAuth");
 
@@ -18,6 +18,7 @@ const authProps: AuthContextProps = {
   setUser: vi.fn(),
   user: authUser,
   redirectToExternalUrl: vi.fn(),
+  safeRedirect: vi.fn(),
   isFeatureEnabled: vi.fn(),
   hasAccounts: true,
 };
@@ -47,7 +48,7 @@ describe("GuestGuard", () => {
 
     vi.mocked(useAuth).mockReturnValue({
       ...authState,
-      redirectToExternalUrl,
+      safeRedirect,
     });
 
     renderWithProviders(<Guard>Guest Content</Guard>);
@@ -107,22 +108,22 @@ describe("GuestGuard", () => {
     it("should redirect to internal 'redirect-to' url", async () => {
       await setup(authorizedState, { "redirect-to": "/dashboard/settings" });
 
-      expect(navigate).toHaveBeenCalledWith("/dashboard/settings", {
+      expect(safeRedirect).toHaveBeenCalledWith("/dashboard/settings", {
+        external: false,
         replace: true,
       });
-      expect(redirectToExternalUrl).not.toHaveBeenCalled();
     });
 
-    it("should redirect to external url if 'external' param is present", async () => {
+    it("should request external redirect when external param is present", async () => {
       await setup(authorizedState, {
         "redirect-to": "https://google.com",
         external: "true",
       });
 
-      expect(redirectToExternalUrl).toHaveBeenCalledWith("https://google.com", {
+      expect(safeRedirect).toHaveBeenCalledWith("https://google.com", {
+        external: true,
         replace: true,
       });
-      expect(navigate).not.toHaveBeenCalled();
     });
   });
 });
