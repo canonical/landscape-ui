@@ -319,6 +319,19 @@ export const packages = [
       },
     ],
   },
+  {
+    id: 99999,
+    name: "no-upgrades-pkg",
+    summary: "package without available upgrades",
+    computers: [
+      {
+        id: 999,
+        status: "installed",
+        current_version: "1.0.0",
+        available_version: null,
+      },
+    ],
+  },
 ] as const satisfies Package[];
 
 export const getInstancePackages = (instanceId: number): InstancePackage[] => {
