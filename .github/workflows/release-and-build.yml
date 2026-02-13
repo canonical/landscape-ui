@@ -43,7 +43,9 @@ jobs:
         uses: changesets/action@v1
         with:
           version: node scripts/manual-version-update.cjs ${{ steps.calver.outputs.version }}
-          publish: echo "Versioned successfully"
+          commit: "chore: version bump to ${{ steps.calver.outputs.version }} [skip ci]"
+          title: "Version Packages (${{ steps.calver.outputs.version }})"
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

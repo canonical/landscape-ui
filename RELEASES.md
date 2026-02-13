@@ -84,3 +84,21 @@ Use this workflow if a customer reports a critical bug in an LTS version (e.g., 
 5. **Write Summary:** `Fixed a regression where the search bar would overlap with the sidebar on mobile devices.`
 6. **Push:** Push directly to `release/24.04`.
 7. **Result:** The CI detects the LTS branch and generates a **Point Release** (e.g., $24.04.1.15$) for the specific LTS PPA.
+
+## 6. Troubleshooting
+   
+### Problem: A PR was merged without a Changeset
+
+If a PR is merged into main or stable and everyone forgot to include a `.changeset/*.md` file, the following happens:
+
+- The code is merged and built.
+- The `CHANGELOG.md` is **not** updated.
+- The version in `package.json` does not bump.
+- No official GitHub Release/Tag is created.
+
+### The Fix:
+
+1. Create a new "empty" branch from main.
+2. Run `pnpm changeset` on that branch.
+3. Write the description for the changes that were previously missed.
+4. Open a PR and merge it. The CI will "consume" the changeset and release the new version containing all previous changes.
