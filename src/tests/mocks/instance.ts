@@ -408,6 +408,74 @@ export const debianInstance: Instance = {
   registered_at: "2023-11-29T18:29:25Z",
 };
 
+const recoveryKeyInstance: Instance = {
+  id: 0,
+  title: "Recovery Key Base",
+  hostname: "recovery-key-base",
+  comment: "",
+  cloud_init: {},
+  is_default_child: null,
+  total_memory: 1024,
+  total_swap: 1024,
+  reboot_required_flag: false,
+  update_manager_prompt: "normal",
+  clone_id: null,
+  secrets_name: null,
+  last_exchange_time: null,
+  last_ping_time: "2023-11-29T18:29:25Z",
+  tags: [],
+  access_group: "server",
+  distribution: "10.04",
+  cloud_instance_metadata: {},
+  vm_info: null,
+  container_info: null,
+  ubuntu_pro_info: null,
+  is_wsl_instance: false,
+  children: [],
+  parent: null,
+  upgrades: {
+    regular: 7,
+    security: 0,
+  },
+  distribution_info: {
+    code_name: "precise",
+    description: "Ubuntu 12.04 LTS",
+    distributor: "Canonical",
+    release: "12.04",
+  },
+  employee_id: 1,
+  archived: false,
+  registered_at: "2023-11-29T18:29:25Z",
+};
+
+export const instanceNoActivityNoKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 500,
+  title: "No Activity No Key",
+  hostname: "no-activity-no-key",
+};
+
+export const instanceActivityWithKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 501,
+  title: "Activity With Key",
+  hostname: "activity-with-key",
+};
+
+export const instanceNoActivityWithKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 502,
+  title: "No Activity With Key",
+  hostname: "no-activity-with-key",
+};
+
+export const instanceActivityNoKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 503,
+  title: "Activity No Key",
+  hostname: "activity-no-key",
+};
+
 export const instances = [
   ubuntuInstance,
   {
@@ -1196,6 +1264,10 @@ export const instances = [
     registered_at: "2023-11-29T18:29:25Z",
   } as Instance,
   ubuntuCoreInstance,
+  instanceNoActivityNoKey,
+  instanceActivityWithKey,
+  instanceNoActivityWithKey,
+  instanceActivityNoKey,
 ] as const satisfies Instance[];
 
 export const pendingInstances = [

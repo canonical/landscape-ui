@@ -9,7 +9,3 @@ export interface Employee extends Record<string, unknown> {
   is_active: boolean;
   computers: Instance[] | null;
 }
-
-export interface RecoveryKey {
-  fde_recovery_key: string;
-}

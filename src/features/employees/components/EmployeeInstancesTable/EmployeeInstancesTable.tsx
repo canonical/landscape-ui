@@ -1,6 +1,9 @@
 import EmptyState from "@/components/layout/EmptyState";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import { getStatusCellIconAndLabel } from "@/features/instances";
+import {
+  getStatusCellIconAndLabel,
+  RecoveryKeyStatus,
+} from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { ModularTable } from "@canonical/react-components";
 import { type FC, useMemo } from "react";
@@ -42,6 +45,13 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
           const { icon } = getStatusCellIconAndLabel(original);
           return icon;
         },
+      },
+      {
+        accessor: "recovery_key",
+        Header: "recovery key",
+        Cell: ({ row: { original } }: CellProps<Instance>) => (
+          <RecoveryKeyStatus instanceId={original.id} />
+        ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,

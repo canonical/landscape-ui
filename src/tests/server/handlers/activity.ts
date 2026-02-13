@@ -12,19 +12,32 @@ import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
+const TYPE_QUERY_REGEX = /(?:^|\s)type:([^\s]+)/;
 
 const parseActivitiesQuery = (
   rawQuery: string,
-): { status?: string; searchQuery: string } => {
+): { status?: string; type?: string; searchQuery: string } => {
   const statusMatch = rawQuery.match(STATUS_QUERY_REGEX);
+  const typeMatch = rawQuery.match(TYPE_QUERY_REGEX);
 
-  if (!statusMatch) {
-    return { searchQuery: rawQuery };
+  let searchQuery = rawQuery;
+
+  if (statusMatch) {
+    searchQuery = searchQuery.replace(statusMatch[0], "").trim();
+  }
+
+  if (typeMatch) {
+    searchQuery = searchQuery.replace(typeMatch[0], "").trim();
+  }
+
+  if (!statusMatch && !typeMatch) {
+    return { searchQuery };
   }
 
   return {
-    status: statusMatch[1],
-    searchQuery: rawQuery.replace(statusMatch[0], "").trim(),
+    status: statusMatch?.[1],
+    type: typeMatch?.[1],
+    searchQuery,
   };
 };
 
@@ -53,10 +66,18 @@ export default [
         );
       }
 
-      const { status, searchQuery } = parseActivitiesQuery(query);
-      const filteredActivities = status
-        ? activities.filter((activity) => activity.activity_status === status)
-        : activities;
+      const { status, type, searchQuery } = parseActivitiesQuery(query);
+      const filteredActivities = activities.filter((activity) => {
+        if (status && activity.activity_status !== status) {
+          return false;
+        }
+
+        if (type && activity.type !== type) {
+          return false;
+        }
+
+        return true;
+      });
 
       return HttpResponse.json(
         generatePaginatedResponse<Activity>({

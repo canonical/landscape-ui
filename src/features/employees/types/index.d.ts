@@ -1,4 +1,4 @@
-export type { Employee, RecoveryKey } from "./Employee";
+export type { Employee } from "./Employee";
 export type {
   GetEmployeesParams,
   GetEmployeeParams,
