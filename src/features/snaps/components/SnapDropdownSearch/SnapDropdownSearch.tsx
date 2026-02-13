@@ -1,3 +1,4 @@
+import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import type { UrlParams } from "@/types/UrlParams";
@@ -12,7 +13,7 @@ import { useSnaps } from "../../hooks";
 import type { AvailableSnap, SelectedSnaps } from "../../types";
 import AvailableSnapDetails from "../AvailableSnapDetails";
 import classes from "./SnapDropdownSearch.module.scss";
-import { boldSubstring, DEBOUNCE_DELAY } from "./helpers";
+import { DEBOUNCE_DELAY } from "./constants";
 
 interface SnapDropdownSearchProps {
   readonly selectedItems: SelectedSnaps[];
@@ -195,7 +196,7 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
                       })}
                     >
                       <div className="u-truncate" data-testid="dropdownElement">
-                        {boldSubstring(item.name, search)}
+                        <BoldSubstring text={item.name} substring={search} />
                       </div>
                       <small className="u-text-muted">
                         {item.snap.publisher["display-name"]}
