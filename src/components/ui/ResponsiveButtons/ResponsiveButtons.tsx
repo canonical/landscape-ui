@@ -4,6 +4,7 @@ import {
   isContextualMenu,
   textFromNode,
 } from "@/components/ui/ResponsiveButtons/helpers";
+import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import { BREAKPOINT_PX } from "@/constants";
 import type {
   ConfirmationButtonProps,
@@ -14,7 +15,6 @@ import classNames from "classnames";
 import type { FC, ReactElement, ReactNode } from "react";
 import { isValidElement, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import classes from "./ResponsiveButtons.module.scss";
 import type { ButtonLikeProps, CollapsedLink, CollapsedNode } from "./types";
 
@@ -26,6 +26,7 @@ export interface ResponsiveButtonGroupProps {
   readonly className?: string;
   readonly menuPosition?: Position;
   readonly grouped?: boolean;
+  readonly disabled?: boolean;
 }
 
 const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
@@ -36,6 +37,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
   className,
   menuPosition = "right",
   grouped = true,
+  disabled,
 }) => {
   const isLargeScreen = useMediaQuery(
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
@@ -69,6 +71,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
                       }
                     }}
                     disabled={link.disabled}
+                    hasIcon={link.hasIcon}
                   >
                     {link.children}
                   </Button>
@@ -154,6 +157,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
           hasToggleIcon
           toggleLabel={menuLabel}
           toggleClassName="u-no-margin--bottom"
+          toggleDisabled={disabled}
         >
           {(close: () => void) => (
             <>

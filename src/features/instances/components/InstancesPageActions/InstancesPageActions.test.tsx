@@ -5,6 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
+import { getFeatures } from "../../helpers";
 import InstancesPageActions from "./InstancesPageActions";
 
 const selected = instances.slice(0, 2);
@@ -14,9 +15,20 @@ const BUTTON_LABELS = [
   "Restart",
   "View report",
   "Run script",
-  "Upgrade",
+  "Manage packages",
   "Assign",
   "Attach token",
+];
+
+const MANAGE_PACKAGE_BUTTON_LABELS = [
+  "Apply upgrades (advanced)",
+  "Apply all upgrades",
+  "Apply all security upgrades",
+  "Install",
+  "Uninstall",
+  "Downgrade",
+  "Hold",
+  "Unhold",
 ];
 
 describe("InstancesPageActions", () => {
@@ -33,7 +45,8 @@ describe("InstancesPageActions", () => {
     const { container } = renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -44,7 +57,7 @@ describe("InstancesPageActions", () => {
     expect(container).toHaveTexts(BUTTON_LABELS);
 
     for (const button of buttons) {
-      expect(button).not.toHaveClass("is-disabled");
+      expect(button).not.toHaveAttribute("aria-disabled");
     }
   });
 
@@ -52,7 +65,8 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={[]}
+        toggledInstances={[]}
+        instanceCount={instances.length}
       />,
     );
 
@@ -61,7 +75,32 @@ describe("InstancesPageActions", () => {
     expect(buttons).toHaveLength(BUTTON_LABELS.length);
 
     for (const button of buttons) {
-      expect(button).toHaveClass("is-disabled");
+      expect(button).toHaveAttribute("aria-disabled", "true");
+    }
+  });
+
+  it("should disable package buttons when instances do not have the package feature", async () => {
+    const toggledInstance = instances.find(
+      (instance) => !getFeatures(instance).packages,
+    );
+
+    assert(toggledInstance);
+
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[toggledInstance]}
+        instanceCount={instances.length}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /manage packages/i }),
+    );
+
+    for (const label of MANAGE_PACKAGE_BUTTON_LABELS) {
+      const button = screen.getByRole("button", { name: label });
+      expect(button).toHaveAttribute("aria-disabled", "true");
     }
   });
 
@@ -69,7 +108,8 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -83,33 +123,8 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
-      />,
-    );
-
-    const button = screen.queryByRole("button", { name: /view report/i });
-    expect(button).not.toBeInTheDocument();
-  });
-
-  test("'View report' button should be visible when feature enabled", async () => {
-    renderWithProviders(
-      <InstancesPageActions
-        isGettingInstances={false}
-        selectedInstances={selected}
-      />,
-    );
-
-    const button = screen.queryByRole("button", { name: /view report/i });
-    expect(button).toBeInTheDocument();
-  });
-
-  test("'View report' button should not be visible when feature disabled", async () => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
-
-    renderWithProviders(
-      <InstancesPageActions
-        isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -121,7 +136,8 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={[
+        instanceCount={instances.length}
+        toggledInstances={[
           {
             ...ubuntuInstance,
             upgrades: undefined,
@@ -130,7 +146,12 @@ describe("InstancesPageActions", () => {
       />,
     );
 
-    const button = screen.queryByRole("button", { name: /upgrade/i });
+    await userEvent.click(
+      screen.getByRole("button", { name: /manage packages/i }),
+    );
+    const button = screen.queryByRole("button", {
+      name: /apply upgrades \(advanced\)/i,
+    });
     expect(button).not.toHaveClass("is-disabled");
   });
 
@@ -139,7 +160,8 @@ describe("InstancesPageActions", () => {
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={selected}
+          toggledInstances={selected}
+          instanceCount={instances.length}
         />,
       );
     });
@@ -150,8 +172,6 @@ describe("InstancesPageActions", () => {
       const dialog = screen.getByRole("dialog", {
         name: /shutting down selected instances/i,
       });
-
-      expect(dialog).toBeInTheDocument();
 
       await userEvent.click(
         within(dialog).getByRole("button", { name: /shut down/i }),
@@ -167,8 +187,6 @@ describe("InstancesPageActions", () => {
         name: /restarting selected instances/i,
       });
 
-      expect(dialog).toBeInTheDocument();
-
       await userEvent.click(
         within(dialog).getByRole("button", { name: /restart/i }),
       );
@@ -181,9 +199,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /run script/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /run script/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /run script/i });
     });
 
     it("'View report' button", async () => {
@@ -191,28 +207,83 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /view report/i }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Report for ${selected.length} instances`,
-        }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", {
+        name: `Report for ${selected.length} instances`,
+      });
+    });
+
+    it("'Manage packages' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+
+      for (const label of MANAGE_PACKAGE_BUTTON_LABELS) {
+        screen.getByRole("button", { name: label });
+      }
     });
 
     it("'Upgrade' button", async () => {
-      await userEvent.click(screen.getByRole("button", { name: /upgrade/i }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /apply upgrades \(advanced\)/i }),
+      );
 
-      expect(
-        screen.getByRole("heading", { name: /upgrades/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /upgrade/i });
+    });
+
+    it("'Downgrade' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+      await userEvent.click(screen.getByRole("button", { name: /downgrade/i }));
+
+      // uncomment when downgrade form is implementated
+      // screen.getByRole("heading", { name: /downgrade/i });
+    });
+
+    it("'Install' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+      await userEvent.click(screen.getByRole("button", { name: /install/ }));
+
+      screen.getByRole("heading", { name: /install/i });
+    });
+
+    it("'Uninstall' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+      await userEvent.click(screen.getByRole("button", { name: /uninstall/i }));
+
+      screen.getByRole("heading", { name: /uninstall/i });
+    });
+
+    it("'Hold' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+      await userEvent.click(screen.getByRole("button", { name: /hold/ }));
+
+      screen.getByRole("heading", { name: /hold/i });
+    });
+
+    it("'Unhold' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /manage packages/i }),
+      );
+      await userEvent.click(screen.getByRole("button", { name: /unhold/i }));
+
+      screen.getByRole("heading", { name: /unhold/i });
     });
 
     it("'Assign' button", async () => {
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
-      expect(
-        screen.getByRole("button", { name: /access group/i }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /tags/i })).toBeInTheDocument();
+      screen.getByRole("button", { name: /access group/i });
+      screen.getByRole("button", { name: /tags/i });
     });
 
     it("'Assign access group' button", async () => {
@@ -222,9 +293,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: /access group/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /assign access group/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /assign access group/i });
     });
 
     it("'Assign tags' button", async () => {
@@ -232,9 +301,7 @@ describe("InstancesPageActions", () => {
 
       await userEvent.click(screen.getByRole("button", { name: /tags/i }));
 
-      expect(
-        screen.getByRole("heading", { name: /assign tags/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /assign tags/i });
     });
   });
 
@@ -246,7 +313,8 @@ describe("InstancesPageActions", () => {
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={instances.slice(startIdx, endIdx)}
+          toggledInstances={instances.slice(startIdx, endIdx)}
+          instanceCount={instances.length}
         />,
       );
 

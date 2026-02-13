@@ -1,0 +1,23 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.modal {
+  & > section {
+    margin: auto;
+    max-width: 40rem;
+
+    & > :last-child {
+      display: flex;
+      flex-direction: column;
+      height: 65svh;
+      padding-top: $spv--large;
+    }
+  }
+
+  & .search {
+    margin-bottom: $spv--large;
+  }
+
+  & .table {
+    width: 100%;
+  }
+}

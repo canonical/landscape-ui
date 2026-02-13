@@ -1,6 +1,6 @@
 import { Button, Chip, Icon } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC, RefCallback } from "react";
+import type { FC } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 import classes from "./TableFilterChipsBase.module.scss";
@@ -105,6 +105,12 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
     }
   }, [hasMultipleChips, calculateOverflowingChips]);
 
+  useEffect(() => {
+    if (flatFilters.length > 1) {
+      calculateOverflowingChips();
+    }
+  }, [flatFilters.length, calculateOverflowingChips]);
+
   if (!flatFilters[0]) {
     return null;
   }
@@ -121,11 +127,6 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
     );
   }
 
-  const containerRefCallback: RefCallback<HTMLDivElement> = (container) => {
-    containerRef.current = container;
-    calculateOverflowingChips();
-  };
-
   const clearAllAndCollapse = () => {
     clearAll();
     collapse();
@@ -134,7 +135,7 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
   return (
     <div className={classes.container}>
       <div
-        ref={containerRefCallback}
+        ref={containerRef}
         className={classNames(classes.chipsContainer, {
           [classes.collapsed]: !isExpanded,
         })}

@@ -1,140 +1,289 @@
+import { SidePanelTableFilterChips, TableFilter } from "@/components/filter";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
-import { hasSecurityUpgrades, hasUpgrades } from "@/features/instances";
-import { usePackages } from "@/features/packages";
-import { useUsns } from "@/features/usns";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import { SidePanelTablePagination } from "@/components/layout/TablePagination";
+import useFetch from "@/hooks/useFetch";
 import useSidePanel from "@/hooks/useSidePanel";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
-import { Form, Tabs } from "@canonical/react-components";
-import { useFormik } from "formik";
-import type { FC } from "react";
-import { Suspense, useState } from "react";
-import UpgradeInfo from "../UpgradeInfo";
-import { TAB_LINKS, TAB_PANELS, VALIDATION_SCHEMA } from "./constants";
-import { getInitialValues, getTabLinks } from "./helpers";
-import type { UpgradesFormProps } from "./types";
+import type { ApiError } from "@/types/api/ApiError";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import { pluralizeArray } from "@/utils/_helpers";
+import { SearchBox } from "@canonical/react-components";
+import { useQuery } from "@tanstack/react-query";
+import type { AxiosError, AxiosResponse } from "axios";
+import classNames from "classnames";
+import { useState, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import type { GetPackageUpgradeParams } from "../../types/GetPackageUpgradeParams";
+import type { PackageUpgrade } from "../../types/PackageUpgrade";
+import type { PriorityOrSeverity } from "../../types/PriorityOrSeverity";
+import UpgradesList from "../UpgradesList";
+import UpgradesSummary from "../UpgradesSummary";
+import classes from "./Upgrades.module.scss";
+import {
+  PRIORITY_OPTIONS,
+  SEVERITY_OPTIONS,
+  UPGRADE_TYPE_OPTIONS,
+} from "./constants";
 
 interface UpgradesProps {
-  readonly selectedInstances: Instance[];
+  readonly toggledInstances: Instance[];
+  readonly query?: string;
 }
 
-const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
-  const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
-    TAB_LINKS[0].id,
-  );
+const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
+  const authFetch = useFetch();
+  const { closeSidePanel, setSidePanelTitle, changeSidePanelSize } =
+    useSidePanel();
 
-  const affectedInstances = selectedInstances.filter(({ alerts }) =>
-    hasUpgrades(alerts),
-  );
+  const [toggledUpgrades, setToggledUpgrades] = useState<PackageUpgrade[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
+  const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
+  const [upgradeType, setUpgradeType] = useState("all");
+  const [priorities, setPriorities] = useState<PriorityOrSeverity[]>([]);
+  const [severities, setSeverities] = useState<PriorityOrSeverity[]>([]);
+  const [step, setStep] = useState<"list" | "summary">("list");
 
-  const instancesWithUsn = affectedInstances.filter(({ alerts }) =>
-    hasSecurityUpgrades(alerts),
-  );
+  const {
+    value: isSelectAllUpgradesEnabled,
+    setTrue: enableSelectAllUpgrades,
+    setFalse: disableSelectAllUpgrades,
+  } = useBoolean();
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
-  const { upgradeInstancesPackagesQuery } = usePackages();
-  const { upgradeUsnsQuery } = useUsns();
-
-  const { mutateAsync: upgradeInstancesPackages } =
-    upgradeInstancesPackagesQuery;
-  const { mutateAsync: upgradeUsns } = upgradeUsnsQuery;
-
-  const handleSubmit = async (values: UpgradesFormProps) => {
-    try {
-      if (activeTabLinkId === "tab-link-usns") {
-        await upgradeUsns({
-          computers: instancesWithUsn.map(({ id }) => ({
-            id,
-            exclude_usns: values.excludedUsns,
-          })),
-        });
-      } else {
-        await upgradeInstancesPackages({
-          computers: values.excludedPackages,
-        });
-      }
-
-      closeSidePanel();
-
-      notify.success({
-        title: "You queued packages to be upgraded",
-        message: `Packages on ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} will be upgraded and are queued in Activities`,
-      });
-    } catch (error) {
-      debug(error);
-    }
+  const queryParams: GetPackageUpgradeParams = {
+    offset: (currentPage - 1) * pageSize,
+    limit: pageSize,
+    priorities,
+    severities,
+    security_only: upgradeType === "security",
+    search,
+    query,
   };
 
-  const formik = useFormik({
-    initialValues: getInitialValues(affectedInstances),
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA,
+  const {
+    data: upgradesResponse,
+    isPending: isPendingUpgrades,
+    error: upgradesError,
+  } = useQuery<
+    AxiosResponse<ApiPaginatedResponse<PackageUpgrade>>,
+    AxiosError<ApiError>
+  >({
+    queryKey: ["packages/upgrades", queryParams],
+    queryFn: async () =>
+      authFetch.get("packages/upgrades", {
+        params: queryParams,
+      }),
   });
 
-  return (
-    <Form onSubmit={formik.handleSubmit}>
-      <UpgradeInfo instances={selectedInstances} />
+  if (upgradesError) {
+    throw upgradesError;
+  }
 
-      <Tabs
-        links={getTabLinks({
-          activeTabLinkId,
-          onTabLinkClick: (id) => {
-            setActiveTabLinkId(id);
-          },
-          withUsnsTab: instancesWithUsn.length > 0,
-        })}
-      />
+  const reset = () => {
+    setToggledUpgrades([]);
+    disableSelectAllUpgrades();
+    setCurrentPage(DEFAULT_CURRENT_PAGE);
+  };
 
-      <AppErrorBoundary>
-        <div tabIndex={0} role="tabpanel" aria-labelledby={activeTabLinkId}>
-          {activeTabLinkId === "tab-link-instances" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.instances
-                excludedPackages={formik.values.excludedPackages}
-                instances={affectedInstances}
-                onExcludedPackagesChange={async (newExcludedPackages) =>
-                  formik.setFieldValue("excludedPackages", newExcludedPackages)
-                }
-              />
-            </Suspense>
-          )}
-          {activeTabLinkId === "tab-link-packages" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.packages
-                excludedPackages={formik.values.excludedPackages}
-                instances={affectedInstances}
-                onExcludedPackagesChange={async (newExcludedPackages) =>
-                  formik.setFieldValue("excludedPackages", newExcludedPackages)
-                }
-              />
-            </Suspense>
-          )}
-          {activeTabLinkId === "tab-link-usns" && (
-            <Suspense fallback={<LoadingState />}>
-              <TAB_PANELS.usns
-                excludedUsns={formik.values.excludedUsns}
-                instances={instancesWithUsn}
-                onExcludedUsnsChange={async (usns) =>
-                  formik.setFieldValue("excludedUsns", usns)
-                }
-              />
-            </Suspense>
-          )}
-        </div>
-      </AppErrorBoundary>
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    reset();
+  };
 
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Upgrade"
-      />
-    </Form>
-  );
+  const clearSearch = () => {
+    setInputValue("");
+    handleSearch("");
+  };
+
+  const handleUpgradeTypeSelect = (value: string) => {
+    setUpgradeType(value);
+    reset();
+  };
+
+  const getIsPriorityOrSeverity = (value: string) => {
+    return (
+      value === "critical" ||
+      value === "high" ||
+      value === "medium" ||
+      value === "low" ||
+      value === "negligible"
+    );
+  };
+
+  const handlePrioritiesSelect = (values: string[]) => {
+    const filteredValues = values.filter(getIsPriorityOrSeverity);
+    setPriorities(filteredValues);
+    reset();
+  };
+
+  const handleSeveritiesSelect = (values: string[]) => {
+    const filteredValues = values.filter(getIsPriorityOrSeverity);
+    setSeverities(filteredValues);
+    reset();
+  };
+
+  switch (step) {
+    case "list":
+      return (
+        <>
+          <div className={classes.header}>
+            <SearchBox
+              className={classNames("u-no-margin--bottom", classes.search)}
+              externallyControlled
+              value={inputValue}
+              onChange={setInputValue}
+              onClear={clearSearch}
+              onSearch={handleSearch}
+              autoComplete="off"
+            />
+            <div className={classes.filters}>
+              <TableFilter
+                type="single"
+                showSelectionOnToggleLabel
+                label="Upgrade type"
+                onItemSelect={handleUpgradeTypeSelect}
+                options={UPGRADE_TYPE_OPTIONS}
+                selectedItem={upgradeType}
+                hasBadge={upgradeType !== "all"}
+              />
+              <TableFilter
+                type="multiple"
+                label="Priority"
+                onItemsSelect={handlePrioritiesSelect}
+                selectedItems={priorities}
+                options={PRIORITY_OPTIONS}
+                hasBadge={!!priorities.length}
+              />
+              <TableFilter
+                type="multiple"
+                label="Severity"
+                onItemsSelect={handleSeveritiesSelect}
+                selectedItems={severities}
+                options={SEVERITY_OPTIONS}
+                hasBadge={!!severities.length}
+              />
+            </div>
+          </div>
+          <SidePanelTableFilterChips
+            filters={[
+              {
+                label: "Search",
+                item: search,
+                clear: clearSearch,
+              },
+              {
+                label: "Upgrades",
+                item: upgradeType === "security" ? "Security" : undefined,
+                clear: () => {
+                  handleUpgradeTypeSelect("all");
+                },
+              },
+              {
+                label: "Priority",
+                multiple: true,
+                items: priorities.map((priority) => {
+                  return {
+                    label:
+                      PRIORITY_OPTIONS.find(
+                        (option) => option.value === priority,
+                      )?.label || priority,
+                    value: priority,
+                  };
+                }),
+                clear: () => {
+                  handlePrioritiesSelect([]);
+                },
+                remove: (value: string) => {
+                  handlePrioritiesSelect(
+                    priorities.filter((priority) => priority !== value),
+                  );
+                },
+              },
+              {
+                label: "Severity",
+                multiple: true,
+                items: severities.map((severity) => {
+                  return {
+                    label:
+                      SEVERITY_OPTIONS.find(
+                        (option) => option.value === severity,
+                      )?.label || severity,
+                    value: severity,
+                  };
+                }),
+                clear: () => {
+                  handleSeveritiesSelect([]);
+                },
+                remove: (value: string) => {
+                  handleSeveritiesSelect(
+                    severities.filter((severity) => severity !== value),
+                  );
+                },
+              },
+            ]}
+          />
+          {isPendingUpgrades ? (
+            <LoadingState />
+          ) : (
+            <UpgradesList
+              currentUpgrades={upgradesResponse.data.results}
+              toggledUpgrades={toggledUpgrades}
+              setToggledUpgrades={setToggledUpgrades}
+              upgradeCount={upgradesResponse.data.count}
+              isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
+              enableSelectAllUpgrades={enableSelectAllUpgrades}
+              disableSelectAllUpgrades={disableSelectAllUpgrades}
+              query={query}
+            />
+          )}
+          <SidePanelTablePagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            paginate={setCurrentPage}
+            setPageSize={setPageSize}
+            totalItems={upgradesResponse?.data.count}
+            currentItemCount={upgradesResponse?.data.results.length}
+          />
+          <SidePanelFormButtons
+            onCancel={closeSidePanel}
+            submitButtonText="Next"
+            submitButtonDisabled={
+              isPendingUpgrades ||
+              !(isSelectAllUpgradesEnabled || toggledUpgrades.length)
+            }
+            onSubmit={() => {
+              setStep("summary");
+              setSidePanelTitle("Summary");
+              changeSidePanelSize("medium");
+            }}
+          />
+        </>
+      );
+
+    case "summary":
+      return (
+        <UpgradesSummary
+          isSelectAllUpgradesEnabled={isSelectAllUpgradesEnabled}
+          onBackButtonPress={() => {
+            setStep("list");
+            setSidePanelTitle(
+              `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+            );
+            changeSidePanelSize("large");
+          }}
+          priorities={priorities}
+          query={query}
+          search={search}
+          severities={severities}
+          toggledUpgrades={toggledUpgrades}
+          upgradeType={upgradeType}
+        />
+      );
+  }
 };
 
 export default Upgrades;

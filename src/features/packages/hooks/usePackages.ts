@@ -59,20 +59,21 @@ interface DowngradePackageVersionParams {
 }
 
 interface PackagesActionParams {
-  action: "install" | "remove" | "hold" | "unhold";
+  action: "install" | "remove" | "hold" | "unhold" | "downgrade";
   computer_ids: number[];
   package_ids: number[];
   deliver_after?: string;
   deliver_delay_window?: number;
 }
 
-export interface InstancePackagesToExclude {
-  exclude_packages: number[];
-  id: number;
-}
-
 interface UpgradeInstancePackagesParams {
-  computers: InstancePackagesToExclude[];
+  mode: "include" | "exclude";
+  query?: string;
+  packages?: number[];
+  security_only?: boolean;
+  priorities?: string[];
+  severities?: string[];
+  search?: string;
 }
 
 export default function usePackages() {

@@ -1,0 +1,30 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.title {
+  border-bottom: 1px solid $colors--theme--border-default;
+  grid-column: 1 / 3;
+  padding-bottom: $spv--large;
+}
+
+.row {
+  align-items: start;
+  border-bottom: 1px solid $colors--theme--border-default;
+  column-gap: $spv--x-large;
+  display: grid;
+  grid-column: 1 / 3;
+  grid-template-columns: subgrid;
+  padding: $sph--small $spv--small;
+}
+
+.package {
+  display: grid;
+  grid-template-columns: max-content auto;
+  margin-bottom: 2rem;
+}
+
+.instances {
+  margin-bottom: 0;
+  padding: 0;
+  text-align: left;
+}

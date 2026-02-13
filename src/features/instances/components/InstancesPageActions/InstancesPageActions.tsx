@@ -2,23 +2,31 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
+import type { PackageAction } from "@/features/packages";
+import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
+import {
+  capitalize,
+  hasOneItem,
+  pluralize,
+  pluralizeArray,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
   ContextualMenu,
   Icon,
 } from "@canonical/react-components";
-import { lazy, memo, Suspense, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRestartInstances, useShutDownInstances } from "../../api";
-import { getFeatures, hasUpgrades } from "../../helpers";
+import { getFeatures, hasSecurityUpgrades, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
 
@@ -30,6 +38,11 @@ const RunInstanceScriptForm = lazy(async () =>
 const Upgrades = lazy(async () =>
   import("@/features/upgrades").then((module) => ({
     default: module.Upgrades,
+  })),
+);
+const UpgradesSummary = lazy(async () =>
+  import("@/features/upgrades").then((module) => ({
+    default: module.UpgradesSummary,
   })),
 );
 const ReportView = lazy(
@@ -50,13 +63,19 @@ const ReplaceTokenForm = lazy(async () =>
 
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
-  readonly selectedInstances: Instance[];
+  readonly toggledInstances: Instance[];
+  readonly instanceCount: number;
+  readonly areAllInstancesSelected?: boolean;
+  readonly query?: string;
 }
 
-const InstancesPageActions = memo(function InstancesPageActions({
+const InstancesPageActions = ({
   isGettingInstances,
-  selectedInstances,
-}: InstancesPageActionsProps) {
+  toggledInstances,
+  areAllInstancesSelected,
+  instanceCount,
+  query,
+}: InstancesPageActionsProps) => {
   const debug = useDebug();
   const { isFeatureEnabled } = useAuth();
   const { notify } = useNotify();
@@ -82,20 +101,19 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        {selectedInstances.some(
-          (instance) => !getFeatures(instance).scripts,
-        ) ? (
+        {toggledInstances.some((instance) => !getFeatures(instance).scripts) ? (
           <div className={classes.warning}>
             <p>
-              You selected {selectedInstances.length} instances. This script
-              will:
+              You selected{" "}
+              {pluralizeWithCount(toggledInstances.length, "instance")}. This
+              script will:
             </p>
 
             <ul>
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter(
+                  toggledInstances.filter(
                     (instance) => getFeatures(instance).scripts,
                   ),
                 )}
@@ -103,7 +121,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               <li>
                 not run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter(
+                  toggledInstances.filter(
                     (instance) => !getFeatures(instance).scripts,
                   ),
                 )}
@@ -112,7 +130,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           </div>
         ) : null}
         <RunInstanceScriptForm
-          query={selectedInstances.map(({ id }) => `id:${id}`).join(" OR ")}
+          query={toggledInstances.map(({ id }) => `id:${id}`).join(" OR ")}
         />
       </Suspense>,
     );
@@ -121,7 +139,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const handleShutdownInstance = async () => {
     try {
       const { data: shutdownActivity } = await shutDownInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
+        computer_ids: toggledInstances.map(({ id }) => id),
       });
 
       notify.success(
@@ -130,7 +148,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           onDetailsClick: () => {
             openActivityDetails(shutdownActivity);
           },
-          selected: selectedInstances,
+          selected: toggledInstances,
         }),
       );
     } catch (error) {
@@ -141,7 +159,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const handleRebootInstance = async () => {
     try {
       const { data: rebootActivity } = await restartInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
+        computer_ids: toggledInstances.map(({ id }) => id),
       });
 
       notify.success(
@@ -150,7 +168,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           onDetailsClick: () => {
             openActivityDetails(rebootActivity);
           },
-          selected: selectedInstances,
+          selected: toggledInstances,
         }),
       );
     } catch (error) {
@@ -160,19 +178,55 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      "Upgrades",
+      `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades selectedInstances={selectedInstances} />
+        <Upgrades query={query} toggledInstances={toggledInstances} />
       </Suspense>,
       "large",
     );
   };
 
+  const handleAllUpgradesRequest = () => {
+    setSidePanelContent(
+      "Apply all upgrades",
+      <Suspense fallback={<LoadingState />}>
+        <UpgradesSummary query={query} isSelectAllUpgradesEnabled />
+      </Suspense>,
+      "medium",
+    );
+  };
+
+  const handleAllSecurityUpgradesRequest = () => {
+    setSidePanelContent(
+      "Apply all security upgrades",
+      <Suspense fallback={<LoadingState />}>
+        <UpgradesSummary
+          query={query}
+          isSelectAllUpgradesEnabled
+          upgradeType="security"
+        />
+      </Suspense>,
+      "medium",
+    );
+  };
+
+  const openPackagesActionForm = (action: PackageAction) => {
+    setSidePanelContent(
+      `${capitalize(action)} packages`,
+      <Suspense fallback={<LoadingState />}>
+        <PackagesActionForm
+          instanceIds={toggledInstances.map(({ id }) => id)}
+          action={action}
+        />
+      </Suspense>,
+    );
+  };
+
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralize(selectedInstances.length, selectedInstances[0]?.title ?? "1 instance", `${selectedInstances.length} instances`)}`,
+      `Report for ${pluralizeArray(toggledInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
+        <ReportView instanceIds={toggledInstances.map(({ id }) => id)} />
       </Suspense>,
       "medium",
     );
@@ -182,7 +236,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Assign access group",
       <Suspense fallback={<LoadingState />}>
-        <AccessGroupChange selected={selectedInstances} />
+        <AccessGroupChange selected={toggledInstances} />
       </Suspense>,
     );
   };
@@ -191,30 +245,30 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Assign tags",
       <Suspense fallback={<LoadingState />}>
-        <TagsAddForm selected={selectedInstances} />
+        <TagsAddForm selected={toggledInstances} />
       </Suspense>,
     );
   };
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      `Attach Ubuntu Pro token to ${pluralizeWithCount(toggledInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={selectedInstances} />
+        <AttachTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
     );
   };
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      `Replace Ubuntu Pro token for ${pluralizeWithCount(toggledInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={selectedInstances} />
+        <ReplaceTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
     );
   };
 
-  const allInstancesHaveToken = selectedInstances.every(
+  const allInstancesHaveToken = toggledInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
@@ -240,20 +294,137 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : {},
   ].filter((link) => link.children);
 
+  const noInstanceHasUpgrades =
+    !areAllInstancesSelected &&
+    toggledInstances.every((instance) => !hasUpgrades(instance.alerts));
+
+  const noInstanceHasPackageFeature =
+    !areAllInstancesSelected &&
+    toggledInstances.every((instance) => !getFeatures(instance).packages);
+
+  const managePackagesLinks = [
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Apply upgrades (advanced)</span>
+        </>
+      ),
+      onClick: handleUpgradesRequest,
+      disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Apply all upgrades</span>
+        </>
+      ),
+      onClick: handleAllUpgradesRequest,
+      disabled: noInstanceHasUpgrades,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="security" />
+          <span>Apply all security upgrades</span>
+        </>
+      ),
+      onClick: handleAllSecurityUpgradesRequest,
+      disabled:
+        !areAllInstancesSelected &&
+        toggledInstances.every(
+          (instance) => !hasSecurityUpgrades(instance.alerts),
+        ),
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="begin-downloading" />
+          <span>Install</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("install");
+      },
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Uninstall</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("uninstall");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-down" />
+          <span>Downgrade</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("downgrade");
+      },
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="pause" />
+          <span>Hold</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("hold");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="play" />
+          <span>Unhold</span>
+        </>
+      ),
+      onClick: () => {
+        openPackagesActionForm("unhold");
+      },
+      disabled: noInstanceHasPackageFeature,
+      hasIcon: true,
+    },
+  ];
+
+  const disabled =
+    (!areAllInstancesSelected && toggledInstances.length <= 0) ||
+    (areAllInstancesSelected && toggledInstances.length >= instanceCount) ||
+    isGettingInstances;
+
+  const nonBulkActionDisabled = disabled || areAllInstancesSelected;
+
   return (
     <>
       <ResponsiveButtons
-        collapseFrom="xl"
+        collapseFrom={REPORT_VIEW_ENABLED ? "xxl" : "xl"}
+        disabled={disabled}
         buttons={[
           <Button
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={
-              isShuttingDownInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={nonBulkActionDisabled || isShuttingDownInstances}
             onClick={() => {
               setShutdownModalOpen(true);
             }}
@@ -265,11 +436,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={
-              isRestartingInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={nonBulkActionDisabled || isRestartingInstances}
             onClick={() => {
               setRebootModalOpen(true);
             }}
@@ -283,7 +450,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={0 === selectedInstances.length}
+              disabled={nonBulkActionDisabled}
             >
               {proServicesLinks[0].children}
             </Button>
@@ -295,8 +462,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel={<span>Pro services</span>}
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={0 === selectedInstances.length}
-              dropdownProps={{ style: { zIndex: 10 } }}
+              toggleDisabled={nonBulkActionDisabled}
             />
           ),
           REPORT_VIEW_ENABLED && (
@@ -304,7 +470,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               key="report-view"
               type="button"
               onClick={handleReportView}
-              disabled={0 === selectedInstances.length}
+              disabled={nonBulkActionDisabled}
             >
               <Icon name="status" />
               <span>View report</span>
@@ -316,28 +482,23 @@ const InstancesPageActions = memo(function InstancesPageActions({
             hasIcon
             onClick={handleRunScript}
             disabled={
-              selectedInstances.every((instance) => {
+              toggledInstances.every((instance) => {
                 return !getFeatures(instance).scripts;
-              }) || isGettingInstances
+              }) || areAllInstancesSelected
             }
           >
             <Icon name="code" />
             <span>Run script</span>
           </Button>,
-          <Button
-            key="upgrade-instances"
-            type="button"
-            hasIcon
-            onClick={handleUpgradesRequest}
-            disabled={
-              selectedInstances.every(
-                (instance) => !hasUpgrades(instance.alerts),
-              ) || isGettingInstances
-            }
-          >
-            <Icon name="change-version" />
-            <span>Upgrade</span>
-          </Button>,
+          <ContextualMenu
+            key="manage-packages"
+            hasToggleIcon
+            links={managePackagesLinks}
+            position="right"
+            toggleLabel={<span>Manage packages</span>}
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={disabled}
+          />,
         ]}
       />
       <ContextualMenu
@@ -359,9 +520,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <span>Assign</span>
           </>
         }
+        toggleDisabled={nonBulkActionDisabled}
         toggleClassName="u-no-margin--bottom"
-        toggleDisabled={0 === selectedInstances.length}
-        dropdownProps={{ style: { zIndex: 10 } }}
       />
       {rebootModalOpen &&
         createPortal(
@@ -377,8 +537,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onConfirm={handleRebootInstance}
           >
             <p>
-              Are you sure you want to restart {selectedInstances.length}
-              {pluralize(selectedInstances.length, "instance")}?
+              Are you sure you want to restart{" "}
+              {pluralizeWithCount(toggledInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
@@ -397,8 +557,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onConfirm={handleShutdownInstance}
           >
             <p>
-              Are you sure you want to shut down {selectedInstances.length}{" "}
-              {pluralize(selectedInstances.length, "instance")}?
+              Are you sure you want to shut down{" "}
+              {pluralizeWithCount(toggledInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
@@ -409,11 +569,11 @@ const InstancesPageActions = memo(function InstancesPageActions({
           onClose={() => {
             setDetachModalOpen(false);
           }}
-          computerIds={selectedInstances.map(({ id }) => id)}
+          computerIds={toggledInstances.map(({ id }) => id)}
         />
       )}
     </>
   );
-});
+};
 
 export default InstancesPageActions;

@@ -1,18 +1,20 @@
 import { Icon, ICONS } from "@canonical/react-components";
-import type { FC } from "react";
-import classes from "./LoadingState.module.scss";
 import classNames from "classnames";
+import type { FC, Ref } from "react";
+import classes from "./LoadingState.module.scss";
 
 interface LoadingStateProps {
   readonly centerOnScreen?: boolean;
+  readonly ref?: Ref<HTMLDivElement>;
 }
 
-const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen }) => {
+const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, ref }) => {
   return (
     <div
       className={classNames({
         [classes.root]: centerOnScreen,
       })}
+      ref={ref}
     >
       <div className="p-strip" role="status">
         <div className="u-align-text--center">
