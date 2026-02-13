@@ -8,13 +8,22 @@ describe("BoldSubstring", () => {
     renderWithProviders(<BoldSubstring text="Hello world" substring="world" />);
 
     expect(screen.getByText("Hello")).toBeInTheDocument();
-    expect(screen.getByText("world")).toBeInTheDocument();
+
+    const strongText = screen.getByText("world");
+    expect(strongText).toBeInTheDocument();
+    expect(strongText).toHaveRole("strong");
   });
 
   it("should render text without substring", () => {
     renderWithProviders(<BoldSubstring text="Hello world" substring="Hi" />);
-
     expect(screen.getByText("Hello world")).toBeInTheDocument();
     expect(screen.queryByText("Hi")).not.toBeInTheDocument();
+    expect(screen.queryByRole("strong")).not.toBeInTheDocument();
+  });
+
+  it("should render text without empty substring", () => {
+    renderWithProviders(<BoldSubstring text="Hello world" substring="" />);
+    expect(screen.getByText("Hello world")).toBeInTheDocument();
+    expect(screen.queryByRole("strong")).not.toBeInTheDocument();
   });
 });
