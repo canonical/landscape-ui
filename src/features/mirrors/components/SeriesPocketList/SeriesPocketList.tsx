@@ -1,5 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -62,10 +62,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         accessor: "package_count",
         Header: "Content",
         Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
-          <>{`${original.package_count} ${pluralize(
-            original.package_count,
-            "package",
-          )}`}</>
+          <>{`${pluralizeWithCount(original.package_count, "package")}`}</>
         ),
       },
       {

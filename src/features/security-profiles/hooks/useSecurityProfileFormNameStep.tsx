@@ -1,7 +1,7 @@
 import { useOrgSettings } from "@/features/organisation-settings";
 import useEnv from "@/hooks/useEnv";
 import useRoles from "@/hooks/useRoles";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
@@ -33,7 +33,7 @@ export default function useSecurityProfileFormNameStep<
       return "Infinite";
     }
 
-    return `${auditRetentionPeriod} ${pluralize(auditRetentionPeriod, "day")}`;
+    return `${pluralizeWithCount(auditRetentionPeriod, "day")}`;
   };
 
   return {

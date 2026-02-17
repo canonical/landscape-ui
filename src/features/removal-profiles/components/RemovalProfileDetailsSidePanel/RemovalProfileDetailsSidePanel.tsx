@@ -4,7 +4,7 @@ import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitleByName, pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -74,7 +74,7 @@ const RemovalProfileDetails: FC = () => {
               <InfoGrid.Item
                 label="Removal timeframe"
                 large
-                value={`${profile.days_without_exchange} ${pluralize(profile.days_without_exchange, "day")}`}
+                value={`${pluralizeWithCount(profile.days_without_exchange, "day")}`}
               />
             </InfoGrid>
           </Blocks.Item>

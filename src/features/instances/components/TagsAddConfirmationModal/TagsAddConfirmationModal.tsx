@@ -4,7 +4,11 @@ import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import { pluralize, pluralizeArray } from "@/utils/_helpers";
+import {
+  pluralize,
+  pluralizeArray,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import {
   ConfirmationModal,
   Icon,
@@ -81,7 +85,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           Cell: ({
             row: { original: profileChange },
           }: CellProps<ProfileChange>) => {
-            const label = `${profileChange.profile.current_associated_instances} ${pluralize(
+            const label = `${pluralizeWithCount(
               profileChange.profile.current_associated_instances,
               "instance",
             )}`;

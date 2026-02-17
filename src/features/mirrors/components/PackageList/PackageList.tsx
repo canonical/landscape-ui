@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
   Col,
@@ -359,9 +359,12 @@ const PackageList: FC<PackageListProps> = ({
                     title: "Deleting packages from pocket",
                     children: (
                       <p>
-                        This will delete {selectedPackages.length} selected{" "}
-                        {pluralize(selectedPackages.length, "package")} from{" "}
-                        {pocket.name} pocket {seriesName} series of{" "}
+                        This will delete{" "}
+                        {pluralizeWithCount(
+                          selectedPackages.length,
+                          "selected package",
+                        )}{" "}
+                        from {pocket.name} pocket {seriesName} series of{" "}
                         {distributionName} distribution
                       </p>
                     ),

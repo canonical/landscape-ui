@@ -2,7 +2,7 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import { useActivities } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import type { FC } from "react";
 import { createPortal } from "react-dom";
 import useDetachToken from "../../api/useDetachToken";
@@ -40,7 +40,7 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
 
       const title = instanceTitle
         ? `You queued detachment of Ubuntu Pro token for instance ${instanceTitle}.`
-        : `You queued detachment of Ubuntu Pro token for ${count} ${pluralize(count, "instance")}.`;
+        : `You queued detachment of Ubuntu Pro token for ${pluralizeWithCount(count, "instance")}.`;
 
       const message = isMultiple
         ? `This will disconnect the ${pluralize(count, "instance from its", "instances from their")} subscription and pause any enabled Pro services.`
@@ -73,8 +73,8 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
 
   const modalMessage = isMultiple ? (
     <p>
-      Detaching the Ubuntu Pro token will disconnect {count}{" "}
-      {pluralize(count, "instance from its ", "instances from their ")}
+      Detaching the Ubuntu Pro token will disconnect{" "}
+      {pluralizeWithCount(count, "instance from its ", "instances from their ")}{" "}
       subscription and pause any enabled Pro services.
     </p>
   ) : (

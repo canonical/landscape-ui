@@ -14,7 +14,7 @@ import useNotify from "@/hooks/useNotify";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
   Col,
@@ -227,7 +227,7 @@ const InfoTablesContainer: FC = () => {
                 (row.original.upgrades?.security ?? 0) +
                 (row.original.upgrades?.regular ?? 0);
 
-              return `${packageCount} ${pluralize(packageCount, "package")}`;
+              return `${pluralizeWithCount(packageCount, "package")}`;
             },
             className: classes.lastCol,
           },
@@ -242,7 +242,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>): ReactNode =>
-              `${row.original.computers.length} ${pluralize(row.original.computers.length, "instance")}`,
+              `${pluralizeWithCount(row.original.computers.length, "instance")}`,
             className: classes.lastCol,
           },
         ];
@@ -256,7 +256,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers_count",
             Cell: ({ row }: CellProps<Usn>): ReactNode =>
-              `${row.original.computers_count} ${pluralize(row.original.computers_count, "instance")}`,
+              `${pluralizeWithCount(row.original.computers_count, "instance")}`,
             className: classes.lastCol,
           },
         ];

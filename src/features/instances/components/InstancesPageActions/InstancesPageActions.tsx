@@ -8,7 +8,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
+import { hasOneItem, pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
@@ -198,7 +198,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      `Attach Ubuntu Pro token to ${pluralizeWithCount(selectedInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
         <AttachTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
@@ -207,7 +207,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")}`,
+      `Replace Ubuntu Pro token for ${pluralizeWithCount(selectedInstances.length, "instance")}`,
       <Suspense fallback={<LoadingState />}>
         <ReplaceTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
@@ -377,8 +377,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onConfirm={handleRebootInstance}
           >
             <p>
-              Are you sure you want to restart {selectedInstances.length}
-              {pluralize(selectedInstances.length, "instance")}?
+              Are you sure you want to restart{" "}
+              {pluralizeWithCount(selectedInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,
@@ -397,8 +397,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
             onConfirm={handleShutdownInstance}
           >
             <p>
-              Are you sure you want to shut down {selectedInstances.length}{" "}
-              {pluralize(selectedInstances.length, "instance")}?
+              Are you sure you want to shut down{" "}
+              {pluralizeWithCount(selectedInstances.length, "instance")}?
             </p>
           </ConfirmationModal>,
           document.body,

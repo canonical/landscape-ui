@@ -1,5 +1,5 @@
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import type { FC } from "react";
 import TokenFormBase, { UBUNTU_PRO_DASHBOARD_URL } from "../TokenFormBase";
 import { getAttachFormNotification } from "./helpers";
@@ -42,20 +42,20 @@ const AttachTokenForm: FC<AttachTokenFormProps> = ({ selectedInstances }) => {
       </p>
       {hasMixedTokens && (
         <p>
-          You&apos;re attaching a token to {selectedInstances.length}{" "}
-          {pluralize(selectedInstances.length, "instance")}. If they already
-          have a token it will be overriden.
+          You&apos;re attaching a token to{" "}
+          {pluralizeWithCount(selectedInstances.length, "instance")}. If they
+          already have a token it will be overriden.
         </p>
       )}
 
       {hasMixedTokens && (
         <ul>
           <li>
-            {withoutToken} {pluralize(withoutToken, "instance")} will be
-            attached to this token
+            {pluralizeWithCount(withoutToken, "instance")} will be attached to
+            this token
           </li>
           <li>
-            {withToken} {pluralize(withToken, "instance")} will override{" "}
+            {pluralizeWithCount(withToken, "instance")} will override{" "}
             {pluralize(withToken, "its", "their")} existing token.
           </li>
         </ul>

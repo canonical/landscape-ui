@@ -3,7 +3,6 @@ import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { renderWithProviders } from "@/tests/render";
-import { pluralize } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import WslProfileDetailsSidePanel from "./WslProfileDetailsSidePanel";
 
@@ -40,15 +39,15 @@ describe("WslProfileDetailsSidePanel", () => {
       },
       {
         label: "Associated parents",
-        value: `${testProfile.computers.constrained.length} ${pluralize(testProfile.computers.constrained.length, "instance")}`,
+        value: `${testProfile.computers.constrained.length} instances`,
       },
       {
         label: "Not compliant",
-        value: `${testProfile.computers["non-compliant"].length} ${pluralize(testProfile.computers["non-compliant"].length, "instance")}`,
+        value: `${testProfile.computers["non-compliant"].length} instance`,
       },
       {
         label: "Compliant",
-        value: `${testProfile.computers.constrained.length - testProfile.computers["non-compliant"].length} ${pluralize(testProfile.computers.constrained.length - testProfile.computers["non-compliant"].length, "instance")}`,
+        value: `${testProfile.computers.constrained.length - testProfile.computers["non-compliant"].length} instances`,
       },
     ];
 

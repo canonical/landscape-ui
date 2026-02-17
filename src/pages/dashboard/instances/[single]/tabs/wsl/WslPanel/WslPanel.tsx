@@ -6,7 +6,7 @@ import {
   WslInstancesEmptyState,
 } from "@/features/wsl";
 import type { WindowsInstance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
 
@@ -36,10 +36,13 @@ const WslPanel: FC<WslPanelProps> = ({ instance }) => {
       <>
         {wslInstances.length >= windowsInstanceChildLimit && (
           <Notification inline title="Limit reached:" severity="caution">
-            You&apos;ve reached the limit of {windowsInstanceChildLimit} active
-            WSL child {pluralize(windowsInstanceChildLimit, "instance")}. This
-            may be due to too many associated profiles or manually created
-            instances.
+            You&apos;ve reached the limit of{" "}
+            {pluralizeWithCount(
+              windowsInstanceChildLimit,
+              "active WSL child instance",
+            )}
+            . This may be due to too many associated profiles or manually
+            created instances.
           </Notification>
         )}
 
