@@ -112,7 +112,15 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
   return (
     <ConfirmationModal
-      title={`Add ${pluralize(tags.length, `"${tags[0]}" tag`, `${tags.length} tags`)} to ${pluralizeArray(instances, (instance) => `"${instance.title}"`, `${instances.length} instances`)}`}
+      title={`Add ${pluralizeArray(
+        tags,
+        (tag) => `"${tag}" tag`,
+        `tags`,
+      )} to ${pluralizeArray(
+        instances,
+        (instance) => `"${instance.title}"`,
+        `instances`,
+      )}`}
       confirmButtonLabel="Add tags"
       {...props}
     >
@@ -129,7 +137,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
         {pluralizeArray(
           instances,
           (instance) => `the ${instance.title} instance`,
-          `${instances.length} instances`,
+          `instances`,
         )}{" "}
         will associate the {pluralize(instances.length, "instance")} with the
         following profiles.

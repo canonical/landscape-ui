@@ -2,7 +2,7 @@ import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
 import { profileChanges, tags } from "@/tests/mocks/tag";
 import { renderWithProviders } from "@/tests/render";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeArray } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import TagsAddConfirmationModal from "./TagsAddConfirmationModal";
@@ -25,7 +25,7 @@ describe("TagsAddConfirmationModal", () => {
         <TagsAddConfirmationModal {...props} tags={testTags} />,
       );
 
-      const title = `Add ${pluralize(testTags.length, `"${testTags[0]}" tag`, `${testTags.length} tags`)} to ${pluralize(props.instances.length, `"${props.instances[0].title}"`, `${props.instances.length} instances`)}`;
+      const title = `Add ${pluralizeArray(testTags, (tag) => `"${tag}" tag`, `tags`)} to ${pluralizeArray(props.instances, (instance) => `"${instance.title}"`, `instances`)}`;
       expect(screen.getByText(title)).toBeInTheDocument();
     },
   );

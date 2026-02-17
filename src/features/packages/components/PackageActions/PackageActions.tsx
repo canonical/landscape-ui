@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeArray } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -24,10 +24,10 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
   const handleExistingPackages = (
     action: Exclude<InstalledPackageAction, "downgrade">,
   ) => {
-    const titleEnding = pluralize(
-      selectedPackages.length,
-      selectedPackages[0]?.name ?? "",
-      `${selectedPackages.length} selected packages`,
+    const titleEnding = pluralizeArray(
+      selectedPackages,
+      (pkg) => pkg.name,
+      `selected packages`,
     );
 
     setSidePanelContent(
