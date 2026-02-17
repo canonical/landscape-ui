@@ -1,3 +1,4 @@
+import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   useGetScriptsInfinite,
@@ -12,7 +13,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 import classes from "./ScriptDropdown.module.scss";
 import { DEBOUNCE_DELAY, NEAR_BOTTOM_RATIO, QUERY_LIMIT } from "./constants";
-import { boldSubstring } from "./helpers";
 
 interface ScriptDropdownProps {
   readonly script: Script | null | undefined;
@@ -227,7 +227,10 @@ const ScriptDropdown: FC<ScriptDropdownProps> = ({
                             className="u-truncate"
                             data-testid="dropdownElement"
                           >
-                            {boldSubstring(item.title, inputValue)}
+                            <BoldSubstring
+                              text={item.title}
+                              substring={search}
+                            />
                           </div>
                         </li>
                       ))}
