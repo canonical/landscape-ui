@@ -74,7 +74,7 @@ export const handleParams = ({
   return paramsToPass;
 };
 
-export const hasOneItem = function <T>(array: readonly T[]): array is [T] {
+export const hasOneItem = function <T>(array: readonly T[]): array is readonly [T] {
   return array.length === 1;
 };
 
@@ -110,7 +110,7 @@ export const formatCountableNoun = (
   plural?: string,
 ) => (
   <span>
-    <strong>{count}</strong> {pluralize(count, singular, plural)}
+    <strong>{count.toLocaleString()}</strong> {pluralize(count, singular, plural)}
   </span>
 );
 
