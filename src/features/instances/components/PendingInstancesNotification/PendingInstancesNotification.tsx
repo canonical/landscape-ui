@@ -41,10 +41,9 @@ const PendingInstancesNotification: FC = () => {
       onDismiss={dismiss}
     >
       <span>
-        {`You currently have ${pluralizeWithCount(
-          pendingInstances.length,
-          "pending instance",
-        )} awaiting your review and approval. `}
+        You currently have{" "}
+        {pluralizeWithCount(pendingInstances.length, "pending instance")}{" "}
+        awaiting your review and approval.
       </span>
       <Button
         type="button"

@@ -101,18 +101,18 @@ const PackageProfileDetailsSidePanel: FC = () => {
 
           <InfoGrid.Item
             label="Pending on"
-            value={`${pluralizeWithCount(
+            value={pluralizeWithCount(
               profile.computers.pending.length,
               "instance",
-            )}`}
+            )}
           />
 
           <InfoGrid.Item
             label="Not compliant on"
-            value={`${pluralizeWithCount(
+            value={pluralizeWithCount(
               profile.computers["non-compliant"].length,
               "instance",
-            )}`}
+            )}
           />
         </InfoGrid>
 

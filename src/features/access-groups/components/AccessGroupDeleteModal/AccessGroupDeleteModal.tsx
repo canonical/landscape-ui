@@ -47,7 +47,7 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
     limit: 1,
   });
 
-  const instancesCountText = `${pluralizeWithCount(instancesCount, "instance")}`;
+  const instancesCountText = pluralizeWithCount(instancesCount, "instance");
   const itOrThem = pluralize(instancesCount, "it", "them");
   const thisOrTheseInstances = pluralize(
     instancesCount,

@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
-import { pluralizeArray } from "@/utils/_helpers";
+import { pluralize, pluralizeArray } from "@/utils/_helpers";
 import {
   randomizationValidationSchema,
   deliveryValidationSchema,
@@ -27,7 +27,7 @@ export const getActionInfo = (
     (pkg) => `${pkg.name} package`,
     "selected packages",
   );
-  const itOrThey = packages.length > 1 ? "They" : "It";
+  const itOrThey = pluralize(packages.length, "It", "They");
 
   return `This will ${action === "hold" ? "disable" : "enable"} upgrades for the ${title}. ${itOrThey} will ${action === "hold" ? "not " : ""}be eligible to upgrade to the latest available version.`;
 };

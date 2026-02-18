@@ -227,7 +227,7 @@ const InfoTablesContainer: FC = () => {
                 (row.original.upgrades?.security ?? 0) +
                 (row.original.upgrades?.regular ?? 0);
 
-              return `${pluralizeWithCount(packageCount, "package")}`;
+              return pluralizeWithCount(packageCount, "package");
             },
             className: classes.lastCol,
           },
@@ -242,7 +242,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>): ReactNode =>
-              `${pluralizeWithCount(row.original.computers.length, "instance")}`,
+              pluralizeWithCount(row.original.computers.length, "instance"),
             className: classes.lastCol,
           },
         ];
@@ -256,7 +256,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers_count",
             Cell: ({ row }: CellProps<Usn>): ReactNode =>
-              `${pluralizeWithCount(row.original.computers_count, "instance")}`,
+              pluralizeWithCount(row.original.computers_count, "instance"),
             className: classes.lastCol,
           },
         ];

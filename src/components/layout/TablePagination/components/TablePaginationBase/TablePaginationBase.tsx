@@ -59,7 +59,8 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
             classes.description,
           )}
         >
-          {`Showing ${currentItemCount} of ${pluralizeWithCount(totalItems, "result")}`}
+          Showing {currentItemCount} of{" "}
+          {pluralizeWithCount(totalItems, "result")}
         </p>
       )}
 

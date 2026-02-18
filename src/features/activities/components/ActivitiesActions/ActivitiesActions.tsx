@@ -37,7 +37,11 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
     () => "an activity",
     `activities`,
   );
-  const pluralizedActivity = selected.length === 1 ? "activity" : "activities";
+  const pluralizedActivity = pluralize(
+    selected.length,
+    "activity",
+    "activities",
+  );
 
   const handleApproveActivities = async () => {
     try {

@@ -80,13 +80,14 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
           onConfirm={tryRemove}
         >
           <p>
-            <span>{`This will remove '${role.name}' role.`}</span>
+            <span>This will remove &apos;{role.name}&apos; role.</span>
 
             {role.persons.length > 0 && (
               <>
                 <br />
                 <strong>
-                  {`This will affect ${pluralizeWithCount(role.persons.length, "administrator")}.`}
+                  This will affect{" "}
+                  {pluralizeWithCount(role.persons.length, "administrator")}.
                 </strong>
               </>
             )}

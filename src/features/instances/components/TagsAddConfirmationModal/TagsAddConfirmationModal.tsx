@@ -85,10 +85,10 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           Cell: ({
             row: { original: profileChange },
           }: CellProps<ProfileChange>) => {
-            const label = `${pluralizeWithCount(
+            const label = pluralizeWithCount(
               profileChange.profile.current_associated_instances,
               "instance",
-            )}`;
+            );
 
             return profileChange.profile.will_exceed_limit ? (
               <Tooltip

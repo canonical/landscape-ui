@@ -137,7 +137,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${pluralizeWithCount(original.computers["non-compliant"].length, "instance")}`}
+            {pluralizeWithCount(
+              original.computers["non-compliant"].length,
+              "instance",
+            )}
           </>
         ),
       },
@@ -157,7 +160,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${pluralizeWithCount(original.computers["pending"].length, "instance")}`}
+            {pluralizeWithCount(
+              original.computers["pending"].length,
+              "instance",
+            )}
           </>
         ),
       },

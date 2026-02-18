@@ -33,7 +33,7 @@ export default function useSecurityProfileFormNameStep<
       return "Infinite";
     }
 
-    return `${pluralizeWithCount(auditRetentionPeriod, "day")}`;
+    return pluralizeWithCount(auditRetentionPeriod, "day");
   };
 
   return {

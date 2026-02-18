@@ -62,7 +62,7 @@ const SeriesPocketList: FC<SeriesPocketListProps> = ({
         accessor: "package_count",
         Header: "Content",
         Cell: ({ row: { original } }: CellProps<CommonPocket>): ReactNode => (
-          <>{`${pluralizeWithCount(original.package_count, "package")}`}</>
+          <>{pluralizeWithCount(original.package_count, "package")}</>
         ),
       },
       {

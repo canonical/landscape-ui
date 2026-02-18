@@ -37,10 +37,15 @@ const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
       {additionalCta}
       <div className={classes.expandBlock}>
         {actualTotalCount > 0 && (
-          <span className="p-text--small u-text--muted">{`Showing ${Math.min(
-            actualTotalCount,
-            itemCount,
-          )} of ${pluralizeWithCount(actualTotalCount, itemNames.singular, itemNames.plural)}.`}</span>
+          <span className="p-text--small u-text--muted">
+            Showing {Math.min(actualTotalCount, itemCount)} of{" "}
+            {pluralizeWithCount(
+              actualTotalCount,
+              itemNames.singular,
+              itemNames.plural,
+            )}
+            .
+          </span>
         )}
         {itemCount < actualTotalCount && (
           <Button

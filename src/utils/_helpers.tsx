@@ -1,5 +1,6 @@
 import { API_VERSION } from "@/constants";
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import type { FC } from "react";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>
   ["get", "delete"].includes(config.method ?? "get")
@@ -106,15 +107,15 @@ export const pluralizeArray = function <T>(
     : `${items.length.toLocaleString()} ${pluralForm}`;
 };
 
-export const formatCountableNoun = (
-  count: number,
-  singular: string,
-  plural?: string,
-) => (
-  <span>
+export const formatCountableNoun: FC<{
+  count: number;
+  singular: string;
+  plural?: string;
+}> = ({ count, singular, plural }) => (
+  <>
     <strong>{count.toLocaleString()}</strong>{" "}
     {pluralize(count, singular, plural)}
-  </span>
+  </>
 );
 
 export const capitalize = <T extends string>(s: T) =>
