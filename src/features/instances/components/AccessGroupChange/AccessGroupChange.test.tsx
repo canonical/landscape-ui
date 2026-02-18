@@ -31,7 +31,7 @@ describe("AccessGroupChange", () => {
     expect(screen.getByText("Access group changed")).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Access group for ${selectedSingle[0]?.title} successfully changed to ${newAccessGroup}`,
+        `Access group for "${selectedSingle[0]?.title}" instance successfully changed to ${newAccessGroup}`,
       ),
     ).toBeInTheDocument();
   });

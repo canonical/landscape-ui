@@ -72,9 +72,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
         ? securityUpgradesInstanceCount[period]
         : instanceIds.length - securityUpgradesInstanceCount[period];
 
-    return count !== 1
-      ? `${count || "No"} instances have${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`
-      : `1 instance has${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
+    return `${pluralizeWithCount(count, "instance has", "instances have")} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
   };
 
   const handleDownloadDialog = () => {
