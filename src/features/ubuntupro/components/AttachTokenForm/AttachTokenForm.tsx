@@ -56,7 +56,7 @@ const AttachTokenForm: FC<AttachTokenFormProps> = ({ selectedInstances }) => {
           </li>
           <li>
             {pluralizeWithCount(withToken, "instance")} will override{" "}
-            {pluralize(withToken, "its", "their")} existing token.
+            {pluralize(withToken, "its", "their")} existing token
           </li>
         </ul>
       )}

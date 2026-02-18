@@ -2,8 +2,11 @@ import {
   deliveryValidationSchema,
   randomizationValidationSchema,
 } from "@/components/form/DeliveryScheduling";
-import { formatCountableNoun } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelActionButtons/helpers";
-import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
+import {
+  formatCountableNoun,
+  hasOneItem,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import moment from "moment";
 import * as Yup from "yup";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
@@ -49,9 +52,9 @@ const messages = {
   single: {
     [EditSnapType.Refresh]:
       "This will update {snapName} to the latest version available. Automatic updates will resume, and {snapName} will be upgraded based on the regular refresh schedule.",
-    [EditSnapType.Uninstall]: "This will remove the snap from your system",
+    [EditSnapType.Uninstall]: "This will remove the snap from your system.",
     [EditSnapType.Hold]:
-      "This will pause automatic updates for that particular snap. {snapName} will maintain the current version",
+      "This will pause automatic updates for that particular snap. {snapName} will maintain the current version.",
     [EditSnapType.Unhold]:
       "This will resume automatic updates for that particular snap. {snapName} will be eligible for the latest version upgrades based on the regular refresh schedule.",
   },
@@ -59,7 +62,7 @@ const messages = {
     [EditSnapType.Refresh]:
       "This will update the selected snaps to the latest version available. Automatic updates will resume, and the snaps will be upgraded based on the regular refresh schedule.",
     [EditSnapType.Uninstall]:
-      "This will remove the selected snaps from your system",
+      "This will remove the selected snaps from your system.",
     [EditSnapType.Hold]:
       "Holding a snap will pause automatic updates for that particular snap.",
     [EditSnapType.Unhold]:
@@ -98,17 +101,17 @@ export const getSnapMessage = (
         <ul>
           <li>
             {type === EditSnapType.Hold ? "hold" : "unhold"}{" "}
-            {formatCountableNoun({
-              count: type === EditSnapType.Hold ? unheld : held,
-              singular: "snap",
-            })}
+            {formatCountableNoun(
+              type === EditSnapType.Hold ? unheld : held,
+              "snap",
+            )}
           </li>
           <li>
             leave{" "}
-            {formatCountableNoun({
-              count: type === EditSnapType.Hold ? held : unheld,
-              singular: "snap",
-            })}{" "}
+            {formatCountableNoun(
+              type === EditSnapType.Hold ? held : unheld,
+              "snap",
+            )}{" "}
             {type === EditSnapType.Hold ? "held" : "unheld"}
           </li>
         </ul>

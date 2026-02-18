@@ -8,7 +8,12 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import {
+  formatCountableNoun,
+  hasOneItem,
+  pluralizeArray,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import {
   Button,
   ConfirmationModal,
@@ -71,11 +76,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
   const createInstanceCountString = (instances: Instance[]) => {
-    return (
-      <>
-        <b>{instances.length}</b> {pluralize(instances.length, "instance")}
-      </>
-    );
+    return formatCountableNoun(instances.length, "instance");
   };
 
   const handleRunScript = async () => {
@@ -170,7 +171,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralize(selectedInstances.length, selectedInstances[0]?.title ?? "1 instance", `${selectedInstances.length} instances`)}`,
+      `Report for ${pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,

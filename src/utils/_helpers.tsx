@@ -74,16 +74,16 @@ export const handleParams = ({
   return paramsToPass;
 };
 
-export const hasOneItem = <T>(array: readonly T[]): array is [T] => {
+export const hasOneItem = function <T>(array: readonly T[]): array is [T] {
   return array.length === 1;
 };
 
 export const pluralize = (
   count: number,
   singularForm: string,
-  pluralForm?: string,
+  pluralForm = `${singularForm}s`,
 ) => {
-  return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
+  return count === 1 ? singularForm : pluralForm;
 };
 
 export const pluralizeWithCount = (
@@ -94,22 +94,28 @@ export const pluralizeWithCount = (
   return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
 };
 
-export const pluralizeArray = <T>(
+export const pluralizeArray = function <T>(
   items: readonly T[],
   getSingularForm: (item: T) => string,
   pluralForm: string,
-) => {
+) {
   return hasOneItem(items)
     ? getSingularForm(items[0])
     : `${items.length.toLocaleString()} ${pluralForm}`;
 };
 
-export const capitalize = (words: string) => {
-  return words
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.substring(1))
-    .join(" ");
-};
+export const formatCountableNoun = (
+  count: number,
+  singular: string,
+  plural?: string,
+) => (
+  <span>
+    <strong>{count}</strong> {pluralize(count, singular, plural)}
+  </span>
+);
+
+export const capitalize = <T extends string>(s: T) =>
+  (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<typeof s>;
 
 export const getTitleByName = (
   name: string,
