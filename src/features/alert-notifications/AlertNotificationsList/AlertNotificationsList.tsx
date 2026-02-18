@@ -28,20 +28,24 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, pendingInstances }) => {
     );
   };
 
-  const listItems = alerts.map((alert) => (
-    <div key={alert.alert_type} className={classes.listItem}>
-      {STATUSES[alert.alert_type].icon}
-      <Link
-        href={`${ROOT_PATH}instances?status=${STATUSES[alert.alert_type].filterValue}`}
-        className={classNames(
-          "u-no-margin u-no-padding",
-          classes.listItem__link,
-        )}
-      >
-        {alert.summary}
-      </Link>
-    </div>
-  ));
+  const listItems = alerts.map((alert) => {
+    const status = STATUSES[alert.alert_type] || STATUSES.Unknown;
+
+    return (
+      <div key={alert.alert_type} className={classes.listItem}>
+        {status.icon}
+        <Link
+          href={`${ROOT_PATH}instances?status=${status.filterValue}`}
+          className={classNames(
+            "u-no-margin u-no-padding",
+            classes.listItem__link,
+          )}
+        >
+          {alert.summary}
+        </Link>
+      </div>
+    );
+  });
   if (pendingInstances.length > 0) {
     listItems.push(
       <div className={classes.listItem}>

@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import TablePagination from "@/components/layout/TablePagination";
 import { usePackages } from "@/hooks/usePackages";
 import LoadingState from "@/components/layout/LoadingState";
+import EmptyState from "@/components/layout/EmptyState";
 import PackageList from "@/pages/dashboard/instances/[single]/tabs/packages/PackageList";
 import PackagesPanelHeader from "@/pages/dashboard/instances/[single]/tabs/packages/PackagesPanelHeader";
 import { Package } from "@/types/Package";
@@ -48,6 +49,20 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
   const { getInstancePackagesQuery } = usePackages();
 
   const {
+    data: getInstalledPackagesQueryResult,
+    isLoading: getInstalledPackagesQueryLoading,
+  } = getInstancePackagesQuery(
+    {
+      instance_id: instance.id,
+      limit: 1,
+      installed: true,
+    },
+    {
+      enabled: !!instance,
+    },
+  );
+
+  const {
     data: getInstancePackagesQueryResult,
     isLoading: getInstancePackagesQueryLoading,
   } = getInstancePackagesQuery(
@@ -67,40 +82,49 @@ const PackagesPanel: FC<PackagesPanelProps> = ({ instance, tabState }) => {
     },
   );
 
+  const hasInstalledPackages =
+    (getInstalledPackagesQueryResult?.data.count ?? 0) > 0;
+
   return (
     <>
       {!packageSearch &&
         !filter &&
         currentPage === 1 &&
         pageSize === 20 &&
-        getInstancePackagesQueryLoading && <LoadingState />}
+        (getInstancePackagesQueryLoading ||
+          getInstalledPackagesQueryLoading) && <LoadingState />}
 
-      {(packageSearch ||
-        filter ||
-        currentPage !== 1 ||
-        pageSize !== 20 ||
-        !getInstancePackagesQueryLoading) && (
-        <>
-          <PackagesPanelHeader
-            instance={instance}
-            selectedPackages={selected}
-            filter={filter}
-            onFilterChange={handleFilterChange}
-            onPackageSearchChange={handlePackageSearchChange}
-          />
-          <PackageList
-            packages={getInstancePackagesQueryResult?.data.results ?? []}
-            packagesLoading={getInstancePackagesQueryLoading}
-            selectedPackages={selected}
-            onPackagesSelect={(packageNames) => {
-              setSelected(packageNames);
-            }}
-            instance={instance}
-            emptyMsg={emptyMessage(filter, packageSearch)}
-            selectAll={tabState?.selectAll ?? false}
-          />
-        </>
+      {!getInstalledPackagesQueryLoading && !hasInstalledPackages && (
+        <EmptyState title="No packages have been found yet." />
       )}
+
+      {hasInstalledPackages &&
+        (packageSearch ||
+          filter ||
+          currentPage !== 1 ||
+          pageSize !== 20 ||
+          !getInstancePackagesQueryLoading) && (
+          <>
+            <PackagesPanelHeader
+              instance={instance}
+              selectedPackages={selected}
+              filter={filter}
+              onFilterChange={handleFilterChange}
+              onPackageSearchChange={handlePackageSearchChange}
+            />
+            <PackageList
+              packages={getInstancePackagesQueryResult?.data.results ?? []}
+              packagesLoading={getInstancePackagesQueryLoading}
+              selectedPackages={selected}
+              onPackagesSelect={(packageNames) => {
+                setSelected(packageNames);
+              }}
+              instance={instance}
+              emptyMsg={emptyMessage(filter, packageSearch)}
+              selectAll={tabState?.selectAll ?? false}
+            />
+          </>
+        )}
       <TablePagination
         currentPage={currentPage}
         totalItems={getInstancePackagesQueryResult?.data.count}
