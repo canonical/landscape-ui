@@ -9,7 +9,6 @@ import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
-  formatCountableNoun,
   hasOneItem,
   pluralizeArray,
   pluralizeWithCount,
@@ -26,6 +25,7 @@ import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -76,7 +76,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
   const createInstanceCountString = (instances: Instance[]) => {
-    return formatCountableNoun(instances.length, "instance");
+    return (
+      <PluralizeWithBoldCount count={instances.length} singular="instance" />
+    );
   };
 
   const handleRunScript = async () => {

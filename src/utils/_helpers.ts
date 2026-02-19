@@ -1,6 +1,5 @@
 import { API_VERSION } from "@/constants";
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import type { FC } from "react";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>
   ["get", "delete"].includes(config.method ?? "get")
@@ -75,9 +74,7 @@ export const handleParams = ({
   return paramsToPass;
 };
 
-export const hasOneItem = function <T>(
-  array: readonly T[],
-): array is readonly [T] {
+export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
   return array.length === 1;
 };
 
@@ -97,26 +94,15 @@ export const pluralizeWithCount = (
   return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
 };
 
-export const pluralizeArray = function <T>(
+export const pluralizeArray = <T>(
   items: readonly T[],
   getSingularForm: (item: T) => string,
   pluralForm: string,
-) {
+) => {
   return hasOneItem(items)
     ? getSingularForm(items[0])
     : `${items.length.toLocaleString()} ${pluralForm}`;
 };
-
-export const formatCountableNoun: FC<{
-  count: number;
-  singular: string;
-  plural?: string;
-}> = ({ count, singular, plural }) => (
-  <>
-    <strong>{count.toLocaleString()}</strong>{" "}
-    {pluralize(count, singular, plural)}
-  </>
-);
 
 export const capitalize = <T extends string>(s: T) =>
   (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<typeof s>;

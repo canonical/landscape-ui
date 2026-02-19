@@ -1,9 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { InternalAxiosRequestConfig } from "axios";
-import { getByRole } from "@testing-library/react";
 import {
   capitalize,
-  formatCountableNoun,
   handleParams,
   hasOneItem,
   pluralize,
@@ -11,7 +9,6 @@ import {
   pluralizeWithCount,
 } from "./_helpers";
 import { API_VERSION } from "@/constants";
-import { renderWithProviders } from "@/tests/render";
 
 const makeConfig = (
   options: Partial<InternalAxiosRequestConfig>,
@@ -276,35 +273,6 @@ describe("pluralizeArray", () => {
     const result = pluralizeArray([], (item) => item, "plural");
 
     expect(result).toEqual("0 plural");
-  });
-});
-
-describe("formatCountableNoun", () => {
-  it("uses singular form", () => {
-    const { container } = renderWithProviders(
-      formatCountableNoun(1, "singular"),
-    );
-
-    expect(container).toHaveTextContent("1 singular");
-    expect(getByRole(container, "strong")).toHaveTextContent("1");
-  });
-
-  it("uses default plural form", () => {
-    const { container } = renderWithProviders(
-      formatCountableNoun(2, "singular"),
-    );
-
-    expect(container).toHaveTextContent("2 singulars");
-    expect(getByRole(container, "strong")).toHaveTextContent("2");
-  });
-
-  it("uses given plural form", () => {
-    const { container } = renderWithProviders(
-      formatCountableNoun(0, "singular", "plural"),
-    );
-
-    expect(container).toHaveTextContent("0 plural");
-    expect(getByRole(container, "strong")).toHaveTextContent("0");
   });
 });
 

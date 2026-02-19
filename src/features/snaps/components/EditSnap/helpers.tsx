@@ -2,16 +2,13 @@ import {
   deliveryValidationSchema,
   randomizationValidationSchema,
 } from "@/components/form/DeliveryScheduling";
-import {
-  formatCountableNoun,
-  hasOneItem,
-  pluralizeWithCount,
-} from "@/utils/_helpers";
+import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
 import moment from "moment";
 import * as Yup from "yup";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
 import type { InstalledSnap } from "../../types";
 import type { FormValidationSchemaShape } from "./types";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 
 const commonValidationSchema = {
   ...deliveryValidationSchema,
@@ -101,17 +98,17 @@ export const getSnapMessage = (
         <ul>
           <li>
             {type === EditSnapType.Hold ? "hold" : "unhold"}{" "}
-            {formatCountableNoun(
-              type === EditSnapType.Hold ? unheld : held,
-              "snap",
-            )}
+            <PluralizeWithBoldCount
+              count={type === EditSnapType.Hold ? unheld : held}
+              singular="snap"
+            />
           </li>
           <li>
             leave{" "}
-            {formatCountableNoun(
-              type === EditSnapType.Hold ? held : unheld,
-              "snap",
-            )}{" "}
+            <PluralizeWithBoldCount
+              count={type === EditSnapType.Hold ? held : unheld}
+              singular="snap"
+            />{" "}
             {type === EditSnapType.Hold ? "held" : "unheld"}
           </li>
         </ul>

@@ -1,5 +1,6 @@
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 import type { User } from "@/types/User";
-import { capitalize, formatCountableNoun } from "@/utils/_helpers";
+import { capitalize } from "@/utils/_helpers";
 import type { ReactNode } from "react";
 
 export enum UserAction {
@@ -70,22 +71,27 @@ export const renderModalBody = ({
     return (
       <>
         <p>{capitalize(userAction)}ing users removes their login access.</p>
-        You selected {formatCountableNoun(selectedUsers.length, "user")}. This
-        will:
+        You selected{" "}
+        <PluralizeWithBoldCount count={selectedUsers.length} singular="user" />.
+        This will:
         <ul>
           <li>
             {userAction}{" "}
-            {formatCountableNoun(
-              userAction === UserAction.Lock ? unlockedCount : lockedCount,
-              "user",
-            )}
+            <PluralizeWithBoldCount
+              count={
+                userAction === UserAction.Lock ? unlockedCount : lockedCount
+              }
+              singular="user"
+            />
           </li>
           <li>
             leave{" "}
-            {formatCountableNoun(
-              userAction === UserAction.Lock ? lockedCount : unlockedCount,
-              "user",
-            )}{" "}
+            <PluralizeWithBoldCount
+              count={
+                userAction === UserAction.Lock ? lockedCount : unlockedCount
+              }
+              singular="user"
+            />{" "}
             {userAction}ed
           </li>
         </ul>

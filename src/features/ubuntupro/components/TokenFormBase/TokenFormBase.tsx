@@ -20,8 +20,9 @@ import { useState } from "react";
 import * as Yup from "yup";
 import useAttachToken from "../../api/useAttachToken";
 import { classifyInstancesByToken } from "../../helpers";
-import { formatCountableNoun, pluralize } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type { FormProps } from "./types";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 
 interface TokenFormBaseProps {
   readonly children: ReactNode;
@@ -190,18 +191,28 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
             <ul>
               {withoutToken > 0 && (
                 <li>
-                  {formatCountableNoun(withoutToken, "instance")} will be
-                  attached to this token
+                  <PluralizeWithBoldCount
+                    count={withoutToken}
+                    singular="instance"
+                  />{" "}
+                  will be attached to this token
                 </li>
               )}
               {withToken > 0 && (
                 <li>
-                  {formatCountableNoun(withToken, "instance")} will override{" "}
-                  {pluralize(withToken, "its", "their")} existing token
+                  <PluralizeWithBoldCount
+                    count={withToken}
+                    singular="instance"
+                  />{" "}
+                  will override {pluralize(withToken, "its", "their")} existing
+                  token
                 </li>
               )}
               <li>
-                {formatCountableNoun(invalidInstanceIds.length, "instance")}{" "}
+                <PluralizeWithBoldCount
+                  count={invalidInstanceIds.length}
+                  singular="instance"
+                />{" "}
                 will be skipped as{" "}
                 {pluralize(invalidInstanceIds.length, "it does", "they do")} not
                 support Ubuntu Pro management

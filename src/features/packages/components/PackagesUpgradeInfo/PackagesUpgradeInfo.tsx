@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import classNames from "classnames";
-import { formatCountableNoun } from "@/utils/_helpers";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 
 interface PackagesUpgradeInfoProps {
   readonly packageCount: number;
@@ -20,7 +20,9 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
   return (
     <div>
       <span>
-        You selected {formatCountableNoun(packageCount, "package")}. This will:
+        You selected{" "}
+        <PluralizeWithBoldCount count={packageCount} singular="package" />. This
+        will:
       </span>
       <ul
         className={classNames({
@@ -30,23 +32,30 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
         {securityUpgradePackageCount > 0 && (
           <li>
             <span>apply </span>
-            {formatCountableNoun(
-              securityUpgradePackageCount,
-              "security upgrade",
-            )}
+            <PluralizeWithBoldCount
+              count={securityUpgradePackageCount}
+              singular="security upgrade"
+            />
           </li>
         )}
         {regularUpgradePackageCount > 0 && (
           <li>
             <span>apply </span>
-            {formatCountableNoun(regularUpgradePackageCount, "regular upgrade")}
+            <PluralizeWithBoldCount
+              count={regularUpgradePackageCount}
+              singular="regular upgrade"
+            />
           </li>
         )}
       </ul>
       {noUpgradePackageCount > 0 && (
         <p>
           <span>No upgrades needed for </span>
-          {formatCountableNoun(noUpgradePackageCount, "package")}.
+          <PluralizeWithBoldCount
+            count={noUpgradePackageCount}
+            singular="package"
+          />
+          .
         </p>
       )}
     </div>
