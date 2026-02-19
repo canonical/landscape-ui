@@ -108,7 +108,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getInstancesNotUpgradedLoading && (
               <ReportWidget
                 currentCount={upgradedInstanceCount}
-                negativeDescription={`${pluralizeWithCount(Number(getInstancesNotUpgradedResult?.data.length), "instance is", "instances are")} not covered by upgrade profiles.`}
+                negativeDescription={`${pluralizeWithCount(Number(getInstancesNotUpgradedResult?.data.length ?? 0), "instance is", "instances are")} not covered by upgrade profiles.`}
                 positiveDescription={`${pluralizeWithCount(upgradedInstanceCount, "instance is", "instances are")} covered by upgrade profiles.`}
                 title="Upgrade profiles"
                 totalCount={instanceIds.length}
@@ -119,7 +119,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getNotPingingInstancesLoading && (
               <ReportWidget
                 currentCount={pingingInstancesCount}
-                negativeDescription={`${pluralizeWithCount(Number(getNotPingingInstancesResult?.data.length), "instance has", "instances have")} not contacted the server within the last 5 minutes.`}
+                negativeDescription={`${pluralizeWithCount(Number(getNotPingingInstancesResult?.data.length ?? 0), "instance has", "instances have")} not contacted the server within the last 5 minutes.`}
                 positiveDescription={`${pluralizeWithCount(pingingInstancesCount, "instance has", "instances have")} contacted the server within the last 5 minutes.`}
                 title="Contacted"
                 totalCount={instanceIds.length}
