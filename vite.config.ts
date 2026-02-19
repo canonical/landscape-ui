@@ -23,6 +23,9 @@ export default defineConfig(() => {
         "@": path.resolve(__dirname, "src"),
       },
     },
+    optimizeDeps: {
+      exclude: ["monaco-editor"],
+    },
     css: {
       preprocessorOptions: {
         scss: {

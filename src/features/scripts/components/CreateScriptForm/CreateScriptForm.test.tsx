@@ -8,7 +8,11 @@ describe("CreateScriptForm", () => {
     renderWithProviders(<CreateScriptForm />);
 
     expect(screen.getByText(/title/i)).toBeInTheDocument();
-    expect(screen.getByText(/code/i)).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/code/i, undefined, { timeout: 5000 }),
+    ).toBeInTheDocument();
+
     expect(screen.getByText("Access group")).toBeInTheDocument();
     expect(screen.getByText(/list of attachments/i)).toBeInTheDocument();
     expect(screen.getByText(/add script/i)).toBeInTheDocument();
