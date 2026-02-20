@@ -8,7 +8,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Form, Tabs } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -64,7 +64,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
       notify.success({
         title: "You queued packages to be upgraded",
-        message: `Packages on ${selectedInstances.length} ${pluralize(selectedInstances.length, "instance")} will be upgraded and are queued in Activities`,
+        message: `Packages on ${pluralizeWithCount(selectedInstances.length, "instance")} will be upgraded and are queued in Activities`,
       });
     } catch (error) {
       debug(error);

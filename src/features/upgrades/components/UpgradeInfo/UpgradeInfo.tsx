@@ -1,10 +1,10 @@
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 import {
   hasRegularUpgrades,
   hasSecurityUpgrades,
   hasUpgrades,
 } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
 import classNames from "classnames";
 import type { FC } from "react";
 
@@ -38,31 +38,30 @@ const UpgradeInfo: FC<UpgradeInfoProps> = ({ instances }) => {
         {instancesWithSecurityUpgradeCount > 0 && (
           <li>
             <span>Security upgrades are available for </span>
-            <b>{instancesWithSecurityUpgradeCount}</b>
-            <span>
-              {pluralize(instancesWithSecurityUpgradeCount, "instance")}
-            </span>
+            <PluralizeWithBoldCount
+              count={instancesWithSecurityUpgradeCount}
+              singular="instance"
+            />
           </li>
         )}
         {instancesWithRegularUpgradeCount > 0 && (
           <li>
             <span>Regular upgrades are available for </span>
-            <b>{instancesWithRegularUpgradeCount}</b>
-            <span>
-              {pluralize(instancesWithRegularUpgradeCount, "instance")}
-            </span>
+            <PluralizeWithBoldCount
+              count={instancesWithRegularUpgradeCount}
+              singular="instance"
+            />
           </li>
         )}
       </ul>
       {notAffectedInstancesCount > 0 && (
         <p>
-          <span>No upgrades for </span>
-          <span>
-            <b>{notAffectedInstancesCount}</b>
-          </span>
-          <span>
-            {pluralize(notAffectedInstancesCount, "instance")} needed.
-          </span>
+          <span>No upgrades needed for </span>
+          <PluralizeWithBoldCount
+            count={notAffectedInstancesCount}
+            singular="instance"
+          />
+          .
         </p>
       )}
     </div>

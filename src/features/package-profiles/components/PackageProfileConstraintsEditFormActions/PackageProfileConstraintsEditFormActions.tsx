@@ -1,7 +1,7 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -91,8 +91,8 @@ const PackageProfileConstraintsEditFormActions: FC<
           title: `Remove ${pluralize(selectedIds.length, "constraint")}`,
           children: (
             <p>
-              This will remove {selectedIds.length}{" "}
-              {pluralize(selectedIds.length, "constraint")}.
+              This will remove{" "}
+              {pluralizeWithCount(selectedIds.length, "constraint")}.
             </p>
           ),
           confirmButtonLabel: "Remove",

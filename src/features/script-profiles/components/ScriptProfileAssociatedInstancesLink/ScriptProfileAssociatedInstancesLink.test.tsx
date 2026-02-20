@@ -4,7 +4,6 @@ import { describe, it } from "vitest";
 import ScriptProfileAssociatedInstancesLink from "./ScriptProfileAssociatedInstancesLink";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { pluralize } from "@/utils/_helpers";
 
 const profileWithNoTagsAndNoAllComputers = scriptProfiles.find(
   (profile) => !profile.tags.length && !profile.all_computers,
@@ -70,10 +69,7 @@ describe("ScriptProfileAssociatedInstancesLink", () => {
 
     expect(
       screen.getByRole("link", {
-        name: `${scriptProfile.computers.num_associated_computers} ${pluralize(
-          scriptProfile.computers.num_associated_computers,
-          "instance",
-        )}`,
+        name: `${scriptProfile.computers.num_associated_computers} instances`,
       }),
     ).toBeInTheDocument();
   });

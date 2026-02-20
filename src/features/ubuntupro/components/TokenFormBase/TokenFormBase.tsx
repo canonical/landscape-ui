@@ -22,6 +22,7 @@ import useAttachToken from "../../api/useAttachToken";
 import { classifyInstancesByToken } from "../../helpers";
 import { pluralize } from "@/utils/_helpers";
 import type { FormProps } from "./types";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 
 interface TokenFormBaseProps {
   readonly children: ReactNode;
@@ -157,7 +158,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
       {!!invalidInstanceIds.length &&
         (invalidInstanceIds.length === selectedInstances.length ? (
           <Modal
-            title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, "instance", "instances")}`}
+            title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, "instance")}`}
             close={closeValidationModal}
             buttonRow={
               <Button
@@ -190,22 +191,29 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
             <ul>
               {withoutToken > 0 && (
                 <li>
-                  <strong>{withoutToken}</strong>{" "}
-                  {pluralize(withoutToken, "instance")} will be attached to this
-                  token
+                  <PluralizeWithBoldCount
+                    count={withoutToken}
+                    singular="instance"
+                  />{" "}
+                  will be attached to this token
                 </li>
               )}
               {withToken > 0 && (
                 <li>
-                  <strong>{withToken}</strong>{" "}
-                  {pluralize(withToken, "instance")} will override{" "}
-                  {pluralize(withToken, "its", "their")} existing token
+                  <PluralizeWithBoldCount
+                    count={withToken}
+                    singular="instance"
+                  />{" "}
+                  will override {pluralize(withToken, "its", "their")} existing
+                  token
                 </li>
               )}
               <li>
-                <strong>{invalidInstanceIds.length}</strong>{" "}
-                {pluralize(invalidInstanceIds.length, "instance")} will be
-                skipped as{" "}
+                <PluralizeWithBoldCount
+                  count={invalidInstanceIds.length}
+                  singular="instance"
+                />{" "}
+                will be skipped as{" "}
                 {pluralize(invalidInstanceIds.length, "it does", "they do")} not
                 support Ubuntu Pro management
               </li>

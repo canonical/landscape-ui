@@ -3,7 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { getAlertStatus } from "@/features/alert-notifications";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
+import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type {
@@ -83,7 +83,7 @@ export const getStatusCellIconAndLabel = (
 
   if (0 === filteredAlerts.length) {
     return {
-      icon: `${ALERT_STATUSES.Online.icon.color}`,
+      icon: ALERT_STATUSES.Online.icon.color,
       label:
         ALERT_STATUSES.Online.alternateLabel ?? ALERT_STATUSES.Online.label,
     };
@@ -124,13 +124,13 @@ const getUpgradesFromAlerts = (
   return {
     regular: hasRegularUpgrades(alerts)
       ? {
-          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color ?? "",
+          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color,
           label: ALERT_STATUSES.PackageUpgradesAlert.label,
         }
       : false,
     security: hasSecurityUpgrades(alerts)
       ? {
-          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color ?? "",
+          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color,
           label: ALERT_STATUSES.SecurityUpgradesAlert.label,
         }
       : false,
@@ -147,14 +147,14 @@ const getUpgradesFromUpgrades = (
   return {
     regular: upgrades.regular
       ? {
-          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color ?? "",
-          label: `${upgrades.regular} regular ${pluralize(upgrades.regular, "upgrade")}`,
+          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color,
+          label: pluralizeWithCount(upgrades.regular, "regular upgrade"),
         }
       : false,
     security: upgrades.security
       ? {
-          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color ?? "",
-          label: `${upgrades.security} security ${pluralize(upgrades.security, "upgrade")}`,
+          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color,
+          label: pluralizeWithCount(upgrades.security, "security upgrade"),
         }
       : false,
   };

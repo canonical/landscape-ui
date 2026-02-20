@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import classNames from "classnames";
-import { pluralize } from "@/utils/_helpers";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 
 interface PackagesUpgradeInfoProps {
   readonly packageCount: number;
@@ -19,11 +19,11 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
 
   return (
     <div>
-      <span>You selected </span>
       <span>
-        <b>{packageCount}</b>
+        You selected{" "}
+        <PluralizeWithBoldCount count={packageCount} singular="package" />. This
+        will:
       </span>
-      <span> packages. This will:</span>
       <ul
         className={classNames({
           "u-no-margin--bottom": noUpgradePackageCount > 0,
@@ -32,33 +32,30 @@ const PackagesUpgradeInfo: FC<PackagesUpgradeInfoProps> = ({
         {securityUpgradePackageCount > 0 && (
           <li>
             <span>apply </span>
-            <span>
-              <b>{securityUpgradePackageCount} </b>
-            </span>
-            <span>
-              security {pluralize(securityUpgradePackageCount, "upgrade")}
-            </span>
+            <PluralizeWithBoldCount
+              count={securityUpgradePackageCount}
+              singular="security upgrade"
+            />
           </li>
         )}
         {regularUpgradePackageCount > 0 && (
           <li>
             <span>apply </span>
-            <span>
-              <b>{regularUpgradePackageCount}</b>
-            </span>
-            <span>
-              regular {pluralize(regularUpgradePackageCount, "upgrade")}
-            </span>
+            <PluralizeWithBoldCount
+              count={regularUpgradePackageCount}
+              singular="regular upgrade"
+            />
           </li>
         )}
       </ul>
       {noUpgradePackageCount > 0 && (
         <p>
-          <span>No upgrades for </span>
-          <span>
-            <b>{noUpgradePackageCount}</b>
-          </span>
-          <span>{pluralize(noUpgradePackageCount, "package")} needed.</span>
+          <span>No upgrades needed for </span>
+          <PluralizeWithBoldCount
+            count={noUpgradePackageCount}
+            singular="package"
+          />
+          .
         </p>
       )}
     </div>

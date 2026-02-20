@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { Suspense } from "react";
@@ -42,7 +42,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
 
     const title = singleSnap
       ? `${action} ${singleSnap.snap.name}${action === EditSnapType.Switch ? "'s channel" : ""}`
-      : `${action} ${count} ${pluralize(count, "snap")}`;
+      : `${action} ${pluralizeWithCount(count, "snap")}`;
 
     setSidePanelContent(
       title,

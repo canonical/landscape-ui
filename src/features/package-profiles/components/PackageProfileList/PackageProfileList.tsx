@@ -9,7 +9,7 @@ import TruncatedCell from "@/components/layout/TruncatedCell";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitleByName, pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -137,7 +137,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["non-compliant"].length} ${pluralize(original.computers["non-compliant"].length, "instance")}`}
+            {pluralizeWithCount(
+              original.computers["non-compliant"].length,
+              "instance",
+            )}
           </>
         ),
       },
@@ -157,7 +160,10 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
         ),
         Cell: ({ row: { original } }: CellProps<PackageProfile>) => (
           <>
-            {`${original.computers["pending"]?.length ?? 0} ${pluralize(original.computers["pending"].length, "instance")}`}
+            {pluralizeWithCount(
+              original.computers["pending"].length,
+              "instance",
+            )}
           </>
         ),
       },

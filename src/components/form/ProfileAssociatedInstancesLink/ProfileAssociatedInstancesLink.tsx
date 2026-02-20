@@ -1,7 +1,7 @@
 import NoData from "@/components/layout/NoData";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import type { FC } from "react";
 
 interface ProfileAssociatedInstancesLinkProps {
@@ -26,7 +26,7 @@ const ProfileAssociatedInstancesLink: FC<
 
   return (
     <StaticLink to={ROUTES.instances.root({ query: `profile:${query}` })}>
-      {count} {pluralize(count, "instance")}
+      {pluralizeWithCount(count, "instance")}
     </StaticLink>
   );
 };

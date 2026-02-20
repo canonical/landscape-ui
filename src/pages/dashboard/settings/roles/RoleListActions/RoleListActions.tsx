@@ -4,7 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Role } from "@/types/Role";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import { Suspense, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -80,13 +80,14 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
           onConfirm={tryRemove}
         >
           <p>
-            <span>{`This will remove '${role.name}' role.`}</span>
+            <span>This will remove &apos;{role.name}&apos; role.</span>
 
             {role.persons.length > 0 && (
               <>
                 <br />
                 <strong>
-                  {`This will affect ${role.persons.length} ${pluralize(role.persons.length, "administrator")}.`}
+                  This will affect{" "}
+                  {pluralizeWithCount(role.persons.length, "administrator")}.
                 </strong>
               </>
             )}
