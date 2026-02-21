@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import type { MenuLink, Position } from "@canonical/react-components";
+import type { ReactNode } from "react";
 
 export interface ButtonLikeProps {
   children?: ReactNode;
@@ -30,4 +30,4 @@ export interface CollapsedNode {
   position?: Position;
 }
 
-export type CollapsedLink = MenuLink & { key: string };
+export type CollapsedLink = MenuLink & { key: string; disabled?: boolean };
