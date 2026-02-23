@@ -3,17 +3,18 @@ import SidePanel from "@/components/layout/SidePanel";
 import useRoles from "@/hooks/useRoles";
 import { getTitleByName } from "@/utils/_helpers";
 import type { FC } from "react";
-import type { Profile } from "../../../../types";
+import type { Profile, ProfileType } from "../../../../types";
 import { canArchiveProfile, hasDescription, isProfileArchived } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
-import NoData from "@/components/layout/NoData/NoData";
 
 interface ProfileDetailsGeneralBlockProps {
   readonly profile: Profile;
+  readonly type: ProfileType;
 }
 
 const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
   profile,
+  type,
 }) => {
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsData, isPending: isGettingAccessGroups } =
@@ -30,7 +31,7 @@ const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
       <InfoGrid>
         <InfoGrid.Item label="Name" value={profile.name} />
 
-        {canArchiveProfile(profile) && 
+        {canArchiveProfile(type) && 
           <InfoGrid.Item label="Status" value={status} />
         }
         
@@ -40,7 +41,7 @@ const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
         />
 
         {hasDescription(profile) && (
-          <InfoGrid.Item label="Description" value={profile.description ?? <NoData />} />
+          <InfoGrid.Item label="Description" value={profile.description} />
         )}
       </InfoGrid>
     </Blocks.Item>

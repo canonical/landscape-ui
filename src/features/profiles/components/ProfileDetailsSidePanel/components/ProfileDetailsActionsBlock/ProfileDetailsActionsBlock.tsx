@@ -30,7 +30,7 @@ const ProfileDetailsActionsBlock: FC<ProfileDetailsActionsBlockProps> = ({
   const handleProfileEdit = createSidePathPusher("edit");
   const handleProfileDuplicate = createSidePathPusher("duplicate");
 
-  const archive = canArchiveProfile(profile);
+  const archive = canArchiveProfile(type);
 
   const buttons: Action[] = [
     {

@@ -21,7 +21,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
   opened,
   closeModal,
 }) => {
-  const removalType = canArchiveProfile(profile) ? "archive" : "remove";
+  const removalType = canArchiveProfile(type) ? "archive" : "remove";
   const removalTypeTitle = capitalize(removalType);
 
   const notificationMessage = `You have successfully ${removalType}d "${profile.title}" profile.` + getNotificationMessage(type);

@@ -9,6 +9,4 @@ export {
   SecurityProfile,
   RepositoryProfile,
   RemovalProfile,
-  ProfilesWithStatus,
-  ProfilesWithDescription,
 } from "./Profiles";

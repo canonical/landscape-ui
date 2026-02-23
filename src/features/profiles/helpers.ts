@@ -1,6 +1,7 @@
 import type { 
   PackageProfile, 
   Profile,
+  ProfileType,
   RebootProfile,
   RemovalProfile,
   RepositoryProfile,
@@ -56,11 +57,11 @@ export const hasLastRunData = (profile: Profile): profile is ScriptProfile | Sec
 export const hasSchedule = (profile: Profile): profile is RebootProfile | ScriptProfile | UpgradeProfile | SecurityProfile => 
   isScriptProfile(profile) || isRebootProfile(profile) || isUpgradeProfile(profile) || isSecurityProfile(profile);
 
-export const canArchiveProfile = (profile: Profile): profile is SecurityProfile | ScriptProfile =>
-  isSecurityProfile(profile) || isScriptProfile(profile);
-
 export const hasDescription = (profile: Profile): profile is RepositoryProfile | WslProfile | PackageProfile => 
   isRepositoryProfile(profile) || isWslProfile(profile) || isPackageProfile(profile);
 
+export const canArchiveProfile = (type: ProfileType) =>
+  type === "security" || type === "script";
+
 export const isProfileArchived = (profile: Profile) =>
-  profile.status == 'archived' || profile.archived;
+  profile.status === 'archived' || profile.archived;

@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { PageParamFilter, TableFilterChips } from "@/components/filter";
-import type { ProfileType } from "@/types/Profile";
+import type { ProfileType } from "../../types";
 import AddProfileButton from "../../components/AddProfileButton";
 import PassRateFilter from "@/components/filter/PassRateFilter";
 import type { FilterKey } from "@/components/filter/TableFilterChips/types";
