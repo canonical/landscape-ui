@@ -21,7 +21,7 @@ const ProfileDetailsScheduleBlock: FC<ProfileDetailsScheduleBlockProps> = ({
   const nextLabel = isRebootProfile(profile) ? "Next restart" : "Next run";
 
   return (
-    <Blocks.Item title="Running Schedule">
+    <Blocks.Item title="RUNNING SCHEDULE">
         <InfoGrid>       
           <InfoGrid.Item
             label={scheduleLabel}

@@ -7,6 +7,7 @@ import type { Profile, ProfileType } from "../../../../types";
 import { ResponsiveButtons } from "@/components/ui";
 import { canArchiveProfile } from "../../../../helpers";
 import type { Action } from "@/types/Action";
+import classes from "./ProfileDetailsActionsBlock.module.scss";
 
 interface ProfileDetailsActionsBlockProps {
   readonly profile: Profile;
@@ -55,13 +56,13 @@ const ProfileDetailsActionsBlock: FC<ProfileDetailsActionsBlockProps> = ({
   return (
     <>
         <ResponsiveButtons
+          className={classes.actions}
           buttons={buttons.map((action) => (
             <Button
               key={action.title}
-              className="p-segmented-control__button u-no-margin"
+              className={classes.buttonText}
               hasIcon
               type="button"
-              appearance={action.appearance ?? "positive"}
               onClick={action.onClick}
               aria-label={`${action.label} ${profile.title} ${type} profile`}
             >

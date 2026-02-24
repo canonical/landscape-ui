@@ -21,10 +21,11 @@ const ProfileDetailsAssociationBlock: FC<ProfileDetailsAssociationBlockProps> = 
   const associationData = getAssociationData(profile);
 
   return (
-    <Blocks.Item title="Association">
+    <Blocks.Item title="ASSOCIATION">
       <InfoGrid>
         <InfoGrid.Item
           label="Associated Instances"
+          large
           value={
             <ProfileAssociatedInstancesLink
               profile={profile}
@@ -66,16 +67,13 @@ const ProfileDetailsAssociationBlock: FC<ProfileDetailsAssociationBlockProps> = 
             />
           </>
         }
-        {profile.tags.length &&
+        {!!profile.tags.length &&
           <InfoGrid.Item
             label="Tags"
             large
             value={profile.tags.join(", ")}
             type="truncated"
           />
-        }
-        {!profile.all_computers &&
-          <p>This profile has not yet been associated with any instances.</p>
         }
       </InfoGrid>
     </Blocks.Item>

@@ -1,4 +1,3 @@
-import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
 import type { Profile, ProfileType } from "../../types";
@@ -8,6 +7,7 @@ import ProfileDetailsGeneralBlock from "./components/ProfileDetailsGeneralBlock"
 import ProfileDetailsAssociationBlock from "./components/ProfileDetailsAssociationBlock";
 import ProfileDetailsScheduleBlock from "./components/ProfileDetailsScheduleBlock";
 import ProfileDetailsActionsBlock from "./components/ProfileDetailsActionsBlock/ProfileDetailsActionsBlock";
+import Blocks from "@/components/layout/Blocks";
 
 interface ProfileDetailsSidePanelProps {
   readonly profile: Profile;
@@ -29,16 +29,15 @@ const ProfileDetailsSidePanel: FC<ProfileDetailsSidePanelProps> = ({
           type={type}
           extraActions={extraActions}
         />
-
-        <InfoGrid spaced>
-          <ProfileDetailsGeneralBlock profile={profile} />
+        <Blocks>
+          <ProfileDetailsGeneralBlock profile={profile} type={type} />
 
           {hasSchedule(profile) &&
             <ProfileDetailsScheduleBlock profile={profile} />
           }
 
           <ProfileDetailsAssociationBlock profile={profile} type={type} />
-        </InfoGrid>
+        </Blocks>
       </SidePanel.Content>
     </>
   );

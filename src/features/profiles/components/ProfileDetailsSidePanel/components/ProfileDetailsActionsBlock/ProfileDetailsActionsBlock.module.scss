@@ -1,0 +1,10 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.actions {
+  margin-bottom: $spv--x-large;
+}
+
+.buttonText {
+  color: $color-negative;
+}

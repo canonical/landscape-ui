@@ -23,9 +23,11 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
   query,
 }) => {
   const { createPageParamsSetter } = usePageParams();
-  const hasNoData = (!profile.tags.length && !profile.all_computers) || profile.trigger?.event_type == "post_enrollment";
   
-  if (hasNoData) {
+  if (!profile.tags.length && !profile.all_computers) {
+    return <p>This profile has not yet been associated with any instances.</p>;
+  }
+  if (profile.trigger?.event_type == "post_enrollment") {
     return <NoData />;
   }
 

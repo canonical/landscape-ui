@@ -27,7 +27,7 @@ const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
   const status = isProfileArchived(profile) ? "Archived" : "Active";
 
   return (
-    <Blocks.Item title="General">
+    <Blocks.Item title="GENERAL">
       <InfoGrid>
         <InfoGrid.Item label="Name" value={profile.name} />
 
@@ -41,7 +41,7 @@ const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
         />
 
         {hasDescription(profile) && (
-          <InfoGrid.Item label="Description" value={profile.description} />
+          <InfoGrid.Item label="Description" large value={profile.description} />
         )}
       </InfoGrid>
     </Blocks.Item>
