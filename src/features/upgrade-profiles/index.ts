@@ -1,3 +1,4 @@
+export { useUpgradeProfiles } from "./hooks";
 export { default as SingleUpgradeProfileForm } from "./components/SingleUpgradeProfileForm";
 export { default as UpgradeProfileAddSidePanel } from "./components/UpgradeProfileAddSidePanel";
 export { default as UpgradeProfileDetailsSidePanel } from "./components/UpgradeProfileDetailsSidePanel";

@@ -8,11 +8,11 @@ import moment from "moment";
 import { getLastRunData, getNextRunData, getScheduleMessage } from "./helpers";
 import { pluralizeWithCount } from "@/utils/_helpers";
 
-interface ProfileDetailsScheduleBlockProps {
+interface ViewProfileScheduleBlockProps {
   readonly profile: Profile;
 }
 
-const ProfileDetailsScheduleBlock: FC<ProfileDetailsScheduleBlockProps> = ({
+const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
   profile,
 }) => {
   const scheduleLabel = isScriptProfile(profile) ? "Trigger" : "Schedule";
@@ -22,7 +22,7 @@ const ProfileDetailsScheduleBlock: FC<ProfileDetailsScheduleBlockProps> = ({
 
   return (
     <Blocks.Item title="RUNNING SCHEDULE">
-        <InfoGrid>       
+        <InfoGrid dense>       
           <InfoGrid.Item
             label={scheduleLabel}
             large
@@ -80,4 +80,4 @@ const ProfileDetailsScheduleBlock: FC<ProfileDetailsScheduleBlockProps> = ({
   );
 };
 
-export default ProfileDetailsScheduleBlock;
+export default ViewProfileScheduleBlock;

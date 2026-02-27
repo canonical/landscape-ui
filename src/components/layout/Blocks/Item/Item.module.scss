@@ -3,10 +3,10 @@
 
 .item:not(:first-child) {
   border-top: 1px solid $colors--theme--border-low-contrast;
-  padding-top: $sp-unit * 5;
+  padding-top: $spv--large;
 }
 
 .heading {
-  margin: -$sp-unit 0 $sp-unit * 4;
+  margin: 0 0 $spv--x-large;
   padding: 0;
 }

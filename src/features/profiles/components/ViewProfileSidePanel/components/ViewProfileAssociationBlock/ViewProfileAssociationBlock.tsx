@@ -7,13 +7,14 @@ import Blocks from "@/components/layout/Blocks";
 import { WslProfileNonCompliantParentsLink } from "@/features/wsl-profiles";
 import usePageParams from "@/hooks/usePageParams";
 import { getAssociationData } from "./helpers";
+import Chip from "@/components/layout/Chip/Chip";
 
-interface ProfileDetailsAssociationBlockProps {
+interface ViewProfileAssociationBlockProps {
   readonly profile: Profile;
   readonly type: ProfileType;
 }
 
-const ProfileDetailsAssociationBlock: FC<ProfileDetailsAssociationBlockProps> = ({
+const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   profile,
   type,
 }) => {
@@ -22,7 +23,7 @@ const ProfileDetailsAssociationBlock: FC<ProfileDetailsAssociationBlockProps> = 
 
   return (
     <Blocks.Item title="ASSOCIATION">
-      <InfoGrid>
+      <InfoGrid dense>
         <InfoGrid.Item
           label="Associated Instances"
           large
@@ -71,8 +72,9 @@ const ProfileDetailsAssociationBlock: FC<ProfileDetailsAssociationBlockProps> = 
           <InfoGrid.Item
             label="Tags"
             large
-            value={profile.tags.join(", ")}
-            type="truncated"
+            value={profile.tags.map((tag) => (
+              <Chip key={tag} value={tag} />
+            ))}
           />
         }
       </InfoGrid>
@@ -80,4 +82,4 @@ const ProfileDetailsAssociationBlock: FC<ProfileDetailsAssociationBlockProps> = 
   );
 };
 
-export default ProfileDetailsAssociationBlock;
+export default ViewProfileAssociationBlock;

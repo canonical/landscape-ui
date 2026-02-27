@@ -4,18 +4,18 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-interface DeleteWslProfileParams {
+interface RemoveWslProfileParams {
   name: string;
 }
 
-export const useDeleteWslProfile = () => {
+export const useRemoveWslProfile = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<Activity>,
     AxiosError<ApiError>,
-    DeleteWslProfileParams
+    RemoveWslProfileParams
   >({
     mutationFn: async ({ name }) =>
       authFetch.delete(`child-instance-profiles/${name}`),
@@ -24,7 +24,7 @@ export const useDeleteWslProfile = () => {
   });
 
   return {
-    deleteWslProfile: mutateAsync,
-    isDeletingWslProfile: isPending,
+    removeWslProfile: mutateAsync,
+    isRemovingWslProfile: isPending,
   };
 };

@@ -36,6 +36,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
     try {
       await removeProfile({
         id: profile.id,
+        name: profile.name ?? profile.title,
       });
 
       notify.success({
@@ -61,8 +62,8 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
       close={closeModal}
       confirmationText={`${removalType} ${profile.title}`}
     >
+      <p>{getModalMessage(type, profile.title)}</p>
       <p>
-        {getModalMessage(type, profile.title)}
         This action is <strong>irreversible</strong>.
       </p>
     </TextConfirmationModal>

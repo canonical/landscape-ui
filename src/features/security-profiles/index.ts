@@ -3,6 +3,7 @@ export {
   useGetSecurityProfiles,
   useIsSecurityProfilesLimitReached,
   useUpdateSecurityProfile,
+  useArchiveSecurityProfile,
 } from "./api";
 export type { AddSecurityProfileParams } from "./api";
 export { default as SecurityProfileAddSidePanel } from "./components/SecurityProfileAddSidePanel";
@@ -15,8 +16,10 @@ export { default as SecurityProfileRunFixSidePanel } from "./components/Security
 export { default as SecurityProfilesContainer } from "./components/SecurityProfilesContainer";
 export { default as SecurityProfilesHeader } from "./components/SecurityProfilesHeader";
 export { default as SecurityProfilesList } from "./components/SecurityProfilesList";
+export { default as SecurityAuditPassRate } from "./components/SecurityAuditPassRate";
 export {
   ACTIVE_SECURITY_PROFILES_LIMIT,
   SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
+  SECURITY_PROFILE_MODE_LABELS,
 } from "./constants";
 export type { SecurityProfile } from "./types";

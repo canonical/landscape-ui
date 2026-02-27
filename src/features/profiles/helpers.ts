@@ -10,7 +10,6 @@ import type {
   UpgradeProfile,
   WslProfile,
 } from "./types";
-
   
 export function isScriptProfile(profile: Profile): profile is ScriptProfile {
   return 'script_id' in profile;

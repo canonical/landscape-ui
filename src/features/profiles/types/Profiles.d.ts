@@ -1,5 +1,13 @@
 import type { Activity } from "@/features/activities";
 
+export type ProfileActions = 
+  | "add"
+  | "edit"
+  | "edit-constraints"
+  | "run"
+  | "download"
+  | "duplicate";
+
 export type ProfileType =
   | "package"
   | "reboot"

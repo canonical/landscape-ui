@@ -7,12 +7,12 @@ import type { Profile, ProfileType } from "../../../../types";
 import { canArchiveProfile, hasDescription, isProfileArchived } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 
-interface ProfileDetailsGeneralBlockProps {
+interface ViewProfileGeneralBlockProps {
   readonly profile: Profile;
   readonly type: ProfileType;
 }
 
-const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
+const ViewProfileGeneralBlock: FC<ViewProfileGeneralBlockProps> = ({
   profile,
   type,
 }) => {
@@ -28,7 +28,7 @@ const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
 
   return (
     <Blocks.Item title="GENERAL">
-      <InfoGrid>
+      <InfoGrid dense>
         <InfoGrid.Item label="Name" value={profile.name} />
 
         {canArchiveProfile(type) && 
@@ -48,4 +48,4 @@ const ProfileDetailsGeneralBlock: FC<ProfileDetailsGeneralBlockProps> = ({
   );
 };
 
-export default ProfileDetailsGeneralBlock;
+export default ViewProfileGeneralBlock;

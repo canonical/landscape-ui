@@ -1,5 +1,6 @@
 export { 
   Profile,
+  ProfileActions,
   ProfileType,
   PackageProfile,
   RebootProfile,

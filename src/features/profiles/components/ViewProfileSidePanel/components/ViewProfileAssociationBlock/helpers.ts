@@ -6,7 +6,7 @@ import {
   isScriptProfile,
   isSecurityProfile,
   isUpgradeProfile
-} from "./../../../../helpers";
+} from "../../../../helpers";
 import type { Profile } from "../../../../types";
 
 export const getAssociationData = (profile: Profile) => {

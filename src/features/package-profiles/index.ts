@@ -1,3 +1,4 @@
+export { usePackageProfiles } from "./hooks";
 export { default as PackageProfileAddSidePanel } from "./components/PackageProfileAddSidePanel";
 export { default as PackageProfileConstraintsAddSidePanel } from "./components/PackageProfileConstraintsAddSidePanel";
 export { default as PackageProfileConstraintsEditSidePanel } from "./components/PackageProfileConstraintsEditSidePanel";

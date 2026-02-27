@@ -1,3 +1,4 @@
+export { useRemovalProfiles } from "./hooks";
 export { default as RemovalProfileAddSidePanel } from "./components/RemovalProfileAddSidePanel";
 export { default as RemovalProfileDetailsSidePanel } from "./components/RemovalProfileDetailsSidePanel";
 export { default as RemovalProfileEditSidePanel } from "./components/RemovalProfileEditSidePanel";

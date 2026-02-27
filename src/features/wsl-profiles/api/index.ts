@@ -1,5 +1,5 @@
 export * from "./useAddWslProfile";
-export * from "./useDeleteWslProfile";
+export * from "./useRemoveWslProfile";
 export * from "./useEditWslProfile";
 export * from "./useGetWslProfile";
 export * from "./useGetWslProfiles";
