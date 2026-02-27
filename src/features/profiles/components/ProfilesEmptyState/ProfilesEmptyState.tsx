@@ -2,9 +2,8 @@ import EmptyState from "@/components/layout/EmptyState";
 import type { FC } from "react";
 import AddProfileButton from "../AddProfileButton";
 import type { ProfileType } from "../../types";
-// import { Link } from "@canonical/react-components";
-import { getLink, getMessage } from "./helpers";
 import { Link } from "@canonical/react-components";
+import { getLink, getMessage } from "./helpers";
 
 interface ProfilesEmptyStateProps {
   readonly type: ProfileType;
@@ -31,7 +30,8 @@ const ProfilesEmptyState: FC<ProfilesEmptyStateProps> = ({ type }) => {
         </>
       }
       cta={[<AddProfileButton key="add" type={type} />]}
-      title={`No ${type} profiles found`}
+      title={`You haven't added any ${type} profiles yet.`}
+      size="large"
     />
   );
 };
