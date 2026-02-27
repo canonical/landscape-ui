@@ -2,4 +2,4 @@
 "landscape-ui": minor
 ---
 
-Soft deletion
+Bulk deletion of instances
