@@ -40,7 +40,7 @@ const InstanceRemoveFromLandscapeModal: FC<
           instances,
           (instance) =>
             `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
-          `instances have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.`,
+          "instances have been removed from Landscape. To manage them again, you will need to re-register them in Landscape.",
         ),
       });
 
