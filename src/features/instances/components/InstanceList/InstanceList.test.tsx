@@ -82,13 +82,13 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setSelectedInstances).toHaveBeenCalledWith(instances);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith(props.instances);
 
     rerender(<InstanceList {...props} selectedInstances={instances} />);
     const checkedCheckboxes = screen.getAllByRole("checkbox", {
       checked: true,
     });
-    expect(checkedCheckboxes).toHaveLength(instances.length + 1);
+    expect(checkedCheckboxes).toHaveLength(props.instances.length + 1);
   });
 
   it("should deselect all instances when clicking ToggleAll checkbox with an instance selected", async () => {
