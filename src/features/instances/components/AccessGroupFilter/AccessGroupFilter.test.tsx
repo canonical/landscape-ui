@@ -17,6 +17,7 @@ const props: ComponentProps<typeof AccessGroupFilter> = {
   options,
   label,
   inline: false,
+  onChange: vi.fn(),
 };
 
 describe("AccessGroupFilter", () => {
@@ -48,6 +49,7 @@ describe("AccessGroupFilter", () => {
     await userEvent.click(firstCheckbox);
 
     expect(firstCheckbox).toBeChecked();
+    expect(props.onChange).toHaveBeenCalled();
   });
 
   it("supports inline prop", () => {
