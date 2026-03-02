@@ -9,32 +9,32 @@ import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
-import { CheckboxInput } from "@canonical/react-components";
+import { Button, CheckboxInput } from "@canonical/react-components";
 import moment from "moment";
-import { memo, useEffect, useId, useMemo } from "react";
+import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import {
   createHeaderPropsGetter,
   getCellProps,
-  getCheckboxState,
   getColumnFilterOptions,
   getRowProps,
   getStatusCellIconAndLabel,
   getUpgradesCellIconAndLabel,
-  handleCheckboxChange,
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
 
 interface InstanceListProps {
   readonly instances: Instance[];
+  readonly instanceCount: number | undefined;
   readonly selectedInstances: Instance[];
   readonly setColumnFilterOptions: (options: ColumnFilterOption[]) => void;
   readonly setSelectedInstances: (instances: Instance[]) => void;
 }
 
 const InstanceList = memo(function InstanceList({
-  instances,
+  instances: currentInstances,
+  instanceCount,
   selectedInstances,
   setColumnFilterOptions,
   setSelectedInstances,
@@ -56,9 +56,49 @@ const InstanceList = memo(function InstanceList({
     return false;
   });
 
-  const toggleAll = () => {
-    setSelectedInstances(selectedInstances.length !== 0 ? [] : instances);
-  };
+  const isSelected = useCallback(
+    (instance: Instance) =>
+      selectedInstances.some(
+        (selectedInstance) => selectedInstance.id === instance.id,
+      ),
+    [selectedInstances],
+  );
+
+  const isNotSelected = useCallback(
+    (instance: Instance) => !isSelected(instance),
+    [isSelected],
+  );
+
+  const deselect = useCallback(
+    (...instances: Instance[]) => {
+      setSelectedInstances(
+        selectedInstances.filter(
+          (selectedInstance) =>
+            !instances.some((instance) => selectedInstance.id === instance.id),
+        ),
+      );
+    },
+    [setSelectedInstances, selectedInstances],
+  );
+
+  const select = useCallback(
+    (...instances: Instance[]) => {
+      setSelectedInstances([...selectedInstances, ...instances]);
+    },
+    [setSelectedInstances, selectedInstances],
+  );
+
+  const selectAll = useCallback(() => {
+    select(...currentInstances.filter(isNotSelected));
+  }, [currentInstances, select, isNotSelected]);
+
+  const toggleAll = useCallback(() => {
+    if (currentInstances.some(isSelected)) {
+      deselect(...currentInstances);
+    } else {
+      selectAll();
+    }
+  }, [deselect, selectAll, currentInstances, isSelected]);
 
   const columns = useMemo<InstanceColumn[]>(
     () => [
@@ -72,14 +112,14 @@ const InstanceList = memo(function InstanceList({
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
               onChange={toggleAll}
-              disabled={instances.length === 0}
+              disabled={currentInstances.length === 0}
               checked={
-                selectedInstances.length === instances.length &&
-                instances.length !== 0
+                currentInstances.every(isSelected) &&
+                currentInstances.length !== 0
               }
               indeterminate={
-                selectedInstances.length !== 0 &&
-                selectedInstances.length < instances.length
+                currentInstances.some(isSelected) &&
+                currentInstances.some(isNotSelected)
               }
             />
             <ListTitle>
@@ -96,21 +136,15 @@ const InstanceList = memo(function InstanceList({
                   <span className="u-off-screen">{row.original.title}</span>
                 }
                 labelClassName="u-no-margin--bottom u-no-padding--top"
-                checked={
-                  getCheckboxState({
-                    instance: row.original,
-                    selectedInstances,
-                  }) === "checked"
-                }
+                checked={isSelected(row.original)}
                 onChange={() => {
-                  handleCheckboxChange({
-                    instance: row.original,
-                    selectedInstances,
-                    setSelectedInstances,
-                  });
+                  if (isSelected(row.original)) {
+                    deselect(row.original);
+                  } else {
+                    select(row.original);
+                  }
                 }}
               />
-
               <ListTitle>
                 <StaticLink
                   to={ROUTES.instances.details.fromInstance(row.original)}
@@ -243,12 +277,22 @@ const InstanceList = memo(function InstanceList({
         ),
       },
     ],
-    [selectedInstances.length, instances, expandedRowIndex],
+    [
+      currentInstances,
+      expandedRowIndex,
+      handleExpand,
+      titleId,
+      isSelected,
+      isNotSelected,
+      select,
+      deselect,
+      toggleAll,
+    ],
   );
 
   useEffect(() => {
     setColumnFilterOptions(getColumnFilterOptions(columns));
-  }, []);
+  }, [columns, setColumnFilterOptions]);
 
   const filteredColumns = useMemo<Column<Instance>[]>(
     () =>
@@ -256,11 +300,46 @@ const InstanceList = memo(function InstanceList({
         ({ accessor }) =>
           typeof accessor === "string" && !disabledColumns.includes(accessor),
       ),
-    [disabledColumns.length, columns],
+    [disabledColumns, columns],
   );
+
+  const clearSelection = () => {
+    setSelectedInstances([]);
+  };
+
+  const subhead = !!selectedInstances.length &&
+    instanceCount !== undefined &&
+    instanceCount > currentInstances.length && (
+      <td colSpan={8} className="u-no-padding">
+        <div className={classes.subhead}>
+          <span>
+            {selectedInstances.length} of {instanceCount} instances selected
+          </span>
+          <div className={classes.buttons}>
+            <Button
+              className="u-no-padding u-no-margin"
+              appearance="link"
+              onClick={clearSelection}
+            >
+              Clear selection
+            </Button>
+            {currentInstances.some(isNotSelected) && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={selectAll}
+              >
+                Select all instances on this page
+              </Button>
+            )}
+          </div>
+        </div>
+      </td>
+    );
 
   return (
     <ResponsiveTable
+      subhead={subhead}
       emptyMsg={
         isFilteringInstances
           ? "No instances found according to your search parameters."
@@ -268,7 +347,7 @@ const InstanceList = memo(function InstanceList({
       }
       ref={getTableRowsRef}
       columns={filteredColumns}
-      data={instances}
+      data={currentInstances}
       getHeaderProps={createHeaderPropsGetter(titleId)}
       getRowProps={getRowProps(expandedRowIndex)}
       getCellProps={getCellProps(expandedRowIndex)}
