@@ -17,6 +17,7 @@ const BUTTON_LABELS = [
   "Upgrade",
   "Assign",
   "Attach token",
+  "Remove from Landscape",
 ];
 
 describe("InstancesPageActions", () => {

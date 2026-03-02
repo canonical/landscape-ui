@@ -1,5 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { useActivities } from "@/features/activities";
 import { DetachTokenModal } from "@/features/ubuntupro";
@@ -19,13 +20,14 @@ import {
   ContextualMenu,
   Icon,
 } from "@canonical/react-components";
-import { lazy, memo, Suspense, useState } from "react";
+import { lazy, memo, Suspense } from "react";
 import { createPortal } from "react-dom";
+import { useBoolean } from "usehooks-ts";
 import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
+import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
-import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -68,9 +70,29 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const { openActivityDetails } = useActivities();
   const { setSidePanelContent } = useSidePanel();
 
-  const [rebootModalOpen, setRebootModalOpen] = useState(false);
-  const [shutdownModalOpen, setShutdownModalOpen] = useState(false);
-  const [detachModalOpen, setDetachModalOpen] = useState(false);
+  const {
+    value: rebootModalOpen,
+    setTrue: openRebootModal,
+    setFalse: closeRebootModal,
+  } = useBoolean();
+
+  const {
+    value: shutdownModalOpen,
+    setTrue: openShutdownModal,
+    setFalse: closeShutdownModal,
+  } = useBoolean();
+
+  const {
+    value: detachModalOpen,
+    setTrue: openDetachModal,
+    setFalse: closeDetachModal,
+  } = useBoolean();
+
+  const {
+    value: removeModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
 
   const { restartInstances, isRestartingInstances } = useRestartInstances();
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
@@ -236,9 +258,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     isFeatureEnabled("ubuntu_pro_licensing")
       ? {
           children: <span>Detach token</span>,
-          onClick: () => {
-            setDetachModalOpen(true);
-          },
+          onClick: openDetachModal,
         }
       : {},
   ].filter((link) => link.children);
@@ -257,9 +277,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               0 === selectedInstances.length ||
               isGettingInstances
             }
-            onClick={() => {
-              setShutdownModalOpen(true);
-            }}
+            onClick={openShutdownModal}
           >
             <Icon name="power-off" />
             <span>Shut down</span>
@@ -273,9 +291,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               0 === selectedInstances.length ||
               isGettingInstances
             }
-            onClick={() => {
-              setRebootModalOpen(true);
-            }}
+            onClick={openRebootModal}
           >
             <Icon name="restart" />
             <span>Restart</span>
@@ -341,6 +357,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <Icon name="change-version" />
             <span>Upgrade</span>
           </Button>,
+          <Button
+            key="remove"
+            type="button"
+            hasIcon
+            onClick={openRemoveModal}
+            disabled={!selectedInstances.length || isGettingInstances}
+          >
+            <Icon name="delete" />
+            <span>Remove from Landscape</span>
+          </Button>,
         ]}
       />
       <ContextualMenu
@@ -369,9 +395,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       {rebootModalOpen &&
         createPortal(
           <ConfirmationModal
-            close={() => {
-              setRebootModalOpen(false);
-            }}
+            close={closeRebootModal}
             title="Restarting selected instances"
             confirmButtonLabel="Restart"
             confirmButtonAppearance="negative"
@@ -389,9 +413,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       {shutdownModalOpen &&
         createPortal(
           <ConfirmationModal
-            close={() => {
-              setShutdownModalOpen(false);
-            }}
+            close={closeShutdownModal}
             title="Shutting down selected instances"
             confirmButtonLabel="Shut down"
             confirmButtonAppearance="negative"
@@ -409,12 +431,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}
-          onClose={() => {
-            setDetachModalOpen(false);
-          }}
+          onClose={closeDetachModal}
           computerIds={selectedInstances.map(({ id }) => id)}
         />
       )}
+      <InstanceRemoveFromLandscapeModal
+        close={closeRemoveModal}
+        instances={selectedInstances}
+        isOpen={removeModalOpen}
+      />
     </>
   );
 });
