@@ -2,7 +2,7 @@ name: Release and PPA Build
 
 on:
   push:
-    branches: [ main, dev, stable, 'release/**' ]
+    branches: [main, stable, "release/**"]
 
 permissions:
   contents: write
@@ -21,16 +21,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.15.1
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Calculate Version
         id: calver
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
+
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then DEST="ppa-build";
-          elif [[ $GITHUB_REF == 'refs/heads/dev' ]]; then DEST="ppa-build-dev";
           elif [[ $GITHUB_REF == 'refs/heads/stable' ]]; then DEST="ppa-build-stable";
           else DEST="ppa-build-${GITHUB_REF##*/}"; fi
           echo "dest_branch=$DEST" >> $GITHUB_OUTPUT
@@ -57,25 +56,42 @@ jobs:
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /new_dashboard/
 
-      - name: Prepare PPA Branch
+      - name: Install Debian build tools
         run: |
-          # Create a temporary directory to hold build artifacts
-          mkdir ../ppa-temp
-          cp -r dist/* ../ppa-temp/
-          cp .gitignore ../ppa-temp/ || true
-          
-          # Switch to the target branch (cleanly)
-          git checkout --orphan tmp-branch
-          git rm -rf .
-          
-          # Move files back to the root
-          cp -r ../ppa-temp/* .
-          rm -rf ../ppa-temp
+          sudo apt-get --update install \
+            debhelper \
+            devscripts
 
-      - name: Deploy to Build Branch
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          branch: ${{ steps.calver.outputs.dest_branch }}
-          create_branch: true
-          push_options: '--force'
-          commit_message: 'Build v${{ steps.calver.outputs.version }} [${{ github.sha }}]'
+      - name: Build Debian assets
+        run: |
+          cd dist
+          cp --recursive ../debian .
+
+          debchange \
+            --newversion "${{ steps.calver.outputs.version }}-0landscape0" \
+            --distribution jammy \
+            "Release ${{ steps.calver.outputs.version }} for jammy"
+
+          tar --create --file "../landscape-dashboard_${{ steps.calver.outputs.version }}.orig.tar" \
+            assets \
+            favicon.svg \
+            index.html
+
+          gzip "../landscape-dashboard_${{ steps.calver.outputs.version }}.orig.tar"
+          debuild --build=source --no-sign -sa
+          cp debian/changelog ../debian
+        env:
+          DEBFULLNAME: Landscape Team
+          DEBEMAIL: landscape-team@canonical.com
+      
+      - name: Create GitHub release
+        run: |
+          gh release create "v${{ steps.calver.outputs.version }}" \
+            --title "v${{ steps.calver.outputs.version }}" \
+            --target ${{ github.sha }} \
+            $PRERELEASE_OPTION \
+            $LATEST_OPTION
+        env:
+          PRERELEASE_OPTION: ${{ github.ref == 'refs/heads/main' && '--prerelease' || '' }}
+          LATEST_OPTION: ${{ github.ref != 'refs/heads/stable' && '--latest=false' || '' }}
+  
