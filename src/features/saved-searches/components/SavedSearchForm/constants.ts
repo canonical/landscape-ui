@@ -26,6 +26,7 @@ export const VALID_ROOT_KEYS = [
   "contract-expires-within-days",
   "license-expires-within-days",
   "has-pro-management",
+  "release-upgrade",
 ] as const;
 export const PROFILE_TYPES = [
   "security",
@@ -37,6 +38,7 @@ export const PROFILE_TYPES = [
   "reboot",
   "removal",
 ] as const;
+export const DISTRIBUTION_UPGRADE_STATUSES = ["available"] as const;
 export const USG_STATUSES = ["pass", "fail", "in-progress"] as const;
 export const WSL_STATUSES = ["compliant", "noncompliant"] as const;
 export const LICENSE_TYPES = [

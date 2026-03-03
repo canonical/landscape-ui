@@ -9,7 +9,12 @@ import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Icon,
+  Tooltip,
+} from "@canonical/react-components";
 import moment from "moment";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -192,9 +197,30 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "OS",
         Header: "OS",
-        Cell: ({ row: { original } }: CellProps<Instance>) => (
-          <>{original.distribution_info?.description ?? <NoData />}</>
-        ),
+        getCellIcon: () => {
+          return "";
+        },
+        Cell: ({ row: { original } }: CellProps<Instance>) => {
+          if (original.has_release_upgrades === false) {
+            return <>{original.distribution_info?.description || <NoData />}</>;
+          }
+
+          return (
+            <span className={classes.indicatorWrapper}>
+              <span className={classes.indicatorIcon}>
+                <Tooltip message="Distribution upgrade available">
+                  <Icon
+                    className="u-no-margin--left"
+                    name="arrow-up--caution"
+                  />
+                </Tooltip>
+              </span>
+              <span>
+                {original.distribution_info?.description || <NoData />}
+              </span>
+            </span>
+          );
+        },
       },
       {
         accessor: "tags",

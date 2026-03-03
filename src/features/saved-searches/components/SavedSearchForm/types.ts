@@ -3,6 +3,7 @@ import type {
   LICENSE_TYPES,
   LOGICAL_OPERATORS,
   PROFILE_TYPES,
+  DISTRIBUTION_UPGRADE_STATUSES,
   USG_STATUSES,
   VALID_ROOT_KEYS,
   WSL_STATUSES,
@@ -28,4 +29,7 @@ export type WslStatus = ArrayToUnion<typeof WSL_STATUSES>;
 export type LicenseType = ArrayToUnion<typeof LICENSE_TYPES>;
 export type BooleanString = ArrayToUnion<typeof BOOLEANS>;
 export type LogicalOperator = ArrayToUnion<typeof LOGICAL_OPERATORS>;
+export type DistributionUpgradeStatus = ArrayToUnion<
+  typeof DISTRIBUTION_UPGRADE_STATUSES
+>;
 export type ValidationResult = string | undefined;

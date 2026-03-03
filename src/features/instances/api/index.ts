@@ -1,5 +1,6 @@
 export * from "./useAcceptPendingInstances";
 export * from "./useAddTagsToInstances";
+export * from "./useCreateDistributionUpgrades";
 export * from "./useEditInstance";
 export * from "./useGenerateRecoveryKey";
 export * from "./useGetAvailabilityZones";
@@ -7,6 +8,7 @@ export * from "./useGetRecoveryKey";
 export * from "./useGetInstance";
 export * from "./useGetInstanceChildren";
 export * from "./useGetInstances";
+export * from "./useGetDistributionUpgradeTargets";
 export * from "./useGetPendingInstances";
 export * from "./useRejectPendingInstances";
 export * from "./useRemoveInstancesFromLandscape";

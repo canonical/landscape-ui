@@ -232,6 +232,10 @@ const useInstanceSearchHelpTerms = () => {
         </>
       ),
     },
+    {
+      term: "release-upgrade:available",
+      description: "Search for instances with a release upgrade available",
+    },
   ];
 
   if (isFeatureEnabled("usg-profiles")) {

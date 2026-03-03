@@ -15,6 +15,7 @@ const BUTTON_LABELS = [
   "View report",
   "Run script",
   "Upgrade",
+  "Upgrade distributions",
   "Assign",
   "Attach token",
   "Remove from Landscape",
@@ -131,7 +132,7 @@ describe("InstancesPageActions", () => {
       />,
     );
 
-    const button = screen.queryByRole("button", { name: /upgrade/i });
+    const button = screen.queryByRole("button", { name: /^upgrade$/i });
     expect(button).not.toHaveClass("is-disabled");
   });
 
@@ -200,10 +201,20 @@ describe("InstancesPageActions", () => {
     });
 
     it("'Upgrade' button", async () => {
-      await userEvent.click(screen.getByRole("button", { name: /upgrade/i }));
+      await userEvent.click(screen.getByRole("button", { name: /^upgrade$/i }));
 
       expect(
         screen.getByRole("heading", { name: /upgrades/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("'Upgrade distributions' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: /upgrade distributions/i }),
+      );
+
+      expect(
+        screen.getByRole("heading", { name: /upgrade distributions/i }),
       ).toBeInTheDocument();
     });
 

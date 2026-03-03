@@ -1,6 +1,7 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
+  DistributionUpgradeTarget,
   GetInstanceParams,
   GetInstancesParams,
   RemoveInstancesParams,
@@ -82,6 +83,74 @@ export default [
       );
     },
   ),
+
+  http.get(`${API_URL}computers/release-upgrade-targets`, ({ request }) => {
+    const url = new URL(request.url);
+    const idsParam = url.searchParams.get("computer_ids") || "";
+    const ids = idsParam
+      .split(",")
+      .map((id) => Number(id))
+      .filter((id) => !Number.isNaN(id));
+
+    const results: DistributionUpgradeTarget[] = ids.map((id) => {
+      const instance = instances.find((inst) => inst.id === id);
+
+      if (!instance) {
+        return {
+          computer_id: id,
+          computer_title: "Unknown Instance",
+          current_release_name: null,
+          current_release_version: null,
+          target_release_code_name: null,
+          target_release_name: null,
+          target_release_version: null,
+          reason_code: "instance_not_found",
+          reason_detail: `Instance with id ${id} not found.`,
+        };
+      }
+
+      if (
+        instance.distribution_info &&
+        instance.distribution_info.release < "18.04"
+      ) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release_name: "Ubuntu 18.04 LTS",
+          current_release_version: "18.04",
+          target_release_code_name: "focal",
+          target_release_name: "Ubuntu 20.04 LTS",
+          target_release_version: "20.04",
+          reason_code: null,
+          reason_detail: null,
+        };
+      } else {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release_name: "Ubuntu 10.04 LTS",
+          current_release_version: "10.04",
+          target_release_code_name: null,
+          target_release_name: null,
+          target_release_version: null,
+          reason_code: "no_upgrade_target",
+          reason_detail: "No release upgrades are available.",
+        };
+      }
+    });
+
+    return HttpResponse.json({ results });
+  }),
+
+  http.post(`${API_URL}computers/release-upgrades`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error") {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    return HttpResponse.json(activities[0]);
+  }),
 
   http.get<never, GetInstanceParams, Instance>(
     `${API_URL}computers/:computerId`,

@@ -3,6 +3,7 @@ import {
   ALERT_TYPES,
   LICENSE_TYPES,
   BOOLEANS,
+  DISTRIBUTION_UPGRADE_STATUSES,
   LOGICAL_OPERATORS,
   LAST_TOKEN_REGEX,
   WHITESPACE_TOKEN_REGEX,
@@ -175,6 +176,17 @@ const getDeepSuggestions = (
 
     case "annotation":
       return getAnnotationSuggestions(depth, range, monaco);
+
+    case "release-upgrade":
+      if (depth === 1) {
+        return getSimpleEnumSuggestions(
+          DISTRIBUTION_UPGRADE_STATUSES,
+          "Release Upgrade Status",
+          range,
+          monaco,
+        );
+      }
+      return [];
 
     default:
       return [];

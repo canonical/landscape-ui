@@ -52,6 +52,7 @@ export const ubuntuInstance: Instance = {
   annotations: {
     MockAnnotation: "MockValue",
   },
+  has_release_upgrades: true,
 };
 
 export const ubuntuCoreInstance: Instance = {
@@ -146,6 +147,7 @@ export const ubuntuCoreInstance: Instance = {
   },
   archived: false,
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
 };
 
 export const windowsInstance: WindowsInstance = {
@@ -345,6 +347,7 @@ export const windowsInstance: WindowsInstance = {
   employee_id: null,
   archived: false,
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
 };
 
 export const debianInstance: Instance = {
@@ -406,6 +409,7 @@ export const debianInstance: Instance = {
     },
   ],
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
 };
 
 const recoveryKeyInstance: Instance = {
@@ -544,6 +548,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 11,
@@ -607,10 +612,12 @@ export const instances = [
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: false,
     },
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 65,
@@ -770,10 +777,12 @@ export const instances = [
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: false,
     },
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 7,
@@ -809,6 +818,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 3,
@@ -848,6 +858,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 8,
@@ -883,6 +894,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 5,
@@ -922,6 +934,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 4,
@@ -961,6 +974,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 9,
@@ -1000,6 +1014,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 10,
@@ -1035,6 +1050,7 @@ export const instances = [
     employee_id: null,
     archived: true,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   windowsInstance,
   {
@@ -1180,6 +1196,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 12,
@@ -1214,6 +1231,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 21,
@@ -1290,6 +1308,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   ubuntuCoreInstance,
   instanceNoActivityNoKey,

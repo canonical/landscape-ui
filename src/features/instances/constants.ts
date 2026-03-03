@@ -157,6 +157,11 @@ export const FILTERS = {
       { label: "All", value: "", query: "" },
       { label: "Ubuntu", value: "ubuntu", query: "NOT distribution:windows" },
       { label: "Windows", value: "windows", query: "distribution:windows" },
+      {
+        label: "Distribution upgrade available",
+        value: "release-upgrade-available",
+        query: "release-upgrade:available",
+      },
     ],
   },
   groupBy: {

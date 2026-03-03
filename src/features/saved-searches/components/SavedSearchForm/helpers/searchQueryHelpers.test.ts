@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   ALERT_TYPES,
+  DISTRIBUTION_UPGRADE_STATUSES,
   LICENSE_TYPES,
   USG_STATUSES,
   WSL_STATUSES,
@@ -81,6 +82,14 @@ describe("validateSearchQuery", () => {
 
     expect(validateSearchQuery("upgrade-profile:daily ")).toBeUndefined();
     expect(validateSearchQuery("removal-profile:2 ")).toBeUndefined();
+
+    const [validDistributionUpgradeStatus] = DISTRIBUTION_UPGRADE_STATUSES;
+    expect(
+      validateSearchQuery(`release-upgrade:${validDistributionUpgradeStatus} `),
+    ).toBeUndefined();
+    expect(validateSearchQuery("release-upgrade:pending ")).toBe(
+      '"release-upgrade" has invalid value "pending".',
+    );
   });
 
   it("validates profile tokens and statuses", () => {

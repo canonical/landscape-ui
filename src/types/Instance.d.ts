@@ -218,6 +218,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   profiles?: Profile[];
   upgrades?: InstanceUpgrades;
   wsl_profiles?: Profile[];
+  has_release_upgrades: boolean;
 }
 
 interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
