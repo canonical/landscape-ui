@@ -88,5 +88,6 @@ jobs:
             $LATEST_OPTION \
             landscape-dashboard_*
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRERELEASE_OPTION: ${{ github.ref == 'refs/heads/main' && '--prerelease' || '' }}
           LATEST_OPTION: ${{ github.ref != 'refs/heads/stable' && '--latest=false' || '' }}
