@@ -27,7 +27,7 @@ const CodeEditorMock = (props: CodeEditorMockProps) => {
     <div>
       <label>{props.label}</label>
       {props.headerContent}
-      <Editor {...props} />
+      <Editor value={props.value} onChange={props.onChange} />
       {props.error && <span>{props.error}</span>}
     </div>
   );
