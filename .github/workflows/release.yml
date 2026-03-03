@@ -73,7 +73,7 @@ jobs:
             index.html
 
           gzip "../landscape-dashboard_${{ steps.calver.outputs.version }}.orig.tar"
-          debuild --build=source --no-sign -sa
+          debuild -S --no-sign -sa
           cp debian/changelog ../debian
         env:
           DEBFULLNAME: Landscape Team
