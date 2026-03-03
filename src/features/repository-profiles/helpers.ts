@@ -1,4 +1,4 @@
-import type { RepositoryProfilePocket } from "./types/RepositoryProfile";
+import type { RepositoryProfilePocket } from "./types";
 import type { Distribution } from "../mirrors";
 
 export const getDistributions = (pockets: RepositoryProfilePocket[]) => {
