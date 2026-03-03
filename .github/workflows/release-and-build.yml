@@ -1,4 +1,4 @@
-name: Release and PPA Build
+name: Release
 
 on:
   push:
@@ -53,6 +53,7 @@ jobs:
       - name: Install Debian build tools
         run: |
           sudo apt-get --update install \
+            build-essential \
             debhelper \
             devscripts
 
