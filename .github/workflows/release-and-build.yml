@@ -28,12 +28,6 @@ jobs:
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then DEST="ppa-build";
-          elif [[ $GITHUB_REF == 'refs/heads/stable' ]]; then DEST="ppa-build-stable";
-          else DEST="ppa-build-${GITHUB_REF##*/}"; fi
-          echo "dest_branch=$DEST" >> $GITHUB_OUTPUT
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -87,11 +81,11 @@ jobs:
       - name: Create GitHub release
         run: |
           gh release create "v${{ steps.calver.outputs.version }}" \
-            --title "v${{ steps.calver.outputs.version }}" \
+            --generate-notes \
             --target ${{ github.sha }} \
             $PRERELEASE_OPTION \
-            $LATEST_OPTION
+            $LATEST_OPTION \
+            landscape-dashboard_*
         env:
           PRERELEASE_OPTION: ${{ github.ref == 'refs/heads/main' && '--prerelease' || '' }}
           LATEST_OPTION: ${{ github.ref != 'refs/heads/stable' && '--latest=false' || '' }}
-  
