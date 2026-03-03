@@ -23,12 +23,12 @@ export interface Profile extends Record<string, unknown> {
   all_computers: boolean;
   description?: string;
   id: number;
-  name?: string;
+  name: string;
   tags: string[];
   title: string;
 }
 
-interface PackageProfile extends Profile {
+export interface PackageProfile extends Profile {
   computers: {
     constrained: number[];
     "non-compliant": number[];
@@ -40,7 +40,7 @@ interface PackageProfile extends Profile {
   version: string;
 }
 
-interface RebootProfile extends Profile {
+export interface RebootProfile extends Profile {
   next_run: string;
   schedule: string;
   deliver_within: number;
@@ -48,19 +48,13 @@ interface RebootProfile extends Profile {
   num_computers: number;
 }
 
-interface RemovalProfile extends Profile {
+export interface RemovalProfile extends Profile {
   cascade_to_children: boolean;
   computers: { num_associated_computers: number };
   days_without_exchange: number;
 }
 
-interface RepositoryProfile extends Profile {
-  apt_sources: number[];
-  pending_count: number;
-  pockets: RepositoryProfilePocket[];
-}
-
-interface ScriptProfile extends Profile {
+export interface ScriptProfile extends Profile {
   activities: {
     last_activity: Activity | null;
   };
@@ -75,7 +69,7 @@ interface ScriptProfile extends Profile {
   username: string;
 }
 
-interface SecurityProfile extends Profile {
+export interface SecurityProfile extends Profile {
   account_id: number;
   benchmark:
     | "disa_stig"
@@ -105,7 +99,7 @@ interface SecurityProfile extends Profile {
   restart_deliver_delay: number;
 }
 
-interface UpgradeProfile extends Profile {
+export interface UpgradeProfile extends Profile {
   at_minute: `${number}`;
   autoremove: boolean;
   computers: { num_associated_computers: number };
@@ -118,7 +112,7 @@ interface UpgradeProfile extends Profile {
   on_days?: UpgradeProfileDay[];
 }
 
-interface WslProfile extends Profile {
+export interface WslProfile extends Profile {
   computers: {
     constrained: number[];
     "non-compliant": number[];

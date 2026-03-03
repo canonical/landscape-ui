@@ -4,12 +4,13 @@ import type {
   ProfileType,
   RebootProfile,
   RemovalProfile,
-  RepositoryProfile,
   ScriptProfile,
   SecurityProfile,
   UpgradeProfile,
   WslProfile,
 } from "./types";
+
+import type { RepositoryProfile } from "@/features/repository-profiles";
   
 export function isScriptProfile(profile: Profile): profile is ScriptProfile {
   return 'script_id' in profile;

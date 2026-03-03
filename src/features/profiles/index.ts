@@ -10,6 +10,7 @@ export { default as ManageProfileForm } from "./components/ManageProfileForm";
 
 export type { 
   Profile,
+  ProfileType,
   PackageProfile,
   RebootProfile,
   ScriptProfile,

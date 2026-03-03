@@ -1,4 +1,4 @@
-export { 
+export type { 
   Profile,
   ProfileActions,
   ProfileType,
@@ -8,6 +8,5 @@ export {
   UpgradeProfile,
   WslProfile,
   SecurityProfile,
-  RepositoryProfile,
   RemovalProfile,
 } from "./Profiles";

@@ -8,4 +8,5 @@ export { default as WslProfileNonCompliantParentsLink } from "./components/WslPr
 export { default as WslProfilesEmptyState } from "./components/WslProfilesEmptyState";
 export { default as WslProfilesHeader } from "./components/WslProfilesHeader";
 export { default as WslProfilesList } from "./components/WslProfilesList";
+export { default as ViewWslProfileDetailsBlock } from "./components/ViewWslProfileDetailsBlock";
 export type { WslProfile } from "./types";

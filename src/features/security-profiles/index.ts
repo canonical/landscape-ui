@@ -18,6 +18,7 @@ export { default as SecurityProfilesContainer } from "./components/SecurityProfi
 export { default as SecurityProfilesHeader } from "./components/SecurityProfilesHeader";
 export { default as SecurityProfilesList } from "./components/SecurityProfilesList";
 export { default as SecurityAuditPassRate } from "./components/SecurityAuditPassRate";
+export { default as ViewSecurityProfileDetailsBlock } from "./components/ViewSecurityProfileDetailsBlock";
 export {
   ACTIVE_SECURITY_PROFILES_LIMIT,
   SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,

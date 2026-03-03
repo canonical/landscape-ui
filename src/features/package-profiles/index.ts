@@ -6,4 +6,5 @@ export { default as PackageProfileDetailsSidePanel } from "./components/PackageP
 export { default as PackageProfileDuplicateSidePanel } from "./components/PackageProfileDuplicateSidePanel";
 export { default as PackageProfileEditSidePanel } from "./components/PackageProfileEditSidePanel";
 export { default as PackageProfilesContainer } from "./components/PackageProfilesContainer";
+export { default as PackageProfileDetailsConstraints } from "./components/PackageProfileDetailsConstraints";
 export type { PackageProfile } from "./types";
