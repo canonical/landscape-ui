@@ -105,7 +105,6 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       emptyMsg={`No ${type} profiles found according to your search parameters.`}
       getCellProps={getCellProps(expandedRowIndex)}
       getRowProps={getRowProps(expandedRowIndex)}
-      minWidth={1200}
     />
   );
 };

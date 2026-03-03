@@ -27,7 +27,7 @@ const ViewProfileGeneralBlock: FC<ViewProfileGeneralBlockProps> = ({
   const status = isProfileArchived(profile) ? "Archived" : "Active";
 
   return (
-    <Blocks.Item title="GENERAL">
+    <Blocks.Item title="General">
       <InfoGrid dense>
         <InfoGrid.Item label="Name" value={profile.name} />
 

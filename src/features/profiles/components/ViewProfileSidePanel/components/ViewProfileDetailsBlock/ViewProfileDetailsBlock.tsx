@@ -47,7 +47,7 @@ const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
 
   if (getProfileDetailsBlock) {
     return (
-      <Blocks.Item title="DETAILS">
+      <Blocks.Item title="Details">
         <InfoGrid dense>
           {getProfileDetailsBlock}
         </InfoGrid>

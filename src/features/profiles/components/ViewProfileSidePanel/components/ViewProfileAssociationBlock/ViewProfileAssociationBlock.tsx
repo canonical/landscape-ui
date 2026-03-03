@@ -22,7 +22,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   const associationData = getAssociationData(profile);
 
   return (
-    <Blocks.Item title="ASSOCIATION">
+    <Blocks.Item title="Association">
       <InfoGrid dense>
         <InfoGrid.Item
           label="Associated Instances"

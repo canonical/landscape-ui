@@ -21,7 +21,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
   const nextLabel = isRebootProfile(profile) ? "Next restart" : "Next run";
 
   return (
-    <Blocks.Item title="RUNNING SCHEDULE">
+    <Blocks.Item title="Running schedule">
         <InfoGrid dense>       
           <InfoGrid.Item
             label={scheduleLabel}
@@ -43,7 +43,6 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
           {isUpgradeProfile(profile) &&
             <InfoGrid.Item
               label="Delivery delay window"
-              large
               value={`${pluralizeWithCount(
                 Number(profile.deliver_delay_window),
                 "minute",
