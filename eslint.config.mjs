@@ -113,6 +113,7 @@ export default defineConfig(
       "no-nested-ternary": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+      "no-console": ["error", { allow: ["warn", "error"] }],
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],
@@ -121,6 +122,13 @@ export default defineConfig(
       "@typescript-eslint/prefer-string-starts-ends-with": "warn",
       "@typescript-eslint/no-confusing-void-expression": "warn",
       "no-shadow": "warn",
+    },
+  },
+
+  {
+    files: ["src/tests/browser.ts"],
+    rules: {
+      "no-console": "off",
     },
   },
 );
