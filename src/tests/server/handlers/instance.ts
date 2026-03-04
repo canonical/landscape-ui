@@ -124,19 +124,47 @@ export default [
           reason_code: null,
           reason_detail: null,
         };
-      } else {
+      }
+
+      if (instance.distribution_info?.release === "22.04") {
         return {
           computer_id: id,
           computer_title: instance.title,
-          current_release_name: "Ubuntu 10.04 LTS",
-          current_release_version: "10.04",
+          current_release_name: "Ubuntu 22.04 LTS",
+          current_release_version: "22.04",
+          target_release_code_name: "noble",
+          target_release_name: "Ubuntu 24.04 LTS",
+          target_release_version: "24.04",
+          reason_code: null,
+          reason_detail: null,
+        };
+      }
+
+      if (instance.distribution_info?.distributor === "Ubuntu Core") {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release_name: "Ubuntu Core 22",
+          current_release_version: "22",
           target_release_code_name: null,
           target_release_name: null,
           target_release_version: null,
-          reason_code: "no_upgrade_target",
-          reason_detail: "No release upgrades are available.",
+          reason_code: "policy_disabled",
+          reason_detail: "Policy is preventing distribution upgrades.",
         };
       }
+
+      return {
+        computer_id: id,
+        computer_title: instance.title,
+        current_release_name: "Ubuntu 10.04 LTS",
+        current_release_version: "10.04",
+        target_release_code_name: null,
+        target_release_name: null,
+        target_release_version: null,
+        reason_code: "no_upgrade_target",
+        reason_detail: "No release upgrades are available.",
+      };
     });
 
     return HttpResponse.json({ results });

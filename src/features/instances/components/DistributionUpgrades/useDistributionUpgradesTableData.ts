@@ -87,9 +87,9 @@ export const useDistributionUpgradesTableData = (
         arr.push(info.modalRow);
         eligibleMap.set(info.targetDistribution, arr);
       } else {
-        const reasonCode = info.reasonCode || "unknown";
+        const { reasonCode } = info;
         const uiReasonTitle =
-          INELIGIBLE_REASON_TITLES[reasonCode] || "Unknown distribution";
+          INELIGIBLE_REASON_TITLES[reasonCode ?? ""] ?? "Unknown reason";
 
         const ineligibleRow: InstanceModalRow = {
           ...info.modalRow,

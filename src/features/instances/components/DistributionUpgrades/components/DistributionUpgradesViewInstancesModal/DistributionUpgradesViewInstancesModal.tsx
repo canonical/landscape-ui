@@ -3,17 +3,14 @@ import { useMemo } from "react";
 import type { FC } from "react";
 import type { Column } from "react-table";
 import { useCounter } from "usehooks-ts";
-
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { InstanceModalRow } from "../../types";
+import type { DistributionCategory } from "./types";
+import { getModalTitle } from "./helpers";
 
 interface DistributionUpgradesViewInstancesModalProps {
-  readonly category: {
-    title: string;
-    instances: InstanceModalRow[];
-    isIneligibleCategory: boolean;
-  };
+  readonly category: DistributionCategory;
   readonly onClose: () => void;
 }
 
@@ -47,8 +44,10 @@ const DistributionUpgradesViewInstancesModal: FC<
     [category.isIneligibleCategory],
   );
 
+  const modalTitle = getModalTitle(category);
+
   return (
-    <Modal close={onClose} title="Cannot be upgraded">
+    <Modal close={onClose} title={modalTitle}>
       <ModularTable
         className="u-no-margin--bottom"
         columns={columns}

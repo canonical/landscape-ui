@@ -69,12 +69,13 @@ describe("DistributionUpgradesViewInstancesModal", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders target distribution column for eligible category", () => {
+  it("uses parent eligible title for the modal heading", () => {
     renderWithProviders(
       <DistributionUpgradesViewInstancesModal
         {...props}
         category={{
           ...props.category,
+          title: "Can be upgraded",
           isIneligibleCategory: false,
           instances: canBeUpgradedInstances,
         }}
@@ -82,11 +83,32 @@ describe("DistributionUpgradesViewInstancesModal", () => {
     );
 
     expect(
+      screen.getByRole("heading", { name: /can be upgraded/i }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("columnheader", { name: /target distribution/i }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: /reason/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("uses specific eligible subcategory title for the modal heading", () => {
+    renderWithProviders(
+      <DistributionUpgradesViewInstancesModal
+        {...props}
+        category={{
+          ...props.category,
+          title: "Upgrading to Ubuntu 24.04 LTS",
+          isIneligibleCategory: false,
+          instances: canBeUpgradedInstances,
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("heading", { name: /upgrading to ubuntu 24.04 lts/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows pagination controls only when there are multiple modal pages", () => {
