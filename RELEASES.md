@@ -2,16 +2,16 @@
 
 ## Overview
 
-Landscape UI follows the [Landscape Server Release Cycle](https://docs.google.com/document/d/1sKAp5IvArpfArhMNojFwKOHm9LEdHKB4Et6tu1_-0GY/edit?tab=t.0). Our versioning uses **CalVer** ($YY.MM.Point.Patch$) to align with Ubuntu LTS cycles. We use **Changesets** to manage our changelog and automated build branches for PPA deployments.
+Landscape UI follows the [Landscape Server Release Cycle](https://docs.google.com/document/d/1sKAp5IvArpfArhMNojFwKOHm9LEdHKB4Et6tu1_-0GY/edit?tab=t.0). Our versioning uses **CalVer** ($YY.MM.Point.Patch$) to align with Ubuntu LTS cycles. We use **Changesets** to manage our changelog and automate GitHub releases.
 
 ## 1. Branching Strategy
 
-| Branch          | Release Tier      | Logic                                                                    |
-|-----------------|-------------------|--------------------------------------------------------------------------|
-| `dev`           | **Development**   | Internal testing. Deploys to  `ppa-build-dev`.                           |
-| `main`          | **Beta**          | Feature-complete but may have breaking changes. Deploys to  `ppa-build`. |
-| `stable`        | **Latest Stable** | Production-ready with latest features. Updated every 6 months.           |
-| `release/YY.04` | **LTS**           | Mission-critical stability.                                              |
+| Branch          | Release Tier      | Logic                                                          |
+| --------------- | ----------------- | -------------------------------------------------------------- |
+| `dev`           | _None_            | Internal testing.                                              |
+| `main`          | **Beta**          | Feature-complete but may have breaking changes.                |
+| `stable`        | **Latest Stable** | Production-ready with latest features. Updated every 6 months. |
+| `release/YY.04` | **LTS**           | Mission-critical stability.                                    |
 
 ---
 
@@ -33,11 +33,11 @@ pnpm changeset
 
 ### Step 2: Push & Build
 
-When you push to `dev` or `main`, the CI automatically:
+When you push to `main`, `stable`, or a `release/YY.04` branch, the CI automatically:
 
 1. Calculates the version based on the branch and date (e.g., `26.04.0.45-beta`).
 2. Bakes the version and commit hash into the UI.
-3. Pushes the compiled artifacts to the corresponding `ppa-build-*` branch.
+3. Creates a GitHub release with the generated assets.
 
 ---
 
@@ -56,7 +56,7 @@ If a critical bug affects an older LTS (e.g., `24.04`), follow this flow:
 
 You can verify the current version and build hash directly in the UI. We inject these values at build time to ensure the `UserInfo.tsx` component shows correct information in the sidebar.
 
-**Reminder:** if the version in your UI ends in `-dev` or `-beta`, you are on a testing branch. Production environments should always show a clean `YY.04.X.X` version.
+**Reminder:** if the version in your UI ends in `-beta`, you are on a testing branch. Production environments should always show a clean `YY.04.X.X` version.
 
 ## 5. Practical Examples
 
@@ -69,7 +69,7 @@ Use this workflow when you’ve built a new UI component or a feature that shoul
 3. **Select Type:** Choose `minor`. In our system, "minor" signals a new feature addition.
 4. Write Summary: `Add a new 'System Health' widget to the overview page.`
 5. **Merge:** Open a new PR and assign reviewers. Once approved, push your code and the new `.changeset/*.md` file to `dev`, then merge to `main`.
-6. **Result:** The CI will trigger a **Beta** release (e.g., `26.04.0.50-beta`) and update the `ppa-build` branch.
+6. **Result:** The CI will trigger a **Beta** release (e.g., `26.04.0.50-beta`) and creates a GitHub pre-release.
 
 ---
 
@@ -83,10 +83,10 @@ Use this workflow if a customer reports a critical bug in an LTS version (e.g., 
 4. **Select Type:** Choose `patch`. This signals a bug fix that doesn't change the feature set.
 5. **Write Summary:** `Fixed a regression where the search bar would overlap with the sidebar on mobile devices.`
 6. **Push:** Push directly to `release/24.04`.
-7. **Result:** The CI detects the LTS branch and generates a **Point Release** (e.g., $24.04.1.15$) for the specific LTS PPA.
+7. **Result:** The CI detects the LTS branch and generates a **Point Release** (e.g., $24.04.1.15$) for the specific LTS GitHub release.
 
 ## 6. Troubleshooting
-   
+
 ### Problem: A PR was merged without a Changeset
 
 If a PR is merged into main or stable and everyone forgot to include a `.changeset/*.md` file, the following happens:
