@@ -310,7 +310,7 @@ const InstanceList = memo(function InstanceList({
   const subhead = !!selectedInstances.length &&
     instanceCount !== undefined &&
     instanceCount > currentInstances.length && (
-      <td colSpan={8} className="u-no-padding">
+      <td colSpan={filteredColumns.length} className="u-no-padding">
         <div className={classes.subhead}>
           <span>
             {selectedInstances.length} of {instanceCount} instances selected
