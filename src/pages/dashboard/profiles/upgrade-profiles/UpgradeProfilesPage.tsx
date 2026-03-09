@@ -1,81 +1,30 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import SidePanel from "@/components/layout/SidePanel";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
-import usePageParams from "@/hooks/usePageParams";
-import { UpgradeProfilesContainer } from "@/features/upgrade-profiles";
-import { Button } from "@canonical/react-components";
+import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
+import { useUpgradeProfiles } from "@/features/upgrade-profiles";
 import type { FC } from "react";
-import { lazy } from "react";
-
-const UpgradeProfileAddSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileAddSidePanel,
-  })),
-);
-
-const UpgradeProfileDetailsSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileDetailsSidePanel,
-  })),
-);
-
-const UpgradeProfileEditSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileEditSidePanel,
-  })),
-);
 
 const UpgradeProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
-    usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
-
-  const handleAddUpgradeProfile = createPageParamsSetter({ sidePath: ["add"] });
+  const { getUpgradeProfilesQuery } = useUpgradeProfiles();
+  const { data: getUpgradeProfilesResult, isPending } = getUpgradeProfilesQuery();
 
   return (
     <PageMain>
       <PageHeader
         title="Upgrade profiles"
-        actions={[
-          <Button
-            key="add"
-            type="button"
-            appearance="positive"
-            onClick={handleAddUpgradeProfile}
-          >
-            Add upgrade profile
-          </Button>,
-        ]}
+        actions={getUpgradeProfilesResult?.data.length
+          ? [<AddProfileButton key="add-upgrade-profile" type="upgrade" />]
+          : undefined
+        }
       />
       <PageContent hasTable>
-        <UpgradeProfilesContainer />
+        <ProfilesContainer
+          type="upgrade"
+          isPending={isPending}
+          profiles={getUpgradeProfilesResult?.data ?? []}
+        />
       </PageContent>
-
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-        isOpen={!!sidePath.length}
-      >
-        {lastSidePathSegment === "add" && (
-          <SidePanel.Suspense key="add">
-            <UpgradeProfileAddSidePanel />
-          </SidePanel.Suspense>
-        )}
-
-        {lastSidePathSegment === "edit" && (
-          <SidePanel.Suspense key="edit">
-            <UpgradeProfileEditSidePanel />
-          </SidePanel.Suspense>
-        )}
-
-        {lastSidePathSegment === "view" && (
-          <SidePanel.Suspense key="view">
-            <UpgradeProfileDetailsSidePanel />
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
     </PageMain>
   );
 };
