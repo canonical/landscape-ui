@@ -7,11 +7,17 @@ import { useMemo } from "react";
 import type { Profile, ProfileType } from "../../types";
 import { createTablePropGetters } from "@/utils/table";
 import type { Column } from "react-table";
-import { ViewProfileSidePanel } from "../..";
-import useSidePanel from "@/hooks/useSidePanel";
-import LoadingState from "@/components/layout/SidePanel/LoadingState";
-import Suspense from "@/components/layout/SidePanel/Suspense";
-import { getComplianceColumns, getGeneralColumns, getRebootColumn, getRemovalColumn, getScriptColumns, getSecurityColumns, getStatusColumn } from "./helpers";
+import {
+  getComplianceColumns,
+  getGeneralColumns,
+  getRebootColumn,
+  getRemovalColumn,
+  getScriptColumns,
+  getSecurityColumns,
+  getStatusColumn
+} from "./helpers";
+import { canArchiveProfile, hasDescription } from "../../helpers";
+import { useOpenViewProfileSidePanel } from "../../hooks/useOpenViewProfileSidePanel";
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
@@ -30,33 +36,26 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       itemTypeName: "profile",
     });
 
-  const { setSidePanelContent } = useSidePanel();
+  const openViewProfileSidePanel = useOpenViewProfileSidePanel();
 
+  // in Package, Reboot, Removal, Repository, Upgrade ; NOT in Security, Script, Wsl
   const filteredProfiles = useMemo(() => {
     if (!search) {
       return profiles;
     }
 
     return profiles.filter(({ title }) => title.toLowerCase().includes(search.toLowerCase()));
-  }, [profiles, search]); // in Package, Reboot, Removal, Repository, Upgrade
-
+  }, [profiles, search]);
 
   const columns = useMemo<Column<Profile>[]>(() => {
     const handleNameClick = (profile: Profile) => {
-      setSidePanelContent(
-        `${profile.title}`,
-        <Suspense fallback={<LoadingState />}>
-          <ViewProfileSidePanel
-            profile={profile}
-            type={type}
-          />
-        </Suspense>,
-      );
+      openViewProfileSidePanel({ profile, type });
     };
+
     const { name, accessGroup, associated, description, actions } = getGeneralColumns(type, handleNameClick, getAccessGroupQueryResult);
     const cols = [name];
 
-    if (type === "script" || type === "security") {
+    if (canArchiveProfile(type)) {
       cols.push(...getStatusColumn());
     }
 
@@ -82,11 +81,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       cols.push(...getRemovalColumn());
     }
 
-    if (type === "security") {
-      cols.push(...getSecurityColumns());
-    }
-
-    if (type === "repository" || type === "wsl" || type === "package") {
+    if (hasDescription(type)) {
       cols.push(description);
     }
     
@@ -94,7 +89,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
 
     return cols;
   },
-    [getAccessGroupQueryResult, setSidePanelContent, type],
+    [getAccessGroupQueryResult, openViewProfileSidePanel, type],
   );
 
   return (

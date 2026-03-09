@@ -20,14 +20,18 @@ const ProfileListActions: FC<PackageProfileListActionsProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const actions = useGetProfileActions({ profile, type, handleOpenModal: openModal });
+  const { 
+    viewAction,
+    actions,
+    destructiveActions
+  } = useGetProfileActions({ profile, type, handleOpenModal: openModal });
 
   return (
     <>
       <ListActions
         toggleAriaLabel={`${profile.title} profile actions`}
-        actions={actions.slice(0, -1)}
-        destructiveActions={actions.slice(-1)}
+        actions={[viewAction, ...actions]}
+        destructiveActions={destructiveActions}
       />
 
       <RemoveProfileModal

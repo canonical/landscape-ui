@@ -29,7 +29,7 @@ const ViewProfileGeneralBlock: FC<ViewProfileGeneralBlockProps> = ({
   return (
     <Blocks.Item title="General">
       <InfoGrid dense>
-        <InfoGrid.Item label="Name" value={profile.name} />
+        <InfoGrid.Item label="Name" value={profile.title} />
 
         {canArchiveProfile(type) && 
           <InfoGrid.Item label="Status" value={status} />
@@ -40,7 +40,7 @@ const ViewProfileGeneralBlock: FC<ViewProfileGeneralBlockProps> = ({
           value={getTitleByName(profile.access_group, accessGroupsData)}
         />
 
-        {hasDescription(profile) && (
+        {hasDescription(type) && (
           <InfoGrid.Item label="Description" large value={profile.description} />
         )}
       </InfoGrid>

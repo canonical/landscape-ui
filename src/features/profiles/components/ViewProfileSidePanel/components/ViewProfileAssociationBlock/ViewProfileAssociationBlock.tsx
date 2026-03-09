@@ -1,11 +1,9 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
 import type { Profile, ProfileType } from "../../../../types";
-import { hasComplianceData, isWslProfile } from "../../../../helpers";
+import { hasComplianceData } from "../../../../helpers";
 import ProfileAssociatedInstancesLink from "../../../ProfileAssociatedInstancesLink";
 import Blocks from "@/components/layout/Blocks";
-import { WslProfileNonCompliantParentsLink } from "@/features/wsl-profiles";
-import usePageParams from "@/hooks/usePageParams";
 import { getAssociationData } from "./helpers";
 import Chip from "@/components/layout/Chip/Chip";
 
@@ -18,7 +16,6 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   profile,
   type,
 }) => {
-  const { createSidePathPusher } = usePageParams();
   const associationData = getAssociationData(profile);
 
   return (
@@ -27,8 +24,9 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
         <InfoGrid.Item
           label="Associated Instances"
           large
-          value={
-            <ProfileAssociatedInstancesLink
+          value={!profile.tags.length && !profile.all_computers
+            ? <p>This profile has not yet been associated with any instances.</p>
+            : <ProfileAssociatedInstancesLink
               profile={profile}
               count={associationData}
               query={`${type}:${profile.id}`}
@@ -54,16 +52,12 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
 
             <InfoGrid.Item
               label="Not compliant"
-              value={isWslProfile(profile)
-                ? <WslProfileNonCompliantParentsLink
-                    wslProfile={profile}
-                    onClick={createSidePathPusher("noncompliant")}
-                  />
-                : <ProfileAssociatedInstancesLink
-                    profile={profile}
-                    count={profile.computers["non-compliant"].length}
-                    query={`${type}:${profile.id}:noncompliant`}
-                  />
+              value={
+                <ProfileAssociatedInstancesLink
+                  profile={profile}
+                  count={profile.computers["non-compliant"].length}
+                  query={`${type}:${profile.id}:noncompliant`}
+                />
               }
             />
           </>

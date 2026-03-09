@@ -1,14 +1,15 @@
 import type { Action } from "@/types/Action";
 import { ICONS } from "@canonical/react-components";
-import { useOpenManageProfileForm } from "./useOpenManageProfileForm";
-import { isPackageProfile, isSecurityProfile, canDuplicateProfile, canArchiveProfile, isProfileArchived } from "../helpers";
+import { useOpenManageProfileSidePanel } from "./useOpenManageProfileSidePanel";
+import { isSecurityProfile, canDuplicateProfile, canArchiveProfile, isProfileArchived } from "../helpers";
 import type { Profile, ProfileType } from "../types";
 import useDebug from "@/hooks/useDebug";
 import { useNavigate } from "react-router";
 import useNotify from "@/hooks/useNotify";
-import { useRunSecurityProfile } from "@/features/security-profiles";
+import { useIsSecurityProfilesLimitReached, useRunSecurityProfile } from "@/features/security-profiles";
 import { ROUTES } from "@/libs/routes";
 import usePageParams from "@/hooks/usePageParams/usePageParams";
+import { useOpenViewProfileSidePanel } from "./useOpenViewProfileSidePanel";
 
 interface UseGetProfileActionsProps {
   profile: Profile;
@@ -18,8 +19,10 @@ interface UseGetProfileActionsProps {
 
 export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetProfileActionsProps) => {
   const { createPageParamsSetter } = usePageParams();
-  const openManageProfileForm = useOpenManageProfileForm();
+  const openManageProfileSidePanel = useOpenManageProfileSidePanel();
+  const openViewProfileSidePanel = useOpenViewProfileSidePanel();
   const { runSecurityProfile } = useRunSecurityProfile();
+  const profileLimitReached = useIsSecurityProfilesLimitReached();
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
@@ -64,44 +67,49 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
     }
   };
 
-  const actions: Action[] = [
-      {
-        icon: "edit",
-        label: "Edit",
-        "aria-label": `Edit ${profile.title} ${type} profile`,
-        onClick: () => { openManageProfileForm({ profile, type, action: "edit" }); },
-      },
-    ];
+  const view: Action = {
+    icon: "show",
+    label: "View details",
+    "aria-label": `View ${profile.title} ${type} profile details`,
+    onClick: () => { openViewProfileSidePanel({ profile, type }); },
+  };
+
+  const actions: Action[] = [{
+    icon: "edit",
+    label: "Edit",
+    "aria-label": `Edit ${profile.title} ${type} profile`,
+    onClick: () => { openManageProfileSidePanel({ profile, type, action: "edit" }); },
+  }];
   
-    if (isPackageProfile(profile)) {
-      actions.push({
-        icon: "edit",
-        label: "Edit package constraints",
-        "aria-label": `Edit ${profile.title} profile package constraints`,
-        onClick: () => { openManageProfileForm({ profile, type, action: "edit-constraints" }); },
-      });
-    }
+    // if (isPackageProfile(profile)) {
+    //   actions.push({
+    //     icon: "edit",
+    //     label: "Edit package constraints",
+    //     "aria-label": `Edit ${profile.title} profile package constraints`,
+    //     onClick: () => { openManageProfileForm({ profile, type, action: "edit-constraints" }); },
+    //   });
+    // }
   
     if (isSecurityProfile(profile)) {
       actions.push(
         {
-          icon: "file-blank",
+          icon: "begin-downloading",
           label: "Download audit",
           "aria-label": `Download "${profile.title}" security profile audit`,
-          onClick: () => { openManageProfileForm({ profile, type, action: "download" }); },
+          onClick: () => { openManageProfileSidePanel({ profile, type, action: "download" }); },
         },
         {
           icon: "play",
           label: "Run",
           "aria-label": `Run ${profile.title} security profile`,
           onClick: async () => {
-              if (profile.mode.includes("fix")) {
-                await handleRunSecurityProfile(profile.mode);
-                return;
-              }
-              openManageProfileForm({ profile, type, action: "run" });
-            },
-            disabled: !profile.associated_instances,
+            if (profile.mode.includes("fix")) {
+              await handleRunSecurityProfile(profile.mode);
+              return;
+            }
+            openManageProfileSidePanel({ profile, type, action: "run" });
+          },
+          disabled: !profile.associated_instances,
         }
       );
     }
@@ -111,8 +119,20 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
         icon: "canvas",
         label: "Duplicate",
         "aria-label": `Duplicate ${profile.title} ${type} profile`,
-        onClick: () => { openManageProfileForm({ profile, type, action: "duplicate" }); },
+        onClick: () => { openManageProfileSidePanel({ profile, type, action: "duplicate" }); },
+        disabled: profileLimitReached,
       });
+    }
+
+    if (isProfileArchived(profile)) {
+      const filteredActions = actions.filter(
+        ({ label }) => label !== "Edit" && label !== "Run"
+      );
+
+      return {
+        viewAction: view,
+        actions: filteredActions,
+      };
     }
   
     const remove: Action = canArchiveProfile(type) ?
@@ -129,10 +149,10 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
         onClick: handleOpenModal,
         appearance: "negative",
       };
-    
-    if (!isProfileArchived(profile)) {
-      actions.push(remove);
-    }
 
-    return actions;
+    return {
+      viewAction: view,
+      actions: actions,
+      destructiveActions: [remove],
+    };
 };

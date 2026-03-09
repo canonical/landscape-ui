@@ -1,19 +1,19 @@
-import NoData from "@/components/layout/NoData";
+import LoadingState from "@/components/layout/LoadingState";
+// import NoData from "@/components/layout/NoData";
 import StaticLink from "@/components/layout/StaticLink";
-import usePageParams from "@/hooks/usePageParams/usePageParams";
+import { WslProfileNonCompliantInstancesList } from "@/features/wsl-profiles";
 import { ROUTES } from "@/libs/routes";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
-import type { FC } from "react";
+import { Suspense, type FC } from "react";
+import type { Profile } from "../..";
+import { isScriptProfile, isWslProfile } from "../../helpers";
+import useSidePanel from "@/hooks/useSidePanel";
+import NoData from "@/components/layout/NoData";
 
 interface ProfileAssociatedInstancesLinkProps {
   readonly count: number;
-  readonly profile: {
-    id: number;
-    tags: string[];
-    all_computers: boolean;
-    trigger?: { event_type?: string };
-  };
+  readonly profile: Profile;
   readonly query: string;
 }
 
@@ -22,12 +22,12 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
   profile,
   query,
 }) => {
-  const { createPageParamsSetter } = usePageParams();
-  
-  if (!profile.tags.length && !profile.all_computers) {
-    return <p>This profile has not yet been associated with any instances.</p>;
-  }
-  if (profile.trigger?.event_type == "post_enrollment") {
+  const { setSidePanelContent } = useSidePanel();
+
+  const hasNoAssociations = (!profile.tags.length && !profile.all_computers)
+    || (isScriptProfile(profile) && profile.trigger?.trigger_type === "event");
+
+  if (hasNoAssociations) {
     return <NoData />;
   }
 
@@ -35,18 +35,23 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
     return <>0 instances</>;
   }
 
-  const text = pluralizeWithCount(count, "instance");
+  const text = profile.all_computers ? "All instances" : pluralizeWithCount(count, "instance");
 
-  if (query.startsWith("wsl:") && query.endsWith(":non-compliant")) {
+  if (isWslProfile(profile) && query.endsWith(":non-compliant")) {
     return (
       <Button
         className="u-no-padding--top u-no-margin--bottom"
         type="button"
         appearance="link"
-        onClick={createPageParamsSetter({
-          sidePath: ["noncompliant"],
-          profile: profile.id.toString(),
-        })}
+        onClick={() => {
+          setSidePanelContent(
+            `Instances not compliant with ${profile.title}`,
+            <Suspense fallback={<LoadingState />}>
+              <WslProfileNonCompliantInstancesList wslProfile={profile} />
+            </Suspense>,
+            "large",
+          );
+        }}
       >
         {text}
       </Button>

@@ -2,18 +2,19 @@ import type { FC } from "react";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import type { ProfileType } from "../../types";
-import AddProfileButton from "../../components/AddProfileButton";
 import PassRateFilter from "@/components/filter/PassRateFilter";
 import type { FilterKey } from "@/components/filter/TableFilterChips/types";
 import classes from "./ProfilesHeader.module.scss";
 import { STATUS_OPTIONS } from "./constants";
 import { canArchiveProfile } from "../../helpers";
+import AddProfileButton from "../AddProfileButton";
 
 interface ProfilesHeaderProps {
   readonly type: ProfileType;
+  readonly isProfileLimitReached?: boolean;
 }
 
-const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
+const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type, isProfileLimitReached }) => {
   const hasFilters = canArchiveProfile(type);
 
   const filters: FilterKey[] = (() => {
@@ -50,8 +51,12 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
                   label="Status"
                   options={STATUS_OPTIONS}
                 />
-                {type == "script" ? (
-                  <AddProfileButton type={type} />
+                {type === "script" ? (
+                  <AddProfileButton
+                    isInsideScriptTab={true}
+                    disabled={isProfileLimitReached}
+                    type={"script"}
+                  />
                 ) : (
                   <PassRateFilter />
                 )}

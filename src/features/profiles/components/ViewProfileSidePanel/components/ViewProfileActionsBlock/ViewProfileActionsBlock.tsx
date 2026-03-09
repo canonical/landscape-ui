@@ -7,6 +7,7 @@ import { ResponsiveButtons } from "@/components/ui";
 import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
 import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
+import { isSecurityProfile } from "../../../../helpers";
 
 interface ViewProfileActionsBlockProps {
   readonly profile: Profile;
@@ -23,25 +24,28 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
     setFalse: handleCloseModal,
   } = useBoolean();
 
-  const actions = useGetProfileActions({ profile, type, handleOpenModal });
+  const { actions, destructiveActions } = useGetProfileActions({ profile, type, handleOpenModal });
+  const buttons = destructiveActions ? [...actions, ...destructiveActions] : actions;
   const isNegative = (action: Action) => action.appearance === "negative";  
 
   return (
     <>
       <ResponsiveButtons
         className={classes.actions}
-        buttons={actions.map((action) => (
+        buttons={buttons.map((button) => (
           <Button
-            key={action.label}
+            key={button.label}
             hasIcon
             type="button"
-            onClick={action.onClick}
-            aria-label={`${action.label} ${profile.title} ${type} profile`}
+            onClick={button.onClick}
+            aria-label={`${button.label} ${profile.title} ${type} profile`}
+            disabled={button.disabled}
           >
-            <Icon name={isNegative(action) ? `${action.icon}--negative` : action.icon} />
-            <span className={isNegative(action) ? "u-text--negative" : ""}>{action.label}</span>
+            <Icon name={isNegative(button) ? `${button.icon}--negative` : button.icon} />
+            <span className={isNegative(button) ? "u-text--negative" : ""}>{button.label}</span>
           </Button>
         ))}
+        collapseFrom={isSecurityProfile(profile) ? "xxl" : "xs"}
       />
 
       <RemoveProfileModal

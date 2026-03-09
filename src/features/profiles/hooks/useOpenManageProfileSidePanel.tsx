@@ -4,7 +4,7 @@ import { capitalize } from "@/utils/_helpers";
 import { type ComponentProps, Suspense } from "react";
 import { ManageProfileForm } from "..";
 
-export const useOpenManageProfileForm = () => {
+export const useOpenManageProfileSidePanel = () => {
   const { setSidePanelContent } = useSidePanel(); 
 
   return (

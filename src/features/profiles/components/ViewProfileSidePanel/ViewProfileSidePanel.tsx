@@ -42,27 +42,27 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
       <Tabs listClassName={classes.tabs} links={links} />
 
       <Suspense fallback={<LoadingState />}>
-      {tabId == "info" && (
-        <ViewProfileInfoTab profile={profile} type={type} key="info" />
-      )}
+        {tabId == "info" && (
+          <ViewProfileInfoTab profile={profile} type={type} key="info" />
+        )}
 
-      {isScriptProfile(profile) && tabId == "activity-history" && (
-        <ScriptProfileActivityHistory profile={profile} key="activity-history" />
-      )}
+        {isScriptProfile(profile) && tabId == "activity-history" && (
+          <ScriptProfileActivityHistory profile={profile} key="activity-history" />
+        )}
 
-      {isPackageProfile(profile) && tabId == "package-constraints" && (
-        <PackageProfileDetailsConstraints profile={profile} key="package-constraints"/>
-      )}
+        {isPackageProfile(profile) && tabId == "package-constraints" && (
+          <PackageProfileDetailsConstraints profile={profile} key="package-constraints"/>
+        )}
 
-      {isRepositoryProfile(profile) && (
-        tabId == "pockets" && (
-          <ViewRepositoryProfilePocketsTab profile={profile}  key="pockets" />
-        ) || 
-        tabId == "apt-sources" && (
-          <ViewRepositoryProfileAptSourcesTab profile={profile}  key="apt-sources"/>
-        )
-      )}
-      </Suspense>
+        {isRepositoryProfile(profile) && (
+          tabId == "pockets" && (
+            <ViewRepositoryProfilePocketsTab profile={profile}  key="pockets" />
+          ) || 
+          tabId == "apt-sources" && (
+            <ViewRepositoryProfileAptSourcesTab profile={profile}  key="apt-sources"/>
+          )
+        )}
+        </Suspense>
     </>
   );
 };

@@ -8,15 +8,8 @@ export { default as ProfilesListActions } from "./components/ProfilesListActions
 export { default as RemoveProfileModal } from "./components/RemoveProfileModal";
 export { default as ManageProfileForm } from "./components/ManageProfileForm";
 
+export { useOpenManageProfileSidePanel } from "./hooks";
+
 export type { 
   Profile,
-  ProfileType,
-  PackageProfile,
-  RebootProfile,
-  ScriptProfile,
-  UpgradeProfile,
-  WslProfile,
-  SecurityProfile,
-  RepositoryProfile,
-  RemovalProfile,
 } from "./types";
