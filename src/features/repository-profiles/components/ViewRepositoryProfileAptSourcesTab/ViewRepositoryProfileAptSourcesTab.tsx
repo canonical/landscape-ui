@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import { type APTSource, useGetAPTSources } from "@/features/apt-sources";
-import type { RepositoryProfile } from "@/features/profiles";
+import type { RepositoryProfile } from "../../types";
 import LoadingState from "@/components/layout/LoadingState";
 import type { CellProps, Column } from "react-table";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
@@ -41,7 +41,6 @@ const ViewRepositoryProfileAptSourcesTab: FC<
       columns={columns}
       data={profileSources}
       emptyMsg="No APT sources found for this profile."
-      minWidth={100}
     />
   );
 };
