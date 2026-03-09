@@ -1,9 +1,9 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import type { ScriptProfile } from "@/features/profiles";
+import type { ScriptProfile } from "../../types";
 import { Link } from "react-router";
 import { ROUTES } from "@/libs/routes";
-import LoadingState from "@/components/layout/SidePanel/LoadingState";
+import { Spinner } from "@canonical/react-components";
 import { useGetSingleScript } from "@/features/scripts";
 
 interface ViewScriptProfileDetailsBlockProps {
@@ -19,15 +19,17 @@ const ViewScriptProfileDetailsBlock: FC<ViewScriptProfileDetailsBlockProps> = ({
     <>
       <InfoGrid.Item
         label="Script"
-        value={
-          script ? (
-            <Link
+        value={ script
+          ? <Link
               to={ROUTES.scripts.root({ tab: "scripts" })}
               state={{ scriptId: script.id }}
             >
               {script.title}
             </Link>
-          ) : <LoadingState />
+          : <>
+            <span className="u-off-screen">Loading...</span>
+            <Spinner aria-hidden />
+          </>
         }
       />
 

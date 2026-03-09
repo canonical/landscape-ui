@@ -1,53 +1,56 @@
-import SidePanel from "@/components/layout/SidePanel";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
-import usePageParams from "@/hooks/usePageParams";
-import { lazy, type FC } from "react";
-import ScriptProfilesPanel from "../ScriptProfilesPanel";
-
-const ScriptProfileAddSidePanel = lazy(
-  () => import("../ScriptProfileAddSidePanel"),
-);
-
-const ScriptProfileEditSidePanel = lazy(
-  () => import("../ScriptProfileEditSidePanel"),
-);
-
-const ScriptProfileDetailsSidePanel = lazy(
-  () => import("../ScriptProfileDetailsSidePanel"),
-);
+import { useGetScripts } from "@/features/scripts";
+import { type FC } from "react";
+import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
+import NoScriptsEmptyState from "../NoScriptsEmptyState";
+import { ProfilesContainer } from "@/features/profiles";
 
 const ScriptProfilesTab: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
-    usePageParams();
+  const {
+    scriptsCount: activeScriptsCount,
+    isScriptsLoading: isGettingActiveScripts,
+  } = useGetScripts(
+    { listenToUrlParams: false },
+    {
+      script_type: "active",
+      limit: 0,
+      offset: 0,
+    },
+  );
 
-  const close = createPageParamsSetter({ sidePath: [], profile: "" });
+  const { scriptProfiles, scriptProfilesCount, isGettingScriptProfiles } =
+    useGetScriptProfiles();
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
+  const {
+    scriptProfilesCount: activeScriptProfilesCount,
+    isGettingScriptProfiles: isGettingActiveScriptProfiles,
+  } = useGetScriptProfiles(
+    { listenToUrlParams: false },
+    { archived: "active" },
+  );
+
+  const { scriptProfileLimits, isGettingScriptProfileLimits } =
+    useGetScriptProfileLimits();
+
+  if (!isGettingActiveScripts && !activeScriptsCount) {
+    return <NoScriptsEmptyState />;
+  }
+
+  const isScriptProfileLimitReached = !!scriptProfileLimits && !!activeScriptProfilesCount
+    && activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles;
 
   return (
-    <>
-      <ScriptProfilesPanel />
-
-      <SidePanel onClose={close} isOpen={!!sidePath.length}>
-        {lastSidePathSegment === "add" && (
-          <SidePanel.Suspense key="add">
-            <ScriptProfileAddSidePanel />
-          </SidePanel.Suspense>
-        )}
-
-        {lastSidePathSegment === "edit" && (
-          <SidePanel.Suspense key="edit">
-            <ScriptProfileEditSidePanel />
-          </SidePanel.Suspense>
-        )}
-
-        {lastSidePathSegment === "view" && (
-          <SidePanel.Suspense key="view">
-            <ScriptProfileDetailsSidePanel />
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
-    </>
+    <ProfilesContainer
+      type="script"
+      profiles={scriptProfiles}
+      profilesCount={scriptProfilesCount}
+      isPending={
+        isGettingActiveScripts ||
+        isGettingScriptProfiles ||
+        isGettingActiveScriptProfiles ||
+        isGettingScriptProfileLimits
+      }
+      isProfileLimitReached={isScriptProfileLimitReached}
+    />
   );
 };
 
