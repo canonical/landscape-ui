@@ -55,6 +55,7 @@ const PackageProfileDetailsConstraints: FC<
           <HeaderWithSearch
             className={classes.actions}
             onSearch={setSearch}
+            searchText={search}
             actions={
               <Button
                 className="u-no-margin--bottom"
