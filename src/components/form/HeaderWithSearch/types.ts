@@ -16,16 +16,19 @@ interface BaseHeaderWithSearchProps extends Omit<
 
 interface HeaderWithSearchPropsWithOnSearch extends BaseHeaderWithSearchProps {
   onSearch: (searchText: string) => void;
+  searchText: string;
   afterSearch?: never;
 }
 
 interface HeaderWithSearchPropsWithAfterSearch extends BaseHeaderWithSearchProps {
   afterSearch: () => void;
+  searchText?: never;
   onSearch?: never;
 }
 
 interface HeaderWithSearchPropsWithoutHandlers extends BaseHeaderWithSearchProps {
   onSearch?: never;
+  searchText?: never;
   afterSearch?: never;
 }
 
