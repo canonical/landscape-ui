@@ -1,4 +1,7 @@
-export { useRemoveRebootProfile } from "./api";
+export { 
+  useGetRebootProfiles,
+  useRemoveRebootProfile
+} from "./api";
 export { default as RebootProfileAddSidePanel } from "./components/RebootProfileAddSidePanel";
 export { default as RebootProfileDetailsSidePanel } from "./components/RebootProfileDetailsSidePanel";
 export { default as RebootProfileDuplicateSidePanel } from "./components/RebootProfileDuplicateSidePanel";
