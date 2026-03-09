@@ -61,3 +61,6 @@ export const canArchiveProfile = (type: ProfileType) =>
 
 export const isProfileArchived = (profile: Profile) =>
   profile.status === 'archived' || profile.archived;
+
+export const hasApiSearch = (type: ProfileType) => 
+  type in ["script", "security", "wsl"];

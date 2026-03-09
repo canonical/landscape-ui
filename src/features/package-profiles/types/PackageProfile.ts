@@ -1,3 +1,5 @@
+import type { Profile } from "@/features/profiles";
+
 export type PackageProfileConstraintType = "depends" | "conflicts";
 
 export interface PackageProfileConstraint extends Record<string, unknown> {
@@ -8,9 +10,7 @@ export interface PackageProfileConstraint extends Record<string, unknown> {
   version: string;
 }
 
-export interface PackageProfile extends Record<string, unknown> {
-  access_group: string;
-  all_computers: boolean;
+export interface PackageProfile extends Profile {
   computers: {
     constrained: number[];
     "non-compliant": number[];
@@ -18,11 +18,6 @@ export interface PackageProfile extends Record<string, unknown> {
   };
   constraints: PackageProfileConstraint[];
   creation_time: string;
-  description: string;
-  id: number;
   modification_time: string;
-  name: string;
-  tags: string[];
-  title: string;
   version: string;
 }

@@ -16,7 +16,7 @@ import {
   getSecurityColumns,
   getStatusColumn
 } from "./helpers";
-import { canArchiveProfile, hasDescription } from "../../helpers";
+import { canArchiveProfile, hasApiSearch, hasDescription } from "../../helpers";
 import { useOpenViewProfileSidePanel } from "../../hooks/useOpenViewProfileSidePanel";
 
 interface ProfilesListProps {
@@ -38,14 +38,13 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
 
   const openViewProfileSidePanel = useOpenViewProfileSidePanel();
 
-  // in Package, Reboot, Removal, Repository, Upgrade ; NOT in Security, Script, Wsl
   const filteredProfiles = useMemo(() => {
-    if (!search) {
+    if (!search || hasApiSearch(type)) {
       return profiles;
     }
 
     return profiles.filter(({ title }) => title.toLowerCase().includes(search.toLowerCase()));
-  }, [profiles, search]);
+  }, [profiles, search, type]);
 
   const columns = useMemo<Column<Profile>[]>(() => {
     const handleNameClick = (profile: Profile) => {

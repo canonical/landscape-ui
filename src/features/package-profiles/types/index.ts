@@ -1,10 +1,10 @@
-export {
+export type {
   PackageProfile,
   PackageProfileConstraint,
   PackageProfileConstraintType,
 } from "./PackageProfile";
 
-export {
+export type {
   AddFormProps,
   Constraint,
   ConstraintsFormProps,
