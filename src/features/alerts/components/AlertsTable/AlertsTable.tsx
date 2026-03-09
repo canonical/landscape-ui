@@ -81,6 +81,10 @@ const AlertsTable: FC<AlertsTableProps> = ({ alerts, availableTagOptions }) => {
         Header: "Enabled for",
         className: classes.tags,
         Cell: ({ row: { original } }: CellProps<Alert>) => {
+          if (original.scope === "account") {
+            return <div className={classes.accountCell}>Account</div>;
+          }
+
           return (
             <AlertTagsCell
               alert={original}
