@@ -1,83 +1,33 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import SidePanel from "@/components/layout/SidePanel";
-import { RemovalProfileContainer } from "@/features/removal-profiles";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
-import usePageParams from "@/hooks/usePageParams";
-import { Button } from "@canonical/react-components";
-import { lazy, type FC } from "react";
-
-const RemovalProfileAddSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileAddSidePanel,
-  })),
-);
-
-const RemovalProfileDetailsSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileDetailsSidePanel,
-  })),
-);
-
-const RemovalProfileEditSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileEditSidePanel,
-  })),
-);
+import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
+import { useRemovalProfiles } from "@/features/removal-profiles";
+import type { FC } from "react";
 
 const RemovalProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
-    usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
-
-  const handleCreate = createPageParamsSetter({
-    sidePath: ["add"],
-    profile: "",
-  });
+  const { getRemovalProfilesQuery } = useRemovalProfiles();
+  const {
+    data: getRemovalProfilesQueryResult,
+    isPending: isGettingRemovalProfiles,
+  } = getRemovalProfilesQuery();
 
   return (
     <PageMain>
       <PageHeader
         title="Removal profiles"
-        actions={[
-          <Button
-            key="add"
-            type="button"
-            appearance="positive"
-            onClick={handleCreate}
-          >
-            Add removal profile
-          </Button>,
-        ]}
+        actions={getRemovalProfilesQueryResult?.data.length 
+          ? [<AddProfileButton key="add-removal-profile" type={"removal"} />]
+          : undefined
+        }
       />
       <PageContent hasTable>
-        <RemovalProfileContainer />
+        <ProfilesContainer
+          type={"removal"}
+          profiles={getRemovalProfilesQueryResult?.data ?? []}
+          isPending={isGettingRemovalProfiles}
+        />
       </PageContent>
-
-      <SidePanel
-        isOpen={!!sidePath.length}
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-      >
-        {lastSidePathSegment === "add" && (
-          <SidePanel.Suspense key="add">
-            <RemovalProfileAddSidePanel />
-          </SidePanel.Suspense>
-        )}
-
-        {lastSidePathSegment === "edit" && (
-          <SidePanel.Suspense key="edit">
-            <RemovalProfileEditSidePanel />
-          </SidePanel.Suspense>
-        )}
-
-        {lastSidePathSegment === "view" && (
-          <SidePanel.Suspense key="view">
-            <RemovalProfileDetailsSidePanel />
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
     </PageMain>
   );
 };
