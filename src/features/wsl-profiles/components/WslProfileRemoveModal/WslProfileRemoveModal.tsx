@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import type { ComponentProps, FC } from "react";
-import { useDeleteWslProfile } from "../../api";
+import { useRemoveWslProfile } from "../../api";
 import type { WslProfile } from "../../types";
 
 interface WslProfileRemoveModalProps extends Omit<
@@ -21,11 +21,11 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
 
-  const { deleteWslProfile, isDeletingWslProfile } = useDeleteWslProfile();
+  const { removeWslProfile, isRemovingWslProfile } = useRemoveWslProfile();
 
   const handleRemoveWslProfile = async () => {
     try {
-      await deleteWslProfile({ name: wslProfile.name });
+      await removeWslProfile({ name: wslProfile.name });
 
       setPageParams({ sidePath: [], profile: "" });
 
@@ -46,8 +46,8 @@ const WslProfileRemoveModal: FC<WslProfileRemoveModalProps> = ({
         title={`Remove ${wslProfile.title}`}
         confirmButtonLabel="Remove"
         confirmButtonAppearance="negative"
-        confirmButtonDisabled={isDeletingWslProfile}
-        confirmButtonLoading={isDeletingWslProfile}
+        confirmButtonDisabled={isRemovingWslProfile}
+        confirmButtonLoading={isRemovingWslProfile}
         onConfirm={handleRemoveWslProfile}
         confirmationText={`remove ${wslProfile.title}`}
         {...props}

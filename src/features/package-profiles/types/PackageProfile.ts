@@ -1,4 +1,4 @@
-import type { Profile } from "@/features/profiles";
+import type { Profile, ComplianceInstanceCounts } from "@/features/profiles";
 
 export type PackageProfileConstraintType = "depends" | "conflicts";
 
@@ -11,11 +11,7 @@ export interface PackageProfileConstraint extends Record<string, unknown> {
 }
 
 export interface PackageProfile extends Profile {
-  computers: {
-    constrained: number[];
-    "non-compliant": number[];
-    pending: number[];
-  };
+  computers: ComplianceInstanceCounts;
   constraints: PackageProfileConstraint[];
   creation_time: string;
   modification_time: string;

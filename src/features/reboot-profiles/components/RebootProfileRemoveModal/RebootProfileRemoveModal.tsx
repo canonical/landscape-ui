@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { useRemoveRebootProfileQuery } from "../../api";
+import { useRemoveRebootProfile } from "../../api";
 import type { RebootProfile } from "../../types";
 
 export interface RebootProfileRemoveModalProps {
@@ -22,7 +22,7 @@ const RebootProfileRemoveModal: FC<RebootProfileRemoveModalProps> = ({
   const { setPageParams } = usePageParams();
 
   const { removeRebootProfile, isRemovingRebootProfile } =
-    useRemoveRebootProfileQuery();
+    useRemoveRebootProfile();
 
   const handleRemoveRebootProfile = async () => {
     try {

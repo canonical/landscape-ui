@@ -12,4 +12,5 @@ export { useOpenManageProfileSidePanel } from "./hooks";
 
 export type { 
   Profile,
+  ComplianceInstanceCounts,
 } from "./types";

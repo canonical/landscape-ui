@@ -16,6 +16,12 @@ export type ProfileType =
   | "upgrade"
   | "wsl";
 
+export interface ComplianceInstanceCounts {
+  constrained: number[];
+  "non-compliant": number[];
+  pending: number[];
+}
+
 export interface Profile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;

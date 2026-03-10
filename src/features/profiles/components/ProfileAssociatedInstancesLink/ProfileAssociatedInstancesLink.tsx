@@ -1,5 +1,4 @@
 import LoadingState from "@/components/layout/LoadingState";
-// import NoData from "@/components/layout/NoData";
 import StaticLink from "@/components/layout/StaticLink";
 import { WslProfileNonCompliantInstancesList } from "@/features/wsl-profiles";
 import { ROUTES } from "@/libs/routes";
@@ -35,7 +34,7 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
     return <>0 instances</>;
   }
 
-  const text = profile.all_computers ? "All instances" : pluralizeWithCount(count, "instance");
+  const text = pluralizeWithCount(count, "instance");
 
   if (isWslProfile(profile) && query.endsWith(":non-compliant")) {
     return (
@@ -59,7 +58,7 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
   }
 
   return (
-    <StaticLink to={ROUTES.instances.root({ query: `profile:${query}` })}>
+    <StaticLink to={ROUTES.instances.root({ query: query })}>
       {text}
     </StaticLink>
   );
