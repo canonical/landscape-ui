@@ -1,60 +1,19 @@
 import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
-import LoadingState from "@/components/layout/LoadingState";
-import { TablePagination } from "@/components/layout/TablePagination";
 import { useGetActivities } from "@/features/activities";
 import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
-import usePageParams from "@/hooks/usePageParams";
 import { hasOneItem } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import {
-  useGetOverLimitSecurityProfiles,
-  useGetSecurityProfiles,
-  useIsSecurityProfilesLimitReached,
-} from "../../api";
+import { useGetOverLimitSecurityProfiles } from "../../api";
 import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
-import SecurityProfilesHeader from "../SecurityProfilesHeader";
-import SecurityProfilesList from "../SecurityProfilesList";
+import { useOpenManageProfileSidePanel } from "@/features/profiles";
 
-interface SecurityProfilesContainerProps {
-  readonly hideRetentionNotification: () => void;
-  readonly retentionNotificationVisible?: boolean;
-}
-
-const getStatus = (status: string) => {
-  if (status === "all") {
-    return undefined;
-  }
-
-  if (status) {
-    return status;
-  }
-
-  return "active";
-};
-
-const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
-  hideRetentionNotification,
-  retentionNotificationVisible,
-}) => {
+const SecurityProfilesNotifications: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentPage, pageSize, search, status, passRateFrom, passRateTo } =
-    usePageParams();
-  const { createPageParamsSetter } = usePageParams();
-  const profileLimitReached = useIsSecurityProfilesLimitReached();
-
-  const { securityProfiles, securityProfilesCount, isSecurityProfilesLoading } =
-    useGetSecurityProfiles({
-      search,
-      status: getStatus(status),
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-      pass_rate_from: passRateFrom != 0 ? passRateFrom : undefined,
-      pass_rate_to: passRateTo != 100 ? passRateTo : undefined,
-    });
+  const openManageProfileSidePanel = useOpenManageProfileSidePanel();
 
   const { overLimitSecurityProfiles } = useGetOverLimitSecurityProfiles({
     limit: 20,
@@ -69,6 +28,14 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
     ),
   );
 
+  const isRetentionNotificationVisible = () => (
+    localStorage.getItem("_landscape_isSecurityProfileLimitNotificationVisible") === "true"
+  );
+
+  const hideRetentionNotification = () => {
+    localStorage.removeItem("_landscape_isSecurityProfileLimitNotificationVisible");
+  };
+
   const { activities } = useGetActivities(
     {
       query: `status:succeeded ${pendingReports
@@ -81,18 +48,9 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
 
   const downloadAudit = useSecurityProfileDownloadAudit();
 
-  const [
-    isProfileLimitNotificationIgnored,
-    setIsProfileLimitNotificationIgnored,
-  ] = useState(
-    localStorage.getItem(
-      "_landscape_isSecurityProfileLimitNotificationIgnored",
-    ) == "true",
-  );
-
   return (
     <>
-      {retentionNotificationVisible && (
+      {isRetentionNotificationVisible() && (
         <IgnorableNotifcation
           inline
           title="Audit retention policy:"
@@ -165,33 +123,10 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           <Button
             type="button"
             appearance="link"
-            onClick={createPageParamsSetter({
-              sidePath: ["edit"],
-              profile: overLimitSecurityProfiles[0].id.toString(),
-            })}
+            onClick={() => { openManageProfileSidePanel({ profile: overLimitSecurityProfiles[0], type: "security", action: "edit" }); }}
           >
             Edit profile
           </Button>
-        </Notification>
-      )}
-
-      {profileLimitReached && !isProfileLimitNotificationIgnored && (
-        <Notification
-          severity="caution"
-          inline
-          title="Security profiles limit reached:"
-          onDismiss={() => {
-            localStorage.setItem(
-              "_landscape_isSecurityProfileLimitNotificationIgnored",
-              "true",
-            );
-
-            setIsProfileLimitNotificationIgnored(true);
-          }}
-        >
-          You&apos;ve reached the maximum of{" "}
-          <strong>5 security profiles</strong>. To add more, archive profiles
-          that are no longer in use to free up space for active ones.
         </Notification>
       )}
 
@@ -244,22 +179,8 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
           </Button>
         </Notification>
       )}
-
-      <SecurityProfilesHeader />
-
-      {isSecurityProfilesLoading ? (
-        <LoadingState />
-      ) : (
-        <>
-          <SecurityProfilesList securityProfiles={securityProfiles} />
-          <TablePagination
-            totalItems={securityProfilesCount}
-            currentItemCount={securityProfiles.length}
-          />
-        </>
-      )}
     </>
   );
 };
 
-export default SecurityProfilesContainer;
+export default SecurityProfilesNotifications;

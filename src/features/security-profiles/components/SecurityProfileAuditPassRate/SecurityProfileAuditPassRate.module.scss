@@ -1,6 +1,10 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+.cell {
+  width: 12rem;
+  min-width: 12rem;
+}
 
 .textContainer {
   align-items: center;

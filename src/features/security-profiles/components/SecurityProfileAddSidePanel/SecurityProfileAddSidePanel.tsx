@@ -10,17 +10,10 @@ import { useState } from "react";
 import { useAddSecurityProfile } from "../../api";
 import { notifyCreation } from "../../helpers";
 import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
-import type { SecurityProfileFormValues } from "../../types/SecurityProfileAddFormValues";
 import classes from "./SecurityProfileAddSidePanel.module.scss";
 import type { StepIndex } from "./types";
 
-interface SecurityProfileAddSidePanelProps {
-  readonly onSuccess: (values: SecurityProfileFormValues) => void;
-}
-
-const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
-  onSuccess,
-}) => {
+const SecurityProfileAddSidePanel: FC = () => {
   const { notify } = useNotify();
   const { createPageParamsSetter } = usePageParams();
 
@@ -68,7 +61,7 @@ const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
     },
     onSuccess: (values) => {
       notifyCreation(values, notify);
-      onSuccess(values);
+      localStorage.setItem("_landscape_isSecurityProfileLimitNotificationVisible", "true");
     },
   });
 

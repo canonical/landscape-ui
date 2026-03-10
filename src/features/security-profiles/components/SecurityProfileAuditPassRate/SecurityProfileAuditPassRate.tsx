@@ -3,8 +3,8 @@ import { ROUTES } from "@/libs/routes";
 import { Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import { Link } from "react-router";
-import type { SecurityProfile } from "@/features/profiles";
-import classes from "./SecurityAuditPassRate.module.scss";
+import classes from "./SecurityProfileAuditPassRate.module.scss";
+import type { SecurityProfile } from "../../types";
 
 interface SecurityProfileAuditPassRateProps {
   readonly profile: SecurityProfile;
@@ -61,7 +61,7 @@ const SecurityProfileAuditPassRate: FC<SecurityProfileAuditPassRateProps> = ({
   );
 
   return (
-    <>
+    <div className={classes.cell}>
       <div className={classes.textContainer}>
         <div>
           {passing > 0 ? (
@@ -121,7 +121,7 @@ const SecurityProfileAuditPassRate: FC<SecurityProfileAuditPassRateProps> = ({
           )}
         </div>
       </Tooltip>
-    </>
+    </div>
   );
 };
 

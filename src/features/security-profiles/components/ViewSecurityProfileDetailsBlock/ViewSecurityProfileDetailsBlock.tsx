@@ -1,6 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import type { SecurityProfile } from "@/features/profiles";
+import type { SecurityProfile } from "../../types";
 import { SECURITY_PROFILE_BENCHMARK_LABELS, SECURITY_PROFILE_MODE_LABELS } from "../../constants";
 import { getTailoringFile } from "../../helpers";
 
