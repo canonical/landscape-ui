@@ -133,13 +133,12 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
               pageParamKey="contractExpiryDays"
               onChange={onChangeFilter}
             />,
-            <span key="divider-2" className={classes.divider} />,
-            <ColumnFilter
-              key="column"
-              label="Columns"
-              options={columnFilterOptions}
-            />,
           ]}
+        />
+        <ColumnFilter
+          key="column"
+          label="Columns"
+          options={columnFilterOptions}
         />
       </div>
 
