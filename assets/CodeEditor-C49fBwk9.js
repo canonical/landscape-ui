@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/CodeEditorInner-I8stl8uA.js","assets/index-BPfbaSp6.js","assets/index-CBwtg6kZ.css","assets/CodeEditorInner-CqluBKo5.css"])))=>i.map(i=>d[i]);
+import{j as e,r,e as o,_ as s}from"./index-BPfbaSp6.js";const a=r.lazy(()=>s(()=>import("./CodeEditorInner-I8stl8uA.js").then(t=>t.C),__vite__mapDeps([0,1,2,3]))),i=t=>e.jsx(r.Suspense,{fallback:e.jsx(o,{}),children:e.jsx(a,{...t})});export{i as C};

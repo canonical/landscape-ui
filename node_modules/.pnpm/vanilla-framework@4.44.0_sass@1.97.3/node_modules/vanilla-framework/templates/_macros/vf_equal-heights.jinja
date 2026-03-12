@@ -1,0 +1,94 @@
+{#- The vf_equal-heights-block has been abstracted to _macros/shared/ folder so that it can be nested and used in other components -#}
+{% from "_macros/shared/vf_equal-heights-block.jinja" import vf_equal_heights_block %}
+{#-
+  Params
+  - title_text (string) (required): The text to be displayed as the heading
+  - attrs (dictionary) (optional): A dictionary of attributes to apply to the equal heights pattern.
+  - subtitle_text (string) (optional): The text to be displayed as the subtitle
+  - subtitle_heading_level (int) (optional): The heading level for the subtitle. Can be 4 or 5. Defaults to 5.
+  - highlight_images (boolean) (optional): If the images need to be highlighted, which means adding a subtle grey background. Not added by default.
+  - image_aspect_ratio_small (string) (optional): The aspect ratio for item images on small screens. Defaults to "square". Can be "square", "2-3", "3-2", "16-9", "cinematic" or "auto". Defaults to "square".
+  - image_aspect_ratio_medium (string) (optional): The aspect ratio for item images on medium screens. Defaults to "square". Can be "square", "2-3", "3-2", "16-9", "cinematic" or "auto". Defaults to "square".
+  - image_aspect_ratio_large (string) (optional): The aspect ratio for item images on large screens. Defaults to "2-3". Can be "square", "2-3", "3-2", "16-9", "cinematic" or "auto". Defaults to "2-3".
+  - items (array) (required): An array of items, each including 'image_html', 'title_text', 'description_html', and 'cta_html'.
+-#}
+
+{%- macro vf_equal_heights(
+  title_text,
+  attrs={},
+  subtitle_text="",
+  subtitle_heading_level=5,
+  highlight_images=false,
+  image_aspect_ratio_small="square",
+  image_aspect_ratio_medium="square",
+  image_aspect_ratio_large="2-3",
+  items=[]
+) -%}
+  {% set has_subtitle = subtitle_text | trim | length > 0 %}
+  {% set description_content = caller('description') | trim %}
+  {% set has_description = description_content | length > 0 %}
+  {% set cta_content = caller('cta') | trim %}
+  {% set has_cta = cta_content | length > 0 %}
+
+  {% set has_two_top_cols = has_subtitle or has_description %}
+
+  {%- if subtitle_heading_level not in [4, 5] -%}
+    {% set subtitle_heading_level=5 %}
+  {%- endif -%}
+
+  <div class="p-section {{ attrs.get('class', '') }}"
+    {%- for attr, value in attrs.items() -%}
+      {% if attr != 'class' %}
+        {{ attr }}="{{ value }}"
+      {%- endif -%}
+    {%- endfor -%}
+  >
+    <hr class="p-rule is-fixed-width"/>
+    <div class="p-section--shallow">
+    {%- if has_two_top_cols -%}
+      <div class="grid-row--50-50-on-large">
+        <div class="grid-col">
+    {%- endif -%}
+          <h2{% if not has_two_top_cols %} class="u-fixed-width"{% endif %}>{{ title_text }}</h2>
+    {%- if has_two_top_cols -%}
+        </div>
+    {%- endif -%}
+        {%- if has_two_top_cols -%}
+          <div class="grid-col">
+            {%- if has_subtitle -%}
+              <p class="p-heading--{{ subtitle_heading_level }}">{{ subtitle_text }}</p>
+            {%- endif -%}
+            {%- if has_description -%}
+              {{- description_content -}}
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+    {%- if has_two_top_cols -%}
+      </div>
+    {%- endif -%}
+    </div>
+
+    <div class="grid-row">
+      <div class="{%- if items | length == 2 -%}grid-col-4 grid-col-start-large-5{%- elif items | length % 3 == 0 and items | length % 4 != 0 -%}grid-col-6 grid-col-start-large-3{%- else -%}grid-col-8{%- endif -%}">
+        {{ vf_equal_heights_block(
+          items=items,
+          subtitle_heading_level=subtitle_heading_level,
+          highlight_images=highlight_images,
+          image_aspect_ratio_small=image_aspect_ratio_small,
+          image_aspect_ratio_medium=image_aspect_ratio_medium,
+          image_aspect_ratio_large=image_aspect_ratio_large
+        ) }}
+      </div>
+    </div>
+    {%- if has_cta -%}
+      <div class="grid-row">
+        <hr class="p-rule--muted">
+        <div class="grid-col-4 grid-col-medium-2 grid-col-start-large-5 grid-col-start-medium-3">
+          <p>
+            {{- cta_content -}}
+          </p>
+        </div>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endmacro -%}

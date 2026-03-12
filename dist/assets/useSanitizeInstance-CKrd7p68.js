@@ -1,0 +1,1 @@
+import{f as c,v as u,w as o}from"./index-BPfbaSp6.js";const y=()=>{const n=c(),t=u(),{isPending:e,mutateAsync:s}=o({mutationKey:["instance","sanitize"],mutationFn:async({computer_id:i,...a})=>n.post(`computers/${i}/sanitize`,a),onSuccess:async()=>t.invalidateQueries({queryKey:["instances"]})});return{sanitizeInstance:s,isSanitizingInstance:e}};export{y as u};

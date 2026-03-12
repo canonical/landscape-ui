@@ -1,0 +1,1 @@
+const u=({errors:r,touched:p},o)=>{if(typeof o=="string")return!p[o]||!r[o]||typeof r[o]!="string"?void 0:r[o];let f=p,t=r;for(const c of o){if(!f||typeof f!="object"||!(c in f)||!t||typeof t!="object"||!(c in t))return;f=f[c],t=t[c]}return f&&t&&typeof t=="string"?t:void 0};export{u as g};
