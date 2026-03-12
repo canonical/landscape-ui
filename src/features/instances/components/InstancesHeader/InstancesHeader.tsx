@@ -135,11 +135,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
             />,
           ]}
         />
-        <ColumnFilter
-          key="column"
-          label="Columns"
-          options={columnFilterOptions}
-        />
+        <ColumnFilter label="Columns" options={columnFilterOptions} />
       </div>
 
       <TableFilterChips
