@@ -18,15 +18,17 @@ describe("RebootProfilesListActions", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: `Edit "${profile.title}" profile` }),
+      screen.getByRole("menuitem", { name: `Edit "${profile.title}" profile` }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("menuitem", {
         name: `Duplicate "${profile.title}" profile`,
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: `Remove "${profile.title}" profile` }),
+      screen.getByRole("menuitem", {
+        name: `Remove "${profile.title}" profile`,
+      }),
     ).toBeInTheDocument();
   });
 });

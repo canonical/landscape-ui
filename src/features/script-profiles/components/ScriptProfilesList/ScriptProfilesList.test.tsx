@@ -94,15 +94,15 @@ describe("ScriptProfileList", () => {
       }),
     );
 
-    const viewDetailsButton = screen.getByRole("button", {
+    const viewDetailsMenuItem = screen.getByRole("menuitem", {
       name: `View details`,
     });
-    expect(viewDetailsButton).toBeVisible();
+    expect(viewDetailsMenuItem).toBeVisible();
 
-    const editButton = screen.queryByRole("button", {
+    const editMenuItem = screen.queryByRole("menuItem", {
       name: `Edit ${archivedProfile.title}`,
     });
-    expect(editButton).not.toBeInTheDocument();
+    expect(editMenuItem).not.toBeInTheDocument();
   });
 
   it("renders correct actions for active script profiles", async () => {
@@ -114,19 +114,19 @@ describe("ScriptProfileList", () => {
       }),
     );
 
-    const viewDetailsButton = screen.getByRole("button", {
+    const viewDetailsMenuItem = screen.getByRole("menuitem", {
       name: `View details`,
     });
-    expect(viewDetailsButton).toBeVisible();
+    expect(viewDetailsMenuItem).toBeVisible();
 
-    const editButton = screen.queryByRole("button", {
+    const editMenuItem = screen.queryByRole("menuitem", {
       name: `Edit`,
     });
-    expect(editButton).toBeInTheDocument();
+    expect(editMenuItem).toBeInTheDocument();
 
-    const archiveButton = screen.getByRole("button", {
+    const archiveMenuItem = screen.getByRole("menuitem", {
       name: `Archive`,
     });
-    expect(archiveButton).toBeInTheDocument();
+    expect(archiveMenuItem).toBeInTheDocument();
   });
 });

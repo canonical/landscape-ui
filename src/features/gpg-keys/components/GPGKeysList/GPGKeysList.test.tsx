@@ -28,11 +28,11 @@ describe("GPGKeysList", () => {
         screen.getByLabelText(`${gpgKey.name} GPG key actions`),
       );
 
-      const deleteButton = screen.getByRole("button", {
+      const deleteMenuItem = screen.getByRole("menuitem", {
         name: `Remove ${gpgKey.name} GPG key`,
       });
 
-      expect(deleteButton).toBeInTheDocument();
+      expect(deleteMenuItem).toBeInTheDocument();
     }
   });
 });

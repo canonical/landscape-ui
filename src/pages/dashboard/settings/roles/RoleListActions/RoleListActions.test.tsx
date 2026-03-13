@@ -24,24 +24,24 @@ describe("RoleListActions", () => {
   });
 
   it("opens the actions of the role", async () => {
-    const editButton = await screen.findByRole("button", {
+    const editMenuItem = await screen.findByRole("menuitem", {
       name: `Edit "${props.role.name}" role`,
     });
-    expect(editButton).toBeInTheDocument();
+    expect(editMenuItem).toBeInTheDocument();
 
-    const removeButton = await screen.findByRole("button", {
+    const removeMenuItem = await screen.findByRole("menuitem", {
       name: `Remove "${props.role.name}" role`,
     });
-    expect(removeButton).toBeInTheDocument();
+    expect(removeMenuItem).toBeInTheDocument();
   });
 
   it("opens modal on remove button click", async () => {
-    const removeButton = await screen.findByRole("button", {
+    const removeMenuItem = await screen.findByRole("menuitem", {
       name: `Remove "${props.role.name}" role`,
     });
-    expect(removeButton).toBeInTheDocument();
+    expect(removeMenuItem).toBeInTheDocument();
 
-    await user.click(removeButton);
+    await user.click(removeMenuItem);
 
     const confirmationModal = await screen.findByRole("dialog");
     expect(confirmationModal).toBeInTheDocument();
@@ -50,12 +50,12 @@ describe("RoleListActions", () => {
   });
 
   it("opens edit sidepanel on edit button click", async () => {
-    const editButton = await screen.findByRole("button", {
+    const editMenuItem = await screen.findByRole("menuitem", {
       name: `Edit "${props.role.name}" role`,
     });
-    expect(editButton).toBeInTheDocument();
+    expect(editMenuItem).toBeInTheDocument();
 
-    await user.click(editButton);
+    await user.click(editMenuItem);
 
     const sidePanel = await screen.findByRole("complementary");
     expect(sidePanel).toBeInTheDocument();

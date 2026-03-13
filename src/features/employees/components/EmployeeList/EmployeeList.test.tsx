@@ -124,16 +124,16 @@ describe("EmployeeList", () => {
 
     await user.click(activeEmployeeActionButton);
 
-    const activeEmployeeDeactivateButton = screen.getByRole("button", {
+    const activeEmployeeDeactivateMenuItem = screen.getByRole("menuitem", {
       name: `Deactivate ${activeEmployee.name}`,
     });
-    expect(activeEmployeeDeactivateButton).toBeVisible();
+    expect(activeEmployeeDeactivateMenuItem).toBeVisible();
 
     await user.click(inactiveEmployeeActionButton);
 
-    const inactiveEmployeeActivateButton = screen.getByRole("button", {
+    const inactiveEmployeeActivateMenuItem = screen.getByRole("menuitem", {
       name: `Activate ${inactiveEmployee.name}`,
     });
-    expect(inactiveEmployeeActivateButton).toBeVisible();
+    expect(inactiveEmployeeActivateMenuItem).toBeVisible();
   });
 });

@@ -51,12 +51,12 @@ const checkEditAndDeleteButtons = async (
     ),
   );
 
-  const editButton = screen.getByRole("button", {
+  const editMenuItem = screen.getByRole("menuitem", {
     name: `Edit ${pocketName} pocket of ${distributionName}/${seriesName}`,
   });
-  expect(editButton).toBeInTheDocument();
+  expect(editMenuItem).toBeInTheDocument();
 
-  await user.click(editButton);
+  await user.click(editMenuItem);
 
   const formHeader = await screen.findByText(`Edit ${pocketName} pocket`);
   expect(formHeader).toBeInTheDocument();
@@ -69,11 +69,11 @@ const checkEditAndDeleteButtons = async (
     ),
   );
 
-  const deleteButton = screen.getByRole("button", {
+  const deleteMenuItem = screen.getByRole("menuitem", {
     name: `Remove ${pocketName} pocket of ${distributionName}/${seriesName}`,
   });
-  expect(deleteButton).toBeInTheDocument();
-  await user.click(deleteButton);
+  expect(deleteMenuItem).toBeInTheDocument();
+  await user.click(deleteMenuItem);
 
   expect(
     screen.getByText(
@@ -91,12 +91,12 @@ describe("SeriesPocketListActions", () => {
     );
     await user.click(contextualListButton);
 
-    const syncButton = screen.getByRole("button", {
+    const syncMenuItem = screen.getByRole("menuitem", {
       name: `Synchronize ${propsWithMirrorPocket.pocket.name} pocket of ${propsWithMirrorPocket.distributionName}/${propsWithMirrorPocket.seriesName}`,
     });
-    expect(syncButton).toBeInTheDocument();
+    expect(syncMenuItem).toBeInTheDocument();
 
-    await user.click(syncButton);
+    await user.click(syncMenuItem);
     expect(
       screen.getByText("Do you want to synchronize packages?"),
     ).toBeInTheDocument();
@@ -118,12 +118,12 @@ describe("SeriesPocketListActions", () => {
 
     await user.click(contextualListButton);
 
-    const pullButton = screen.getByRole("button", {
+    const pullMenuItem = screen.getByRole("menuitem", {
       name: `Pull packages to ${propsWithPullPocket.pocket.name} pocket of ${propsWithPullPocket.distributionName}/${propsWithPullPocket.seriesName}`,
     });
-    expect(pullButton).toBeInTheDocument();
+    expect(pullMenuItem).toBeInTheDocument();
 
-    await user.click(pullButton);
+    await user.click(pullMenuItem);
     expect(
       screen.getByText(
         `Do you want to pull packages from ${(propsWithPullPocket.pocket as PullPocket).pull_pocket}?`,
@@ -146,8 +146,8 @@ describe("SeriesPocketListActions", () => {
     );
     await user.click(contextualListButton);
 
-    const buttonsLength = screen.getAllByRole("button").length;
-    expect(buttonsLength).toBe(3);
+    const menuItemsLength = screen.getAllByRole("menuitem").length;
+    expect(menuItemsLength).toBe(2);
 
     await userEvent.click(
       screen.getByLabelText(

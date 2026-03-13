@@ -49,17 +49,17 @@ describe("PackageListActions", () => {
       const displayPackageButtonText = `${regularPackage.name} package`;
 
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Hold ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Downgrade ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Uninstall ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
@@ -93,7 +93,7 @@ describe("PackageListActions", () => {
       );
 
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Upgrade ${upgradablePackage.name} package`,
         }),
       ).toBeInTheDocument();
@@ -111,22 +111,22 @@ describe("PackageListActions", () => {
       const displayPackageButtonText = `${upgradablePackage.name} package`;
 
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Upgrade ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Hold ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Downgrade ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Uninstall ${displayPackageButtonText}`,
         }),
       ).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe("PackageListActions", () => {
       );
 
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Unhold ${heldPackage.name} package`,
         }),
       ).toBeInTheDocument();
@@ -192,7 +192,7 @@ describe("PackageListActions", () => {
       );
 
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Uninstall ${heldPackage.name} package`,
         }),
       ).toBeInTheDocument();
@@ -210,7 +210,7 @@ describe("PackageListActions", () => {
       );
 
       await user.click(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Upgrade ${upgradablePackage.name} package`,
         }),
       );
@@ -233,7 +233,7 @@ describe("PackageListActions", () => {
       );
 
       await user.click(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Hold ${regularPackage.name} package`,
         }),
       );
@@ -256,7 +256,7 @@ describe("PackageListActions", () => {
       );
 
       await user.click(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Unhold ${heldPackage.name} package`,
         }),
       );
@@ -279,7 +279,7 @@ describe("PackageListActions", () => {
       );
 
       await user.click(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Downgrade ${regularPackage.name} package`,
         }),
       );
@@ -302,7 +302,7 @@ describe("PackageListActions", () => {
       );
 
       await user.click(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: `Uninstall ${regularPackage.name} package`,
         }),
       );
