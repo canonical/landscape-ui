@@ -3,7 +3,6 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AccessGroupChange from "./AccessGroupChange";
-import { pluralize } from "@/utils/_helpers";
 
 const selectedMultiple = instances.slice(0, 2);
 const selectedSingle = instances.slice(0, 1);
@@ -32,7 +31,7 @@ describe("AccessGroupChange", () => {
     expect(screen.getByText("Access group changed")).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Access group for ${pluralize(selectedSingle.length, `"${selectedSingle[0]?.title ?? ""}" instance`, `${selectedSingle.length} instances`)} successfully changed to ${newAccessGroup}`,
+        `Access group for "${selectedSingle[0]?.title}" instance successfully changed to ${newAccessGroup}`,
       ),
     ).toBeInTheDocument();
   });
@@ -59,7 +58,7 @@ describe("AccessGroupChange", () => {
     expect(screen.getByText("Access group changed")).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Access group for ${pluralize(selectedMultiple.length, `"${selectedMultiple[0]?.title ?? ""}" instance`, `${selectedMultiple.length} instances`)} successfully changed to ${newAccessGroup}`,
+        `Access group for ${selectedMultiple.length} instances successfully changed to ${newAccessGroup}`,
       ),
     ).toBeInTheDocument();
   });

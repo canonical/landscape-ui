@@ -56,7 +56,7 @@ describe("ReportView", () => {
     renderWithProviders(<ReportView instanceIds={instanceIds} />);
 
     expect(
-      screen.getByText(/No instances have not contacted/i),
+      screen.getByText(/0 instances have not contacted/i),
     ).toBeInTheDocument();
   });
   it("USN Report Widgets Display Correct Periods", () => {

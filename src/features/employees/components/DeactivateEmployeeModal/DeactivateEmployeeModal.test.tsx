@@ -45,15 +45,16 @@ describe("DeactivateEmployeeModal", () => {
       name: /deactivate/i,
     });
 
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(sanitizeInput);
     await user.type(sanitizeInput, "wrong text");
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(sanitizeInput);
     await user.type(sanitizeInput, "sanitize instances");
-    expect(confirmButton).not.toBeDisabled();
+    expect(confirmButton).not.toHaveAttribute("aria-disabled");
+    expect(confirmButton).toBeEnabled();
   });
 
   it("disables and then enables the confirm button for the remove action", async () => {
@@ -74,15 +75,16 @@ describe("DeactivateEmployeeModal", () => {
       name: /deactivate/i,
     });
 
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(removeInput);
     await user.type(removeInput, "wrong text");
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(removeInput);
     await user.type(removeInput, "remove instances");
-    expect(confirmButton).not.toBeDisabled();
+    expect(confirmButton).not.toHaveAttribute("aria-disabled");
+    expect(confirmButton).toBeEnabled();
   });
 
   it("disables and then enables the confirm button for the remove action and sanitize action", async () => {
@@ -103,7 +105,7 @@ describe("DeactivateEmployeeModal", () => {
       name: /deactivate/i,
     });
 
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     const sanitizeCheckbox = within(modal).getByLabelText(
       /sanitize associated instances/i,
@@ -114,11 +116,11 @@ describe("DeactivateEmployeeModal", () => {
       "Sanitization confirmation text",
     );
 
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(removeInput);
     await user.type(removeInput, "wrong text");
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     await user.clear(sanitizeInput);
     await user.type(sanitizeInput, "wrong text");
@@ -128,7 +130,8 @@ describe("DeactivateEmployeeModal", () => {
 
     await user.type(sanitizeInput, "sanitize instances");
     await user.type(removeInput, "remove instances");
-    expect(confirmButton).not.toBeDisabled();
+    expect(confirmButton).not.toHaveAttribute("aria-disabled");
+    expect(confirmButton).toBeEnabled();
   });
 
   it("submits the form and calls handleClose", async () => {

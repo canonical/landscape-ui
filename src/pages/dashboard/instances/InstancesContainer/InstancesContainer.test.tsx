@@ -2,14 +2,20 @@ import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { afterEach } from "vitest";
 import InstancesContainer from "./InstancesContainer";
+import { ubuntuInstance } from "@/tests/mocks/instance";
 
-const props = {
+const props: Omit<
+  ComponentProps<typeof InstancesContainer>,
+  "setSelectedInstances"
+> = {
   instances: [],
   instanceCount: 0,
   isGettingInstances: false,
   selectedInstances: [],
+  onChangeFilter: vi.fn(),
 };
 
 const columns = [
@@ -134,5 +140,34 @@ describe("InstancesContainer", () => {
         screen.getByRole("columnheader", { name: label }),
       ).toBeInTheDocument();
     }
+  });
+
+  it("should have selected instances as null initially", () => {
+    const setSelectedInstances = vi.fn();
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        setSelectedInstances={setSelectedInstances}
+      />,
+    );
+
+    expect(setSelectedInstances).toHaveBeenCalledTimes(0);
+  });
+
+  it("should update selected instances when an instance is selected", async () => {
+    const setSelectedInstances = vi.fn();
+    const mockInstance = ubuntuInstance;
+
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        setSelectedInstances={setSelectedInstances}
+      />,
+    );
+
+    setSelectedInstances([mockInstance]);
+
+    expect(setSelectedInstances).toHaveBeenCalledTimes(1);
+    expect(setSelectedInstances).toHaveBeenCalledWith([mockInstance]);
   });
 });

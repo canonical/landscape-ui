@@ -3,8 +3,8 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import WslFilter from "./WslFilter";
 import { FILTERS } from "../../constants";
+import WslFilter from "./WslFilter";
 
 const options = FILTERS.wsl.type === "multi-select" ? FILTERS.wsl.options : [];
 
@@ -14,6 +14,7 @@ const props: ComponentProps<typeof WslFilter> = {
   options,
   label,
   inline: false,
+  onChange: vi.fn(),
 };
 
 describe("WslFilter", () => {
@@ -49,6 +50,8 @@ describe("WslFilter", () => {
 
     expect(firstCheckbox).toBeChecked();
     expect(secondCheckbox).toBeChecked();
+
+    expect(props.onChange).toHaveBeenCalledTimes(2);
   });
 
   it("supports inline prop", () => {

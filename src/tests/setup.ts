@@ -29,6 +29,12 @@ const ResizeObserver = vi.fn(function ResizeObserverMock(
 
 vi.stubGlobal("ResizeObserver", ResizeObserver);
 
+HTMLCanvasElement.prototype.getContext = (() => {
+  return { webkitBackingStorePixelRatio: 1 };
+}) as unknown as HTMLCanvasElement["getContext"];
+
+document.queryCommandSupported = vi.fn(() => true);
+
 if (typeof globalThis.ProgressEvent === "undefined") {
   class TestProgressEvent extends Event implements ProgressEvent<EventTarget> {
     lengthComputable = false;

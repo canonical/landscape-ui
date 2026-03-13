@@ -1,5 +1,5 @@
 import NoData from "@/components/layout/NoData";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import { type FC } from "react";
 import type { WslProfile } from "../../types";
@@ -27,8 +27,10 @@ const WslProfileNonCompliantParentsLink: FC<
       appearance="link"
       onClick={openNonCompliantInstancesList}
     >
-      {wslProfile.computers["non-compliant"].length}{" "}
-      {pluralize(wslProfile.computers["non-compliant"].length, "instance")}
+      {pluralizeWithCount(
+        wslProfile.computers["non-compliant"].length,
+        "instance",
+      )}
     </Button>
   );
 };

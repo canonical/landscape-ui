@@ -1,16 +1,4 @@
-@import "vanilla-framework/scss/patterns_lists";
-
-.buttons {
-  background-color: $colors--theme--background-default;
-  border-top: 1px solid $colors--theme--border-default;
-  bottom: 0;
-  margin-bottom: -3 * $sp-unit;
-  margin-top: $spv--x-large;
-  padding-bottom: $spv--x-large;
-  padding-top: $spv--x-large;
-  position: sticky;
-  text-align: left;
-}
+@import "vanilla-framework/scss/settings_spacing";
 
 .inputContainer {
   display: flex;

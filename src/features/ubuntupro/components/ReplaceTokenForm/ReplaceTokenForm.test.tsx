@@ -1,8 +1,8 @@
+import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import { instances } from "@/tests/mocks/instance";
 import { UBUNTU_PRO_DASHBOARD_URL } from "../TokenFormBase";
 import ReplaceTokenForm from "./ReplaceTokenForm";
 
@@ -39,7 +39,7 @@ describe("ReplaceTokenForm", () => {
     renderWithProviders(<ReplaceTokenForm {...props} />);
 
     const submitButton = screen.getByRole("button", { name: /replace/i });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveAttribute("aria-disabled", "true");
   });
 
   it("renders cancel button", () => {

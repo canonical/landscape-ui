@@ -54,7 +54,8 @@ describe("ConsentBannerModal", () => {
 
     await user.click(checkbox);
 
-    expect(proceedButton).not.toHaveAttribute("aria-disabled", "true");
+    expect(proceedButton).not.toHaveAttribute("aria-disabled");
+    expect(proceedButton).toBeEnabled();
   });
 
   it("clicking proceed closes the modal", async () => {

@@ -18,6 +18,7 @@ describe("SearchBoxWithSavedSearches", () => {
 
   const defaultProps: ComponentProps<typeof SearchBoxWithSavedSearches> = {
     onHelpButtonClick: vi.fn(),
+    onChange: vi.fn(),
   };
 
   it("should render search box and help button", () => {
@@ -140,6 +141,7 @@ describe("SearchBoxWithSavedSearches", () => {
     await user.click(clearButton);
 
     expect(searchBox).toHaveValue("");
+    expect(defaultProps.onChange).toHaveBeenCalled();
   });
 
   it("should close dropdown when Escape key is pressed", async () => {
@@ -166,6 +168,7 @@ describe("SearchBoxWithSavedSearches", () => {
     await user.keyboard("{Enter}");
 
     expect(searchBox).toHaveValue(textToSearch);
+    expect(defaultProps.onChange).toHaveBeenCalled();
   });
 
   it("should open dropdown when search box gets focus", async () => {

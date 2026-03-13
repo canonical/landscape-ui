@@ -1,5 +1,6 @@
+import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
 import type { User } from "@/types/User";
-import { pluralize } from "@/utils/_helpers";
+import { capitalize } from "@/utils/_helpers";
 import type { ReactNode } from "react";
 
 export enum UserAction {
@@ -33,23 +34,6 @@ const getUsersWithSameStateMessage = (userAction: UserAction): string => {
       return "";
   }
 };
-
-const capitalize = <T extends string>(s: T) =>
-  (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<typeof s>;
-
-export const formatCountableNoun = ({
-  count,
-  singular,
-  plural = `${singular}s`,
-}: {
-  count: number;
-  singular: string;
-  plural?: string;
-}) => (
-  <span>
-    <strong>{count}</strong> {pluralize(count, singular, plural)}
-  </span>
-);
 
 export const getUserLockStatusCounts = (
   users: User[],
@@ -88,24 +72,26 @@ export const renderModalBody = ({
       <>
         <p>{capitalize(userAction)}ing users removes their login access.</p>
         You selected{" "}
-        {formatCountableNoun({ count: selectedUsers.length, singular: "user" })}
-        . This will:
+        <PluralizeWithBoldCount count={selectedUsers.length} singular="user" />.
+        This will:
         <ul>
           <li>
             {userAction}{" "}
-            {formatCountableNoun({
-              count:
-                userAction === UserAction.Lock ? unlockedCount : lockedCount,
-              singular: "user",
-            })}
+            <PluralizeWithBoldCount
+              count={
+                userAction === UserAction.Lock ? unlockedCount : lockedCount
+              }
+              singular="user"
+            />
           </li>
           <li>
             leave{" "}
-            {formatCountableNoun({
-              count:
-                userAction === UserAction.Lock ? lockedCount : unlockedCount,
-              singular: "user",
-            })}{" "}
+            <PluralizeWithBoldCount
+              count={
+                userAction === UserAction.Lock ? lockedCount : unlockedCount
+              }
+              singular="user"
+            />{" "}
             {userAction}ed
           </li>
         </ul>

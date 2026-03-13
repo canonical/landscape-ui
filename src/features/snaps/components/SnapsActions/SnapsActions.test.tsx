@@ -1,11 +1,11 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import "@/tests/matcher";
+import { installedSnaps } from "@/tests/mocks/snap";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe } from "vitest";
-import SnapsActions from "./SnapsActions";
-import { renderWithProviders } from "@/tests/render";
-import { installedSnaps } from "@/tests/mocks/snap";
 import { getSelectedSnaps } from "../../helpers";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import SnapsActions from "./SnapsActions";
 
 const snapData = {
   empty: [],
@@ -80,6 +80,7 @@ describe("SnapsActions", () => {
             expect(actionButton).toHaveAttribute("aria-disabled");
           } else {
             expect(actionButton).not.toHaveAttribute("aria-disabled");
+            expect(actionButton).toBeEnabled();
           }
         }
       });
@@ -124,6 +125,8 @@ describe("SnapsActions", () => {
         );
         const holdButton = screen.getByRole("button", { name: "Hold" });
         const unholdButton = screen.getByRole("button", { name: "Unhold" });
+        expect(unholdButton).not.toHaveAttribute("aria-disabled");
+        expect(holdButton).not.toHaveAttribute("aria-disabled");
         expect(unholdButton).toBeEnabled();
         expect(holdButton).toBeEnabled();
       });

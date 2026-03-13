@@ -21,9 +21,9 @@ describe("UpgradeInfo", () => {
       "Regular upgrades are available for",
       `${instances.filter(({ alerts }) => hasRegularUpgrades(alerts)).length}`,
       "instances",
-      "No upgrades for",
+      "No upgrades needed for",
       `${instances.filter(({ alerts }) => !hasUpgrades(alerts)).length}`,
-      "instances needed.",
+      "instances.",
     ]);
   });
 });

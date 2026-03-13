@@ -3,7 +3,6 @@ import { ROUTES } from "@/libs/routes";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { pluralize } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import AlertNotificationsList from "./AlertNotificationsList";
@@ -65,11 +64,7 @@ describe("AlertNotificationsList", () => {
       />,
     );
     const button = screen.getByRole("button", {
-      name: `${pendingInstances.length} pending ${pluralize(
-        pendingInstances.length,
-        "computer needs",
-        "computers need",
-      )} authorization`,
+      name: `${pendingInstances.length} pending computers need authorization`,
     });
     expect(button).toBeInTheDocument();
   });

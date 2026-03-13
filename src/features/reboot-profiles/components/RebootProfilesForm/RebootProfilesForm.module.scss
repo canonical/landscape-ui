@@ -7,12 +7,6 @@
   padding-top: $spv--large;
 }
 
-.radioGroup {
-  align-items: baseline;
-  column-gap: $sph--x-large;
-  display: flex;
-}
-
 .timeContainer {
   border-left: 1px solid $colors--theme--border-default;
   margin-bottom: $spv--x-large;
@@ -53,19 +47,4 @@
   .timeInput {
     max-width: 7rem;
   }
-}
-
-.windowInputContainer {
-  position: relative;
-}
-
-.windowInput {
-  min-width: initial;
-  width: 7rem;
-}
-
-.windowInputDescription {
-  left: 7.5rem;
-  position: absolute;
-  top: 0.5rem;
 }

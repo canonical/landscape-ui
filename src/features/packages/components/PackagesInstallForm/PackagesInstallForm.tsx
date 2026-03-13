@@ -10,7 +10,7 @@ import { usePackages } from "../../hooks";
 import type { InstancePackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import type { UrlParams } from "@/types/UrlParams";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeArray } from "@/utils/_helpers";
 
 const PackagesInstallForm: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
@@ -40,8 +40,8 @@ const PackagesInstallForm: FC = () => {
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralize(selected.length, `package ${selected[0]?.name ?? ""}`, `${selected.length} packages`)} to be installed.`,
-        message: `${pluralize(selected.length, `${selected[0]?.name ?? ""} package`, `${selected.length} selected packages`)} will be installed and ${pluralize(selected.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${pluralizeArray(selected, (pkg) => `package ${pkg.name}`, `packages`)} to be installed.`,
+        message: `${pluralizeArray(selected, (pkg) => `${pkg.name} package`, `selected packages`)} will be installed and ${pluralize(selected.length, "is", "are")} queued in Activities.`,
         actions: [
           {
             label: "Details",

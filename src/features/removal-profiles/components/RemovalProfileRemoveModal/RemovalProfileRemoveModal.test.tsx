@@ -23,11 +23,12 @@ describe("RemovalProfileRemoveModal", () => {
     ).toBeInTheDocument();
 
     const removeButton = screen.getByRole("button", { name: "Remove" });
-    expect(removeButton).toBeDisabled();
+    expect(removeButton).toHaveAttribute("aria-disabled", "true");
     await user.type(
       screen.getByRole("textbox"),
       `remove ${props.removalProfile.title}`,
     );
+    expect(removeButton).not.toHaveAttribute("aria-disabled");
     expect(removeButton).toBeEnabled();
     await user.click(removeButton);
     expect(props.close).toHaveBeenCalledTimes(1);

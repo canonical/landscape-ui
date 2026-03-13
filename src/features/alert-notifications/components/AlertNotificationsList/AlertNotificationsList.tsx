@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { PendingInstance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Icon, List } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -51,11 +51,10 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
             className="u-no-margin u-no-padding"
             onClick={handlePendingInstancesReview}
           >
-            {`${pendingInstances.length} pending `}
-            {pluralize(
+            {pluralizeWithCount(
               pendingInstances.length,
-              "computer needs",
-              "computers need",
+              "pending computer needs",
+              "pending computers need",
             )}{" "}
             authorization
           </Button>

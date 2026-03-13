@@ -6,11 +6,11 @@ import type { ComponentProps } from "react";
 import { describe, it, vi } from "vitest";
 import InstanceRemoveFromLandscapeModal from "./InstanceRemoveFromLandscapeModal";
 
-const props: ComponentProps<typeof InstanceRemoveFromLandscapeModal> = {
+const props = {
   isOpen: true,
   close: vi.fn(),
-  instance: instances[0],
-};
+  instances: [instances[0]],
+} as const satisfies ComponentProps<typeof InstanceRemoveFromLandscapeModal>;
 
 describe("InstanceRemoveFromLandscapeModal", () => {
   const user = userEvent.setup();
@@ -19,7 +19,7 @@ describe("InstanceRemoveFromLandscapeModal", () => {
     renderWithProviders(<InstanceRemoveFromLandscapeModal {...props} />);
 
     const modalTitle = screen.getByText(
-      `Remove ${props.instance.title} from Landscape`,
+      `Remove ${props.instances[0].title} from Landscape`,
     );
     expect(modalTitle).toBeInTheDocument();
 
@@ -46,7 +46,10 @@ describe("InstanceRemoveFromLandscapeModal", () => {
     );
 
     const confirmationTextInput = screen.getByRole("textbox");
-    await user.type(confirmationTextInput, `remove ${props.instance.title}`);
+    await user.type(
+      confirmationTextInput,
+      `remove ${props.instances[0].title}`,
+    );
 
     const confirmButton = screen.getByRole("button", { name: /remove/i });
     await user.click(confirmButton);

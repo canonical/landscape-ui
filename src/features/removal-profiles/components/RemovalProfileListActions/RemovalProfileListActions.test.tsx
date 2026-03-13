@@ -36,9 +36,10 @@ describe("RemovalProfileListActions", () => {
     );
 
     const modalDeleteBtn = screen.getByRole("button", { name: "Remove" });
-    expect(modalDeleteBtn).toBeDisabled();
+    expect(modalDeleteBtn).toHaveAttribute("aria-disabled", "true");
 
     await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
+    expect(modalDeleteBtn).not.toHaveAttribute("aria-disabled");
     expect(modalDeleteBtn).toBeEnabled();
   });
 });

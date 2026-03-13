@@ -97,6 +97,6 @@ describe("SecurityProfileForm", () => {
 
     expect(
       await screen.findByRole("button", { name: "Submit" }),
-    ).toBeDisabled();
+    ).toHaveAttribute("aria-disabled", "true");
   });
 });

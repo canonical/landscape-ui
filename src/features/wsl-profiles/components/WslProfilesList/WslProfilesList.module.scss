@@ -1,13 +1,9 @@
 @import "vanilla-framework/scss/settings_spacing";
 
-.description,
-.noWrap {
-  white-space: nowrap;
-}
-
 .description {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   width: 20%;
 }
 

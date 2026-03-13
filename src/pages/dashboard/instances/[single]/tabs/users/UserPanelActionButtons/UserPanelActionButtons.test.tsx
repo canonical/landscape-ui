@@ -1,11 +1,11 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import "@/tests/matcher";
+import { users } from "@/tests/mocks/user";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, vi } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import UserPanelActionButtons from "./UserPanelActionButtons";
-import { users } from "@/tests/mocks/user";
 import { getSelectedUsers } from "../UserPanelHeader/helpers";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import UserPanelActionButtons from "./UserPanelActionButtons";
 
 const userData = {
   empty: [],
@@ -63,6 +63,7 @@ describe("UserPanelActionButtons", () => {
             expect(actionButton).toHaveAttribute("aria-disabled");
           } else {
             expect(actionButton).not.toHaveAttribute("aria-disabled");
+            expect(actionButton).toBeEnabled();
           }
         }
       });
@@ -104,6 +105,8 @@ describe("UserPanelActionButtons", () => {
         );
         const lockButton = screen.getByRole("button", { name: "Lock" });
         const unlockButton = screen.getByRole("button", { name: "Unlock" });
+        expect(unlockButton).not.toHaveAttribute("aria-disabled");
+        expect(lockButton).not.toHaveAttribute("aria-disabled");
         expect(unlockButton).toBeEnabled();
         expect(lockButton).toBeEnabled();
       });

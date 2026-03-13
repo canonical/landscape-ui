@@ -4,6 +4,7 @@ import {
   isContextualMenu,
   textFromNode,
 } from "@/components/ui/ResponsiveButtons/helpers";
+import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import { BREAKPOINT_PX } from "@/constants";
 import type {
   ConfirmationButtonProps,
@@ -14,7 +15,6 @@ import classNames from "classnames";
 import type { FC, ReactElement, ReactNode } from "react";
 import { isValidElement, useMemo } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import classes from "./ResponsiveButtons.module.scss";
 import type { ButtonLikeProps, CollapsedLink, CollapsedNode } from "./types";
 
@@ -154,6 +154,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
           hasToggleIcon
           toggleLabel={menuLabel}
           toggleClassName="u-no-margin--bottom"
+          toggleDisabled={collapsedItems.every((item) => item.disabled)}
         >
           {(close: () => void) => (
             <>

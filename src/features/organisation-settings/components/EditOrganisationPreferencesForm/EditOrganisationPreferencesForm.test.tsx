@@ -37,6 +37,7 @@ describe("EditOrganisationPreferencesForm", () => {
     await userEvent.type(organisationNameInput, " Updated");
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
+    expect(saveButton).not.toHaveAttribute("aria-disabled");
     expect(saveButton).toBeEnabled();
   });
 

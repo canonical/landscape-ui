@@ -33,14 +33,15 @@ describe("ActivitiesActions", () => {
       renderWithProviders(<ActivitiesActions selected={[]} />);
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
-      expect(approveButton).toBeDisabled();
+      expect(approveButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with approvable action are selected", () => {
       renderWithProviders(<ActivitiesActions selected={mockActivities} />);
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
-      expect(approveButton).not.toBeDisabled();
+      expect(approveButton).not.toHaveAttribute("aria-disabled");
+      expect(approveButton).toBeEnabled();
     });
 
     it("should be disabled when selected activities are not approvable", () => {
@@ -61,7 +62,7 @@ describe("ActivitiesActions", () => {
       );
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
-      expect(approveButton).toBeDisabled();
+      expect(approveButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should show confirmation modal and approve single activity", async () => {
@@ -125,14 +126,15 @@ describe("ActivitiesActions", () => {
       renderWithProviders(<ActivitiesActions selected={[]} />);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
-      expect(cancelButton).toBeDisabled();
+      expect(cancelButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with cancelable action are selected", () => {
       renderWithProviders(<ActivitiesActions selected={mockActivities} />);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
-      expect(cancelButton).not.toBeDisabled();
+      expect(cancelButton).not.toHaveAttribute("aria-disabled");
+      expect(cancelButton).toBeEnabled();
     });
 
     it("should be disabled when selected activities are not cancelable", () => {
@@ -153,7 +155,7 @@ describe("ActivitiesActions", () => {
       );
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
-      expect(cancelButton).toBeDisabled();
+      expect(cancelButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should show confirmation modal and cancel single activity", async () => {
@@ -217,14 +219,15 @@ describe("ActivitiesActions", () => {
       renderWithProviders(<ActivitiesActions selected={[]} />);
 
       const undoButton = screen.getByRole("button", { name: "Undo" });
-      expect(undoButton).toBeDisabled();
+      expect(undoButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with revertable action are selected", () => {
       renderWithProviders(<ActivitiesActions selected={mockActivities} />);
 
       const undoButton = screen.getByRole("button", { name: "Undo" });
-      expect(undoButton).not.toBeDisabled();
+      expect(undoButton).not.toHaveAttribute("aria-disabled");
+      expect(undoButton).toBeEnabled();
     });
 
     it("should be disabled when selected activities are not revertable", () => {
@@ -245,7 +248,7 @@ describe("ActivitiesActions", () => {
       );
 
       const undoButton = screen.getByRole("button", { name: "Undo" });
-      expect(undoButton).toBeDisabled();
+      expect(undoButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should show confirmation modal and undo single activity", async () => {
@@ -309,14 +312,15 @@ describe("ActivitiesActions", () => {
       renderWithProviders(<ActivitiesActions selected={[]} />);
 
       const redoButton = screen.getByRole("button", { name: "Redo" });
-      expect(redoButton).toBeDisabled();
+      expect(redoButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should be enabled when activities with reappliable action are selected", () => {
       renderWithProviders(<ActivitiesActions selected={mockActivities} />);
 
       const redoButton = screen.getByRole("button", { name: "Redo" });
-      expect(redoButton).not.toBeDisabled();
+      expect(redoButton).not.toHaveAttribute("aria-disabled");
+      expect(redoButton).toBeEnabled();
     });
 
     it("should be disabled when selected activities are not reappliable", () => {
@@ -337,7 +341,7 @@ describe("ActivitiesActions", () => {
       );
 
       const redoButton = screen.getByRole("button", { name: "Redo" });
-      expect(redoButton).toBeDisabled();
+      expect(redoButton).toHaveAttribute("aria-disabled", "true");
     });
 
     it("should show confirmation modal and redo single activity", async () => {
@@ -422,10 +426,11 @@ describe("ActivitiesActions", () => {
       renderWithProviders(<ActivitiesActions selected={mixedActivities} />);
 
       const approveButton = screen.getByRole("button", { name: "Approve" });
-      expect(approveButton).toBeDisabled();
+      expect(approveButton).toHaveAttribute("aria-disabled", "true");
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
-      expect(cancelButton).not.toBeDisabled();
+      expect(cancelButton).not.toHaveAttribute("aria-disabled");
+      expect(cancelButton).toBeEnabled();
     });
   });
 });

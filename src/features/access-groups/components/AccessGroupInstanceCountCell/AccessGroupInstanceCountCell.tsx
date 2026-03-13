@@ -1,5 +1,5 @@
 import { useGetInstances } from "@/features/instances";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Spinner } from "@canonical/react-components";
 import { type FC } from "react";
 import { Link } from "react-router";
@@ -32,7 +32,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   if (instancesCount) {
     return (
       <Link to={ROUTES.instances.root({ accessGroups: [accessGroup.name] })}>
-        {instancesCount} {pluralize(instancesCount, "instance")}
+        {pluralizeWithCount(instancesCount, "instance")}
       </Link>
     );
   }

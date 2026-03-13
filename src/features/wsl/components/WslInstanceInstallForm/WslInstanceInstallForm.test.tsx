@@ -13,6 +13,7 @@ describe("WslInstanceInstallForm", () => {
       name: /create/i,
     });
     expect(installInstanceButton).toBeInTheDocument();
+    expect(installInstanceButton).not.toHaveAttribute("aria-disabled");
     expect(installInstanceButton).toBeEnabled();
   });
 

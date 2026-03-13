@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
 import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";
-import { APP_COMMIT, APP_VERSION, FEEDBACK_LINK } from "@/constants";
+import { FEEDBACK_LINK } from "@/constants";
 import classNames from "classnames";
 import { TOOLTIP_MESSAGE } from "./constants";
 
@@ -27,18 +27,10 @@ const LandscapeActions: FC = () => {
     <div className={classNames("is-fading-when-collapsed", classes.container)}>
       <ul className="p-list p-list--divided u-no-margin--bottom">
         <li className={classNames("p-list__item", classes.listItem)}>
-          <span className={classes.titleRow}>
-            <div>
-              <span className={classes.title}>New web portal</span>
-              <Tooltip position="right" message={TOOLTIP_MESSAGE}>
-                <Icon name={ICONS.help} />
-              </Tooltip>
-            </div>
-            <div>
-              <span className={classes.version}>{`v${APP_VERSION}`}</span>
-              <code className={classes.commit}>({APP_COMMIT.slice(0, 7)})</code>
-            </div>
-          </span>
+          <span className={classes.title}>New web portal</span>
+          <Tooltip position="right" message={TOOLTIP_MESSAGE}>
+            <Icon name={ICONS.help} />
+          </Tooltip>
         </li>
         <li className={classNames("p-list__item", classes.listItem)}>
           <a

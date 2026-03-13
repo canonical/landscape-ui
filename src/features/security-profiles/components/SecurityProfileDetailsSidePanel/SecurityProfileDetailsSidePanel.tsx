@@ -6,7 +6,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitleByName, pluralize } from "@/utils/_helpers";
+import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -172,9 +172,9 @@ const SecurityProfileDetailsSidePanel: FC = () => {
                   large
                   value={`${
                     profile.restart_deliver_delay
-                      ? `Delayed by ${profile.restart_deliver_delay} ${pluralize(profile.restart_deliver_delay, "hour")}`
+                      ? `Delayed by ${pluralizeWithCount(profile.restart_deliver_delay, "hour")}`
                       : "As soon as possible"
-                  }${profile.restart_deliver_delay_window ? `, randomize delivery over ${profile.restart_deliver_delay_window} ${pluralize(profile.restart_deliver_delay_window, "minute")}` : ""}`}
+                  }${profile.restart_deliver_delay_window ? `, randomize delivery over ${pluralizeWithCount(profile.restart_deliver_delay_window, "minute")}` : ""}`}
                 />
               )}
             </InfoGrid>

@@ -1,9 +1,9 @@
+import { instances } from "@/tests/mocks/instance";
+import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { renderWithProviders } from "@/tests/render";
 import TokenFormBase from "./TokenFormBase";
-import { instances } from "@/tests/mocks/instance";
 
 const selectedInstances = instances.slice(0, 3);
 
@@ -79,7 +79,7 @@ describe("TokenFormBase", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /attach token/i });
-    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveAttribute("aria-disabled", "true");
   });
 
   it("enables submit button when token is entered", async () => {
@@ -100,6 +100,7 @@ describe("TokenFormBase", () => {
     const submitButton = screen.getByRole("button", { name: /attach token/i });
 
     await user.type(tokenInput, "test-token");
+    expect(submitButton).not.toHaveAttribute("aria-disabled");
     expect(submitButton).toBeEnabled();
   });
 

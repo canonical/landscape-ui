@@ -3,7 +3,7 @@ import useReports from "@/hooks/useReports";
 import useSidePanel from "@/hooks/useSidePanel";
 import ReportForm from "@/pages/dashboard/instances/ReportForm";
 import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeWithCount } from "@/utils/_helpers";
 import { Col, Row } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -72,9 +72,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
         ? securityUpgradesInstanceCount[period]
         : instanceIds.length - securityUpgradesInstanceCount[period];
 
-    return count !== 1
-      ? `${count || "No"} instances have${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`
-      : `1 instance has${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
+    return `${pluralizeWithCount(count, "instance has", "instances have")} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
   };
 
   const handleDownloadDialog = () => {
@@ -99,8 +97,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
                 currentCount={
                   instanceIds.length - securityUpgradesInstanceCount.pending
                 }
-                negativeDescription={`${securityUpgradesInstanceCount.pending || "No"} instance${pluralize(securityUpgradesInstanceCount.pending, " is", "s are")} not yet patched.`}
-                positiveDescription={`${instanceIds.length - securityUpgradesInstanceCount.pending || "No"} instance${pluralize(instanceIds.length - securityUpgradesInstanceCount.pending, " is", "s are")} securely patched.`}
+                negativeDescription={`${pluralizeWithCount(securityUpgradesInstanceCount.pending, "instance is", "instances are")} not yet patched.`}
+                positiveDescription={`${pluralizeWithCount(instanceIds.length - securityUpgradesInstanceCount.pending, "instance is", "instances are")} securely patched.`}
                 title="Securely patched"
                 totalCount={instanceIds.length}
               />
@@ -110,8 +108,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getInstancesNotUpgradedLoading && (
               <ReportWidget
                 currentCount={upgradedInstanceCount}
-                negativeDescription={`${getInstancesNotUpgradedResult?.data.length || "No"} instance${pluralize(Number(getInstancesNotUpgradedResult?.data.length), " is", "s are")} not covered by upgrade profiles.`}
-                positiveDescription={`${upgradedInstanceCount || "No"} instance${pluralize(upgradedInstanceCount, " is", "s are")} covered by upgrade profiles.`}
+                negativeDescription={`${pluralizeWithCount(Number(getInstancesNotUpgradedResult?.data.length ?? 0), "instance is", "instances are")} not covered by upgrade profiles.`}
+                positiveDescription={`${pluralizeWithCount(upgradedInstanceCount, "instance is", "instances are")} covered by upgrade profiles.`}
                 title="Upgrade profiles"
                 totalCount={instanceIds.length}
               />
@@ -121,8 +119,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getNotPingingInstancesLoading && (
               <ReportWidget
                 currentCount={pingingInstancesCount}
-                negativeDescription={`${getNotPingingInstancesResult?.data.length || "No"} instance${pluralize(Number(getNotPingingInstancesResult?.data.length), " has", "s have")} not contacted the server within the last 5 minutes.`}
-                positiveDescription={`${pingingInstancesCount || "No"} instance${pluralize(pingingInstancesCount, " has", "s have")} contacted the server within the last 5 minutes.`}
+                negativeDescription={`${pluralizeWithCount(Number(getNotPingingInstancesResult?.data.length ?? 0), "instance has", "instances have")} not contacted the server within the last 5 minutes.`}
+                positiveDescription={`${pluralizeWithCount(pingingInstancesCount, "instance has", "instances have")} contacted the server within the last 5 minutes.`}
                 title="Contacted"
                 totalCount={instanceIds.length}
               />

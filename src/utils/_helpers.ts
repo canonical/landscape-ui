@@ -74,7 +74,7 @@ export const handleParams = ({
   return paramsToPass;
 };
 
-export const hasOneItem = <T>(array: T[]): array is [T] => {
+export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
   return array.length === 1;
 };
 
@@ -86,13 +86,26 @@ export const pluralize = (
   return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
 };
 
+export const pluralizeWithCount = (
+  count: number,
+  singularForm: string,
+  pluralForm?: string,
+) => {
+  return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
+};
+
 export const pluralizeArray = <T>(
-  items: T[],
+  items: readonly T[],
   getSingularForm: (item: T) => string,
   pluralForm: string,
 ) => {
-  return hasOneItem(items) ? getSingularForm(items[0]) : pluralForm;
+  return hasOneItem(items)
+    ? getSingularForm(items[0])
+    : `${items.length.toLocaleString()} ${pluralForm}`;
 };
+
+export const capitalize = <T extends string>(s: T) =>
+  (s.charAt(0).toUpperCase() + s.slice(1)) as Capitalize<typeof s>;
 
 export const getTitleByName = (
   name: string,

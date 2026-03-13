@@ -2,7 +2,6 @@ import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
-import { pluralize } from "@/utils/_helpers";
 import { screen } from "@testing-library/react";
 import { getScheduleInfo } from "./helpers";
 import UpgradeProfileDetailsSidePanel from "./UpgradeProfileDetailsSidePanel";
@@ -37,7 +36,7 @@ describe("UpgradeProfileDetailsSidePanel", () => {
     },
     {
       label: "Delivery delay window",
-      value: `${testProfile.deliver_delay_window} ${pluralize(Number(testProfile.deliver_delay_window), "minute")}`,
+      value: `${testProfile.deliver_delay_window} minutes`,
     },
   ];
 

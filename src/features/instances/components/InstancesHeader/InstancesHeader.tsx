@@ -13,7 +13,6 @@ import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
-import ContractExpiryFilter from "../ContractExpiryFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import WslFilter from "../WslFilter";
@@ -22,9 +21,13 @@ import useInstanceSearchHelpTerms from "./hooks/useInstanceSearchHelpTerms";
 
 interface InstancesHeaderProps {
   readonly columnFilterOptions: ColumnFilterOption[];
+  readonly onChangeFilter: () => void;
 }
 
-const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
+const InstancesHeader: FC<InstancesHeaderProps> = ({
+  columnFilterOptions,
+  onChangeFilter,
+}) => {
   const instanceSearchHelpTerms = useInstanceSearchHelpTerms();
 
   const [showSearchHelp, setShowSearchHelp] = useState(false);
@@ -79,6 +82,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
             onHelpButtonClick={() => {
               setShowSearchHelp(true);
             }}
+            onChange={onChangeFilter}
           />
         </div>
         <ResponsiveTableFilters
@@ -89,29 +93,45 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
               key="status"
               label="Status"
               options={statusOptions}
+              onChange={onChangeFilter}
             />,
             <PageParamFilter
               key="os"
               label="OS"
               options={osOptions}
               pageParamKey="os"
+              onChange={onChangeFilter}
             />,
             <AvailabilityZoneFilter
               key="availability-zone"
               label="Availability zones"
               options={availabilityZoneOptions}
+              onChange={onChangeFilter}
             />,
             <AccessGroupFilter
               key="access-group"
               label="Access groups"
               options={accessGroupOptions}
+              onChange={onChangeFilter}
             />,
-            <TagFilter key="tag" label="Tags" options={tagOptions} />,
-            <WslFilter key="wsl" label="WSL" options={wslOptions} />,
-            <ContractExpiryFilter
+            <TagFilter
+              key="tag"
+              label="Tags"
+              options={tagOptions}
+              onChange={onChangeFilter}
+            />,
+            <WslFilter
+              key="wsl"
+              label="WSL"
+              options={wslOptions}
+              onChange={onChangeFilter}
+            />,
+            <PageParamFilter
               key="contract-expiry"
               label="Contract expiry"
               options={contractExpiryOptions}
+              pageParamKey="contractExpiryDays"
+              onChange={onChangeFilter}
             />,
             <span key="divider-2" className={classes.divider} />,
             <ColumnFilter
@@ -133,6 +153,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({ columnFilterOptions }) => {
           "wsl",
           "contractExpiryDays",
         ]}
+        onChange={onChangeFilter}
         accessGroupOptions={accessGroupOptions}
         availabilityZonesOptions={availabilityZoneOptions}
         osOptions={osOptions}

@@ -33,11 +33,12 @@ describe("ScriptProfileArchiveModal", () => {
       name: "Archive",
     });
 
-    expect(confirmButton).toBeDisabled();
+    expect(confirmButton).toHaveAttribute("aria-disabled", "true");
 
     const textInput = screen.getByRole("textbox");
     await user.type(textInput, `archive ${profile.title}`);
 
+    expect(confirmButton).not.toHaveAttribute("aria-disabled");
     expect(confirmButton).toBeEnabled();
   });
 });

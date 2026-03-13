@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LandscapeActions from "./LandscapeActions";
-import { APP_VERSION, FEEDBACK_LINK } from "@/constants";
+import { FEEDBACK_LINK } from "@/constants";
 
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
 
@@ -17,7 +17,6 @@ describe("LandscapeActions", () => {
   });
 
   it("should render Landscape version and action buttons", async () => {
-    expect(screen.getByText(`v${APP_VERSION}`)).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "Share your feedback" }),
     ).toHaveProperty("href", FEEDBACK_LINK);

@@ -142,6 +142,7 @@ describe("Filter with single selection", () => {
         expect(button).toHaveAttribute("aria-disabled", "true");
       } else {
         expect(button).not.toHaveAttribute("aria-disabled");
+        expect(button).toBeEnabled();
       }
     }
   });

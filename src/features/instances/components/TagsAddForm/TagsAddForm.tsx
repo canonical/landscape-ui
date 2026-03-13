@@ -5,7 +5,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { pluralize } from "@/utils/_helpers";
+import { pluralizeArray } from "@/utils/_helpers";
 import {
   CheckboxInput,
   ModularTable,
@@ -66,10 +66,10 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       notify.success({
         title: "Tags assigned",
-        message: `Tags successfully assigned to ${pluralize(
-          selected.length,
-          `"${selected[0]?.title ?? ""}" instance`,
-          `${selected.length} instances`,
+        message: `Tags successfully assigned to ${pluralizeArray(
+          selected,
+          (instance) => `"${instance.title}" instance`,
+          `instances`,
         )}`,
       });
     } catch (error) {

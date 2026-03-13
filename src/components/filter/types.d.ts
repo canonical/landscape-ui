@@ -6,4 +6,5 @@ export type FilterProps<O = SelectOption> = Pick<
   "label" | "inline"
 > & {
   readonly options: readonly O[];
+  onChange?: () => void;
 };
