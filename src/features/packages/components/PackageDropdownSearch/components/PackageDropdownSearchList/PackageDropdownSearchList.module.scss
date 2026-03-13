@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.listItem {
+  cursor: pointer;
+  padding: $sph--small $spv--large;
+
+  &.disabled {
+    color: $colors--theme--text-muted;
+    cursor: not-allowed;
+  }
+}
+
+.highlighted {
+  background-color: $colors--theme--background-alt;
+}
+
+.empty {
+  padding: 1rem;
+}

@@ -48,18 +48,24 @@ export const getQuery = ({
   }
 
   if (tags.length) {
-    queryParts.push(`tag:${tags.join(" OR tag:")}`);
+    queryParts.push(tags.map((tag) => `tag:${tag}`).join(" OR "));
   }
 
   if (accessGroups.length) {
-    queryParts.push(`access-group:${accessGroups.join(" OR access-group:")}`);
+    queryParts.push(
+      accessGroups
+        .map((accessGroup) => `access-group:${accessGroup}`)
+        .join(" OR "),
+    );
   }
 
   if (availabilityZones.length) {
     queryParts.push(
       availabilityZones.includes("none")
         ? "availability-zone:null"
-        : `availability-zone:${availabilityZones.join(" OR availability-zone:")}`,
+        : availabilityZones
+            .map((availabilityZone) => `availability-zone:${availabilityZone}`)
+            .join(" OR "),
     );
   }
 
