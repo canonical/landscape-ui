@@ -2,6 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe } from "vitest";
 import InfoItem from "./InfoItem";
+import { MASKED_VALUE } from "@/constants";
 
 const props = {
   label: "Label",
@@ -18,7 +19,7 @@ describe("InfoItem", () => {
   it("should render a password info item", () => {
     renderWithProviders(<InfoItem type="password" {...props} />);
     expect(screen.getByText(props.label)).toBeInTheDocument();
-    expect(screen.getByText("****************")).toBeInTheDocument();
+    expect(screen.getByText(MASKED_VALUE)).toBeInTheDocument();
   });
 
   it("should render a truncated info item", () => {

@@ -8,6 +8,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import UserList from "./UserList";
+import { MASKED_VALUE } from "@/constants";
 
 const userIds = users.map((user) => user.uid);
 const unlockedUser = users.find((user) => user.enabled);
@@ -153,7 +154,7 @@ describe("UserList", () => {
         return [
           { label: "Username", value: item.username },
           { label: "Name", value: item?.name ?? <NoData /> },
-          { label: "Password", value: "****************" },
+          { label: "Password", value: MASKED_VALUE },
           { label: "Primary group", value: primaryGroup ?? <NoData /> },
           { label: "Additional groups", value: groupsData },
           { label: "Location", value: item?.location ?? <NoData /> },

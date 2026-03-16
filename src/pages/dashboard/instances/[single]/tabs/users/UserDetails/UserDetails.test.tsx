@@ -6,6 +6,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe } from "vitest";
 import UserDetails from "./UserDetails";
+import { MASKED_VALUE } from "@/constants";
 
 const unlockedUser = users.find((user) => user.enabled);
 
@@ -26,7 +27,7 @@ describe("user details", () => {
     const fieldsToCheck = [
       { label: "Username", value: user.username },
       { label: "Name", value: user?.name ?? <NoData /> },
-      { label: "Password", value: "****************" },
+      { label: "Password", value: MASKED_VALUE },
       { label: "Primary group", value: primaryGroup ?? <NoData /> },
       { label: "Additional groups", value: groupsData },
       { label: "Location", value: user?.location ?? <NoData /> },

@@ -12,11 +12,18 @@ import {
 } from "@/features/employees";
 import {
   getFeatures,
+  getRecoveryKeyRegenerationAttemptMessage,
+  isRecoveryKeyActivityInProgress,
   getStatusCellIconAndLabel,
+  GenerateRecoveryKeyModal,
   InstanceRemoveFromLandscapeModal,
+  RecoveryKeyStatus,
+  RegenerateRecoveryKeyModal,
+  useGetRecoveryKey,
   useRestartInstances,
   useSanitizeInstance,
   useShutDownInstances,
+  ViewRecoveryKeyModal,
 } from "@/features/instances";
 import {
   WslInstanceReinstallModal,
@@ -44,6 +51,7 @@ import {
   Icon,
   ICONS,
   Input,
+  Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
@@ -91,6 +99,15 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     { enabled: !!instance.employee_id },
   );
   const { restartInstances, isRestartingInstances } = useRestartInstances();
+  const { recoveryKey, recoveryKeyActivityStatus, isRecoveryKeyFetched } =
+    useGetRecoveryKey(instance.id);
+  const isRecoveryKeyGenerationActivityInProgress =
+    isRecoveryKeyActivityInProgress(recoveryKeyActivityStatus);
+  const recoveryKeyRegenerationAttemptMessage =
+    getRecoveryKeyRegenerationAttemptMessage(
+      recoveryKey,
+      recoveryKeyActivityStatus,
+    );
   const { getAccessGroupQuery } = useRoles();
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
@@ -131,6 +148,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     value: isSanitizeModalOpen,
     setTrue: openSanitizeModal,
     setFalse: closeSanitizeModal,
+  } = useBoolean();
+
+  const {
+    value: isViewRecoveryKeyModalOpen,
+    setTrue: openViewRecoveryKeyModal,
+    setFalse: closeViewRecoveryKeyModal,
+  } = useBoolean();
+
+  const {
+    value: isGenerateRecoveryKeyModalOpen,
+    setTrue: openGenerateRecoveryKeyModal,
+    setFalse: closeGenerateRecoveryKeyModal,
+  } = useBoolean();
+
+  const {
+    value: isRegenerateRecoveryKeyModalOpen,
+    setTrue: openRegenerateRecoveryKeyModal,
+    setFalse: closeRegenerateRecoveryKeyModal,
   } = useBoolean();
 
   const {
@@ -287,6 +322,21 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     ? getAccessGroupQueryResult.data
     : [];
 
+  const hasRecoveryKey = Boolean(recoveryKey);
+  const shouldShowRecoveryKeyWarningInLabel = Boolean(
+    recoveryKeyRegenerationAttemptMessage,
+  );
+  const shouldShowRecoveryKeyActions = isRecoveryKeyFetched;
+  const shouldShowGenerateRecoveryKey =
+    shouldShowRecoveryKeyActions &&
+    !hasRecoveryKey &&
+    !isRecoveryKeyGenerationActivityInProgress;
+  const shouldShowViewRecoveryKey =
+    shouldShowRecoveryKeyActions && hasRecoveryKey;
+  const shouldShowRegenerateRecoveryKey =
+    shouldShowRecoveryKeyActions &&
+    (hasRecoveryKey || isRecoveryKeyGenerationActivityInProgress);
+
   return (
     <>
       <HeaderActions
@@ -327,6 +377,20 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               excluded: !getFeatures(instance).scripts,
             },
             {
+              icon: "private-key",
+              label: "View recovery key",
+              onClick: openViewRecoveryKeyModal,
+              collapsed: true,
+              excluded: !shouldShowViewRecoveryKey,
+            },
+            {
+              icon: "plus",
+              label: "Generate recovery key",
+              onClick: openGenerateRecoveryKeyModal,
+              collapsed: true,
+              excluded: !shouldShowGenerateRecoveryKey,
+            },
+            {
               icon: ICONS.user,
               label: "Associate employee",
               onClick: openAssociateEmployeeForm,
@@ -361,6 +425,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               onClick: openUninstallModal,
               collapsed: true,
               excluded: !getFeatures(instance).uninstallation,
+            },
+            {
+              icon: "restart",
+              label: "Regenerate recovery key",
+              onClick: openRegenerateRecoveryKeyModal,
+              collapsed: true,
+              excluded: !shouldShowRegenerateRecoveryKey,
             },
             {
               icon: ICONS.delete,
@@ -440,6 +511,28 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
                 value={employee?.name}
               />
             )}
+            <InfoGrid.Item
+              label={
+                <>
+                  Recovery key
+                  {shouldShowRecoveryKeyWarningInLabel && (
+                    <Tooltip
+                      position="top-center"
+                      message={recoveryKeyRegenerationAttemptMessage}
+                      className={classes.recoveryKeyTooltip}
+                    >
+                      <Icon name="warning" aria-label="Recovery key warning" />
+                    </Tooltip>
+                  )}
+                </>
+              }
+              value={
+                <RecoveryKeyStatus
+                  instanceId={instance.id}
+                  showWarningTooltip={false}
+                />
+              }
+            />
           </InfoGrid>
         </Blocks.Item>
         <Blocks.Item title="Registration details">
@@ -636,6 +729,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           action cannot be undone. Please confirm your wish to proceed.
         </p>
       </TextConfirmationModal>
+
+      {isViewRecoveryKeyModalOpen && (
+        <ViewRecoveryKeyModal
+          instance={instance}
+          onClose={closeViewRecoveryKeyModal}
+        />
+      )}
+
+      {isGenerateRecoveryKeyModalOpen && (
+        <GenerateRecoveryKeyModal
+          instance={instance}
+          onClose={closeGenerateRecoveryKeyModal}
+        />
+      )}
+
+      {isRegenerateRecoveryKeyModalOpen && (
+        <RegenerateRecoveryKeyModal
+          instance={instance}
+          onClose={closeRegenerateRecoveryKeyModal}
+        />
+      )}
     </>
   );
 };

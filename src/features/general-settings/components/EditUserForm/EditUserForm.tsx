@@ -17,6 +17,7 @@ import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
 import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";
+import { MASKED_VALUE } from "@/constants";
 
 const ChangePasswordForm = lazy(async () => import("../ChangePasswordForm"));
 
@@ -152,7 +153,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
         <Input
           label="Current"
           type="password"
-          defaultValue="****************"
+          defaultValue={MASKED_VALUE}
           wrapperClassName={classes.passwordInputWrapper}
           disabled
           help={

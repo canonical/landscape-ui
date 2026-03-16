@@ -22,4 +22,9 @@ export { default as ActivitiesActions } from "./components/ActivitiesActions";
 export { default as ActivitiesEmptyState } from "./components/ActivitiesEmptyState";
 export { ACTIVITY_STATUSES } from "./constants";
 export { useActivities } from "./hooks";
-export type { Activity, ActivityCommon, GetActivitiesParams } from "./types";
+export type {
+  Activity,
+  ActivityCommon,
+  GetActivitiesParams,
+  ActivityStatus,
+} from "./types";
