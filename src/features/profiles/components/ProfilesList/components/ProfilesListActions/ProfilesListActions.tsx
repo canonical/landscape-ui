@@ -1,10 +1,13 @@
 import ListActions from "@/components/layout/ListActions";
-import type { FC } from "react";
+import { lazy, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { Profile } from "../../../../types";
-import RemoveProfileModal from "../../../RemoveProfileModal";
 import { useGetProfileActions } from "../../../../hooks";
 import type { ProfileTypes } from "../../../../helpers";
+
+const RemoveProfileModal = lazy(
+  async () => import("../../../RemoveProfileModal"),
+);
 
 interface PackageProfileListActionsProps {
   readonly profile: Profile;

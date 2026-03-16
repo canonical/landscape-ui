@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetRemovalProfile } from ".";
+import { useGetRemovalProfile } from "./useGetRemovalProfile";
 import type { RemovalProfile } from "../types";
 
 const useGetPageRemovalProfile = ():

@@ -5,7 +5,7 @@ import ProfileAssociatedInstancesLink from "../../../ProfileAssociatedInstancesL
 import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
 import type { Profile } from "../../../../types";
-import { useGetProfileAssociatedCount } from "../../../../hooks";
+import { useGetProfileAssociatedCount } from "../../../../hooks/useGetProfileAssociatedCount";
 
 interface ViewProfileAssociationBlockProps {
   readonly profile: Profile;

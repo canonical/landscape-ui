@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetPackageProfile } from ".";
+import { useGetPackageProfile } from "./useGetPackageProfile";
 import type { PackageProfile } from "../types";
 
 const useGetPagePackageProfile = ():

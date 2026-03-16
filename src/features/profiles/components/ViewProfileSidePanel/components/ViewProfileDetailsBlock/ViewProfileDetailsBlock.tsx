@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { lazy, type FC } from "react";
 import type { Profile } from "../../../../types";
 import {
   isRemovalProfile,
@@ -9,11 +9,26 @@ import {
 } from "../../../../helpers";
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import Blocks from "@/components/layout/Blocks";
-import { ViewRemovalProfileDetailsBlock } from "@/features/removal-profiles";
-import { ViewScriptProfileDetailsBlock } from "@/features/script-profiles";
-import { ViewSecurityProfileDetailsBlock } from "@/features/security-profiles";
-import { ViewUpgradeProfileDetailsBlock } from "@/features/upgrade-profiles";
-import { ViewWslProfileDetailsBlock } from "@/features/wsl-profiles";
+
+const ViewRemovalProfileDetailsBlock = lazy(
+  async () => import("@/features/removal-profiles/components/ViewRemovalProfileDetailsBlock"),
+);
+
+const ViewScriptProfileDetailsBlock = lazy(
+  async () => import("@/features/script-profiles/components/ViewScriptProfileDetailsBlock"),
+);
+
+const ViewSecurityProfileDetailsBlock = lazy(
+  async () => import("@/features/security-profiles/components/ViewSecurityProfileDetailsBlock"),
+);
+
+const ViewUpgradeProfileDetailsBlock = lazy(
+  async () => import("@/features/upgrade-profiles/components/ViewUpgradeProfileDetailsBlock"),
+);
+
+const ViewWslProfileDetailsBlock = lazy(
+  async () => import("@/features/wsl-profiles/components/ViewWslProfileDetailsBlock"),
+);
 
 interface ViewProfileDetailsBlockProps {
   readonly profile: Profile;

@@ -1,9 +1,12 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import type { Profile } from "../types";
-import ViewProfileSidePanel from "../components/ViewProfileSidePanel";
 import { type ProfileTypes } from "../helpers";
+
+const ViewProfileSidePanel = lazy(
+  async () => import("../components/ViewProfileSidePanel"),
+);
 
 export const useOpenViewProfileSidePanel = () => {
   const { setSidePanelContent } = useSidePanel(); 

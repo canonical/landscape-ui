@@ -1,10 +1,26 @@
 import { useGetScripts } from "@/features/scripts";
-import { type FC } from "react";
+import { lazy, type FC } from "react";
 import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
 import NoScriptsEmptyState from "../NoScriptsEmptyState";
-import { ProfilesContainer } from "@/features/profiles";
+import { ProfilesContainer, ProfileTypes } from "@/features/profiles";
+import { ProfilesProvider } from "@/context/profiles";
+import useProfiles from "@/hooks/useProfiles";
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+
+const ScriptProfileAddSidePanel = lazy(
+  () => import("../ScriptProfileAddSidePanel"),
+);
+
+const ScriptProfileEditSidePanel = lazy(
+  () => import("../ScriptProfileEditSidePanel"),
+);
 
 const ScriptProfilesTab: FC = () => {
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
+
   const {
     scriptsCount: activeScriptsCount,
     isScriptsLoading: isGettingActiveScripts,
@@ -31,26 +47,50 @@ const ScriptProfilesTab: FC = () => {
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
+  const { setIsProfileLimitReached } = useProfiles();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
+
   if (!isGettingActiveScripts && !activeScriptsCount) {
     return <NoScriptsEmptyState />;
   }
 
   const isScriptProfileLimitReached = !!scriptProfileLimits && !!activeScriptProfilesCount
     && activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles;
+  
+  setIsProfileLimitReached(isScriptProfileLimitReached);
 
   return (
-    <ProfilesContainer
-      type="script"
-      profiles={scriptProfiles}
-      profilesCount={scriptProfilesCount}
-      isPending={
-        isGettingActiveScripts ||
-        isGettingScriptProfiles ||
-        isGettingActiveScriptProfiles ||
-        isGettingScriptProfileLimits
-      }
-      isProfileLimitReached={isScriptProfileLimitReached}
-    />
+    <ProfilesProvider>
+      <ProfilesContainer
+        type={ProfileTypes.script}
+        profiles={scriptProfiles}
+        profilesCount={scriptProfilesCount}
+        isPending={
+          isGettingActiveScripts ||
+          isGettingScriptProfiles ||
+          isGettingActiveScriptProfiles ||
+          isGettingScriptProfileLimits
+        }
+      />
+
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <ScriptProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <ScriptProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </ProfilesProvider>
   );
 };
 

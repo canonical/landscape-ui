@@ -1,4 +1,4 @@
-import { useGetSecurityProfileAuditDownload } from "../api";
+import { useGetSecurityProfileAuditDownload } from "../api/useGetSecurityProfileAuditDownload";
 
 export const useSecurityProfileDownloadAudit = () => {
   const { getSecurityProfileAuditDownload } =

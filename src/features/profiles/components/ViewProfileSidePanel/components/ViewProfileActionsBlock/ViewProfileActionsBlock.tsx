@@ -1,13 +1,18 @@
-import { Button, Icon } from "@canonical/react-components";
-import { type FC } from "react";
+import { Button, Icon, Notification } from "@canonical/react-components";
+import { lazy, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import RemoveProfileModal from "../../../RemoveProfileModal";
 import type { Profile } from "../../../../types";
 import { ResponsiveButtons } from "@/components/ui";
 import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
-import { useGetProfileActions } from "../../../../hooks";
-import { hasExtraActions, type ProfileTypes } from "../../../../helpers";
+import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
+import { hasExtraActions, isProfileArchived, type ProfileTypes } from "../../../../helpers";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+
+const RemoveProfileModal = lazy(
+  async () => import("../../../RemoveProfileModal"),
+);
 
 interface ViewProfileActionsBlockProps {
   readonly profile: Profile;
@@ -28,6 +33,15 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
   const buttons = destructiveActions ? [...actions, ...destructiveActions] : actions;
   const isNegative = (action: Action) => action.appearance === "negative";  
 
+  if (isProfileArchived(profile)) {
+    const lastEdit = profile.last_edited_at ?? profile.modification_time;
+    return (
+      <Notification inline title="Profile archived:" severity="caution">
+        The profile was archived on{" "}
+        {moment(lastEdit ?? undefined).format(DISPLAY_DATE_TIME_FORMAT)}.
+      </Notification>
+    );
+  }
   return (
     <>
       <ResponsiveButtons

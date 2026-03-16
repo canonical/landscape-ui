@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetScriptProfile } from ".";
+import { useGetScriptProfile } from "./useGetScriptProfile";
 import type { ScriptProfile } from "../types";
 
 const useGetPageScriptProfile = ():

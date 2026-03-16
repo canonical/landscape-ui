@@ -1,6 +1,6 @@
-import type { Profile } from "@/features/profiles";
+import type { Profile } from "../../../../types";
 import ProfileAssociatedInstancesLink from "../../../ProfileAssociatedInstancesLink";
-import { useGetProfileAssociatedCount } from "../../../../hooks";
+import { useGetProfileAssociatedCount } from "../../../../hooks/useGetProfileAssociatedCount";
 import type { ProfileTypes } from "../../../../helpers";
 
 interface AssociatedInstancesCellProps {
