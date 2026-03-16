@@ -1,12 +1,12 @@
 import EmptyState from "@/components/layout/EmptyState";
 import type { FC } from "react";
 import AddProfileButton from "../AddProfileButton";
-import type { ProfileType } from "../../types";
 import { Link } from "@canonical/react-components";
 import { getLink, getMessage } from "./helpers";
+import type { ProfileTypes } from "../../helpers";
 
 interface ProfilesEmptyStateProps {
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
 
 const ProfilesEmptyState: FC<ProfilesEmptyStateProps> = ({ type }) => {

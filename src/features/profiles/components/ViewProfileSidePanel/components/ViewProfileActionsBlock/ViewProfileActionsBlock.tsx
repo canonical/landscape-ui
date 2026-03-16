@@ -2,16 +2,16 @@ import { Button, Icon } from "@canonical/react-components";
 import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import RemoveProfileModal from "../../../RemoveProfileModal";
-import type { Profile, ProfileType } from "../../../../types";
+import type { Profile } from "../../../../types";
 import { ResponsiveButtons } from "@/components/ui";
 import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
-import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
-import { isSecurityProfile } from "../../../../helpers";
+import { useGetProfileActions } from "../../../../hooks";
+import { hasExtraActions, type ProfileTypes } from "../../../../helpers";
 
 interface ViewProfileActionsBlockProps {
   readonly profile: Profile;
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
 
 const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
@@ -20,11 +20,11 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
 }) => {
   const {
     value: modalOpen,
-    setTrue: handleOpenModal,
-    setFalse: handleCloseModal,
+    setTrue: openModal,
+    setFalse: closeModal,
   } = useBoolean();
 
-  const { actions, destructiveActions } = useGetProfileActions({ profile, type, handleOpenModal });
+  const { actions, destructiveActions } = useGetProfileActions({ profile, type, openModal });
   const buttons = destructiveActions ? [...actions, ...destructiveActions] : actions;
   const isNegative = (action: Action) => action.appearance === "negative";  
 
@@ -45,11 +45,11 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
             <span className={isNegative(button) ? "u-text--negative" : ""}>{button.label}</span>
           </Button>
         ))}
-        collapseFrom={isSecurityProfile(profile) ? "xxl" : "xs"}
+        collapseFrom={hasExtraActions(type) ? "xxl" : "xs"}
       />
 
       <RemoveProfileModal
-        closeModal={handleCloseModal}
+        closeModal={closeModal}
         opened={modalOpen}
         profile={profile}
         type={type}

@@ -4,7 +4,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useMemo } from "react";
-import type { Profile, ProfileType } from "../../types";
+import type { Profile } from "../../types";
 import { createTablePropGetters } from "@/utils/table";
 import type { Column } from "react-table";
 import {
@@ -16,12 +16,12 @@ import {
   getSecurityColumns,
   getStatusColumn
 } from "./helpers";
-import { canArchiveProfile, hasApiSearch, hasDescription } from "../../helpers";
-import { useOpenViewProfileSidePanel } from "../../hooks/useOpenViewProfileSidePanel";
+import { canArchiveProfile, hasApiSearch, hasDescription, hasComplianceColumns, ProfileTypes } from "../../helpers";
+import { useOpenViewProfileSidePanel } from "../../hooks";
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
   
 const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
@@ -47,11 +47,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
   }, [profiles, search, type]);
 
   const columns = useMemo<Column<Profile>[]>(() => {
-    const handleNameClick = (profile: Profile) => {
-      openViewProfileSidePanel({ profile, type });
-    };
-
-    const { name, accessGroup, associated, description, actions } = getGeneralColumns(type, handleNameClick, getAccessGroupQueryResult);
+    const { name, accessGroup, associated, description, actions } = getGeneralColumns(type, openViewProfileSidePanel, getAccessGroupQueryResult);
     const cols = [name];
 
     if (canArchiveProfile(type)) {
@@ -60,23 +56,23 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
 
     cols.push(accessGroup, associated);
 
-    if (type === "package" || type === "wsl") {
-      cols.push(...getComplianceColumns(type));
+    if (hasComplianceColumns(type)) {
+      cols.push(...getComplianceColumns());
     }
 
-    if (type === "security") {
+    if (type === ProfileTypes.security) {
       cols.push(...getSecurityColumns());
     }
 
-    if (type === "script") {
+    if (type === ProfileTypes.script) {
       cols.push(...getScriptColumns());
     }
 
-    if (type === "reboot") {
+    if (type === ProfileTypes.reboot) {
       cols.push(...getRebootColumn());
     }
 
-    if (type === "removal") {
+    if (type === ProfileTypes.removal) {
       cols.push(...getRemovalColumn());
     }
 

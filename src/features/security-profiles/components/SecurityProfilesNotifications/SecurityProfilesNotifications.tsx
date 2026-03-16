@@ -1,6 +1,6 @@
 import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import { useGetActivities } from "@/features/activities";
-import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "@/features/security-profiles";
+import { SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../../constants";
 import { hasOneItem } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
@@ -10,7 +10,15 @@ import { useGetOverLimitSecurityProfiles } from "../../api";
 import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
 import { useOpenManageProfileSidePanel } from "@/features/profiles";
 
-const SecurityProfilesNotifications: FC = () => {
+interface SecurityProfilesNotificationsProps {
+  readonly isRetentionNotificationVisible: boolean;
+  readonly hideRetentionNotification: () => void;
+}
+
+const SecurityProfilesNotifications: FC<SecurityProfilesNotificationsProps> = ({
+  isRetentionNotificationVisible,
+  hideRetentionNotification,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
   const openManageProfileSidePanel = useOpenManageProfileSidePanel();
@@ -28,14 +36,6 @@ const SecurityProfilesNotifications: FC = () => {
     ),
   );
 
-  const isRetentionNotificationVisible = () => (
-    localStorage.getItem("_landscape_isSecurityProfileLimitNotificationVisible") === "true"
-  );
-
-  const hideRetentionNotification = () => {
-    localStorage.removeItem("_landscape_isSecurityProfileLimitNotificationVisible");
-  };
-
   const { activities } = useGetActivities(
     {
       query: `status:succeeded ${pendingReports
@@ -50,7 +50,7 @@ const SecurityProfilesNotifications: FC = () => {
 
   return (
     <>
-      {isRetentionNotificationVisible() && (
+      {isRetentionNotificationVisible && (
         <IgnorableNotifcation
           inline
           title="Audit retention policy:"
@@ -123,7 +123,7 @@ const SecurityProfilesNotifications: FC = () => {
           <Button
             type="button"
             appearance="link"
-            onClick={() => { openManageProfileSidePanel({ profile: overLimitSecurityProfiles[0], type: "security", action: "edit" }); }}
+            onClick={() => { openManageProfileSidePanel(overLimitSecurityProfiles[0], "edit"); }}
           >
             Edit profile
           </Button>

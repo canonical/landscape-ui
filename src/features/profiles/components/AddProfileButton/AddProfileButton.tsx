@@ -1,18 +1,19 @@
 import { Button, Icon } from "@canonical/react-components";
 import { type FC } from "react";
-import type { ProfileType } from "../../types";
-import { useOpenManageProfileSidePanel } from "../../hooks/useOpenManageProfileSidePanel";
+import useProfiles from "@/hooks/useProfiles"; 
+import usePageParams from "@/hooks/usePageParams";
+import type { ProfileTypes } from "../../helpers";
 
 interface AddProfileButtonProps {
-  readonly type: ProfileType;
-  readonly disabled?: boolean;
-  readonly isInsideScriptTab?: boolean;
+  readonly type: ProfileTypes;
+  readonly isInsideScriptHeader?: boolean;
 }
 
-const AddProfileButton: FC<AddProfileButtonProps> = ({ type, disabled = false, isInsideScriptTab = false }) => {
-  const openManageProfileSidePanel = useOpenManageProfileSidePanel();
+const AddProfileButton: FC<AddProfileButtonProps> = ({ type, isInsideScriptHeader = false }) => {
+  const { createPageParamsSetter } = usePageParams();
+  const { isProfileLimitReached } = useProfiles();
   
-  const settings = isInsideScriptTab ? {
+  const settings = isInsideScriptHeader ? {
     className: "u-no-margin--bottom",
     icon: <Icon name="plus" />,
     hasIcon: true,
@@ -26,9 +27,9 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({ type, disabled = false, i
       type="button"
       appearance={settings.appearance}
       className={settings.className}
-      onClick={() => { openManageProfileSidePanel({ type, action: "add" }); }}
+      onClick={createPageParamsSetter({ sidePath: ["add"] })}
       hasIcon={settings.hasIcon}
-      disabled={disabled}
+      disabled={isProfileLimitReached}
     >
       {settings.icon}
       <span>Add {settings.typeText} profile</span>

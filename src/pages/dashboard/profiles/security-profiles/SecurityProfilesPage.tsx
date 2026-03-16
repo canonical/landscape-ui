@@ -8,13 +8,65 @@ import {
   useIsSecurityProfilesLimitReached,
 } from "@/features/security-profiles";
 import usePageParams from "@/hooks/usePageParams";
-import type { FC } from "react";
+import { lazy, type FC } from "react";
+import useProfiles from "@/hooks/useProfiles";
+import { ProfilesProvider } from "@/context/profiles";
+import SidePanel from "@/components/layout/SidePanel";
+import { useBoolean } from "usehooks-ts";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import { ProfileTypes } from "@/features/profiles";
+
+const SecurityProfileAddSidePanel = lazy(() =>
+  import("@/features/security-profiles").then((module) => ({
+    default: module.SecurityProfileAddSidePanel,
+  })),
+);
+
+const SecurityProfileDownloadAuditSidePanel = lazy(() =>
+  import("@/features/security-profiles").then((module) => ({
+    default: module.SecurityProfileDownloadAuditSidePanel,
+  })),
+);
+
+const SecurityProfileDuplicateSidePanel = lazy(() =>
+  import("@/features/security-profiles").then((module) => ({
+    default: module.SecurityProfileDuplicateSidePanel,
+  })),
+);
+
+const SecurityProfileEditSidePanel = lazy(() =>
+  import("@/features/security-profiles").then((module) => ({
+    default: module.SecurityProfileEditSidePanel,
+  })),
+);
+
+const SecurityProfileRunFixSidePanel = lazy(() =>
+  import("@/features/security-profiles").then((module) => ({
+    default: module.SecurityProfileRunFixSidePanel,
+  })),
+);
 
 const SecurityProfilesPage: FC = () => {
-  const { currentPage, pageSize, search, status, passRateFrom, passRateTo } =
+  const { createPageParamsSetter, lastSidePathSegment, sidePath,
+    currentPage, pageSize, search, status, passRateFrom, passRateTo } =
     usePageParams();
+  const { setIsProfileLimitReached } = useProfiles();
+  const {
+    value: isRetentionNotificationVisible,
+    setTrue: showRetentionNotification,
+    setFalse: hideRetentionNotification,
+  } = useBoolean(false);
   
-  const profileLimitReached = useIsSecurityProfilesLimitReached();
+  const isSecurityProfileLimitReached = useIsSecurityProfilesLimitReached();
+  setIsProfileLimitReached(isSecurityProfileLimitReached);
+
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "download",
+    "duplicate",
+    "edit",
+    "run",
+  ]);
 
   const getStatus = () => {
     if (status === "all") {
@@ -40,31 +92,66 @@ const SecurityProfilesPage: FC = () => {
   });
 
   return (
-    <PageMain>
-      <PageHeader
-        title="Security profiles"
-        actions={securityProfilesCount ? [
-          <AddProfileButton
-            key="add-security-profile"
-            disabled={profileLimitReached}
-            type="security"
-          />
-        ] : undefined }
-      />
-
-      <PageContent hasTable>
-        {!isGettingSecurityProfiles && !!securityProfilesCount && (
-          <SecurityProfilesNotifications />
-        )}
-        <ProfilesContainer
-          type={"security"}
-          profiles={securityProfiles}
-          isPending={isGettingSecurityProfiles}
-          isProfileLimitReached={profileLimitReached}
-          profilesCount={securityProfilesCount}
+    <ProfilesProvider>
+      <PageMain>
+        <PageHeader
+          title="Security profiles"
+          actions={securityProfilesCount ? [
+            <AddProfileButton type={ProfileTypes.security} key="add-security-profile" />
+          ] : undefined }
         />
-      </PageContent>
-    </PageMain>
+
+        <PageContent hasTable>
+          {!isGettingSecurityProfiles && !!securityProfilesCount && (
+            <SecurityProfilesNotifications 
+            isRetentionNotificationVisible={isRetentionNotificationVisible}
+            hideRetentionNotification={hideRetentionNotification}
+          />
+          )}
+          <ProfilesContainer
+            type={ProfileTypes.security}
+            profiles={securityProfiles}
+            isPending={isGettingSecurityProfiles}
+            profilesCount={securityProfilesCount}
+          />
+        </PageContent>
+
+        <SidePanel
+          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+          isOpen={!!sidePath.length}
+        >
+          {lastSidePathSegment === "add" && (
+            <SidePanel.Suspense key="add">
+              <SecurityProfileAddSidePanel showRetentionNotification={showRetentionNotification} />
+            </SidePanel.Suspense>
+          )}
+
+          {lastSidePathSegment === "download" && (
+            <SidePanel.Suspense key="download">
+              <SecurityProfileDownloadAuditSidePanel />
+            </SidePanel.Suspense>
+          )}
+
+          {lastSidePathSegment === "duplicate" && (
+            <SidePanel.Suspense key="duplicate">
+              <SecurityProfileDuplicateSidePanel />
+            </SidePanel.Suspense>
+          )}
+        
+          {lastSidePathSegment === "edit" && (
+            <SidePanel.Suspense key="edit">
+              <SecurityProfileEditSidePanel />
+            </SidePanel.Suspense>
+          )}
+
+          {lastSidePathSegment === "run" && (
+            <SidePanel.Suspense key="run">
+              <SecurityProfileRunFixSidePanel />
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
+      </PageMain>
+    </ProfilesProvider>
   );
 };
 

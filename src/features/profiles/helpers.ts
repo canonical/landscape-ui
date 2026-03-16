@@ -6,8 +6,33 @@ import type { PackageProfile } from "../package-profiles";
 import type { UpgradeProfile } from "../upgrade-profiles";
 import type { SecurityProfile } from "../security-profiles";
 import type { RemovalProfile } from "../removal-profiles";
-import type { Profile, ProfileType } from "./types";
-  
+import type { Profile } from "./types";
+import { toCronPhrase } from "@/components/form/CronSchedule/components/CronSchedule/helpers";
+
+export enum ProfileTypes {
+  package = "package",
+  reboot = "reboot",
+  removal = "removal",
+  repository = "repository",
+  script = "script",
+  security = "security",
+  upgrade = "upgrade",
+  wsl = "WSL",
+}
+
+export const getTriggerText = (profile: ScriptProfile, long = false) => {
+  switch (profile.trigger.trigger_type) {
+    case "event": return "Post enrollment";
+    case "one_time": return "On a date";
+    case "recurring": {
+      if (long) {
+        return `Recurring, ${toCronPhrase(profile.trigger.interval)}`;
+      }
+      return "Recurring";
+    }
+  }
+};
+
 export function isScriptProfile(profile: Profile): profile is ScriptProfile {
   return 'script_id' in profile;
 }
@@ -40,27 +65,41 @@ export function isWslProfile(profile: Profile): profile is WslProfile {
   return 'image_name' in profile;
 }
 
-
 export const canDuplicateProfile = (profile: Profile): profile is RebootProfile | PackageProfile | SecurityProfile =>
   isRebootProfile(profile) || isPackageProfile(profile) || isSecurityProfile(profile);  
 
 export const hasComplianceData = (profile: Profile): profile is WslProfile | PackageProfile => 
   isWslProfile(profile) || isPackageProfile(profile);
 
+export const usesNameAsIdentifier = (profile: Profile): profile is WslProfile | PackageProfile | RepositoryProfile => 
+  isWslProfile(profile) || isPackageProfile(profile) || isRepositoryProfile(profile);
+
 export const hasLastRunData = (profile: Profile): profile is ScriptProfile | SecurityProfile =>
   isScriptProfile(profile) || isSecurityProfile(profile);
 
-export const hasSchedule = (profile: Profile): profile is RebootProfile | ScriptProfile | UpgradeProfile | SecurityProfile => 
-  isScriptProfile(profile) || isRebootProfile(profile) || isUpgradeProfile(profile) || isSecurityProfile(profile);
-
-export const hasDescription = (type: ProfileType) => 
-  type in ["repository", "wsl", "package"];
-
-export const canArchiveProfile = (type: ProfileType) =>
-  type === "security" || type === "script";
+export const hasAssociations = (profile: Profile) => 
+  !!profile.tags.length || profile.all_computers;
 
 export const isProfileArchived = (profile: Profile) =>
-  profile.status === 'archived' || profile.archived;
+  profile.status === 'archived' || !!profile.archived;
 
-export const hasApiSearch = (type: ProfileType) => 
-  type in ["script", "security", "wsl"];
+export const isPostEnrollmentScriptProfile = (profile: Profile) => 
+  isScriptProfile(profile) && profile.trigger.trigger_type === "event";
+
+export const hasSchedule = (type: ProfileTypes) => 
+  [ProfileTypes.script, ProfileTypes.reboot, ProfileTypes.upgrade, ProfileTypes.security].includes(type);
+
+export const hasDescription = (type: ProfileTypes) => 
+  [ProfileTypes.repository, ProfileTypes.wsl, ProfileTypes.package].includes(type);
+
+export const canArchiveProfile = (type: ProfileTypes) =>
+  [ProfileTypes.security, ProfileTypes.script].includes(type);
+
+export const hasExtraActions = (type: ProfileTypes) =>
+  [ProfileTypes.security, ProfileTypes.package].includes(type);
+
+export const hasApiSearch = (type: ProfileTypes) => 
+  [ProfileTypes.script, ProfileTypes.security, ProfileTypes.wsl].includes(type);
+
+export const hasComplianceColumns = (type: ProfileTypes) =>
+  [ProfileTypes.wsl, ProfileTypes.package].includes(type);

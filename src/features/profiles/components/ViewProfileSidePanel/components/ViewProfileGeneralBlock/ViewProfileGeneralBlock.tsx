@@ -3,13 +3,13 @@ import SidePanel from "@/components/layout/SidePanel";
 import useRoles from "@/hooks/useRoles";
 import { getTitleByName } from "@/utils/_helpers";
 import type { FC } from "react";
-import type { Profile, ProfileType } from "../../../../types";
-import { canArchiveProfile, hasDescription, isProfileArchived } from "../../../../helpers";
+import type { Profile } from "../../../../types";
+import { canArchiveProfile, hasDescription, isProfileArchived, type ProfileTypes } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 
 interface ViewProfileGeneralBlockProps {
   readonly profile: Profile;
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
 
 const ViewProfileGeneralBlock: FC<ViewProfileGeneralBlockProps> = ({

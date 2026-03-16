@@ -26,10 +26,7 @@ const ViewScriptProfileDetailsBlock: FC<ViewScriptProfileDetailsBlockProps> = ({
             >
               {script.title}
             </Link>
-          : <>
-            <span className="u-off-screen">Loading...</span>
-            <Spinner aria-hidden />
-          </>
+          : <Spinner />
         }
       />
 

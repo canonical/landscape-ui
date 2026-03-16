@@ -22,7 +22,7 @@ interface ViewProfileDetailsBlockProps {
 const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
   profile,
 }) => {
-  const getProfileDetailsBlock = (() => {
+  const profileDetailsBlock = (() => {
     if (isRemovalProfile(profile)) {
       return <ViewRemovalProfileDetailsBlock profile={profile} />;
     }
@@ -45,11 +45,11 @@ const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
     return;
   })();
 
-  if (getProfileDetailsBlock) {
+  if (profileDetailsBlock) {
     return (
       <Blocks.Item title="Details">
         <InfoGrid dense>
-          {getProfileDetailsBlock}
+          {profileDetailsBlock}
         </InfoGrid>
       </Blocks.Item>
     );

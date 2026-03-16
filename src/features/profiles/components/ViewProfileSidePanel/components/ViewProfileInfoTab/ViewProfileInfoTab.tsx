@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import type { Profile, ProfileType } from "../../../../types";
-import { hasSchedule } from "../../../../helpers";
+import type { Profile } from "../../../../types";
+import { hasSchedule, type ProfileTypes } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 import ViewProfileGeneralBlock from "../ViewProfileGeneralBlock";
 import ViewProfileAssociationBlock from "../ViewProfileAssociationBlock";
@@ -9,7 +9,7 @@ import ViewProfileDetailsBlock from "../ViewProfileDetailsBlock";
 
 interface ViewProfileInfoTabProps {
   readonly profile: Profile;
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
 
 const ViewProfileInfoTab: FC<ViewProfileInfoTabProps> = ({
@@ -18,15 +18,15 @@ const ViewProfileInfoTab: FC<ViewProfileInfoTabProps> = ({
 }) => {
   return (
     <Blocks>
-      <ViewProfileGeneralBlock profile={profile} type={type} />
+      <ViewProfileGeneralBlock type={type} profile={profile} />
 
       <ViewProfileDetailsBlock profile={profile} />
 
-      {hasSchedule(profile) &&
+      {hasSchedule(type) &&
         <ViewProfileScheduleBlock profile={profile} />
       }
 
-      <ViewProfileAssociationBlock profile={profile} type={type} />
+      <ViewProfileAssociationBlock type={type} profile={profile} />
     </Blocks>
   );
 };

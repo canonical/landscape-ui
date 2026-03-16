@@ -1,40 +1,22 @@
 import { Icon, ICONS, Tooltip } from "@canonical/react-components";
-import type { Profile, ProfileType } from "../../types";
-import { isPackageProfile, isProfileArchived, isRebootProfile, isRemovalProfile, isRepositoryProfile, isScriptProfile, isSecurityProfile, isUpgradeProfile, isWslProfile } from "../../helpers";
+import type { Profile } from "../../types";
+import { getTriggerText, isPackageProfile, isProfileArchived, isRebootProfile, isRemovalProfile, isScriptProfile, isSecurityProfile, isWslProfile, type ProfileTypes } from "../../helpers";
 import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import { getTitleByName } from "@/utils/_helpers";
 import { Button, Link } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
-import ProfilesListActions from "../ProfilesListActions";
+import ProfilesListActions from "./components/ProfilesListActions";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import type { AxiosResponse } from "axios";
 import type { ScriptProfile } from "@/features/script-profiles";
 import { type SecurityProfile, SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT, SECURITY_PROFILE_MODE_LABELS, SecurityProfileAuditPassRate, SecurityProfileLastRunWithSchedule } from "@/features/security-profiles";
+import AssociatedInstancesCell from "./components/AssociatedInstancesCell";
 
-export const getAssociatedCount = (profile: Profile) => {
-  if (isSecurityProfile(profile)) {
-    return profile.associated_instances;
-  }
-  if (isRepositoryProfile(profile)) {
-    return profile.pending_count;
-  }
-  if (isRemovalProfile(profile) || isUpgradeProfile(profile) || isScriptProfile(profile)) {
-    return profile.computers.num_associated_computers;
-  }
-  if (isPackageProfile(profile) || isWslProfile(profile)) {
-    return profile.computers.constrained.length;
-  }
-  if (isRebootProfile(profile)) {
-    return profile.num_computers;
-  }
-  return 0;
-};
-
-export const getStatus = (profile: ScriptProfile | SecurityProfile) => {
+const getStatus = (profile: ScriptProfile | SecurityProfile) => {
   if (isProfileArchived(profile)) {
     return { label: "Archived", icon: "status-queued-small" };
   }
@@ -62,36 +44,12 @@ export const getStatus = (profile: ScriptProfile | SecurityProfile) => {
   return { label: "Active", icon: "status-succeeded-small" };
 };
 
-export const getTriggerText = (profile: ScriptProfile) => {
-  switch (profile.trigger.trigger_type) {
-    case "event": {
-      switch (profile.trigger.event_type) {
-        case "post_enrollment": {
-          return "Post enrollment";
-        }
-
-        default: {
-          return;
-        }
-      }
-    }
-
-    case "one_time": {
-      return "On a date";
-    }
-
-    case "recurring": {
-      return `Recurring`;
-    }
-  }
-};
-
 type ColumnNames = "name" | "accessGroup" | "associated" | "description" | "actions";
 
 export const getGeneralColumns = (
-  type: ProfileType,
-  onNameClick: (profile: Profile) => void,
-  accessGroupData: AxiosResponse | undefined
+  type: ProfileTypes,
+  onNameClick: (type: ProfileTypes, profile: Profile) => void,
+  accessGroupData: AxiosResponse | undefined,
 ): Record<ColumnNames, Column<Profile>> => ({
   name: {
     accessor: "title",
@@ -105,7 +63,7 @@ export const getGeneralColumns = (
         type="button"
         appearance="link"
         className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-        onClick={() => { onNameClick(profile); }}
+        onClick={() => { onNameClick(type, profile); }}
         aria-label={`Open "${profile.title}" profile details`}
       >
         {profile.title}
@@ -130,11 +88,7 @@ export const getGeneralColumns = (
         `${profile.title} profile associated instances`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
-      <ProfileAssociatedInstancesLink
-        profile={profile}
-        count={getAssociatedCount(profile)}
-        query={`profile:${type}:${profile.id}`}
-      />
+      <AssociatedInstancesCell type={type} profile={profile} />
     ),
   },
   description: {
@@ -180,7 +134,7 @@ export const getStatusColumn = (): Column<Profile>[] => [
   },
 ];
 
-export const getComplianceColumns = (type: ProfileType): Column<Profile>[] => [
+export const getComplianceColumns = (): Column<Profile>[] => [
   {
     Header: "Compliant",
     meta: {
@@ -190,7 +144,7 @@ export const getComplianceColumns = (type: ProfileType): Column<Profile>[] => [
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isWslProfile(profile) || isPackageProfile(profile)) {
         const query = isWslProfile(profile)
-          ? `profile:${type}:${profile.id}:compliant`
+          ? `profile:wsl:${profile.id}:compliant`
           : `${profile.computers.constrained.filter(
               (id) => !profile.computers["non-compliant"].includes(id)
             ).map((id) => `id:${id}`).join(" OR ")}`;
@@ -215,7 +169,7 @@ export const getComplianceColumns = (type: ProfileType): Column<Profile>[] => [
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isWslProfile(profile) || isPackageProfile(profile)) {
         const query = isWslProfile(profile)
-          ? `profile:${type}:${profile.id}:non-compliant`
+          ? `profile:wsl:${profile.id}:noncompliant`
           : `${profile.computers["non-compliant"].map((id) => `id:${id}`).join(" OR ")}`;
 
         return <ProfileAssociatedInstancesLink
@@ -320,7 +274,7 @@ export const getRebootColumn = (): Column<Profile>[] => [
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isRebootProfile(profile)) {
-        return moment(profile.next_run ?? "").utc().format(DISPLAY_DATE_TIME_FORMAT);
+        return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
       }
     }
   },

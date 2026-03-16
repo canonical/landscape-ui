@@ -1,20 +1,9 @@
 export type ProfileActions = 
-  | "add"
   | "edit"
   | "edit-constraints"
   | "run"
   | "download"
   | "duplicate";
-
-export type ProfileType =
-  | "package"
-  | "reboot"
-  | "removal"
-  | "repository"
-  | "script"
-  | "security"
-  | "upgrade"
-  | "wsl";
 
 export interface ComplianceInstanceCounts {
   constrained: number[];
@@ -25,7 +14,7 @@ export interface ComplianceInstanceCounts {
 export interface Profile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;
-  description?: string;
+  description: string;
   id: number;
   name: string;
   tags: string[];

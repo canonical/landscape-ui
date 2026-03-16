@@ -3,10 +3,10 @@ import StaticLink from "@/components/layout/StaticLink";
 import { WslProfileNonCompliantInstancesList } from "@/features/wsl-profiles";
 import { ROUTES } from "@/libs/routes";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import { Button } from "@canonical/react-components";
+import { Button, Spinner } from "@canonical/react-components";
 import { Suspense, type FC } from "react";
 import type { Profile } from "../..";
-import { isScriptProfile, isWslProfile } from "../../helpers";
+import { hasAssociations, isPostEnrollmentScriptProfile, isWslProfile } from "../../helpers";
 import useSidePanel from "@/hooks/useSidePanel";
 import NoData from "@/components/layout/NoData";
 
@@ -14,17 +14,24 @@ interface ProfileAssociatedInstancesLinkProps {
   readonly count: number;
   readonly profile: Profile;
   readonly query: string;
+  readonly isPending?: boolean;
+  readonly isGeneralAssociation?: boolean;
 }
 
 const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = ({ 
   count,
   profile,
   query,
+  isPending = false,
+  isGeneralAssociation = false,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const hasNoAssociations = (!profile.tags.length && !profile.all_computers)
-    || (isScriptProfile(profile) && profile.trigger?.trigger_type === "event");
+  if (isPending) {
+    return <Spinner />;
+  }
+
+  const hasNoAssociations = !hasAssociations(profile) || isPostEnrollmentScriptProfile(profile);
 
   if (hasNoAssociations) {
     return <NoData />;
@@ -34,9 +41,13 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
     return <>0 instances</>;
   }
 
-  const text = pluralizeWithCount(count, "instance");
+  const text = isGeneralAssociation && profile.all_computers 
+    ? "All instances" 
+    : pluralizeWithCount(count, "instance");
 
-  if (isWslProfile(profile) && query.endsWith(":non-compliant")) {
+  const formattedQuery = query.startsWith("profile:") ? query.toLowerCase() : query;
+
+  if (isWslProfile(profile) && query.endsWith(":noncompliant")) {
     return (
       <Button
         className="u-no-padding--top u-no-margin--bottom"
@@ -58,7 +69,7 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
   }
 
   return (
-    <StaticLink to={ROUTES.instances.root({ query: query })}>
+    <StaticLink to={ROUTES.instances.root({ query: formattedQuery })}>
       {text}
     </StaticLink>
   );

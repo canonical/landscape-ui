@@ -1,13 +1,14 @@
 import ListActions from "@/components/layout/ListActions";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import type { Profile, ProfileType } from "../../types";
-import RemoveProfileModal from "../RemoveProfileModal";
-import { useGetProfileActions } from "../../hooks/useGetProfileActions";
+import type { Profile } from "../../../../types";
+import RemoveProfileModal from "../../../RemoveProfileModal";
+import { useGetProfileActions } from "../../../../hooks";
+import type { ProfileTypes } from "../../../../helpers";
 
 interface PackageProfileListActionsProps {
   readonly profile: Profile;
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
 
 const ProfileListActions: FC<PackageProfileListActionsProps> = ({
@@ -24,7 +25,7 @@ const ProfileListActions: FC<PackageProfileListActionsProps> = ({
     viewAction,
     actions,
     destructiveActions
-  } = useGetProfileActions({ profile, type, handleOpenModal: openModal });
+  } = useGetProfileActions({ profile, type, openModal });
 
   return (
     <>

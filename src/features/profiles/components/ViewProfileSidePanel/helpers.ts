@@ -1,4 +1,4 @@
-import type { ProfileType } from "../../types";
+import { ProfileTypes } from "../../helpers";
 
 export type TabTypes = 
   | "info"
@@ -7,33 +7,32 @@ export type TabTypes =
   | "pockets"
   | "apt-sources"
 
-export const getTabs = (type: ProfileType) => {
+export const getTabs = (type: ProfileTypes) => {
   const tabs: { label: string; id: TabTypes }[] = [{
     label: "Info",
     id: "info",
   }];
 
-  if (type === "script") {
+  if (type === ProfileTypes.script) {
     tabs.push({
       label: "Activity history",
       id: "activity-history",
     });
-  } else if (type === "package") {
+  } else if (type === ProfileTypes.package) {
     tabs.push({
       label: "Package constraints",
       id: "package-constraints",
     });
-  } else if (type === "repository") {
-    tabs.push(
-      {
-        label: "Pockets",
-        id: "pockets",
-      },
-      {
-        label: "APT sources",
-        id: "apt-sources",
-      }
-    );
+  } else if (type === ProfileTypes.repository) {
+    tabs.push({
+      label: "Pockets",
+      id: "pockets",
+    },
+    {
+      label: "APT sources",
+      id: "apt-sources",
+    });
   }
+
   return tabs;
 };

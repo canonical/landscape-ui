@@ -1,33 +1,34 @@
 import type { Action } from "@/types/Action";
 import { ICONS } from "@canonical/react-components";
-import { useOpenManageProfileSidePanel } from "./useOpenManageProfileSidePanel";
-import { isSecurityProfile, canDuplicateProfile, canArchiveProfile, isProfileArchived } from "../helpers";
-import type { Profile, ProfileType } from "../types";
+import { isSecurityProfile, isPackageProfile, canDuplicateProfile, canArchiveProfile, isProfileArchived, type ProfileTypes } from "../helpers";
 import useDebug from "@/hooks/useDebug";
 import { useNavigate } from "react-router";
 import useNotify from "@/hooks/useNotify";
-import { useIsSecurityProfilesLimitReached, useRunSecurityProfile } from "@/features/security-profiles";
+import { useRunSecurityProfile } from "@/features/security-profiles";
 import { ROUTES } from "@/libs/routes";
-import usePageParams from "@/hooks/usePageParams/usePageParams";
+import { useOpenManageProfileSidePanel } from "./useOpenManageProfileSidePanel";
 import { useOpenViewProfileSidePanel } from "./useOpenViewProfileSidePanel";
+import type { SecurityProfileMode } from "@/features/security-profiles";
+import useProfiles from "@/hooks/useProfiles";
+import type { Profile } from "../types";
 
 interface UseGetProfileActionsProps {
-  profile: Profile;
-  type: ProfileType;
-  handleOpenModal: () => void;
+  readonly profile: Profile;
+  readonly type: ProfileTypes;
+  readonly openModal: () => void;
+  // readonly isInsideSidePanel?: boolean;
 }
 
-export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetProfileActionsProps) => {
-  const { createPageParamsSetter } = usePageParams();
+export const useGetProfileActions = ({ profile, type, openModal }: UseGetProfileActionsProps) => {
   const openManageProfileSidePanel = useOpenManageProfileSidePanel();
   const openViewProfileSidePanel = useOpenViewProfileSidePanel();
   const { runSecurityProfile } = useRunSecurityProfile();
-  const profileLimitReached = useIsSecurityProfilesLimitReached();
+  const { isProfileLimitReached } = useProfiles();
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
 
-  const getNotificationMessage = (mode: string) => {
+  const getNotificationMessage = (mode: SecurityProfileMode) => {
     switch (mode) {
       case "audit-fix-restart":
         return "Applying remediation fixes, restarting associated instances, and generating an audit have been queued in Activities.";
@@ -38,29 +39,23 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
     }
   };
 
-  const handleRunSecurityProfile = async (mode: "audit" | "audit-fix" | "audit-fix-restart") => {
+  const handleRunSecurityProfile = async (mode: SecurityProfileMode) => {
     try {
       const { data: activity } = await runSecurityProfile({ id: profile.id });
-
-      createPageParamsSetter({ sidePath: [], profile: "" });
 
       const message = getNotificationMessage(mode);
 
       notify.success({
         title: `You have successfully initiated run of the ${profile.title} security profile`,
         message,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => {
-              navigate(
-                ROUTES.activities.root({
-                  query: `parent-id:${activity.id}`,
-                }),
-              );
-            },
+        actions: [{
+          label: "View details",
+          onClick: () => {
+            navigate(ROUTES.activities.root({
+              query: `parent-id:${activity.id}`,
+            }));
           },
-        ],
+        }],
       });
     } catch (error) {
       debug(error);
@@ -71,24 +66,24 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
     icon: "show",
     label: "View details",
     "aria-label": `View ${profile.title} ${type} profile details`,
-    onClick: () => { openViewProfileSidePanel({ profile, type }); },
+    onClick: () => { openViewProfileSidePanel(type, profile); },
   };
 
   const actions: Action[] = [{
     icon: "edit",
     label: "Edit",
     "aria-label": `Edit ${profile.title} ${type} profile`,
-    onClick: () => { openManageProfileSidePanel({ profile, type, action: "edit" }); },
+    onClick: () => { openManageProfileSidePanel(profile, "edit"); },
   }];
   
-    // if (isPackageProfile(profile)) {
-    //   actions.push({
-    //     icon: "edit",
-    //     label: "Edit package constraints",
-    //     "aria-label": `Edit ${profile.title} profile package constraints`,
-    //     onClick: () => { openManageProfileForm({ profile, type, action: "edit-constraints" }); },
-    //   });
-    // }
+    if (isPackageProfile(profile)) {
+      actions.push({
+        icon: "edit",
+        label: "Edit package constraints",
+        "aria-label": `Edit ${profile.title} profile package constraints`,
+        onClick: () => { openManageProfileSidePanel(profile, "edit-constraints"); },
+      });
+    }
   
     if (isSecurityProfile(profile)) {
       actions.push(
@@ -96,18 +91,18 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
           icon: "begin-downloading",
           label: "Download audit",
           "aria-label": `Download "${profile.title}" security profile audit`,
-          onClick: () => { openManageProfileSidePanel({ profile, type, action: "download" }); },
+          onClick: () => { openManageProfileSidePanel(profile, "download"); },
         },
         {
           icon: "play",
           label: "Run",
           "aria-label": `Run ${profile.title} security profile`,
           onClick: async () => {
-            if (profile.mode.includes("fix")) {
+            if (!profile.mode.includes("fix")) {
               await handleRunSecurityProfile(profile.mode);
               return;
             }
-            openManageProfileSidePanel({ profile, type, action: "run" });
+            openManageProfileSidePanel(profile, "run");
           },
           disabled: !profile.associated_instances,
         }
@@ -119,8 +114,8 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
         icon: "canvas",
         label: "Duplicate",
         "aria-label": `Duplicate ${profile.title} ${type} profile`,
-        onClick: () => { openManageProfileSidePanel({ profile, type, action: "duplicate" }); },
-        disabled: profileLimitReached,
+        onClick: () => { openManageProfileSidePanel(profile, "duplicate"); },
+        disabled: isProfileLimitReached,
       });
     }
 
@@ -140,13 +135,13 @@ export const useGetProfileActions = ({ profile, type, handleOpenModal }: UseGetP
         icon: "archive",
         label: "Archive",
         "aria-label": `Archive ${profile.title} ${type} profile`,
-        onClick: handleOpenModal,
+        onClick: openModal,
         appearance: "negative",
       } : {
         icon: ICONS.delete,
         label: "Remove",
         "aria-label": `Remove ${profile.title} ${type} profile`,
-        onClick: handleOpenModal,
+        onClick: openModal,
         appearance: "negative",
       };
 

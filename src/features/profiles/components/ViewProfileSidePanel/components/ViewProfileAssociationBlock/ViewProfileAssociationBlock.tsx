@@ -1,22 +1,22 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import type { Profile, ProfileType } from "../../../../types";
-import { hasComplianceData } from "../../../../helpers";
+import { hasAssociations, hasComplianceData, type ProfileTypes } from "../../../../helpers";
 import ProfileAssociatedInstancesLink from "../../../ProfileAssociatedInstancesLink";
 import Blocks from "@/components/layout/Blocks";
-import { getAssociationData } from "./helpers";
-import Chip from "@/components/layout/Chip/Chip";
+import Chip from "@/components/layout/Chip";
+import type { Profile } from "../../../../types";
+import { useGetProfileAssociatedCount } from "../../../../hooks";
 
 interface ViewProfileAssociationBlockProps {
   readonly profile: Profile;
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
 }
 
 const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   profile,
   type,
 }) => {
-  const associationData = getAssociationData(profile);
+  const { associatedCount, isGettingInstances } = useGetProfileAssociatedCount(profile);
 
   return (
     <Blocks.Item title="Association">
@@ -24,17 +24,19 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
         <InfoGrid.Item
           label="Associated Instances"
           large
-          value={!profile.tags.length && !profile.all_computers
-            ? <p>This profile has not yet been associated with any instances.</p>
+          value={!hasAssociations(profile)
+            ? <span>This profile has not yet been associated with any instances.</span>
             : <ProfileAssociatedInstancesLink
-              profile={profile}
-              count={associationData}
-              query={`${type}:${profile.id}`}
-            />
+                profile={profile}
+                count={associatedCount}
+                query={`profile:${type}:${profile.id}`}
+                isPending={isGettingInstances}
+                isGeneralAssociation={true}
+              />
           }
         />
 
-        {hasComplianceData(profile) &&
+        {hasAssociations(profile) && hasComplianceData(profile) &&
           <>
             <InfoGrid.Item
               label="Compliant"
@@ -46,6 +48,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
                     profile.computers?.["non-compliant"].length
                   }
                   query={`${type}:${profile.id}:compliant`}
+                  isPending={isGettingInstances}
                 />
               }
             />
@@ -57,6 +60,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
                   profile={profile}
                   count={profile.computers["non-compliant"].length}
                   query={`${type}:${profile.id}:noncompliant`}
+                  isPending={isGettingInstances}
                 />
               }
             />

@@ -3,7 +3,7 @@ import { createFormik } from "@/tests/formik";
 import { screen } from "@testing-library/react";
 import { describe, it } from "vitest";
 import type { RepositoryProfileFormValues } from "../../types";
-import { INITIAL_VALUES } from "../RepositoryProfileForm/constants";
+import { INITIAL_VALUES } from "../RepositoryProfileManageSidePanel/constants";
 import RepositoryProfileFormDetailsPanel from "./RepositoryProfileFormDetailsPanel";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 

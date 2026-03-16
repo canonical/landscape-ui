@@ -13,7 +13,13 @@ import useSecurityProfileForm from "../../hooks/useSecurityProfileForm";
 import classes from "./SecurityProfileAddSidePanel.module.scss";
 import type { StepIndex } from "./types";
 
-const SecurityProfileAddSidePanel: FC = () => {
+interface SecurityProfileAddSidePanelProps {
+  readonly showRetentionNotification: () => void;
+}
+
+const SecurityProfileAddSidePanel: FC<SecurityProfileAddSidePanelProps> = ({
+  showRetentionNotification,
+}) => {
   const { notify } = useNotify();
   const { createPageParamsSetter } = usePageParams();
 
@@ -61,7 +67,7 @@ const SecurityProfileAddSidePanel: FC = () => {
     },
     onSuccess: (values) => {
       notifyCreation(values, notify);
-      localStorage.setItem("_landscape_isSecurityProfileLimitNotificationVisible", "true");
+      showRetentionNotification();
     },
   });
 

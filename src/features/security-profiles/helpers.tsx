@@ -62,7 +62,7 @@ export const getTailoringFile = (profile: SecurityProfile) => {
   );
 };
 
-export const getSchedule = (profile: SecurityProfile) => {
+export const getSecuritySchedule = (profile: SecurityProfile, short = false) => {
   const schedule = Object.fromEntries(
     profile.schedule.split(";").map((part) => part.split("=")),
   );
@@ -71,6 +71,10 @@ export const getSchedule = (profile: SecurityProfile) => {
 
   if (schedule.COUNT == 1) {
     return "On a date";
+  }
+
+  if (short) {
+    return "Recurring";
   }
 
   let scheduleText = "Recurring, every ";
@@ -146,7 +150,7 @@ export const getSchedule = (profile: SecurityProfile) => {
   }
 
   if (schedule.UNTIL) {
-    scheduleText += ` until ${moment(schedule.UNTIL).format(DISPLAY_DATE_TIME_FORMAT)}`;
+    scheduleText += ` until ${moment(schedule.UNTIL).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`;
   }
 
   return scheduleText;

@@ -1,16 +1,16 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import type { FC } from "react";
-import type { Profile, ProfileType } from "../../types";
+import type { Profile } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { capitalize } from "@/utils/_helpers";
 import { getModalMessage, getNotificationMessage } from "./helpers";
-import { canArchiveProfile } from "../../helpers";
+import { canArchiveProfile, type ProfileTypes } from "../../helpers";
 import { useRemoveProfile } from "../../api/useRemoveProfile";
 
 interface RemoveProfileModalProps {
   readonly profile: Profile;
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
   readonly opened: boolean;
   readonly closeModal: () => void;
 }

@@ -4,26 +4,26 @@ import { type FC } from "react";
 import ProfilesHeader from "../ProfilesHeader";
 import ProfilesList from "../ProfilesList";
 import ProfilesEmptyState from "../ProfilesEmptyState";
-import type { Profile, ProfileType } from "../../types";
+import type { Profile } from "../../types";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { Notification } from "@canonical/react-components";
-import { canArchiveProfile } from "../../helpers";
+import { canArchiveProfile, type ProfileTypes } from "../../helpers";
 import { useBoolean } from "usehooks-ts";
+import useProfiles from "@/hooks/useProfiles";
 
 interface ProfilesContainerProps {
-  readonly type: ProfileType;
+  readonly type: ProfileTypes;
   readonly profiles: Profile[];
   readonly isPending: boolean;
   readonly profilesCount?: number;
-  readonly isProfileLimitReached?: boolean;
 }
 const ProfilesContainer: FC<ProfilesContainerProps> = ({
   type,
   profiles,
   isPending,
-  isProfileLimitReached,
   profilesCount,
 }) => {
+  const { isProfileLimitReached } = useProfiles();
   const { search } = usePageParams();
   const {
     value: isNotificationVisible,
@@ -42,7 +42,7 @@ const ProfilesContainer: FC<ProfilesContainerProps> = ({
 
   return (
     <>
-      <ProfilesHeader type={type} isProfileLimitReached={isProfileLimitReached}/>
+      <ProfilesHeader type={type} />
       {isNotificationVisible && isProfileLimitReached && (
         <Notification
           severity="caution"

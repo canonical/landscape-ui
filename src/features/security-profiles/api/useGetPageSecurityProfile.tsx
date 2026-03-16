@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetSecurityProfile } from ".";
+import { useGetSecurityProfile } from "./useGetSecurityProfile";
 import type { SecurityProfile } from "../types";
 
 const useGetPageSecurityProfile = ():
