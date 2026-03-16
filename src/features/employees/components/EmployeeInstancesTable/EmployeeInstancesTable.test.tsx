@@ -2,8 +2,12 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import EmployeeInstancesTable from "./EmployeeInstancesTable";
-import { instances } from "@/tests/mocks/instance";
+import {
+  instanceFailedActivityWithKey,
+  instances,
+} from "@/tests/mocks/instance";
 import { EMPTY_STATE } from "./constants";
+import { MASKED_VALUE } from "@/constants";
 
 describe("EmployeeInstancesTable", () => {
   it("renders the heading and table when instances are provided", () => {
@@ -37,10 +41,38 @@ describe("EmployeeInstancesTable", () => {
       });
       expect(statusCell).toBeInTheDocument();
 
+      const recoveryKeyCell = within(row).getByRole("cell", {
+        name: /recovery key/i,
+      });
+      expect(recoveryKeyCell).toBeInTheDocument();
+
       expect(
         within(row).getByLabelText(`${instance.title} profile actions`),
       ).toBeInTheDocument();
     });
+  });
+
+  it("shows inline recovery key warning indicator for failed activity with key", async () => {
+    renderWithProviders(<EmployeeInstancesTable instances={instances} />);
+
+    const table = screen.getByRole("table");
+    const rows = within(table).getAllByRole("row");
+    const tableRow = rows.find((row) =>
+      within(row).queryByRole("link", {
+        name: instanceFailedActivityWithKey.title,
+      }),
+    );
+
+    assert(tableRow);
+
+    const recoveryKeyCell = within(tableRow).getByRole("cell", {
+      name: /recovery key/i,
+    });
+
+    expect(
+      await within(recoveryKeyCell).findByLabelText("Recovery key warning"),
+    ).toBeInTheDocument();
+    expect(within(recoveryKeyCell).getByText(MASKED_VALUE)).toBeInTheDocument();
   });
 
   it("renders the EmptyState when instances is null", () => {

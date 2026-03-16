@@ -1,10 +1,18 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { MASKED_VALUE } from "@/constants";
 import type { AuthContextProps } from "@/context/auth";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import { expectLoadingState, setScreenSize } from "@/tests/helpers";
 import { authUser } from "@/tests/mocks/auth";
-import { instances } from "@/tests/mocks/instance";
+import {
+  instances,
+  instanceActivityNoKey,
+  instanceActivityWithKey,
+  instanceFailedActivityWithKey,
+  instanceNoActivityNoKey,
+  instanceNoActivityWithKey,
+} from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import type { FeatureKey } from "@/types/FeatureKey";
 import type { Instance } from "@/types/Instance";
@@ -30,6 +38,8 @@ const authProps: AuthContextProps = {
 vi.mock("@/hooks/useAuth");
 
 describe("InfoPanel", () => {
+  const user = userEvent.setup();
+
   describe("Basic", () => {
     beforeEach(async () => {
       vi.mocked(useAuth).mockReturnValue(authProps);
@@ -163,6 +173,170 @@ describe("InfoPanel", () => {
       });
 
       expect(disassociateEmployeeButton).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Recovery key buttons", () => {
+    describe("View recovery key button", () => {
+      it("should render 'View recovery key' button if instance has recovery key", async () => {
+        renderWithProviders(<InfoPanel instance={instanceActivityWithKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+
+        const viewKeyButton = screen.getByRole("button", {
+          name: /view recovery key/i,
+        });
+
+        expect(viewKeyButton).toBeInTheDocument();
+
+        await user.click(viewKeyButton);
+        expect(
+          await screen.findByRole("heading", {
+            name: `View recovery key for "${instanceActivityWithKey.title}"`,
+          }),
+        ).toBeVisible();
+      });
+
+      it("should not render 'View recovery key' button if instance does not have recovery key", async () => {
+        renderWithProviders(<InfoPanel instance={instanceActivityNoKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+        const viewKeyButton = screen.queryByRole("button", {
+          name: /view recovery key/i,
+        });
+
+        expect(viewKeyButton).not.toBeInTheDocument();
+      });
+    });
+
+    describe("Generate recovery key button", () => {
+      it("should render 'Generate recovery key' button if instance does not have recovery key", async () => {
+        renderWithProviders(<InfoPanel instance={instanceNoActivityNoKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+
+        const generateKeyButton = screen.getByRole("button", {
+          name: "Generate recovery key",
+        });
+
+        expect(generateKeyButton).toBeInTheDocument();
+
+        await user.click(generateKeyButton);
+        expect(
+          await screen.findByRole("heading", {
+            name: `Generate recovery key for "${instanceNoActivityNoKey.title}"`,
+          }),
+        ).toBeVisible();
+      });
+
+      it("should not render 'Generate recovery key' button if instance has recovery key", async () => {
+        renderWithProviders(<InfoPanel instance={instanceNoActivityWithKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+        const generateKeyButton = screen.queryByRole("button", {
+          name: "Generate recovery key",
+        });
+
+        expect(generateKeyButton).not.toBeInTheDocument();
+      });
+    });
+
+    describe("Regenerate recovery key button", () => {
+      it("should render 'Regenerate recovery key' button if instance has recovery key", async () => {
+        renderWithProviders(<InfoPanel instance={instanceActivityWithKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+
+        const regenerateKeyButton = screen.getByRole("button", {
+          name: "Regenerate recovery key",
+        });
+
+        expect(regenerateKeyButton).toBeInTheDocument();
+
+        await user.click(regenerateKeyButton);
+        expect(
+          await screen.findByRole("heading", {
+            name: `Regenerate recovery key for "${instanceActivityWithKey.title}"`,
+          }),
+        ).toBeVisible();
+      });
+
+      it("should not render 'Regenerate recovery key' button if instance does not have recovery key", async () => {
+        renderWithProviders(<InfoPanel instance={instanceNoActivityNoKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+        const regenerateKeyButton = screen.queryByRole("button", {
+          name: "Regenerate recovery key",
+        });
+
+        expect(regenerateKeyButton).not.toBeInTheDocument();
+      });
+
+      it("should render 'Regenerate recovery key' button if instance has no recovery key but has an activity", async () => {
+        renderWithProviders(<InfoPanel instance={instanceActivityNoKey} />);
+
+        await expectLoadingState();
+        await user.click(
+          screen.getByRole("button", {
+            name: "More actions",
+          }),
+        );
+
+        const regenerateKeyButton = screen.getByRole("button", {
+          name: "Regenerate recovery key",
+        });
+
+        expect(regenerateKeyButton).toBeInTheDocument();
+      });
+    });
+
+    it("shows recovery key warning in label when latest regeneration activity failed and key exists", async () => {
+      renderWithProviders(
+        <InfoPanel instance={instanceFailedActivityWithKey} />,
+      );
+
+      await expectLoadingState();
+
+      const warningIcon = screen.getByLabelText("Recovery key warning");
+      await user.hover(warningIcon);
+
+      expect(
+        await screen.findByText(
+          "The last attempt to regenerate this key failed.",
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText(MASKED_VALUE)).toBeInTheDocument();
+      expect(screen.queryByText(/activity:/i)).not.toBeInTheDocument();
     });
   });
 });

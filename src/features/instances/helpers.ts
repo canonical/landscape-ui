@@ -1,5 +1,45 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import type { SecurityProfile } from "../security-profiles";
+import type { RecoveryKeyActivityStatus } from "./types/RecoveryKey";
+
+export const isRecoveryKeyActivityFailedOrCanceled = (
+  activityStatus?: RecoveryKeyActivityStatus | null,
+): boolean => {
+  return Boolean(
+    activityStatus && ["failed", "canceled"].includes(activityStatus),
+  );
+};
+
+export const isRecoveryKeyActivityInProgress = (
+  activityStatus?: RecoveryKeyActivityStatus | null,
+): boolean => {
+  return Boolean(
+    activityStatus && !isRecoveryKeyActivityFailedOrCanceled(activityStatus),
+  );
+};
+
+export const shouldShowRecoveryKeyActivityStatus = (
+  activityStatus?: RecoveryKeyActivityStatus | null,
+): boolean => {
+  return Boolean(
+    activityStatus && !isRecoveryKeyActivityFailedOrCanceled(activityStatus),
+  );
+};
+
+export const getRecoveryKeyRegenerationAttemptMessage = (
+  recoveryKey: string | null = null,
+  activityStatus: RecoveryKeyActivityStatus,
+): string | null => {
+  const shouldShowRecoveryKeyRegenerationAttemptMessage = Boolean(
+    recoveryKey && isRecoveryKeyActivityFailedOrCanceled(activityStatus),
+  );
+
+  if (!shouldShowRecoveryKeyRegenerationAttemptMessage || !activityStatus) {
+    return null;
+  }
+
+  return `The last attempt to regenerate this key ${activityStatus === "failed" ? "failed" : "was canceled"}.`;
+};
 
 export function getFeatures(instance: InstanceWithoutRelation) {
   const isUbuntu = instance.distribution_info?.distributor === "Ubuntu";
