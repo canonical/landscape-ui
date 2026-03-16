@@ -36,29 +36,27 @@ const ViewRepositoryProfilePocketsTab: FC<
       {!distributions.length ? (
         <p>No pockets found for this profile.</p>
       ) : (
-        distributions.map(
-          ({ name: distributionName, series }) => (
-            <Row key={distributionName} className={classes.bordered}>
-              <Col small={1} medium={2} size={3}>
-                {distributionName}
-              </Col>
-              <Col small={3} medium={4} size={9}>
-                  {series.map(({ name: seriesName, pockets }) => (
-                    <Row key={seriesName} className={classes.bordered}>
-                      <Col small={1} medium={2} size={4}>
-                        {seriesName}
-                      </Col>
-                      <Col small={2} medium={2} size={5}>
-                        {pockets.map(
-                          ({ name: pocketName }) => (pocketName)
-                        ).join(", ")}
-                      </Col>
-                    </Row>
-                  ))}
-              </Col>
-            </Row>
-          ),
-        )
+        distributions.map(({ name: distributionName, series }) => (
+          <Row key={distributionName} className={classes.bordered}>
+            <Col small={1} medium={2} size={3}>
+              {distributionName}
+            </Col>
+            <Col small={3} medium={4} size={9}>
+              {series.map(({ name: seriesName, pockets }) => (
+                <Row key={seriesName} className={classes.bordered}>
+                  <Col small={1} medium={2} size={4}>
+                    {seriesName}
+                  </Col>
+                  <Col small={2} medium={2} size={5}>
+                    {pockets
+                      .map(({ name: pocketName }) => pocketName)
+                      .join(", ")}
+                  </Col>
+                </Row>
+              ))}
+            </Col>
+          </Row>
+        ))
       )}
     </>
   );

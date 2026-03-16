@@ -19,14 +19,17 @@ const ViewScriptProfileDetailsBlock: FC<ViewScriptProfileDetailsBlockProps> = ({
     <>
       <InfoGrid.Item
         label="Script"
-        value={ script
-          ? <Link
+        value={
+          script ? (
+            <Link
               to={ROUTES.scripts.root({ tab: "scripts" })}
               state={{ scriptId: script.id }}
             >
               {script.title}
             </Link>
-          : <Spinner />
+          ) : (
+            <Spinner />
+          )
         }
       />
 

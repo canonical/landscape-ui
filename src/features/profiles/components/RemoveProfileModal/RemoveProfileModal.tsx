@@ -24,13 +24,14 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
   const removalType = canArchiveProfile(type) ? "archive" : "remove";
   const removalTypeTitle = capitalize(removalType);
 
-  const notificationMessage = `You have successfully ${removalType}d "${profile.title}" profile.` + getNotificationMessage(type);
+  const notificationMessage =
+    `You have successfully ${removalType}d "${profile.title}" profile.` +
+    getNotificationMessage(type);
 
   const { notify } = useNotify();
   const debug = useDebug();
 
-  const { removeProfile, isRemovingProfile } =
-    useRemoveProfile(type);
+  const { removeProfile, isRemovingProfile } = useRemoveProfile(type);
 
   const handleRemoveProfile = async () => {
     try {

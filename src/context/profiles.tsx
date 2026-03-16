@@ -11,15 +11,14 @@ const initialState = {
   setIsProfileLimitReached: () => undefined,
 };
 
-export const ProfilesContext = createContext<ProfilesContextProps>(initialState);
+export const ProfilesContext =
+  createContext<ProfilesContextProps>(initialState);
 
 interface ProfilesProviderProps {
   readonly children: ReactNode;
 }
 
-export const ProfilesProvider: FC<ProfilesProviderProps> = ({ 
-  children,
-}) => {
+export const ProfilesProvider: FC<ProfilesProviderProps> = ({ children }) => {
   const [isProfileLimitReached, setIsProfileLimitReached] = useState(false);
 
   return (

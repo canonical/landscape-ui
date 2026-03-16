@@ -123,7 +123,9 @@ const SecurityProfilesNotifications: FC<SecurityProfilesNotificationsProps> = ({
           <Button
             type="button"
             appearance="link"
-            onClick={() => { openManageProfileSidePanel(overLimitSecurityProfiles[0], "edit"); }}
+            onClick={() => {
+              openManageProfileSidePanel(overLimitSecurityProfiles[0], "edit");
+            }}
           >
             Edit profile
           </Button>

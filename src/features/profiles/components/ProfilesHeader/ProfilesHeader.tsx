@@ -52,7 +52,6 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
                 />
                 {type === ProfileTypes.script ? (
                   <AddProfileButton type={type} isInsideScriptHeader={true} />
-                  
                 ) : (
                   <PassRateFilter />
                 )}

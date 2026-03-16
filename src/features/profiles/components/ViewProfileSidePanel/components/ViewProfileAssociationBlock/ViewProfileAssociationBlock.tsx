@@ -1,6 +1,10 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import { hasAssociations, hasComplianceData, type ProfileTypes } from "../../../../helpers";
+import {
+  hasAssociations,
+  hasComplianceData,
+  type ProfileTypes,
+} from "../../../../helpers";
 import ProfileAssociatedInstancesLink from "../../../ProfileAssociatedInstancesLink";
 import Blocks from "@/components/layout/Blocks";
 import Chip from "@/components/layout/Chip";
@@ -16,7 +20,8 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   profile,
   type,
 }) => {
-  const { associatedCount, isGettingInstances } = useGetProfileAssociatedCount(profile);
+  const { associatedCount, isGettingInstances } =
+    useGetProfileAssociatedCount(profile);
 
   return (
     <Blocks.Item title="Association">
@@ -24,19 +29,24 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
         <InfoGrid.Item
           label="Associated Instances"
           large
-          value={!hasAssociations(profile)
-            ? <span>This profile has not yet been associated with any instances.</span>
-            : <ProfileAssociatedInstancesLink
+          value={
+            !hasAssociations(profile) ? (
+              <span>
+                This profile has not yet been associated with any instances.
+              </span>
+            ) : (
+              <ProfileAssociatedInstancesLink
                 profile={profile}
                 count={associatedCount}
                 query={`profile:${type}:${profile.id}`}
                 isPending={isGettingInstances}
                 isGeneralAssociation={true}
               />
+            )
           }
         />
 
-        {hasAssociations(profile) && hasComplianceData(profile) &&
+        {hasAssociations(profile) && hasComplianceData(profile) && (
           <>
             <InfoGrid.Item
               label="Compliant"
@@ -65,8 +75,8 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
               }
             />
           </>
-        }
-        {!!profile.tags.length &&
+        )}
+        {!!profile.tags.length && (
           <InfoGrid.Item
             label="Tags"
             large
@@ -74,7 +84,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
               <Chip key={tag} value={tag} />
             ))}
           />
-        }
+        )}
       </InfoGrid>
     </Blocks.Item>
   );

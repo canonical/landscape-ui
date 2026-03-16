@@ -45,8 +45,7 @@ const SecurityProfileAuditPassRate: FC<SecurityProfileAuditPassRateProps> = ({
           {`${passing} instances (${adjustedPassingPercent}%)`}
         </div>
         <div>
-          <strong>Failed:</strong>{" "}
-          {`${failing} instances (${failingPercent}%)`}
+          <strong>Failed:</strong> {`${failing} instances (${failingPercent}%)`}
         </div>
         <div>
           <strong>In progress:</strong>{" "}

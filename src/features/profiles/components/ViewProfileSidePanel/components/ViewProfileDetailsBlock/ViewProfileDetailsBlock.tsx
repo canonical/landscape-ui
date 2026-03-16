@@ -5,29 +5,34 @@ import {
   isScriptProfile,
   isSecurityProfile,
   isUpgradeProfile,
-  isWslProfile
+  isWslProfile,
 } from "../../../../helpers";
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import Blocks from "@/components/layout/Blocks";
 
 const ViewRemovalProfileDetailsBlock = lazy(
-  async () => import("@/features/removal-profiles/components/ViewRemovalProfileDetailsBlock"),
+  async () =>
+    import("@/features/removal-profiles/components/ViewRemovalProfileDetailsBlock"),
 );
 
 const ViewScriptProfileDetailsBlock = lazy(
-  async () => import("@/features/script-profiles/components/ViewScriptProfileDetailsBlock"),
+  async () =>
+    import("@/features/script-profiles/components/ViewScriptProfileDetailsBlock"),
 );
 
 const ViewSecurityProfileDetailsBlock = lazy(
-  async () => import("@/features/security-profiles/components/ViewSecurityProfileDetailsBlock"),
+  async () =>
+    import("@/features/security-profiles/components/ViewSecurityProfileDetailsBlock"),
 );
 
 const ViewUpgradeProfileDetailsBlock = lazy(
-  async () => import("@/features/upgrade-profiles/components/ViewUpgradeProfileDetailsBlock"),
+  async () =>
+    import("@/features/upgrade-profiles/components/ViewUpgradeProfileDetailsBlock"),
 );
 
 const ViewWslProfileDetailsBlock = lazy(
-  async () => import("@/features/wsl-profiles/components/ViewWslProfileDetailsBlock"),
+  async () =>
+    import("@/features/wsl-profiles/components/ViewWslProfileDetailsBlock"),
 );
 
 interface ViewProfileDetailsBlockProps {
@@ -63,9 +68,7 @@ const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
   if (profileDetailsBlock) {
     return (
       <Blocks.Item title="Details">
-        <InfoGrid dense>
-          {profileDetailsBlock}
-        </InfoGrid>
+        <InfoGrid dense>{profileDetailsBlock}</InfoGrid>
       </Blocks.Item>
     );
   }

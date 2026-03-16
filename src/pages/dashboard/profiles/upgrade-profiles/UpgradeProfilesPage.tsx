@@ -25,7 +25,8 @@ const UpgradeProfileEditSidePanel = lazy(() =>
 
 const UpgradeProfilesPage: FC = () => {
   const { getUpgradeProfilesQuery } = useUpgradeProfiles();
-  const { data: getUpgradeProfilesResult, isPending } = getUpgradeProfilesQuery();
+  const { data: getUpgradeProfilesResult, isPending } =
+    getUpgradeProfilesQuery();
 
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
@@ -37,9 +38,15 @@ const UpgradeProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="Upgrade profiles"
-          actions={getUpgradeProfilesResult?.data.length
-            ? [<AddProfileButton type={ProfileTypes.upgrade} key="add-upgrade-profile" />]
-            : undefined
+          actions={
+            getUpgradeProfilesResult?.data.length
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.upgrade}
+                    key="add-upgrade-profile"
+                  />,
+                ]
+              : undefined
           }
         />
         <PageContent hasTable>
@@ -49,23 +56,23 @@ const UpgradeProfilesPage: FC = () => {
             profiles={getUpgradeProfilesResult?.data ?? []}
           />
         </PageContent>
-        
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-        isOpen={!!sidePath.length}
-      >
-        {lastSidePathSegment === "add" && (
-          <SidePanel.Suspense key="add">
-            <UpgradeProfileAddSidePanel />
-          </SidePanel.Suspense>
-        )}
 
-        {lastSidePathSegment === "edit" && (
-          <SidePanel.Suspense key="edit">
-            <UpgradeProfileEditSidePanel />
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
+        <SidePanel
+          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+          isOpen={!!sidePath.length}
+        >
+          {lastSidePathSegment === "add" && (
+            <SidePanel.Suspense key="add">
+              <UpgradeProfileAddSidePanel />
+            </SidePanel.Suspense>
+          )}
+
+          {lastSidePathSegment === "edit" && (
+            <SidePanel.Suspense key="edit">
+              <UpgradeProfileEditSidePanel />
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
       </PageMain>
     </ProfilesProvider>
   );

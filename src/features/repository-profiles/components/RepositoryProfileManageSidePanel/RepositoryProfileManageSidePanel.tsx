@@ -7,14 +7,20 @@ interface RepositoryProfileManageSidePanelProps {
   readonly action: "add" | "edit";
 }
 
-const RepositoryProfileManageSidePanel: FC<RepositoryProfileManageSidePanelProps> = ({ action }) => {
-  const { repositoryProfile, isGettingRepositoryProfile } = useGetPageRepositoryProfile();
+const RepositoryProfileManageSidePanel: FC<
+  RepositoryProfileManageSidePanelProps
+> = ({ action }) => {
+  const { repositoryProfile, isGettingRepositoryProfile } =
+    useGetPageRepositoryProfile();
 
   if (isGettingRepositoryProfile) {
     return <SidePanel.LoadingState />;
   }
 
-  const title = action === "edit" ? `Edit ${repositoryProfile.title}` : "Add repository profile";
+  const title =
+    action === "edit"
+      ? `Edit ${repositoryProfile.title}`
+      : "Add repository profile";
 
   return (
     <>

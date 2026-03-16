@@ -159,7 +159,13 @@ const WslProfileNonCompliantInstancesList: FC<
         ),
       },
     ],
-    [instances, selectedInstances, setSelectedInstances, expandedRowIndex, handleExpand],
+    [
+      instances,
+      selectedInstances,
+      setSelectedInstances,
+      expandedRowIndex,
+      handleExpand,
+    ],
   );
 
   const clear = () => {

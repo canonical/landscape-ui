@@ -11,13 +11,15 @@ interface SecurityProfileLastRunWithScheduleProps {
   readonly profile: SecurityProfile;
 }
 
-const SecurityProfileLastRunWithSchedule: FC<SecurityProfileLastRunWithScheduleProps> = ({
-  profile
-}) => {
+const SecurityProfileLastRunWithSchedule: FC<
+  SecurityProfileLastRunWithScheduleProps
+> = ({ profile }) => {
   const lastRun = !profile.last_run_results.timestamp ? (
     <NoData />
   ) : (
-    moment(profile.last_run_results.timestamp).utc().format(DISPLAY_DATE_TIME_FORMAT)
+    moment(profile.last_run_results.timestamp)
+      .utc()
+      .format(DISPLAY_DATE_TIME_FORMAT)
   );
   const nextRun = !profile.next_run_time ? (
     <NoData />
@@ -48,9 +50,7 @@ const SecurityProfileLastRunWithSchedule: FC<SecurityProfileLastRunWithScheduleP
       message={tooltipMessage}
     >
       <div className={classes.truncated}>
-        <span
-          aria-label={`Last run for ${profile.title} profile`}
-        >
+        <span aria-label={`Last run for ${profile.title} profile`}>
           {lastRun}
         </span>
         <br />

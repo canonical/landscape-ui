@@ -4,7 +4,7 @@ import {
   isRebootProfile,
   isScriptProfile,
   isSecurityProfile,
-  isUpgradeProfile
+  isUpgradeProfile,
 } from "../../../../helpers";
 import type { Profile } from "../../../../types";
 import type { UpgradeProfile } from "@/features/upgrade-profiles";
@@ -24,8 +24,9 @@ const WEEKDAY_MAP = {
 const getScheduledDays = (onDays: string[]) => {
   if (onDays.length === 7) {
     return "Every day";
-  } 
-  return onDays.map((code) => code.toLowerCase())
+  }
+  return onDays
+    .map((code) => code.toLowerCase())
     .filter((value) => hasProperty(WEEKDAY_MAP, value))
     .map((code) => WEEKDAY_MAP[code])
     .join(", ");

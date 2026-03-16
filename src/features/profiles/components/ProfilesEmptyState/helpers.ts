@@ -24,11 +24,20 @@ export const getMessage = (type: ProfileTypes) => {
 export const getLink = (type: ProfileTypes) => {
   switch (type) {
     case ProfileTypes.repository:
-      return { text: "How to manage repositories in Landscape.", url: "https://ubuntu.com/landscape/docs/manage-repositories-web-portal" };
+      return {
+        text: "How to manage repositories in Landscape.",
+        url: "https://ubuntu.com/landscape/docs/manage-repositories-web-portal",
+      };
     case ProfileTypes.reboot:
-      return { text: "Learn more about Livepatch", url: "https://ubuntu.com/security/livepatch/docs" };
+      return {
+        text: "Learn more about Livepatch",
+        url: "https://ubuntu.com/security/livepatch/docs",
+      };
     case ProfileTypes.wsl:
-      return { text: "How to manage WSL profiles in Landscape.", url: "https://ubuntu.com/landscape/docs/manage-wsl-instances-in-landscape" };
+      return {
+        text: "How to manage WSL profiles in Landscape.",
+        url: "https://ubuntu.com/landscape/docs/manage-wsl-instances-in-landscape",
+      };
     default:
       return undefined;
   }

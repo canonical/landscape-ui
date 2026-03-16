@@ -6,11 +6,14 @@ interface ViewRemovalProfileDetailsBlockProps {
   readonly profile: RemovalProfile;
 }
 
-const ViewRemovalProfileDetailsBlock: FC<ViewRemovalProfileDetailsBlockProps> = ({
-  profile,
-}) => {
+const ViewRemovalProfileDetailsBlock: FC<
+  ViewRemovalProfileDetailsBlockProps
+> = ({ profile }) => {
   return (
-    <InfoGrid.Item label="Removal Timeframe" value={`${profile.days_without_exchange} days`} />
+    <InfoGrid.Item
+      label="Removal Timeframe"
+      value={`${profile.days_without_exchange} days`}
+    />
   );
 };
 

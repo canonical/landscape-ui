@@ -5,9 +5,16 @@ import { ScriptProfileActivityHistory } from "@/features/script-profiles";
 import { Tabs } from "@canonical/react-components";
 import ViewProfileInfoTab from "./components/ViewProfileInfoTab";
 import classes from "./ViewProfileSidePanel.module.scss";
-import { isPackageProfile, isRepositoryProfile, isScriptProfile } from "../../helpers";
+import {
+  isPackageProfile,
+  isRepositoryProfile,
+  isScriptProfile,
+} from "../../helpers";
 import { PackageProfileDetailsConstraints } from "@/features/package-profiles";
-import { ViewRepositoryProfileAptSourcesTab, ViewRepositoryProfilePocketsTab } from "@/features/repository-profiles";
+import {
+  ViewRepositoryProfileAptSourcesTab,
+  ViewRepositoryProfilePocketsTab,
+} from "@/features/repository-profiles";
 import { getTabs, type TabTypes } from "./helpers";
 import type { Profile } from "../../types";
 import type { ProfileTypes } from "../../helpers";
@@ -28,7 +35,9 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
   const links = tabs.map(({ label, id }) => ({
     label,
     active: tabId == id,
-    onClick: () => { setTabId(id); },
+    onClick: () => {
+      setTabId(id);
+    },
   }));
 
   return (
@@ -42,21 +51,29 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
         )}
 
         {isScriptProfile(profile) && tabId === "activity-history" && (
-          <ScriptProfileActivityHistory profile={profile} key="activity-history" />
+          <ScriptProfileActivityHistory
+            profile={profile}
+            key="activity-history"
+          />
         )}
 
         {isPackageProfile(profile) && tabId === "package-constraints" && (
-          <PackageProfileDetailsConstraints profile={profile} key="package-constraints"/>
+          <PackageProfileDetailsConstraints
+            profile={profile}
+            key="package-constraints"
+          />
         )}
 
-        {isRepositoryProfile(profile) && (
-          tabId === "pockets" && (
+        {isRepositoryProfile(profile) &&
+          ((tabId === "pockets" && (
             <ViewRepositoryProfilePocketsTab profile={profile} key="pockets" />
-          ) || 
-          tabId === "apt-sources" && (
-            <ViewRepositoryProfileAptSourcesTab profile={profile} key="apt-sources"/>
-          )
-        )}
+          )) ||
+            (tabId === "apt-sources" && (
+              <ViewRepositoryProfileAptSourcesTab
+                profile={profile}
+                key="apt-sources"
+              />
+            )))}
       </Suspense>
     </>
   );

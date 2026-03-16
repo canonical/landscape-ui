@@ -30,11 +30,8 @@ const RebootProfileEditSidePanel = lazy(async () =>
 );
 
 const RebootProfilesPage: FC = () => {
-  const {
-    rebootProfiles,
-    rebootProfilesCount,
-    isGettingRebootProfiles
-  } = useGetRebootProfiles();
+  const { rebootProfiles, rebootProfilesCount, isGettingRebootProfiles } =
+    useGetRebootProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
@@ -45,9 +42,15 @@ const RebootProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="Reboot profiles"
-          actions={rebootProfilesCount
-            ? [<AddProfileButton type={ProfileTypes.reboot} key="add-reboot-profile" />]
-            : undefined
+          actions={
+            rebootProfilesCount
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.reboot}
+                    key="add-reboot-profile"
+                  />,
+                ]
+              : undefined
           }
         />
         <PageContent hasTable>

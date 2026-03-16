@@ -16,12 +16,16 @@ interface RemoveWithProfileNameParams {
   name: string;
 }
 
-export type RemoveProfileParams = RemoveWithProfileNameParams & RemoveWithProfileIdParams;
+export type RemoveProfileParams = RemoveWithProfileNameParams &
+  RemoveWithProfileIdParams;
 
 export const useRemoveProfile = (type: ProfileTypes) => {
-  const { archiveScriptProfile, isArchivingScriptProfile } = useArchiveScriptProfile();
-  const { archiveSecurityProfile, isArchivingSecurityProfile } = useArchiveSecurityProfile();
-  const { removeRebootProfile, isRemovingRebootProfile } = useRemoveRebootProfile();
+  const { archiveScriptProfile, isArchivingScriptProfile } =
+    useArchiveScriptProfile();
+  const { archiveSecurityProfile, isArchivingSecurityProfile } =
+    useArchiveSecurityProfile();
+  const { removeRebootProfile, isRemovingRebootProfile } =
+    useRemoveRebootProfile();
   const { removeWslProfile, isRemovingWslProfile } = useRemoveWslProfile();
 
   const { removePackageProfileQuery } = usePackageProfiles();

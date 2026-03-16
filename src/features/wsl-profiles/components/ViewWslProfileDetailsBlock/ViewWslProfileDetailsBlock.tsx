@@ -11,14 +11,8 @@ const ViewWslProfileDetailsBlock: FC<ViewWslProfileDetailsBlockProps> = ({
 }) => {
   return (
     <>
-      <InfoGrid.Item
-        label="rootfs image"
-        value="From URL"
-      />
-      <InfoGrid.Item
-        label="image name"
-        value={profile.image_name}
-      />
+      <InfoGrid.Item label="rootfs image" value="From URL" />
+      <InfoGrid.Item label="image name" value={profile.image_name} />
       {profile.image_source !== null && (
         <InfoGrid.Item
           label="image source"

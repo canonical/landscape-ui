@@ -27,12 +27,11 @@ const WslProfileEditSidePanel = lazy(() =>
 );
 
 const WslProfilesPage: FC = () => {
-  const { isGettingWslProfiles, wslProfiles, wslProfilesCount } = useGetWslProfiles(
-    {
+  const { isGettingWslProfiles, wslProfiles, wslProfilesCount } =
+    useGetWslProfiles({
       limit: DEFAULT_PAGE_SIZE,
       offset: 0,
-    },
-  );
+    });
   const { setIsProfileLimitReached } = useProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
@@ -48,9 +47,16 @@ const WslProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="WSL profiles"
-          actions={wslProfilesCount ? [
-            <AddProfileButton type={ProfileTypes.wsl} key="add-wsl-profile" />
-          ] : undefined }
+          actions={
+            wslProfilesCount
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.wsl}
+                    key="add-wsl-profile"
+                  />,
+                ]
+              : undefined
+          }
         />
         <PageContent hasTable>
           <Notification
@@ -74,21 +80,21 @@ const WslProfilesPage: FC = () => {
           />
         </PageContent>
         <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-        isOpen={!!sidePath.length}
-      >
-        {lastSidePathSegment === "add" && (
-          <SidePanel.Suspense key="add">
-            <WslProfileAddSidePanel />
-          </SidePanel.Suspense>
-        )}
+          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+          isOpen={!!sidePath.length}
+        >
+          {lastSidePathSegment === "add" && (
+            <SidePanel.Suspense key="add">
+              <WslProfileAddSidePanel />
+            </SidePanel.Suspense>
+          )}
 
-        {lastSidePathSegment === "edit" && (
-          <SidePanel.Suspense key="edit">
-            <WslProfileEditSidePanel />
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
+          {lastSidePathSegment === "edit" && (
+            <SidePanel.Suspense key="edit">
+              <WslProfileEditSidePanel />
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
       </PageMain>
     </ProfilesProvider>
   );

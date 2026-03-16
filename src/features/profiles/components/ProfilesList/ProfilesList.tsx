@@ -14,27 +14,32 @@ import {
   getRemovalColumn,
   getScriptColumns,
   getSecurityColumns,
-  getStatusColumn
+  getStatusColumn,
 } from "./helpers";
-import { canArchiveProfile, hasApiSearch, hasDescription, hasComplianceColumns, ProfileTypes } from "../../helpers";
+import {
+  canArchiveProfile,
+  hasApiSearch,
+  hasDescription,
+  hasComplianceColumns,
+  ProfileTypes,
+} from "../../helpers";
 import { useOpenViewProfileSidePanel } from "../../hooks";
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
   readonly type: ProfileTypes;
 }
-  
+
 const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
   const { search } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
-  const { expandedRowIndex, getTableRowsRef } =
-    useExpandableRow();
+  const { expandedRowIndex, getTableRowsRef } = useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
   const { getCellProps, getRowProps } = createTablePropGetters<Profile>({
-      headerColumnId: "title",
-      itemTypeName: "profile",
-    });
+    headerColumnId: "title",
+    itemTypeName: "profile",
+  });
 
   const openViewProfileSidePanel = useOpenViewProfileSidePanel();
 
@@ -43,11 +48,18 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       return profiles;
     }
 
-    return profiles.filter(({ title }) => title.toLowerCase().includes(search.toLowerCase()));
+    return profiles.filter(({ title }) =>
+      title.toLowerCase().includes(search.toLowerCase()),
+    );
   }, [profiles, search, type]);
 
   const columns = useMemo<Column<Profile>[]>(() => {
-    const { name, accessGroup, associated, description, actions } = getGeneralColumns(type, openViewProfileSidePanel, getAccessGroupQueryResult);
+    const { name, accessGroup, associated, description, actions } =
+      getGeneralColumns(
+        type,
+        openViewProfileSidePanel,
+        getAccessGroupQueryResult,
+      );
     const cols = [name];
 
     if (canArchiveProfile(type)) {
@@ -79,13 +91,11 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
     if (hasDescription(type)) {
       cols.push(description);
     }
-    
+
     cols.push(actions);
 
     return cols;
-  },
-    [getAccessGroupQueryResult, openViewProfileSidePanel, type],
-  );
+  }, [getAccessGroupQueryResult, openViewProfileSidePanel, type]);
 
   return (
     <ResponsiveTable

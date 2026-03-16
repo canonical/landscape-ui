@@ -6,7 +6,11 @@ import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Spinner } from "@canonical/react-components";
 import { Suspense, type FC } from "react";
 import type { Profile } from "../..";
-import { hasAssociations, isPostEnrollmentScriptProfile, isWslProfile } from "../../helpers";
+import {
+  hasAssociations,
+  isPostEnrollmentScriptProfile,
+  isWslProfile,
+} from "../../helpers";
 import useSidePanel from "@/hooks/useSidePanel";
 import NoData from "@/components/layout/NoData";
 
@@ -18,7 +22,9 @@ interface ProfileAssociatedInstancesLinkProps {
   readonly isGeneralAssociation?: boolean;
 }
 
-const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = ({ 
+const ProfileAssociatedInstancesLink: FC<
+  ProfileAssociatedInstancesLinkProps
+> = ({
   count,
   profile,
   query,
@@ -31,7 +37,8 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
     return <Spinner />;
   }
 
-  const hasNoAssociations = !hasAssociations(profile) || isPostEnrollmentScriptProfile(profile);
+  const hasNoAssociations =
+    !hasAssociations(profile) || isPostEnrollmentScriptProfile(profile);
 
   if (hasNoAssociations) {
     return <NoData />;
@@ -41,11 +48,14 @@ const ProfileAssociatedInstancesLink: FC<ProfileAssociatedInstancesLinkProps> = 
     return <>0 instances</>;
   }
 
-  const text = isGeneralAssociation && profile.all_computers 
-    ? "All instances" 
-    : pluralizeWithCount(count, "instance");
+  const text =
+    isGeneralAssociation && profile.all_computers
+      ? "All instances"
+      : pluralizeWithCount(count, "instance");
 
-  const formattedQuery = query.startsWith("profile:") ? query.toLowerCase() : query;
+  const formattedQuery = query.startsWith("profile:")
+    ? query.toLowerCase()
+    : query;
 
   if (isWslProfile(profile) && query.endsWith(":noncompliant")) {
     return (

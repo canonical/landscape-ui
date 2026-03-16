@@ -62,7 +62,10 @@ export const getTailoringFile = (profile: SecurityProfile) => {
   );
 };
 
-export const getSecuritySchedule = (profile: SecurityProfile, short = false) => {
+export const getSecuritySchedule = (
+  profile: SecurityProfile,
+  short = false,
+) => {
   const schedule = Object.fromEntries(
     profile.schedule.split(";").map((part) => part.split("=")),
   );

@@ -12,7 +12,10 @@ export function useGetRepositoryProfile(name: string) {
     data: response,
     isPending,
     error,
-  } = useQuery<AxiosResponse<ApiPaginatedResponse<RepositoryProfile[]>>, AxiosError<ApiError>>({
+  } = useQuery<
+    AxiosResponse<ApiPaginatedResponse<RepositoryProfile[]>>,
+    AxiosError<ApiError>
+  >({
     queryKey: ["repositoryProfile", name],
     queryFn: async ({ signal }) =>
       authFetch.get("repositoryprofiles", {

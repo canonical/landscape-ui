@@ -18,15 +18,15 @@ const ProfilesEmptyState: FC<ProfilesEmptyStateProps> = ({ type }) => {
       body={
         <>
           <p>{message}</p>
-          {!!link &&
+          {!!link && (
             <Link
               href={link.url}
               target="_blank"
               rel="nofollow noopener noreferrer"
             >
-            {link.text}
-          </Link>
-          }
+              {link.text}
+            </Link>
+          )}
         </>
       }
       cta={[<AddProfileButton key="add" type={type} />]}

@@ -1,9 +1,19 @@
 import { useGetInstances } from "@/features/instances";
-import { isRemovalProfile, isScriptProfile, isUpgradeProfile, hasComplianceData, isRebootProfile, isRepositoryProfile, isSecurityProfile, hasAssociations } from "../helpers";
+import {
+  isRemovalProfile,
+  isScriptProfile,
+  isUpgradeProfile,
+  hasComplianceData,
+  isRebootProfile,
+  isRepositoryProfile,
+  isSecurityProfile,
+  hasAssociations,
+} from "../helpers";
 import type { Profile } from "../types";
 
 export const useGetProfileAssociatedCount = (profile: Profile) => {
-  const isAssociationQueryEnabled = isRepositoryProfile(profile) && hasAssociations(profile);
+  const isAssociationQueryEnabled =
+    isRepositoryProfile(profile) && hasAssociations(profile);
 
   const { instancesCount = 0, isGettingInstances } = useGetInstances(
     {
@@ -17,7 +27,11 @@ export const useGetProfileAssociatedCount = (profile: Profile) => {
   );
 
   const getAssociationFromProfile = () => {
-    if (isRemovalProfile(profile) || isScriptProfile(profile) || isUpgradeProfile(profile)) {
+    if (
+      isRemovalProfile(profile) ||
+      isScriptProfile(profile) ||
+      isUpgradeProfile(profile)
+    ) {
       return profile.computers.num_associated_computers;
     }
     if (hasComplianceData(profile)) {
@@ -31,9 +45,9 @@ export const useGetProfileAssociatedCount = (profile: Profile) => {
     }
     return instancesCount;
   };
-  
-  return { 
+
+  return {
     associatedCount: getAssociationFromProfile(),
-    isGettingInstances: isAssociationQueryEnabled ? isGettingInstances : false ,
+    isGettingInstances: isAssociationQueryEnabled ? isGettingInstances : false,
   };
 };

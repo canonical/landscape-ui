@@ -7,9 +7,9 @@ interface ViewUpgradeProfileDetailsBlockProps {
   readonly profile: UpgradeProfile;
 }
 
-const ViewUpgradeProfileDetailsBlock: FC<ViewUpgradeProfileDetailsBlockProps> = ({
-  profile,
-}) => {
+const ViewUpgradeProfileDetailsBlock: FC<
+  ViewUpgradeProfileDetailsBlockProps
+> = ({ profile }) => {
   return (
     <>
       <InfoGrid.Item

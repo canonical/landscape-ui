@@ -19,7 +19,8 @@ const RepositoryProfileManageSidePanel = lazy(async () =>
 
 const RepositoryProfilesPage: FC = () => {
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
-  const { data: getRepositoryProfilesResult, isPending } = getRepositoryProfilesQuery();
+  const { data: getRepositoryProfilesResult, isPending } =
+    getRepositoryProfilesQuery();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
@@ -30,9 +31,15 @@ const RepositoryProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="Repository profiles"
-          actions={getRepositoryProfilesResult?.data.count
-            ? [<AddProfileButton type={ProfileTypes.repository} key="add-repository-profile" />]
-            : undefined
+          actions={
+            getRepositoryProfilesResult?.data.count
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.repository}
+                    key="add-repository-profile"
+                  />,
+                ]
+              : undefined
           }
         />
         <PageContent hasTable>

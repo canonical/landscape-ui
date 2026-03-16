@@ -6,7 +6,11 @@ import { ResponsiveButtons } from "@/components/ui";
 import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
 import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
-import { hasExtraActions, isProfileArchived, type ProfileTypes } from "../../../../helpers";
+import {
+  hasExtraActions,
+  isProfileArchived,
+  type ProfileTypes,
+} from "../../../../helpers";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
@@ -29,9 +33,15 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const { actions, destructiveActions } = useGetProfileActions({ profile, type, openModal });
-  const buttons = destructiveActions ? [...actions, ...destructiveActions] : actions;
-  const isNegative = (action: Action) => action.appearance === "negative";  
+  const { actions, destructiveActions } = useGetProfileActions({
+    profile,
+    type,
+    openModal,
+  });
+  const buttons = destructiveActions
+    ? [...actions, ...destructiveActions]
+    : actions;
+  const isNegative = (action: Action) => action.appearance === "negative";
 
   if (isProfileArchived(profile)) {
     const lastEdit = profile.last_edited_at ?? profile.modification_time;
@@ -55,8 +65,14 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
             aria-label={`${button.label} ${profile.title} ${type} profile`}
             disabled={button.disabled}
           >
-            <Icon name={isNegative(button) ? `${button.icon}--negative` : button.icon} />
-            <span className={isNegative(button) ? "u-text--negative" : ""}>{button.label}</span>
+            <Icon
+              name={
+                isNegative(button) ? `${button.icon}--negative` : button.icon
+              }
+            />
+            <span className={isNegative(button) ? "u-text--negative" : ""}>
+              {button.label}
+            </span>
           </Button>
         ))}
         collapseFrom={hasExtraActions(type) ? "xxl" : "xs"}

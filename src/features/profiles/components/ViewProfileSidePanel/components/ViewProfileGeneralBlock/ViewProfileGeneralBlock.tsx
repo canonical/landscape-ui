@@ -4,7 +4,12 @@ import useRoles from "@/hooks/useRoles";
 import { getTitleByName } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { Profile } from "../../../../types";
-import { canArchiveProfile, hasDescription, isProfileArchived, type ProfileTypes } from "../../../../helpers";
+import {
+  canArchiveProfile,
+  hasDescription,
+  isProfileArchived,
+  type ProfileTypes,
+} from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 
 interface ViewProfileGeneralBlockProps {
@@ -31,17 +36,21 @@ const ViewProfileGeneralBlock: FC<ViewProfileGeneralBlockProps> = ({
       <InfoGrid dense>
         <InfoGrid.Item label="Name" value={profile.title} />
 
-        {canArchiveProfile(type) && 
+        {canArchiveProfile(type) && (
           <InfoGrid.Item label="Status" value={status} />
-        }
-        
+        )}
+
         <InfoGrid.Item
           label="Access group"
           value={getTitleByName(profile.access_group, accessGroupsData)}
         />
 
         {hasDescription(type) && (
-          <InfoGrid.Item label="Description" large value={profile.description} />
+          <InfoGrid.Item
+            label="Description"
+            large
+            value={profile.description}
+          />
         )}
       </InfoGrid>
     </Blocks.Item>

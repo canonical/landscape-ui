@@ -1,6 +1,6 @@
 import type { Profile } from "@/features/profiles";
 
-export type SecurityBenchmark = 
+export type SecurityBenchmark =
   | "disa_stig"
   | "cis_level1_workstation"
   | "cis_level1_server"

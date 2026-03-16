@@ -12,19 +12,14 @@ interface ViewProfileInfoTabProps {
   readonly type: ProfileTypes;
 }
 
-const ViewProfileInfoTab: FC<ViewProfileInfoTabProps> = ({
-  profile,
-  type,
-}) => {
+const ViewProfileInfoTab: FC<ViewProfileInfoTabProps> = ({ profile, type }) => {
   return (
     <Blocks>
       <ViewProfileGeneralBlock type={type} profile={profile} />
 
       <ViewProfileDetailsBlock profile={profile} />
 
-      {hasSchedule(type) &&
-        <ViewProfileScheduleBlock profile={profile} />
-      }
+      {hasSchedule(type) && <ViewProfileScheduleBlock profile={profile} />}
 
       <ViewProfileAssociationBlock type={type} profile={profile} />
     </Blocks>

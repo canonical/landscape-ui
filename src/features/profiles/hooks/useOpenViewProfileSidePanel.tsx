@@ -9,7 +9,7 @@ const ViewProfileSidePanel = lazy(
 );
 
 export const useOpenViewProfileSidePanel = () => {
-  const { setSidePanelContent } = useSidePanel(); 
+  const { setSidePanelContent } = useSidePanel();
 
   return (type: ProfileTypes, profile: Profile) => {
     setSidePanelContent(
@@ -17,6 +17,6 @@ export const useOpenViewProfileSidePanel = () => {
       <Suspense fallback={<LoadingState />}>
         <ViewProfileSidePanel profile={profile} type={type} />
       </Suspense>,
-    ); 
+    );
   };
 };

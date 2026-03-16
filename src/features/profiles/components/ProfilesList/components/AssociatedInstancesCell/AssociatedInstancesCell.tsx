@@ -8,8 +8,12 @@ interface AssociatedInstancesCellProps {
   readonly type: ProfileTypes;
 }
 
-function AssociatedInstancesCell({ profile, type }: AssociatedInstancesCellProps) {
-  const { associatedCount, isGettingInstances } = useGetProfileAssociatedCount(profile);
+function AssociatedInstancesCell({
+  profile,
+  type,
+}: AssociatedInstancesCellProps) {
+  const { associatedCount, isGettingInstances } =
+    useGetProfileAssociatedCount(profile);
 
   return (
     <ProfileAssociatedInstancesLink

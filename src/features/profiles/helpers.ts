@@ -22,8 +22,10 @@ export enum ProfileTypes {
 
 export const getTriggerText = (profile: ScriptProfile, long = false) => {
   switch (profile.trigger.trigger_type) {
-    case "event": return "Post enrollment";
-    case "one_time": return "On a date";
+    case "event":
+      return "Post enrollment";
+    case "one_time":
+      return "On a date";
     case "recurring": {
       if (long) {
         return `Recurring, ${toCronPhrase(profile.trigger.interval)}`;
@@ -34,63 +36,88 @@ export const getTriggerText = (profile: ScriptProfile, long = false) => {
 };
 
 export function isScriptProfile(profile: Profile): profile is ScriptProfile {
-  return 'script_id' in profile;
+  return "script_id" in profile;
 }
 
-export function isSecurityProfile(profile: Profile): profile is SecurityProfile {
-  return 'benchmark' in profile;
+export function isSecurityProfile(
+  profile: Profile,
+): profile is SecurityProfile {
+  return "benchmark" in profile;
 }
 
 export function isRebootProfile(profile: Profile): profile is RebootProfile {
-  return ['num_computers', 'schedule', 'next_run'].every(key => key in profile);
+  return ["num_computers", "schedule", "next_run"].every(
+    (key) => key in profile,
+  );
 }
 
 export function isUpgradeProfile(profile: Profile): profile is UpgradeProfile {
-  return 'upgrade_type' in profile;
+  return "upgrade_type" in profile;
 }
 
 export function isPackageProfile(profile: Profile): profile is PackageProfile {
-  return 'constraints' in profile;
+  return "constraints" in profile;
 }
 
 export function isRemovalProfile(profile: Profile): profile is RemovalProfile {
-  return 'days_without_exchange' in profile;
+  return "days_without_exchange" in profile;
 }
 
-export function isRepositoryProfile(profile: Profile): profile is RepositoryProfile {
-  return 'pockets' in profile;
+export function isRepositoryProfile(
+  profile: Profile,
+): profile is RepositoryProfile {
+  return "pockets" in profile;
 }
 
 export function isWslProfile(profile: Profile): profile is WslProfile {
-  return 'image_name' in profile;
+  return "image_name" in profile;
 }
 
-export const canDuplicateProfile = (profile: Profile): profile is RebootProfile | PackageProfile | SecurityProfile =>
-  isRebootProfile(profile) || isPackageProfile(profile) || isSecurityProfile(profile);  
+export const canDuplicateProfile = (
+  profile: Profile,
+): profile is RebootProfile | PackageProfile | SecurityProfile =>
+  isRebootProfile(profile) ||
+  isPackageProfile(profile) ||
+  isSecurityProfile(profile);
 
-export const hasComplianceData = (profile: Profile): profile is WslProfile | PackageProfile => 
+export const hasComplianceData = (
+  profile: Profile,
+): profile is WslProfile | PackageProfile =>
   isWslProfile(profile) || isPackageProfile(profile);
 
-export const usesNameAsIdentifier = (profile: Profile): profile is WslProfile | PackageProfile | RepositoryProfile => 
-  isWslProfile(profile) || isPackageProfile(profile) || isRepositoryProfile(profile);
+export const usesNameAsIdentifier = (
+  profile: Profile,
+): profile is WslProfile | PackageProfile | RepositoryProfile =>
+  isWslProfile(profile) ||
+  isPackageProfile(profile) ||
+  isRepositoryProfile(profile);
 
-export const hasLastRunData = (profile: Profile): profile is ScriptProfile | SecurityProfile =>
+export const hasLastRunData = (
+  profile: Profile,
+): profile is ScriptProfile | SecurityProfile =>
   isScriptProfile(profile) || isSecurityProfile(profile);
 
-export const hasAssociations = (profile: Profile) => 
+export const hasAssociations = (profile: Profile) =>
   !!profile.tags.length || profile.all_computers;
 
 export const isProfileArchived = (profile: Profile) =>
-  profile.status === 'archived' || !!profile.archived;
+  profile.status === "archived" || !!profile.archived;
 
-export const isPostEnrollmentScriptProfile = (profile: Profile) => 
+export const isPostEnrollmentScriptProfile = (profile: Profile) =>
   isScriptProfile(profile) && profile.trigger.trigger_type === "event";
 
-export const hasSchedule = (type: ProfileTypes) => 
-  [ProfileTypes.script, ProfileTypes.reboot, ProfileTypes.upgrade, ProfileTypes.security].includes(type);
+export const hasSchedule = (type: ProfileTypes) =>
+  [
+    ProfileTypes.script,
+    ProfileTypes.reboot,
+    ProfileTypes.upgrade,
+    ProfileTypes.security,
+  ].includes(type);
 
-export const hasDescription = (type: ProfileTypes) => 
-  [ProfileTypes.repository, ProfileTypes.wsl, ProfileTypes.package].includes(type);
+export const hasDescription = (type: ProfileTypes) =>
+  [ProfileTypes.repository, ProfileTypes.wsl, ProfileTypes.package].includes(
+    type,
+  );
 
 export const canArchiveProfile = (type: ProfileTypes) =>
   [ProfileTypes.security, ProfileTypes.script].includes(type);
@@ -98,7 +125,7 @@ export const canArchiveProfile = (type: ProfileTypes) =>
 export const hasExtraActions = (type: ProfileTypes) =>
   [ProfileTypes.security, ProfileTypes.package].includes(type);
 
-export const hasApiSearch = (type: ProfileTypes) => 
+export const hasApiSearch = (type: ProfileTypes) =>
   [ProfileTypes.script, ProfileTypes.security, ProfileTypes.wsl].includes(type);
 
 export const hasComplianceColumns = (type: ProfileTypes) =>

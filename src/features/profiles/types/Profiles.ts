@@ -1,4 +1,4 @@
-export type ProfileActions = 
+export type ProfileActions =
   | "edit"
   | "edit-constraints"
   | "run"

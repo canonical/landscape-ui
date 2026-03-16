@@ -10,8 +10,11 @@ const useGetPageRepositoryProfile = ():
   | { repositoryProfile: undefined; isGettingRepositoryProfile: true } => {
   const { profile: repositoryProfileName } = usePageParams();
 
-  const { isGettingRepositoryProfile, repositoryProfile, repositoryProfileError } =
-    useGetRepositoryProfile(repositoryProfileName);
+  const {
+    isGettingRepositoryProfile,
+    repositoryProfile,
+    repositoryProfileError,
+  } = useGetRepositoryProfile(repositoryProfileName);
 
   if (repositoryProfileError) {
     throw repositoryProfileError;

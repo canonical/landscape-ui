@@ -55,9 +55,11 @@ const ScriptProfilesTab: FC = () => {
     return <NoScriptsEmptyState />;
   }
 
-  const isScriptProfileLimitReached = !!scriptProfileLimits && !!activeScriptProfilesCount
-    && activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles;
-  
+  const isScriptProfileLimitReached =
+    !!scriptProfileLimits &&
+    !!activeScriptProfilesCount &&
+    activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles;
+
   setIsProfileLimitReached(isScriptProfileLimitReached);
 
   return (

@@ -53,7 +53,7 @@ const PackageProfilesPage: FC = () => {
     "edit",
     "edit-constraints",
   ]);
-  
+
   const {
     data: getPackageProfilesQueryResult,
     isPending: isGettingPackageProfiles,
@@ -65,9 +65,15 @@ const PackageProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="Package profiles"
-          actions={packageProfiles.length
-            ? [<AddProfileButton type={ProfileTypes.package} key="add-package-profile" />]
-            : undefined
+          actions={
+            packageProfiles.length
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.package}
+                    key="add-package-profile"
+                  />,
+                ]
+              : undefined
           }
         />
         <PageContent hasTable>
@@ -77,7 +83,7 @@ const PackageProfilesPage: FC = () => {
             isPending={isGettingPackageProfiles}
           />
         </PageContent>
-        
+
         <SidePanel
           onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
           isOpen={!!sidePath.length}

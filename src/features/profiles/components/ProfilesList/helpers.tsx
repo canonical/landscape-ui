@@ -1,6 +1,16 @@
 import { Icon, ICONS, Tooltip } from "@canonical/react-components";
 import type { Profile } from "../../types";
-import { getTriggerText, isPackageProfile, isProfileArchived, isRebootProfile, isRemovalProfile, isScriptProfile, isSecurityProfile, isWslProfile, type ProfileTypes } from "../../helpers";
+import {
+  getTriggerText,
+  isPackageProfile,
+  isProfileArchived,
+  isRebootProfile,
+  isRemovalProfile,
+  isScriptProfile,
+  isSecurityProfile,
+  isWslProfile,
+  type ProfileTypes,
+} from "../../helpers";
 import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
@@ -13,7 +23,13 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import type { AxiosResponse } from "axios";
 import type { ScriptProfile } from "@/features/script-profiles";
-import { type SecurityProfile, SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT, SECURITY_PROFILE_MODE_LABELS, SecurityProfileAuditPassRate, SecurityProfileLastRunWithSchedule } from "@/features/security-profiles";
+import {
+  type SecurityProfile,
+  SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
+  SECURITY_PROFILE_MODE_LABELS,
+  SecurityProfileAuditPassRate,
+  SecurityProfileLastRunWithSchedule,
+} from "@/features/security-profiles";
 import AssociatedInstancesCell from "./components/AssociatedInstancesCell";
 
 const getStatus = (profile: ScriptProfile | SecurityProfile) => {
@@ -21,7 +37,9 @@ const getStatus = (profile: ScriptProfile | SecurityProfile) => {
     return { label: "Archived", icon: "status-queued-small" };
   }
 
-  if (isSecurityProfile(profile) && profile.associated_instances > SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT
+  if (
+    isSecurityProfile(profile) &&
+    profile.associated_instances > SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT
   ) {
     return {
       label: (
@@ -44,7 +62,12 @@ const getStatus = (profile: ScriptProfile | SecurityProfile) => {
   return { label: "Active", icon: "status-succeeded-small" };
 };
 
-type ColumnNames = "name" | "accessGroup" | "associated" | "description" | "actions";
+type ColumnNames =
+  | "name"
+  | "accessGroup"
+  | "associated"
+  | "description"
+  | "actions";
 
 export const getGeneralColumns = (
   type: ProfileTypes,
@@ -63,7 +86,9 @@ export const getGeneralColumns = (
         type="button"
         appearance="link"
         className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-        onClick={() => { onNameClick(type, profile); }}
+        onClick={() => {
+          onNameClick(type, profile);
+        }}
         aria-label={`Open "${profile.title}" profile details`}
       >
         {profile.title}
@@ -74,11 +99,11 @@ export const getGeneralColumns = (
     accessor: "access_group",
     Header: "Access group",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile access group`,
+      ariaLabel: ({ original: profile }) =>
+        `${profile.title} profile access group`,
     },
-    Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
-      getTitleByName(profile.access_group, accessGroupData)
-    ), 
+    Cell: ({ row: { original: profile } }: CellProps<Profile>) =>
+      getTitleByName(profile.access_group, accessGroupData),
   },
   associated: {
     accessor: "associated",
@@ -96,13 +121,14 @@ export const getGeneralColumns = (
     Header: "Description",
     className: "description-cell",
     meta: {
-      ariaLabel: ({ original: profile }) => profile.description
+      ariaLabel: ({ original: profile }) =>
+        profile.description
           ? `${profile.title} profile description`
           : `No description for ${profile.title} profile`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) =>
       profile.description || <NoData />,
-  }, 
+  },
   actions: {
     ...LIST_ACTIONS_COLUMN_PROPS,
     meta: {
@@ -145,18 +171,21 @@ export const getComplianceColumns = (): Column<Profile>[] => [
       if (isWslProfile(profile) || isPackageProfile(profile)) {
         const query = isWslProfile(profile)
           ? `profile:wsl:${profile.id}:compliant`
-          : `${profile.computers.constrained.filter(
-              (id) => !profile.computers["non-compliant"].includes(id)
-            ).map((id) => `id:${id}`).join(" OR ")}`;
+          : `${profile.computers.constrained
+              .filter((id) => !profile.computers["non-compliant"].includes(id))
+              .map((id) => `id:${id}`)
+              .join(" OR ")}`;
 
-        return <ProfileAssociatedInstancesLink
-          profile={profile}
-          count={
-            profile.computers.constrained.length -
-            profile.computers["non-compliant"].length
-          }
-          query={query}
-        />;
+        return (
+          <ProfileAssociatedInstancesLink
+            profile={profile}
+            count={
+              profile.computers.constrained.length -
+              profile.computers["non-compliant"].length
+            }
+            query={query}
+          />
+        );
       }
     },
   },
@@ -172,11 +201,13 @@ export const getComplianceColumns = (): Column<Profile>[] => [
           ? `profile:wsl:${profile.id}:noncompliant`
           : `${profile.computers["non-compliant"].map((id) => `id:${id}`).join(" OR ")}`;
 
-        return <ProfileAssociatedInstancesLink
-          profile={profile}
-          count={profile.computers["non-compliant"].length}
-          query={query}
-        />;
+        return (
+          <ProfileAssociatedInstancesLink
+            profile={profile}
+            count={profile.computers["non-compliant"].length}
+            query={query}
+          />
+        );
       }
     },
   },
@@ -187,7 +218,8 @@ export const getSecurityColumns = (): Column<Profile>[] => [
     accessor: "last_run_results",
     Header: "Pass rate",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile last audit pass rate`,
+      ariaLabel: ({ original: profile }) =>
+        `${profile.title} profile last audit pass rate`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isSecurityProfile(profile)) {
@@ -199,13 +231,15 @@ export const getSecurityColumns = (): Column<Profile>[] => [
     accessor: "schedule",
     Header: (
       <div>
-        Last run<br />
+        Last run
+        <br />
         <span className="u-text--muted">Schedule</span>
       </div>
     ),
     meta: {
-    ariaLabel: ({ original: profile }) => `${profile.title} profile last run and schedule`,
-  },
+      ariaLabel: ({ original: profile }) =>
+        `${profile.title} profile last run and schedule`,
+    },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isSecurityProfile(profile)) {
         return <SecurityProfileLastRunWithSchedule profile={profile} />;
@@ -222,7 +256,7 @@ export const getSecurityColumns = (): Column<Profile>[] => [
       if (isSecurityProfile(profile)) {
         return SECURITY_PROFILE_MODE_LABELS[profile.mode];
       }
-    }
+    },
   },
 ];
 
@@ -242,13 +276,15 @@ export const getScriptColumns = (): Column<Profile>[] => [
               query: `parent-id:${last_activity.id}`,
             })}
           >
-            {moment(last_activity.creation_time).utc().format(DISPLAY_DATE_TIME_FORMAT)}
+            {moment(last_activity.creation_time)
+              .utc()
+              .format(DISPLAY_DATE_TIME_FORMAT)}
           </Link>
         ) : (
           <NoData />
         );
       }
-    }
+    },
   },
   {
     Header: "Trigger",
@@ -276,7 +312,7 @@ export const getRebootColumn = (): Column<Profile>[] => [
       if (isRebootProfile(profile)) {
         return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
       }
-    }
+    },
   },
 ];
 
@@ -285,12 +321,13 @@ export const getRemovalColumn = (): Column<Profile>[] => [
     accessor: "days_without_exchange",
     Header: "Removal timeframe",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile removal timeframe`,
+      ariaLabel: ({ original: profile }) =>
+        `${profile.title} profile removal timeframe`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isRemovalProfile(profile)) {
         return `${profile.days_without_exchange} days`;
       }
     },
-  }
+  },
 ];

@@ -24,11 +24,11 @@ const ProfileListActions: FC<PackageProfileListActionsProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const { 
-    viewAction,
-    actions,
-    destructiveActions
-  } = useGetProfileActions({ profile, type, openModal });
+  const { viewAction, actions, destructiveActions } = useGetProfileActions({
+    profile,
+    type,
+    openModal,
+  });
 
   return (
     <>

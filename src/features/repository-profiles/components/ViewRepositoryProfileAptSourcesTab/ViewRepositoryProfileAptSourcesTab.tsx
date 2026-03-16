@@ -14,23 +14,30 @@ const ViewRepositoryProfileAptSourcesTab: FC<
   RepositoryProfileDetailsAptSourcesTabProps
 > = ({ profile }) => {
   const { aptSources, isGettingAPTSources } = useGetAPTSources();
-  const profileSources = aptSources.filter((source) => source.profiles.includes(profile.name));
+  const profileSources = aptSources.filter((source) =>
+    source.profiles.includes(profile.name),
+  );
 
-  const columns = useMemo<Column<APTSource>[]>(() => [
-    {
-      accessor: "name",
-      Header: "Name",
-      id: "name",
-      Cell: ({ row: { original: source } }: CellProps<APTSource>) => (source.name),
-    },
-    {
-      accessor: "line",
-      Header: "Line",
-      id: "line",
-      className: "long-cell",
-      Cell: ({ row: { original: source } }: CellProps<APTSource>) => (source.line),
-    },
-  ],[]);
+  const columns = useMemo<Column<APTSource>[]>(
+    () => [
+      {
+        accessor: "name",
+        Header: "Name",
+        id: "name",
+        Cell: ({ row: { original: source } }: CellProps<APTSource>) =>
+          source.name,
+      },
+      {
+        accessor: "line",
+        Header: "Line",
+        id: "line",
+        className: "long-cell",
+        Cell: ({ row: { original: source } }: CellProps<APTSource>) =>
+          source.line,
+      },
+    ],
+    [],
+  );
 
   if (isGettingAPTSources) {
     return <LoadingState />;

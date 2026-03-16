@@ -1,17 +1,19 @@
 import { ProfileTypes } from "../../helpers";
 
-export type TabTypes = 
+export type TabTypes =
   | "info"
   | "activity-history"
   | "package-constraints"
   | "pockets"
-  | "apt-sources"
+  | "apt-sources";
 
 export const getTabs = (type: ProfileTypes) => {
-  const tabs: { label: string; id: TabTypes }[] = [{
-    label: "Info",
-    id: "info",
-  }];
+  const tabs: { label: string; id: TabTypes }[] = [
+    {
+      label: "Info",
+      id: "info",
+    },
+  ];
 
   if (type === ProfileTypes.script) {
     tabs.push({
@@ -24,14 +26,16 @@ export const getTabs = (type: ProfileTypes) => {
       id: "package-constraints",
     });
   } else if (type === ProfileTypes.repository) {
-    tabs.push({
-      label: "Pockets",
-      id: "pockets",
-    },
-    {
-      label: "APT sources",
-      id: "apt-sources",
-    });
+    tabs.push(
+      {
+        label: "Pockets",
+        id: "pockets",
+      },
+      {
+        label: "APT sources",
+        id: "apt-sources",
+      },
+    );
   }
 
   return tabs;

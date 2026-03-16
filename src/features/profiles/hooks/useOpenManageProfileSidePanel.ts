@@ -6,7 +6,9 @@ export const useOpenManageProfileSidePanel = () => {
   const { setPageParams } = usePageParams();
 
   return (profile: Profile, action: ProfileActions) => {
-    const profileIdentifier = usesNameAsIdentifier(profile) ? profile.name : `${profile.id}`;
+    const profileIdentifier = usesNameAsIdentifier(profile)
+      ? profile.name
+      : `${profile.id}`;
 
     setPageParams({
       sidePath: [action],

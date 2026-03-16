@@ -17,14 +17,13 @@ export default function useGetRebootProfiles(
   const authFetch = useFetch();
 
   const { data, isPending, error } = useQuery<
-      AxiosResponse<ApiPaginatedResponse<RebootProfile>>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["rebootprofiles"],
-      queryFn: async ({ signal }) =>
-        authFetch.get("rebootprofiles", { signal }),
-      ...config,
-    });
+    AxiosResponse<ApiPaginatedResponse<RebootProfile>>,
+    AxiosError<ApiError>
+  >({
+    queryKey: ["rebootprofiles"],
+    queryFn: async ({ signal }) => authFetch.get("rebootprofiles", { signal }),
+    ...config,
+  });
 
   return {
     rebootProfiles: data?.data.results ?? [],

@@ -40,9 +40,15 @@ const RemovalProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="Removal profiles"
-          actions={getRemovalProfilesQueryResult?.data.length
-            ? [<AddProfileButton type={ProfileTypes.removal} key="add-removal-profile" />]
-            : undefined
+          actions={
+            getRemovalProfilesQueryResult?.data.length
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.removal}
+                    key="add-removal-profile"
+                  />,
+                ]
+              : undefined
           }
         />
         <PageContent hasTable>

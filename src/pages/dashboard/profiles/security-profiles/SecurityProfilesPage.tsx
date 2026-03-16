@@ -47,16 +47,24 @@ const SecurityProfileRunFixSidePanel = lazy(() =>
 );
 
 const SecurityProfilesPage: FC = () => {
-  const { createPageParamsSetter, lastSidePathSegment, sidePath,
-    currentPage, pageSize, search, status, passRateFrom, passRateTo } =
-    usePageParams();
+  const {
+    createPageParamsSetter,
+    lastSidePathSegment,
+    sidePath,
+    currentPage,
+    pageSize,
+    search,
+    status,
+    passRateFrom,
+    passRateTo,
+  } = usePageParams();
   const { setIsProfileLimitReached } = useProfiles();
   const {
     value: isRetentionNotificationVisible,
     setTrue: showRetentionNotification,
     setFalse: hideRetentionNotification,
   } = useBoolean(false);
-  
+
   const isSecurityProfileLimitReached = useIsSecurityProfilesLimitReached();
   setIsProfileLimitReached(isSecurityProfileLimitReached);
 
@@ -81,7 +89,7 @@ const SecurityProfilesPage: FC = () => {
   const {
     securityProfiles,
     securityProfilesCount,
-    isSecurityProfilesLoading: isGettingSecurityProfiles
+    isSecurityProfilesLoading: isGettingSecurityProfiles,
   } = useGetSecurityProfiles({
     search,
     status: getStatus(),
@@ -96,17 +104,24 @@ const SecurityProfilesPage: FC = () => {
       <PageMain>
         <PageHeader
           title="Security profiles"
-          actions={securityProfilesCount ? [
-            <AddProfileButton type={ProfileTypes.security} key="add-security-profile" />
-          ] : undefined }
+          actions={
+            securityProfilesCount
+              ? [
+                  <AddProfileButton
+                    type={ProfileTypes.security}
+                    key="add-security-profile"
+                  />,
+                ]
+              : undefined
+          }
         />
 
         <PageContent hasTable>
           {!isGettingSecurityProfiles && !!securityProfilesCount && (
-            <SecurityProfilesNotifications 
-            isRetentionNotificationVisible={isRetentionNotificationVisible}
-            hideRetentionNotification={hideRetentionNotification}
-          />
+            <SecurityProfilesNotifications
+              isRetentionNotificationVisible={isRetentionNotificationVisible}
+              hideRetentionNotification={hideRetentionNotification}
+            />
           )}
           <ProfilesContainer
             type={ProfileTypes.security}
@@ -122,7 +137,9 @@ const SecurityProfilesPage: FC = () => {
         >
           {lastSidePathSegment === "add" && (
             <SidePanel.Suspense key="add">
-              <SecurityProfileAddSidePanel showRetentionNotification={showRetentionNotification} />
+              <SecurityProfileAddSidePanel
+                showRetentionNotification={showRetentionNotification}
+              />
             </SidePanel.Suspense>
           )}
 
@@ -137,7 +154,7 @@ const SecurityProfilesPage: FC = () => {
               <SecurityProfileDuplicateSidePanel />
             </SidePanel.Suspense>
           )}
-        
+
           {lastSidePathSegment === "edit" && (
             <SidePanel.Suspense key="edit">
               <SecurityProfileEditSidePanel />
