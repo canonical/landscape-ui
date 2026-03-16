@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    branches: [main, stable, "release/**"]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  process-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.1
+          cache: "pnpm"
+
+      - name: Calculate Version
+        id: calver
+        run: |
+          VERSION=$(node scripts/calculate-version.cjs)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create Release Tag
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: node scripts/manual-version-update.cjs ${{ steps.calver.outputs.version }}
+          commit: "chore: version bump to ${{ steps.calver.outputs.version }}"
+          title: "Version Packages (${{ steps.calver.outputs.version }})"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Production Build
+        run: pnpm run build
+        env:
+          VITE_APP_VERSION: ${{ steps.calver.outputs.version }}
+          VITE_APP_COMMIT: ${{ github.sha }}
+          VITE_API_URL: /api/v2/
+          VITE_API_URL_OLD: /api/
+          VITE_ROOT_PATH: /new_dashboard/
+
+      - name: Install Debian build tools
+        run: |
+          sudo apt-get --update install \
+            build-essential \
+            debhelper \
+            devscripts
+
+      - name: Build Debian assets
+        run: |
+          cd dist
+          cp --recursive ../debian .
+
+          debchange \
+            --newversion "${{ steps.calver.outputs.version }}-0landscape0" \
+            --distribution jammy \
+            "Release ${{ steps.calver.outputs.version }} for jammy"
+
+          tar --create --file "../landscape-dashboard_${{ steps.calver.outputs.version }}.orig.tar" \
+            assets \
+            favicon.svg \
+            index.html
+
+          gzip "../landscape-dashboard_${{ steps.calver.outputs.version }}.orig.tar"
+          debuild -S --no-sign -sa
+          cp debian/changelog ../debian
+        env:
+          DEBFULLNAME: Landscape Team
+          DEBEMAIL: landscape-team@canonical.com
+      
+      - name: Create GitHub release
+        run: |
+          gh release create "v${{ steps.calver.outputs.version }}" \
+            --generate-notes \
+            --target ${{ github.sha }} \
+            $PRERELEASE_OPTION \
+            $LATEST_OPTION \
+            landscape-dashboard_*
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRERELEASE_OPTION: ${{ github.ref == 'refs/heads/main' && '--prerelease' || '' }}
+          LATEST_OPTION: ${{ github.ref != 'refs/heads/stable' && '--latest=false' || '' }}
