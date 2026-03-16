@@ -122,9 +122,6 @@ export const hasDescription = (type: ProfileTypes) =>
 export const canArchiveProfile = (type: ProfileTypes) =>
   [ProfileTypes.security, ProfileTypes.script].includes(type);
 
-export const hasExtraActions = (type: ProfileTypes) =>
-  [ProfileTypes.security, ProfileTypes.package].includes(type);
-
 export const hasApiSearch = (type: ProfileTypes) =>
   [ProfileTypes.script, ProfileTypes.security, ProfileTypes.wsl].includes(type);
 

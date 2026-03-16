@@ -1,11 +1,14 @@
-import type { FC } from "react";
+import { lazy, type FC } from "react";
 import type { Profile } from "../../../../types";
 import { hasSchedule, type ProfileTypes } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 import ViewProfileGeneralBlock from "../ViewProfileGeneralBlock";
 import ViewProfileAssociationBlock from "../ViewProfileAssociationBlock";
-import ViewProfileScheduleBlock from "../ViewProfileScheduleBlock";
 import ViewProfileDetailsBlock from "../ViewProfileDetailsBlock";
+
+const ViewProfileScheduleBlock = lazy(async () =>
+  import("../ViewProfileScheduleBlock"),
+);
 
 interface ViewProfileInfoTabProps {
   readonly profile: Profile;

@@ -7,6 +7,7 @@ import { capitalize } from "@/utils/_helpers";
 import { getModalMessage, getNotificationMessage } from "./helpers";
 import { canArchiveProfile, type ProfileTypes } from "../../helpers";
 import { useRemoveProfile } from "../../api/useRemoveProfile";
+import useSidePanel from "@/hooks/useSidePanel";
 
 interface RemoveProfileModalProps {
   readonly profile: Profile;
@@ -24,12 +25,11 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
   const removalType = canArchiveProfile(type) ? "archive" : "remove";
   const removalTypeTitle = capitalize(removalType);
 
-  const notificationMessage =
-    `You have successfully ${removalType}d "${profile.title}" profile.` +
-    getNotificationMessage(type);
+  const notificationMessage = `You have successfully ${removalType}d "${profile.title}" profile. ${getNotificationMessage(type)}`;
 
   const { notify } = useNotify();
   const debug = useDebug();
+  const { closeSidePanel } = useSidePanel();
 
   const { removeProfile, isRemovingProfile } = useRemoveProfile(type);
 
@@ -37,8 +37,10 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
     try {
       await removeProfile({
         id: profile.id,
-        name: profile.name ?? profile.title,
+        name: profile.name,
       });
+
+      closeSidePanel();
 
       notify.success({
         title: `${capitalize(type)} profile ${removalType}d`,

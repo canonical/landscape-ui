@@ -29,7 +29,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
         appearance: "positive",
         typeText: type,
       };
-  
+
   const { value: isModalRead, setTrue: readModal } = useBoolean(
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
   );
@@ -40,9 +40,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const openAddSidePanel = createPageParamsSetter({
-    sidePath: ["add"]
-  });
+  const openAddSidePanel = createPageParamsSetter({ sidePath: ["add"] });
 
   const handleClick = () => {
     if (type === ProfileTypes.wsl && !isModalRead) {
@@ -72,7 +70,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
         {settings.icon}
         <span>Add {settings.typeText} profile</span>
       </Button>
-  
+
       {isModalOpen && (
         <ConfirmationModal
           close={closeModal}

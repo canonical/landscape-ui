@@ -7,8 +7,7 @@ import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
 import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
 import {
-  hasExtraActions,
-  isProfileArchived,
+  isScriptProfile,
   type ProfileTypes,
 } from "../../../../helpers";
 import moment from "moment";
@@ -43,12 +42,11 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
     : actions;
   const isNegative = (action: Action) => action.appearance === "negative";
 
-  if (isProfileArchived(profile)) {
-    const lastEdit = profile.last_edited_at ?? profile.modification_time;
+  if (isScriptProfile(profile) && profile.archived) {
     return (
       <Notification inline title="Profile archived:" severity="caution">
         The profile was archived on{" "}
-        {moment(lastEdit ?? undefined).format(DISPLAY_DATE_TIME_FORMAT)}.
+        {moment(profile.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}.
       </Notification>
     );
   }
@@ -75,7 +73,7 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
             </span>
           </Button>
         ))}
-        collapseFrom={hasExtraActions(type) ? "xxl" : "xs"}
+        collapseFrom={buttons.length > 3 ? "xxl" : "xs"}
       />
 
       <RemoveProfileModal

@@ -5,7 +5,7 @@ import { ROUTES } from "@/libs/routes";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Spinner } from "@canonical/react-components";
 import { Suspense, type FC } from "react";
-import type { Profile } from "../..";
+import type { Profile } from "../../types";
 import {
   hasAssociations,
   isPostEnrollmentScriptProfile,
