@@ -24,6 +24,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
         className: "u-no-margin--bottom",
         icon: <Icon name="plus" />,
         hasIcon: true,
+        typeText: "",
       }
     : {
         appearance: "positive",
@@ -40,7 +41,10 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const openAddSidePanel = createPageParamsSetter({ sidePath: ["add"] });
+  const openAddSidePanel = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: ""
+  });
 
   const handleClick = () => {
     if (type === ProfileTypes.wsl && !isModalRead) {

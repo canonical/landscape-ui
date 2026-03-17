@@ -9,12 +9,12 @@ const RemoveProfileModal = lazy(
   async () => import("../../../RemoveProfileModal"),
 );
 
-interface PackageProfileListActionsProps {
+interface ProfileListActionsProps {
   readonly profile: Profile;
   readonly type: ProfileTypes;
 }
 
-const ProfileListActions: FC<PackageProfileListActionsProps> = ({
+const ProfileListActions: FC<ProfileListActionsProps> = ({
   profile,
   type,
 }) => {

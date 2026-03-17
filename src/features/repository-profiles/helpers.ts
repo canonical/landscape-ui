@@ -1,5 +1,5 @@
 import type { RepositoryProfilePocket } from "./types";
-import type { Distribution } from "../mirrors";
+import type { Distribution } from "@/features/mirrors";
 
 export const getDistributions = (pockets: RepositoryProfilePocket[]) => {
   const distributions: Distribution[] = [];

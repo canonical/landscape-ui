@@ -12,27 +12,37 @@ import Blocks from "@/components/layout/Blocks";
 
 const ViewRemovalProfileDetailsBlock = lazy(
   async () =>
-    import("@/features/removal-profiles/components/ViewRemovalProfileDetailsBlock"),
+    import("@/features/removal-profiles").then((module) => ({
+       default: module.ViewRemovalProfileDetailsBlock,
+     })),
 );
 
 const ViewScriptProfileDetailsBlock = lazy(
   async () =>
-    import("@/features/script-profiles/components/ViewScriptProfileDetailsBlock"),
+    import("@/features/script-profiles").then((module) => ({
+       default: module.ViewScriptProfileDetailsBlock,
+     })),
 );
 
 const ViewSecurityProfileDetailsBlock = lazy(
   async () =>
-    import("@/features/security-profiles/components/ViewSecurityProfileDetailsBlock"),
+    import("@/features/security-profiles").then((module) => ({
+       default: module.ViewSecurityProfileDetailsBlock,
+     })),
 );
 
 const ViewUpgradeProfileDetailsBlock = lazy(
   async () =>
-    import("@/features/upgrade-profiles/components/ViewUpgradeProfileDetailsBlock"),
+    import("@/features/upgrade-profiles").then((module) => ({
+       default: module.ViewUpgradeProfileDetailsBlock,
+     })),
 );
 
 const ViewWslProfileDetailsBlock = lazy(
   async () =>
-    import("@/features/wsl-profiles/components/ViewWslProfileDetailsBlock"),
+    import("@/features/wsl-profiles").then((module) => ({
+       default: module.ViewWslProfileDetailsBlock,
+     })),
 );
 
 interface ViewProfileDetailsBlockProps {

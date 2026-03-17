@@ -13,7 +13,7 @@ export function useGetRepositoryProfile(name: string) {
     isPending,
     error,
   } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<RepositoryProfile[]>>,
+    AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>,
     AxiosError<ApiError>
   >({
     queryKey: ["repositoryProfile", name],
