@@ -1,6 +1,6 @@
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 
 interface UpgradeConfirmationModalProps {
   readonly onClose: () => void;
@@ -18,13 +18,15 @@ const UpgradeConfirmationModal: FC<UpgradeConfirmationModalProps> = ({
   return (
     <ConfirmationModal
       close={onClose}
-      title={`Upgrade ${pluralize(eligibleCount, "distribution")} for ${eligibleCount} ${pluralize(
+      title={`Upgrade ${pluralize(eligibleCount, "distribution")} for ${pluralizeWithCount(
         eligibleCount,
         "instance",
       )}`}
       confirmButtonLabel="Confirm"
+      confirmButtonProps={{ type: "button" }}
       onConfirm={onConfirm}
       confirmButtonDisabled={isCreating}
+      confirmButtonLoading={isCreating}
     >
       <p>
         A reboot is required to complete this action. There is a risk that the{" "}

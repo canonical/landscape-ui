@@ -22,20 +22,19 @@ export const useDistributionUpgradesTableData = (
 
       const currentDistribution = target
         ? formatDistributionTitle(
-            target.current_release_name,
-            target.current_release_version,
+            target.current_release?.name ?? null,
+            target.current_release?.version ?? null,
             "Unknown",
           )
         : "Unknown";
 
-      const targetDistribution =
-        target && target.target_release_name
-          ? formatDistributionTitle(
-              target.target_release_name,
-              target.target_release_version,
-              "Unavailable",
-            )
-          : "Unavailable";
+      const targetDistribution = target?.target_release
+        ? formatDistributionTitle(
+            target.target_release.name,
+            target.target_release.version,
+            "Unavailable",
+          )
+        : "Unavailable";
 
       const modalRow: InstanceModalRow = {
         instanceId: instId,
@@ -47,10 +46,9 @@ export const useDistributionUpgradesTableData = (
       if (target) {
         return {
           modalRow,
-          isEligible:
-            !target.reason_code && Boolean(target.target_release_name),
+          isEligible: !target.reason?.code && Boolean(target.target_release),
           targetDistribution,
-          reasonCode: target.reason_code ?? null,
+          reasonCode: target.reason?.code ?? null,
         };
       } else {
         return {
@@ -111,6 +109,7 @@ export const useDistributionUpgradesTableData = (
           text: `Upgrading to ${target}`,
           count: instances.length,
           instances,
+          distributionKey: target,
         });
       });
 
@@ -130,7 +129,7 @@ export const useDistributionUpgradesTableData = (
 
       ORDERED_REASONS.forEach((reasonText) => {
         const instances = ineligibleMap.get(reasonText);
-        if (instances && instances.length > 0) {
+        if (instances?.length) {
           cannotUpgradeSubRows.push({
             text: reasonText,
             count: instances.length,

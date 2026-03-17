@@ -201,7 +201,7 @@ const InstanceList = memo(function InstanceList({
           return "";
         },
         Cell: ({ row: { original } }: CellProps<Instance>) => {
-          if (original.has_release_upgrades === false) {
+          if (!original.has_release_upgrades) {
             return <>{original.distribution_info?.description || <NoData />}</>;
           }
 

@@ -1,22 +1,6 @@
 import type { AccessGroup } from "@/features/access-groups";
 import type { Profile } from "./Profile";
 
-interface CloudInstanceMetadata {
-  "ami-id"?: string;
-  "instance-id"?: string;
-  "instance-type"?: string;
-}
-
-interface NetworkDevice {
-  broadcast_address: string;
-  duplex: boolean;
-  interface: string;
-  ip_address: string;
-  mac_address: string;
-  netmask: string;
-  speed: number | null;
-}
-
 interface Partition {
   description: string;
   filesystem: string;
@@ -128,12 +112,6 @@ export interface GroupedHardware {
   usb: Usb[];
 }
 
-type HardwareDescription = [
-  attribute: string,
-  title: string,
-  value: number | null,
-];
-
 interface InstanceAlert {
   type: string;
   summary: string;
@@ -169,7 +147,7 @@ export interface UbuntuProService extends Record<string, unknown> {
   status_details?: string;
 }
 
-interface UbuntuProInfo {
+export interface UbuntuProInfo {
   attached: boolean;
   expires: string | null;
   services: UbuntuProService[];
@@ -221,9 +199,9 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   has_release_upgrades: boolean;
 }
 
-interface WithRelation<Type extends InstanceWithoutRelation> extends Type {
+type WithRelation<T extends InstanceWithoutRelation> = T & {
   parent: InstanceWithoutRelation | null;
-}
+};
 
 export type Instance = WithRelation<InstanceWithoutRelation>;
 
@@ -232,10 +210,10 @@ export interface FreshInstance extends Instance {
   distribution_info: null;
 }
 
-interface WithDistribution<Type extends InstanceWithoutRelation> extends Type {
+type WithDistribution<T extends InstanceWithoutRelation> = T & {
   distribution: string;
   distribution_info: DistributionInfo;
-}
+};
 
 export type UbuntuInstanceWithoutRelation =
   WithDistribution<InstanceWithoutRelation>;
@@ -252,8 +230,7 @@ export interface WindowsInstanceWithoutRelation extends WithDistribution<Instanc
   is_wsl_instance: false;
 }
 
-export interface WslInstance
-  extends WithRelation<WslInstanceWithoutRelation>, UbuntuInstance {
+export interface WslInstance extends WithRelation<WslInstanceWithoutRelation> {
   parent: WindowsInstanceWithoutRelation;
 }
 

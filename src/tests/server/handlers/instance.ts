@@ -99,13 +99,12 @@ export default [
         return {
           computer_id: id,
           computer_title: "Unknown Instance",
-          current_release_name: null,
-          current_release_version: null,
-          target_release_code_name: null,
-          target_release_name: null,
-          target_release_version: null,
-          reason_code: "instance_not_found",
-          reason_detail: `Instance with id ${id} not found.`,
+          current_release: null,
+          target_release: null,
+          reason: {
+            code: "instance_not_found",
+            detail: `Instance with id ${id} not found.`,
+          },
         };
       }
 
@@ -116,13 +115,16 @@ export default [
         return {
           computer_id: id,
           computer_title: instance.title,
-          current_release_name: "Ubuntu 18.04 LTS",
-          current_release_version: "18.04",
-          target_release_code_name: "focal",
-          target_release_name: "Ubuntu 20.04 LTS",
-          target_release_version: "20.04",
-          reason_code: null,
-          reason_detail: null,
+          current_release: {
+            name: "Ubuntu 18.04 LTS",
+            version: "18.04",
+          },
+          target_release: {
+            code_name: "focal",
+            name: "Ubuntu 20.04 LTS",
+            version: "20.04",
+          },
+          reason: null,
         };
       }
 
@@ -130,13 +132,16 @@ export default [
         return {
           computer_id: id,
           computer_title: instance.title,
-          current_release_name: "Ubuntu 22.04 LTS",
-          current_release_version: "22.04",
-          target_release_code_name: "noble",
-          target_release_name: "Ubuntu 24.04 LTS",
-          target_release_version: "24.04",
-          reason_code: null,
-          reason_detail: null,
+          current_release: {
+            name: "Ubuntu 22.04 LTS",
+            version: "22.04",
+          },
+          target_release: {
+            code_name: "noble",
+            name: "Ubuntu 24.04 LTS",
+            version: "24.04",
+          },
+          reason: null,
         };
       }
 
@@ -144,26 +149,30 @@ export default [
         return {
           computer_id: id,
           computer_title: instance.title,
-          current_release_name: "Ubuntu Core 22",
-          current_release_version: "22",
-          target_release_code_name: null,
-          target_release_name: null,
-          target_release_version: null,
-          reason_code: "policy_disabled",
-          reason_detail: "Policy is preventing distribution upgrades.",
+          current_release: {
+            name: "Ubuntu Core 22",
+            version: "22",
+          },
+          target_release: null,
+          reason: {
+            code: "policy_disabled",
+            detail: "Policy is preventing distribution upgrades.",
+          },
         };
       }
 
       return {
         computer_id: id,
         computer_title: instance.title,
-        current_release_name: "Ubuntu 10.04 LTS",
-        current_release_version: "10.04",
-        target_release_code_name: null,
-        target_release_name: null,
-        target_release_version: null,
-        reason_code: "no_upgrade_target",
-        reason_detail: "No release upgrades are available.",
+        current_release: {
+          name: "Ubuntu 10.04 LTS",
+          version: "10.04",
+        },
+        target_release: null,
+        reason: {
+          code: "no_upgrade_target",
+          detail: "No release upgrades are available.",
+        },
       };
     });
 

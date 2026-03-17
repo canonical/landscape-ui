@@ -4,9 +4,10 @@ import { useCreateDistributionUpgrades } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize } from "@/utils/_helpers";
+import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
+  CheckboxInput,
   Form,
   Icon,
   ModularTable,
@@ -22,6 +23,7 @@ import classes from "./DistributionUpgrades.module.scss";
 import type { InstanceModalRow, TableRow } from "./types";
 import { useDistributionUpgradesTableData } from "./useDistributionUpgradesTableData";
 import LoadingState from "@/components/layout/LoadingState";
+import { useBoolean } from "usehooks-ts";
 
 export interface DistributionUpgradesProps {
   readonly selectedInstances: number[];
@@ -30,48 +32,61 @@ export interface DistributionUpgradesProps {
 const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   selectedInstances,
 }) => {
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
-  const { openActivityDetails } = useActivities();
+  const {
+    value: showConfirmModal,
+    setTrue: openModal,
+    setFalse: closeModal,
+  } = useBoolean(false);
 
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [viewedCategory, setViewedCategory] = useState<{
     title: string;
     instances: InstanceModalRow[];
     isIneligibleCategory: boolean;
   } | null>(null);
 
+  const [deselectedDistributions, setDeselectedDistributions] = useState<
+    string[]
+  >([]);
+
+  const debug = useDebug();
+  const { notify } = useNotify();
+  const { closeSidePanel } = useSidePanel();
+  const { openActivityDetails } = useActivities();
+
   const { isGettingDistributionUpgradeTargets, eligibleIds, tableData } =
     useDistributionUpgradesTableData(selectedInstances);
 
-  const eligibleIdSet = useMemo(() => new Set(eligibleIds), [eligibleIds]);
+  const finalEligibleIds = useMemo(
+    () =>
+      tableData
+        .flatMap((row) => row.subRows ?? [])
+        .filter(
+          (subRow) =>
+            subRow.distributionKey !== undefined &&
+            !deselectedDistributions.includes(subRow.distributionKey),
+        )
+        .flatMap((subRow) =>
+          subRow.instances.map((instance) => instance.instanceId),
+        ),
+    [tableData, deselectedDistributions],
+  );
 
   const { createDistributionUpgrades, isCreatingDistributionUpgrades } =
     useCreateDistributionUpgrades();
 
-  const handleSubmitForm = () => {
-    setShowConfirmModal(true);
-  };
-
   const handleConfirm = async () => {
-    setShowConfirmModal(false);
-
-    if (!eligibleIds.length) {
-      return;
-    }
-
     try {
       const { data: activity } = await createDistributionUpgrades({
-        computer_ids: eligibleIds,
+        computer_ids: finalEligibleIds,
       });
 
+      closeModal();
       closeSidePanel();
 
       notify.success({
-        title: "Distribution upgrades queued",
-        message: `Distribution upgrades for ${eligibleIds.length} ${pluralize(
-          eligibleIds.length,
+        title: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} queued`,
+        message: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} for ${pluralizeWithCount(
+          finalEligibleIds.length,
           "instance has",
           "instances have",
         )} been queued in Activities.`,
@@ -98,18 +113,38 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
         Cell: ({ row }: CellProps<TableRow>) => {
           const depth = (row as Row<TableRow> & { depth?: number }).depth || 0;
           const isParent = depth === 0;
+          const { distributionKey } = row.original;
 
           return (
             <div
               className={classNames(classes.statusCell, {
                 [classes.parentStatusCell]: isParent,
-                [classes.childStatusCell]: !isParent,
+                [classes.childStatusCell]: !isParent && !distributionKey,
+                [classes.childStatusCheckboxCell]: !isParent && distributionKey,
               })}
             >
               {isParent && row.original.iconClass && (
                 <Icon name={row.original.iconClass} />
               )}
-              <span>{row.original.text}</span>
+              {distributionKey ? (
+                <CheckboxInput
+                  inline
+                  labelClassName="u-no-margin--bottom"
+                  label={<span>{row.original.text}</span>}
+                  checked={!deselectedDistributions.includes(distributionKey)}
+                  onChange={() => {
+                    setDeselectedDistributions(
+                      deselectedDistributions.includes(distributionKey)
+                        ? deselectedDistributions.filter(
+                            (k) => k !== distributionKey,
+                          )
+                        : [...deselectedDistributions, distributionKey],
+                    );
+                  }}
+                />
+              ) : (
+                <span>{row.original.text}</span>
+              )}
             </div>
           );
         },
@@ -128,17 +163,17 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
                 title: row.original.text,
                 instances: row.original.instances,
                 isIneligibleCategory: row.original.instances.every(
-                  (instance) => !eligibleIdSet.has(instance.instanceId),
+                  (instance) => !eligibleIds.includes(instance.instanceId),
                 ),
               });
             }}
           >
-            {row.original.count} {pluralize(row.original.count, "instance")}
+            {pluralizeWithCount(row.original.count, "instance")}
           </Button>
         ),
       },
     ],
-    [eligibleIdSet],
+    [eligibleIds, deselectedDistributions],
   );
 
   if (isGettingDistributionUpgradeTargets) {
@@ -146,35 +181,31 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   }
 
   return (
-    <Form noValidate onSubmit={handleSubmitForm}>
+    <Form noValidate onSubmit={openModal}>
       <Notification severity="caution" title="Warning">
         When upgrading distributions, misbehaved packages may require user input
         which can cause the upgrade to fail. Test the upgrade on a test system
         to ensure success. A reboot is required to complete this action.
       </Notification>
 
-      <div style={{ marginTop: 12 }}>
-        <ModularTable columns={columns} data={tableData} />
-      </div>
+      <ModularTable columns={columns} data={tableData} />
 
       <SidePanelFormButtons
         submitButtonDisabled={
           isGettingDistributionUpgradeTargets ||
           isCreatingDistributionUpgrades ||
-          eligibleIds.length === 0
+          finalEligibleIds.length === 0
         }
         submitButtonLoading={isCreatingDistributionUpgrades}
         submitButtonText="Upgrade distributions"
-        onSubmit={handleSubmitForm}
+        onSubmit={openModal}
       />
 
       {showConfirmModal && (
         <UpgradeConfirmationModal
-          onClose={() => {
-            setShowConfirmModal(false);
-          }}
+          onClose={closeModal}
           onConfirm={handleConfirm}
-          eligibleCount={eligibleIds.length}
+          eligibleCount={finalEligibleIds.length}
           isCreating={isCreatingDistributionUpgrades}
         />
       )}

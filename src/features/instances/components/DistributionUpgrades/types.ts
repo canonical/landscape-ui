@@ -12,4 +12,5 @@ export interface TableRow extends Record<string, unknown> {
   text: string;
   subRows?: TableRow[];
   iconClass?: string;
+  distributionKey?: string;
 }

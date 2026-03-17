@@ -3,10 +3,6 @@ export const formatDistributionTitle = (
   version: string | null | undefined,
   fallback: string,
 ) => {
-  if (!name && !version) {
-    return fallback;
-  }
-
   if (name && version && !name.includes(version)) {
     return `${name} (${version})`;
   }
