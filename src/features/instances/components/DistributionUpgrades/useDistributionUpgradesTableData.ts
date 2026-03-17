@@ -147,7 +147,7 @@ export const useDistributionUpgradesTableData = (
       remainingReasons.forEach((reasonText) => {
         const instances = ineligibleMap.get(reasonText);
 
-        if (instances && instances.length > 0) {
+        if (instances?.length) {
           cannotUpgradeSubRows.push({
             text: reasonText,
             count: instances.length,
