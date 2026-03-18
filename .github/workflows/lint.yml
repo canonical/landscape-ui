@@ -2,7 +2,7 @@ name: Lint & format
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [main]
 
 jobs:
   eslint:
