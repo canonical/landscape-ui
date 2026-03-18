@@ -1,5 +1,5 @@
 import { Input } from "@canonical/react-components";
-import { useId, type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC } from "react";
 import CronHelp from "../CronHelp";
 import { toCronPhrase } from "./helpers";
 
@@ -9,8 +9,6 @@ type CronScheduleProps = ComponentProps<typeof Input> &
   };
 
 const CronSchedule: FC<CronScheduleProps> = ({ touched, value, ...props }) => {
-  const id = useId();
-
   let help = "";
   let errorMessage = "";
 
@@ -26,20 +24,19 @@ const CronSchedule: FC<CronScheduleProps> = ({ touched, value, ...props }) => {
   }
 
   return (
-    <>
-      <label htmlFor={id}>* Schedule</label>
-      <CronHelp />
-
-      <Input
-        id={id}
-        type="text"
-        {...props}
-        help={help}
-        value={value}
-        error={touched && errorMessage}
-        required
-      />
-    </>
+    <Input
+      label={
+        <>
+          Schedule
+          <CronHelp />
+        </>
+      }
+      type="text"
+      {...props}
+      help={help}
+      value={value}
+      error={touched && errorMessage}
+    />
   );
 };
 
