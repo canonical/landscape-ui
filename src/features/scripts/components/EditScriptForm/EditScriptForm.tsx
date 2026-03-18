@@ -1,29 +1,17 @@
 import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { ROUTES } from "@/libs/routes";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Button,
-  ConfirmationModal,
-  Form,
-  Icon,
-  Input,
-  ModularTable,
-} from "@canonical/react-components";
+import { Button, Form, Icon, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useRef, useState } from "react";
-import { Link } from "react-router";
-import type { CellProps } from "react-table";
+import { lazy, Suspense, useRef, useState } from "react";
 import {
   useCreateScriptAttachment,
   useEditScript,
-  useGetAssociatedScriptProfiles,
   useRemoveScriptAttachment,
 } from "../../api";
 import { DEFAULT_SCRIPT } from "../../constants";
@@ -31,18 +19,16 @@ import {
   getCreateAttachmentsPromises,
   getEditScriptParams,
 } from "../../helpers";
-import type {
-  Script,
-  ScriptFormValues,
-  TruncatedScriptProfile,
-} from "../../types";
+import type { Script, ScriptFormValues } from "../../types";
+import EditScriptConfirmationModal from "../EditScriptConfirmationModal";
 import ScriptFormAttachments from "../ScriptFormAttachments";
-import classes from "./EditScriptForm.module.scss";
 import {
   getInitialValues,
   getValidationSchema,
   removeFileExtension,
 } from "./helpers";
+
+const RunScriptForm = lazy(async () => import("../RunScriptForm"));
 
 interface EditScriptFormProps {
   readonly script: Script;
@@ -50,9 +36,11 @@ interface EditScriptFormProps {
 
 const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalIntent, setModalIntent] = useState<
+    "submit" | "submitAndRun" | null
+  >(null);
 
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, setSidePanelContent } = useSidePanel();
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -60,43 +48,44 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const { removeScriptAttachment } = useRemoveScriptAttachment();
   const { editScript, isEditing } = useEditScript();
 
-  const { associatedScriptProfiles, isAssociatedScriptProfilesLoading } =
-    useGetAssociatedScriptProfiles(script.id, { enabled: modalOpen });
-
-  const handleSubmit = async (values: ScriptFormValues) => {
+  const performEdit = async (values: ScriptFormValues) => {
     const newAttachments = Object.values(values.attachments).filter(
       (a) => a !== null,
     );
-    try {
-      const promises: Promise<unknown>[] = [
-        editScript(getEditScriptParams({ scriptId: script.id, values })),
-      ];
-      if (values.attachmentsToRemove.length) {
-        for (const filename of values.attachmentsToRemove) {
-          promises.push(
-            removeScriptAttachment({ script_id: script.id, filename }),
-          );
-        }
-      }
-      if (newAttachments.length) {
+    const promises: Promise<unknown>[] = [
+      editScript(getEditScriptParams({ scriptId: script.id, values })),
+    ];
+    if (values.attachmentsToRemove.length) {
+      for (const filename of values.attachmentsToRemove) {
         promises.push(
-          ...(await getCreateAttachmentsPromises({
-            attachments: newAttachments,
-            createScriptAttachment,
-            script_id: script.id,
-          })),
+          removeScriptAttachment({ script_id: script.id, filename }),
         );
       }
-      await Promise.all(promises);
+    }
+    if (newAttachments.length) {
+      promises.push(
+        ...(await getCreateAttachmentsPromises({
+          attachments: newAttachments,
+          createScriptAttachment,
+          script_id: script.id,
+        })),
+      );
+    }
+    await Promise.all(promises);
+    notify.success({
+      title: `You have successfully submitted a new version of ${script.title}`,
+      message:
+        "All its associated profiles will now be run using this new version.",
+    });
+  };
+
+  const handleSubmit = async (values: ScriptFormValues) => {
+    try {
+      await performEdit(values);
+      setModalIntent(null);
       closeSidePanel();
-      setModalOpen(false);
-      notify.success({
-        title: `You have successfully submitted a new version of ${script.title}`,
-        message:
-          "All its associated profiles will now be run using this new version.",
-      });
     } catch (error) {
-      setModalOpen(false);
+      setModalIntent(null);
       debug(error);
     }
   };
@@ -106,6 +95,25 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
     validationSchema: getValidationSchema(),
     onSubmit: handleSubmit,
   });
+
+  const openRunForm = () => {
+    setSidePanelContent(
+      `Run "${script.title}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <RunScriptForm script={script} />
+      </Suspense>,
+    );
+  };
+
+  const handleSubmitAndRun = async (values: ScriptFormValues) => {
+    try {
+      await performEdit(values);
+      openRunForm();
+    } catch (error) {
+      setModalIntent(null);
+      debug(error);
+    }
+  };
 
   const handleInputChange = async ({
     target: { files },
@@ -132,6 +140,17 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   };
 
   const clickFileInput = () => inputRef.current?.click();
+
+  const modalIntentProps =
+    modalIntent === "submitAndRun"
+      ? {
+          onConfirm: () => handleSubmitAndRun(formik.values),
+          confirmButtonLabel: "Submit and run",
+        }
+      : {
+          onConfirm: formik.handleSubmit,
+          confirmButtonLabel: "Submit new version",
+        };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -206,91 +225,26 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
 
       <SidePanelFormButtons
         onSubmit={() => {
-          setModalOpen(true);
+          setModalIntent("submit");
         }}
+        submitButtonDisabled={!formik.dirty}
         submitButtonText="Submit new version"
+        secondaryActionButtonTitle="Submit and run"
+        secondaryActionButtonDisabled={!formik.dirty}
+        secondaryActionButtonSubmit={() => {
+          setModalIntent("submitAndRun");
+        }}
       />
 
-      {modalOpen && (
-        <ConfirmationModal
-          title={`Submit new version of "${script.title}"`}
-          confirmButtonLabel="Submit new version"
-          onConfirm={() => {
-            formik.handleSubmit();
+      {modalIntent !== null && (
+        <EditScriptConfirmationModal
+          script={script}
+          {...modalIntentProps}
+          isConfirming={isEditing}
+          onClose={() => {
+            setModalIntent(null);
           }}
-          confirmButtonAppearance="positive"
-          confirmButtonDisabled={isEditing}
-          confirmButtonLoading={isEditing}
-          close={() => {
-            setModalOpen(false);
-          }}
-          className={classes.modal}
-          confirmButtonProps={{
-            type: "button",
-          }}
-        >
-          {associatedScriptProfiles.length > 0 ? (
-            <>
-              <p>
-                All future script runs will be done using the latest version of
-                the code. Submitting these changes will affect the following
-                profiles:
-              </p>
-              <ModularTable
-                columns={[
-                  {
-                    Header: "active profiles",
-                    accessor: "title",
-                    Cell: ({ row }: CellProps<TruncatedScriptProfile>) => (
-                      <Link
-                        to={ROUTES.scripts.root({ tab: "profiles" })}
-                        state={{ scriptProfileId: row.original.id }}
-                        target="_blank"
-                      >
-                        {row.original.title}
-                      </Link>
-                    ),
-                  },
-                  {
-                    Header: "associated instances",
-                    Cell: ({ row }: CellProps<TruncatedScriptProfile>) => {
-                      const associatedProfile = associatedScriptProfiles.find(
-                        (profile) => profile.id === row.original.id,
-                      );
-
-                      const associatedComputers =
-                        associatedProfile?.computers.num_associated_computers;
-
-                      if (isAssociatedScriptProfilesLoading) {
-                        return <LoadingState />;
-                      }
-
-                      return associatedComputers ? (
-                        <Link
-                          to={ROUTES.instances.root({
-                            tags: associatedProfile?.tags,
-                          })}
-                          target="_blank"
-                        >
-                          {associatedComputers} instance
-                          {associatedComputers > 1 ? "s" : ""}
-                        </Link>
-                      ) : (
-                        <NoData />
-                      );
-                    },
-                  },
-                ]}
-                data={script.script_profiles}
-              />
-            </>
-          ) : (
-            <p>
-              All future script runs will be done using the latest version of
-              the code.
-            </p>
-          )}
-        </ConfirmationModal>
+        />
       )}
     </Form>
   );

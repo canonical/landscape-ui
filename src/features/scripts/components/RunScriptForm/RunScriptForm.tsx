@@ -1,3 +1,5 @@
+import CodeEditor from "@/components/form/CodeEditor";
+import { DeliveryBlock } from "@/components/form/DeliveryScheduling";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
@@ -17,25 +19,45 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment/moment";
-import { useState, type FC } from "react";
-import { useRunScript } from "../../api";
+import { type FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import { useEditScript, useRunScript } from "../../api";
+import { getCode, getEncodedCode } from "../../helpers";
 import type { Script } from "../../types";
+import EditScriptConfirmationModal from "../EditScriptConfirmationModal";
 import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import classes from "./RunScriptForm.module.scss";
 import type { FormProps } from "./types";
-import { DeliveryBlock } from "@/components/form/DeliveryScheduling";
 
 interface RunScriptFormProps {
   readonly script: Script;
 }
 
 const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
+  const {
+    value: isRunConfirmVisible,
+    setTrue: showRunConfirm,
+    setFalse: hideRunConfirm,
+  } = useBoolean();
+
+  const {
+    value: isEditConfirmVisible,
+    setTrue: showEditConfirm,
+    setFalse: hideEditConfirm,
+  } = useBoolean();
+
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
 
   const { runScript } = useRunScript();
+  const { editScript } = useEditScript();
+
+  const originalCode = getCode({
+    code: script.code,
+    interpreter: script.interpreter,
+  });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit = {
@@ -60,6 +82,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     }
 
     try {
+      if (values.code !== originalCode) {
+        await editScript({
+          script_id: script.id,
+          code: getEncodedCode(values.code),
+        });
+      }
+
       await runScript(valuesToSubmit);
 
       closeSidePanel();
@@ -74,13 +103,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues: { ...INITIAL_VALUES, code: originalCode },
     onSubmit: handleSubmit,
     validateOnMount: true,
     validationSchema: VALIDATION_SCHEMA,
   });
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const codeChanged = formik.values.code !== originalCode;
 
   const { tags, isGettingTags } = useGetTags();
 
@@ -110,14 +139,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
     debug(taggedInstancesError);
   }
 
-  const hideModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
   const tagOptions: MultiSelectItem[] =
     tags.map((tag) => ({
       label: tag,
@@ -141,18 +162,26 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
       return getFeatures(instance).scripts;
     }) ?? [];
 
-  const trySubmit = () => {
-    if (formik.values.queryType == "tags") {
-      showModal();
+  const proceedWithRun = () => {
+    if (formik.values.queryType === "tags") {
+      showRunConfirm();
     } else {
       formik.handleSubmit();
+    }
+  };
+
+  const trySubmit = () => {
+    if (codeChanged) {
+      showEditConfirm();
+    } else {
+      proceedWithRun();
     }
   };
 
   return (
     <>
       <Form onSubmit={trySubmit} noValidate>
-        <p className="u-no-margin--bottom">Select instances by:</p>
+        <p className="u-no-margin--bottom">* Select instances by:</p>
         <div className="is-required">
           <div>
             <div className={classes.radioGroup}>
@@ -263,16 +292,39 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
           </Col>
         </Row>
 
+        <CodeEditor
+          label="Script code"
+          value={formik.values.code}
+          onChange={async (value) => {
+            await formik.setFieldValue("code", value ?? "");
+          }}
+          error={getFormikError(formik, "code")}
+          required
+        />
+
         <DeliveryBlock formik={formik} />
 
         <SidePanelFormButtons
           submitButtonDisabled={formik.isSubmitting || !formik.isValid}
-          submitButtonText="Run script"
+          submitButtonText={codeChanged ? "Save and run" : "Run script"}
           onSubmit={trySubmit}
         />
       </Form>
 
-      {isModalVisible && (
+      {isEditConfirmVisible && (
+        <EditScriptConfirmationModal
+          script={script}
+          confirmButtonLabel="Submit and run"
+          isConfirming={formik.isSubmitting}
+          onConfirm={() => {
+            hideEditConfirm();
+            proceedWithRun();
+          }}
+          onClose={hideEditConfirm}
+        />
+      )}
+
+      {isRunConfirmVisible && (
         <ConfirmationModal
           title={`Run ${script.title} script on ${formik.values.tags.length > 1 ? `${formik.values.tags.length} tags` : `${formik.values.tags[0]} tag`}`}
           confirmButtonLabel="Run script"
@@ -285,7 +337,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
             isGettingTaggedInstances
           }
           confirmButtonLoading={isGettingTaggedInstances}
-          close={hideModal}
+          close={hideRunConfirm}
           confirmButtonAppearance="positive"
         >
           <p>
@@ -296,6 +348,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
           <RunScriptFormInstanceList
             instances={taggedInstancesWithScriptsFeature}
+            tags={formik.values.tags}
           />
         </ConfirmationModal>
       )}

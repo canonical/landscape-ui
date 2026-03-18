@@ -4,16 +4,18 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon, Notification } from "@canonical/react-components";
+import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useArchiveScriptModal } from "../../hooks";
+import { lazy, Suspense } from "react";
+import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { ScriptTabId } from "../../types";
+import { useBoolean } from "usehooks-ts";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
 
 const EditScriptForm = lazy(async () => import("../EditScriptForm"));
+const RunScriptForm = lazy(async () => import("../RunScriptForm"));
 
 interface ScriptDetailsProps {
   readonly scriptId: number;
@@ -24,20 +26,22 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   scriptId,
   initialTabId = "info",
 }) => {
-  const [modalOpen, setModalOpen] = useState(false);
+  const {
+    setTrue: openModal,
+    setFalse: closeModal,
+    value: modalOpen,
+  } = useBoolean();
+
+  const {
+    value: deleteModalOpen,
+    setTrue: openDeleteModal,
+    setFalse: closeDeleteModal,
+  } = useBoolean();
 
   const { setSidePanelContent } = useSidePanel();
   const debug = useDebug();
 
   const { script } = useGetSingleScript(scriptId);
-
-  const handleOpenModal = (): void => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = (): void => {
-    setModalOpen(false);
-  };
 
   const {
     archiveModalBody,
@@ -47,7 +51,18 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     onConfirmArchive,
   } = useArchiveScriptModal({
     script,
-    afterSuccess: handleCloseModal,
+    afterSuccess: closeModal,
+  });
+
+  const {
+    deleteModalBody,
+    deleteModalButtonLabel,
+    deleteModalTitle,
+    isRemoving,
+    onConfirmDelete,
+  } = useDeleteScriptModal({
+    script,
+    afterSuccess: closeDeleteModal,
   });
 
   const viewVersionHistory = (): void => {
@@ -69,10 +84,25 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
       debug("Script not loaded");
       return;
     }
+
     setSidePanelContent(
       `Edit "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
         <EditScriptForm script={script} />
+      </Suspense>,
+    );
+  };
+
+  const handleRunScript = (): void => {
+    if (script === null) {
+      debug("Script not loaded");
+      return;
+    }
+
+    setSidePanelContent(
+      `Run "${script.title}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <RunScriptForm script={script} />
       </Suspense>,
     );
   };
@@ -112,15 +142,38 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
             </Button>
 
             <Button
+              type="button"
+              className="p-segmented-control__button"
+              onClick={handleRunScript}
+              hasIcon
+              disabled={!script?.is_executable}
+            >
+              <Icon name="play" />
+              <span>Run</span>
+            </Button>
+
+            <Button
               className="p-segmented-control__button"
               type="button"
-              onClick={handleOpenModal}
+              onClick={openModal}
               hasIcon
               aria-label={`Archive ${script?.title}`}
               disabled={!script?.is_editable}
             >
               <Icon name="archive" />
               <span>Archive</span>
+            </Button>
+
+            <Button
+              className="p-segmented-control__button"
+              type="button"
+              onClick={openDeleteModal}
+              hasIcon
+              aria-label={`Delete ${script?.title}`}
+              disabled={!script?.is_redactable}
+            >
+              <Icon name={ICONS.delete} />
+              <span>Delete</span>
             </Button>
           </div>
         </div>
@@ -146,9 +199,23 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         confirmButtonDisabled={isArchivingScript}
         confirmButtonLoading={isArchivingScript}
         onConfirm={onConfirmArchive}
-        close={handleCloseModal}
+        close={closeModal}
       >
         <>{archiveModalBody}</>
+      </TextConfirmationModal>
+
+      <TextConfirmationModal
+        isOpen={deleteModalOpen}
+        confirmationText={`delete ${script?.title}`}
+        title={deleteModalTitle}
+        confirmButtonLabel={deleteModalButtonLabel}
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={onConfirmDelete}
+        close={closeDeleteModal}
+      >
+        {deleteModalBody}
       </TextConfirmationModal>
     </>
   );
