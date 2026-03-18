@@ -44,11 +44,6 @@ export interface Package extends Record<string, unknown> {
   available_version: string | null;
   current_version: string | null;
   name: string;
-  status: "available" | "installed" | "held" | "security" | "upgrade";
+  status: "available" | "installed" | "held" | "security";
   summary: string;
-  usn?: {
-    info: string;
-    usn: string;
-    usn_link: string;
-  };
 }
