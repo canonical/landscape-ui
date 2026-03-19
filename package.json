@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "vite --host",
-    "build": "pnpm run lint:ci && pnpm run tcm:run && tsc && vite build",
+    "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
     "build:e2e": "pnpm run build --mode e2e",
-    "lint:ci": "eslint --fix . --config eslint.ci.config.mjs --ext .ts,.tsx",
+    "lint": "eslint --fix . --ext .ts,.tsx",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
     "test:saas": "VITE_SELF_HOSTED_ENV=false pnpm exec playwright test --project=saas",
@@ -75,7 +75,6 @@
     "typescript": "5.9.3",
     "typescript-eslint": "8.57.0",
     "vite": "^7.3.1",
-    "vite-plugin-eslint": "1.8.1",
     "vitest": "4.0.18"
   }
 }

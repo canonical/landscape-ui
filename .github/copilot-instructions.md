@@ -388,7 +388,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 **Trigger:** push → `dev`  
 **Jobs:**
 
-- **eslint-check:** `pnpm run lint:ci`.
+- **eslint-check:** `pnpm run lint`.
 - **e2e-tests:** needs eslint; same matrix pattern as PR e2e.
 - **unit-tests:** needs eslint; same pattern as PR unit tests; uploads `coverage-report`.
 
