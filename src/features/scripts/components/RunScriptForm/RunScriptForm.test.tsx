@@ -1,11 +1,19 @@
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import RunScriptForm from "./RunScriptForm";
 
 const [script] = scripts;
+
+const selectTag = async (
+  user: ReturnType<typeof userEvent.setup>,
+  tagName: string,
+) => {
+  await user.click(await screen.findByRole("combobox", { name: "Tags" }));
+  await user.click(await screen.findByRole("checkbox", { name: tagName }));
+};
 
 describe("RunScriptForm", () => {
   const user = userEvent.setup();
@@ -45,5 +53,120 @@ describe("RunScriptForm", () => {
     await user.click(instanceIdsRadio);
 
     expect(screen.getByText("Select instances")).toBeInTheDocument();
+  });
+
+  it("should display the code editor with its label", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    expect(await screen.findByText(/script code/i)).toBeInTheDocument();
+    expect(screen.getByTestId("mock-monaco")).toBeInTheDocument();
+  });
+
+  it("should disable the submit button when code is cleared (required validation)", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await selectTag(user, "appservers");
+
+    expect(
+      await screen.findByRole("button", { name: /run script/i }),
+    ).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.clear(screen.getByTestId("mock-monaco"));
+
+    expect(
+      await screen.findByRole("button", { name: /save and run/i }),
+    ).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("should change submit button label to 'Save and run' when code is modified", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await screen.findByRole("button", { name: /run script/i });
+
+    const codeEditor = screen.getByTestId("mock-monaco");
+    await user.clear(codeEditor);
+    await user.type(codeEditor, "#!/bin/bash\necho hello");
+
+    expect(
+      screen.getByRole("button", { name: /save and run/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("should show the edit confirmation modal when code is modified and submit is clicked", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await selectTag(user, "appservers");
+
+    const codeEditor = screen.getByTestId("mock-monaco");
+    await user.clear(codeEditor);
+    await user.type(codeEditor, "#!/bin/bash\necho hello");
+
+    expect(
+      await screen.findByRole("button", { name: /save and run/i }),
+    ).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(screen.getByRole("button", { name: /save and run/i }));
+
+    expect(
+      await screen.findByText(/submit new version of/i),
+    ).toBeInTheDocument();
+  });
+
+  it("should run the script without showing the edit confirmation modal when code is not modified", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await selectTag(user, "appservers");
+
+    expect(
+      await screen.findByRole("button", { name: /run script/i }),
+    ).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(screen.getByRole("button", { name: /run script/i }));
+
+    expect(
+      screen.queryByText(/submit new version of/i),
+    ).not.toBeInTheDocument();
+
+    const dialog = await screen.findByRole("dialog");
+    await user.click(
+      within(dialog).getByRole("button", { name: "Run script" }),
+    );
+
+    expect(
+      await screen.findByText(/script execution queued/i),
+    ).toBeInTheDocument();
+  });
+
+  it("should call editScript before runScript when submitting with modified code", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await selectTag(user, "appservers");
+
+    const codeEditor = screen.getByTestId("mock-monaco");
+    await user.clear(codeEditor);
+    await user.type(codeEditor, "#!/bin/bash\necho hello");
+
+    expect(
+      await screen.findByRole("button", { name: /save and run/i }),
+    ).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(screen.getByRole("button", { name: /save and run/i }));
+
+    const editConfirmButton = await screen.findByRole("button", {
+      name: "Submit and run",
+    });
+    await user.click(editConfirmButton);
+
+    const runConfirmButton = await screen.findByRole("button", {
+      name: "Run script",
+    });
+
+    expect(runConfirmButton).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(runConfirmButton);
+
+    expect(
+      await screen.findByText(/script execution queued/i),
+    ).toBeInTheDocument();
   });
 });

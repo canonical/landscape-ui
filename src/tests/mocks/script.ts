@@ -326,6 +326,18 @@ export const detailedScriptsData = [
     code: "#!/bin/shell\nls /tmp",
     version_number: 1,
   },
+  {
+    ...scripts[0],
+    id: 100,
+    is_executable: false,
+    version_number: 1,
+  },
+  {
+    ...scripts[0],
+    id: 101,
+    is_redactable: false,
+    version_number: 1,
+  },
 ] as const;
 
 export const scriptVersions: TruncatedScriptVersion[] = [

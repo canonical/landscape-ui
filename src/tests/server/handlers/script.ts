@@ -1,4 +1,4 @@
-import { API_URL } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   detailedScriptsData,
@@ -7,7 +7,11 @@ import {
   scriptVersionsWithPagination,
 } from "@/tests/mocks/script";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { activities } from "@/tests/mocks/activity";
+import {
+  generatePaginatedResponse,
+  isAction,
+} from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
 
 export default [
@@ -51,7 +55,8 @@ export default [
   http.get(`${API_URL}scripts/:id/script-profiles`, async () => {
     const endpointStatus = getEndpointStatus();
     if (
-      endpointStatus.path?.includes("script-profiles") &&
+      (!endpointStatus.path ||
+        endpointStatus.path.includes("script-profiles")) &&
       endpointStatus.status === "empty"
     ) {
       return HttpResponse.json({
@@ -102,5 +107,19 @@ export default [
         searchFields: ["title"],
       }),
     );
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "EditScript")) {
+      return;
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "ExecuteScript")) {
+      return;
+    }
+    return HttpResponse.json(activities[0]);
   }),
 ];

@@ -81,11 +81,6 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
       );
     }
     await Promise.all(promises);
-    notify.success({
-      title: `You have successfully submitted a new version of ${script.title}`,
-      message:
-        "All its associated profiles will now be run using this new version.",
-    });
   };
 
   const handleSubmit = async (values: ScriptFormValues) => {
@@ -96,6 +91,11 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
         openRunForm(values);
       } else {
         closeSidePanel();
+        notify.success({
+          title: `You have successfully submitted a new version of ${script.title}`,
+          message:
+            "All its associated profiles will now be run using this new version.",
+        });
       }
     } catch (error) {
       setModalIntent(null);
