@@ -14,4 +14,8 @@ export default [
 
     return HttpResponse.json(preferences);
   }),
+
+  http.patch(`${API_URL}preferences`, () => {
+    return HttpResponse.json();
+  }),
 ];

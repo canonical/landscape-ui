@@ -40,7 +40,6 @@ import userSettings from "./userSettings";
 import usn from "./usn";
 import wsl from "./wsl";
 import wslProfiles from "./wslProfiles";
-import preferences from "./preferences";
 
 export default [
   ...about,
@@ -64,7 +63,6 @@ export default [
   ...packageProfile,
   ...packages,
   ...pockets,
-  ...preferences,
   ...process,
   ...rebootProfiles,
   ...removalProfiles,

@@ -19,6 +19,20 @@ const props: ComponentProps<typeof EditOrganisationPreferencesForm> = {
 };
 
 describe("EditOrganisationPreferencesForm", () => {
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser: vi.fn(),
+      user: authUser,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+  });
+
   it("renders correct form fields", () => {
     const { container } = renderWithProviders(
       <EditOrganisationPreferencesForm {...props} />,
@@ -102,18 +116,6 @@ describe("EditOrganisationPreferencesForm", () => {
   });
 
   it("submits a null registration key when the field is empty", async () => {
-    vi.mocked(useAuth).mockReturnValue({
-      logout: vi.fn(),
-      authorized: true,
-      authLoading: false,
-      setUser: vi.fn(),
-      user: authUser,
-      redirectToExternalUrl: vi.fn(),
-      safeRedirect: vi.fn(),
-      isFeatureEnabled: vi.fn(),
-      hasAccounts: true,
-    });
-
     renderWithProviders(
       <EditOrganisationPreferencesForm
         organisationPreferences={{
