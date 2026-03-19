@@ -2,7 +2,7 @@ name: Release and PPA Build
 
 on:
   push:
-    branches: [ main, dev, stable, 'release/**' ]
+    branches: [main, dev, stable, "release/**"]
 
 permissions:
   contents: write
@@ -20,15 +20,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22.15.1
-          cache: 'pnpm'
+          node-version: 24
+          cache: "pnpm"
 
       - name: Calculate Version
         id: calver
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
+
           if [[ $GITHUB_REF == 'refs/heads/main' ]]; then DEST="ppa-build";
           elif [[ $GITHUB_REF == 'refs/heads/dev' ]]; then DEST="ppa-build-dev";
           elif [[ $GITHUB_REF == 'refs/heads/stable' ]]; then DEST="ppa-build-stable";
@@ -63,11 +63,11 @@ jobs:
           mkdir ../ppa-temp
           cp -r dist/* ../ppa-temp/
           cp .gitignore ../ppa-temp/ || true
-          
+
           # Switch to the target branch (cleanly)
           git checkout --orphan tmp-branch
           git rm -rf .
-          
+
           # Move files back to the root
           cp -r ../ppa-temp/* .
           rm -rf ../ppa-temp
@@ -77,5 +77,5 @@ jobs:
         with:
           branch: ${{ steps.calver.outputs.dest_branch }}
           create_branch: true
-          push_options: '--force'
-          commit_message: 'Build v${{ steps.calver.outputs.version }} [${{ github.sha }}]'
+          push_options: "--force"
+          commit_message: "Build v${{ steps.calver.outputs.version }} [${{ github.sha }}]"

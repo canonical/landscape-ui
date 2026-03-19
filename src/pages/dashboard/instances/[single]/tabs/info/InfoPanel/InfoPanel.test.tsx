@@ -115,11 +115,11 @@ describe("InfoPanel", () => {
 
       renderWithProviders(<InfoPanel instance={instances[0]} />);
 
-      const associateEmployeeButton = screen.queryByRole("button", {
+      const associateEmployeeMenuItem = screen.queryByRole("menuitem", {
         name: /associate employee/i,
       });
 
-      expect(associateEmployeeButton).not.toBeInTheDocument();
+      expect(associateEmployeeMenuItem).not.toBeInTheDocument();
     });
   });
 
@@ -168,11 +168,11 @@ describe("InfoPanel", () => {
 
       renderWithProviders(<InfoPanel instance={instanceWithoutEmployee} />);
 
-      const disassociateEmployeeButton = screen.queryByRole("button", {
+      const disassociateEmployeeMenuItem = screen.queryByRole("menuitem", {
         name: /disassociate employee/i,
       });
 
-      expect(disassociateEmployeeButton).not.toBeInTheDocument();
+      expect(disassociateEmployeeMenuItem).not.toBeInTheDocument();
     });
   });
 
@@ -188,13 +188,13 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const viewKeyButton = screen.getByRole("button", {
+        const viewKeyMenuItem = screen.getByRole("menuitem", {
           name: /view recovery key/i,
         });
 
-        expect(viewKeyButton).toBeInTheDocument();
+        expect(viewKeyMenuItem).toBeInTheDocument();
 
-        await user.click(viewKeyButton);
+        await user.click(viewKeyMenuItem);
         expect(
           await screen.findByRole("heading", {
             name: `View recovery key for "${instanceActivityWithKey.title}"`,
@@ -211,11 +211,11 @@ describe("InfoPanel", () => {
             name: "More actions",
           }),
         );
-        const viewKeyButton = screen.queryByRole("button", {
+        const viewKeyMenuItem = screen.queryByRole("menuitem", {
           name: /view recovery key/i,
         });
 
-        expect(viewKeyButton).not.toBeInTheDocument();
+        expect(viewKeyMenuItem).not.toBeInTheDocument();
       });
     });
 
@@ -230,13 +230,13 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const generateKeyButton = screen.getByRole("button", {
+        const generateKeyMenuItem = screen.getByRole("menuitem", {
           name: "Generate recovery key",
         });
 
-        expect(generateKeyButton).toBeInTheDocument();
+        expect(generateKeyMenuItem).toBeInTheDocument();
 
-        await user.click(generateKeyButton);
+        await user.click(generateKeyMenuItem);
         expect(
           await screen.findByRole("heading", {
             name: `Generate recovery key for "${instanceNoActivityNoKey.title}"`,
@@ -253,11 +253,11 @@ describe("InfoPanel", () => {
             name: "More actions",
           }),
         );
-        const generateKeyButton = screen.queryByRole("button", {
+        const generateKeyMenuItem = screen.queryByRole("menuitem", {
           name: "Generate recovery key",
         });
 
-        expect(generateKeyButton).not.toBeInTheDocument();
+        expect(generateKeyMenuItem).not.toBeInTheDocument();
       });
     });
 
@@ -272,13 +272,13 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const regenerateKeyButton = screen.getByRole("button", {
+        const regenerateKeyMenuItem = screen.getByRole("menuitem", {
           name: "Regenerate recovery key",
         });
 
-        expect(regenerateKeyButton).toBeInTheDocument();
+        expect(regenerateKeyMenuItem).toBeInTheDocument();
 
-        await user.click(regenerateKeyButton);
+        await user.click(regenerateKeyMenuItem);
         expect(
           await screen.findByRole("heading", {
             name: `Regenerate recovery key for "${instanceActivityWithKey.title}"`,
@@ -295,11 +295,11 @@ describe("InfoPanel", () => {
             name: "More actions",
           }),
         );
-        const regenerateKeyButton = screen.queryByRole("button", {
+        const regenerateKeyMenuItem = screen.queryByRole("menuitem", {
           name: "Regenerate recovery key",
         });
 
-        expect(regenerateKeyButton).not.toBeInTheDocument();
+        expect(regenerateKeyMenuItem).not.toBeInTheDocument();
       });
 
       it("should render 'Regenerate recovery key' button if instance has no recovery key but has an activity", async () => {
@@ -312,11 +312,11 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const regenerateKeyButton = screen.getByRole("button", {
+        const regenerateKeyMenuItem = screen.getByRole("menuitem", {
           name: "Regenerate recovery key",
         });
 
-        expect(regenerateKeyButton).toBeInTheDocument();
+        expect(regenerateKeyMenuItem).toBeInTheDocument();
       });
     });
 
