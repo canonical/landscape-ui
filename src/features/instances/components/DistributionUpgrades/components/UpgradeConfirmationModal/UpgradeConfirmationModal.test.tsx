@@ -59,11 +59,11 @@ describe("UpgradeConfirmationModal", () => {
     expect(props.onClose).toHaveBeenCalledTimes(1);
   });
 
-  it("disables confirm button while creating upgrades", () => {
+  it("disables confirm button while creating upgrades", async () => {
     renderWithProviders(<UpgradeConfirmationModal {...props} isCreating />);
 
-    expect(screen.getByRole("button", { name: /confirm/i })).toHaveClass(
-      "is-disabled",
-    );
+    expect(
+      screen.getByRole("button", { name: /waiting for action to complete/i }),
+    ).toHaveAttribute("aria-disabled", "true");
   });
 });

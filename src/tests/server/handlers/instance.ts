@@ -9,7 +9,11 @@ import type {
 } from "@/features/instances";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { activities, getMockRecoveryKeyActivity } from "@/tests/mocks/activity";
+import {
+  activities,
+  getMockRecoveryKeyActivity,
+  RELEASE_UPGRADE_ACTIVITY,
+} from "@/tests/mocks/activity";
 import {
   instanceCanceledActivityNoKey,
   instanceCanceledActivityWithKey,
@@ -95,6 +99,31 @@ export default [
     const results: DistributionUpgradeTarget[] = ids.map((id) => {
       const instance = instances.find((inst) => inst.id === id);
 
+      const currentRelease = instance?.distribution_info
+        ? {
+            name: instance.distribution_info.description,
+            version: instance.distribution_info.release,
+          }
+        : null;
+
+      const mockedIneligibleReasonById: Record<
+        number,
+        NonNullable<DistributionUpgradeTarget["reason"]>
+      > = {
+        11: {
+          code: "client_upgrade_required",
+          detail: "Client update required before distribution upgrade.",
+        },
+        21: {
+          code: "no_meta_release",
+          detail: "Meta-release information is currently unavailable.",
+        },
+        65: {
+          code: "lts_only_no_lts_target",
+          detail: "Policy only allows LTS upgrades and no target is available.",
+        },
+      };
+
       if (!instance) {
         return {
           computer_id: id,
@@ -105,6 +134,61 @@ export default [
             code: "instance_not_found",
             detail: `Instance with id ${id} not found.`,
           },
+        };
+      }
+
+      if (!instance.distribution_info) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: null,
+          target_release: null,
+          reason: {
+            code: "no_distribution",
+            detail:
+              "No distribution information is available for this instance.",
+          },
+        };
+      }
+
+      if (instance.distribution_info.distributor === "Ubuntu Core") {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: currentRelease,
+          target_release: null,
+          reason: {
+            code: "policy_disabled",
+            detail: "Policy is preventing distribution upgrades.",
+          },
+        };
+      }
+
+      if (
+        instance.distribution_info.distributor !== "Canonical" &&
+        instance.distribution_info.distributor !== "Ubuntu"
+      ) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: currentRelease,
+          target_release: null,
+          reason: {
+            code: "unsupported_release",
+            detail: "This distribution is not supported for release upgrades.",
+          },
+        };
+      }
+
+      const mockedIneligibleReason = mockedIneligibleReasonById[id];
+
+      if (mockedIneligibleReason) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: currentRelease,
+          target_release: null,
+          reason: mockedIneligibleReason,
         };
       }
 
@@ -145,29 +229,10 @@ export default [
         };
       }
 
-      if (instance.distribution_info?.distributor === "Ubuntu Core") {
-        return {
-          computer_id: id,
-          computer_title: instance.title,
-          current_release: {
-            name: "Ubuntu Core 22",
-            version: "22",
-          },
-          target_release: null,
-          reason: {
-            code: "policy_disabled",
-            detail: "Policy is preventing distribution upgrades.",
-          },
-        };
-      }
-
       return {
         computer_id: id,
         computer_title: instance.title,
-        current_release: {
-          name: "Ubuntu 10.04 LTS",
-          version: "10.04",
-        },
+        current_release: currentRelease,
         target_release: null,
         reason: {
           code: "no_upgrade_target",
@@ -186,7 +251,8 @@ export default [
       throw new HttpResponse(null, { status: 500 });
     }
 
-    return HttpResponse.json(activities[0]);
+    const releaseUpgradeActivity = RELEASE_UPGRADE_ACTIVITY;
+    return HttpResponse.json(releaseUpgradeActivity);
   }),
 
   http.get<never, GetInstanceParams, Instance>(

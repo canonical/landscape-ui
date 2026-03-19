@@ -15,6 +15,7 @@ import {
   Icon,
   Tooltip,
 } from "@canonical/react-components";
+import classNames from "classnames";
 import moment from "moment";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -210,7 +211,10 @@ const InstanceList = memo(function InstanceList({
               <span className={classes.indicatorIcon}>
                 <Tooltip message="Distribution upgrade available">
                   <Icon
-                    className="u-no-margin--left"
+                    className={classNames(
+                      "u-no-margin--left",
+                      classes.distributionUpgradeIcon,
+                    )}
                     name="arrow-up--caution"
                   />
                 </Tooltip>
