@@ -1,8 +1,8 @@
 import { aptSources } from "@/tests/mocks/apt-sources";
+import { createFormik } from "@/tests/formik";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useFormik } from "formik";
 import { describe, it } from "vitest";
 import type { RepositoryProfileFormValues } from "../../types";
 import { INITIAL_VALUES } from "../RepositoryProfileForm/constants";
@@ -11,27 +11,28 @@ import RepositoryProfileFormAptSourcesPanel from "./RepositoryProfileFormAptSour
 describe("RepositoryProfileFormAptSourcesPanel", () => {
   const user = userEvent.setup();
 
-  const Wrapper = () => {
-    const formik = useFormik<RepositoryProfileFormValues>({
-      initialValues: INITIAL_VALUES,
-      onSubmit: vi.fn(),
+  const renderWrapper = (values?: Partial<RepositoryProfileFormValues>) => {
+    const formik = createFormik<RepositoryProfileFormValues>({
+      ...INITIAL_VALUES,
+      ...values,
     });
-    return (
+    renderWithProviders(
       <RepositoryProfileFormAptSourcesPanel
         formik={formik}
         aptSources={aptSources}
-      />
+      />,
     );
+    return { formik };
   };
 
   it("shows columns", () => {
-    renderWithProviders(<Wrapper />);
+    renderWrapper();
     expect(screen.getByText("Name")).toBeInTheDocument();
     expect(screen.getByText("Line")).toBeInTheDocument();
   });
 
   it("filters APT sources and toggles selection", async () => {
-    renderWithProviders(<Wrapper />);
+    renderWrapper();
 
     expect(screen.getByText("source1")).toBeInTheDocument();
 
@@ -45,20 +46,22 @@ describe("RepositoryProfileFormAptSourcesPanel", () => {
   });
 
   it("selects and deselects APT sources", async () => {
-    renderWithProviders(<Wrapper />);
+    const { formik } = renderWrapper({ apt_sources: [2] });
 
-    const checkbox = screen.getByRole("checkbox", { name: "source1" });
-    expect(checkbox).not.toBeChecked();
+    const sourceCheckbox = screen.getByRole("checkbox", { name: "source1" });
+    const selectedCheckbox = screen.getByRole("checkbox", { name: "source2" });
+    expect(sourceCheckbox).not.toBeChecked();
+    expect(selectedCheckbox).toBeChecked();
 
-    await user.click(checkbox);
-    expect(checkbox).toBeChecked();
+    await user.click(sourceCheckbox);
+    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [2, 1]);
 
-    await user.click(checkbox);
-    expect(checkbox).not.toBeChecked();
+    await user.click(selectedCheckbox);
+    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [1]);
   });
 
   it("shows empty state when no APT sources match search", async () => {
-    renderWithProviders(<Wrapper />);
+    renderWrapper();
 
     const searchInput = screen.getByRole("searchbox");
     await user.type(searchInput, "nonexistent");
