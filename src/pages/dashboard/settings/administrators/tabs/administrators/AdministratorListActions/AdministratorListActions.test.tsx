@@ -22,17 +22,17 @@ describe("AdministratorListActions", () => {
   });
 
   it("renders correctly", () => {
-    const removeButton = screen.getByRole("button", {
+    const removeMenuItem = screen.getByRole("menuitem", {
       name: `Remove "${administrators[0].name}" administrator`,
     });
-    expect(removeButton).toBeInTheDocument();
+    expect(removeMenuItem).toBeInTheDocument();
   });
 
   it("shows modal upon remove button click", async () => {
-    const removeButton = screen.getByRole("button", {
+    const removeMenuItem = screen.getByRole("menuitem", {
       name: `Remove "${administrators[0].name}" administrator`,
     });
-    await user.click(removeButton);
+    await user.click(removeMenuItem);
 
     const modal = screen.getByRole("dialog");
     expect(modal).toBeInTheDocument();

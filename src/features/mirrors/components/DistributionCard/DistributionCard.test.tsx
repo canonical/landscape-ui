@@ -34,13 +34,14 @@ const checkModalActions = async ({
   distributionName: string;
   isLarge: boolean;
 }) => {
-  const removeDistributionButton = await screen.findByRole("button", {
-    name: /remove distribution/i,
-  });
+  const removeDistributionAction = await screen.findByRole(
+    isLarge ? "button" : "menuitem",
+    { name: /remove distribution/i },
+  );
 
-  expect(removeDistributionButton).toBeVisible();
+  expect(removeDistributionAction).toBeVisible();
 
-  await userEvent.click(removeDistributionButton);
+  await userEvent.click(removeDistributionAction);
 
   const removeButton = screen.getByRole("button", {
     name: "Remove",
@@ -63,10 +64,11 @@ const checkModalActions = async ({
       screen.getByLabelText(`${distributionName} distribution actions`),
     );
   }
-  const addSeriesButton = await screen.findByRole("button", {
-    name: /add series/i,
-  });
-  expect(addSeriesButton).toBeVisible();
+  const addSeriesAction = await screen.findByRole(
+    isLarge ? "button" : "menuitem",
+    { name: /add series/i },
+  );
+  expect(addSeriesAction).toBeVisible();
 };
 
 describe("DistributionCard", () => {

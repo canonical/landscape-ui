@@ -211,16 +211,18 @@ describe("InstancesPageActions", () => {
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
       expect(
-        screen.getByRole("button", { name: /access group/i }),
+        screen.getByRole("menuitem", { name: /access group/i }),
       ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /tags/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("menuitem", { name: /tags/i }),
+      ).toBeInTheDocument();
     });
 
-    it("'Assign access group' button", async () => {
+    it("'Assign access group' menu item", async () => {
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
       await userEvent.click(
-        screen.getByRole("button", { name: /access group/i }),
+        screen.getByRole("menuitem", { name: /access group/i }),
       );
 
       expect(
@@ -228,10 +230,10 @@ describe("InstancesPageActions", () => {
       ).toBeInTheDocument();
     });
 
-    it("'Assign tags' button", async () => {
+    it("'Assign tags' menu item", async () => {
       await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
-      await userEvent.click(screen.getByRole("button", { name: /tags/i }));
+      await userEvent.click(screen.getByRole("menuitem", { name: /tags/i }));
 
       expect(
         screen.getByRole("heading", { name: /assign tags/i }),

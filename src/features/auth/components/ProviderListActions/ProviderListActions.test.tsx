@@ -23,12 +23,12 @@ describe("ProviderListActions", () => {
     await userEvent.click(screen.getByRole("button"));
 
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("menuitem", {
         name: `Edit ${identityProviders[0].name} provider`,
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("menuitem", {
         name: `Delete ${identityProviders[0].name} provider`,
       }),
     ).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("ProviderListActions", () => {
     await userEvent.click(screen.getByRole("button"));
 
     await userEvent.click(
-      screen.getByRole("button", {
+      screen.getByRole("menuitem", {
         name: `Edit ${identityProviders[0].name} provider`,
       }),
     );

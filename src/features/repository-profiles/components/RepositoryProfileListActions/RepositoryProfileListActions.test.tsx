@@ -17,10 +17,10 @@ describe("RepositoryProfileListActions", () => {
       screen.getByRole("button", { name: `${profile.title} profile actions` }),
     );
     expect(
-      screen.getByRole("button", { name: `Edit "${profile.title}" profile` }),
+      screen.getByRole("menuitem", { name: `Edit "${profile.title}" profile` }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", {
+      screen.getByRole("menuitem", {
         name: `Remove "${profile.title}" repository profile`,
       }),
     ).toBeInTheDocument();
@@ -32,7 +32,7 @@ describe("RepositoryProfileListActions", () => {
       screen.getByRole("button", { name: `${profile.title} profile actions` }),
     );
     await user.click(
-      screen.getByRole("button", { name: `Edit "${profile.title}" profile` }),
+      screen.getByRole("menuitem", { name: `Edit "${profile.title}" profile` }),
     );
 
     expect(
@@ -46,7 +46,7 @@ describe("RepositoryProfileListActions", () => {
       screen.getByRole("button", { name: `${profile.title} profile actions` }),
     );
     await user.click(
-      screen.getByRole("button", {
+      screen.getByRole("menuitem", {
         name: `Remove "${profile.title}" repository profile`,
       }),
     );

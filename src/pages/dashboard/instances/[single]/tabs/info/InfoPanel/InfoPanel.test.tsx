@@ -100,7 +100,7 @@ describe("InfoPanel", () => {
       );
 
       expect(
-        screen.getByRole("button", {
+        screen.getByRole("menuitem", {
           name: /associate employee/i,
         }),
       ).toBeInTheDocument();
@@ -145,11 +145,11 @@ describe("InfoPanel", () => {
       });
       await userEvent.click(moreActionsButton);
 
-      const disassociateEmployeeButton = await screen.findByRole("button", {
+      const disassociateEmployeeMenuItem = await screen.findByRole("menuitem", {
         name: /disassociate employee/i,
       });
 
-      expect(disassociateEmployeeButton).toBeInTheDocument();
+      expect(disassociateEmployeeMenuItem).toBeInTheDocument();
     });
 
     it("should not render button if instance does not have an employee associated", () => {

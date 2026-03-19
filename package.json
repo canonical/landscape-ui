@@ -24,7 +24,7 @@
     "tcm:watch": "pnpm tcm:run --watch"
   },
   "dependencies": {
-    "@canonical/react-components": "3.11.1",
+    "@canonical/react-components": "4.0.0",
     "@monaco-editor/react": "4.7.0",
     "@sentry/react": "10.43.0",
     "@tanstack/react-query": "5.90.21",
