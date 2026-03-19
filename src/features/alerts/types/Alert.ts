@@ -3,7 +3,7 @@ export interface Alert extends Record<string, unknown> {
   all_computers: boolean;
   description: string;
   label: string;
-  scope: string;
+  scope: "account" | "computer";
   status: string;
   subscribed: boolean;
   tags: string[];
