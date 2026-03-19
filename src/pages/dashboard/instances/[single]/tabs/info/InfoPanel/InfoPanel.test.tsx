@@ -188,7 +188,7 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const viewKeyButton = screen.getByRole("button", {
+        const viewKeyButton = screen.getByRole("menuitem", {
           name: /view recovery key/i,
         });
 
@@ -230,7 +230,7 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const generateKeyButton = screen.getByRole("button", {
+        const generateKeyButton = screen.getByRole("menuitem", {
           name: "Generate recovery key",
         });
 
@@ -272,7 +272,7 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const regenerateKeyButton = screen.getByRole("button", {
+        const regenerateKeyButton = screen.getByRole("menuitem", {
           name: "Regenerate recovery key",
         });
 
@@ -312,7 +312,7 @@ describe("InfoPanel", () => {
           }),
         );
 
-        const regenerateKeyButton = screen.getByRole("button", {
+        const regenerateKeyButton = screen.getByRole("menuitem", {
           name: "Regenerate recovery key",
         });
 
