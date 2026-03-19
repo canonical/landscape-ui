@@ -34,8 +34,10 @@ const checkModalActions = async ({
   distributionName: string;
   isLarge: boolean;
 }) => {
-  const removeDistributionAction =
-    await screen.findByText(/remove distribution/i);
+  const removeDistributionAction = await screen.findByRole(
+    isLarge ? "button" : "menuitem",
+    { name: /remove distribution/i },
+  );
 
   expect(removeDistributionAction).toBeVisible();
 
@@ -62,7 +64,10 @@ const checkModalActions = async ({
       screen.getByLabelText(`${distributionName} distribution actions`),
     );
   }
-  const addSeriesAction = await screen.findByText(/add series/i);
+  const addSeriesAction = await screen.findByRole(
+    isLarge ? "button" : "menuitem",
+    { name: /add series/i },
+  );
   expect(addSeriesAction).toBeVisible();
 };
 
