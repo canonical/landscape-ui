@@ -21,6 +21,18 @@ export default defineConfig({
         find: /^.*\.(css|scss|sass)$/,
         replacement: resolve(__dirname, "src/tests/styleMock.ts"),
       },
+      {
+        find: "@/components/form/CodeEditor",
+        replacement: resolve(__dirname, "src/tests/monacoMock.tsx"),
+      },
+      {
+        find: "@monaco-editor/react",
+        replacement: resolve(__dirname, "src/tests/monacoMock.tsx"),
+      },
+      {
+        find: "@",
+        replacement: resolve(__dirname, "src"),
+      },
     ],
     deps: {
       optimizer: {
