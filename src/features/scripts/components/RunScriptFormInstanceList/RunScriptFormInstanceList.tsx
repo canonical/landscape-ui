@@ -38,6 +38,7 @@ const RunScriptFormInstanceList: FC<RunScriptFormInstanceListProps> = ({
     () => [
       {
         Header: "Instance",
+        accessor: "title",
         Cell: ({ row: { original: instance } }: CellProps<Instance>) =>
           instance.title,
       },

@@ -79,6 +79,20 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     );
   };
 
+  const handleBackToDetails = (): void => {
+    if (script === null) {
+      debug("Script not loaded");
+      return;
+    }
+
+    setSidePanelContent(
+      script.title,
+      <Suspense fallback={<LoadingState />}>
+        <ScriptDetails scriptId={script.id} />
+      </Suspense>,
+    );
+  };
+
   const handleEditScript = (): void => {
     if (script === null) {
       debug("Script not loaded");
@@ -102,7 +116,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     setSidePanelContent(
       `Run "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} />
+        <RunScriptForm script={script} onBack={handleBackToDetails} />
       </Suspense>,
     );
   };

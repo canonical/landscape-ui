@@ -32,9 +32,15 @@ import type { FormProps } from "./types";
 
 interface RunScriptFormProps {
   readonly script: Script;
+  readonly submittedCode?: string;
+  readonly onBack?: () => void;
 }
 
-const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
+const RunScriptForm: FC<RunScriptFormProps> = ({
+  script,
+  submittedCode,
+  onBack,
+}) => {
   const {
     value: isRunConfirmVisible,
     setTrue: showRunConfirm,
@@ -54,10 +60,12 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
   const { runScript } = useRunScript();
   const { editScript } = useEditScript();
 
-  const originalCode = getCode({
-    code: script.code,
-    interpreter: script.interpreter,
-  });
+  const originalCode =
+    submittedCode ??
+    getCode({
+      code: script.code,
+      interpreter: script.interpreter,
+    });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit = {
@@ -306,6 +314,8 @@ const RunScriptForm: FC<RunScriptFormProps> = ({ script }) => {
 
         <SidePanelFormButtons
           submitButtonDisabled={formik.isSubmitting || !formik.isValid}
+          onBackButtonPress={onBack}
+          hasBackButton={!!onBack}
           submitButtonText={codeChanged ? "Save and run" : "Run script"}
           onSubmit={trySubmit}
         />

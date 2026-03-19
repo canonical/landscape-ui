@@ -48,6 +48,15 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const { removeScriptAttachment } = useRemoveScriptAttachment();
   const { editScript, isEditing } = useEditScript();
 
+  const openRunForm = (values: ScriptFormValues) => {
+    setSidePanelContent(
+      `Run "${values.title.trim()}" script`,
+      <Suspense fallback={<LoadingState />}>
+        <RunScriptForm script={script} submittedCode={values.code} />
+      </Suspense>,
+    );
+  };
+
   const performEdit = async (values: ScriptFormValues) => {
     const newAttachments = Object.values(values.attachments).filter(
       (a) => a !== null,
@@ -83,7 +92,11 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
     try {
       await performEdit(values);
       setModalIntent(null);
-      closeSidePanel();
+      if (modalIntent === "submitAndRun") {
+        openRunForm(values);
+      } else {
+        closeSidePanel();
+      }
     } catch (error) {
       setModalIntent(null);
       debug(error);
@@ -95,25 +108,6 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
     validationSchema: getValidationSchema(),
     onSubmit: handleSubmit,
   });
-
-  const openRunForm = () => {
-    setSidePanelContent(
-      `Run "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} />
-      </Suspense>,
-    );
-  };
-
-  const handleSubmitAndRun = async (values: ScriptFormValues) => {
-    try {
-      await performEdit(values);
-      openRunForm();
-    } catch (error) {
-      setModalIntent(null);
-      debug(error);
-    }
-  };
 
   const handleInputChange = async ({
     target: { files },
@@ -140,17 +134,6 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   };
 
   const clickFileInput = () => inputRef.current?.click();
-
-  const modalIntentProps =
-    modalIntent === "submitAndRun"
-      ? {
-          onConfirm: () => handleSubmitAndRun(formik.values),
-          confirmButtonLabel: "Submit and run",
-        }
-      : {
-          onConfirm: formik.handleSubmit,
-          confirmButtonLabel: "Submit new version",
-        };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -239,7 +222,12 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
       {modalIntent !== null && (
         <EditScriptConfirmationModal
           script={script}
-          {...modalIntentProps}
+          onConfirm={formik.handleSubmit}
+          confirmButtonLabel={
+            modalIntent === "submitAndRun"
+              ? "Submit and run"
+              : "Submit new version"
+          }
           isConfirming={isEditing}
           onClose={() => {
             setModalIntent(null);

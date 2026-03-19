@@ -49,7 +49,25 @@ export default [
   }),
 
   http.get(`${API_URL}scripts/:id/script-profiles`, async () => {
-    return HttpResponse.json({ script_profiles: scriptProfiles });
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.path?.includes("script-profiles") &&
+      endpointStatus.status === "empty"
+    ) {
+      return HttpResponse.json({
+        results: [],
+        count: 0,
+        next: null,
+        previous: null,
+      });
+    }
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: scriptProfiles,
+        limit: 20,
+        offset: 0,
+      }),
+    );
   }),
 
   http.get(`${API_URL}scripts/:id`, async ({ params }) => {

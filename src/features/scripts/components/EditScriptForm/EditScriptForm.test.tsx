@@ -16,7 +16,7 @@ describe("EditScriptForm", () => {
     expect(screen.getByText(/submit new version/i)).toBeInTheDocument();
   });
 
-  it("should display confirmation modal when submitting changes", async () => {
+  it("should show disabled buttons", async () => {
     renderWithProviders(<EditScriptForm script={script} />);
 
     const submitAndRunButton = screen.getByRole("button", {
