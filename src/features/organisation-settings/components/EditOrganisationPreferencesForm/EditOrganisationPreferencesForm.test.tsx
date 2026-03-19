@@ -4,6 +4,10 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import EditOrganisationPreferencesForm from "./EditOrganisationPreferencesForm";
 import { REGISTRATION_KEY_REGEX } from "./constants";
+import useAuth from "@/hooks/useAuth";
+import { authUser } from "@/tests/mocks/auth";
+
+vi.mock("@/hooks/useAuth");
 
 const props: ComponentProps<typeof EditOrganisationPreferencesForm> = {
   organisationPreferences: {
@@ -95,6 +99,45 @@ describe("EditOrganisationPreferencesForm", () => {
 
       expect(errorText).toBeInTheDocument();
     });
+  });
+
+  it("submits a null registration key when the field is empty", async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser: vi.fn(),
+      user: authUser,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+
+    renderWithProviders(
+      <EditOrganisationPreferencesForm
+        organisationPreferences={{
+          ...props.organisationPreferences,
+          registration_password: "key",
+        }}
+      />,
+    );
+
+    await userEvent.clear(screen.getByLabelText("Registration key"));
+
+    await userEvent.click(
+      screen.getByRole("checkbox", {
+        name: /use registration key/i,
+      }),
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
+
+    expect(
+      await screen.findByText("Your changes have been saved"),
+    ).toBeInTheDocument();
   });
 
   it("correctly validates input with regex", () => {
