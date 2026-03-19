@@ -1,16 +1,19 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { instances, ubuntuCoreInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { ComponentProps } from "react";
 import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 
-const props = {
-  instances,
+const props: ComponentProps<typeof InstanceList> = {
+  instances: instances.slice(0, DEFAULT_PAGE_SIZE),
   selectedInstances: [],
   setColumnFilterOptions: vi.fn(),
   setSelectedInstances: vi.fn(),
+  instanceCount: instances.length,
 };
 
 describe("InstanceList", () => {
@@ -23,15 +26,14 @@ describe("InstanceList", () => {
       }),
     );
 
-    for (const row of screen
+    for (const [i, row] of screen
       .getAllByRole<HTMLTableRowElement>("row")
-      .slice(1)) {
+      .slice(1)
+      .entries()) {
       const [titleCell] = row.cells;
       assert(titleCell);
 
-      const instance = instances.find(({ title }) => {
-        return titleCell.textContent?.includes(title);
-      });
+      const instance = instances[i];
 
       assert(instance);
       assert(row.cells[3]);
@@ -80,13 +82,32 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setSelectedInstances).toHaveBeenCalledWith(instances);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith(props.instances);
 
     rerender(<InstanceList {...props} selectedInstances={instances} />);
     const checkedCheckboxes = screen.getAllByRole("checkbox", {
       checked: true,
     });
-    expect(checkedCheckboxes).toHaveLength(instances.length + 1);
+    expect(checkedCheckboxes).toHaveLength(props.instances.length + 1);
+  });
+
+  it("should deselect all instances when clicking ToggleAll checkbox with an instance selected", async () => {
+    const { rerender } = renderWithProviders(
+      <InstanceList {...props} selectedInstances={[instances[0]]} />,
+    );
+
+    const toggleAllCheckbox = await screen.findByRole("checkbox", {
+      name: /toggle all/i,
+    });
+    await userEvent.click(toggleAllCheckbox);
+
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
+
+    rerender(<InstanceList {...props} selectedInstances={[]} />);
+    const checkedCheckboxes = screen.queryAllByRole("checkbox", {
+      checked: true,
+    });
+    expect(checkedCheckboxes).toHaveLength(0);
   });
 
   it("should not show upgrades for an ubuntu core instance", async () => {
@@ -95,5 +116,46 @@ describe("InstanceList", () => {
     );
 
     expect(screen.queryByText("Up to date")).not.toBeInTheDocument();
+  });
+
+  it("selects an instance", async () => {
+    renderWithProviders(<InstanceList {...props} />);
+
+    const instanceCheckbox = await screen.findByRole("checkbox", {
+      name: instances[0].title,
+    });
+
+    await userEvent.click(instanceCheckbox);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([instances[0]]);
+  });
+
+  it("deselects an instance", async () => {
+    renderWithProviders(
+      <InstanceList {...props} selectedInstances={[instances[0]]} />,
+    );
+
+    const instanceCheckbox = screen.getByRole("checkbox", {
+      name: instances[0].title,
+    });
+
+    expect(instanceCheckbox).toBeChecked();
+    await userEvent.click(instanceCheckbox);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
+  });
+
+  it("clears selection", async () => {
+    assert(props.instanceCount);
+    assert(props.instanceCount > props.instances.length);
+
+    renderWithProviders(
+      <InstanceList {...props} selectedInstances={instances} />,
+    );
+
+    const clearSelectionButton = await screen.findByRole("button", {
+      name: /clear selection/i,
+    });
+
+    await userEvent.click(clearSelectionButton);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
   });
 });

@@ -38,6 +38,7 @@ const InstancesContainer = memo(function InstancesContainer({
       ) : (
         <InstanceList
           instances={instances}
+          instanceCount={instanceCount}
           selectedInstances={selectedInstances}
           setColumnFilterOptions={setColumnFilterOptions}
           setSelectedInstances={setSelectedInstances}
@@ -46,7 +47,6 @@ const InstancesContainer = memo(function InstancesContainer({
 
       <TablePagination
         totalItems={instanceCount}
-        handleClearSelection={onChangeFilter}
         currentItemCount={instances.length}
       />
     </>

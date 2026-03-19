@@ -1,3 +1,6 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
 .rowHeader {
   display: flex;
 }
@@ -9,4 +12,22 @@
 .statusContainer {
   display: flex;
   transform: translateX(-1.5rem);
+}
+
+.subhead {
+  background: $colors--theme--background-alt;
+  border-bottom: 1px solid $colors--theme--border-low-contrast;
+  display: flex;
+  gap: $sph--large;
+  padding: $spv--small 0 $spv--small 2.5rem;
+
+  > .buttons {
+    display: flex;
+    gap: $sph--large;
+
+    > :not(:last-child) {
+      border-right: 1px solid $colors--theme--border-low-contrast;
+      padding-right: $sph--large !important;
+    }
+  }
 }
