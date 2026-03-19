@@ -19,7 +19,7 @@ const TableFilterMultiple: FC<MultipleFilterProps> = ({
   onSearch,
   selectedItems,
   inline = false,
-  position,
+  position = "left",
   onItemsSelect,
   disabledOptions,
   hideSelectAllButton,

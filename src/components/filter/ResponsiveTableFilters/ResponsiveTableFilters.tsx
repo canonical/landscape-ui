@@ -49,6 +49,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
           hasToggleIcon
           toggleLabel={menuLabel}
           toggleClassName="u-no-margin--bottom"
+          toggleAppearance="base"
         >
           <div className={classes.menuContainer}>
             {filters.map((node, i) => {
