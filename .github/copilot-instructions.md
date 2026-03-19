@@ -369,7 +369,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 - **Prettier:** Diff-only JS/TS/TSX/JSON/MD/HTML.
 - **Stylelint:** Diff-only SCSS.  
   **Common:**
-- Node `22.15.1`, pnpm `10`, `pnpm install --frozen-lockfile`.
+- Node `24`, pnpm `10`, `pnpm install --frozen-lockfile`.
 - Skip job if no matching changed files.
 
 ### Tests + TICS on PRs (`.github/workflows/run-tests-and-tics.yml`)
@@ -433,7 +433,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 
 ### CI Tooling Contracts
 
-- **Node:** `22.15.1`
+- **Node:** `24`
 - **pnpm:** `10`
 - **Install:** `pnpm install --frozen-lockfile` only
 - **Build:** `pnpm run build` before Playwright runs
