@@ -53,7 +53,7 @@ const EditOrganisationPreferencesForm: FC<
 
         await mutateAsync({
           title: values.title,
-          registration_password: values.registration_password,
+          registration_password: values.registration_password || null,
           auto_register_new_computers: values.auto_register_new_computers,
         });
 
