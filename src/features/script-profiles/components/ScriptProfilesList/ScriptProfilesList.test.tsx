@@ -99,7 +99,7 @@ describe("ScriptProfileList", () => {
     });
     expect(viewDetailsMenuItem).toBeVisible();
 
-    const editMenuItem = screen.queryByRole("menuItem", {
+    const editMenuItem = screen.queryByRole("menuitem", {
       name: `Edit ${archivedProfile.title}`,
     });
     expect(editMenuItem).not.toBeInTheDocument();
