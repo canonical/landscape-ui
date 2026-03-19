@@ -323,15 +323,6 @@ const InstanceList = memo(function InstanceList({
             >
               Clear selection
             </Button>
-            {currentInstances.some(isNotSelected) && (
-              <Button
-                className="u-no-padding u-no-margin"
-                appearance="link"
-                onClick={selectAll}
-              >
-                Select all instances on this page
-              </Button>
-            )}
           </div>
         </div>
       </td>
