@@ -55,7 +55,9 @@ describe("EditScriptForm", () => {
     renderWithProviders(<EditScriptForm script={script} />);
 
     await user.type(screen.getByRole("textbox", { name: /title/i }), " edited");
-    await user.click(screen.getByRole("button", { name: /submit new version/i }));
+    await user.click(
+      screen.getByRole("button", { name: /submit new version/i }),
+    );
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(
@@ -69,7 +71,9 @@ describe("EditScriptForm", () => {
     renderWithProviders(<EditScriptForm script={script} />);
 
     await user.type(screen.getByRole("textbox", { name: /title/i }), " edited");
-    await user.click(screen.getByRole("button", { name: /submit new version/i }));
+    await user.click(
+      screen.getByRole("button", { name: /submit new version/i }),
+    );
 
     await user.click(
       within(await screen.findByRole("dialog")).getByRole("button", {
