@@ -20,7 +20,7 @@ export const useCreateScript = () => {
     CreateScriptParams
   >({
     mutationKey: ["scripts", "create"],
-    mutationFn: async (params) => authFetch.get("CreateScript", { params }),
+    mutationFn: async (params) => authFetch.post("CreateScript", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });
