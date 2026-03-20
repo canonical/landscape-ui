@@ -1,4 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
+import { createFormik } from "@/tests/formik";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
@@ -6,35 +7,35 @@ import RepositoryProfileFormPocketsPanel from "./RepositoryProfileFormPocketsPan
 import { distributions } from "@/tests/mocks/distributions";
 import { INITIAL_VALUES } from "../RepositoryProfileForm/constants";
 import type { RepositoryProfileFormValues } from "../../types";
-import { useFormik } from "formik";
 
 const distributionsWithUniquePockets = distributions.slice(0, 2);
 
 describe("RepositoryProfileFormPocketsPanel", () => {
   const user = userEvent.setup();
 
-  const Wrapper = () => {
-    const formik = useFormik<RepositoryProfileFormValues>({
-      initialValues: INITIAL_VALUES,
-      onSubmit: vi.fn(),
+  const renderWrapper = (values?: Partial<RepositoryProfileFormValues>) => {
+    const formik = createFormik<RepositoryProfileFormValues>({
+      ...INITIAL_VALUES,
+      ...values,
     });
-    return (
+    renderWithProviders(
       <RepositoryProfileFormPocketsPanel
         distributions={distributionsWithUniquePockets}
         formik={formik}
-      />
+      />,
     );
+    return { formik };
   };
 
   it("renders columns", () => {
-    renderWithProviders(<Wrapper />);
+    renderWrapper();
     expect(screen.getByText("Distribution")).toBeInTheDocument();
     expect(screen.getByText("Series")).toBeInTheDocument();
     expect(screen.getByText("Pocket")).toBeInTheDocument();
   });
 
   it("renders pockets and applies search filter", async () => {
-    renderWithProviders(<Wrapper />);
+    renderWrapper();
 
     expect(screen.getByText(/distribution 2/i)).toBeInTheDocument();
     await user.type(screen.getByRole("searchbox"), "Pocket 5");
@@ -43,7 +44,7 @@ describe("RepositoryProfileFormPocketsPanel", () => {
   });
 
   it("shows no pockets found message when search yields no results", async () => {
-    renderWithProviders(<Wrapper />);
+    renderWrapper();
 
     await user.type(screen.getByRole("searchbox"), "nonexistent pocket");
     await user.keyboard("{Enter}");
@@ -53,10 +54,11 @@ describe("RepositoryProfileFormPocketsPanel", () => {
   });
 
   it("shows selected number of pockets", async () => {
-    renderWithProviders(<Wrapper />);
+    const selectedPocket = 125;
+    const { formik } = renderWrapper({ pockets: [selectedPocket] });
 
-    expect(screen.getByText("0 selected")).toBeInTheDocument();
-    await user.click(screen.getByRole("checkbox", { name: "Pocket 5" }));
     expect(screen.getByText("1 selected")).toBeInTheDocument();
+    await user.click(screen.getByRole("checkbox", { name: "Pocket 5" }));
+    expect(formik.setFieldValue).toHaveBeenCalledWith("pockets", []);
   });
 });

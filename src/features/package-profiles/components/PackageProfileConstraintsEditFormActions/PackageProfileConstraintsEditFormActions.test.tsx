@@ -1,10 +1,10 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { createFormik } from "@/tests/formik";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useFormik } from "formik";
 import type { ComponentProps, FC } from "react";
 import { describe, expect } from "vitest";
 import type { Constraint } from "../../types";
@@ -24,16 +24,13 @@ const defaultProps: TestComponentProps = {
 };
 
 const TestComponent: FC<TestComponentProps> = (props) => {
-  const formik = useFormik<Constraint>({
-    initialValues: {
-      constraint: "",
-      id: 0,
-      notAnyVersion: false,
-      package: "",
-      rule: "",
-      version: "",
-    },
-    onSubmit: () => undefined,
+  const formik = createFormik<Constraint>({
+    constraint: "",
+    id: 0,
+    notAnyVersion: false,
+    package: "",
+    rule: "",
+    version: "",
   });
 
   return (

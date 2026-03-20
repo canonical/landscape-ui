@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
+import { createFormik } from "@/tests/formik";
 import { screen } from "@testing-library/react";
-import { useFormik } from "formik";
 import { describe, it } from "vitest";
 import type { RepositoryProfileFormValues } from "../../types";
 import { INITIAL_VALUES } from "../RepositoryProfileForm/constants";
@@ -15,10 +15,7 @@ describe("RepositoryProfileFormDetailsPanel", () => {
     readonly isTitleRequired?: boolean;
     readonly isAccessGroupDisabled?: boolean;
   }) => {
-    const formik = useFormik<RepositoryProfileFormValues>({
-      initialValues: INITIAL_VALUES,
-      onSubmit: vi.fn(),
-    });
+    const formik = createFormik<RepositoryProfileFormValues>(INITIAL_VALUES);
     return (
       <RepositoryProfileFormDetailsPanel
         formik={formik}
