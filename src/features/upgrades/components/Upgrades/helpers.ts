@@ -1,4 +1,4 @@
-import type { TabLink } from "@canonical/react-components/dist/components/Tabs/Tabs";
+import type { TabsProps } from "@canonical/react-components";
 import type { Instance } from "@/types/Instance";
 import { TAB_LINKS } from "./constants";
 import type { UpgradesFormProps } from "./types";
@@ -14,17 +14,15 @@ export const getTabLinks = ({
 }) => {
   return TAB_LINKS.filter(
     ({ id }) => withUsnsTab || id !== "tab-link-usns",
-  ).map(
-    ({ id, label }): TabLink => ({
-      id,
-      label,
-      active: id === activeTabLinkId,
-      onClick: () => {
-        onTabLinkClick(id);
-      },
-      role: "tab",
-    }),
-  );
+  ).map(({ id, label }): TabsProps["links"][number] => ({
+    id,
+    label,
+    active: id === activeTabLinkId,
+    onClick: () => {
+      onTabLinkClick(id);
+    },
+    role: "tab",
+  }));
 };
 
 export const getInitialValues = (instances: Instance[]): UpgradesFormProps => {
