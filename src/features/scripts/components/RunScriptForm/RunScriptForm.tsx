@@ -336,7 +336,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
       {isRunConfirmVisible && (
         <ConfirmationModal
-          title={`Run ${script.title} script on ${formik.values.tags.length > 1 ? `${formik.values.tags.length} tags` : `${formik.values.tags[0]} tag`}`}
+          title={`Run "${script.title}" script on ${formik.values.tags.length > 1 ? `${formik.values.tags.length} tags` : `${formik.values.tags[0]} tag`}`}
           confirmButtonLabel="Run script"
           onConfirm={() => {
             formik.handleSubmit();

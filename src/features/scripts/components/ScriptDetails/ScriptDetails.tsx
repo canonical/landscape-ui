@@ -174,8 +174,8 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
               aria-label={`Archive ${script?.title}`}
               disabled={!script?.is_editable}
             >
-              <Icon name="archive" />
-              <span>Archive</span>
+              <Icon name="archive--negative" />
+              <span className="u-text--negative">Archive</span>
             </Button>
 
             <Button
@@ -186,8 +186,8 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
               aria-label={`Delete ${script?.title}`}
               disabled={!script?.is_redactable}
             >
-              <Icon name={ICONS.delete} />
-              <span>Delete</span>
+              <Icon name={`${ICONS.delete}--negative`} />
+              <span className="u-text--negative">Delete</span>
             </Button>
           </div>
         </div>

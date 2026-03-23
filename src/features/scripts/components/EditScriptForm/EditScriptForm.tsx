@@ -1,6 +1,5 @@
 import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -8,7 +7,8 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { lazy, Suspense, useRef, useState } from "react";
+import { useRef } from "react";
+import { useBoolean } from "usehooks-ts";
 import {
   useCreateScriptAttachment,
   useEditScript,
@@ -28,19 +28,19 @@ import {
   removeFileExtension,
 } from "./helpers";
 
-const RunScriptForm = lazy(async () => import("../RunScriptForm"));
-
 interface EditScriptFormProps {
   readonly script: Script;
 }
 
 const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [modalIntent, setModalIntent] = useState<
-    "submit" | "submitAndRun" | null
-  >(null);
+  const {
+    value: showConfirmationModal,
+    setTrue: showModal,
+    setFalse: closeModal,
+  } = useBoolean();
 
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
+  const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -48,57 +48,42 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const { removeScriptAttachment } = useRemoveScriptAttachment();
   const { editScript, isEditing } = useEditScript();
 
-  const openRunForm = (values: ScriptFormValues) => {
-    setSidePanelContent(
-      `Run "${values.title.trim()}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} submittedCode={values.code} />
-      </Suspense>,
-    );
-  };
-
-  const performEdit = async (values: ScriptFormValues) => {
-    const newAttachments = Object.values(values.attachments).filter(
-      (a) => a !== null,
-    );
-    const promises: Promise<unknown>[] = [
-      editScript(getEditScriptParams({ scriptId: script.id, values })),
-    ];
-    if (values.attachmentsToRemove.length) {
-      for (const filename of values.attachmentsToRemove) {
-        promises.push(
-          removeScriptAttachment({ script_id: script.id, filename }),
-        );
-      }
-    }
-    if (newAttachments.length) {
-      promises.push(
-        ...(await getCreateAttachmentsPromises({
-          attachments: newAttachments,
-          createScriptAttachment,
-          script_id: script.id,
-        })),
-      );
-    }
-    await Promise.all(promises);
-  };
-
   const handleSubmit = async (values: ScriptFormValues) => {
     try {
-      await performEdit(values);
-      setModalIntent(null);
-      if (modalIntent === "submitAndRun") {
-        openRunForm(values);
-      } else {
-        closeSidePanel();
-        notify.success({
-          title: `You have successfully submitted a new version of ${script.title}`,
-          message:
-            "All its associated profiles will now be run using this new version.",
-        });
+      const newAttachments = Object.values(values.attachments).filter(
+        (a) => a !== null,
+      );
+      const promises: Promise<unknown>[] = [
+        editScript(getEditScriptParams({ scriptId: script.id, values })),
+      ];
+      if (values.attachmentsToRemove.length) {
+        for (const filename of values.attachmentsToRemove) {
+          promises.push(
+            removeScriptAttachment({ script_id: script.id, filename }),
+          );
+        }
       }
+      if (newAttachments.length) {
+        promises.push(
+          ...(await getCreateAttachmentsPromises({
+            attachments: newAttachments,
+            createScriptAttachment,
+            script_id: script.id,
+          })),
+        );
+      }
+      await Promise.all(promises);
+
+      closeModal();
+      closeSidePanel();
+
+      notify.success({
+        title: `You have successfully submitted a new version of ${script.title}`,
+        message:
+          "All its associated profiles will now be run using this new version.",
+      });
     } catch (error) {
-      setModalIntent(null);
+      closeModal();
       debug(error);
     }
   };
@@ -207,31 +192,18 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
       />
 
       <SidePanelFormButtons
-        onSubmit={() => {
-          setModalIntent("submit");
-        }}
+        onSubmit={showModal}
         submitButtonDisabled={!formik.dirty}
         submitButtonText="Submit new version"
-        secondaryActionButtonTitle="Submit and run"
-        secondaryActionButtonDisabled={!formik.dirty}
-        secondaryActionButtonSubmit={() => {
-          setModalIntent("submitAndRun");
-        }}
       />
 
-      {modalIntent !== null && (
+      {showConfirmationModal && (
         <EditScriptConfirmationModal
           script={script}
           onConfirm={formik.handleSubmit}
-          confirmButtonLabel={
-            modalIntent === "submitAndRun"
-              ? "Submit and run"
-              : "Submit new version"
-          }
+          confirmButtonLabel="Submit new version"
           isConfirming={isEditing}
-          onClose={() => {
-            setModalIntent(null);
-          }}
+          onClose={closeModal}
         />
       )}
     </Form>
