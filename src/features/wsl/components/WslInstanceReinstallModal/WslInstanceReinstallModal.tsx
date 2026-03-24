@@ -2,7 +2,6 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import { windowsInstance } from "@/tests/mocks/instance";
 import type {
   InstanceChild,
   WindowsInstanceWithoutRelation,
@@ -21,6 +20,7 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
   close,
   instances,
   isOpen,
+  windowsInstance,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();

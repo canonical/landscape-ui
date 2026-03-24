@@ -42,7 +42,7 @@ export default [
     { autoinstallFileId: string },
     GetAutoinstallFileParams,
     AutoinstallFile
-  >(`${API_URL}autoinstall/:autoinstallFileId`, async ({ params }) => {
+  >(`${API_URL}autoinstall/:autoinstallFileId`, async ({ params, request }) => {
     const { autoinstallFileId } = params;
 
     await delay();
@@ -53,6 +53,20 @@ export default [
 
     if (!autoinstallFile) {
       throw new HttpResponse(null, { status: 404, statusText: "Not Found" });
+    }
+
+    const url = new URL(request.url);
+    const withMetadata = url.searchParams.get("with_metadata") === "true";
+
+    if (withMetadata) {
+      return HttpResponse.json({
+        ...autoinstallFile,
+        metadata: {
+          current_version: autoinstallFile.version,
+          max_versions: 5,
+          versions: [],
+        },
+      });
     }
 
     return HttpResponse.json(autoinstallFile);

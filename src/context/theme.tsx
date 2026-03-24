@@ -20,7 +20,7 @@ const initialValues: ThemeContext = {
   set: () => undefined,
 };
 
-const ThemeContext = createContext<ThemeContext>(initialValues);
+export const ThemeContext = createContext<ThemeContext>(initialValues);
 
 export const useTheme = () => {
   return useContext(ThemeContext);

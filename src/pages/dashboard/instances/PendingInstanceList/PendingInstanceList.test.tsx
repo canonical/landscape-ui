@@ -8,6 +8,7 @@ import PendingInstancesForm from "./../PendingInstancesForm";
 import PendingInstanceList from "./PendingInstanceList";
 
 describe("PendingInstanceList", () => {
+  const user = userEvent.setup();
   const mockAccessGroupOptions = accessGroups.map((group) => ({
     label: group.title,
     value: group.name,
@@ -42,7 +43,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("clicking a checkbox calls onSelectedIdsChange with correct ID", async () => {
-    const user = userEvent.setup();
     renderWithProviders(
       <PendingInstanceList
         accessGroupOptions={mockAccessGroupOptions}
@@ -60,7 +60,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("'select all' selects all instances", async () => {
-    const user = userEvent.setup();
     renderWithProviders(
       <PendingInstanceList
         accessGroupOptions={mockAccessGroupOptions}
@@ -79,7 +78,6 @@ describe("PendingInstanceList", () => {
 
   it("'select all' checkbox deselects all instances when all are selected", async () => {
     const allSelectedIds = pendingInstances.map((instance) => instance.id);
-    const user = userEvent.setup();
     renderWithProviders(
       <PendingInstanceList
         accessGroupOptions={mockAccessGroupOptions}
@@ -106,7 +104,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("action buttons enabled when at least one instance is selected", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
@@ -123,7 +120,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("clicking cancel button closes the panel", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const cancelButton = screen.getByRole("button", { name: /cancel/i });
@@ -135,7 +131,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("clicking approve renders access group dropdown", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
@@ -151,7 +146,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("clicking 'Back' after approving returns to table view", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
@@ -178,7 +172,6 @@ describe("PendingInstanceList", () => {
   });
 
   it("clicking reject opens confirmation and confirms with correct IDs", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<PendingInstancesForm instances={pendingInstances} />);
 
     const checkboxes = screen.getAllByRole("checkbox");

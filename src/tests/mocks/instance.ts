@@ -1766,3 +1766,45 @@ export const pendingInstances = [
     access_group: null,
   },
 ] as const satisfies PendingInstance[];
+
+export const instanceWithHardware: Instance = {
+  ...ubuntuInstance,
+  grouped_hardware: {
+    system: {
+      bios_capabilities: [],
+      model: "ThinkPad X1",
+      vendor: "Lenovo",
+      bios_vendor: "LENOVO",
+      bios_date: "2023-01-01",
+      serial: "SN12345",
+      chassis: "Notebook",
+      bios_version: "1.0",
+    },
+    cpu: [
+      {
+        vendor: "Intel",
+        clock_speed: "3.0 GHz",
+        model: "Core i7",
+        architecture: "x86_64",
+        cache: {},
+        flags: [],
+      },
+    ],
+    memory: { size: "16 GB" },
+    network: [
+      {
+        ip: "192.168.1.1",
+        vendor: "Intel",
+        product: "Ethernet",
+        mac: "aa:bb:cc:dd:ee:ff",
+        description: "Ethernet adapter",
+      },
+    ],
+    multimedia: { model: "HD Audio", vendor: "Realtek" },
+    storage: [],
+    display: { model: "", vendor: "" },
+    pci: [],
+    scsi: [],
+    usb: [],
+  },
+};

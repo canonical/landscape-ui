@@ -1,6 +1,6 @@
 import type { GPGKey } from "@/features/gpg-keys";
 
-export const gpgKeys: GPGKey[] = [
+export const gpgKeys = [
   {
     id: 2,
     name: "sign-key",
@@ -15,4 +15,4 @@ export const gpgKeys: GPGKey[] = [
     fingerprint: "e971:59de:e2e9:b4aa:ffcc:4dc4:fee2:1e73:307c:a6ef",
     has_secret: false,
   },
-];
+] as const satisfies GPGKey[];
