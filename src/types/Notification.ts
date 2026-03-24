@@ -1,5 +1,4 @@
-import type { NotificationSeverity } from "@canonical/react-components/dist/components/Notification/Notification";
-import type { ValueOf } from "@canonical/react-components/dist/types";
+import type { NotificationProps } from "@canonical/react-components";
 
 declare interface NotificationAction {
   label: string;
@@ -8,7 +7,7 @@ declare interface NotificationAction {
 
 export interface Notification {
   message: string;
-  type: ValueOf<typeof NotificationSeverity>;
+  type: NotificationProps["severity"];
   actions?: NotificationAction[];
   error?: unknown;
   title?: string;
@@ -28,7 +27,7 @@ export type NotificationMethodArgs<T extends "default" | "error" = "default"> =
         title?: string;
       };
 
-type NotificationMethod<T = "default"> = (
+type NotificationMethod<T extends "default" | "error" = "default"> = (
   args: NotificationMethodArgs<T>,
 ) => void;
 
