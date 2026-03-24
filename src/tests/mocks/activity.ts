@@ -1,5 +1,33 @@
 import type { Activity } from "@/features/activities";
 
+export const RELEASE_UPGRADE_ACTIVITY: Activity = {
+  id: 9001,
+  type: "ReleaseUpgradeRequest",
+  summary: "Upgrade distribution for 3 instances",
+  computer_id: 1,
+  activity_status: "undelivered",
+  completion_time: null,
+  creation_time: "2026-03-19T10:00:00Z",
+  creator: { name: "John Smith", email: "john@example.com", id: 1 },
+  parent_id: null,
+  result_code: null,
+  result_text: null,
+  actions: {
+    approvable: false,
+    cancelable: true,
+    reappliable: false,
+    revertable: false,
+  },
+  approval_time: null,
+  delivery_time: null,
+  deliver_after_time: null,
+  deliver_before_time: null,
+  modification_time: "2026-03-19T10:00:00Z",
+  schedule_after_time: null,
+  schedule_before_time: null,
+  children: [],
+};
+
 export const activities = [
   {
     id: 1010,
@@ -268,6 +296,7 @@ export const activities = [
     summary: "Request computer 2 to generate a FDE recovery key.",
     type: "GenerateFDERecoveryKeyRequest",
   },
+  RELEASE_UPGRADE_ACTIVITY,
 ] as const satisfies Activity[];
 
 export const activityTypes = [

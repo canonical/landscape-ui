@@ -232,6 +232,11 @@ const useInstanceSearchHelpTerms = () => {
         </>
       ),
     },
+    {
+      term: "release-upgrade:available",
+      description:
+        "Search for computers with a supported Ubuntu release upgrade available.",
+    },
   ];
 
   if (isFeatureEnabled("usg-profiles")) {

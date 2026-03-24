@@ -1,6 +1,7 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
+  DistributionUpgradeTarget,
   GetInstanceParams,
   GetInstancesParams,
   RemoveInstancesParams,
@@ -8,7 +9,11 @@ import type {
 } from "@/features/instances";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { activities, getMockRecoveryKeyActivity } from "@/tests/mocks/activity";
+import {
+  activities,
+  getMockRecoveryKeyActivity,
+  RELEASE_UPGRADE_ACTIVITY,
+} from "@/tests/mocks/activity";
 import {
   instanceCanceledActivityNoKey,
   instanceCanceledActivityWithKey,
@@ -82,6 +87,173 @@ export default [
       );
     },
   ),
+
+  http.get(`${API_URL}computers/release-upgrade-targets`, ({ request }) => {
+    const url = new URL(request.url);
+    const idsParam = url.searchParams.get("computer_ids") || "";
+    const ids = idsParam
+      .split(",")
+      .map((id) => Number(id))
+      .filter((id) => !Number.isNaN(id));
+
+    const results: DistributionUpgradeTarget[] = ids.map((id) => {
+      const instance = instances.find((inst) => inst.id === id);
+
+      const currentRelease = instance?.distribution_info
+        ? {
+            name: instance.distribution_info.description,
+            version: instance.distribution_info.release,
+          }
+        : null;
+
+      const mockedIneligibleReasonById: Record<
+        number,
+        NonNullable<DistributionUpgradeTarget["reason"]>
+      > = {
+        11: {
+          code: "client_upgrade_required",
+          detail: "Client update required before distribution upgrade.",
+        },
+        21: {
+          code: "no_meta_release",
+          detail: "Meta-release information is currently unavailable.",
+        },
+        65: {
+          code: "lts_only_no_lts_target",
+          detail: "Policy only allows LTS upgrades and no target is available.",
+        },
+      };
+
+      if (!instance) {
+        return {
+          computer_id: id,
+          computer_title: "Unknown Instance",
+          current_release: null,
+          target_release: null,
+          reason: {
+            code: "instance_not_found",
+            detail: `Instance with id ${id} not found.`,
+          },
+        };
+      }
+
+      if (!instance.distribution_info) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: null,
+          target_release: null,
+          reason: {
+            code: "no_distribution",
+            detail:
+              "No distribution information is available for this instance.",
+          },
+        };
+      }
+
+      if (instance.distribution_info.distributor === "Ubuntu Core") {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: currentRelease,
+          target_release: null,
+          reason: {
+            code: "policy_disabled",
+            detail: "Policy is preventing distribution upgrades.",
+          },
+        };
+      }
+
+      if (
+        instance.distribution_info.distributor !== "Canonical" &&
+        instance.distribution_info.distributor !== "Ubuntu"
+      ) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: currentRelease,
+          target_release: null,
+          reason: {
+            code: "unsupported_release",
+            detail: "This distribution is not supported for release upgrades.",
+          },
+        };
+      }
+
+      const mockedIneligibleReason = mockedIneligibleReasonById[id];
+
+      if (mockedIneligibleReason) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: currentRelease,
+          target_release: null,
+          reason: mockedIneligibleReason,
+        };
+      }
+
+      if (
+        instance.distribution_info &&
+        instance.distribution_info.release < "18.04"
+      ) {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: {
+            name: "Ubuntu 18.04 LTS",
+            version: "18.04",
+          },
+          target_release: {
+            code_name: "focal",
+            name: "Ubuntu 20.04 LTS",
+            version: "20.04",
+          },
+          reason: null,
+        };
+      }
+
+      if (instance.distribution_info?.release === "22.04") {
+        return {
+          computer_id: id,
+          computer_title: instance.title,
+          current_release: {
+            name: "Ubuntu 22.04 LTS",
+            version: "22.04",
+          },
+          target_release: {
+            code_name: "noble",
+            name: "Ubuntu 24.04 LTS",
+            version: "24.04",
+          },
+          reason: null,
+        };
+      }
+
+      return {
+        computer_id: id,
+        computer_title: instance.title,
+        current_release: currentRelease,
+        target_release: null,
+        reason: {
+          code: "no_upgrade_target",
+          detail: "No release upgrades are available.",
+        },
+      };
+    });
+
+    return HttpResponse.json({ results });
+  }),
+
+  http.post(`${API_URL}computers/release-upgrades`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error") {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    const releaseUpgradeActivity = RELEASE_UPGRADE_ACTIVITY;
+    return HttpResponse.json(releaseUpgradeActivity);
+  }),
 
   http.get<never, GetInstanceParams, Instance>(
     `${API_URL}computers/:computerId`,

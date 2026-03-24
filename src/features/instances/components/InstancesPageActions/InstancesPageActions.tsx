@@ -43,6 +43,9 @@ const ReportView = lazy(
   async () => import("@/pages/dashboard/instances/ReportView"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
+const DistributionUpgrades = lazy(
+  async () => import("../DistributionUpgrades"),
+);
 const TagsAddForm = lazy(async () => import("../TagsAddForm"));
 const AttachTokenForm = lazy(async () =>
   import("@/features/ubuntupro").then((module) => ({
@@ -190,6 +193,18 @@ const InstancesPageActions = memo(function InstancesPageActions({
         <Upgrades selectedInstances={selectedInstances} />
       </Suspense>,
       "large",
+    );
+  };
+
+  const handleDistributionUpgradesRequest = () => {
+    setSidePanelContent(
+      "Upgrade distributions",
+      <Suspense fallback={<LoadingState />}>
+        <DistributionUpgrades
+          selectedInstances={selectedInstances.map(({ id }) => id)}
+        />
+      </Suspense>,
+      "medium",
     );
   };
 
@@ -366,6 +381,22 @@ const InstancesPageActions = memo(function InstancesPageActions({
           >
             <Icon name="delete" />
             <span>Remove from Landscape</span>
+          </Button>,
+          <Button
+            key="upgrade-distributions"
+            type="button"
+            hasIcon
+            onClick={handleDistributionUpgradesRequest}
+            disabled={
+              0 === selectedInstances.length ||
+              isGettingInstances ||
+              !selectedInstances.some(
+                (instance) => instance.has_release_upgrades,
+              )
+            }
+          >
+            <Icon name="arrow-up" />
+            <span>Upgrade distributions</span>
           </Button>,
         ]}
       />

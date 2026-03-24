@@ -21,5 +21,5 @@ export {
 export { default as GenerateRecoveryKeyModal } from "./components/GenerateRecoveryKeyModal";
 export { default as RegenerateRecoveryKeyModal } from "./components/RegenerateRecoveryKeyModal";
 export { default as ViewRecoveryKeyModal } from "./components/ViewRecoveryKeyModal";
-export type { Status, RecoveryKey } from "./types";
+export type { Status, RecoveryKey, DistributionUpgradeTarget } from "./types";
 export { default as useInstanceSearchHelpTerms } from "./components/InstancesHeader/hooks/useInstanceSearchHelpTerms";

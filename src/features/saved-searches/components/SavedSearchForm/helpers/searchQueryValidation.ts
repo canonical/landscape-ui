@@ -11,10 +11,12 @@ import {
   USG_STATUSES,
   VALID_ROOT_KEYS,
   WSL_STATUSES,
+  DISTRIBUTION_UPGRADE_STATUSES,
 } from "../constants";
 
 import type {
   BooleanString,
+  DistributionUpgradeStatus,
   LicenseType,
   LogicalOperator,
   ProfileType,
@@ -36,6 +38,11 @@ const isUsgStatus = (
   s: string,
   allowedStatuses: readonly string[],
 ): s is UsgStatus => allowedStatuses.includes(s);
+
+const isDistributionUpgradeAvailable = (
+  val: string,
+): val is DistributionUpgradeStatus =>
+  DISTRIBUTION_UPGRADE_STATUSES.includes(val as DistributionUpgradeStatus);
 
 const isWslStatus = (
   s: string,
@@ -183,6 +190,14 @@ const validateAnnotationToken = (val: string): ValidationResult => {
   return keyError("annotation", "key cannot be empty.");
 };
 
+const validateDistributionUpgradeToken = (val: string): ValidationResult => {
+  if (isDistributionUpgradeAvailable(val)) {
+    return undefined;
+  }
+
+  return keyError("release-upgrade", `has invalid value "${val}".`);
+};
+
 const validateKeyToken = (
   parts: [string, string],
   config: ValidationConfig,
@@ -215,6 +230,9 @@ const validateKeyToken = (
 
     case "annotation":
       return validateAnnotationToken(val);
+
+    case "release-upgrade":
+      return validateDistributionUpgradeToken(val);
 
     case "id":
     case "contract":

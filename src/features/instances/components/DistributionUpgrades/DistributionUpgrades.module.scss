@@ -1,0 +1,27 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.statusColumn {
+  width: 80%;
+}
+
+.statusCell {
+  align-items: center;
+  display: flex;
+  gap: $sph--large;
+}
+
+.parentStatusCell {
+  font-weight: bold;
+}
+
+.childStatusCell {
+  padding-left: 3.5rem;
+}
+
+.childStatusCheckboxCell {
+  padding-left: 1.5rem;
+}
+
+.countColumn {
+  text-align: right;
+}

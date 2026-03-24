@@ -23,6 +23,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
     <div className={classes.pagination}>
       <div className={classes.inner}>
         <Button
+          type="button"
           className="u-no-margin--right u-no-margin--bottom"
           appearance="base"
           hasIcon
@@ -36,6 +37,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
           Page {current} of {max}
         </span>
         <Button
+          type="button"
           className="u-no-margin--bottom"
           appearance="base"
           hasIcon

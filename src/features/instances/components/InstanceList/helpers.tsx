@@ -98,12 +98,12 @@ export const getStatusCellIconAndLabel = (
 
   return {
     label: (
-      <span className={classes.statusContainer}>
+      <span className={classes.indicatorWrapper}>
         {filteredAlerts.map(({ type, summary }) => {
           const alertStatus = getAlertStatus(type);
 
           return (
-            <span className={classes.statusListItem} key={type}>
+            <span className={classes.indicatorIcon} key={type}>
               <Tooltip message={summary}>
                 <Icon
                   className="u-no-margin--left"
