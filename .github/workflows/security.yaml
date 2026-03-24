@@ -6,8 +6,8 @@ on:
     - cron: "0 2 * * 1" # Run weekly at 2 AM on Monday
   pull_request:
     paths:
-      - 'Dockerfile'
-      - '.github/workflows/security.yaml'
+      - "Dockerfile"
+      - ".github/workflows/security.yaml"
 
 permissions:
   contents: write
@@ -64,7 +64,8 @@ jobs:
   scan-and-report:
     name: Vulnerability Scan
     needs: build-image
-    runs-on: [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
+    runs-on:
+      [self-hosted, self-hosted-linux-amd64-jammy-private-endpoint-medium]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -149,7 +150,7 @@ jobs:
             echo "Scan results file not found."
           fi >> issue-body.txt
           echo '```' >> issue-body.txt
-          
+
           gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
 
   generate-and-submit-sbom:
@@ -165,11 +166,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Trivy to generate SBOM and submit to Dependency Graph
-        uses: aquasecurity/trivy-action@0.34.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: ${{ needs.build-image.outputs.image_name }}
-          format: 'spdx-json'
-          output: 'dependency-results.sbom.json'
+          format: "spdx-json"
+          output: "dependency-results.sbom.json"
           github-pat: ${{ secrets.GITHUB_TOKEN }}
           severity: "HIGH,CRITICAL"
           scanners: "vuln"
@@ -178,5 +179,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sbom-report-json
-          path: 'dependency-results.sbom.json'
+          path: "dependency-results.sbom.json"
           retention-days: 30
