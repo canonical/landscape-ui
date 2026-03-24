@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import ConsentBannerModal from "./ConsentBannerModal";
 
 describe("ConsentBannerModal", () => {
+  const user = userEvent.setup();
   const mockProceed = vi.fn();
 
   it("renders properly", () => {
@@ -25,7 +26,6 @@ describe("ConsentBannerModal", () => {
   });
 
   it("checkbox is clickable", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<ConsentBannerModal onClose={mockProceed} />);
 
     const checkbox = screen.getByRole("checkbox", {
@@ -39,7 +39,6 @@ describe("ConsentBannerModal", () => {
   });
 
   it("proceed button is disabled until the checkbox is clicked", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<ConsentBannerModal onClose={mockProceed} />);
 
     const dialog = await screen.findByRole("dialog", {
@@ -59,7 +58,6 @@ describe("ConsentBannerModal", () => {
   });
 
   it("clicking proceed closes the modal", async () => {
-    const user = userEvent.setup();
     renderWithProviders(<ConsentBannerModal onClose={mockProceed} />);
 
     const checkbox = screen.getByRole("checkbox", { name: /i acknowledge/i });

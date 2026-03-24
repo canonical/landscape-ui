@@ -95,7 +95,16 @@ export default defineConfig(
       "no-restricted-imports": [
         "error",
         {
-          patterns: ["@/features/*/*"],
+          patterns: [
+            {
+              group: ["**/tests/mocks/**"],
+              message:
+                "Mocks from src/tests/mocks/ can only be imported into test files or the /tests directory.",
+            },
+            {
+              group: ["@/features/*/*"],
+            },
+          ],
         },
       ],
       "react/prefer-read-only-props": "error",
@@ -129,6 +138,16 @@ export default defineConfig(
     files: ["src/tests/browser.ts"],
     rules: {
       "no-console": "off",
+    },
+  },
+
+  {
+    files: ["**/tests/**", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        { patterns: [{ group: ["@/features/*/*"] }] },
+      ],
     },
   },
 );

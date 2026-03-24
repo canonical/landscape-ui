@@ -17,13 +17,12 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { MASKED_VALUE } from "@/constants";
 
 describe("RecoveryKeyStatus", () => {
-  it("renders loading state initially", () => {
+  it("renders loading state initially", async () => {
     renderWithProviders(
       <RecoveryKeyStatus instanceId={instanceNoActivityNoKey.id} />,
     );
 
-    expect(screen.getByRole("status")).toBeInTheDocument();
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    await expectLoadingState();
   });
 
   it("renders no data state when no recovery key exists and no activity", async () => {

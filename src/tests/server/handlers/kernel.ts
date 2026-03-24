@@ -3,12 +3,25 @@ import type {
   KernelManagementInfo,
   LivepatchInformation,
 } from "@/features/kernel";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
 
 export default [
   http.get<never, never, KernelManagementInfo>(
     `${API_URL}computers/:computerId/livepatch/kernel`,
     async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json<KernelManagementInfo>({
+          downgrades: [],
+          installed: null,
+          message: "Kernel information is not available for this instance.",
+          smart_status: "",
+          upgrades: [],
+        });
+      }
+
       return HttpResponse.json<KernelManagementInfo>({
         downgrades: [],
         installed: {

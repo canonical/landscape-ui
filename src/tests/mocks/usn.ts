@@ -766,6 +766,8 @@ export const usns = [
   },
 ] as const satisfies Usn[];
 
+export const usnPackageComputerId = 21;
+
 export const usnPackages: UsnPackage[] = [
   {
     name: "vim",
@@ -773,7 +775,7 @@ export const usnPackages: UsnPackage[] = [
     current_id: 112675,
     new_version: "2:8.1.2269-1ubuntu5.21",
     summary: "Vi IMproved - enhanced vi editor",
-    computer_ids: [21],
+    computer_ids: [usnPackageComputerId],
   },
   {
     name: "vim-common",
@@ -781,7 +783,7 @@ export const usnPackages: UsnPackage[] = [
     current_id: 126448,
     new_version: "2:8.1.2269-1ubuntu5.21",
     summary: "Vi IMproved - Common files",
-    computer_ids: [21],
+    computer_ids: [usnPackageComputerId],
   },
   {
     name: "vim-runtime",
@@ -789,7 +791,7 @@ export const usnPackages: UsnPackage[] = [
     current_id: 90790,
     new_version: "2:8.1.2269-1ubuntu5.21",
     summary: "Vi IMproved - Runtime files",
-    computer_ids: [21],
+    computer_ids: [usnPackageComputerId],
   },
   {
     name: "vim-tiny",
@@ -797,7 +799,7 @@ export const usnPackages: UsnPackage[] = [
     current_id: 145560,
     new_version: "2:8.1.2269-1ubuntu5.21",
     summary: "Vi IMproved - enhanced vi editor - compact version",
-    computer_ids: [21],
+    computer_ids: [usnPackageComputerId],
   },
   {
     name: "xxd",
@@ -805,6 +807,6 @@ export const usnPackages: UsnPackage[] = [
     current_id: 88967,
     new_version: "2:8.1.2269-1ubuntu5.21",
     summary: "tool to make (or reverse) a hex dump",
-    computer_ids: [21],
+    computer_ids: [usnPackageComputerId],
   },
 ];

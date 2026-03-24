@@ -5,6 +5,8 @@ import { describe, it, vi } from "vitest";
 import TagMultiSelect from "./TagMultiSelect";
 
 describe("TagMultiSelect", () => {
+  const user = userEvent.setup();
+
   it("renders with custom label and required state", () => {
     renderWithProviders(
       <TagMultiSelect
@@ -20,7 +22,6 @@ describe("TagMultiSelect", () => {
   });
 
   it("adds an existing tag when selecting from the dropdown", async () => {
-    const user = userEvent.setup();
     const onTagsChange = vi.fn();
 
     renderWithProviders(
@@ -34,8 +35,6 @@ describe("TagMultiSelect", () => {
   });
 
   it("shows validation error for invalid new tag", async () => {
-    const user = userEvent.setup();
-
     renderWithProviders(<TagMultiSelect tags={[]} onTagsChange={vi.fn()} />);
 
     const input = screen.getByPlaceholderText("Add tags");
@@ -48,7 +47,6 @@ describe("TagMultiSelect", () => {
   });
 
   it("creates a new valid tag on Enter", async () => {
-    const user = userEvent.setup();
     const onTagsChange = vi.fn();
 
     renderWithProviders(

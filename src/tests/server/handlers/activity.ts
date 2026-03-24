@@ -13,31 +13,37 @@ import { generatePaginatedResponse, isAction } from "./_helpers";
 
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
 const TYPE_QUERY_REGEX = /(?:^|\s)type:([^\s]+)/;
+const COMPUTER_ID_REGEX = /computer:id:(\d+)/;
 
 const parseActivitiesQuery = (
   rawQuery: string,
-): { status?: string; type?: string; searchQuery: string } => {
+): {
+  status?: string;
+  type?: string;
+  computerId?: string;
+  searchQuery: string;
+} => {
   const statusMatch = rawQuery.match(STATUS_QUERY_REGEX);
   const typeMatch = rawQuery.match(TYPE_QUERY_REGEX);
+  const computerMatch = rawQuery.match(COMPUTER_ID_REGEX);
 
   let searchQuery = rawQuery;
 
   if (statusMatch) {
     searchQuery = searchQuery.replace(statusMatch[0], "").trim();
   }
-
   if (typeMatch) {
     searchQuery = searchQuery.replace(typeMatch[0], "").trim();
   }
-
-  if (!statusMatch && !typeMatch) {
-    return { searchQuery };
+  if (computerMatch) {
+    searchQuery = searchQuery.replace(computerMatch[0], "").trim();
   }
 
   return {
     status: statusMatch?.[1],
     type: typeMatch?.[1],
-    searchQuery,
+    computerId: computerMatch?.[1],
+    searchQuery: searchQuery.replace(/\s\s+/g, " "),
   };
 };
 

@@ -2,11 +2,17 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type { WslInstanceType } from "@/features/wsl";
 import type { MakeWindowsInstancesCompliantParams } from "@/features/wsl-profiles";
-import { wslInstanceNames } from "@/tests/mocks/wsl";
+import { instanceChildren, wslInstanceNames } from "@/tests/mocks/wsl";
+import type { InstanceChild } from "@/types/Instance";
 import { http, HttpResponse } from "msw";
 import { isAction } from "./_helpers";
 
 export default [
+  http.get<{ id: string }, never, { children: InstanceChild[] }>(
+    `${API_URL}computers/:id/children`,
+    () => HttpResponse.json({ children: instanceChildren }),
+  ),
+
   http.get<never, never, WslInstanceType[]>(
     `${API_URL}wsl-instance-names`,
     () => {
