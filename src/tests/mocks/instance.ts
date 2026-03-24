@@ -450,6 +450,7 @@ const recoveryKeyInstance: Instance = {
   employee_id: 1,
   archived: false,
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
 };
 
 export const instanceNoActivityNoKey: Instance = {
@@ -1357,6 +1358,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 201,
@@ -1396,6 +1398,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 202,
@@ -1435,6 +1438,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 203,
@@ -1474,6 +1478,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 204,
@@ -1513,6 +1518,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 205,
@@ -1552,6 +1558,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 206,
@@ -1591,6 +1598,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 207,
@@ -1630,6 +1638,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 208,
@@ -1669,6 +1678,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 209,
@@ -1708,6 +1718,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 210,
@@ -1747,6 +1758,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
 ] as const satisfies Instance[];
 
