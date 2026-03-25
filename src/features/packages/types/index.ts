@@ -5,8 +5,6 @@ export type {
   PackageObject,
   PackageDiff,
   PocketPackage,
-  PocketPackageName,
-  PocketPackageVersion,
   PocketPackagesList,
 } from "./Package";
 

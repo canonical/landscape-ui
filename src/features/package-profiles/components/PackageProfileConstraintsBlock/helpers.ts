@@ -43,14 +43,14 @@ const getConstraintsErrorByIndex = (
 ) => {
   if (
     !formik.errors.constraints?.[index] ||
-    !formik.touched.constraints?.[index]?.[key as string]
+    !formik.touched.constraints?.[index]?.[key]
   ) {
     return undefined;
   }
 
   const rowErrors = formik.errors.constraints[index];
 
-  return typeof rowErrors !== "string" ? rowErrors[key as string] : undefined;
+  return typeof rowErrors !== "string" ? rowErrors[key] : undefined;
 };
 
 const handleConstraintRowDelete = async (

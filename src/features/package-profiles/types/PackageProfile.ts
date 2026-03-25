@@ -1,4 +1,4 @@
-export type PackageProfileConstraintType = "depends" | "conflicts";
+export type PackageProfileConstraintType = "depends" | "conflicts" | "";
 
 export interface PackageProfileConstraint extends Record<string, unknown> {
   constraint: PackageProfileConstraintType;

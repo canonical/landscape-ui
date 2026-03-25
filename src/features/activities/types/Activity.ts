@@ -33,14 +33,14 @@ export interface ActivityCommon extends Record<string, unknown> {
   actions?: ActivityActions;
 }
 
-export interface ScheduleWindow extends Record<string, unknown> {
+interface ScheduleWindow extends Record<string, unknown> {
   children: ActivityCommon[];
   modification_time: string;
   schedule_after_time: string | null;
   schedule_before_time: string | null;
 }
 
-export interface DeliveryWindow extends Record<string, unknown> {
+interface DeliveryWindow extends Record<string, unknown> {
   approval_time: string | null;
   computer_id: number;
   deliver_after_time: string | null;
@@ -48,18 +48,18 @@ export interface DeliveryWindow extends Record<string, unknown> {
   delivery_time: string | null;
 }
 
-export interface PackageChanges extends Record<string, unknown> {
+interface PackageChanges extends Record<string, unknown> {
   changes: string[];
   package_ids: number[];
 }
 
-export interface PocketInfo extends Record<string, unknown> {
+interface PocketInfo extends Record<string, unknown> {
   pocket_id: number;
   pocket_name: string;
   progress: number;
 }
 
-export interface DelayWindow extends Record<string, unknown> {
+interface DelayWindow extends Record<string, unknown> {
   deliver_delay_window: number;
 }
 
