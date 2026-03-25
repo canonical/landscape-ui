@@ -68,9 +68,13 @@ export interface PocketUploadProps {
   upload_gpg_keys: UploadedGPGKey[];
 }
 
-export type MirrorPocket = PocketMirrorProps & PocketLastSyncProps & PocketCommonProps;
+export type MirrorPocket = PocketMirrorProps &
+  PocketLastSyncProps &
+  PocketCommonProps;
 
-export type PullPocket = PocketPullProps & PocketLastSyncProps & PocketCommonProps;
+export type PullPocket = PocketPullProps &
+  PocketLastSyncProps &
+  PocketCommonProps;
 
 export type UploadPocket = PocketUploadProps & PocketCommonProps;
 

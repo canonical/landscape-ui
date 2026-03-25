@@ -1,4 +1,8 @@
-export type { Kernel, KernelManagementInfo, KernelOverviewInfo } from "./Kernel";
+export type {
+  Kernel,
+  KernelManagementInfo,
+  KernelOverviewInfo,
+} from "./Kernel";
 
 export type {
   Fix,

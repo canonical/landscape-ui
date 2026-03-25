@@ -24,4 +24,3 @@ export type CommonPocket = Record<string, unknown> &
       | PocketPullProps["mode"]
       | PocketUploadProps["mode"];
   };
-
