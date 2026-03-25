@@ -1,8 +1,20 @@
 # Coverage
 
-This document describes how to reason about automated test coverage in this repository.
+This document tells agents how to reason about automated test coverage in this repository.
 
 Coverage is a quality signal, not the goal by itself. High percentages are not useful if they come from weak assertions, trivial code paths, or tests that do not protect important behavior.
+
+## How Agents Should Use This Document
+
+Use this document for coverage policy, expectations, and interpretation.
+
+Use [`vitest.config.ts`](../../vitest.config.ts) as the source of truth for the live coverage configuration.
+
+If this document and the config ever differ:
+
+- trust the config for mechanics
+- trust this document for intent and review expectations
+- update the document if the policy changed, not only the tooling
 
 ## What Coverage Is For
 
@@ -15,30 +27,29 @@ In this repo, coverage should help answer questions like:
 
 Coverage should support review and verification, not replace them.
 
-## Current Coverage Source
+## Current Coverage Setup
 
 Coverage is currently produced by Vitest, not by Playwright.
 
 The repo already defines:
 
 - `pnpm coverage` -> `vitest run --coverage`
-- coverage provider: `v8`
-- coverage reporters: `cobertura`, `json-summary`, and `html`
-- coverage output directory: `reports/`
 - global thresholds: `80` for statements, lines, and functions, and `70` for branches
 
-This is configured in `vitest.config.ts`.
+Additional provider, reporter, output, include, and exclude details are configured in [`vitest.config.ts`](../../vitest.config.ts). Agents should inspect the config directly when they need those exact mechanics.
 
 ## Scope Of Coverage Numbers
 
-Current coverage reporting is focused on `src/**/*.{ts,tsx}` and excludes a number of support and low-signal paths, including:
+Coverage reporting is focused on application code under `src`, not the whole repository.
+
+It excludes low-signal paths such as:
 
 - tests themselves
 - config files
 - `types`
 - barrel `index.ts` files
 - declaration files
-- `__tests__` directories
+- other support-only files defined in the Vitest coverage config
 
 That means the reported coverage numbers are primarily about application code exercised through the Vitest suite.
 
@@ -86,7 +97,7 @@ Bad coverage usually looks like:
 
 ## Thresholds
 
-This repository uses the following global Vitest coverage thresholds:
+This repository currently enforces the following global Vitest coverage thresholds:
 
 - statements: `80%`
 - lines: `80%`
@@ -97,7 +108,7 @@ These are baseline repository thresholds, not a substitute for judgment.
 
 ## How To Use The Thresholds
 
-Treat the configured thresholds as the floor, not the target.
+Treat the enforced thresholds as the floor, not the target.
 
 Expected practice:
 
