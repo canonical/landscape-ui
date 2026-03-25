@@ -10,11 +10,11 @@ const handleConstraintPropChange = async (
   prop: keyof Constraint,
   value: string,
 ) => {
-  await formik.setFieldValue(`${prop}`, value);
+  await formik.setFieldValue(String(prop), value);
 
-  await formik.setFieldTouched(`${prop}`, true);
+  await formik.setFieldTouched(String(prop), true);
 
-  if (!["rule", "version"].includes(`${prop}`)) {
+  if (!["rule", "version"].includes(String(prop))) {
     return;
   }
 

@@ -1,4 +1,4 @@
-export {
+export type {
   DowngradePackageVersion,
   InstancePackage,
   Package,
@@ -10,7 +10,7 @@ export {
   PocketPackagesList,
 } from "./Package";
 
-export {
+export type {
   InstalledPackageAction,
   InstalledPackageActionAppearance,
 } from "./InstalledPackageAction";

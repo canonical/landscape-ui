@@ -2,7 +2,7 @@ import type { Row, CellProps } from "react-table";
 import "react-table";
 
 declare module "react-table" {
-  export interface ColumnInterface {
+  export interface ColumnInterface<D extends object = {}> {
     meta?: {
       ariaLabel?: string | ((row: Row<D>) => string);
       isExpandable?: boolean;

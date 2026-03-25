@@ -1,2 +1,2 @@
-export { GetEventsLogParams } from "./EventsLogParams";
-export { EventLog } from "./EventLog";
+export type { GetEventsLogParams } from "./EventsLogParams";
+export type { EventLog } from "./EventLog";

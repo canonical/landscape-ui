@@ -1,1 +1,1 @@
-export { SavedSearch } from "./SavedSearch";
+export type { SavedSearch } from "./SavedSearch";

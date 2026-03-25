@@ -4,7 +4,7 @@ import type {
   CreateUploadPocketParams,
 } from "../../types";
 
-interface FormProps
+export interface FormProps
   extends
     Omit<CreateMirrorPocketParams, "mode">,
     Omit<CreatePullPocketParams, "mode" | "filter_type">,

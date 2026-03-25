@@ -1,4 +1,4 @@
-export {
+export type {
   Activity,
   ActivityCommon,
   ActivityGroup,
@@ -13,7 +13,7 @@ export {
   SyncPocketRequest,
 } from "./Activity";
 
-export {
+export type {
   ApproveActivitiesParams,
   CancelActivitiesParams,
   GetActivitiesParams,

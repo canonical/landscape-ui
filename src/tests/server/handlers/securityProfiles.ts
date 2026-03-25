@@ -134,7 +134,7 @@ export default [
       completion_time: null,
       computer_id: 0,
       creation_time: "",
-      creator: undefined,
+      creator: { email: "", id: 0, name: "" },
       deliver_after_time: null,
       deliver_before_time: null,
       delivery_time: null,

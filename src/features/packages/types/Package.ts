@@ -1,6 +1,6 @@
-type PocketPackageName = string;
+export type PocketPackageName = string;
 
-type PocketPackageVersion = string;
+export type PocketPackageVersion = string;
 
 export type PocketPackage = [PocketPackageName, PocketPackageVersion];
 

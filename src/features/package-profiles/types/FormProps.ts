@@ -9,9 +9,13 @@ import type {
   PackageProfileConstraintType,
 } from "./PackageProfile";
 
-interface Constraint extends PackageProfileConstraint {
+export interface Constraint extends Record<string, unknown> {
   constraint: PackageProfileConstraintType | "";
+  id: number;
   notAnyVersion: boolean;
+  package: string;
+  rule: string;
+  version: string;
 }
 
 export interface AddFormProps extends Omit<

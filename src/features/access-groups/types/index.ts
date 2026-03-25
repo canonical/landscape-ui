@@ -1,1 +1,1 @@
-export { AccessGroup, AccessGroupWithInstancesCount } from "./AccessGroup";
+export type { AccessGroup, AccessGroupWithInstancesCount } from "./AccessGroup";

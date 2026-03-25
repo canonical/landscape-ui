@@ -1,2 +1,2 @@
-export { AutoinstallFile, WithMetadata } from "./AutoinstallFile";
-export { AutoinstallFileTabId } from "./AutoinstallFileTab";
+export type { AutoinstallFile, WithMetadata } from "./AutoinstallFile";
+export type { AutoinstallFileTabId } from "./AutoinstallFileTab";

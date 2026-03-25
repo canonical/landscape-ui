@@ -1,6 +1,6 @@
-export {
+export type {
   ChangePasswordParams,
   EditUserDetailsParams,
 } from "./UserGeneralSettingsParams";
 
-export { UserDetails } from "./UserDetails";
+export type { UserDetails } from "./UserDetails";

@@ -1,5 +1,5 @@
-export { APTSource } from "./APTSource";
-export {
+export type { APTSource } from "./APTSource";
+export type {
   CreateAPTSourceParams,
   GetAPTSourcesParams,
   RemoveAPTSourceParams,

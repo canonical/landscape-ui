@@ -1,6 +1,6 @@
 import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import type { ApiError } from "./api/ApiError";
+import type { ApiError } from "./ApiError";
 
 export type QueryFnType<Result, Params> = (
   queryParams?: Params,

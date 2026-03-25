@@ -29,7 +29,7 @@ export interface OktaProviderConfiguration {
   discovery_uri: string;
 }
 
-type ProviderConfiguration = OktaProviderConfiguration;
+export type ProviderConfiguration = OktaProviderConfiguration;
 
 export interface SingleIdentityProvider {
   configuration: ProviderConfiguration;

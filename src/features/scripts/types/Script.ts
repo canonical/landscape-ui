@@ -7,7 +7,7 @@ interface ChangedBy {
   name: string;
 }
 
-interface Attachment {
+export interface Attachment {
   id: number;
   filename: string;
 }

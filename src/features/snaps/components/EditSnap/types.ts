@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 export interface SnapFormProps {
   deliver_immediately: boolean;
   randomize_delivery: boolean;

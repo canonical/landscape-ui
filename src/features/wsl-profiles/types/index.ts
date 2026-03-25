@@ -1,1 +1,1 @@
-export { WslProfile } from "./WslProfile";
+export type { WslProfile } from "./WslProfile";

@@ -1,18 +1,18 @@
-export { SyncPocketRef } from "./SyncPocketRef";
-export { Distribution } from "./Distribution";
-export {
+export type { SyncPocketRef } from "./SyncPocketRef";
+export type { Distribution } from "./Distribution";
+export type {
   CreateDistributionParams,
   GetDistributionsParams,
   RemoveDistributionParams,
 } from "./DistributionParams";
-export { Series, Repo, RepoInfo } from "./Series";
-export {
+export type { Series, Repo, RepoInfo } from "./Series";
+export type {
   CreateSeriesParams,
   DeriveSeriesParams,
   GetRepoInfoParams,
   RemoveSeriesParams,
 } from "./SeriesParams";
-export {
+export type {
   Pocket,
   PocketLastSyncProps,
   PocketCommonProps,
@@ -20,7 +20,7 @@ export {
   PocketPullProps,
   PocketUploadProps,
 } from "./Pocket";
-export {
+export type {
   AddPackageFiltersToPocketParams,
   AddUploaderGPGKeysToPocketParams,
   CreateCommonPocketParams,

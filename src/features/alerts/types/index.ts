@@ -1,7 +1,7 @@
-export {
+export type {
   AssociateAlertParams,
   DisassociateAlertParams,
   SubscriptionParams,
 } from "./AlertParams";
 
-export { Alert } from "./Alert";
+export type { Alert } from "./Alert";

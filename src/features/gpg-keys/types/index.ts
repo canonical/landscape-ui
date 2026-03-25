@@ -1,5 +1,5 @@
-export { GPGKey, UploadedGPGKey } from "./GPGKey";
-export {
+export type { GPGKey, UploadedGPGKey } from "./GPGKey";
+export type {
   GetGPGKeysParams,
   ImportGPGKeyParams,
   RemoveGPGKeyParams,

@@ -1,7 +1,7 @@
-export {
+export type {
   UpgradeProfile,
   UpgradeProfileFrequency,
   UpgradeProfileDay,
   UpgradeProfileType,
 } from "./UpgradeProfile";
-export { FormProps } from "./FormProps";
+export type { FormProps } from "./FormProps";

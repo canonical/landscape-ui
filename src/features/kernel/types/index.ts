@@ -1,6 +1,6 @@
-export { Kernel, KernelManagementInfo, KernelOverviewInfo } from "./Kernel";
+export type { Kernel, KernelManagementInfo, KernelOverviewInfo } from "./Kernel";
 
-export {
+export type {
   Fix,
   KernelStatus,
   LivepatchInformation,

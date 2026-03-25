@@ -13,10 +13,10 @@ export interface AutoinstallFileVersionInfo extends Record<string, unknown> {
   created_at: string;
 }
 
-export interface WithMetadata<T extends AutoinstallFile> extends T {
+export type WithMetadata<T extends AutoinstallFile> = T & {
   metadata: {
     current_version: number;
     max_versions: number;
     versions: AutoinstallFileVersionInfo[];
   };
-}
+};

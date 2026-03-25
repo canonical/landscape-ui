@@ -1,4 +1,4 @@
-interface EmployeeActionParams {
+export interface EmployeeActionParams {
   id: number;
 }
 

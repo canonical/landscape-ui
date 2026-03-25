@@ -1,1 +1,1 @@
-export { RemovalProfile } from "./RemovalProfile";
+export type { RemovalProfile } from "./RemovalProfile";

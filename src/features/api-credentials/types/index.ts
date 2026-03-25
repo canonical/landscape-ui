@@ -1,5 +1,5 @@
-export { GenerateApiCredentialsParams } from "./ApiCredentialsParams";
-export {
+export type { GenerateApiCredentialsParams } from "./ApiCredentialsParams";
+export type {
   ApiKeyCredentials,
   Credential,
   UserCredentials,

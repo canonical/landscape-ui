@@ -1,9 +1,6 @@
-import type { CommonPackagesActionParams } from "../api";
-
-export interface FormProps extends Pick<
-  CommonPackagesActionParams,
-  "deliver_after" | "deliver_delay_window"
-> {
+export interface FormProps {
+  deliver_after: string;
+  deliver_delay_window: number;
   deliver_immediately: boolean;
   randomize_delivery: boolean;
   version: string;

@@ -1,12 +1,12 @@
 import type { CreateUpgradeProfileParams } from "../hooks/useUpgradeProfiles";
 
-export interface FormProps extends Omit<
+export type FormProps = Omit<
   Required<CreateUpgradeProfileParams>,
-  "access_group"
-> {
+  "access_group" | "at_hour" | "at_minute" | "deliver_delay_window"
+> & {
   access_group?: string;
   at_hour: number | "";
   at_minute: number | "";
   deliver_delay_window: number;
   randomize_delivery: boolean;
-}
+};

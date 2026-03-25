@@ -1,1 +1,1 @@
-export { AlertSummary, AlertSummaryResponse } from "./AlertSummary";
+export type { AlertSummary, AlertSummaryResponse } from "./AlertSummary";

@@ -1,4 +1,4 @@
-export {
+export type {
   IdentityProvider,
   OktaProviderConfiguration,
   ProviderConfiguration,
@@ -8,4 +8,4 @@ export {
   SupportedIdentityProvider,
 } from "./IdentityProvider";
 
-export { Account, AuthUser } from "./AuthUser";
+export type { Account, AuthUser } from "./AuthUser";

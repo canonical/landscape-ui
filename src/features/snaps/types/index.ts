@@ -1,11 +1,11 @@
-export {
+export type {
   GetAvailableSnapInfoParams,
   GetAvailableSnapsParams,
   GetSnapsParams,
   SnapActionParams,
 } from "./SnapsParams";
 
-export {
+export type {
   AvailableSnap,
   AvailableSnapInfo,
   InstalledSnap,

@@ -1,2 +1,2 @@
-export { RepositoryProfileFormValues } from "./RepositoryProfileFormValues";
-export { RepositoryProfile } from "./RepositoryProfile";
+export type { RepositoryProfileFormValues } from "./RepositoryProfileFormValues";
+export type { RepositoryProfile } from "./RepositoryProfile";
