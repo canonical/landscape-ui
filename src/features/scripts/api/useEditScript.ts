@@ -21,7 +21,7 @@ export const useEditScript = () => {
     EditScriptParams
   >({
     mutationKey: ["scripts", "edit"],
-    mutationFn: async (params) => authFetch.get("EditScript", { params }),
+    mutationFn: async (params) => authFetch.post("EditScript", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });

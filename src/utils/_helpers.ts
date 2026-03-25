@@ -13,7 +13,7 @@ const initParamsToPass = ({
   config: InternalAxiosRequestConfig;
   isOld: boolean;
 }): Record<string, unknown> =>
-  isOld
+  isOld && config.method === "get"
     ? {
         action: config.url ?? "",
         version: API_VERSION,
@@ -60,7 +60,8 @@ export const handleParams = ({
         }
       }
     } else if (["number", "boolean"].includes(typeof value)) {
-      paramsToPass[param] = isOld ? `${value}` : value;
+      paramsToPass[param] =
+        isOld && config.method === "get" ? `${value}` : value;
     } else if (typeof value === "object") {
       paramsToPass[param] =
         isOld || "get" === config.method ? JSON.stringify(value) : value;
