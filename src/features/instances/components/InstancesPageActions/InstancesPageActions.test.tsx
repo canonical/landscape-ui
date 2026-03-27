@@ -160,6 +160,8 @@ describe("InstancesPageActions", () => {
       );
 
       screen.getByText("Selected instances have been queued for shutdown.");
+
+      expect(dialog).not.toBeInTheDocument();
     });
 
     it("'Restart' button", async () => {
@@ -176,6 +178,8 @@ describe("InstancesPageActions", () => {
       );
 
       screen.getByText("Selected instances have been queued for reboot.");
+
+      expect(dialog).not.toBeInTheDocument();
     });
 
     it("'Run script' button", async () => {
