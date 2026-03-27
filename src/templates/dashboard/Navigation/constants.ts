@@ -23,6 +23,7 @@ export const REPOSITORY_SUBMENU: MenuItem[] = [
   {
     label: "Local repositories",
     path: ROUTES.repositories.localRepositories(),
+    env: "selfHosted"
   },
   { label: "Publications", path: ROUTES.repositories.publications(), env: "selfHosted" },
   {
@@ -80,7 +81,7 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: "fork",
     items: REPOSITORY_SUBMENU,
     secondary: true,
-    env: "selfHosted"
+    env: "selfHosted",
   },
   {
     label: "Org. settings",
