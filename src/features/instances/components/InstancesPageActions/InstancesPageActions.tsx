@@ -161,6 +161,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
           selected: selectedInstances,
         }),
       );
+
+      closeShutdownModal();
     } catch (error) {
       debug(error);
     }
@@ -181,6 +183,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
           selected: selectedInstances,
         }),
       );
+
+      closeRebootModal();
     } catch (error) {
       debug(error);
     }
