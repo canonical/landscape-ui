@@ -2,7 +2,6 @@ import { ROUTES } from "@/libs/routes";
 import type { MenuItem } from "./types";
 
 const PROFILES_SUBMENU: MenuItem[] = [
-  { label: "Repository profiles", path: ROUTES.profiles.repository() },
   { label: "Package profiles", path: ROUTES.profiles.package() },
   { label: "Upgrade profiles", path: ROUTES.profiles.upgrade() },
   { label: "Reboot profiles", path: ROUTES.profiles.reboot() },
@@ -19,10 +18,21 @@ const PROFILES_SUBMENU: MenuItem[] = [
   },
 ];
 
-const REPOSITORY_SUBMENU: MenuItem[] = [
-  { label: "Mirrors", path: ROUTES.repositories.mirrors(), env: "selfHosted" },
-  { label: "GPG Keys", path: ROUTES.repositories.gpgKeys() },
-  { label: "APT Sources", path: ROUTES.repositories.aptSources() },
+export const REPOSITORY_SUBMENU: MenuItem[] = [
+  { label: "Mirrors", path: ROUTES.repositories.mirrors() },
+  {
+    label: "Local repositories",
+    path: ROUTES.repositories.localRepositories(),
+  },
+  { label: "Publications", path: ROUTES.repositories.publications() },
+  {
+    label: "Publication targets",
+    path: ROUTES.repositories.publicationTargets(),
+  },
+  {
+    label: "Repository profiles",
+    path: ROUTES.repositories.repositoryProfiles(),
+  },
 ];
 
 const SETTINGS_SUBMENU: MenuItem[] = [
@@ -64,9 +74,10 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     label: "Repositories",
-    path: ROUTES.repositories.root(),
+    path: ROUTES.repositories.mirrors(),
     icon: "fork",
     items: REPOSITORY_SUBMENU,
+    secondary: true,
   },
   {
     label: "Org. settings",

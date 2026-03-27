@@ -1,9 +1,12 @@
 import { Outlet, Route } from "react-router";
 import { PATHS } from "@/libs/routes";
 import { AuthGuard } from "@/components/guards/AuthGuard";
-import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import * as Pages from "@/routes/elements";
+import SecondaryNavigation from "@/templates/dashboard/SecondaryNavigation";
+import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/constants";
+import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
+import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 
 export const DashboardRoutes = (
   <Route
@@ -34,10 +37,6 @@ export const DashboardRoutes = (
 
       {/* --- Profiles --- */}
       <Route path={PATHS.profiles.root}>
-        <Route
-          path={PATHS.profiles.repository}
-          element={<Pages.RepositoryProfilesPage />}
-        />
         <Route
           path={PATHS.profiles.package}
           element={<Pages.PackageProfilesPage />}
@@ -75,23 +74,37 @@ export const DashboardRoutes = (
       </Route>
 
       {/* --- Repositories --- */}
-      <Route path={PATHS.repositories.root}>
-        <Route
-          path={PATHS.repositories.gpgKeys}
-          element={<Pages.GPGKeysPage />}
-        />
-        <Route
-          path={PATHS.repositories.aptSources}
-          element={<Pages.APTSourcesPage />}
-        />
-
+      <Route
+        path={PATHS.repositories.root}
+        element={
+          <>
+            <SecondaryNavigation
+              title="Repositories"
+              items={REPOSITORY_SUBMENU}
+            />
+            <Outlet />
+          </>
+        }
+      >
         <Route
           path={PATHS.repositories.mirrors}
-          element={
-            <SelfHostedGuard>
-              <Pages.DistributionsPage />
-            </SelfHostedGuard>
-          }
+          element={<Pages.MirrorsPage />}
+        />
+        <Route
+          path={PATHS.repositories.localRepositories}
+          element={<Pages.LocalRepositoriesPage />}
+        />
+        <Route
+          path={PATHS.repositories.publications}
+          element={<Pages.PublicationsPage />}
+        />
+        <Route
+          path={PATHS.repositories.publicationTargets}
+          element={<Pages.PublicationTargetsPage />}
+        />
+        <Route
+          path={PATHS.repositories.repositoryProfiles}
+          element={<Pages.RepositoryProfilesPage />}
         />
       </Route>
 
@@ -131,7 +144,20 @@ export const DashboardRoutes = (
       </Route>
 
       {/* --- Account --- */}
-      <Route path={PATHS.account.root}>
+      <Route
+        path={PATHS.account.root}
+        element={
+          <>
+            <SecondaryNavigation
+              title={ACCOUNT_SETTINGS.label}
+              items={ACCOUNT_SETTINGS.items}
+            >
+              <DarkModeSwitch />
+            </SecondaryNavigation>
+            <Outlet />
+          </>
+        }
+      >
         <Route
           path={PATHS.account.general}
           element={<Pages.GeneralSettings />}
