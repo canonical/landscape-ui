@@ -3,14 +3,3 @@
 .wrapper {
   display: flex;
 }
-
-.secondaryNavigation {
-  flex-shrink: 0;
-}
-
-.pageContent {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  width: 100%;
-}

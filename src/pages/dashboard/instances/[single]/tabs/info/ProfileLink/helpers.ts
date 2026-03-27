@@ -19,7 +19,7 @@ export const getTo = (profile: Profile) => {
         profile: profile.id.toString() || "",
       });
     case "repository":
-      return ROUTES.profiles.repository({
+      return ROUTES.repositories.repositoryProfiles({
         search: profile.title || "",
       });
     case "script":
