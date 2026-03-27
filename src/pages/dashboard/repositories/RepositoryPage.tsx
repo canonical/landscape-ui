@@ -1,16 +1,9 @@
 import { ROUTES } from "@/libs/routes";
 import type { FC } from "react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router";
 
 const RepositoryPage: FC = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    navigate(ROUTES.repositories.mirrors(), { replace: true });
-  }, []);
-
-  return null;
+  return <Navigate to={ROUTES.repositories.mirrors()} replace />;
 };
 
 export default RepositoryPage;
