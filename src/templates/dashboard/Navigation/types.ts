@@ -14,4 +14,5 @@ export interface MenuItem {
     count: number;
     isNegative: boolean;
   };
+  secondary?: boolean;
 }

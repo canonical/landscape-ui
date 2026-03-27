@@ -3,32 +3,28 @@ import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { GPGKeysList, useGPGKeys } from "@/features/gpg-keys";
+import { APTSourcesList, useGetAPTSources } from "@/features/apt-sources";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { GPG_KEYS_DOCS_URL } from "./constants";
 
-const NewGPGKeyForm = lazy(async () =>
-  import("@/features/gpg-keys").then((module) => ({
-    default: module.NewGPGKeyForm,
+const NewAPTSourceForm = lazy(async () =>
+  import("@/features/apt-sources").then((module) => ({
+    default: module.NewAPTSourceForm,
   })),
 );
 
-const GPGKeysPage: FC = () => {
+const APTSourcesPage: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const { getGPGKeysQuery } = useGPGKeys();
-
-  const { data, isLoading } = getGPGKeysQuery();
-
-  const items = data?.data ?? [];
+  const { aptSources: items, isGettingAPTSources: isLoading } =
+    useGetAPTSources();
 
   const handleOpen = () => {
     setSidePanelContent(
-      "Import GPG key",
+      "Add APT source",
       <Suspense fallback={<LoadingState />}>
-        <NewGPGKeyForm />
+        <NewAPTSourceForm />
       </Suspense>,
     );
   };
@@ -36,16 +32,15 @@ const GPGKeysPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
-        title="GPG keys"
+        title="APT sources"
         actions={[
           <Button
             key="new-key-button"
             appearance="positive"
             onClick={handleOpen}
             type="button"
-            aria-label="Import GPG key"
           >
-            Import key
+            Add APT source
           </Button>,
         ]}
       />
@@ -53,19 +48,19 @@ const GPGKeysPage: FC = () => {
         {isLoading && <LoadingState />}
         {!isLoading && items.length === 0 && (
           <EmptyState
-            title="No GPG keys found"
+            title="No APT sources found"
             icon="connected"
             body={
               <>
                 <p className="u-no-margin--bottom">
-                  You haven&apos;t added any GPG keys yet.
+                  You haven’t added any APT sources yet.
                 </p>
                 <a
-                  href={GPG_KEYS_DOCS_URL}
+                  href="https://ubuntu.com/landscape/docs/repositories"
                   target="_blank"
                   rel="nofollow noopener noreferrer"
                 >
-                  How to manage GPG keys in Landscape
+                  How to manage APT sources in Landscape
                 </a>
               </>
             }
@@ -75,17 +70,16 @@ const GPGKeysPage: FC = () => {
                 key="table-add-new-mirror"
                 onClick={handleOpen}
                 type="button"
-                aria-label="Import GPG key"
               >
-                Import key
+                Add APT source
               </Button>,
             ]}
           />
         )}
-        {!isLoading && items.length > 0 && <GPGKeysList items={items} />}
+        {!isLoading && items.length > 0 && <APTSourcesList items={items} />}
       </PageContent>
     </PageMain>
   );
 };
 
-export default GPGKeysPage;
+export default APTSourcesPage;

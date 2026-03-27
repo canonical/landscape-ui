@@ -65,18 +65,6 @@ export const InstancesPage = Loadable(
 export const SingleInstance = Loadable(
   lazy(() => import("@/pages/dashboard/instances/[single]")),
 );
-export const DistributionsPage = Loadable(
-  lazy(() => import("@/pages/dashboard/repositories/mirrors")),
-);
-export const RepositoryProfilesPage = Loadable(
-  lazy(() => import("@/pages/dashboard/profiles/repository-profiles")),
-);
-export const GPGKeysPage = Loadable(
-  lazy(() => import("@/pages/dashboard/repositories/gpg-keys")),
-);
-export const APTSourcesPage = Loadable(
-  lazy(() => import("@/pages/dashboard/repositories/apt-sources")),
-);
 export const PackageProfilesPage = Loadable(
   lazy(() => import("@/pages/dashboard/profiles/package-profiles")),
 );
@@ -94,6 +82,21 @@ export const SecurityProfilesPage = Loadable(
 );
 export const RebootProfilesPage = Loadable(
   lazy(() => import("@/pages/dashboard/profiles/reboot-profiles")),
+);
+export const MirrorsPage = Loadable(
+  lazy(() => import("@/pages/dashboard/repositories/mirrors")),
+);
+export const LocalRepositoriesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/repositories/local-repositories")),
+);
+export const PublicationsPage = Loadable(
+  lazy(() => import("@/pages/dashboard/repositories/publications")),
+);
+export const PublicationTargetsPage = Loadable(
+  lazy(() => import("@/pages/dashboard/repositories/publication-targets")),
+);
+export const RepositoryProfilesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/repositories/repository-profiles")),
 );
 export const AccessGroupsPage = Loadable(
   lazy(() => import("@/pages/dashboard/settings/access-group")),

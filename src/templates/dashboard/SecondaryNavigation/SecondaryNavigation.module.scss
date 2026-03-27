@@ -3,6 +3,10 @@
 @import "vanilla-framework/scss/settings_breakpoints";
 @import "vanilla-framework/scss/layouts_application";
 
+.secondaryNavigationDrawer {
+  flex-shrink: 0;
+}
+
 .secondaryNavigation {
   background-color: $colors--theme--background-alt !important;
   display: flex;
