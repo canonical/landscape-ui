@@ -1,4 +1,5 @@
 import type { Monaco } from "@monaco-editor/react";
+import type { Position, editor } from "monaco-editor";
 import {
   ALERT_TYPES,
   LICENSE_TYPES,
@@ -231,7 +232,7 @@ export const configureSearchLanguage = (
   if (!registeredCompletionProviders.has(languageId)) {
     monaco.languages.registerCompletionItemProvider(languageId, {
       triggerCharacters: [":", " ", '"'],
-      provideCompletionItems(model, position) {
+      provideCompletionItems(model: editor.ITextModel, position: Position) {
         const word = model.getWordUntilPosition(position);
         const range: MonacoRange = {
           startLineNumber: position.lineNumber,

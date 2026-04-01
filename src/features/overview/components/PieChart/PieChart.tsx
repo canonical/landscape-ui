@@ -5,7 +5,6 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Pie } from "react-chartjs-2";
-import type { ChartJSOrUndefined } from "react-chartjs-2/dist/types";
 import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
 import Legend from "../Legend";
 import classes from "./PieChart.module.scss";
@@ -17,14 +16,14 @@ interface PieChartProps {
 }
 
 const PieChart: FC<PieChartProps> = ({ data }) => {
-  const chartRef = useRef<ChartJSOrUndefined<"pie"> | null>(undefined);
+  const chartRef = useRef<Chart<"pie">>(null);
   const [chartInstance, setChartInstance] = useState<Chart | null>(null);
   const [selectedArc, setSelectedArc] = useState<number | null>(null);
   const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (chartRef.current) {
-      setChartInstance(chartRef.current as Chart);
+      setChartInstance(chartRef.current);
     }
   }, [chartRef.current]);
 
