@@ -64,6 +64,7 @@ const SingleInstanceContainer: FC = () => {
       with_annotations: true,
       with_grouped_hardware: true,
       with_profiles: true,
+      with_alerts: true,
     },
     {
       enabled: isInstanceQueryEnabled(

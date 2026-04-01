@@ -39,6 +39,11 @@ export const ubuntuInstance: Instance = {
       summary: "",
       severity: "info",
     },
+    {
+      type: "EsmDisabledAlert",
+      summary: "ESM disabled",
+      severity: "warning",
+    },
   ],
   distribution_info: {
     code_name: "lucid",
