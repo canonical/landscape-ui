@@ -210,6 +210,15 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           },
         ],
       });
+
+      switch (values.action) {
+        case "reboot":
+          closeRestartModal();
+          break;
+        case "shutdown":
+          closeShutDownModal();
+          break;
+      }
     } catch (error) {
       debug(error);
     }
@@ -336,6 +345,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const shouldShowRegenerateRecoveryKey =
     shouldShowRecoveryKeyActions &&
     (hasRecoveryKey || isRecoveryKeyGenerationActivityInProgress);
+
+  const getProfilesValue = () => {
+    if (!instance.profiles?.length) {
+      return null;
+    }
+
+    if (hasOneItem(instance.profiles)) {
+      return <ProfileLink profile={instance.profiles[0]} />;
+    }
+
+    return (
+      <Button
+        type="button"
+        className="u-no-margin"
+        appearance="link"
+        onClick={openProfilesList}
+      >
+        {instance.profiles.length} profiles
+      </Button>
+    );
+  };
 
   return (
     <>
@@ -487,22 +517,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <InfoGrid.Item
               label="Profiles"
-              value={
-                !instance.profiles?.length ? null : hasOneItem(
-                    instance.profiles,
-                  ) ? (
-                  <ProfileLink profile={instance.profiles[0]} />
-                ) : (
-                  <Button
-                    type="button"
-                    className="u-no-margin"
-                    appearance="link"
-                    onClick={openProfilesList}
-                  >
-                    {instance.profiles.length} profiles
-                  </Button>
-                )
-              }
+              value={getProfilesValue()}
               type="truncated"
             />
             {getFeatures(instance).employees && (
