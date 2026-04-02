@@ -18,15 +18,9 @@ const ProfilesEmptyState: FC<ProfilesEmptyStateProps> = ({ type }) => {
       body={
         <>
           <p>{message}</p>
-          {!!link && (
-            <Link
-              href={link.url}
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-            >
-              {link.text}
-            </Link>
-          )}
+          <Link href={link} target="_blank" rel="nofollow noopener noreferrer">
+            How to manage {type} profiles in Landscape
+          </Link>
         </>
       }
       cta={[<AddProfileButton key="add" type={type} />]}

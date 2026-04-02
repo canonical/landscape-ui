@@ -24,21 +24,12 @@ export const getMessage = (type: ProfileTypes) => {
 export const getLink = (type: ProfileTypes) => {
   switch (type) {
     case ProfileTypes.repository:
-      return {
-        text: "How to manage repositories in Landscape.",
-        url: "https://ubuntu.com/landscape/docs/manage-repositories-web-portal",
-      };
-    case ProfileTypes.reboot:
-      return {
-        text: "Learn more about Livepatch",
-        url: "https://ubuntu.com/security/livepatch/docs",
-      };
+      return "https://documentation.ubuntu.com/landscape/how-to-guides/repository-mirrors/manage-repositories-in-the-web-portal/#create-a-repository-profile-and-associate-client-machines-to-the-profile";
+    case ProfileTypes.security:
+      return "https://documentation.ubuntu.com/landscape/how-to-guides/security/use-security-profiles/#how-to-web-portal-use-security-profiles";
     case ProfileTypes.wsl:
-      return {
-        text: "How to manage WSL profiles in Landscape.",
-        url: "https://ubuntu.com/landscape/docs/manage-wsl-instances-in-landscape",
-      };
+      return "https://documentation.ubuntu.com/landscape/how-to-guides/wsl-integration/use-wsl-profiles/#how-to-use-wsl-profiles";
     default:
-      return undefined;
+      return `https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/web-portal-24-04-or-later/use-profiles/#${type}-profiles`;
   }
 };
