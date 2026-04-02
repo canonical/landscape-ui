@@ -2,11 +2,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
-import { useActivities } from "@/features/activities";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
@@ -14,20 +11,15 @@ import {
   pluralizeArray,
   pluralizeWithCount,
 } from "@/utils/_helpers";
-import {
-  Button,
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-} from "@canonical/react-components";
+import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
-import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
-import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
+import ShutDownModal from "../ShutDownModal";
+import RestartModal from "../RestartModal";
 
 const RunInstanceScriptForm = lazy(async () =>
   import("@/features/scripts").then((module) => ({
@@ -67,10 +59,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   isGettingInstances,
   selectedInstances,
 }: InstancesPageActionsProps) {
-  const debug = useDebug();
   const { isFeatureEnabled } = useAuth();
-  const { notify } = useNotify();
-  const { openActivityDetails } = useActivities();
   const { setSidePanelContent } = useSidePanel();
 
   const {
@@ -96,9 +85,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
-
-  const { restartInstances, isRestartingInstances } = useRestartInstances();
-  const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
   const createInstanceCountString = (instances: Instance[]) => {
     return (
@@ -144,50 +130,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
         />
       </Suspense>,
     );
-  };
-
-  const handleShutdownInstance = async () => {
-    try {
-      const { data: shutdownActivity } = await shutDownInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
-      });
-
-      notify.success(
-        getNotificationArgs({
-          action: "shutdown",
-          onDetailsClick: () => {
-            openActivityDetails(shutdownActivity);
-          },
-          selected: selectedInstances,
-        }),
-      );
-
-      closeShutdownModal();
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleRebootInstance = async () => {
-    try {
-      const { data: rebootActivity } = await restartInstances({
-        computer_ids: selectedInstances.map(({ id }) => id),
-      });
-
-      notify.success(
-        getNotificationArgs({
-          action: "reboot",
-          onDetailsClick: () => {
-            openActivityDetails(rebootActivity);
-          },
-          selected: selectedInstances,
-        }),
-      );
-
-      closeRebootModal();
-    } catch (error) {
-      debug(error);
-    }
   };
 
   const handleUpgradesRequest = () => {
@@ -291,11 +233,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="shutdown-instances"
             className="has-icon"
             type="button"
-            disabled={
-              isShuttingDownInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={0 === selectedInstances.length || isGettingInstances}
             onClick={openShutdownModal}
           >
             <Icon name="power-off" />
@@ -305,11 +243,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             key="reboot-instances"
             hasIcon
             type="button"
-            disabled={
-              isRestartingInstances ||
-              0 === selectedInstances.length ||
-              isGettingInstances
-            }
+            disabled={0 === selectedInstances.length || isGettingInstances}
             onClick={openRebootModal}
           >
             <Icon name="restart" />
@@ -429,40 +363,20 @@ const InstancesPageActions = memo(function InstancesPageActions({
       />
       {rebootModalOpen &&
         createPortal(
-          <ConfirmationModal
+          <RestartModal
             close={closeRebootModal}
-            title="Restarting selected instances"
-            confirmButtonLabel="Restart"
-            confirmButtonAppearance="negative"
-            confirmButtonLoading={isRestartingInstances}
-            confirmButtonDisabled={isRestartingInstances}
-            onConfirm={handleRebootInstance}
-          >
-            <p>
-              Are you sure you want to restart{" "}
-              {pluralizeWithCount(selectedInstances.length, "instance")}?
-            </p>
-          </ConfirmationModal>,
+            instances={selectedInstances}
+            isOpen={rebootModalOpen}
+          />,
           document.body,
         )}
-      {shutdownModalOpen &&
-        createPortal(
-          <ConfirmationModal
-            close={closeShutdownModal}
-            title="Shutting down selected instances"
-            confirmButtonLabel="Shut down"
-            confirmButtonAppearance="negative"
-            confirmButtonLoading={isShuttingDownInstances}
-            confirmButtonDisabled={isShuttingDownInstances}
-            onConfirm={handleShutdownInstance}
-          >
-            <p>
-              Are you sure you want to shut down{" "}
-              {pluralizeWithCount(selectedInstances.length, "instance")}?
-            </p>
-          </ConfirmationModal>,
-          document.body,
-        )}
+      createPortal(
+      <ShutDownModal
+        close={closeShutdownModal}
+        instances={selectedInstances}
+        isOpen={shutdownModalOpen}
+      />
+      , document.body,
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}
