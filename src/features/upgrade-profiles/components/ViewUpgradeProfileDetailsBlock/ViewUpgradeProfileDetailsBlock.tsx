@@ -1,6 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import type { UpgradeProfile } from "@/features/profiles";
+import type { UpgradeProfile } from "../../types";
 import { capitalize } from "@/utils/_helpers";
 
 interface ViewUpgradeProfileDetailsBlockProps {

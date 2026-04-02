@@ -52,7 +52,7 @@ const SecurityProfileAuditPassRate: FC<SecurityProfileAuditPassRateProps> = ({
           {`${in_progress} instances (${inProgressPercent}%)`}
         </div>
         <div>
-          <strong>Not Run:</strong>{" "}
+          <strong>Not run:</strong>{" "}
           {`${not_started} instances (${notRunPercent}%)`}
         </div>
       </div>
@@ -93,7 +93,7 @@ const SecurityProfileAuditPassRate: FC<SecurityProfileAuditPassRateProps> = ({
         positionElementClassName={classes.tooltip}
         message={tooltipMessage}
       >
-        <div className={classes.lineContainer}>
+        <div className={classes.lineContainer} data-testid="passrate-line">
           {passing > 0 && (
             <div
               className={classes.linePassed}

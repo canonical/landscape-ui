@@ -1,6 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import type { RemovalProfile } from "@/features/profiles";
+import type { RemovalProfile } from "../../types";
 
 interface ViewRemovalProfileDetailsBlockProps {
   readonly profile: RemovalProfile;
