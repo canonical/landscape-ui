@@ -14,10 +14,7 @@ interface ProfileListActionsProps {
   readonly type: ProfileTypes;
 }
 
-const ProfileListActions: FC<ProfileListActionsProps> = ({
-  profile,
-  type,
-}) => {
+const ProfileListActions: FC<ProfileListActionsProps> = ({ profile, type }) => {
   const {
     value: isModalOpen,
     setTrue: openModal,
@@ -33,7 +30,7 @@ const ProfileListActions: FC<ProfileListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${profile.title} profile actions`}
+        toggleAriaLabel={`"${profile.title}" profile actions`}
         actions={[viewAction, ...actions]}
         destructiveActions={destructiveActions}
       />

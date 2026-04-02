@@ -8,6 +8,7 @@ import SidePanelProvider from "../../context/sidePanel";
 import classes from "./DashboardTemplate.module.scss";
 import SecondaryNavigation from "./SecondaryNavigation";
 import Sidebar from "./Sidebar";
+import { ProfilesProvider } from "@/context/profiles";
 
 interface DashboardTemplateProps {
   readonly children: ReactNode;
@@ -22,22 +23,24 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
   return (
     <div id={applicationId} className="l-application" role="presentation">
       <SidePanelProvider>
-        <Sidebar />
-        <ApplicationIdContext value={applicationId}>
-          <main className={classNames("l-main", classes.wrapper)}>
-            {hasSecondaryNav && isLargeScreen && (
-              <div
-                className={classNames(
-                  "l-navigation__drawer",
-                  classes.secondaryNavigation,
-                )}
-              >
-                <SecondaryNavigation />
-              </div>
-            )}
-            <div className={classes.pageContent}>{children}</div>
-          </main>
-        </ApplicationIdContext>
+        <ProfilesProvider>
+          <Sidebar />
+          <ApplicationIdContext value={applicationId}>
+            <main className={classNames("l-main", classes.wrapper)}>
+              {hasSecondaryNav && isLargeScreen && (
+                <div
+                  className={classNames(
+                    "l-navigation__drawer",
+                    classes.secondaryNavigation,
+                  )}
+                >
+                  <SecondaryNavigation />
+                </div>
+              )}
+              <div className={classes.pageContent}>{children}</div>
+            </main>
+          </ApplicationIdContext>
+        </ProfilesProvider>
       </SidePanelProvider>
       <WelcomePopup />
     </div>

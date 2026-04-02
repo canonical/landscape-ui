@@ -6,10 +6,7 @@ import { ResponsiveButtons } from "@/components/ui";
 import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
 import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
-import {
-  isScriptProfile,
-  type ProfileTypes,
-} from "../../../../helpers";
+import { isScriptProfile, type ProfileTypes } from "../../../../helpers";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
@@ -37,9 +34,7 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
     type,
     openModal,
   });
-  const buttons = destructiveActions
-    ? [...actions, ...destructiveActions]
-    : actions;
+  const buttons = [...actions, ...(destructiveActions ?? [])];
   const isNegative = (action: Action) => action.appearance === "negative";
 
   if (isScriptProfile(profile) && profile.archived) {
@@ -50,6 +45,7 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
       </Notification>
     );
   }
+
   return (
     <>
       <ResponsiveButtons

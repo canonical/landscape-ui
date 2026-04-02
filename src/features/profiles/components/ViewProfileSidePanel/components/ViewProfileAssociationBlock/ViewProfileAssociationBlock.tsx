@@ -38,9 +38,9 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
               <ProfileAssociatedInstancesLink
                 profile={profile}
                 count={associatedCount}
-                query={`profile:${type}:${profile.id}`}
+                query={`${type}:${profile.id}`}
                 isPending={isGettingInstances}
-                isGeneralAssociation={true}
+                isGeneralAssociation
               />
             )
           }
@@ -54,8 +54,8 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
                 <ProfileAssociatedInstancesLink
                   profile={profile}
                   count={
-                    profile.computers?.constrained.length -
-                    profile.computers?.["non-compliant"].length
+                    profile.computers.constrained.length -
+                    profile.computers["non-compliant"].length
                   }
                   query={`${type}:${profile.id}:compliant`}
                   isPending={isGettingInstances}

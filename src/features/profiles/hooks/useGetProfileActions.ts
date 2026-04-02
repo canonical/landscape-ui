@@ -23,7 +23,6 @@ interface UseGetProfileActionsProps {
   readonly profile: Profile;
   readonly type: ProfileTypes;
   readonly openModal: () => void;
-  // readonly isInsideSidePanel?: boolean;
 }
 
 export const useGetProfileActions = ({
@@ -113,7 +112,7 @@ export const useGetProfileActions = ({
       {
         icon: "begin-downloading",
         label: "Download audit",
-        "aria-label": `Download "${profile.title}" security profile audit`,
+        "aria-label": `Download ${profile.title} security profile audit`,
         onClick: () => {
           openManageProfileSidePanel(profile, "download");
         },

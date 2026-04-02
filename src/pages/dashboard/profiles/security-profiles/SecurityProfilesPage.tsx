@@ -10,7 +10,6 @@ import {
 import usePageParams from "@/hooks/usePageParams";
 import { lazy, type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
-import { ProfilesProvider } from "@/context/profiles";
 import SidePanel from "@/components/layout/SidePanel";
 import { useBoolean } from "usehooks-ts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
@@ -100,75 +99,73 @@ const SecurityProfilesPage: FC = () => {
   });
 
   return (
-    <ProfilesProvider>
-      <PageMain>
-        <PageHeader
-          title="Security profiles"
-          actions={
-            securityProfilesCount
-              ? [
-                  <AddProfileButton
-                    type={ProfileTypes.security}
-                    key="add-security-profile"
-                  />,
-                ]
-              : undefined
-          }
-        />
+    <PageMain>
+      <PageHeader
+        title="Security profiles"
+        actions={
+          securityProfilesCount
+            ? [
+                <AddProfileButton
+                  type={ProfileTypes.security}
+                  key="add-security-profile"
+                />,
+              ]
+            : undefined
+        }
+      />
 
-        <PageContent hasTable>
-          {!isGettingSecurityProfiles && !!securityProfilesCount && (
-            <SecurityProfilesNotifications
-              isRetentionNotificationVisible={isRetentionNotificationVisible}
-              hideRetentionNotification={hideRetentionNotification}
-            />
-          )}
-          <ProfilesContainer
-            type={ProfileTypes.security}
-            profiles={securityProfiles}
-            isPending={isGettingSecurityProfiles}
-            profilesCount={securityProfilesCount}
+      <PageContent hasTable>
+        {!isGettingSecurityProfiles && !!securityProfilesCount && (
+          <SecurityProfilesNotifications
+            isRetentionNotificationVisible={isRetentionNotificationVisible}
+            hideRetentionNotification={hideRetentionNotification}
           />
-        </PageContent>
+        )}
+        <ProfilesContainer
+          type={ProfileTypes.security}
+          profiles={securityProfiles}
+          isPending={isGettingSecurityProfiles}
+          profilesCount={securityProfilesCount}
+        />
+      </PageContent>
 
-        <SidePanel
-          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-          isOpen={!!sidePath.length}
-        >
-          {lastSidePathSegment === "add" && (
-            <SidePanel.Suspense key="add">
-              <SecurityProfileAddSidePanel
-                showRetentionNotification={showRetentionNotification}
-              />
-            </SidePanel.Suspense>
-          )}
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <SecurityProfileAddSidePanel
+              showRetentionNotification={showRetentionNotification}
+            />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "download" && (
-            <SidePanel.Suspense key="download">
-              <SecurityProfileDownloadAuditSidePanel />
-            </SidePanel.Suspense>
-          )}
+        {lastSidePathSegment === "download" && (
+          <SidePanel.Suspense key="download">
+            <SecurityProfileDownloadAuditSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "duplicate" && (
-            <SidePanel.Suspense key="duplicate">
-              <SecurityProfileDuplicateSidePanel />
-            </SidePanel.Suspense>
-          )}
+        {lastSidePathSegment === "duplicate" && (
+          <SidePanel.Suspense key="duplicate">
+            <SecurityProfileDuplicateSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "edit" && (
-            <SidePanel.Suspense key="edit">
-              <SecurityProfileEditSidePanel />
-            </SidePanel.Suspense>
-          )}
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <SecurityProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "run" && (
-            <SidePanel.Suspense key="run">
-              <SecurityProfileRunFixSidePanel />
-            </SidePanel.Suspense>
-          )}
-        </SidePanel>
-      </PageMain>
-    </ProfilesProvider>
+        {lastSidePathSegment === "run" && (
+          <SidePanel.Suspense key="run">
+            <SecurityProfileRunFixSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </PageMain>
   );
 };
 

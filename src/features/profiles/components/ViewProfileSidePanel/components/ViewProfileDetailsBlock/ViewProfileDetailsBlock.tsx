@@ -10,39 +10,34 @@ import {
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import Blocks from "@/components/layout/Blocks";
 
-const ViewRemovalProfileDetailsBlock = lazy(
-  async () =>
-    import("@/features/removal-profiles").then((module) => ({
-       default: module.ViewRemovalProfileDetailsBlock,
-     })),
+const ViewRemovalProfileDetailsBlock = lazy(async () =>
+  import("@/features/removal-profiles").then((module) => ({
+    default: module.ViewRemovalProfileDetailsBlock,
+  })),
 );
 
-const ViewScriptProfileDetailsBlock = lazy(
-  async () =>
-    import("@/features/script-profiles").then((module) => ({
-       default: module.ViewScriptProfileDetailsBlock,
-     })),
+const ViewScriptProfileDetailsBlock = lazy(async () =>
+  import("@/features/script-profiles").then((module) => ({
+    default: module.ViewScriptProfileDetailsBlock,
+  })),
 );
 
-const ViewSecurityProfileDetailsBlock = lazy(
-  async () =>
-    import("@/features/security-profiles").then((module) => ({
-       default: module.ViewSecurityProfileDetailsBlock,
-     })),
+const ViewSecurityProfileDetailsBlock = lazy(async () =>
+  import("@/features/security-profiles").then((module) => ({
+    default: module.ViewSecurityProfileDetailsBlock,
+  })),
 );
 
-const ViewUpgradeProfileDetailsBlock = lazy(
-  async () =>
-    import("@/features/upgrade-profiles").then((module) => ({
-       default: module.ViewUpgradeProfileDetailsBlock,
-     })),
+const ViewUpgradeProfileDetailsBlock = lazy(async () =>
+  import("@/features/upgrade-profiles").then((module) => ({
+    default: module.ViewUpgradeProfileDetailsBlock,
+  })),
 );
 
-const ViewWslProfileDetailsBlock = lazy(
-  async () =>
-    import("@/features/wsl-profiles").then((module) => ({
-       default: module.ViewWslProfileDetailsBlock,
-     })),
+const ViewWslProfileDetailsBlock = lazy(async () =>
+  import("@/features/wsl-profiles").then((module) => ({
+    default: module.ViewWslProfileDetailsBlock,
+  })),
 );
 
 interface ViewProfileDetailsBlockProps {

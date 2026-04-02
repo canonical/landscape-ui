@@ -1,7 +1,6 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { ProfilesProvider } from "@/context/profiles";
 import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
 import { useRemovalProfiles } from "@/features/removal-profiles";
 import type { FC } from "react";
@@ -36,47 +35,45 @@ const RemovalProfilesPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
 
   return (
-    <ProfilesProvider>
-      <PageMain>
-        <PageHeader
-          title="Removal profiles"
-          actions={
-            getRemovalProfilesQueryResult?.data.length
-              ? [
-                  <AddProfileButton
-                    type={ProfileTypes.removal}
-                    key="add-removal-profile"
-                  />,
-                ]
-              : undefined
-          }
+    <PageMain>
+      <PageHeader
+        title="Removal profiles"
+        actions={
+          getRemovalProfilesQueryResult?.data.length
+            ? [
+                <AddProfileButton
+                  type={ProfileTypes.removal}
+                  key="add-removal-profile"
+                />,
+              ]
+            : undefined
+        }
+      />
+      <PageContent hasTable>
+        <ProfilesContainer
+          type={ProfileTypes.removal}
+          profiles={getRemovalProfilesQueryResult?.data ?? []}
+          isPending={isGettingRemovalProfiles}
         />
-        <PageContent hasTable>
-          <ProfilesContainer
-            type={ProfileTypes.removal}
-            profiles={getRemovalProfilesQueryResult?.data ?? []}
-            isPending={isGettingRemovalProfiles}
-          />
-        </PageContent>
+      </PageContent>
 
-        <SidePanel
-          isOpen={!!sidePath.length}
-          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-        >
-          {lastSidePathSegment === "add" && (
-            <SidePanel.Suspense key="add">
-              <RemovalProfileAddSidePanel />
-            </SidePanel.Suspense>
-          )}
+      <SidePanel
+        isOpen={!!sidePath.length}
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <RemovalProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "edit" && (
-            <SidePanel.Suspense key="edit">
-              <RemovalProfileEditSidePanel />
-            </SidePanel.Suspense>
-          )}
-        </SidePanel>
-      </PageMain>
-    </ProfilesProvider>
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <RemovalProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </PageMain>
   );
 };
 

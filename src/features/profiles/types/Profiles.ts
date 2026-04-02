@@ -14,7 +14,7 @@ export interface ComplianceInstanceCounts {
 export interface Profile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;
-  description: string;
+  description?: string;
   id: number;
   name: string;
   tags: string[];

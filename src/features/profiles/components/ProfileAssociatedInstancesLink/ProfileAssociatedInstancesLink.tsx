@@ -8,6 +8,7 @@ import { Suspense, type FC } from "react";
 import type { Profile } from "../../types";
 import {
   hasAssociations,
+  isPackageProfile,
   isPostEnrollmentScriptProfile,
   isWslProfile,
 } from "../../helpers";
@@ -53,9 +54,19 @@ const ProfileAssociatedInstancesLink: FC<
       ? "All instances"
       : pluralizeWithCount(count, "instance");
 
-  const formattedQuery = query.startsWith("profile:")
-    ? query.toLowerCase()
-    : query;
+  const packageComplianceIds = (() => {
+    if (isPackageProfile(profile) && !isGeneralAssociation) {
+      return query.endsWith(":noncompliant")
+        ? profile.computers["non-compliant"]
+        : profile.computers.constrained.filter(
+            (id) => !profile.computers["non-compliant"].includes(id),
+          );
+    }
+  })();
+
+  const formattedQuery =
+    packageComplianceIds?.map((id) => `id:${id}`).join(" OR ") ??
+    `profile:${query.toLowerCase()}`;
 
   if (isWslProfile(profile) && query.endsWith(":noncompliant")) {
     return (

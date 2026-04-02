@@ -6,8 +6,8 @@ import ViewProfileGeneralBlock from "../ViewProfileGeneralBlock";
 import ViewProfileAssociationBlock from "../ViewProfileAssociationBlock";
 import ViewProfileDetailsBlock from "../ViewProfileDetailsBlock";
 
-const ViewProfileScheduleBlock = lazy(async () =>
-  import("../ViewProfileScheduleBlock"),
+const ViewProfileScheduleBlock = lazy(
+  async () => import("../ViewProfileScheduleBlock"),
 );
 
 interface ViewProfileInfoTabProps {

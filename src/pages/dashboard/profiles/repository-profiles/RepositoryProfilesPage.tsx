@@ -1,7 +1,6 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { ProfilesProvider } from "@/context/profiles";
 import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
 import { useRepositoryProfiles } from "@/features/repository-profiles";
 import SidePanel from "@/components/layout/SidePanel";
@@ -27,47 +26,45 @@ const RepositoryProfilesPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
 
   return (
-    <ProfilesProvider>
-      <PageMain>
-        <PageHeader
-          title="Repository profiles"
-          actions={
-            getRepositoryProfilesResult?.data.count
-              ? [
-                  <AddProfileButton
-                    type={ProfileTypes.repository}
-                    key="add-repository-profile"
-                  />,
-                ]
-              : undefined
-          }
+    <PageMain>
+      <PageHeader
+        title="Repository profiles"
+        actions={
+          getRepositoryProfilesResult?.data.count
+            ? [
+                <AddProfileButton
+                  type={ProfileTypes.repository}
+                  key="add-repository-profile"
+                />,
+              ]
+            : undefined
+        }
+      />
+      <PageContent hasTable>
+        <ProfilesContainer
+          type={ProfileTypes.repository}
+          isPending={isPending}
+          profiles={getRepositoryProfilesResult?.data.results ?? []}
         />
-        <PageContent hasTable>
-          <ProfilesContainer
-            type={ProfileTypes.repository}
-            isPending={isPending}
-            profiles={getRepositoryProfilesResult?.data.results ?? []}
-          />
-        </PageContent>
+      </PageContent>
 
-        <SidePanel
-          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-          isOpen={!!sidePath.length}
-        >
-          {lastSidePathSegment === "add" && (
-            <SidePanel.Suspense key="add">
-              <RepositoryProfileManageSidePanel action="add" />
-            </SidePanel.Suspense>
-          )}
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <RepositoryProfileManageSidePanel action="add" />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "edit" && (
-            <SidePanel.Suspense key="edit">
-              <RepositoryProfileManageSidePanel action="edit" />
-            </SidePanel.Suspense>
-          )}
-        </SidePanel>
-      </PageMain>
-    </ProfilesProvider>
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <RepositoryProfileManageSidePanel action="edit" />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </PageMain>
   );
 };
 

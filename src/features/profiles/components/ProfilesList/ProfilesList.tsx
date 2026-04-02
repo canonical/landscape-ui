@@ -69,7 +69,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
     cols.push(accessGroup, associated);
 
     if (hasComplianceColumns(type)) {
-      cols.push(...getComplianceColumns());
+      cols.push(...getComplianceColumns(type));
     }
 
     if (type === ProfileTypes.security) {

@@ -1,7 +1,6 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { ProfilesProvider } from "@/context/profiles";
 import { usePackageProfiles } from "@/features/package-profiles";
 import type { FC } from "react";
 import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
@@ -61,72 +60,70 @@ const PackageProfilesPage: FC = () => {
   const packageProfiles = getPackageProfilesQueryResult?.data.result ?? [];
 
   return (
-    <ProfilesProvider>
-      <PageMain>
-        <PageHeader
-          title="Package profiles"
-          actions={
-            packageProfiles.length
-              ? [
-                  <AddProfileButton
-                    type={ProfileTypes.package}
-                    key="add-package-profile"
-                  />,
-                ]
-              : undefined
-          }
+    <PageMain>
+      <PageHeader
+        title="Package profiles"
+        actions={
+          packageProfiles.length
+            ? [
+                <AddProfileButton
+                  type={ProfileTypes.package}
+                  key="add-package-profile"
+                />,
+              ]
+            : undefined
+        }
+      />
+      <PageContent hasTable>
+        <ProfilesContainer
+          type={ProfileTypes.package}
+          profiles={packageProfiles}
+          isPending={isGettingPackageProfiles}
         />
-        <PageContent hasTable>
-          <ProfilesContainer
-            type={ProfileTypes.package}
-            profiles={packageProfiles}
-            isPending={isGettingPackageProfiles}
-          />
-        </PageContent>
+      </PageContent>
 
-        <SidePanel
-          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-          isOpen={!!sidePath.length}
-          size={
-            lastSidePathSegment === "add" ||
-            lastSidePathSegment === "add-constraints" ||
-            lastSidePathSegment === "edit-constraints"
-              ? "medium"
-              : undefined
-          }
-        >
-          {lastSidePathSegment === "add" && (
-            <SidePanel.Suspense key="add">
-              <PackageProfileAddSidePanel />
-            </SidePanel.Suspense>
-          )}
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
+        size={
+          lastSidePathSegment === "add" ||
+          lastSidePathSegment === "add-constraints" ||
+          lastSidePathSegment === "edit-constraints"
+            ? "medium"
+            : undefined
+        }
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <PackageProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "add-constraints" && (
-            <SidePanel.Suspense key="add-constraints">
-              <PackageProfileConstraintsAddSidePanel />
-            </SidePanel.Suspense>
-          )}
+        {lastSidePathSegment === "add-constraints" && (
+          <SidePanel.Suspense key="add-constraints">
+            <PackageProfileConstraintsAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "duplicate" && (
-            <SidePanel.Suspense key="duplicate">
-              <PackageProfileDuplicateSidePanel />
-            </SidePanel.Suspense>
-          )}
+        {lastSidePathSegment === "duplicate" && (
+          <SidePanel.Suspense key="duplicate">
+            <PackageProfileDuplicateSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "edit" && (
-            <SidePanel.Suspense key="edit">
-              <PackageProfileEditSidePanel />
-            </SidePanel.Suspense>
-          )}
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <PackageProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "edit-constraints" && (
-            <SidePanel.Suspense key="edit-constraints">
-              <PackageProfileConstraintsEditSidePanel />
-            </SidePanel.Suspense>
-          )}
-        </SidePanel>
-      </PageMain>
-    </ProfilesProvider>
+        {lastSidePathSegment === "edit-constraints" && (
+          <SidePanel.Suspense key="edit-constraints">
+            <PackageProfileConstraintsEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </PageMain>
   );
 };
 

@@ -1,6 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import type { FC } from "react";
-import type { WslProfile } from "@/features/profiles";
+import type { WslProfile } from "../../types";
 
 interface ViewWslProfileDetailsBlockProps {
   readonly profile: WslProfile;

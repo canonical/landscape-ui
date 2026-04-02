@@ -10,7 +10,6 @@ import AddProfileButton from "../AddProfileButton";
 
 interface ProfilesHeaderProps {
   readonly type: ProfileTypes;
-  // readonly isProfileLimitReached?: boolean;
 }
 
 const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {

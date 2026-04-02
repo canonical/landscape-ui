@@ -76,10 +76,10 @@ export const getGeneralColumns = (
 ): Record<ColumnNames, Column<Profile>> => ({
   name: {
     accessor: "title",
-    Header: "Profile Name",
+    Header: "Profile name",
     id: "title",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile name`,
+      ariaLabel: ({ original: profile }) => `"${profile.title}" profile name`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
       <Button
@@ -100,7 +100,7 @@ export const getGeneralColumns = (
     Header: "Access group",
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile access group`,
+        `"${profile.title}" profile access group`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) =>
       getTitleByName(profile.access_group, accessGroupData),
@@ -110,7 +110,7 @@ export const getGeneralColumns = (
     Header: "Associated",
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile associated instances`,
+        `"${profile.title}" profile associated instances`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
       <AssociatedInstancesCell type={type} profile={profile} />
@@ -123,8 +123,8 @@ export const getGeneralColumns = (
     meta: {
       ariaLabel: ({ original: profile }) =>
         profile.description
-          ? `${profile.title} profile description`
-          : `No description for ${profile.title} profile`,
+          ? `"${profile.title}" profile description`
+          : `No description for "${profile.title}" profile`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) =>
       profile.description || <NoData />,
@@ -132,7 +132,8 @@ export const getGeneralColumns = (
   actions: {
     ...LIST_ACTIONS_COLUMN_PROPS,
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile actions`,
+      ariaLabel: ({ original: profile }) =>
+        `"${profile.title}" profile actions`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => (
       <ProfilesListActions profile={profile} type={type} />
@@ -145,7 +146,7 @@ export const getStatusColumn = (): Column<Profile>[] => [
     Header: "Status",
     accessor: (row) => (isSecurityProfile(row) ? "status" : "archived"),
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile status`,
+      ariaLabel: ({ original: profile }) => `"${profile.title}" profile status`,
     },
     getCellIcon: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isSecurityProfile(profile) || isScriptProfile(profile)) {
@@ -160,7 +161,7 @@ export const getStatusColumn = (): Column<Profile>[] => [
   },
 ];
 
-export const getComplianceColumns = (): Column<Profile>[] => [
+export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
   {
     Header: "Compliant",
     meta: {
@@ -169,13 +170,6 @@ export const getComplianceColumns = (): Column<Profile>[] => [
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isWslProfile(profile) || isPackageProfile(profile)) {
-        const query = isWslProfile(profile)
-          ? `profile:wsl:${profile.id}:compliant`
-          : `${profile.computers.constrained
-              .filter((id) => !profile.computers["non-compliant"].includes(id))
-              .map((id) => `id:${id}`)
-              .join(" OR ")}`;
-
         return (
           <ProfileAssociatedInstancesLink
             profile={profile}
@@ -183,7 +177,7 @@ export const getComplianceColumns = (): Column<Profile>[] => [
               profile.computers.constrained.length -
               profile.computers["non-compliant"].length
             }
-            query={query}
+            query={`${type}:${profile.id}:compliant`}
           />
         );
       }
@@ -193,19 +187,15 @@ export const getComplianceColumns = (): Column<Profile>[] => [
     Header: "Not compliant",
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile non-compliant instances`,
+        `"${profile.title}" profile non-compliant instances`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isWslProfile(profile) || isPackageProfile(profile)) {
-        const query = isWslProfile(profile)
-          ? `profile:wsl:${profile.id}:noncompliant`
-          : `${profile.computers["non-compliant"].map((id) => `id:${id}`).join(" OR ")}`;
-
         return (
           <ProfileAssociatedInstancesLink
             profile={profile}
             count={profile.computers["non-compliant"].length}
-            query={query}
+            query={`${type}:${profile.id}:noncompliant`}
           />
         );
       }
@@ -219,7 +209,7 @@ export const getSecurityColumns = (): Column<Profile>[] => [
     Header: "Pass rate",
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile last audit pass rate`,
+        `"${profile.title}" profile last audit pass rate`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isSecurityProfile(profile)) {
@@ -238,7 +228,7 @@ export const getSecurityColumns = (): Column<Profile>[] => [
     ),
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile last run and schedule`,
+        `"${profile.title}" profile last run and schedule`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isSecurityProfile(profile)) {
@@ -250,7 +240,7 @@ export const getSecurityColumns = (): Column<Profile>[] => [
     accessor: "mode",
     Header: "Mode",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile mode`,
+      ariaLabel: ({ original: profile }) => `"${profile.title}" profile mode`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isSecurityProfile(profile)) {
@@ -265,7 +255,8 @@ export const getScriptColumns = (): Column<Profile>[] => [
     Header: "Last run",
     accessor: "activities.last_activity.creation_time",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile last run`,
+      ariaLabel: ({ original: profile }) =>
+        `"${profile.title}" profile last run`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isScriptProfile(profile)) {
@@ -290,7 +281,8 @@ export const getScriptColumns = (): Column<Profile>[] => [
     Header: "Trigger",
     accessor: "trigger",
     meta: {
-      ariaLabel: ({ original: profile }) => `${profile.title} profile trigger`,
+      ariaLabel: ({ original: profile }) =>
+        `"${profile.title}" profile trigger`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isScriptProfile(profile)) {
@@ -306,7 +298,7 @@ export const getRebootColumn = (): Column<Profile>[] => [
     Header: "Next restart",
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile next restart`,
+        `"${profile.title}" profile next restart`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isRebootProfile(profile)) {
@@ -322,7 +314,7 @@ export const getRemovalColumn = (): Column<Profile>[] => [
     Header: "Removal timeframe",
     meta: {
       ariaLabel: ({ original: profile }) =>
-        `${profile.title} profile removal timeframe`,
+        `"${profile.title}" profile removal timeframe`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
       if (isRemovalProfile(profile)) {

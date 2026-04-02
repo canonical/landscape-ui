@@ -19,8 +19,9 @@ function AssociatedInstancesCell({
     <ProfileAssociatedInstancesLink
       profile={profile}
       count={associatedCount}
-      query={`profile:${type}:${profile.id}`}
+      query={`${type}:${profile.id}`}
       isPending={isGettingInstances}
+      isGeneralAssociation
     />
   );
 }

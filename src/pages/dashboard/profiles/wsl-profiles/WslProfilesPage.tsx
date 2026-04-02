@@ -8,7 +8,7 @@ import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Notification } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
-import { ProfilesProvider } from "@/context/profiles";
+// import { ProfilesProvider } from "@/context/profiles";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
@@ -27,6 +27,11 @@ const WslProfileEditSidePanel = lazy(() =>
 );
 
 const WslProfilesPage: FC = () => {
+  const { wslProfilesCount: allWslProfilesCount } = useGetWslProfiles(
+    { limit: 1 },
+    { listenToUrlParams: false },
+  );
+
   const { isGettingWslProfiles, wslProfiles, wslProfilesCount } =
     useGetWslProfiles({
       limit: DEFAULT_PAGE_SIZE,
@@ -39,64 +44,59 @@ const WslProfilesPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
 
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
-  const isWslProfileLimitReached = wslProfilesCount >= wslProfileLimit;
+  const isWslProfileLimitReached = allWslProfilesCount >= wslProfileLimit;
   setIsProfileLimitReached(isWslProfileLimitReached);
 
   return (
-    <ProfilesProvider>
-      <PageMain>
-        <PageHeader
-          title="WSL profiles"
-          actions={
-            wslProfilesCount
-              ? [
-                  <AddProfileButton
-                    type={ProfileTypes.wsl}
-                    key="add-wsl-profile"
-                  />,
-                ]
-              : undefined
-          }
-        />
-        <PageContent hasTable>
-          <Notification
-            severity="caution"
-            title="WSL profiles is a beta feature"
+    <PageMain>
+      <PageHeader
+        title="WSL profiles"
+        actions={
+          wslProfilesCount
+            ? [
+                <AddProfileButton
+                  type={ProfileTypes.wsl}
+                  key="add-wsl-profile"
+                />,
+              ]
+            : undefined
+        }
+      />
+      <PageContent hasTable>
+        <Notification severity="caution" title="WSL profiles is a beta feature">
+          We are gathering feedback to improve this feature.{" "}
+          <a
+            target="_blank"
+            rel="noreferrer noopener nofollow"
+            href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
           >
-            We are gathering feedback to improve this feature.{" "}
-            <a
-              target="_blank"
-              rel="noreferrer noopener nofollow"
-              href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
-            >
-              Share your feedback
-            </a>
-          </Notification>
-          <ProfilesContainer
-            type={ProfileTypes.wsl}
-            profiles={wslProfiles}
-            profilesCount={wslProfilesCount}
-            isPending={isGettingWslLimits || isGettingWslProfiles}
-          />
-        </PageContent>
-        <SidePanel
-          onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-          isOpen={!!sidePath.length}
-        >
-          {lastSidePathSegment === "add" && (
-            <SidePanel.Suspense key="add">
-              <WslProfileAddSidePanel />
-            </SidePanel.Suspense>
-          )}
+            Share your feedback
+          </a>
+        </Notification>
+        <ProfilesContainer
+          type={ProfileTypes.wsl}
+          profiles={wslProfiles}
+          profilesCount={wslProfilesCount}
+          isPending={isGettingWslLimits || isGettingWslProfiles}
+        />
+      </PageContent>
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <WslProfileAddSidePanel />
+          </SidePanel.Suspense>
+        )}
 
-          {lastSidePathSegment === "edit" && (
-            <SidePanel.Suspense key="edit">
-              <WslProfileEditSidePanel />
-            </SidePanel.Suspense>
-          )}
-        </SidePanel>
-      </PageMain>
-    </ProfilesProvider>
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <WslProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </PageMain>
   );
 };
 
