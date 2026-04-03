@@ -9,8 +9,8 @@ describe("ViewRemovalProfileDetailsBlock", () => {
   it("renders formatted removal timeframe", () => {
     render(
       <ViewRemovalProfileDetailsBlock
-        profile={{ 
-          ...profile, 
+        profile={{
+          ...profile,
           days_without_exchange: 14,
           cascade_to_children: false,
           computers: { num_associated_computers: 7 },

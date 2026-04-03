@@ -26,7 +26,7 @@ const navigate = vi.fn();
 
 vi.mock("react-router", async () => {
   const actual = await vi.importActual<typeof actualModule>("react-router");
-  
+
   return {
     ...actual,
     useLocation: () => ({ pathname }),
@@ -47,7 +47,6 @@ const mockUseGetActivities = vi.mocked(useGetActivities);
 const [profileA, profileB] = securityProfiles;
 
 describe("SecurityProfilesNotifications", () => {
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -85,14 +84,28 @@ describe("SecurityProfilesNotifications", () => {
       />,
     );
 
-    expect(screen.queryByText("Audit retention policy:")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Audit retention policy:"),
+    ).not.toBeInTheDocument();
 
-    expect(screen.getByRole("heading", { name: "Your audit is ready for download:" })).toBeInTheDocument();
-    expect(screen.getByText(/Your audit has been successfully generated/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Download audit" }));
+    expect(
+      screen.getByRole("heading", {
+        name: "Your audit is ready for download:",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Your audit has been successfully generated/),
+    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", { name: "Download audit" }),
+    );
     expect(downloadAudit).toHaveBeenCalledWith("result");
 
-    expect(screen.getByRole("heading", { name: "Profile exceeded associated instance limit:" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Profile exceeded associated instance limit:",
+      }),
+    ).toBeInTheDocument();
     expect(screen.getByText(profileA.title)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Edit profile" }));
     expect(openManageProfileSidePanel).toHaveBeenCalledWith(profileA, "edit");
@@ -113,15 +126,32 @@ describe("SecurityProfilesNotifications", () => {
       />,
     );
 
-    expect(screen.getByRole("heading", { name: "Your audits are ready for download:" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", {
+        name: "Your audits are ready for download:",
+      }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Several of your audits/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "Download audits" }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Download audits" }),
+    );
     expect(downloadAudit).toHaveBeenCalledTimes(2);
 
-    expect(screen.getByRole("heading", { name: "Profiles exceeded associated instance limit:" })).toBeInTheDocument();
-    
-    expect(screen.getByText(/Some of your security profiles/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole("button", { name: "View profiles" }));
-    expect(navigate).toHaveBeenCalledWith({ pathname, search: "?status=over-limit" });
+    expect(
+      screen.getByRole("heading", {
+        name: "Profiles exceeded associated instance limit:",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText(/Some of your security profiles/),
+    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", { name: "View profiles" }),
+    );
+    expect(navigate).toHaveBeenCalledWith({
+      pathname,
+      search: "?status=over-limit",
+    });
   });
 });

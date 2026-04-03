@@ -20,9 +20,9 @@ describe("SecurityProfileLastRunWithSchedule", () => {
       `Last run for ${profile.title} profile`,
     );
     expect(lastRun).toHaveTextContent(NO_DATA_TEXT);
-    expect(screen.getByLabelText(
-      `Schedule for ${profile.title} profile`,
-    )).toHaveTextContent("Recurring");
+    expect(
+      screen.getByLabelText(`Schedule for ${profile.title} profile`),
+    ).toHaveTextContent("Recurring");
 
     await user.hover(lastRun);
 
@@ -31,7 +31,9 @@ describe("SecurityProfileLastRunWithSchedule", () => {
     expect(within(tooltip).getByText(/Last run:/)).toBeInTheDocument();
     expect(within(tooltip).getByText(/Next run:/)).toBeInTheDocument();
     expect(within(tooltip).getByText(/Schedule:/)).toBeInTheDocument();
-    expect(within(tooltip).getByText("Recurring, every 7 days")).toBeInTheDocument();
+    expect(
+      within(tooltip).getByText("Recurring, every 7 days"),
+    ).toBeInTheDocument();
     expect(within(tooltip).getAllByText(NO_DATA_TEXT)).toHaveLength(2);
   });
 
@@ -46,8 +48,12 @@ describe("SecurityProfileLastRunWithSchedule", () => {
     await user.hover(lastRun);
 
     const tooltip = await screen.findByRole("tooltip");
-    expect(within(tooltip).getByText("May 15, 2024, 15:47 UTC")).toBeInTheDocument();
-    expect(within(tooltip).getByText("Sep 15, 2024, 15:47 UTC")).toBeInTheDocument();
+    expect(
+      within(tooltip).getByText("May 15, 2024, 15:47 UTC"),
+    ).toBeInTheDocument();
+    expect(
+      within(tooltip).getByText("Sep 15, 2024, 15:47 UTC"),
+    ).toBeInTheDocument();
     expect(within(tooltip).getByText("On a date")).toBeInTheDocument();
   });
 });

@@ -32,15 +32,16 @@ describe("ViewRepositoryProfilePocketsTab", () => {
       {
         name: "Ubuntu",
         series: [
-          { name: "lucid", pockets: [{ name: "updates" }, { name: "security" }] },
+          {
+            name: "lucid",
+            pockets: [{ name: "updates" }, { name: "security" }],
+          },
           { name: "noble", pockets: [{ name: "release" }] },
         ],
       },
     ] as unknown as Distribution[]);
 
-    renderWithProviders(
-      <ViewRepositoryProfilePocketsTab profile={profile} />,
-    );
+    renderWithProviders(<ViewRepositoryProfilePocketsTab profile={profile} />);
 
     expect(screen.getByText("Distribution")).toBeInTheDocument();
     expect(screen.getByText("Series")).toBeInTheDocument();

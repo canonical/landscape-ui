@@ -19,13 +19,9 @@ describe("ViewWslProfileDetailsBlock", () => {
     expect(screen.getByText("Image name")).toBeInTheDocument();
     expect(screen.getByText(profile.image_name)).toBeInTheDocument();
     expect(screen.getByText("Image source")).toBeInTheDocument();
-    expect(
-      screen.getByText(profile.image_source),
-    ).toBeInTheDocument();
+    expect(screen.getByText(profile.image_source)).toBeInTheDocument();
     expect(screen.getByText("Cloud init")).toBeInTheDocument();
-    expect(
-      screen.getByText(/#cloud-config/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/#cloud-config/)).toBeInTheDocument();
     expect(screen.getByText("Compliance settings")).toBeInTheDocument();
     expect(
       screen.getByText(

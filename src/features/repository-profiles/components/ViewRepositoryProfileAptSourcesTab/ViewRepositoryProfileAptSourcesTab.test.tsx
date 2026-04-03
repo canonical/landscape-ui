@@ -21,9 +21,7 @@ describe("ViewRepositoryProfileAptSourcesTab", () => {
     } as unknown as ReturnType<typeof useGetAPTSources>);
 
     renderWithProviders(
-      <ViewRepositoryProfileAptSourcesTab
-        profile={profile}
-      />,
+      <ViewRepositoryProfileAptSourcesTab profile={profile} />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -39,33 +37,35 @@ describe("ViewRepositoryProfileAptSourcesTab", () => {
     } as unknown as ReturnType<typeof useGetAPTSources>);
 
     renderWithProviders(
-      <ViewRepositoryProfileAptSourcesTab
-        profile={profile}
-      />,
+      <ViewRepositoryProfileAptSourcesTab profile={profile} />,
     );
 
-    expect(screen.getByRole("columnheader", { name: "Name" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Line" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Name" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Line" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "A" })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "line-a" })).toBeInTheDocument();
-    
+
     expect(screen.queryByRole("cell", { name: "B" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("cell", { name: "line-b" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("cell", { name: "line-b" }),
+    ).not.toBeInTheDocument();
   });
-  
+
   it("shows empty message if no sources for the profile", () => {
     mockUseGetAPTSources.mockReturnValue({
       isGettingAPTSources: false,
-      aptSources: [
-        { name: "B", line: "line-b", profiles: ["repo-profile-2"] },
-      ],
+      aptSources: [{ name: "B", line: "line-b", profiles: ["repo-profile-2"] }],
     } as unknown as ReturnType<typeof useGetAPTSources>);
 
     renderWithProviders(
-      <ViewRepositoryProfileAptSourcesTab
-        profile={profile}
-      />,
+      <ViewRepositoryProfileAptSourcesTab profile={profile} />,
     );
-    expect(screen.getByText("No APT sources found for this profile.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No APT sources found for this profile."),
+    ).toBeInTheDocument();
   });
 });

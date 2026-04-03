@@ -15,13 +15,11 @@ const [profile] = scriptProfiles;
 
 describe("ViewScriptProfileDetailsBlock", () => {
   it("renders spinner for script while script details are unavailable", () => {
-    mockUseGetSingleScript.mockReturnValue({ 
-      script: undefined 
+    mockUseGetSingleScript.mockReturnValue({
+      script: undefined,
     } as unknown as ReturnType<typeof useGetSingleScript>);
 
-    renderWithProviders(
-      <ViewScriptProfileDetailsBlock profile={profile} />,
-    );
+    renderWithProviders(<ViewScriptProfileDetailsBlock profile={profile} />);
 
     expect(screen.getByRole("alert")).toBeInTheDocument();
 
@@ -36,11 +34,7 @@ describe("ViewScriptProfileDetailsBlock", () => {
       script: { id: 9, title: "Hardening script" },
     } as unknown as ReturnType<typeof useGetSingleScript>);
 
-    renderWithProviders(
-      <ViewScriptProfileDetailsBlock
-        profile={profile}
-      />,
-    );
+    renderWithProviders(<ViewScriptProfileDetailsBlock profile={profile} />);
 
     expect(
       screen.getByRole("link", { name: "Hardening script" }),

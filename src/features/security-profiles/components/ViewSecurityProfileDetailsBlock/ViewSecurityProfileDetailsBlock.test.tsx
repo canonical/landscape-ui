@@ -7,14 +7,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("ViewSecurityProfileDetailsBlock", () => {
   it.each([
-    [
-      "disa_stig",
-      "audit",
-      null,
-      "DISA-STIG",
-      "Audit only",
-      NO_DATA_TEXT,
-    ],
+    ["disa_stig", "audit", null, "DISA-STIG", "Audit only", NO_DATA_TEXT],
     [
       "cis_level1_workstation",
       "audit-fix",
@@ -29,27 +22,35 @@ describe("ViewSecurityProfileDetailsBlock", () => {
       "root/file",
       "CIS Level 2 Server",
       "Fix, restart, audit",
-      "file"
+      "file",
     ],
-  ] as const)("renders benchmark, tailoring and mode labels", (
-    benchmark,
-    mode,
-    tailoringFile,
-    expectedBenchmark,
-    expectedMode,
-    expectedTailoringFile,
-  ) => {
-    renderWithProviders(
-      <ViewSecurityProfileDetailsBlock
-        profile={{ ...securityProfiles[0], benchmark, mode, tailoring_file_uri: tailoringFile }}
-      />,
-    );
+  ] as const)(
+    "renders benchmark, tailoring and mode labels",
+    (
+      benchmark,
+      mode,
+      tailoringFile,
+      expectedBenchmark,
+      expectedMode,
+      expectedTailoringFile,
+    ) => {
+      renderWithProviders(
+        <ViewSecurityProfileDetailsBlock
+          profile={{
+            ...securityProfiles[0],
+            benchmark,
+            mode,
+            tailoring_file_uri: tailoringFile,
+          }}
+        />,
+      );
 
-    expect(screen.getByText("Benchmark")).toBeInTheDocument();
-    expect(screen.getByText(expectedBenchmark)).toBeInTheDocument();
-    expect(screen.getByText("Tailoring file")).toBeInTheDocument();
-    expect(screen.getByText(expectedTailoringFile)).toBeInTheDocument();
-    expect(screen.getByText("Mode")).toBeInTheDocument();
-    expect(screen.getByText(expectedMode)).toBeInTheDocument();
-  });
+      expect(screen.getByText("Benchmark")).toBeInTheDocument();
+      expect(screen.getByText(expectedBenchmark)).toBeInTheDocument();
+      expect(screen.getByText("Tailoring file")).toBeInTheDocument();
+      expect(screen.getByText(expectedTailoringFile)).toBeInTheDocument();
+      expect(screen.getByText("Mode")).toBeInTheDocument();
+      expect(screen.getByText(expectedMode)).toBeInTheDocument();
+    },
+  );
 });

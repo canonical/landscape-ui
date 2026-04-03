@@ -7,9 +7,7 @@ import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 describe("ViewUpgradeProfileDetailsBlock", () => {
   it("renders upgrade type and autoremove state", () => {
     renderWithProviders(
-      <ViewUpgradeProfileDetailsBlock
-        profile={upgradeProfiles[0]}
-      />,
+      <ViewUpgradeProfileDetailsBlock profile={upgradeProfiles[0]} />,
     );
 
     expect(screen.getByText("Upgrade type")).toBeInTheDocument();
@@ -20,9 +18,7 @@ describe("ViewUpgradeProfileDetailsBlock", () => {
 
   it("renders upgrade type all and autoremove state off", () => {
     renderWithProviders(
-      <ViewUpgradeProfileDetailsBlock
-        profile={upgradeProfiles[1]}
-      />,
+      <ViewUpgradeProfileDetailsBlock profile={upgradeProfiles[1]} />,
     );
 
     expect(screen.getByText("All")).toBeInTheDocument();
