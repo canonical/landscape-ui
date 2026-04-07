@@ -29,24 +29,20 @@ describe("WelcomePopup", () => {
   });
 
   it("should close and save in local storage", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<WelcomePopup />);
 
-    await waitFor(async () => {
-      const closeButton = screen.getByRole("button", {
-        name: /got it!/i,
-      });
+    const closeButton = await screen.findByRole("button", {
+      name: /got it!/i,
+    });
+    await user.click(closeButton);
 
-      expect(closeButton).toBeInTheDocument();
-
-      await userEvent.click(closeButton);
-
+    await waitFor(() => {
       expect(
         screen.queryByText("Landscape web portal (Preview)"),
       ).not.toBeInTheDocument();
-
-      expect(localStorage.getItem("_landscape_isWelcomePopupClosed")).toBe(
-        "true",
-      );
     });
+
+    expect(localStorage.getItem("_landscape_isWelcomePopupClosed")).toBe("true");
   });
 });

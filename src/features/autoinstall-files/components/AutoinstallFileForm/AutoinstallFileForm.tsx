@@ -185,6 +185,7 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         ref={inputRef}
         className="u-hide"
         type="file"
+        data-testid="autoinstall-upload-input"
         accept={AUTOINSTALL_FILE_LANGUAGES.map(
           (language) => `.${language}`,
         ).join(",")}

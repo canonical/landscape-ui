@@ -9,7 +9,9 @@ import {
   isAction,
 } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, never, ApiPaginatedResponse<string>>(`${API_URL}tags`, () => {
@@ -27,15 +29,39 @@ export default [
     UseGetProfileChangesParams,
     ApiPaginatedResponse<ProfileChange>
   >(`${API_URL}tags/profile-diff`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "tags/profile-diff"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
     const { searchParams } = new URL(request.url);
 
     const offset = searchParams.get("offset");
     const limit = searchParams.get("limit");
+    const parsedOffset = offset ? parseInt(offset) : 0;
+    const parsedLimit = limit ? parseInt(limit) : 100;
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "tags/profile-diff"
+    ) {
+      return HttpResponse.json(
+        generatePaginatedResponse<ProfileChange>({
+          data: [],
+          offset: parsedOffset,
+          limit: parsedLimit,
+        }),
+      );
+    }
 
     const response = generatePaginatedResponse<ProfileChange>({
       data: profileChanges,
-      offset: offset ? parseInt(offset) : 0,
-      limit: limit ? parseInt(limit) : 100,
+      offset: parsedOffset,
+      limit: parsedLimit,
     });
 
     return HttpResponse.json(response);

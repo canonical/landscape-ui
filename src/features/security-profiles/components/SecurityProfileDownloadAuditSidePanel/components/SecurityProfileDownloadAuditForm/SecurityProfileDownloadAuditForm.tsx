@@ -93,8 +93,8 @@ const SecurityProfileDownloadAuditForm: FC<
   const formik = useFormik<SecurityProfileDownloadAuditFormValues>({
     initialValues: {
       audit_timeframe: "specific-date",
-      end_date: moment().format(INPUT_DATE_FORMAT),
-      start_date: moment().format(INPUT_DATE_FORMAT),
+      end_date: moment().utc().format(INPUT_DATE_FORMAT),
+      start_date: moment().utc().format(INPUT_DATE_FORMAT),
       level_of_detail: "summary-only",
     },
 

@@ -201,6 +201,7 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
 
 type WithRelation<T extends InstanceWithoutRelation> = T & {
   parent: InstanceWithoutRelation | null;
+  children: Omit<InstanceWithoutRelation, "children">[];
 };
 
 export type Instance = WithRelation<InstanceWithoutRelation>;

@@ -8,6 +8,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { GPG_KEYS_DOCS_URL } from "./constants";
 
 const NewGPGKeyForm = lazy(async () =>
   import("@/features/gpg-keys").then((module) => ({
@@ -60,7 +61,7 @@ const GPGKeysPage: FC = () => {
                   You haven&apos;t added any GPG keys yet.
                 </p>
                 <a
-                  href="https://ubuntu.com/landscape/docs/repositories"
+                  href={GPG_KEYS_DOCS_URL}
                   target="_blank"
                   rel="nofollow noopener noreferrer"
                 >

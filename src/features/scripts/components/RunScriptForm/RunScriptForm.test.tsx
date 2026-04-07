@@ -1,8 +1,9 @@
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it } from "vitest";
+import { beforeEach, describe, it } from "vitest";
 import RunScriptForm from "./RunScriptForm";
 
 const [script] = scripts;
@@ -17,6 +18,10 @@ const selectTag = async (
 
 describe("RunScriptForm", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
 
   it("should display run script form", async () => {
     renderWithProviders(<RunScriptForm script={script} />);

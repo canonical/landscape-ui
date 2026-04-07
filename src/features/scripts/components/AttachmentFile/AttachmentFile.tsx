@@ -30,8 +30,8 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
   const handleDownload = async () => {
     try {
       const { data } = await refetch();
-      if (!data) {
-        throw new Error("Could not download attachment.");
+      if (!data || data.data === null || data.data === undefined) {
+        return;
       }
 
       const url = URL.createObjectURL(data.data);

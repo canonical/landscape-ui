@@ -126,6 +126,18 @@ export const alerts = [
   },
 ] as const satisfies Alert[];
 
+export const licenseAlert: Alert = {
+  id: 9999,
+  alert_type: "LicenseSeatsAlert",
+  description: "Alert when available seats are low",
+  subscribed: false,
+  status: "OK",
+  scope: "account",
+  all_computers: false,
+  tags: [],
+  label: "License Seats Alert",
+};
+
 export const alertsSummary = [
   {
     id: 1,

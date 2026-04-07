@@ -23,12 +23,11 @@ const AlertsPage: FC = () => {
     [getAlertsQueryResult],
   );
 
-  const tagOptions: MultiSelectItem[] =
-    tags.map((tag) => ({
-      label: tag,
-      value: tag,
-      group: "Tags",
-    })) ?? [];
+  const tagOptions: MultiSelectItem[] = tags.map((tag) => ({
+    label: tag,
+    value: tag,
+    group: "Tags",
+  }));
 
   const availableTagOptions = [
     { label: "All instances", value: "All" },
@@ -40,7 +39,7 @@ const AlertsPage: FC = () => {
       <PageHeader title="Alerts" />
       <PageContent hasTable>
         {isLoading && <LoadingState />}
-        {!isLoading && alerts && (
+        {!isLoading && (
           <AlertsList
             alerts={alerts}
             availableTagOptions={availableTagOptions}

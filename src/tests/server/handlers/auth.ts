@@ -16,6 +16,7 @@ import {
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { invitationState } from "./invitations";
+import { getEndpointStatusApiError } from "./_constants";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -157,10 +158,26 @@ export default [
     });
   }),
 
-  http.get(
+  http.get<{ attach_code: string }>(
     `${API_URL}ubuntu-installer-attach-sessions/code/:attach_code`,
-    () => {
+    ({ params }) => {
       const HOUR_S = 3600;
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "error" &&
+        (!endpointStatus.path ||
+          endpointStatus.path.includes("ubuntu-installer-attach-sessions/code"))
+      ) {
+        throw getEndpointStatusApiError();
+      }
+
+      if (params.attach_code === "EXPIRE") {
+        return HttpResponse.json({
+          valid: false,
+          valid_until: null,
+        });
+      }
 
       return HttpResponse.json({
         valid: true,
@@ -369,7 +386,7 @@ export default [
 
       return HttpResponse.json({
         accounts: [createdAccount],
-        current_account: createdAccount ? createdAccount.account : "",
+        current_account: createdAccount.account,
         email: "new-user@example.com",
         has_password: false,
         name: "New Ubuntu One User",

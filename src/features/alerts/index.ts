@@ -1,3 +1,8 @@
 export { default as AlertsList } from "./components/AlertsList";
 export { useAlerts } from "./hooks";
-export type { Alert, SubscriptionParams } from "./types";
+export type {
+  Alert,
+  SubscriptionParams,
+  AssociateAlertParams,
+  DisassociateAlertParams,
+} from "./types";
