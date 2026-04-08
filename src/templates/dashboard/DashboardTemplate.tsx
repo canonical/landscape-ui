@@ -22,8 +22,8 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
 
   return (
     <div id={applicationId} className="l-application" role="presentation">
-      <SidePanelProvider>
-        <ProfilesProvider>
+      <ProfilesProvider>
+        <SidePanelProvider>
           <Sidebar />
           <ApplicationIdContext value={applicationId}>
             <main className={classNames("l-main", classes.wrapper)}>
@@ -40,8 +40,8 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
               <div className={classes.pageContent}>{children}</div>
             </main>
           </ApplicationIdContext>
-        </ProfilesProvider>
-      </SidePanelProvider>
+        </SidePanelProvider>
+      </ProfilesProvider>
       <WelcomePopup />
     </div>
   );

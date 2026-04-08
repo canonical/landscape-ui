@@ -58,7 +58,9 @@ describe("ResponsiveButtons", () => {
   it("renders collapsed buttons on all screens", async () => {
     setScreenSize("xxl");
 
-    render(<ResponsiveButtons buttons={buttons} collapseFrom="md" alwaysCollapse />);
+    render(
+      <ResponsiveButtons buttons={buttons} collapseFrom="md" alwaysCollapse />,
+    );
 
     expect(
       screen.queryByRole("button", { name: "Simple button" }),

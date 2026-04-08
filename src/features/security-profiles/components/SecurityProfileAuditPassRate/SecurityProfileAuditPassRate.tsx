@@ -60,7 +60,7 @@ const SecurityProfileAuditPassRate: FC<SecurityProfileAuditPassRateProps> = ({
   );
 
   return (
-    <div className={classes.cell}>
+    <div>
       <div className={classes.textContainer}>
         <div>
           {passing > 0 ? (

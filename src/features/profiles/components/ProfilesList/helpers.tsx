@@ -206,6 +206,7 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
 export const getSecurityColumns = (): Column<Profile>[] => [
   {
     accessor: "last_run_results",
+    className: "medium-cell",
     Header: "Pass rate",
     meta: {
       ariaLabel: ({ original: profile }) =>
