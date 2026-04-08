@@ -1,4 +1,4 @@
-import useFetchOld from "@/hooks/useFetchOld";
+import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import type { Instance } from "@/types/Instance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +9,7 @@ export interface RemoveInstancesParams {
 }
 
 export const useRemoveInstancesFromLandscape = () => {
-  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
   const queryClient = useQueryClient();
 
   const { isPending, mutateAsync } = useMutation<
@@ -18,7 +18,7 @@ export const useRemoveInstancesFromLandscape = () => {
     RemoveInstancesParams
   >({
     mutationFn: async (params) =>
-      authFetchOld.get("RemoveComputers", { params }),
+      authFetch.post("computers:delete", { params }),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });

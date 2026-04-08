@@ -2,9 +2,15 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import { pluralize, pluralizeArray } from "@/utils/_helpers";
+import {
+  pluralize,
+  pluralizeArray,
+  pluralizeWithCount,
+} from "@/utils/_helpers";
 import type { FC } from "react";
 import { useRemoveInstancesFromLandscape } from "../../api";
+import { Modal } from "@canonical/react-components";
+import { INSTANCE_REMOVE_FROM_LANDSCAPE_LIMIT } from "./constants";
 
 interface InstanceRemoveFromLandscapeModalProps {
   readonly close: () => void;
@@ -27,6 +33,20 @@ const InstanceRemoveFromLandscapeModal: FC<
     (instance) => instance.title,
     `instances`,
   );
+
+  const title = `Remove ${label} from Landscape`;
+
+  if (isOpen && instances.length > INSTANCE_REMOVE_FROM_LANDSCAPE_LIMIT) {
+    return (
+      <Modal title={title} close={close}>
+        <p>
+          This action can not be done on more than{" "}
+          {pluralizeWithCount(INSTANCE_REMOVE_FROM_LANDSCAPE_LIMIT, "instance")}{" "}
+          at once. Please select fewer instances and try again.
+        </p>
+      </Modal>
+    );
+  }
 
   const removeFromLandscape = async () => {
     try {
@@ -56,7 +76,7 @@ const InstanceRemoveFromLandscapeModal: FC<
     <TextConfirmationModal
       isOpen={isOpen}
       close={close}
-      title={`Remove ${label} from Landscape`}
+      title={title}
       confirmButtonLabel="Remove"
       confirmButtonAppearance="negative"
       confirmButtonDisabled={isRemovingInstancesFromLandscape}
