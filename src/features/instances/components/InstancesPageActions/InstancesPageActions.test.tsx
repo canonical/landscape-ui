@@ -6,6 +6,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
+import { pluralizeWithCount } from "@/utils/_helpers";
 
 const selected = instances.slice(0, 2);
 
@@ -150,7 +151,7 @@ describe("InstancesPageActions", () => {
       await userEvent.click(screen.getByRole("button", { name: /shut down/i }));
 
       const dialog = screen.getByRole("dialog", {
-        name: /shutting down selected instances/i,
+        name: `Shut down ${pluralizeWithCount(selected.length, "instance")}`,
       });
 
       expect(dialog).toBeInTheDocument();
@@ -159,7 +160,9 @@ describe("InstancesPageActions", () => {
         within(dialog).getByRole("button", { name: /shut down/i }),
       );
 
-      screen.getByText("Selected instances have been queued for shutdown.");
+      screen.getByText(
+        `You queued ${pluralizeWithCount(selected.length, "instance")} to be shut down.`,
+      );
 
       expect(dialog).not.toBeInTheDocument();
     });
@@ -168,7 +171,7 @@ describe("InstancesPageActions", () => {
       await userEvent.click(screen.getByRole("button", { name: /restart/i }));
 
       const dialog = screen.getByRole("dialog", {
-        name: /restarting selected instances/i,
+        name: `Restart ${pluralizeWithCount(selected.length, "instance")}`,
       });
 
       expect(dialog).toBeInTheDocument();
@@ -177,7 +180,9 @@ describe("InstancesPageActions", () => {
         within(dialog).getByRole("button", { name: /restart/i }),
       );
 
-      screen.getByText("Selected instances have been queued for reboot.");
+      screen.getByText(
+        `You queued ${pluralizeWithCount(selected.length, "instance")} to be restarted.`,
+      );
 
       expect(dialog).not.toBeInTheDocument();
     });
