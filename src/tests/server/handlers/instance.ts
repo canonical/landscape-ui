@@ -4,7 +4,6 @@ import type {
   DistributionUpgradeTarget,
   GetInstanceParams,
   GetInstancesParams,
-  RemoveInstancesParams,
   SanitizeInstanceParams,
 } from "@/features/instances";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
@@ -439,17 +438,10 @@ export default [
     },
   ),
 
-  http.get<never, RemoveInstancesParams, Instance[]>(
-    API_URL_OLD,
-    async ({ request }) => {
-      if (!isAction(request, ["RemoveComputers"])) {
-        return;
-      }
-      await delay();
-
-      return HttpResponse.json(instances);
-    },
-  ),
+  http.post(`${API_URL}computers:delete`, async () => {
+    await delay();
+    return HttpResponse.json();
+  }),
 
   http.get(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, ["AddTagsToComputers"])) {
