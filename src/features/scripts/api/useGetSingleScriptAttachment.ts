@@ -20,10 +20,12 @@ export const useGetSingleScriptAttachment = (
     data: response,
     isLoading,
     refetch,
-  } = useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
+  } = useQuery<AxiosResponse<Blob>, AxiosError<ApiError>>({
     queryKey: ["scripts", "attachment", attachmentId],
     queryFn: async () =>
-      authFetch.get(`scripts/${scriptId}/attachments/${attachmentId}`),
+      authFetch.get(`scripts/${scriptId}/attachments/${attachmentId}`, {
+        responseType: "blob",
+      }),
     ...config,
   });
 

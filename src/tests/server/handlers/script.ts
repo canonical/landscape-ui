@@ -2,6 +2,8 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   detailedScriptsData,
+  scriptAttachment,
+  scriptAttachmentHtml,
   scripts,
   scriptVersion,
   scriptVersionsWithPagination,
@@ -88,8 +90,25 @@ export default [
     return HttpResponse.json(scriptVersion);
   }),
 
-  http.get(`${API_URL}scripts-attachment/:id`, async () => {
-    return HttpResponse.json("attachment");
+  http.get(`${API_URL}scripts/:id/attachments/:attachmentId`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.path &&
+      endpointStatus.path.includes("scripts/attachments/html")
+    ) {
+      return new HttpResponse(scriptAttachmentHtml, {
+        headers: {
+          "Content-Type": "text/html",
+        },
+      });
+    }
+
+    return new HttpResponse(scriptAttachment, {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
   }),
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {

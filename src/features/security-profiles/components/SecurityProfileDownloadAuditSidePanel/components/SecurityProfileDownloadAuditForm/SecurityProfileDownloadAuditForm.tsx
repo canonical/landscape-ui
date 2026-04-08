@@ -12,7 +12,7 @@ import moment from "moment";
 import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../../../api";
-import { useSecurityProfileDownloadAudit } from "../../../../hooks/useSecurityProfileDownloadAudit";
+import { useSecurityProfileDownload } from "../../../../hooks/useSecurityProfileDownload";
 import type { SecurityProfile } from "../../../../types";
 import classes from "./SecurityProfileDownloadAuditForm.module.scss";
 
@@ -43,7 +43,7 @@ const SecurityProfileDownloadAuditForm: FC<
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
     useGetSecurityProfileReport();
 
-  const downloadAudit = useSecurityProfileDownloadAudit();
+  const downloadAudit = useSecurityProfileDownload("audit");
 
   const [status, setStatus] = useState<Status>({ type: "okay" });
 

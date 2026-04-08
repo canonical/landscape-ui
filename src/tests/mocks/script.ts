@@ -428,3 +428,6 @@ export const scriptVersion = {
   interpreter: "shell",
   title: "List temporary files",
 };
+
+export const scriptAttachment = "attachment file";
+export const scriptAttachmentHtml = "<!doctype html><html></html>";

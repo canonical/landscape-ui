@@ -18,6 +18,7 @@ import {
   SECURITY_PROFILE_MODE_LABELS,
 } from "../../constants";
 import { getSchedule, getStatus, getTailoringFile } from "../../helpers";
+import { useSecurityProfileDownload } from "../../hooks/useSecurityProfileDownload";
 import SecurityProfileArchiveModal from "../SecurityProfileArchiveModal";
 
 const SecurityProfileDetailsSidePanel: FC = () => {
@@ -27,6 +28,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
   const { securityProfile: profile, isGettingSecurityProfile } =
     useGetPageSecurityProfile();
   const profileLimitReached = useIsSecurityProfilesLimitReached();
+  const downloadSecurityProfileFile = useSecurityProfileDownload("tailoring");
   const { data: accessGroupsData, isPending: isGettingAccessGroups } =
     getAccessGroupQuery();
 
@@ -129,7 +131,7 @@ const SecurityProfileDetailsSidePanel: FC = () => {
 
               <InfoGrid.Item
                 label="Tailoring file"
-                value={getTailoringFile(profile)}
+                value={getTailoringFile(profile, downloadSecurityProfileFile)}
               />
 
               <InfoGrid.Item
