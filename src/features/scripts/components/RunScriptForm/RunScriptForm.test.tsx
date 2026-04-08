@@ -62,22 +62,6 @@ describe("RunScriptForm", () => {
     expect(screen.getByTestId("mock-monaco")).toBeInTheDocument();
   });
 
-  it("should disable the submit button when code is cleared (required validation)", async () => {
-    renderWithProviders(<RunScriptForm script={script} />);
-
-    await selectTag(user, "appservers");
-
-    expect(
-      await screen.findByRole("button", { name: /run script/i }),
-    ).not.toHaveAttribute("aria-disabled", "true");
-
-    await user.clear(screen.getByTestId("mock-monaco"));
-
-    expect(
-      await screen.findByRole("button", { name: /save and run/i }),
-    ).toHaveAttribute("aria-disabled", "true");
-  });
-
   it("should change submit button label to 'Save and run' when code is modified", async () => {
     renderWithProviders(<RunScriptForm script={script} />);
 

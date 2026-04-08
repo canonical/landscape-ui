@@ -135,6 +135,20 @@ export default [
     return HttpResponse.json({});
   }),
 
+  http.post(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "EditScript")) {
+      return;
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.post(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "CreateScriptAttachment")) {
+      return;
+    }
+    return HttpResponse.json({});
+  }),
+
   http.get(API_URL_OLD, ({ request }) => {
     if (!isAction(request, "ExecuteScript")) {
       return;
