@@ -49,7 +49,7 @@ describe("ProfilesListActions", () => {
     });
     await userEvent.click(menu);
 
-    await userEvent.click(screen.getByRole("button", { name: /remove/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /remove/i }));
     expect(
       await screen.findByText("Remove repository profile"),
     ).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe("ProfilesListActions", () => {
     });
     await userEvent.click(menu);
 
-    await userEvent.click(screen.getByRole("button", { name: /archive/i }));
+    await userEvent.click(screen.getByRole("menuitem", { name: /archive/i }));
     expect(
       await screen.findByText("Archive script profile"),
     ).toBeInTheDocument();
@@ -151,11 +151,11 @@ describe("ProfilesListActions", () => {
         }),
       );
 
-      const buttons = screen.getAllByRole("button");
-      expect(buttons.length).toEqual(actions.length + 1);
+      const buttons = screen.getAllByRole("menuitem");
+      expect(buttons.length).toEqual(actions.length);
 
       for (let i = 0; i < actions.length; i++) {
-        expect(buttons[i + 1]).toHaveTextContent(actions[i] ?? "");
+        expect(buttons[i]).toHaveTextContent(actions[i] ?? "invalid");
       }
     },
   );

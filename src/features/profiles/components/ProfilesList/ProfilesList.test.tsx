@@ -171,7 +171,7 @@ describe("ProfilesList", () => {
       }
 
       const lastRunSchedule = within(row).getByRole("cell", {
-        name: `Last run for "${profile.title}" profileSchedule for "${profile.title}" profile`,
+        name: `Last run for ${profile.title} profileSchedule for ${profile.title} profile`,
       });
       expect(
         within(lastRunSchedule).getByText(

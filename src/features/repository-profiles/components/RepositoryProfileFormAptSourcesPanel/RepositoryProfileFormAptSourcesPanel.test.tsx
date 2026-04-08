@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import type { RepositoryProfileFormValues } from "../../types";
-import { INITIAL_VALUES } from "../RepositoryProfileManageSidePanel/constants";
+import { INITIAL_VALUES } from "../RepositoryProfileForm/constants";
 import RepositoryProfileFormAptSourcesPanel from "./RepositoryProfileFormAptSourcesPanel";
 
 describe("RepositoryProfileFormAptSourcesPanel", () => {

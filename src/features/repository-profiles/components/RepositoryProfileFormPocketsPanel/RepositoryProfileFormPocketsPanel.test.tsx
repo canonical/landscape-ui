@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import RepositoryProfileFormPocketsPanel from "./RepositoryProfileFormPocketsPanel";
 import { distributions } from "@/tests/mocks/distributions";
-import { INITIAL_VALUES } from "../RepositoryProfileManageSidePanel/constants";
+import { INITIAL_VALUES } from "../RepositoryProfileForm/constants";
 import type { RepositoryProfileFormValues } from "../../types";
 
 const distributionsWithUniquePockets = distributions.slice(0, 2);

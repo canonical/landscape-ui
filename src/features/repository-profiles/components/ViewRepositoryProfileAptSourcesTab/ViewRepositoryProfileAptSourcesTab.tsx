@@ -48,6 +48,7 @@ const ViewRepositoryProfileAptSourcesTab: FC<
       columns={columns}
       data={profileSources}
       emptyMsg="No APT sources found for this profile."
+      minWidth={320}
     />
   );
 };

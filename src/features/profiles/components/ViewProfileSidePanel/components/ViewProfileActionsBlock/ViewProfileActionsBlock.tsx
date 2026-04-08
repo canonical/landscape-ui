@@ -69,7 +69,8 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
             </span>
           </Button>
         ))}
-        collapseFrom={buttons.length > 3 ? "xxl" : "xs"}
+        collapseFrom={"xs"}
+        alwaysCollapse={buttons.length > 3}
       />
 
       <RemoveProfileModal
