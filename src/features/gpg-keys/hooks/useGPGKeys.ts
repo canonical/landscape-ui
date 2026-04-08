@@ -1,4 +1,5 @@
 import useFetchOld from "@/hooks/useFetchOld";
+import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/api/QueryFnType";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +13,8 @@ import type {
 
 export default function useGPGKeys() {
   const queryClient = useQueryClient();
-  const authFetch = useFetchOld();
+  const authFetchOld = useFetchOld();
+  const authFetch = useFetch();
 
   const getGPGKeysQuery: QueryFnType<
     AxiosResponse<GPGKey[]>,
@@ -21,7 +23,7 @@ export default function useGPGKeys() {
     useQuery<AxiosResponse<GPGKey[]>, AxiosError<ApiError>>({
       queryKey: ["gpgKeys"],
       queryFn: async () =>
-        authFetch.get("GetGPGKeys", {
+        authFetchOld.get("GetGPGKeys", {
           params: queryParams,
         }),
       ...config,
@@ -33,7 +35,7 @@ export default function useGPGKeys() {
     ImportGPGKeyParams
   >({
     mutationKey: ["gpgKeys", "new"],
-    mutationFn: async (params) => authFetch.get("ImportGPGKey", { params }),
+    mutationFn: async (params) => authFetch.post("gpg-key", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["gpgKeys"] }),
   });
@@ -44,7 +46,7 @@ export default function useGPGKeys() {
     RemoveGPGKeyParams
   >({
     mutationKey: ["gpgKeys", "remove"],
-    mutationFn: async (params) => authFetch.get("RemoveGPGKey", { params }),
+    mutationFn: async (params) => authFetchOld.get("RemoveGPGKey", { params }),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["gpgKeys"] }),
   });
