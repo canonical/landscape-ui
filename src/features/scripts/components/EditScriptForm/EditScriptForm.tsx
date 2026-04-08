@@ -30,9 +30,10 @@ import {
 
 interface EditScriptFormProps {
   readonly script: Script;
+  readonly onBack: () => void;
 }
 
-const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
+const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     value: showConfirmationModal,
@@ -193,7 +194,8 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
 
       <SidePanelFormButtons
         onSubmit={showModal}
-        submitButtonDisabled={!formik.dirty}
+        hasBackButton={!!onBack}
+        onBackButtonPress={onBack}
         submitButtonText="Submit new version"
       />
 

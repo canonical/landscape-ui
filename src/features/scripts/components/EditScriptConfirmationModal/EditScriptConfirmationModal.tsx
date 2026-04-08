@@ -95,6 +95,7 @@ const EditScriptConfirmationModal: FC<EditScriptConfirmationModalProps> = ({
 
   return (
     <ConfirmationModal
+      renderInPortal
       title={`Submit new version of "${script.title}"`}
       confirmButtonLabel={confirmButtonLabel}
       onConfirm={onConfirm}

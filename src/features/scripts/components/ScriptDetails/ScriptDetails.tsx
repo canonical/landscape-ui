@@ -102,7 +102,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     setSidePanelContent(
       `Edit "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <EditScriptForm script={script} />
+        <EditScriptForm script={script} onBack={handleBackToDetails} />
       </Suspense>,
     );
   };

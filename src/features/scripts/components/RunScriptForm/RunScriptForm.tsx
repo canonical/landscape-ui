@@ -67,7 +67,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
       interpreter: script.interpreter,
     });
 
-  const handleSubmit = async (values: FormProps) => {
+  const submitRun = async (values: FormProps) => {
     const valuesToSubmit = {
       query:
         values.queryType === "ids"
@@ -108,6 +108,20 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     } catch (error) {
       debug(error);
     }
+  };
+
+  const handleSubmit = async (values: FormProps) => {
+    if (values.code !== originalCode) {
+      showEditConfirm();
+      return;
+    }
+
+    if (values.queryType === "tags") {
+      showRunConfirm();
+      return;
+    }
+
+    await submitRun(values);
   };
 
   const formik = useFormik({
@@ -174,21 +188,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     if (formik.values.queryType === "tags") {
       showRunConfirm();
     } else {
-      formik.handleSubmit();
-    }
-  };
-
-  const trySubmit = () => {
-    if (codeChanged) {
-      showEditConfirm();
-    } else {
-      proceedWithRun();
+      submitRun(formik.values);
     }
   };
 
   return (
     <>
-      <Form onSubmit={trySubmit} noValidate>
+      <Form onSubmit={formik.handleSubmit} noValidate>
         <p className="u-no-margin--bottom">* Select instances by:</p>
         <div className="is-required">
           <div>
@@ -313,11 +319,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
         <DeliveryBlock formik={formik} />
 
         <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting || !formik.isValid}
+          submitButtonDisabled={formik.isSubmitting}
           onBackButtonPress={onBack}
           hasBackButton={!!onBack}
           submitButtonText={codeChanged ? "Save and run" : "Run script"}
-          onSubmit={trySubmit}
+          onSubmit={formik.submitForm}
         />
       </Form>
 
@@ -336,10 +342,12 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
       {isRunConfirmVisible && (
         <ConfirmationModal
+          renderInPortal
           title={`Run "${script.title}" script on ${formik.values.tags.length > 1 ? `${formik.values.tags.length} tags` : `${formik.values.tags[0]} tag`}`}
           confirmButtonLabel="Run script"
           onConfirm={() => {
-            formik.handleSubmit();
+            hideRunConfirm();
+            submitRun(formik.values);
           }}
           confirmButtonDisabled={
             formik.isSubmitting ||
