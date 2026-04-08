@@ -29,30 +29,30 @@ const ScriptsContainer: FC<ScriptsContainerProps> = () => {
           getScriptsQueryResult.data.results.length === 0) && (
           <ScriptsEmptyState />
         )}
-      {currentPage !== 1 ||
+      {(currentPage !== 1 ||
         pageSize !== 20 ||
         (!getScriptsQueryLoading &&
           getScriptsQueryResult &&
-          getScriptsQueryResult.data.results.length > 0 && (
-            <>
-              <ScriptList
-                isScriptsLoading={getScriptsQueryLoading}
-                scripts={getScriptsQueryResult?.data.results ?? []}
-              />
-              <TablePagination
-                currentPage={currentPage}
-                totalItems={getScriptsQueryResult?.data.count}
-                paginate={(page) => {
-                  setCurrentPage(page);
-                }}
-                pageSize={pageSize}
-                setPageSize={(itemsNumber) => {
-                  setPageSize(itemsNumber);
-                }}
-                currentItemCount={getScriptsQueryResult.data.results.length}
-              />
-            </>
-          ))}
+          getScriptsQueryResult.data.results.length > 0)) && (
+        <>
+          <ScriptList
+            isScriptsLoading={getScriptsQueryLoading}
+            scripts={getScriptsQueryResult?.data.results ?? []}
+          />
+          <TablePagination
+            currentPage={currentPage}
+            totalItems={getScriptsQueryResult?.data.count}
+            paginate={(page) => {
+              setCurrentPage(page);
+            }}
+            pageSize={pageSize}
+            setPageSize={(itemsNumber) => {
+              setPageSize(itemsNumber);
+            }}
+            currentItemCount={getScriptsQueryResult?.data.results.length}
+          />
+        </>
+      )}
     </>
   );
 };
