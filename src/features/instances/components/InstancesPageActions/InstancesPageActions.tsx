@@ -13,7 +13,6 @@ import {
 } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
-import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
@@ -361,22 +360,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
         toggleDisabled={0 === selectedInstances.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
-      {rebootModalOpen &&
-        createPortal(
-          <RestartModal
-            close={closeRebootModal}
-            instances={selectedInstances}
-            isOpen={rebootModalOpen}
-          />,
-          document.body,
-        )}
-      createPortal(
+      <RestartModal
+        close={closeRebootModal}
+        instances={selectedInstances}
+        isOpen={rebootModalOpen}
+      />
       <ShutDownModal
         close={closeShutdownModal}
         instances={selectedInstances}
         isOpen={shutdownModalOpen}
       />
-      , document.body,
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}

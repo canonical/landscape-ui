@@ -82,6 +82,7 @@ const RestartModal: FC<RestartModalProps> = ({ instances, isOpen, close }) => {
           onConfirm={() => {
             formik.handleSubmit();
           }}
+          renderInPortal
         >
           <CheckboxInput
             label="Deliver as soon as possible"

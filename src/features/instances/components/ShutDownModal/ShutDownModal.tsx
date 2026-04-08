@@ -87,6 +87,7 @@ const ShutDownModal: FC<ShutDownModalProps> = ({
           onConfirm={() => {
             formik.handleSubmit();
           }}
+          renderInPortal
         >
           <CheckboxInput
             label="Deliver as soon as possible"
