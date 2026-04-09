@@ -18,6 +18,7 @@ import {
 import { getTabs, type TabTypes } from "./helpers";
 import type { Profile } from "../../types";
 import type { ProfileTypes } from "../../helpers";
+import { hasOneItem } from "@/utils/_helpers";
 
 interface ViewProfileSidePanelProps {
   readonly profile: Profile;
@@ -39,6 +40,15 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
       setTabId(id);
     },
   }));
+
+  if (hasOneItem(tabs)) {
+    return (
+      <>
+        <ViewProfileActionsBlock profile={profile} type={type} />
+        <ViewProfileInfoTab profile={profile} type={type} key="info" />
+      </>
+    );
+  }
 
   return (
     <>

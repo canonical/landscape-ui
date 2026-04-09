@@ -6,9 +6,8 @@ import { useGetWslLimits } from "@/features/wsl";
 import { useGetWslProfiles } from "@/features/wsl-profiles";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Notification } from "@canonical/react-components";
-import { lazy, type FC } from "react";
+import { lazy, useEffect, type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
-// import { ProfilesProvider } from "@/context/profiles";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
@@ -45,7 +44,10 @@ const WslProfilesPage: FC = () => {
 
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
   const isWslProfileLimitReached = allWslProfilesCount >= wslProfileLimit;
-  setIsProfileLimitReached(isWslProfileLimitReached);
+
+  useEffect(() => {
+    setIsProfileLimitReached(isWslProfileLimitReached);
+  }, [isWslProfileLimitReached, setIsProfileLimitReached]);
 
   return (
     <PageMain>
@@ -53,12 +55,7 @@ const WslProfilesPage: FC = () => {
         title="WSL profiles"
         actions={
           wslProfilesCount
-            ? [
-                <AddProfileButton
-                  type={ProfileTypes.wsl}
-                  key="add-wsl-profile"
-                />,
-              ]
+            ? [<AddProfileButton isWsl key="add-wsl-profile" />]
             : undefined
         }
       />

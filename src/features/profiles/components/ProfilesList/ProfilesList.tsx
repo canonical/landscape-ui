@@ -5,7 +5,6 @@ import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { Profile } from "../../types";
-import { createTablePropGetters } from "@/utils/table";
 import type { Column } from "react-table";
 import {
   getComplianceColumns,
@@ -19,7 +18,6 @@ import {
 import {
   canArchiveProfile,
   hasApiSearch,
-  hasDescription,
   hasComplianceColumns,
   ProfileTypes,
 } from "../../helpers";
@@ -33,13 +31,9 @@ interface ProfilesListProps {
 const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
   const { search } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
-  const { expandedRowIndex, getTableRowsRef } = useExpandableRow();
+  const { getTableRowsRef } = useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-  const { getCellProps, getRowProps } = createTablePropGetters<Profile>({
-    headerColumnId: "title",
-    itemTypeName: "profile",
-  });
 
   const openViewProfileSidePanel = useOpenViewProfileSidePanel();
 
@@ -54,16 +48,15 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
   }, [profiles, search, type]);
 
   const columns = useMemo<Column<Profile>[]>(() => {
-    const { name, accessGroup, associated, description, actions } =
-      getGeneralColumns(
-        type,
-        openViewProfileSidePanel,
-        getAccessGroupQueryResult,
-      );
+    const { name, accessGroup, associated, actions } = getGeneralColumns(
+      type,
+      openViewProfileSidePanel,
+      getAccessGroupQueryResult,
+    );
     const cols = [name];
 
     if (canArchiveProfile(type)) {
-      cols.push(...getStatusColumn());
+      cols.push(getStatusColumn());
     }
 
     cols.push(accessGroup, associated);
@@ -81,15 +74,11 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
     }
 
     if (type === ProfileTypes.reboot) {
-      cols.push(...getRebootColumn());
+      cols.push(getRebootColumn());
     }
 
     if (type === ProfileTypes.removal) {
-      cols.push(...getRemovalColumn());
-    }
-
-    if (hasDescription(type)) {
-      cols.push(description);
+      cols.push(getRemovalColumn());
     }
 
     cols.push(actions);
@@ -103,8 +92,6 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       columns={columns}
       data={filteredProfiles}
       emptyMsg={`No ${type} profiles found according to your search parameters.`}
-      getCellProps={getCellProps(expandedRowIndex)}
-      getRowProps={getRowProps(expandedRowIndex)}
     />
   );
 };

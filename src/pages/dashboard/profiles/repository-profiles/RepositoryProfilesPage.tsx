@@ -7,8 +7,9 @@ import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const RepositoryProfileManageSidePanel = lazy(async () =>
   import("@/features/repository-profiles").then((module) => ({
@@ -22,6 +23,11 @@ const RepositoryProfilesPage: FC = () => {
     getRepositoryProfilesQuery();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
+  const { setIsProfileLimitReached } = useProfiles();
+
+  useEffect(() => {
+    setIsProfileLimitReached(false);
+  }, [setIsProfileLimitReached]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
 
@@ -31,12 +37,7 @@ const RepositoryProfilesPage: FC = () => {
         title="Repository profiles"
         actions={
           getRepositoryProfilesResult?.data.count
-            ? [
-                <AddProfileButton
-                  type={ProfileTypes.repository}
-                  key="add-repository-profile"
-                />,
-              ]
+            ? [<AddProfileButton key="add-repository-profile" />]
             : undefined
         }
       />

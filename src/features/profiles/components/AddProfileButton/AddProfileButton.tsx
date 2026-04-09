@@ -2,34 +2,25 @@ import { Button, ConfirmationModal, Icon } from "@canonical/react-components";
 import { type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
 import usePageParams from "@/hooks/usePageParams";
-import { ProfileTypes } from "../../helpers";
 import { useBoolean } from "usehooks-ts";
 
 const LOCAL_STORAGE_ITEM = "_landscape_isWslPopupClosed";
 
 interface AddProfileButtonProps {
-  readonly type: ProfileTypes;
+  readonly isWsl?: boolean;
   readonly isInsideScriptHeader?: boolean;
 }
 
 const AddProfileButton: FC<AddProfileButtonProps> = ({
-  type,
+  isWsl = false,
   isInsideScriptHeader = false,
 }) => {
   const { createPageParamsSetter } = usePageParams();
   const { isProfileLimitReached } = useProfiles();
 
   const settings = isInsideScriptHeader
-    ? {
-        className: "u-no-margin--bottom",
-        icon: <Icon name="plus" />,
-        hasIcon: true,
-        typeText: "",
-      }
-    : {
-        appearance: "positive",
-        typeText: type,
-      };
+    ? { className: "u-no-margin--bottom" }
+    : { appearance: "positive" };
 
   const { value: isModalRead, setTrue: readModal } = useBoolean(
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
@@ -47,7 +38,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
   });
 
   const handleClick = () => {
-    if (type === ProfileTypes.wsl && !isModalRead) {
+    if (isWsl && !isModalRead) {
       openModal();
     } else {
       openAddSidePanel();
@@ -68,11 +59,11 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
         appearance={settings.appearance}
         className={settings.className}
         onClick={handleClick}
-        hasIcon={settings.hasIcon}
+        hasIcon
         disabled={isProfileLimitReached}
       >
-        {settings.icon}
-        <span>Add {settings.typeText} profile</span>
+        <Icon name="plus" />
+        <span>Add profile</span>
       </Button>
 
       {isModalOpen && (

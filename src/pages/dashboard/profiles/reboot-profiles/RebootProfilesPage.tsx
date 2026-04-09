@@ -7,8 +7,9 @@ import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
 import { useGetRebootProfiles } from "@/features/reboot-profiles";
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const RebootProfileAddSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
@@ -33,6 +34,11 @@ const RebootProfilesPage: FC = () => {
     useGetRebootProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
+  const { setIsProfileLimitReached } = useProfiles();
+
+  useEffect(() => {
+    setIsProfileLimitReached(false);
+  }, [setIsProfileLimitReached]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "duplicate", "edit"]);
 
@@ -42,12 +48,7 @@ const RebootProfilesPage: FC = () => {
         title="Reboot profiles"
         actions={
           rebootProfilesCount
-            ? [
-                <AddProfileButton
-                  type={ProfileTypes.reboot}
-                  key="add-reboot-profile"
-                />,
-              ]
+            ? [<AddProfileButton key="add-reboot-profile" />]
             : undefined
         }
       />

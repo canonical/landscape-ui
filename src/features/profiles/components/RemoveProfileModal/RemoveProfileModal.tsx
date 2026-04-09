@@ -64,6 +64,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
       confirmButtonLoading={isRemovingProfile}
       close={closeModal}
       confirmationText={`${removalType} ${profile.title}`}
+      renderInPortal
     >
       <p>{getModalMessage(type, profile.title)}</p>
       <p>

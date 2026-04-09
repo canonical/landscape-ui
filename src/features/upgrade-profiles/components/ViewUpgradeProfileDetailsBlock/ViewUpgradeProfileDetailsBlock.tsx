@@ -14,7 +14,7 @@ const ViewUpgradeProfileDetailsBlock: FC<
     <>
       <InfoGrid.Item
         label="Upgrade type"
-        value={capitalize(profile.upgrade_type)}
+        value={`${capitalize(profile.upgrade_type)} upgrades`}
       />
       <InfoGrid.Item
         label="Auto remove packages"

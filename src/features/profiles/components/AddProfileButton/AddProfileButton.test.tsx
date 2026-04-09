@@ -4,7 +4,6 @@ import { within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AddProfileButton from "./AddProfileButton";
-import { ProfileTypes } from "../../helpers";
 import usePageParams from "@/hooks/usePageParams";
 import useProfiles from "@/hooks/useProfiles";
 
@@ -39,31 +38,25 @@ describe("AddProfileButton", () => {
   });
 
   it("displays specific appearance for scripts header", async () => {
-    renderWithProviders(
-      <AddProfileButton type={ProfileTypes.script} isInsideScriptHeader />,
-    );
+    renderWithProviders(<AddProfileButton isInsideScriptHeader />);
 
-    expect(screen.getByRole("button", { name: /add profile/i })).toHaveIcon(
-      "plus",
-    );
+    expect(
+      screen.getByRole("button", { name: /add profile/i }),
+    ).not.toHaveClass("p-button--positive");
   });
 
   it("opens add side panel for non-WSL type", async () => {
-    renderWithProviders(<AddProfileButton type={ProfileTypes.script} />);
+    renderWithProviders(<AddProfileButton />);
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /add script profile/i }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: /add profile/i }));
 
     expect(openAddSidePanel).toHaveBeenCalledTimes(1);
   });
 
   it("opens confirmation modal for WSL when not acknowledged", async () => {
-    renderWithProviders(<AddProfileButton type={ProfileTypes.wsl} />);
+    renderWithProviders(<AddProfileButton isWsl />);
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /add wsl profile/i }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: /add profile/i }));
 
     expect(
       screen.getByText("WSL profiles is a beta feature"),
@@ -71,7 +64,7 @@ describe("AddProfileButton", () => {
 
     const modal = screen.getByRole("dialog");
     await userEvent.click(
-      within(modal).getByRole("button", { name: /add wsl profile/i }),
+      within(modal).getByRole("button", { name: /add WSL profile/i }),
     );
 
     expect(openAddSidePanel).toHaveBeenCalledTimes(1);
@@ -80,11 +73,9 @@ describe("AddProfileButton", () => {
   it("skips modal for WSL when already acknowledged", async () => {
     localStorage.setItem("_landscape_isWslPopupClosed", "true");
 
-    renderWithProviders(<AddProfileButton type={ProfileTypes.wsl} />);
+    renderWithProviders(<AddProfileButton isWsl />);
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /add wsl profile/i }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: /add profile/i }));
 
     expect(openAddSidePanel).toHaveBeenCalledTimes(1);
     expect(
@@ -97,10 +88,11 @@ describe("AddProfileButton", () => {
       isProfileLimitReached: true,
     } as ReturnType<typeof useProfiles>);
 
-    renderWithProviders(<AddProfileButton type={ProfileTypes.script} />);
+    renderWithProviders(<AddProfileButton />);
 
-    expect(
-      screen.getByRole("button", { name: /add script profile/i }),
-    ).toHaveAttribute("aria-disabled", "true");
+    const button = screen.getByRole("button", { name: /add profile/i });
+
+    expect(button).toHaveClass("p-button--positive");
+    expect(button).toHaveAttribute("aria-disabled", "true");
   });
 });

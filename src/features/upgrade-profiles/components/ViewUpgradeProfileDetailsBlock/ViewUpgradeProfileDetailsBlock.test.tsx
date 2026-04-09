@@ -11,7 +11,7 @@ describe("ViewUpgradeProfileDetailsBlock", () => {
     );
 
     expect(screen.getByText("Upgrade type")).toBeInTheDocument();
-    expect(screen.getByText("Security")).toBeInTheDocument();
+    expect(screen.getByText("Security upgrades")).toBeInTheDocument();
     expect(screen.getByText("Auto remove packages")).toBeInTheDocument();
     expect(screen.getByText("On")).toBeInTheDocument();
   });
@@ -21,7 +21,7 @@ describe("ViewUpgradeProfileDetailsBlock", () => {
       <ViewUpgradeProfileDetailsBlock profile={upgradeProfiles[1]} />,
     );
 
-    expect(screen.getByText("All")).toBeInTheDocument();
+    expect(screen.getByText("All upgrades")).toBeInTheDocument();
     expect(screen.getByText("Off")).toBeInTheDocument();
   });
 });

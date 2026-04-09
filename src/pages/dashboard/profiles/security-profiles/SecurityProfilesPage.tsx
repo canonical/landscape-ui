@@ -8,7 +8,7 @@ import {
   useIsSecurityProfilesLimitReached,
 } from "@/features/security-profiles";
 import usePageParams from "@/hooks/usePageParams";
-import { lazy, type FC } from "react";
+import { lazy, useEffect, type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
 import SidePanel from "@/components/layout/SidePanel";
 import { useBoolean } from "usehooks-ts";
@@ -65,7 +65,10 @@ const SecurityProfilesPage: FC = () => {
   } = useBoolean(false);
 
   const isSecurityProfileLimitReached = useIsSecurityProfilesLimitReached();
-  setIsProfileLimitReached(isSecurityProfileLimitReached);
+
+  useEffect(() => {
+    setIsProfileLimitReached(isSecurityProfileLimitReached);
+  }, [setIsProfileLimitReached, isSecurityProfileLimitReached]);
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -104,12 +107,7 @@ const SecurityProfilesPage: FC = () => {
         title="Security profiles"
         actions={
           securityProfilesCount
-            ? [
-                <AddProfileButton
-                  type={ProfileTypes.security}
-                  key="add-security-profile"
-                />,
-              ]
+            ? [<AddProfileButton key="add-security-profile" />]
             : undefined
         }
       />

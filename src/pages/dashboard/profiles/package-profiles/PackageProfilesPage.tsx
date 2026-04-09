@@ -7,8 +7,9 @@ import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
@@ -44,6 +45,11 @@ const PackageProfilesPage: FC = () => {
   const { getPackageProfilesQuery } = usePackageProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
+  const { setIsProfileLimitReached } = useProfiles();
+
+  useEffect(() => {
+    setIsProfileLimitReached(false);
+  }, [setIsProfileLimitReached]);
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
@@ -65,12 +71,7 @@ const PackageProfilesPage: FC = () => {
         title="Package profiles"
         actions={
           packageProfiles.length
-            ? [
-                <AddProfileButton
-                  type={ProfileTypes.package}
-                  key="add-package-profile"
-                />,
-              ]
+            ? [<AddProfileButton key="add-package-profile" />]
             : undefined
         }
       />

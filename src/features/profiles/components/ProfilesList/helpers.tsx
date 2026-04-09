@@ -62,12 +62,7 @@ const getStatus = (profile: ScriptProfile | SecurityProfile) => {
   return { label: "Active", icon: "status-succeeded-small" };
 };
 
-type ColumnNames =
-  | "name"
-  | "accessGroup"
-  | "associated"
-  | "description"
-  | "actions";
+type ColumnNames = "name" | "accessGroup" | "associated" | "actions";
 
 export const getGeneralColumns = (
   type: ProfileTypes,
@@ -116,19 +111,6 @@ export const getGeneralColumns = (
       <AssociatedInstancesCell type={type} profile={profile} />
     ),
   },
-  description: {
-    accessor: "description",
-    Header: "Description",
-    className: "description-cell",
-    meta: {
-      ariaLabel: ({ original: profile }) =>
-        profile.description
-          ? `"${profile.title}" profile description`
-          : `No description for "${profile.title}" profile`,
-    },
-    Cell: ({ row: { original: profile } }: CellProps<Profile>) =>
-      profile.description || <NoData />,
-  },
   actions: {
     ...LIST_ACTIONS_COLUMN_PROPS,
     meta: {
@@ -141,25 +123,23 @@ export const getGeneralColumns = (
   },
 });
 
-export const getStatusColumn = (): Column<Profile>[] => [
-  {
-    Header: "Status",
-    accessor: (row) => (isSecurityProfile(row) ? "status" : "archived"),
-    meta: {
-      ariaLabel: ({ original: profile }) => `"${profile.title}" profile status`,
-    },
-    getCellIcon: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isSecurityProfile(profile) || isScriptProfile(profile)) {
-        return getStatus(profile).icon;
-      }
-    },
-    Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isSecurityProfile(profile) || isScriptProfile(profile)) {
-        return getStatus(profile).label;
-      }
-    },
+export const getStatusColumn = (): Column<Profile> => ({
+  Header: "Status",
+  accessor: (row) => (isSecurityProfile(row) ? "status" : "archived"),
+  meta: {
+    ariaLabel: ({ original: profile }) => `"${profile.title}" profile status`,
   },
-];
+  getCellIcon: ({ row: { original: profile } }: CellProps<Profile>) => {
+    if (isSecurityProfile(profile) || isScriptProfile(profile)) {
+      return getStatus(profile).icon;
+    }
+  },
+  Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
+    if (isSecurityProfile(profile) || isScriptProfile(profile)) {
+      return getStatus(profile).label;
+    }
+  },
+});
 
 export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
   {
@@ -293,34 +273,30 @@ export const getScriptColumns = (): Column<Profile>[] => [
   },
 ];
 
-export const getRebootColumn = (): Column<Profile>[] => [
-  {
-    accessor: "next_run",
-    Header: "Next restart",
-    meta: {
-      ariaLabel: ({ original: profile }) =>
-        `"${profile.title}" profile next restart`,
-    },
-    Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isRebootProfile(profile)) {
-        return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
-      }
-    },
+export const getRebootColumn = (): Column<Profile> => ({
+  accessor: "next_run",
+  Header: "Next restart",
+  meta: {
+    ariaLabel: ({ original: profile }) =>
+      `"${profile.title}" profile next restart`,
   },
-];
+  Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
+    if (isRebootProfile(profile)) {
+      return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
+    }
+  },
+});
 
-export const getRemovalColumn = (): Column<Profile>[] => [
-  {
-    accessor: "days_without_exchange",
-    Header: "Removal timeframe",
-    meta: {
-      ariaLabel: ({ original: profile }) =>
-        `"${profile.title}" profile removal timeframe`,
-    },
-    Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isRemovalProfile(profile)) {
-        return `${profile.days_without_exchange} days`;
-      }
-    },
+export const getRemovalColumn = (): Column<Profile> => ({
+  accessor: "days_without_exchange",
+  Header: "Removal timeframe",
+  meta: {
+    ariaLabel: ({ original: profile }) =>
+      `"${profile.title}" profile removal timeframe`,
   },
-];
+  Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
+    if (isRemovalProfile(profile)) {
+      return `${profile.days_without_exchange} days`;
+    }
+  },
+});

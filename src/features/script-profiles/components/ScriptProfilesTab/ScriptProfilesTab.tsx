@@ -1,5 +1,5 @@
 import { useGetScripts } from "@/features/scripts";
-import { lazy, type FC } from "react";
+import { lazy, useEffect, type FC } from "react";
 import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
 import NoScriptsEmptyState from "../NoScriptsEmptyState";
 import { ProfilesContainer, ProfileTypes } from "@/features/profiles";
@@ -51,16 +51,18 @@ const ScriptProfilesTab: FC = () => {
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
 
-  if (!isGettingActiveScripts && !activeScriptsCount) {
-    return <NoScriptsEmptyState />;
-  }
-
   const isScriptProfileLimitReached =
     !!scriptProfileLimits &&
     !!activeScriptProfilesCount &&
     activeScriptProfilesCount >= scriptProfileLimits.max_num_profiles;
 
-  setIsProfileLimitReached(isScriptProfileLimitReached);
+  useEffect(() => {
+    setIsProfileLimitReached(isScriptProfileLimitReached);
+  }, [setIsProfileLimitReached, isScriptProfileLimitReached]);
+
+  if (!isGettingActiveScripts && !activeScriptsCount) {
+    return <NoScriptsEmptyState />;
+  }
 
   return (
     <ProfilesProvider>

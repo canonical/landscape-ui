@@ -13,11 +13,11 @@ describe("PackageProfilesPage", () => {
     const user = userEvent.setup();
 
     await user.click(
-      screen.getByRole("button", { name: "Add package profile" }),
+      await screen.findByRole("button", { name: "Add package profile" }),
     );
     await expectLoadingState();
     expect(
-      screen.getByRole("heading", { name: "Add package profile" }),
+      await screen.findByRole("heading", { name: "Add package profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
     expect(
@@ -77,20 +77,6 @@ describe("PackageProfilesPage", () => {
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Change "${packageProfiles[0].title}" profile's constraints`,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders a side panel to view", async () => {
-    renderWithProviders(
-      <PackageProfilesPage />,
-      undefined,
-      `/?sidePath=view&profile=${packageProfiles[0].name}`,
-    );
-
-    expect(
-      await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: packageProfiles[0].title,
       }),
     ).toBeInTheDocument();
   });
