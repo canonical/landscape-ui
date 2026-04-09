@@ -30,7 +30,7 @@ import {
 
 interface EditScriptFormProps {
   readonly script: Script;
-  readonly onBack: () => void;
+  readonly onBack?: () => void;
 }
 
 const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
