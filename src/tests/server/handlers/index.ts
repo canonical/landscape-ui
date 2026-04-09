@@ -42,6 +42,7 @@ import upgradeProfile from "./upgradeProfile";
 import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
+import publicationTargets from "./publicationTargets";
 import wsl from "./wsl";
 import wslProfiles from "./wslProfiles";
 
@@ -89,6 +90,7 @@ export default [
   ...user,
   ...userSettings,
   ...usn,
+  ...publicationTargets,
   ...wsl,
   ...wslProfiles,
   ...features,
