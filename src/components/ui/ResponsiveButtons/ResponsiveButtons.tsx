@@ -99,9 +99,11 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
 
         collapsed.push({
           key: `action-${index}`,
-          children: textFromNode(el) || `Action ${index + 1}`,
+          children:
+            el.props.children || textFromNode(el) || `Action ${index + 1}`,
           onClick: el.props.onClick,
           disabled: el.props.disabled,
+          hasIcon: el.props.hasIcon,
         });
 
         return;
@@ -185,6 +187,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
                         }
                       }}
                       disabled={item.disabled}
+                      hasIcon={item.hasIcon}
                     >
                       {item.children}
                     </Button>

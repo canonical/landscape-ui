@@ -199,7 +199,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const allInstancesHaveToken = selectedInstances.every(
+  const allInstancesHaveToken = selectedInstances.length && selectedInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
@@ -208,16 +208,25 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const proServicesLinks = [
     allInstancesHaveToken
       ? {
-          children: <span>Replace token</span>,
+          children: <>
+            <Icon name="change-version" />
+            <span>Replace token</span>
+          </>,
           onClick: handleReplaceToken,
         }
       : {
-          children: <span>Attach token</span>,
+          children: <>
+            <Icon name="private-key" />
+            <span>Attach token</span>
+          </>,
           onClick: handleAttachToken,
         },
     isFeatureEnabled("ubuntu_pro_licensing")
       ? {
-          children: <span>Detach token</span>,
+          children: <>
+            <Icon name="disconnect" />
+            <span>Detach token</span>
+          </>,
           onClick: openDetachModal,
         }
       : {},
@@ -230,7 +239,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         buttons={[
           <Button
             key="shutdown-instances"
-            className="has-icon"
+            hasIcon
             type="button"
             disabled={0 === selectedInstances.length || isGettingInstances}
             onClick={openShutdownModal}
@@ -255,6 +264,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
               disabled={0 === selectedInstances.length}
+              hasIcon
             >
               {proServicesLinks[0].children}
             </Button>
@@ -274,6 +284,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <Button
               key="report-view"
               type="button"
+              hasIcon
               onClick={handleReportView}
               disabled={0 === selectedInstances.length}
             >
