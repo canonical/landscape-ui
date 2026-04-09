@@ -43,6 +43,8 @@ describe("WelcomePopup", () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(localStorage.getItem("_landscape_isWelcomePopupClosed")).toBe("true");
+    expect(localStorage.getItem("_landscape_isWelcomePopupClosed")).toBe(
+      "true",
+    );
   });
 });
