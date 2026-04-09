@@ -71,6 +71,7 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
         ))}
         collapseFrom={"xs"}
         alwaysCollapse={buttons.length > 3}
+        menuPosition="left"
       />
 
       <RemoveProfileModal

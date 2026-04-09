@@ -20,7 +20,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
 
   const settings = isInsideScriptHeader
     ? { className: "u-no-margin--bottom" }
-    : { appearance: "positive" };
+    : { appearance: "positive", light: true };
 
   const { value: isModalRead, setTrue: readModal } = useBoolean(
     !!localStorage.getItem(LOCAL_STORAGE_ITEM),
@@ -62,7 +62,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
         hasIcon
         disabled={isProfileLimitReached}
       >
-        <Icon name="plus" />
+        <Icon name="plus" light={settings.light}/>
         <span>Add profile</span>
       </Button>
 
