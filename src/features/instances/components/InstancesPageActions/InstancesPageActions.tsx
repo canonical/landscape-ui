@@ -199,34 +199,42 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const allInstancesHaveToken = selectedInstances.length && selectedInstances.every(
-    (instance) =>
-      instance.ubuntu_pro_info?.result === "success" &&
-      instance.ubuntu_pro_info.attached,
-  );
+  const hasInstanceWithoutToken =
+    !selectedInstances.length ||
+    selectedInstances.some(
+      (instance) =>
+        !instance.ubuntu_pro_info?.attached ||
+        instance.ubuntu_pro_info.result !== "success",
+    );
 
   const proServicesLinks = [
-    allInstancesHaveToken
+    hasInstanceWithoutToken
       ? {
-          children: <>
-            <Icon name="change-version" />
-            <span>Replace token</span>
-          </>,
-          onClick: handleReplaceToken,
+          children: (
+            <>
+              <Icon name="private-key" />
+              <span>Attach token</span>
+            </>
+          ),
+          onClick: handleAttachToken,
         }
       : {
-          children: <>
-            <Icon name="private-key" />
-            <span>Attach token</span>
-          </>,
-          onClick: handleAttachToken,
+          children: (
+            <>
+              <Icon name="change-version" />
+              <span>Replace token</span>
+            </>
+          ),
+          onClick: handleReplaceToken,
         },
     isFeatureEnabled("ubuntu_pro_licensing")
       ? {
-          children: <>
-            <Icon name="disconnect" />
-            <span>Detach token</span>
-          </>,
+          children: (
+            <>
+              <Icon name="disconnect" />
+              <span>Detach token</span>
+            </>
+          ),
           onClick: openDetachModal,
         }
       : {},
