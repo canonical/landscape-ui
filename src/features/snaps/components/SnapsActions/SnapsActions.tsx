@@ -81,6 +81,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               onClick={() => {
                 handleEditSnap(EditSnapType.Switch);
               }}
+              hasIcon
             >
               <Icon name="fork" />
               <span>Switch channel</span>
@@ -94,6 +95,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             onClick={() => {
               handleEditSnap(EditSnapType.Uninstall);
             }}
+            hasIcon
           >
             <Icon name={ICONS.delete} />
             <span>Uninstall</span>
@@ -107,6 +109,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               onClick={() => {
                 handleEditSnap(EditSnapType.Hold);
               }}
+              hasIcon
             >
               <Icon name="pause" />
               <span>Hold</span>
@@ -121,6 +124,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               onClick={() => {
                 handleEditSnap(EditSnapType.Unhold);
               }}
+              hasIcon
             >
               <Icon name="play" />
               <span>Unhold</span>
@@ -134,6 +138,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             onClick={() => {
               handleEditSnap(EditSnapType.Refresh);
             }}
+            hasIcon
           >
             <Icon name="change-version" />
             <span>Refresh</span>

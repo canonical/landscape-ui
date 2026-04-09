@@ -8,6 +8,7 @@ export interface ButtonLikeProps {
   className?: string;
   "aria-label"?: string;
   title?: string;
+  hasIcon?: boolean;
 }
 
 export interface ContextualMenuProps {
