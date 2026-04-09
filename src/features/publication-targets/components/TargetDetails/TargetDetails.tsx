@@ -1,11 +1,11 @@
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon, ModularTable } from "@canonical/react-components";
-import type { CellProps, Column } from "react-table";
-import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useMemo } from "react";
-import type { Publication, PublicationTargetWithPublications } from "../../types";
+import { Button, Icon } from "@canonical/react-components";
+import type { FC } from "react";
+import { lazy, Suspense } from "react";
+import type { PublicationTargetWithPublications } from "../../types";
+import PublicationsTable from "../PublicationsTable/PublicationsTable";
 
 const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
 const RemoveTargetForm = lazy(async () => import("../RemoveTargetForm/RemoveTargetForm"));
@@ -28,34 +28,12 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
   const handleRemoveTarget = (): void => {
     setSidePanelContent(
-      `Remove "${target.display_name ?? target.name}"`,
+      `Remove ${target.display_name}`,
       <Suspense fallback={<LoadingState />}>
         <RemoveTargetForm target={target} />
       </Suspense>,
     );
   };
-
-  const publicationsColumns = useMemo<Column<Publication>[]>(
-    () => [
-      {
-        accessor: "display_name",
-        Header: "Publication",
-      },
-      {
-        accessor: "mirror",
-        Header: "Source",
-        Cell: ({ value }: CellProps<Publication>): ReactNode =>
-          (value as string | undefined) ?? "—",
-      },
-      {
-        accessor: "distribution",
-        Header: "Distribution",
-        Cell: ({ value }: CellProps<Publication>): ReactNode =>
-          (value as string | undefined) ?? "—",
-      },
-    ],
-    [],
-  );
 
   const s3Fields = target.s3
     ? {
@@ -118,10 +96,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
       {target.publications.length > 0 && (
         <>
           <h5>USED IN</h5>
-          <ModularTable
-            columns={publicationsColumns}
-            data={target.publications}
-          />
+          <PublicationsTable publications={target.publications} />
         </>
       )}
     </>

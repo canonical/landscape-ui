@@ -7,7 +7,8 @@ import {
   PublicationTargetContainer,
   usePublicationTargets,
 } from "@/features/publication-targets";
-import type { FC } from "react";  
+import type { Publication, PublicationTargetWithPublications } from "@/features/publication-targets";
+import type { FC } from "react";
 
 const PublicationTargetsPage: FC = () => {
   const { getPublicationTargetsQuery } = usePublicationTargets();
@@ -17,9 +18,12 @@ const PublicationTargetsPage: FC = () => {
     return <LoadingState />;
   }
 
-  const targets = (
+  const targets: PublicationTargetWithPublications[] = (
     publicationTargetsResult.data?.data.publication_targets ?? []
-  ).map((target) => ({ ...target, publications: target.publications ?? [] }));
+  ).map((target) => ({
+    ...target,
+    publications: (target.publications as Publication[] | undefined) ?? [],
+  }));
 
   return (
     <PageMain>

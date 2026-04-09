@@ -5,9 +5,283 @@
 - **Objective:** Add a Publication Targets page nested under the Repositories section, enabling users to list, create, edit, and delete publication targets (S3 or Swift storage destinations). Routes to `/repositories/publication-targets` using the existing `REPOSITORIES_ROUTES.publicationTargets` route.
 - **Location:** `src/features/publication-targets/`
 
-> **Note:** The `PublicationTargetsPage` component stub already exists at  
-> `src/pages/dashboard/repositories/publication-targets/PublicationTargetsPage.tsx`  
-> and is already wired into routing and navigation. It currently renders a copy-pasted APT sources page and must be replaced.
+> **Status:** Core implementation is complete. The page is functional with list, add, edit, remove, and details flows. Swift edit support is pending (EditTargetForm is currently S3-only).
+
+---
+
+## 2. API Design
+
+The backend is a Connect-RPC (gRPC-JSON transcoding) service. All calls go through the v2 API base URL (`VITE_API_URL` → `/api/v2/`). Endpoint paths follow the resource name pattern `publicationTargets/{id}`.
+
+### Endpoints
+
+Proto HTTP transcoding (`body: "publication_target"`) means POST and PATCH bodies are the `PublicationTarget` message directly — **not** nested under a wrapper key.
+
+| Method | Path | Body | Purpose |
+|---|---|---|---|
+| `GET` | `publicationTargets` | — | List all publication targets (response includes embedded publications via `PublicationTargetWithPublications`) |
+| `POST` | `publicationTargets` | `PublicationTarget` fields (flat) | Create a new publication target |
+| `GET` | `publicationTargets/{id}` | — | Get a single publication target |
+| `PATCH` | `publicationTargets/{id}` | `PublicationTarget` fields + `name` (flat) | Update a publication target |
+| `DELETE` | `publicationTargets/{id}` | — | Delete a publication target |
+
+`{id}` is the UUID segment of the resource `name` (e.g. `name = "publicationTargets/uuid"` → path `publicationTargets/uuid`).
+
+> **Note:** There is no separate `GET publications` endpoint usage. Publications are embedded in the `GET publicationTargets` response as `publications: Publication[]` on each target object. The `PublicationTargetWithPublications` extends `PublicationTarget` with this field.
+
+### TypeScript Interfaces (`src/features/publication-targets/types/`)
+
+**`PublicationTarget.d.ts`**
+```ts
+export interface S3Target {
+  region: string;
+  bucket: string;
+  endpoint?: string;
+  aws_access_key_id: string;
+  aws_secret_access_key: string;
+  prefix?: string;
+  acl?: string;
+  storage_class?: string;
+  encryption_method?: string;
+  plus_workaround?: boolean;
+  disable_multi_del?: boolean;
+  force_sig_v2?: boolean;
+  debug?: boolean;
+}
+
+export interface SwiftTarget {
+  container: string;
+  username: string;
+  password: string;
+  prefix?: string;
+  auth_url?: string;
+  tenant?: string;
+  tenant_id?: string;
+  domain?: string;
+  domain_id?: string;
+  tenant_domain?: string;
+  tenant_domain_id?: string;
+}
+
+export interface PublicationTarget extends Record<string, unknown> {
+  name: string;                      // e.g. "publicationTargets/{uuid}"
+  publication_target_id: string;     // UUID
+  display_name: string;
+  s3?: S3Target;
+  swift?: SwiftTarget;
+}
+```
+
+**`Publication.d.ts`**
+```ts
+import type { PublicationTarget } from "./PublicationTarget";
+
+export interface Publication extends Record<string, unknown> {
+  name: string;
+  publication_id: string;
+  display_name: string;
+  publication_target: string;  // resource name, e.g. "publicationTargets/{uuid}"
+  mirror?: string;             // resource name of the source mirror
+  distribution?: string;
+}
+
+export interface PublicationTargetWithPublications extends PublicationTarget {
+  publications: Publication[];
+}
+```
+
+### Hooks (`src/features/publication-targets/hooks/`)
+
+**[Implemented] `usePublicationTargets` (`usePublicationTargets.tsx`)**  
+Main consolidated CRUD hook using the `QueryFnType` pattern (same pattern as `useRepositoryProfiles`). Returned queries/mutations:
+
+- `getPublicationTargetsQuery(params?, config?)` — `GET publicationTargets`; response: `{ publication_targets: PublicationTargetWithPublications[] }`
+- `createPublicationTargetQuery` — `POST publicationTargets`; body: flat `PublicationTarget` fields
+- `editPublicationTargetQuery` — `PATCH publicationTargets/{name}`; body: flat fields including `name`
+- `removePublicationTargetQuery` — `DELETE publicationTargets/{name}`
+
+All mutations invalidate `["publicationTargets"]` on success.
+
+> **Note:** There is no `useGetPublications` hook. Publications are embedded in the target response and typed via `PublicationTargetWithPublications`.
+
+---
+
+## 3. Component Hierarchy
+
+```
+src/features/publication-targets/
+├── hooks/
+│   ├── index.ts                                 # exports usePublicationTargets
+│   ├── usePublicationTargets.tsx                # ✅ full CRUD; QueryFnType pattern
+│   ├── useGetPublicationTargets.tsx             # ⚠️  standalone simple hook (may be redundant)
+│   ├── useCreatePublicationTarget.tsx           # ⚠️  standalone mutation (may be redundant)
+│   └── useDeleteTargetModal.tsx                 # 🗑️  dead code; safe to delete
+├── components/
+│   ├── PublicationTargetContainer/
+│   │   └── PublicationTargetContainer.tsx       # ✅ Routes to empty state or PublicationTargetList
+│   ├── PublicationTargetList/
+│   │   └── PublicationTargetList.tsx            # ✅ Table; columns: Name, Type, Publications count, Actions
+│   ├── PublicationTargetListActions/
+│   │   └── PublicationTargetListActions.tsx     # ✅ 3-dot ListActions; View details / Edit / Remove
+│   ├── TargetDetails/
+│   │   └── TargetDetails.tsx                    # ✅ Side panel details view; Edit + Remove buttons at top;
+│   │                                            #    DETAILS section (InfoGrid); USED IN section (PublicationsTable)
+│   ├── PublicationsTable/
+│   │   └── PublicationsTable.tsx                # ✅ Shared table: Publication / Source / Distribution;
+│   │                                            #    optional pageSize prop enables SidePanelTablePagination
+│   ├── NewPublicationTargetForm/
+│   │   ├── NewPublicationTargetForm.tsx         # ✅ Formik form; S3 and Swift fields
+│   │   └── constants.ts                         # ✅ INITIAL_VALUES, VALIDATION_SCHEMA
+│   ├── EditTargetForm/
+│   │   └── EditTargetForm.tsx                   # ✅ Pre-populated Formik form; ⚠️ currently S3-only
+│   ├── RemoveTargetForm/
+│   │   └── RemoveTargetForm.tsx                 # ✅ Side panel confirmation form; shows PublicationsTable
+│   │                                            #    of associated publications; Cancel + Remove buttons
+│   └── PublicationTargetAddButton/
+│       └── PublicationTargetAddButton.tsx       # ✅ Button; opens NewPublicationTargetForm in side panel
+├── types/
+│   ├── PublicationTarget.d.ts
+│   ├── Publication.d.ts                         # also defines PublicationTargetWithPublications
+│   └── index.d.ts
+└── index.ts                                     # Barrel exports
+```
+
+### Table Columns (`PublicationTargetList`)
+
+| Column | Source | Notes |
+|---|---|---|
+| Name | `display_name` | Plain text |
+| Type | derived from presence of `s3` / `swift` key | `"S3"`, `"Swift"`, or `"—"` |
+| Publications | `target.publications.length` | e.g. `"2"` from embedded array |
+| Actions | `PublicationTargetListActions` | 3-dot menu via `ListActions` component |
+
+### Actions (`PublicationTargetListActions`)
+
+All three actions open the **right-side side panel** via `setSidePanelContent` — no modals are used.
+
+| Action | Opens |
+|---|---|
+| **View details** | `TargetDetails` side panel |
+| **Edit** | `EditTargetForm` side panel |
+| **Remove** | `RemoveTargetForm` side panel |
+
+> **Design decision:** Original plan specified modals for details and removal. Implementation uses side panels exclusively for consistency with the rest of the application. `TargetDetails` also exposes Edit and Remove buttons that open the same sub-panels.
+
+### `TargetDetails` Layout
+
+1. Edit and Remove buttons (segmented control at top)
+2. `<hr />` divider
+3. **DETAILS** section via `InfoGrid` — Name in full row; S3 or Swift fields in two-column grid
+4. **USED IN** section — `PublicationsTable` (no pagination in details view; full list)
+
+### `RemoveTargetForm` Layout
+
+1. `<hr />` divider at top
+2. If target has associated publications: explanatory text + `PublicationsTable` with `pageSize={5}`
+3. Warning text ("This action is irreversible")
+4. `<hr />` divider
+5. Right-aligned button row: Cancel + Remove target (negative, delete icon)
+
+---
+
+## 4. State & Logic
+
+### Forms
+
+All forms use Formik + Yup.
+
+#### `NewPublicationTargetForm` — `INITIAL_VALUES` and `VALIDATION_SCHEMA`
+
+See `src/features/publication-targets/components/NewPublicationTargetForm/constants.ts`.
+
+Required S3 fields: `region`, `bucket`, `aws_access_key_id`, `aws_secret_access_key`.  
+Required Swift fields: `container`, `username`, `password`.
+
+#### `EditTargetForm` — current state
+
+Pre-populated from the target passed as prop. Currently **S3-only** — Swift edit fields are not yet implemented. The form submits a `PATCH` with the full S3 payload.
+
+> **Pending work:** Add Swift field support to `EditTargetForm`, matching the structure of `NewPublicationTargetForm`.
+
+### Publications Data
+
+Publications are **not fetched separately**. They arrive embedded in `GET publicationTargets` as `publications: Publication[]` on each target. `PublicationTargetWithPublications` (from `types/Publication.d.ts`) is the runtime type used throughout components.
+
+The `PublicationsPage.tsx` maps the raw response:
+```ts
+const targets = (
+  publicationTargetsResult.data?.data.publication_targets ?? []
+).map((target) => ({ ...target, publications: target.publications ?? [] }));
+```
+
+### Global Context
+
+No new context. Uses `useSidePanel()`, `useNotify()`, `useDebug()` from shared hooks.
+
+---
+
+## 5. Testing Status
+
+### MSW Handlers (`src/tests/server/handlers/publicationTargets.ts`)
+
+| Endpoint | Status |
+|---|---|
+| `GET publicationTargets` | ✅ Returns `publicationTargetsWithPublications` (3 targets; prod-s3-us-east has 3 publications) |
+| `POST publicationTargets` | ✅ Returns 201 with generated name/id |
+| `DELETE publicationTargets/:id` | ✅ Returns 204 |
+| `PATCH publicationTargets/:id` | ✅ Returns updated target body |
+
+### Mock Data (`src/tests/mocks/publication-targets.ts`)
+
+Exports:
+- `publications` — 3 `Publication` objects (Jammy, Noble, Focal), all linked to `prod-s3-us-east`
+- `publicationTargets` — 3 `PublicationTarget` objects (2 S3, 1 Swift)
+- `publicationTargetsWithPublications` — same 3 targets with embedded publications
+
+### Unit Tests
+
+| File | Status |
+|---|---|
+| `PublicationTargetListActions.test.tsx` | ✅ Exists |
+| All other component/hook tests | ❌ Not yet written |
+
+> **Pending work:** Unit tests for hooks, `PublicationTargetList`, `TargetDetails`, `NewPublicationTargetForm`, `EditTargetForm`, `RemoveTargetForm`, and `PublicationsTable`.
+
+---
+
+## 6. Routing & Navigation (Already Wired)
+
+The following are already in place and **must not be changed**:
+
+- Route path: `REPOSITORIES_PATHS.publicationTargets = "publication-targets"` in `src/libs/routes/repositories.ts`
+- Route entry: `REPOSITORIES_ROUTES.publicationTargets` (same file)
+- Lazy page load: `PublicationTargetsPage` in `src/routes/elements.tsx`
+- Dashboard route: `src/routes/DashboardRoutes.tsx`
+- Navigation link: `src/templates/dashboard/Navigation/constants.ts`
+
+---
+
+## 7. Pending Work
+
+| Item | Priority | Notes |
+|---|---|---|
+| Swift edit support in `EditTargetForm` | High | Currently S3-only; add Swift field block matching `NewPublicationTargetForm` |
+| Unit tests (all components and hooks) | High | See testing plan in original spec; `PublicationTargetListActions.test.tsx` exists |
+| Delete `useDeleteTargetModal.tsx` | Low | Dead code; replaced by `RemoveTargetForm` |
+| Consolidate/remove `useGetPublicationTargets` and `useCreatePublicationTarget` | Low | Redundant with `usePublicationTargets`; remove after confirming no references |
+
+---
+
+## 8. Implementation Notes / Decisions
+
+| Decision | Rationale |
+|---|---|
+| Side panels instead of modals for details/removal | Consistent with application-wide pattern in other features (scripts, mirrors, etc.) |
+| Publications embedded in target response | Avoids a secondary `GET publications` request; backend already returns associated publications with each target |
+| Single `usePublicationTargets` hook for all CRUD | Follows `useRepositoryProfiles` pattern; `QueryFnType` enables param passing while keeping the hook composable |
+| `PublicationsTable` shared component | Both `TargetDetails` and `RemoveTargetForm` render the same 3-column publications table; extracted to avoid duplication |
+| `PublicationTargetContainer` added | Separates data-fetching concerns from the page; mirrors pattern in other feature areas |
+
 
 ---
 

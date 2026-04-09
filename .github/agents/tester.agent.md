@@ -1,7 +1,7 @@
 ---
 name: tester
 description: QA Specialist for Landscape UI. Generates Vitest integration tests and MSW handlers.
-tools: [ "code_search", "readfile", "ls", "terminal" ]
+tools: [execute/runNotebookCell, execute/testFailure, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/createAndRunTask, execute/runInTerminal, execute/runTests, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/terminalSelection, read/terminalLastCommand, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, browser/openBrowserPage, todo]
 ---
 
 # Role
@@ -14,6 +14,7 @@ You must strictly follow the patterns established in the repository:
 2.  **Async States:** Use `await expectLoadingState()` from `@/tests/helpers` to handle React Query loading transitions.
 3.  **Data Mocking:** - Pull mock data from existing files in `src/tests/mocks/`.
     - Use `assert()` to narrow types for IDs or required fields before running test logic.
+    - If new mock data is needed, create a new file in `src/tests/mocks/` and export the necessary structures.
 4.  **Interactions:** Always use `userEvent.setup()` and async user interactions (e.g., `await user.click()`).
 5.  **Assertions:**
     - Use `screen` for queries.
