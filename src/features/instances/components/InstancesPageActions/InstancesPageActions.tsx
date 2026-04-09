@@ -360,16 +360,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
         toggleDisabled={0 === selectedInstances.length}
         dropdownProps={{ style: { zIndex: 10 } }}
       />
-      <RestartModal
-        close={closeRebootModal}
-        instances={selectedInstances}
-        isOpen={rebootModalOpen}
-      />
-      <ShutDownModal
-        close={closeShutdownModal}
-        instances={selectedInstances}
-        isOpen={shutdownModalOpen}
-      />
+      {rebootModalOpen && (
+        <RestartModal close={closeRebootModal} instances={selectedInstances} />
+      )}
+      {shutdownModalOpen && (
+        <ShutDownModal
+          close={closeShutdownModal}
+          instances={selectedInstances}
+        />
+      )}
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}

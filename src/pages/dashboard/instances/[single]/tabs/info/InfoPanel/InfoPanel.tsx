@@ -546,17 +546,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
         </Blocks.Item>
       </Blocks>
 
-      <RestartModal
-        instances={[instance]}
-        isOpen={isRestartModalOpen}
-        close={closeRestartModal}
-      />
+      {isRestartModalOpen && (
+        <RestartModal instances={[instance]} close={closeRestartModal} />
+      )}
 
-      <ShutDownModal
-        instances={[instance]}
-        isOpen={isShutDownModalOpen}
-        close={closeShutDownModal}
-      />
+      {isShutDownModalOpen && (
+        <ShutDownModal instances={[instance]} close={closeShutDownModal} />
+      )}
 
       {disassociateModalOpen && (
         <ConfirmationModal

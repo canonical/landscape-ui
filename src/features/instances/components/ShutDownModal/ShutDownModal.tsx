@@ -21,14 +21,9 @@ import { pluralizeArray } from "@/utils/_helpers";
 interface ShutDownModalProps {
   readonly close: () => void;
   readonly instances: Instance[];
-  readonly isOpen: boolean;
 }
 
-const ShutDownModal: FC<ShutDownModalProps> = ({
-  instances,
-  isOpen,
-  close,
-}) => {
+const ShutDownModal: FC<ShutDownModalProps> = ({ instances, close }) => {
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -76,38 +71,36 @@ const ShutDownModal: FC<ShutDownModalProps> = ({
     },
   });
 
-  if (isOpen) {
-    return (
-      <>
-        <ConfirmationModal
-          close={close}
-          title={`Shut down ${title}`}
-          confirmButtonLabel="Shut down"
-          confirmButtonLoading={isShuttingDownInstances}
-          onConfirm={() => {
-            formik.handleSubmit();
-          }}
-          renderInPortal
-        >
-          <CheckboxInput
-            label="Deliver as soon as possible"
-            {...formik.getFieldProps("deliverImmediately")}
-            checked={formik.values.deliverImmediately}
-          />
-          <Input
-            type="datetime-local"
-            label="Schedule time"
-            labelClassName="u-off-screen"
-            placeholder="Scheduled time"
-            {...formik.getFieldProps("deliver_after")}
-            disabled={formik.values.deliverImmediately}
-            error={getFormikError(formik, "deliver_after")}
-          />
-          <p>This will shut down {title}.</p>
-        </ConfirmationModal>
-      </>
-    );
-  }
+  return (
+    <>
+      <ConfirmationModal
+        close={close}
+        title={`Shut down ${title}`}
+        confirmButtonLabel="Shut down"
+        confirmButtonLoading={isShuttingDownInstances}
+        onConfirm={() => {
+          formik.handleSubmit();
+        }}
+        renderInPortal
+      >
+        <CheckboxInput
+          label="Deliver as soon as possible"
+          {...formik.getFieldProps("deliverImmediately")}
+          checked={formik.values.deliverImmediately}
+        />
+        <Input
+          type="datetime-local"
+          label="Schedule time"
+          labelClassName="u-off-screen"
+          placeholder="Scheduled time"
+          {...formik.getFieldProps("deliver_after")}
+          disabled={formik.values.deliverImmediately}
+          error={getFormikError(formik, "deliver_after")}
+        />
+        <p>This will shut down {title}.</p>
+      </ConfirmationModal>
+    </>
+  );
 };
 
 export default ShutDownModal;

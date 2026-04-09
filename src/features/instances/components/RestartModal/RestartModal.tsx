@@ -20,10 +20,9 @@ import { pluralizeArray } from "@/utils/_helpers";
 interface RestartModalProps {
   readonly close: () => void;
   readonly instances: Instance[];
-  readonly isOpen: boolean;
 }
 
-const RestartModal: FC<RestartModalProps> = ({ instances, isOpen, close }) => {
+const RestartModal: FC<RestartModalProps> = ({ instances, close }) => {
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -71,38 +70,36 @@ const RestartModal: FC<RestartModalProps> = ({ instances, isOpen, close }) => {
     },
   });
 
-  if (isOpen) {
-    return (
-      <>
-        <ConfirmationModal
-          close={close}
-          title={`Restart ${title}`}
-          confirmButtonLabel="Restart"
-          confirmButtonLoading={isRestartingInstances}
-          onConfirm={() => {
-            formik.handleSubmit();
-          }}
-          renderInPortal
-        >
-          <CheckboxInput
-            label="Deliver as soon as possible"
-            {...formik.getFieldProps("deliverImmediately")}
-            checked={formik.values.deliverImmediately}
-          />
-          <Input
-            type="datetime-local"
-            label="Schedule time"
-            labelClassName="u-off-screen"
-            placeholder="Scheduled time"
-            {...formik.getFieldProps("deliver_after")}
-            disabled={formik.values.deliverImmediately}
-            error={getFormikError(formik, "deliver_after")}
-          />
-          <p>This will restart {title}.</p>
-        </ConfirmationModal>
-      </>
-    );
-  }
+  return (
+    <>
+      <ConfirmationModal
+        close={close}
+        title={`Restart ${title}`}
+        confirmButtonLabel="Restart"
+        confirmButtonLoading={isRestartingInstances}
+        onConfirm={() => {
+          formik.handleSubmit();
+        }}
+        renderInPortal
+      >
+        <CheckboxInput
+          label="Deliver as soon as possible"
+          {...formik.getFieldProps("deliverImmediately")}
+          checked={formik.values.deliverImmediately}
+        />
+        <Input
+          type="datetime-local"
+          label="Schedule time"
+          labelClassName="u-off-screen"
+          placeholder="Scheduled time"
+          {...formik.getFieldProps("deliver_after")}
+          disabled={formik.values.deliverImmediately}
+          error={getFormikError(formik, "deliver_after")}
+        />
+        <p>This will restart {title}.</p>
+      </ConfirmationModal>
+    </>
+  );
 };
 
 export default RestartModal;
