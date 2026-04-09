@@ -199,26 +199,15 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const hasInstanceWithoutToken =
-    !selectedInstances.length ||
-    selectedInstances.some(
-      (instance) =>
-        !instance.ubuntu_pro_info?.attached ||
-        instance.ubuntu_pro_info.result !== "success",
-    );
+  const allInstancesHaveToken = selectedInstances.every(
+    (instance) =>
+      instance.ubuntu_pro_info?.result === "success" &&
+      instance.ubuntu_pro_info.attached,
+  );
 
   const proServicesLinks = [
-    hasInstanceWithoutToken
+    allInstancesHaveToken
       ? {
-          children: (
-            <>
-              <Icon name="private-key" />
-              <span>Attach token</span>
-            </>
-          ),
-          onClick: handleAttachToken,
-        }
-      : {
           children: (
             <>
               <Icon name="change-version" />
@@ -226,6 +215,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
             </>
           ),
           onClick: handleReplaceToken,
+          hasIcon: true,
+        }
+      : {
+          children: (
+            <>
+              <Icon name="private-key" />
+              <span>Attach token</span>
+            </>
+          ),
+          onClick: handleAttachToken,
+          hasIcon: true,
         },
     isFeatureEnabled("ubuntu_pro_licensing")
       ? {
@@ -236,6 +236,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             </>
           ),
           onClick: openDetachModal,
+          hasIcon: true,
         }
       : {},
   ].filter((link) => link.children);
@@ -272,7 +273,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
               disabled={0 === selectedInstances.length}
-              hasIcon
+              hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
             </Button>
