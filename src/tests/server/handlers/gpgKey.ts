@@ -10,7 +10,7 @@ import { isAction } from "@/tests/server/handlers/_helpers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
-  http.post<ImportGPGKeyParams, never, GPGKey>(
+  http.post<never, ImportGPGKeyParams, GPGKey>(
     `${API_URL}gpg-key`,
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();

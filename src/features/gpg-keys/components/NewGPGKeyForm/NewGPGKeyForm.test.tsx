@@ -35,11 +35,11 @@ describe("NewGPGKeyForm", () => {
     );
     await user.click(addGPGKeyButton);
 
-    expect(await screen.findByRole("heading", { name: "GPG key imported" }));
+    expect(await screen.findByRole("heading", { name: "GPG key imported" })).toBeInTheDocument();
     expect(
       await screen.findByText(
         `GPG key "testing-name" was imported successfully.`,
       ),
-    );
+    ).toBeInTheDocument();
   });
 });
