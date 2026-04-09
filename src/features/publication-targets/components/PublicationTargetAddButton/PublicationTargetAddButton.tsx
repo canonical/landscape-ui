@@ -1,5 +1,4 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { useTheme } from "@/context/theme";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
@@ -14,7 +13,6 @@ const NewPublicationTargetForm = lazy(
 
 const PublicationTargetAddButton: FC = () => {
   const { setSidePanelContent } = useSidePanel();
-  const { isDarkMode } = useTheme();
 
   const handleAdd = () => {
     setSidePanelContent(
@@ -27,7 +25,7 @@ const PublicationTargetAddButton: FC = () => {
 
   return (
     <Button appearance="positive" hasIcon onClick={handleAdd} type="button">
-      <Icon name="plus" light={!isDarkMode} />
+      <Icon name="plus" light={true} />
       <span>Add publication target</span>
     </Button>
   );
