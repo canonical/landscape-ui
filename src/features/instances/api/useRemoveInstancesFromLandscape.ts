@@ -17,7 +17,7 @@ export const useRemoveInstancesFromLandscape = () => {
     AxiosError<ApiError>,
     RemoveInstancesParams
   >({
-    mutationFn: async (params) => authFetch.post("computers:delete", params),
+    mutationFn: async (params) => authFetch.post("/computers:delete", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
