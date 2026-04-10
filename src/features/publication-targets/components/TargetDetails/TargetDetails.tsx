@@ -68,7 +68,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
           hasIcon
           onClick={handleRemoveTarget}
         >
-          <Icon name="delete" />
+          <Icon light={true} name="delete" />
           <span>Remove</span>
         </Button>
       </div>
