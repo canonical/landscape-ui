@@ -2,4 +2,4 @@
 "landscape-ui": minor
 ---
 
-Soft deletion
+Support for v2 deletion endpoint
