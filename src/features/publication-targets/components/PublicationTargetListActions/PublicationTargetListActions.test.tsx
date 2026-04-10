@@ -1,6 +1,5 @@
 import { publicationTargetsWithPublications } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
-import type { PublicationTargetWithPublications } from "@/features/publication-targets/types";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";

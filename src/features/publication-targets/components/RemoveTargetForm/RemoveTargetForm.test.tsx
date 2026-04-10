@@ -5,7 +5,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Mock } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import RemoveTargetForm from "./RemoveTargetForm";
 
 vi.mock("@/hooks/useSidePanel");
@@ -106,27 +106,30 @@ describe("RemoveTargetForm", () => {
   });
 
   it("calls debug when deletion fails with an error", async () => {
-    const { usePublicationTargets } = await import(
-      "@/features/publication-targets/hooks"
-    );
     const mockDebug = vi.fn();
     (useDebug as Mock).mockReturnValue(mockDebug);
     
-    const mockUsePublicationTargets = vi.mocked(usePublicationTargets);
-    mockUsePublicationTargets.mockReturnValue({
+    // Override the mutation to reject, simulating an API error
+    // The component's try/catch calls debug(error), which routes to notify.error()
+    const { usePublicationTargets } = await import(
+      "@/features/publication-targets/hooks"
+    );
+    vi.mocked(usePublicationTargets).mockImplementation(() => ({
       removePublicationTargetQuery: {
-        mutateAsync: vi.fn().mockRejectedValue(new Error("Deletion failed")),
+        mutateAsync: vi.fn().mockRejectedValue(
+          new Error("API error: deletion failed"),
+        ),
         isPending: false,
       },
-    } as any);
+    } as never));
 
     renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
 
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
-    // Wait for the error to be processed
+    // Verify the error handler was invoked with the error
     await vi.waitFor(() => {
-      expect(mockDebug).toHaveBeenCalled();
+      expect(mockDebug).toHaveBeenCalledWith(expect.any(Error));
     });
   });
 });
