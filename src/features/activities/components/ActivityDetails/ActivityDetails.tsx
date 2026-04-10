@@ -113,6 +113,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
           className={classes.output}
           blocks={[
             {
+              wrapLines: true,
               title: "Output",
               code: activity.result_text,
             },
