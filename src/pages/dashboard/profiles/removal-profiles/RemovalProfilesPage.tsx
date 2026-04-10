@@ -1,8 +1,15 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
-import { useRemovalProfiles } from "@/features/removal-profiles";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
+import {
+  useRemovalProfiles,
+  useGetPageRemovalProfile,
+} from "@/features/removal-profiles";
 import type { FC } from "react";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
@@ -38,7 +45,9 @@ const RemovalProfilesPage: FC = () => {
     setIsProfileLimitReached(false);
   }, [setIsProfileLimitReached]);
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
+  const { removalProfile } = useGetPageRemovalProfile();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   return (
     <PageMain>
@@ -71,6 +80,15 @@ const RemovalProfilesPage: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <RemovalProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.removal}
+              profile={removalProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

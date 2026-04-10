@@ -1,4 +1,3 @@
-export { useOpenManageProfileSidePanel } from "./useOpenManageProfileSidePanel";
-export { useOpenViewProfileSidePanel } from "./useOpenViewProfileSidePanel";
+export { useOpenProfileSidePanel } from "./useOpenProfileSidePanel";
 export { useGetProfileAssociatedCount } from "./useGetProfileAssociatedCount";
 export { useGetProfileActions } from "./useGetProfileActions";

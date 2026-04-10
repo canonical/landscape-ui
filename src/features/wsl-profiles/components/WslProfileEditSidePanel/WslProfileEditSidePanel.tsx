@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPageWslProfile from "../../api/useGetPageWslProfile";
+import { useGetPageWslProfile } from "../../api/useGetPageWslProfile";
 import WslProfileEditForm from "./components/WslProfileEditForm";
 
 const WslProfileEditSidePanel: FC = () => {

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
-import useGetPageRepositoryProfile from "../../api/useGetPageRepositoryProfile";
+import { useGetPageRepositoryProfile } from "../../api/useGetPageRepositoryProfile";
 import RepositoryProfileForm from "../RepositoryProfileForm";
 
 interface RepositoryProfileManageSidePanelProps {

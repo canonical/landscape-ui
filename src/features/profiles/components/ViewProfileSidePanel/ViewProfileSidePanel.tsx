@@ -19,9 +19,10 @@ import { getTabs, type TabTypes } from "./helpers";
 import type { Profile } from "../../types";
 import type { ProfileTypes } from "../../helpers";
 import { hasOneItem } from "@/utils/_helpers";
+import SidePanel from "@/components/layout/SidePanel";
 
 interface ViewProfileSidePanelProps {
-  readonly profile: Profile;
+  readonly profile: Profile | undefined;
   readonly type: ProfileTypes;
 }
 
@@ -31,8 +32,11 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
 }) => {
   const [tabId, setTabId] = useState<TabTypes>("info");
 
-  const tabs = getTabs(type);
+  if (!profile) {
+    return <SidePanel.LoadingState />;
+  }
 
+  const tabs = getTabs(type);
   const links = tabs.map(({ label, id }) => ({
     label,
     active: tabId == id,
@@ -41,50 +45,53 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
     },
   }));
 
-  if (hasOneItem(tabs)) {
-    return (
-      <>
-        <ViewProfileActionsBlock profile={profile} type={type} />
-        <ViewProfileInfoTab profile={profile} type={type} key="info" />
-      </>
-    );
-  }
-
   return (
     <>
-      <ViewProfileActionsBlock profile={profile} type={type} />
-      <Tabs listClassName={classes.tabs} links={links} />
-
-      <Suspense fallback={<LoadingState />}>
-        {tabId === "info" && (
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
+      <SidePanel.Content>
+        <ViewProfileActionsBlock profile={profile} type={type} />
+        {hasOneItem(tabs) ? (
           <ViewProfileInfoTab profile={profile} type={type} key="info" />
-        )}
+        ) : (
+          <>
+            <Tabs listClassName={classes.tabs} links={links} />
 
-        {isScriptProfile(profile) && tabId === "activity-history" && (
-          <ScriptProfileActivityHistory
-            profile={profile}
-            key="activity-history"
-          />
-        )}
+            <Suspense fallback={<LoadingState />}>
+              {tabId === "info" && (
+                <ViewProfileInfoTab profile={profile} type={type} key="info" />
+              )}
 
-        {isPackageProfile(profile) && tabId === "package-constraints" && (
-          <PackageProfileDetailsConstraints
-            profile={profile}
-            key="package-constraints"
-          />
-        )}
+              {isScriptProfile(profile) && tabId === "activity-history" && (
+                <ScriptProfileActivityHistory
+                  profile={profile}
+                  key="activity-history"
+                />
+              )}
 
-        {isRepositoryProfile(profile) &&
-          ((tabId === "pockets" && (
-            <ViewRepositoryProfilePocketsTab profile={profile} key="pockets" />
-          )) ||
-            (tabId === "apt-sources" && (
-              <ViewRepositoryProfileAptSourcesTab
-                profile={profile}
-                key="apt-sources"
-              />
-            )))}
-      </Suspense>
+              {isPackageProfile(profile) && tabId === "package-constraints" && (
+                <PackageProfileDetailsConstraints
+                  profile={profile}
+                  key="package-constraints"
+                />
+              )}
+
+              {isRepositoryProfile(profile) &&
+                ((tabId === "pockets" && (
+                  <ViewRepositoryProfilePocketsTab
+                    profile={profile}
+                    key="pockets"
+                  />
+                )) ||
+                  (tabId === "apt-sources" && (
+                    <ViewRepositoryProfileAptSourcesTab
+                      profile={profile}
+                      key="apt-sources"
+                    />
+                  )))}
+            </Suspense>
+          </>
+        )}
+      </SidePanel.Content>
     </>
   );
 };

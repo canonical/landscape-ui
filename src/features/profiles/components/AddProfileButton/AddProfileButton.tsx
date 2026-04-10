@@ -62,7 +62,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
         hasIcon
         disabled={isProfileLimitReached}
       >
-        <Icon name="plus" light={settings.light}/>
+        <Icon name="plus" light={settings.light} />
         <span>Add profile</span>
       </Button>
 

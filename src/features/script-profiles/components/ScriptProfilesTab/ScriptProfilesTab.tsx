@@ -1,8 +1,16 @@
 import { useGetScripts } from "@/features/scripts";
 import { lazy, useEffect, type FC } from "react";
-import { useGetScriptProfileLimits, useGetScriptProfiles } from "../../api";
+import {
+  useGetPageScriptProfile,
+  useGetScriptProfileLimits,
+  useGetScriptProfiles,
+} from "../../api";
 import NoScriptsEmptyState from "../NoScriptsEmptyState";
-import { ProfilesContainer, ProfileTypes } from "@/features/profiles";
+import {
+  ProfilesContainer,
+  ProfileTypes,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
 import { ProfilesProvider } from "@/context/profiles";
 import useProfiles from "@/hooks/useProfiles";
 import SidePanel from "@/components/layout/SidePanel";
@@ -49,7 +57,9 @@ const ScriptProfilesTab: FC = () => {
 
   const { setIsProfileLimitReached } = useProfiles();
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
+  const { scriptProfile } = useGetPageScriptProfile();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const isScriptProfileLimitReached =
     !!scriptProfileLimits &&
@@ -91,6 +101,15 @@ const ScriptProfilesTab: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <ScriptProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.script}
+              profile={scriptProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

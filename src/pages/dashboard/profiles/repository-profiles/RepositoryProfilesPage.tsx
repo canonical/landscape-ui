@@ -1,8 +1,15 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
-import { useRepositoryProfiles } from "@/features/repository-profiles";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
+import {
+  useRepositoryProfiles,
+  useGetPageRepositoryProfile,
+} from "@/features/repository-profiles";
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
@@ -29,7 +36,9 @@ const RepositoryProfilesPage: FC = () => {
     setIsProfileLimitReached(false);
   }, [setIsProfileLimitReached]);
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
+  const { repositoryProfile } = useGetPageRepositoryProfile();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   return (
     <PageMain>
@@ -62,6 +71,15 @@ const RepositoryProfilesPage: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <RepositoryProfileManageSidePanel action="edit" />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.repository}
+              profile={repositoryProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPageRemovalProfile from "../../api/useGetPageRemovalProfile";
+import { useGetPageRemovalProfile } from "../../api/useGetPageRemovalProfile";
 import SingleRemovalProfileForm from "../SingleRemovalProfileForm";
 
 const RemovalProfileEditSidePanel: FC = () => {

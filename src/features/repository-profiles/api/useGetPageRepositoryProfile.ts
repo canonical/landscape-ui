@@ -2,7 +2,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { useGetRepositoryProfile } from "./useGetRepositoryProfile";
 import type { RepositoryProfile } from "../types";
 
-const useGetPageRepositoryProfile = ():
+export const useGetPageRepositoryProfile = ():
   | {
       repositoryProfile: RepositoryProfile;
       isGettingRepositoryProfile: false;
@@ -14,7 +14,9 @@ const useGetPageRepositoryProfile = ():
     isGettingRepositoryProfile,
     repositoryProfile,
     repositoryProfileError,
-  } = useGetRepositoryProfile(repositoryProfileName);
+  } = useGetRepositoryProfile(repositoryProfileName, {
+    enabled: !!repositoryProfileName,
+  });
 
   if (repositoryProfileError) {
     throw repositoryProfileError;
@@ -32,5 +34,3 @@ const useGetPageRepositoryProfile = ():
     isGettingRepositoryProfile: false,
   };
 };
-
-export default useGetPageRepositoryProfile;

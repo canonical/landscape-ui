@@ -13,8 +13,7 @@ import { useNavigate } from "react-router";
 import useNotify from "@/hooks/useNotify";
 import { useRunSecurityProfile } from "@/features/security-profiles";
 import { ROUTES } from "@/libs/routes";
-import { useOpenManageProfileSidePanel } from "./useOpenManageProfileSidePanel";
-import { useOpenViewProfileSidePanel } from "./useOpenViewProfileSidePanel";
+import { useOpenProfileSidePanel } from "./useOpenProfileSidePanel";
 import type { SecurityProfileMode } from "@/features/security-profiles";
 import useProfiles from "@/hooks/useProfiles";
 import type { Profile } from "../types";
@@ -30,8 +29,7 @@ export const useGetProfileActions = ({
   type,
   openModal,
 }: UseGetProfileActionsProps) => {
-  const openManageProfileSidePanel = useOpenManageProfileSidePanel();
-  const openViewProfileSidePanel = useOpenViewProfileSidePanel();
+  const openProfileSidePanel = useOpenProfileSidePanel();
   const { runSecurityProfile } = useRunSecurityProfile();
   const { isProfileLimitReached } = useProfiles();
   const debug = useDebug();
@@ -81,7 +79,7 @@ export const useGetProfileActions = ({
     label: "View details",
     "aria-label": `View ${profile.title} ${type} profile details`,
     onClick: () => {
-      openViewProfileSidePanel(type, profile);
+      openProfileSidePanel(profile, "view");
     },
   };
 
@@ -91,7 +89,7 @@ export const useGetProfileActions = ({
       label: "Edit",
       "aria-label": `Edit ${profile.title} ${type} profile`,
       onClick: () => {
-        openManageProfileSidePanel(profile, "edit");
+        openProfileSidePanel(profile, "edit");
       },
     },
   ];
@@ -102,7 +100,7 @@ export const useGetProfileActions = ({
       label: "Edit package constraints",
       "aria-label": `Edit ${profile.title} profile package constraints`,
       onClick: () => {
-        openManageProfileSidePanel(profile, "edit-constraints");
+        openProfileSidePanel(profile, "edit-constraints");
       },
     });
   }
@@ -114,7 +112,7 @@ export const useGetProfileActions = ({
         label: "Download audit",
         "aria-label": `Download ${profile.title} security profile audit`,
         onClick: () => {
-          openManageProfileSidePanel(profile, "download");
+          openProfileSidePanel(profile, "download");
         },
       },
       {
@@ -126,7 +124,7 @@ export const useGetProfileActions = ({
             await handleRunSecurityProfile(profile.mode);
             return;
           }
-          openManageProfileSidePanel(profile, "run");
+          openProfileSidePanel(profile, "run");
         },
         disabled: !profile.associated_instances,
       },
@@ -139,7 +137,7 @@ export const useGetProfileActions = ({
       label: "Duplicate",
       "aria-label": `Duplicate ${profile.title} ${type} profile`,
       onClick: () => {
-        openManageProfileSidePanel(profile, "duplicate");
+        openProfileSidePanel(profile, "duplicate");
       },
       disabled: isProfileLimitReached,
     });

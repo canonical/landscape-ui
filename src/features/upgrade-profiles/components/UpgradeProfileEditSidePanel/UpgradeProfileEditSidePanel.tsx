@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPageUpgradeProfile from "../../api/useGetPageUpgradeProfile";
+import { useGetPageUpgradeProfile } from "../../api/useGetPageUpgradeProfile";
 import SingleUpgradeProfileForm from "../SingleUpgradeProfileForm";
 
 const UpgradeProfileEditSidePanel: FC = () => {

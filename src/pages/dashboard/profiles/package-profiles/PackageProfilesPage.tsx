@@ -1,9 +1,16 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { usePackageProfiles } from "@/features/package-profiles";
+import {
+  usePackageProfiles,
+  useGetPagePackageProfile,
+} from "@/features/package-profiles";
 import type { FC } from "react";
-import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
@@ -51,12 +58,15 @@ const PackageProfilesPage: FC = () => {
     setIsProfileLimitReached(false);
   }, [setIsProfileLimitReached]);
 
+  const { packageProfile } = useGetPagePackageProfile();
+
   useSetDynamicFilterValidation("sidePath", [
     "add",
     "add-constraints",
     "duplicate",
     "edit",
     "edit-constraints",
+    "view",
   ]);
 
   const {
@@ -121,6 +131,15 @@ const PackageProfilesPage: FC = () => {
         {lastSidePathSegment === "edit-constraints" && (
           <SidePanel.Suspense key="edit-constraints">
             <PackageProfileConstraintsEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.package}
+              profile={packageProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

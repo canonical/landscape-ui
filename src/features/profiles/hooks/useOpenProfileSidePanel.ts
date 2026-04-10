@@ -2,17 +2,21 @@ import type { Profile, ProfileActions } from "../types";
 import usePageParams from "@/hooks/usePageParams";
 import { usesNameAsIdentifier } from "../helpers";
 
-export const useOpenManageProfileSidePanel = () => {
-  const { setPageParams } = usePageParams();
+export const useOpenProfileSidePanel = () => {
+  const { sidePath, setPageParams, createSidePathPusher } = usePageParams();
 
   return (profile: Profile, action: ProfileActions) => {
     const profileIdentifier = usesNameAsIdentifier(profile)
       ? profile.name
       : `${profile.id}`;
 
-    setPageParams({
-      sidePath: [action],
-      profile: profileIdentifier,
-    });
+    if (!sidePath.length || action === "view") {
+      setPageParams({
+        sidePath: [action],
+        profile: profileIdentifier,
+      });
+    } else {
+      createSidePathPusher(action)();
+    }
   };
 };

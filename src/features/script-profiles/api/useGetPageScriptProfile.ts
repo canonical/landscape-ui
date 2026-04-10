@@ -2,13 +2,16 @@ import usePageParams from "@/hooks/usePageParams";
 import { useGetScriptProfile } from "./useGetScriptProfile";
 import type { ScriptProfile } from "../types";
 
-const useGetPageScriptProfile = ():
+export const useGetPageScriptProfile = ():
   | { scriptProfile: ScriptProfile; isGettingScriptProfile: false }
   | { scriptProfile: undefined; isGettingScriptProfile: true } => {
   const { profile: scriptProfileId } = usePageParams();
 
   const { isGettingScriptProfile, scriptProfile, scriptProfileError } =
-    useGetScriptProfile({ id: parseInt(scriptProfileId) });
+    useGetScriptProfile(
+      { id: parseInt(scriptProfileId) },
+      { enabled: !!scriptProfileId },
+    );
 
   if (scriptProfileError) {
     throw scriptProfileError;
@@ -23,5 +26,3 @@ const useGetPageScriptProfile = ():
     isGettingScriptProfile: false,
   };
 };
-
-export default useGetPageScriptProfile;

@@ -1,9 +1,16 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
 import { useGetWslLimits } from "@/features/wsl";
-import { useGetWslProfiles } from "@/features/wsl-profiles";
+import {
+  useGetPageWslProfile,
+  useGetWslProfiles,
+} from "@/features/wsl-profiles";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Notification } from "@canonical/react-components";
 import { lazy, useEffect, type FC } from "react";
@@ -40,7 +47,9 @@ const WslProfilesPage: FC = () => {
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit"]);
+  const { wslProfile } = useGetPageWslProfile();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
   const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
   const isWslProfileLimitReached = allWslProfilesCount >= wslProfileLimit;
@@ -90,6 +99,15 @@ const WslProfilesPage: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <WslProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.wsl}
+              profile={wslProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

@@ -1,11 +1,16 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
 import {
   SecurityProfilesNotifications,
   useGetSecurityProfiles,
   useIsSecurityProfilesLimitReached,
+  useGetPageSecurityProfile,
 } from "@/features/security-profiles";
 import usePageParams from "@/hooks/usePageParams";
 import { lazy, useEffect, type FC } from "react";
@@ -64,6 +69,8 @@ const SecurityProfilesPage: FC = () => {
     setFalse: hideRetentionNotification,
   } = useBoolean(false);
 
+  const { securityProfile } = useGetPageSecurityProfile();
+
   const isSecurityProfileLimitReached = useIsSecurityProfilesLimitReached();
 
   useEffect(() => {
@@ -76,6 +83,7 @@ const SecurityProfilesPage: FC = () => {
     "duplicate",
     "edit",
     "run",
+    "view",
   ]);
 
   const getStatus = () => {
@@ -160,6 +168,15 @@ const SecurityProfilesPage: FC = () => {
         {lastSidePathSegment === "run" && (
           <SidePanel.Suspense key="run">
             <SecurityProfileRunFixSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.security}
+              profile={securityProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

@@ -3,8 +3,15 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { AddProfileButton, ProfilesContainer } from "@/features/profiles";
-import { useGetRebootProfiles } from "@/features/reboot-profiles";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
+import {
+  useGetRebootProfiles,
+  useGetPageRebootProfile,
+} from "@/features/reboot-profiles";
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import { lazy, useEffect } from "react";
@@ -40,7 +47,14 @@ const RebootProfilesPage: FC = () => {
     setIsProfileLimitReached(false);
   }, [setIsProfileLimitReached]);
 
-  useSetDynamicFilterValidation("sidePath", ["add", "duplicate", "edit"]);
+  const { rebootProfile } = useGetPageRebootProfile();
+
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "duplicate",
+    "edit",
+    "view",
+  ]);
 
   return (
     <PageMain>
@@ -81,6 +95,15 @@ const RebootProfilesPage: FC = () => {
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <RebootProfileEditSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewProfileSidePanel
+              type={ProfileTypes.reboot}
+              profile={rebootProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

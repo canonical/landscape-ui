@@ -4,6 +4,7 @@ export {
   useIsSecurityProfilesLimitReached,
   useArchiveSecurityProfile,
   useRunSecurityProfile,
+  useGetPageSecurityProfile,
 } from "./api";
 export type { AddSecurityProfileParams } from "./api";
 export { default as SecurityProfileAddSidePanel } from "./components/SecurityProfileAddSidePanel";

@@ -1,10 +1,17 @@
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { UpgradeProfile } from "../types";
 
-export const useGetUpgradeProfile = (id: number) => {
+export const useGetUpgradeProfile = (
+  id: number,
+  config: Omit<
+    UseQueryOptions<AxiosResponse<UpgradeProfile[], AxiosError<ApiError>>>,
+    "queryKey" | "queryFn"
+  > = {},
+) => {
   const authFetchOld = useFetchOld();
 
   const {
@@ -15,6 +22,7 @@ export const useGetUpgradeProfile = (id: number) => {
     queryKey: ["upgradeProfile", id],
     queryFn: async ({ signal }) =>
       authFetchOld.get("GetUpgradeProfiles", { signal }),
+    ...config,
   });
 
   const upgradeProfile = response?.data.find(

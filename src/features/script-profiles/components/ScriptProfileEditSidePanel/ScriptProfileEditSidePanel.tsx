@@ -2,7 +2,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import useNotify from "@/hooks/useNotify";
 import type { FC } from "react";
 import { useEditScriptProfile } from "../../api";
-import useGetPageScriptProfile from "../../api/useGetPageScriptProfile";
+import { useGetPageScriptProfile } from "../../api/useGetPageScriptProfile";
 import type { ScriptProfileFormSubmitValues } from "../ScriptProfileForm";
 import ScriptProfileForm from "../ScriptProfileForm";
 import { getScriptProfileEditFormInitialValues } from "./helpers";

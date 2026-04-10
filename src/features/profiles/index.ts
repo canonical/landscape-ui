@@ -7,7 +7,7 @@ export { default as ProfilesList } from "./components/ProfilesList";
 export { default as ProfilesListActions } from "./components/ProfilesList/components/ProfilesListActions";
 export { default as RemoveProfileModal } from "./components/RemoveProfileModal";
 
-export { useOpenManageProfileSidePanel } from "./hooks";
+export { useOpenProfileSidePanel } from "./hooks";
 
 export { ProfileTypes } from "./helpers";
 

@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useGetOverLimitSecurityProfiles } from "../../api";
 import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
-import { useOpenManageProfileSidePanel } from "@/features/profiles";
+import { useOpenProfileSidePanel } from "@/features/profiles";
 
 interface SecurityProfilesNotificationsProps {
   readonly isRetentionNotificationVisible: boolean;
@@ -21,7 +21,7 @@ const SecurityProfilesNotifications: FC<SecurityProfilesNotificationsProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const openManageProfileSidePanel = useOpenManageProfileSidePanel();
+  const openProfileSidePanel = useOpenProfileSidePanel();
 
   const { overLimitSecurityProfiles } = useGetOverLimitSecurityProfiles({
     limit: 20,
@@ -124,7 +124,7 @@ const SecurityProfilesNotifications: FC<SecurityProfilesNotificationsProps> = ({
             type="button"
             appearance="link"
             onClick={() => {
-              openManageProfileSidePanel(overLimitSecurityProfiles[0], "edit");
+              openProfileSidePanel(overLimitSecurityProfiles[0], "edit");
             }}
           >
             Edit profile

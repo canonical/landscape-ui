@@ -21,7 +21,7 @@ import {
   hasComplianceColumns,
   ProfileTypes,
 } from "../../helpers";
-import { useOpenViewProfileSidePanel } from "../../hooks";
+import { useOpenProfileSidePanel } from "../../hooks/useOpenProfileSidePanel";
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
@@ -35,7 +35,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
-  const openViewProfileSidePanel = useOpenViewProfileSidePanel();
+  const openProfileSidePanel = useOpenProfileSidePanel();
 
   const filteredProfiles = useMemo(() => {
     if (!search || hasApiSearch(type)) {
@@ -50,7 +50,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
   const columns = useMemo<Column<Profile>[]>(() => {
     const { name, accessGroup, associated, actions } = getGeneralColumns(
       type,
-      openViewProfileSidePanel,
+      openProfileSidePanel,
       getAccessGroupQueryResult,
     );
     const cols = [name];
@@ -84,7 +84,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
     cols.push(actions);
 
     return cols;
-  }, [getAccessGroupQueryResult, openViewProfileSidePanel, type]);
+  }, [getAccessGroupQueryResult, openProfileSidePanel, type]);
 
   return (
     <ResponsiveTable

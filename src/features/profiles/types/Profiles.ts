@@ -3,7 +3,8 @@ export type ProfileActions =
   | "edit-constraints"
   | "run"
   | "download"
-  | "duplicate";
+  | "duplicate"
+  | "view";
 
 export interface ComplianceInstanceCounts {
   constrained: number[];

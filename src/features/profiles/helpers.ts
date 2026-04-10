@@ -66,7 +66,7 @@ export function isRemovalProfile(profile: Profile): profile is RemovalProfile {
 export function isRepositoryProfile(
   profile: Profile,
 ): profile is RepositoryProfile {
-  return "pockets" in profile;
+  return "apt_sources" in profile;
 }
 
 export function isWslProfile(profile: Profile): profile is WslProfile {

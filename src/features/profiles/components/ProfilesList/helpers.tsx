@@ -1,5 +1,5 @@
 import { Icon, ICONS, Tooltip } from "@canonical/react-components";
-import type { Profile } from "../../types";
+import type { Profile, ProfileActions } from "../../types";
 import {
   getTriggerText,
   isPackageProfile,
@@ -66,7 +66,7 @@ type ColumnNames = "name" | "accessGroup" | "associated" | "actions";
 
 export const getGeneralColumns = (
   type: ProfileTypes,
-  onNameClick: (type: ProfileTypes, profile: Profile) => void,
+  onNameClick: (profile: Profile, action: ProfileActions) => void,
   accessGroupData: AxiosResponse | undefined,
 ): Record<ColumnNames, Column<Profile>> => ({
   name: {
@@ -82,7 +82,7 @@ export const getGeneralColumns = (
         appearance="link"
         className="u-no-margin--bottom u-no-padding--top u-align-text--left"
         onClick={() => {
-          onNameClick(type, profile);
+          onNameClick(profile, "view");
         }}
         aria-label={`Open "${profile.title}" profile details`}
       >
