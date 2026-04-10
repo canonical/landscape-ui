@@ -90,7 +90,7 @@ describe("ViewProfileSidePanel", () => {
   });
 
   it("renders repository tabs when selected", async () => {
-    const repositoryProfile = { ...baseProfile, pockets: [] };
+    const repositoryProfile = { ...baseProfile, apt_sources: [] };
 
     renderWithProviders(
       <ViewProfileSidePanel

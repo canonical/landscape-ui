@@ -18,11 +18,18 @@ import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const RepositoryProfileManageSidePanel = lazy(async () =>
+const RepositoryProfileEditSidePanel = lazy(async () =>
   import("@/features/repository-profiles").then((module) => ({
-    default: module.RepositoryProfileManageSidePanel,
+    default: module.RepositoryProfileEditSidePanel,
   })),
 );
+
+const RepositoryProfileAddSidePanel = lazy(async () =>
+  import("@/features/repository-profiles").then((module) => ({
+    default: module.RepositoryProfileAddSidePanel,
+  })),
+);
+
 
 const RepositoryProfilesPage: FC = () => {
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
@@ -64,13 +71,13 @@ const RepositoryProfilesPage: FC = () => {
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <RepositoryProfileManageSidePanel action="add" />
+            <RepositoryProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
 
         {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
-            <RepositoryProfileManageSidePanel action="edit" />
+            <RepositoryProfileEditSidePanel />
           </SidePanel.Suspense>
         )}
 

@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import RepositoryProfileManageSidePanel from "./RepositoryProfileManageSidePanel";
-import useGetPageRepositoryProfile from "../../api/useGetPageRepositoryProfile";
+import RepositoryProfileEditSidePanel from "./RepositoryProfileEditSidePanel";
+import { useGetPageRepositoryProfile } from "../../api/useGetPageRepositoryProfile";
 
 vi.mock("../../api/useGetPageRepositoryProfile", () => ({
-  default: vi.fn(),
+  useGetPageRepositoryProfile: vi.fn(),
 }));
 
 vi.mock("../RepositoryProfileForm", () => ({
@@ -19,21 +19,18 @@ describe("RepositoryProfileManageSidePanel", () => {
       isGettingRepositoryProfile: true,
     } as unknown as ReturnType<typeof useGetPageRepositoryProfile>);
 
-    render(<RepositoryProfileManageSidePanel action="edit" />);
+    render(<RepositoryProfileEditSidePanel />);
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
-  it.each([
-    ["edit", "Edit Repo One"],
-    ["add", "Add repository profile"],
-  ] as const)("renders %s title and form", (action, title) => {
+  it("renders title and form", () => {
     mockUseGetPageRepositoryProfile.mockReturnValue({
       isGettingRepositoryProfile: false,
       repositoryProfile: { title: "Repo One" },
     } as unknown as ReturnType<typeof useGetPageRepositoryProfile>);
 
-    render(<RepositoryProfileManageSidePanel action={action} />);
-    expect(screen.getByText(title)).toBeInTheDocument();
-    expect(screen.getByText(`form:${action}`)).toBeInTheDocument();
+    render(<RepositoryProfileEditSidePanel />);
+    expect(screen.getByText("Edit Repo One")).toBeInTheDocument();
+    expect(screen.getByText("form:edit")).toBeInTheDocument();
   });
 });

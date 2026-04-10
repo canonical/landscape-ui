@@ -23,7 +23,7 @@ const ProfilesEmptyState: FC<ProfilesEmptyStateProps> = ({ type }) => {
           </Link>
         </>
       }
-      cta={[<AddProfileButton key="add" type={type} />]}
+      cta={[<AddProfileButton key="add" />]}
       title={`You haven't added any ${type} profiles yet.`}
       size="large"
     />

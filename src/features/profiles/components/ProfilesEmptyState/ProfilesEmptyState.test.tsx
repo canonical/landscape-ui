@@ -31,7 +31,7 @@ describe("ProfilesEmptyState", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: `Add ${type} profile` }),
-    ).toBeInTheDocument();
+      screen.getByRole("button", { name: "Add profile" }),
+    ).toHaveIcon("plus");
   });
 });

@@ -7,19 +7,21 @@ import { describe, expect } from "vitest";
 import PackageProfilesPage from "./PackageProfilesPage";
 
 describe("PackageProfilesPage", () => {
-  it("has a button to add a package profile", async () => {
+  it("has a button to add a profile", async () => {
     renderWithProviders(<PackageProfilesPage />);
 
     const user = userEvent.setup();
 
     await user.click(
-      await screen.findByRole("button", { name: "Add package profile" }),
+      await screen.findByRole("button", { name: "Add profile" }),
     );
     await expectLoadingState();
+
     expect(
       await screen.findByRole("heading", { name: "Add package profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
+    
     expect(
       screen.queryByRole("heading", { name: "Add package profile" }),
     ).not.toBeInTheDocument();
@@ -77,6 +79,20 @@ describe("PackageProfilesPage", () => {
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Change "${packageProfiles[0].title}" profile's constraints`,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders a side panel to view", async () => {
+    renderWithProviders(
+      <PackageProfilesPage />,
+      undefined,
+      `/?sidePath=view&profile=${packageProfiles[0].name}`,
+    );
+
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("heading", {
+        name: packageProfiles[0].title,
       }),
     ).toBeInTheDocument();
   });

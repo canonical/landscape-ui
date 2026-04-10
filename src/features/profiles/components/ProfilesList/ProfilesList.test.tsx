@@ -37,7 +37,7 @@ describe("ProfilesList", () => {
   it.each([
     [
       ProfileTypes.repository,
-      ["Profile name", "Access group", "Associated", "Description", "Actions"],
+      ["Profile name", "Access group", "Associated", "Actions"],
     ],
     [
       ProfileTypes.package,
@@ -47,7 +47,6 @@ describe("ProfilesList", () => {
         "Associated",
         "Compliant",
         "Not compliant",
-        "Description",
         "Actions",
       ],
     ],
@@ -102,7 +101,6 @@ describe("ProfilesList", () => {
         "Associated",
         "Compliant",
         "Not compliant",
-        "Description",
         "Actions",
       ],
     ],
@@ -200,13 +198,13 @@ describe("ProfilesList", () => {
     }
   });
 
-  it("renders rows with wsl profile data", () => {
+  it("renders rows with wsl profile data", async () => {
     renderWithProviders(
       <ProfilesList profiles={wslProfiles} type={ProfileTypes.wsl} />,
     );
 
     for (const profile of wslProfiles) {
-      const row = screen.getByRole("row", {
+      const row = await screen.findByRole("row", {
         name: (name) => name.includes(profile.title),
       });
       const associatedCount = profile.computers.constrained.length;
@@ -219,9 +217,8 @@ describe("ProfilesList", () => {
         }),
       ).toBeInTheDocument();
 
-      if (associatedCount - profile.computers["non-compliant"].length) {
-        const count =
-          associatedCount - profile.computers["non-compliant"].length;
+      const count = associatedCount - profile.computers["non-compliant"].length;
+      if (count) {
         expect(
           within(row).getByRole("link", {
             name: `${count} instances`,
@@ -236,8 +233,6 @@ describe("ProfilesList", () => {
           }),
         ).toBeInTheDocument();
       }
-
-      expect(within(row).getByText(profile.description)).toBeInTheDocument();
     }
   });
 });

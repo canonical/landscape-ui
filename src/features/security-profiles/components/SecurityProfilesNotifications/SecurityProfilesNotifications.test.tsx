@@ -34,9 +34,9 @@ vi.mock("react-router", async () => {
   };
 });
 
-const openManageProfileSidePanel = vi.fn();
+const openProfileSidePanel = vi.fn();
 vi.mock("@/features/profiles", () => ({
-  useOpenManageProfileSidePanel: () => openManageProfileSidePanel,
+  useOpenProfileSidePanel: () => openProfileSidePanel,
 }));
 
 const mockUseGetOverLimitSecurityProfiles = vi.mocked(
@@ -108,7 +108,7 @@ describe("SecurityProfilesNotifications", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(profileA.title)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Edit profile" }));
-    expect(openManageProfileSidePanel).toHaveBeenCalledWith(profileA, "edit");
+    expect(openProfileSidePanel).toHaveBeenCalledWith(profileA, "edit");
   });
 
   it("renders multi-profile notifications", async () => {
