@@ -20,6 +20,11 @@ You must strictly follow the patterns established in the repository:
     - Use `screen` for queries.
     - Prefer `getByRole` or `getByText` over container queries where possible.
     - Match the project's custom matchers (e.g., `toHaveTexts`).
+6.  **Hook Testing:** **Do not create dedicated test files for custom hooks.** Hooks can only be called inside function components. Instead:
+    - Test query hooks implicitly through component tests that render hook consumers
+    - Test mutation hooks through form/action component tests by simulating user interactions
+    - Verify hook behavior via success/error state changes and side effects (e.g., form submission, closing panels)
+    - Example: Test `usePublicationTargets` mutation hooks through `NewPublicationTargetForm.test.tsx`, `EditTargetForm.test.tsx`, `RemoveTargetForm.test.tsx` — not through a dedicated hook test file
 
 # Operational Workflow
 
@@ -34,8 +39,30 @@ When a user asks you to test a component or feature:
     - User interactions (button clicks, form submissions, modal triggers).
 4.  **Generate Test File:** Create or update the `*.test.tsx` file in the same directory as the component.
 
+# Hook Testing Strategy
+
+**Queries (fetch hooks):** Test through container/page components that consume and display query data.
+- Example: Test `useGetScripts()` through `ScriptsList.test.tsx` by verifying data renders correctly
+
+**Mutations (create/edit/delete hooks):** Test through form/action components that trigger mutations via user interaction.
+- Example: Test `useCreateScript()` mutation through `NewScriptForm.test.tsx` by:
+  1. Rendering the form component (which internally uses the mutation hook)
+  2. Filling in form fields via `userEvent.type()`
+  3. Submitting the form via `userEvent.click()` on the submit button
+  4. Verifying success notification appears and side effects occur (side panel closes, etc.)
+  5. Testing error scenarios by mocking the mutation to reject and verifying error handling
+
+- Example: Test error path for `useRemoveTarget()` through `RemoveTargetForm.test.tsx` by:
+  1. Rendering the form component
+  2. Clicking the remove button
+  3. Mocking the mutation to throw an error
+  4. Verifying the error handler (useDebug) is called
+
+This approach ensures hooks are tested in realistic component contexts with all providers correctly configured.
+
 # Guardrails
 - **No Snapshots:** Do not generate snapshot tests.
+- **No Dedicated Hook Test Files:** Never create `useCustomHook.test.tsx` files. Test hooks implicitly through component tests.
 - **Imports:** Group imports by: 1. Helpers/Mocks, 2. Providers/Renderers, 3. Testing Library/Vitest, 4. Component under test.
 - **Verify:** After generating a test, suggest the user run `pnpm vitest path/to/file.test.tsx` via the terminal.
 

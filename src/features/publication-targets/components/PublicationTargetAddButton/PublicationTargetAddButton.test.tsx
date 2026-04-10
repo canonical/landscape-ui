@@ -1,22 +1,18 @@
-import useSidePanel from "@/hooks/useSidePanel";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Mock } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import PublicationTargetAddButton from "./PublicationTargetAddButton";
 
-vi.mock("@/hooks/useSidePanel");
+vi.mock(
+  "@/features/publication-targets/components/NewPublicationTargetForm",
+  () => ({
+    NewPublicationTargetForm: () => <div>New publication target form</div>,
+  }),
+);
 
 describe("PublicationTargetAddButton", () => {
   const user = userEvent.setup();
-
-  beforeEach(() => {
-    (useSidePanel as Mock).mockReturnValue({
-      setSidePanelContent: vi.fn(),
-      closeSidePanel: vi.fn(),
-    });
-  });
 
   it("renders the Add publication target button", () => {
     renderWithProviders(<PublicationTargetAddButton />);
@@ -26,18 +22,27 @@ describe("PublicationTargetAddButton", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls setSidePanelContent with the correct title when clicked", async () => {
-    const { setSidePanelContent } = useSidePanel();
-
+  it("opens a side panel with the correct title when clicked", async () => {
     renderWithProviders(<PublicationTargetAddButton />);
 
     await user.click(
       screen.getByRole("button", { name: /add publication target/i }),
     );
 
-    expect(setSidePanelContent).toHaveBeenCalledWith(
-      "Add publication target",
-      expect.anything(),
+    expect(
+      screen.getByRole("heading", { name: /add publication target/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders NewPublicationTargetForm inside the side panel", async () => {
+    renderWithProviders(<PublicationTargetAddButton />);
+
+    await user.click(
+      screen.getByRole("button", { name: /add publication target/i }),
     );
+
+    expect(
+      await screen.findByText("New publication target form"),
+    ).toBeInTheDocument();
   });
 });

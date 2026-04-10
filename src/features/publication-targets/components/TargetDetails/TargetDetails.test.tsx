@@ -62,6 +62,12 @@ describe("TargetDetails", () => {
   });
 
   describe("S3 target details", () => {
+    it("renders the DETAILS heading", () => {
+      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+
+      expect(screen.getByText("DETAILS")).toBeInTheDocument();
+    });
+
     it("renders the target display_name", () => {
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
@@ -70,7 +76,7 @@ describe("TargetDetails", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders S3 fields: region, bucket", () => {
+    it("renders all S3 fields: region, bucket, prefix, acl, storage_class, encryption_method, disable_multi_del, force_sig_v2", () => {
       const { container } = renderWithProviders(
         <TargetDetails target={targetWithPublications} />,
       );
@@ -82,6 +88,49 @@ describe("TargetDetails", () => {
       expect(container).toHaveInfoItem(
         "Bucket Name",
         targetWithPublications.s3!.bucket,
+      );
+      expect(container).toHaveInfoItem(
+        "Prefix",
+        targetWithPublications.s3!.prefix,
+      );
+      expect(container).toHaveInfoItem("ACL", targetWithPublications.s3!.acl);
+      expect(container).toHaveInfoItem(
+        "Storage class",
+        targetWithPublications.s3!.storage_class,
+      );
+      expect(container).toHaveInfoItem(
+        "Encryption method",
+        targetWithPublications.s3!.encryption_method,
+      );
+      // Boolean fields should be converted to "Yes"/"No"
+      expect(container).toHaveInfoItem(
+        "Disable MultiDel",
+        targetWithPublications.s3!.disable_multi_del ? "Yes" : "No",
+      );
+      expect(container).toHaveInfoItem(
+        "Force AWS SIGv2",
+        targetWithPublications.s3!.force_sig_v2 ? "Yes" : "No",
+      );
+    });
+
+    it("renders S3 configuration with partial fields (missing optional fields have undefined values)", () => {
+      const { container } = renderWithProviders(
+        <TargetDetails target={targetWithoutPublications} />,
+      );
+
+      // These fields should still be present even with undefined values
+      expect(container).toHaveInfoItem(
+        "Region",
+        targetWithoutPublications.s3!.region,
+      );
+      expect(container).toHaveInfoItem(
+        "Bucket Name",
+        targetWithoutPublications.s3!.bucket,
+      );
+      // Boolean fields should still show "Yes"/"No"
+      expect(container).toHaveInfoItem(
+        "Disable MultiDel",
+        targetWithoutPublications.s3!.disable_multi_del ? "Yes" : "No",
       );
     });
   });

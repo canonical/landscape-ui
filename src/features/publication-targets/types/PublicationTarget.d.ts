@@ -1,4 +1,4 @@
-export interface S3Target extends Record<string, unknown> {
+export interface S3Target {
   region?: string;
   bucket: string;
   endpoint?: string;
@@ -12,7 +12,7 @@ export interface S3Target extends Record<string, unknown> {
   force_sig_v2?: boolean;
 }
 
-export interface SwiftTarget extends Record<string, unknown> {
+export interface SwiftTarget {
   container: string;
   username: string;
   password: string;
@@ -26,7 +26,7 @@ export interface SwiftTarget extends Record<string, unknown> {
   tenant_domain_id?: string;
 }
 
-export interface PublicationTarget extends Record<string, unknown> {
+export interface PublicationTarget {
   name: string;
   publication_target_id: string;
   display_name?: string;

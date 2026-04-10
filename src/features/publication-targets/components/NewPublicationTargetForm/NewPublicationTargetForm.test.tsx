@@ -82,4 +82,63 @@ describe("NewPublicationTargetForm", () => {
       expect(closeSidePanel).toHaveBeenCalled();
     });
   });
+
+  it("includes optional fields in submission when all fields are provided", async () => {
+    const { closeSidePanel } = useSidePanel();
+
+    renderWithProviders(<NewPublicationTargetForm />);
+
+    await user.type(screen.getByLabelText("Name"), "Full Target");
+    await user.type(screen.getByLabelText(/region/i), "us-east-1");
+    await user.type(screen.getByLabelText(/bucket name/i), "my-bucket");
+    await user.type(screen.getByLabelText(/endpoint/i), "https://s3.example.com");
+    await user.type(
+      screen.getByLabelText(/aws access key id/i),
+      "AKIAIOSFODNN7EXAMPLE",
+    );
+    await user.type(
+      screen.getByLabelText(/aws secret access key/i),
+      "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    );
+    await user.type(screen.getByLabelText(/prefix/i), "ubuntu/");
+    await user.type(screen.getByLabelText(/^acl$/i), "private");
+    await user.type(screen.getByLabelText(/storage class/i), "STANDARD");
+    await user.type(screen.getByLabelText(/encryption method/i), "AES256");
+
+    await user.click(
+      screen.getByRole("button", { name: /add publication target/i }),
+    );
+
+    await vi.waitFor(() => {
+      expect(closeSidePanel).toHaveBeenCalled();
+    });
+  });
+
+  it("toggles the disable_multi_del checkbox", async () => {
+    renderWithProviders(<NewPublicationTargetForm />);
+
+    const checkbox = screen.getByRole("checkbox", { name: /disable multidel/i });
+    expect(checkbox).not.toBeChecked();
+
+    await user.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    await user.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+  });
+
+  it("toggles the force_sig_v2 checkbox", async () => {
+    renderWithProviders(<NewPublicationTargetForm />);
+
+    const checkbox = screen.getByRole("checkbox", {
+      name: /force aws sigv2/i,
+    });
+    expect(checkbox).not.toBeChecked();
+
+    await user.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    await user.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+  });
 });

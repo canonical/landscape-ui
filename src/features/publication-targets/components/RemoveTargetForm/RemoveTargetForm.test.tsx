@@ -1,4 +1,5 @@
 import useSidePanel from "@/hooks/useSidePanel";
+import useDebug from "@/hooks/useDebug";
 import { publicationTargetsWithPublications } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -8,6 +9,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import RemoveTargetForm from "./RemoveTargetForm";
 
 vi.mock("@/hooks/useSidePanel");
+vi.mock("@/hooks/useDebug");
+vi.mock("@/features/publication-targets/hooks", () => ({
+  usePublicationTargets: vi.fn(() => ({
+    removePublicationTargetQuery: {
+      mutateAsync: vi.fn().mockResolvedValue({}),
+      isPending: false,
+    },
+  })),
+}));
 
 // Target with publications (prod-s3-us-east)
 const [targetWithPublications, targetWithoutPublications] = publicationTargetsWithPublications;
@@ -28,6 +38,7 @@ describe("RemoveTargetForm", () => {
       setSidePanelContent: vi.fn(),
       closeSidePanel: vi.fn(),
     });
+    (useDebug as Mock).mockReturnValue(vi.fn());
   });
 
   it("renders the irreversible warning", () => {
@@ -92,5 +103,30 @@ describe("RemoveTargetForm", () => {
     expect(
       await screen.findByText(/publication target removed successfully/i),
     ).toBeInTheDocument();
+  });
+
+  it("calls debug when deletion fails with an error", async () => {
+    const { usePublicationTargets } = await import(
+      "@/features/publication-targets/hooks"
+    );
+    const mockDebug = vi.fn();
+    (useDebug as Mock).mockReturnValue(mockDebug);
+    
+    const mockUsePublicationTargets = vi.mocked(usePublicationTargets);
+    mockUsePublicationTargets.mockReturnValue({
+      removePublicationTargetQuery: {
+        mutateAsync: vi.fn().mockRejectedValue(new Error("Deletion failed")),
+        isPending: false,
+      },
+    } as any);
+
+    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+
+    await user.click(screen.getByRole("button", { name: /remove target/i }));
+
+    // Wait for the error to be processed
+    await vi.waitFor(() => {
+      expect(mockDebug).toHaveBeenCalled();
+    });
   });
 });
