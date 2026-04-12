@@ -438,7 +438,7 @@ export default [
     },
   ),
 
-  http.post(`${API_URL}computers:delete`, async () => {
+  http.post(`${API_URL}computers\\:delete`, async () => {
     await delay();
     return HttpResponse.json();
   }),
