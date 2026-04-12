@@ -70,7 +70,7 @@ export const features: Feature[] = [
     name: "Ubuntu Pro Licensing",
     description:
       "Allows attaching, replacing, and detaching Ubuntu Pro tokens to/from instances.",
-    key: "ubuntu_pro_licensing",
+    key: "ubuntu-pro-licensing",
     database_key: 8,
     enabled: true,
     details: {
@@ -88,5 +88,18 @@ export const features: Feature[] = [
       configuration: false,
       account: false,
     },
+  },
+  {
+      name: "Computer Soft Deletion",
+      description:
+        "Soft delete computers instead of hard deleting them. Soft-deleted computers still exist in the database, but will be filtered out and eventually removed.",
+      key: "computer-soft-deletion",
+      database_key: 12,
+      enabled: true,
+      details: {
+          configuration: true,
+          // self_hosted_default: false,
+          account: true
+      },
   },
 ];

@@ -270,7 +270,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           children: <span>Attach token</span>,
           onClick: handleAttachToken,
         },
-    isFeatureEnabled("ubuntu_pro_licensing")
+    isFeatureEnabled("ubuntu-pro-licensing")
       ? {
           children: <span>Detach token</span>,
           onClick: openDetachModal,
