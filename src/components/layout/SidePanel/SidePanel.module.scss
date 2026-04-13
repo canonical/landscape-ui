@@ -10,6 +10,7 @@
   flex-direction: column;
   overflow: visible;
   padding-bottom: 0;
+  z-index: var(--z-sidepanel);
 }
 
 .medium {
