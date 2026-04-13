@@ -23,7 +23,7 @@ export const useRemoveInstancesFromLandscape = () => {
       RemoveInstancesParams
     >({
       mutationFn: async (params: RemoveInstancesParams) =>
-        authFetch.post("computers:delete", params),
+        authFetch.post("/computers:delete", params),
       onSuccess: async () =>
         queryClient.invalidateQueries({ queryKey: ["instances"] }),
     });
