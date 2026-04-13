@@ -1,5 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import AddPublicationButton from "../AddPublicationButton";
+import { DOCUMENTATION_URL } from "./constants";
 
 const NoPublicationsEmptyState = () => {
   return (
@@ -12,7 +13,7 @@ const NoPublicationsEmptyState = () => {
             a mirror or a local repository.{" "}
           </p>
           <a
-            href="https://ubuntu.com/landscape/docs/managing-computers" // TODO change
+            href={DOCUMENTATION_URL}
             target="_blank"
             rel="nofollow noopener noreferrer"
           >

@@ -12,7 +12,8 @@ interface Settings {
   skip_content_indexing: boolean;
 }
 
-export interface Publication {
+export interface Publication extends Record<string, unknown> {
+  id: number;
   name: string;
   source_type: string;
   source: string;
@@ -20,6 +21,6 @@ export interface Publication {
   date_published: string;
   prefix: string;
 
-  uploaders: Uploader[];
+  uploaders: Uploader;
   settings: Settings;
 }
