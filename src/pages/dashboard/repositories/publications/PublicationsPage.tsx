@@ -16,6 +16,7 @@ const PublicationsPage: FC = () => {
 
   useSetDynamicFilterValidation("sidePath", ["view"]);
 
+const PublicationsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
