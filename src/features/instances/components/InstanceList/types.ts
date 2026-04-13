@@ -1,0 +1,14 @@
+import type { Instance } from "@/types/Instance";
+import type { CellProps, Column } from "react-table";
+
+export type InstanceColumn = Column<Instance> & {
+  accessor: string;
+  canBeHidden: boolean;
+  optionLabel: string;
+  getCellIcon?: (cell: CellProps<Instance>) => string | undefined;
+};
+
+export interface GetUpgradesResult {
+  regular: { icon: string; label: string } | false;
+  security: { icon: string; label: string } | false;
+}
