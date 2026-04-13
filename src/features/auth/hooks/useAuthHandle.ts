@@ -129,6 +129,9 @@ export default function useAuthHandle() {
     mutationFn: async (params) => authFetch.post("switch-account", params),
     onSuccess: async () => {
       queryClient.removeQueries();
+      // queryClient.removeQueries({
+      //   predicate: (query) => query.queryKey[0] !== "authUser",
+      // });
       return queryClient.refetchQueries();
     },
   });
