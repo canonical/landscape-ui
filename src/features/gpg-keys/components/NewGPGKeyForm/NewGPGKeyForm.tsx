@@ -10,10 +10,12 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import type { FormProps } from "./types";
 import { INITIAL_VALUES } from "./constants";
 import { getFormikError } from "@/utils/formikErrors";
+import useNotify from "@/hooks/useNotify";
 
 const NewGPGKeyForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
   const debug = useDebug();
+  const { notify } = useNotify();
   const { importGPGKeyQuery, getGPGKeysQuery } = useGPGKeys();
 
   const { mutateAsync } = importGPGKeyQuery;
@@ -47,6 +49,11 @@ const NewGPGKeyForm: FC = () => {
         await mutateAsync(values);
 
         closeSidePanel();
+
+        notify.success({
+          title: "GPG key imported",
+          message: `GPG key "${values.name}" was imported successfully.`,
+        });
       } catch (error) {
         debug(error);
       }
