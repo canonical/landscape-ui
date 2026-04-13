@@ -2,10 +2,7 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import {
-  pluralize,
-  pluralizeArray,
-} from "@/utils/_helpers";
+import { pluralize, pluralizeArray } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useRemoveInstancesFromLandscape } from "../../api";
 

@@ -15,19 +15,18 @@ export const useRemoveInstancesFromLandscape = () => {
   const { isFeatureEnabled } = useAuth();
   const queryClient = useQueryClient();
 
-
   if (isFeatureEnabled("computer-soft-deletion")) {
     const authFetch = useFetch();
     const { isPending, mutateAsync } = useMutation<
-    AxiosResponse<Instance[]>,
-    AxiosError<ApiError>,
-    RemoveInstancesParams
-  >({
-    mutationFn: async (params: RemoveInstancesParams) =>
-      authFetch.post("computers:delete", params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["instances"] }),
-  });
+      AxiosResponse<Instance[]>,
+      AxiosError<ApiError>,
+      RemoveInstancesParams
+    >({
+      mutationFn: async (params: RemoveInstancesParams) =>
+        authFetch.post("computers:delete", params),
+      onSuccess: async () =>
+        queryClient.invalidateQueries({ queryKey: ["instances"] }),
+    });
 
     return {
       removeInstancesFromLandscape: mutateAsync,

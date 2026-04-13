@@ -90,16 +90,16 @@ export const features: Feature[] = [
     },
   },
   {
-      name: "Computer Soft Deletion",
-      description:
-        "Soft delete computers instead of hard deleting them. Soft-deleted computers still exist in the database, but will be filtered out and eventually removed.",
-      key: "computer-soft-deletion",
-      database_key: 12,
-      enabled: true,
-      details: {
-          configuration: true,
-          // self_hosted_default: false,
-          account: true
-      },
+    name: "Computer Soft Deletion",
+    description:
+      "Soft delete computers instead of hard deleting them. Soft-deleted computers still exist in the database, but will be filtered out and eventually removed.",
+    key: "computer-soft-deletion",
+    database_key: 12,
+    enabled: true,
+    details: {
+      configuration: true,
+      // self_hosted_default: false,
+      account: true,
+    },
   },
 ];
