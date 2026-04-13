@@ -17,7 +17,7 @@ const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline }) => {
   );
 
   if (inline) {
-    return <div role="status">{spinningElement}</div>;
+    return <span role="status">{spinningElement}</span>;
   }
 
   return (
