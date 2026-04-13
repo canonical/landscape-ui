@@ -4,6 +4,7 @@ import type {
   DistributionUpgradeTarget,
   GetInstanceParams,
   GetInstancesParams,
+  RemoveInstancesParams,
   SanitizeInstanceParams,
 } from "@/features/instances";
 import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
@@ -435,6 +436,18 @@ export default [
     `${API_URL}computers/:computerId/recovery-key`,
     async () => {
       return new HttpResponse(null, { status: 204 });
+    },
+  ),
+
+  http.get<never, RemoveInstancesParams, Instance[]>(
+    API_URL_OLD,
+    async ({ request }) => {
+      if (!isAction(request, ["RemoveComputers"])) {
+        return;
+      }
+      await delay();
+
+      return HttpResponse.json(instances);
     },
   ),
 
