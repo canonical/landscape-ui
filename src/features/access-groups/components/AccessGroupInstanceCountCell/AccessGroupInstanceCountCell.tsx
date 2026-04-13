@@ -1,6 +1,6 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { useGetInstances } from "@/features/instances";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import { Spinner } from "@canonical/react-components";
 import { type FC } from "react";
 import { Link } from "react-router";
 import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
@@ -21,12 +21,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   });
 
   if (isGettingInstances) {
-    return (
-      <>
-        <span className="u-off-screen">Loading...</span>
-        <Spinner aria-hidden />
-      </>
-    );
+    return <LoadingState inline />;
   }
 
   if (instancesCount) {

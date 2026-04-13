@@ -1,12 +1,12 @@
+import LoadingState from "../LoadingState";
 import type { FC } from "react";
 import classes from "./Redirecting.module.scss";
 
 const Redirecting: FC = () => {
   return (
     <div className={classes.root}>
-      <span role="status" className={classes.icon}>
-        <span className="u-off-screen">Redirecting...</span>
-        <i className="p-icon--spinner u-animation--spin" aria-hidden />
+      <span className={classes.icon}>
+        <LoadingState inline />
       </span>
       <span>Redirecting...</span>
     </div>
