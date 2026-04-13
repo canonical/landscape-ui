@@ -34,7 +34,11 @@ export default [
         endpointStatus.path === "ListPocketMany"
           ? Array.from({ length: 25 }, (_, index) => {
               const basePocket = listPockets[index % listPockets.length];
-              assert(basePocket);
+              if (!basePocket) {
+                throw new Error(
+                  "Expected at least one pocket in mock pocket data",
+                );
+              }
               return {
                 ...basePocket,
                 name: `${basePocket.name}-${index + 1}`,

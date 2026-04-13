@@ -50,7 +50,9 @@ export default [
     }
 
     const [role] = roleMocks;
-    assert(role);
+    if (!role) {
+      throw new Error("Expected at least one role in mock role data");
+    }
 
     const { searchParams } = new URL(request.url);
     const roleName = searchParams.get("name");

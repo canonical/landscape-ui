@@ -10,7 +10,9 @@ import { getEndpointStatusApiError } from "./_constants";
 
 const [defaultAccount] = userDetails.accounts;
 
-assert(defaultAccount);
+if (!defaultAccount) {
+  throw new Error("Expected at least one account in mock userDetails data");
+}
 
 const userCredentials: UserCredentials = {
   credentials: [
