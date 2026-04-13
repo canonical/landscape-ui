@@ -8,6 +8,7 @@
 
   & + :global(.p-search-and-filter__panel) {
     background-color: $colors--theme--background-default;
+    z-index: var(--z-page-dropdown);
   }
 }
 
