@@ -4,6 +4,7 @@ import type { QueryFnType } from "@/types/api/QueryFnType.d";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { PublicationTarget, S3Target, SwiftTarget } from "../types";
+import * from "@canonical/landscape-openapi";
 
 interface GetPublicationTargetsResponse {
   publication_targets: PublicationTarget[];
