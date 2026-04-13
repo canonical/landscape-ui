@@ -13,9 +13,7 @@ const RemovalProfileEditSidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>
-        Edit &quot;{removalProfile.title}&quot; profile
-      </SidePanel.Header>
+      <SidePanel.Header>Edit {removalProfile.title}</SidePanel.Header>
       <SidePanel.Content>
         <SingleRemovalProfileForm action="edit" profile={removalProfile} />;
       </SidePanel.Content>

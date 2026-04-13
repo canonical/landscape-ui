@@ -19,7 +19,7 @@ describe("RemovalProfileEditSidePanel", () => {
 
     expect(
       screen.findByRole("heading", {
-        name: `Edit "${removalProfile.title}" profile`,
+        name: `Edit ${removalProfile.title}`,
       }),
     );
   });

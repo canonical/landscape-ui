@@ -1,15 +1,14 @@
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
+import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ScriptProfilesTab from "./ScriptProfilesTab";
+import RepositoryProfilesPage from "./RepositoryProfilesPage";
 import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
 
-describe("ScriptProfilesTab", () => {
+describe("RepositoryProfilesPage", () => {
   it("has a button to add a profile", async () => {
-    renderWithProviders(<ScriptProfilesTab />);
-
+    renderWithProviders(<RepositoryProfilesPage />);
     const user = userEvent.setup();
 
     await user.click(
@@ -18,41 +17,41 @@ describe("ScriptProfilesTab", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: "Add script profile" }),
+      await screen.findByRole("heading", { name: "Add repository profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
 
     expect(
-      screen.queryByRole("heading", { name: "Add script profile" }),
+      screen.queryByRole("heading", { name: "Add repository profile" }),
     ).not.toBeInTheDocument();
   });
 
   it("renders a side panel to edit", async () => {
     renderWithProviders(
-      <ScriptProfilesTab />,
+      <RepositoryProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=edit&profile=${repositoryProfiles[0].name}`,
     );
 
-    await expectLoadingState();
+    expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Edit ${scriptProfiles[0].title}`,
+        name: `Edit ${repositoryProfiles[0].title}`,
       }),
     ).toBeInTheDocument();
   });
 
   it("renders a side panel to view", async () => {
     renderWithProviders(
-      <ScriptProfilesTab />,
+      <RepositoryProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=view&profile=${repositoryProfiles[0].name}`,
     );
 
-    await expectLoadingState();
+    expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: scriptProfiles[0].title,
+        name: repositoryProfiles[0].title,
       }),
     ).toBeInTheDocument();
   });

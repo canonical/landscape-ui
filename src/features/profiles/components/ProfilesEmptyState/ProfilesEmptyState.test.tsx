@@ -30,8 +30,8 @@ describe("ProfilesEmptyState", () => {
       expect.stringContaining(`${type.toLocaleLowerCase()}-profile`),
     );
 
-    expect(
-      screen.getByRole("button", { name: "Add profile" }),
-    ).toHaveIcon("plus");
+    expect(screen.getByRole("button", { name: "Add profile" })).toHaveIcon(
+      "plus",
+    );
   });
 });

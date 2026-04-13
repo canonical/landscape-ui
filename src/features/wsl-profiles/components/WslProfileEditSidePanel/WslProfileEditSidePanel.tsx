@@ -12,9 +12,7 @@ const WslProfileEditSidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>
-        Edit &quot;{wslProfile.title}&quot; profile
-      </SidePanel.Header>
+      <SidePanel.Header>Edit {wslProfile.title}</SidePanel.Header>
       <SidePanel.Content>
         <WslProfileEditForm profile={wslProfile} />
       </SidePanel.Content>

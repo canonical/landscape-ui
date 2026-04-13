@@ -30,7 +30,6 @@ const RepositoryProfileAddSidePanel = lazy(async () =>
   })),
 );
 
-
 const RepositoryProfilesPage: FC = () => {
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
   const { data: getRepositoryProfilesResult, isPending } =

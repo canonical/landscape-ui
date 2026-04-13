@@ -1,15 +1,16 @@
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
+import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ScriptProfilesTab from "./ScriptProfilesTab";
-import { expectLoadingState } from "@/tests/helpers";
+import UpgradeProfilesPage from "./UpgradeProfilesPage";
 import userEvent from "@testing-library/user-event";
+import { expectLoadingState } from "@/tests/helpers";
 
-describe("ScriptProfilesTab", () => {
+describe("UpgradeProfilesPage", () => {
+  const [selectedUpgradeProfile] = upgradeProfiles;
+
   it("has a button to add a profile", async () => {
-    renderWithProviders(<ScriptProfilesTab />);
-
+    renderWithProviders(<UpgradeProfilesPage />);
     const user = userEvent.setup();
 
     await user.click(
@@ -18,41 +19,41 @@ describe("ScriptProfilesTab", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: "Add script profile" }),
+      await screen.findByRole("heading", { name: "Add upgrade profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
 
     expect(
-      screen.queryByRole("heading", { name: "Add script profile" }),
+      screen.queryByRole("heading", { name: "Add upgrade profile" }),
     ).not.toBeInTheDocument();
   });
 
   it("renders a side panel to edit", async () => {
     renderWithProviders(
-      <ScriptProfilesTab />,
+      <UpgradeProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=edit&profile=${selectedUpgradeProfile.id}`,
     );
 
-    await expectLoadingState();
+    expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Edit ${scriptProfiles[0].title}`,
+        name: `Edit ${selectedUpgradeProfile.title}`,
       }),
     ).toBeInTheDocument();
   });
 
   it("renders a side panel to view", async () => {
     renderWithProviders(
-      <ScriptProfilesTab />,
+      <UpgradeProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=view&profile=${selectedUpgradeProfile.id}`,
     );
 
-    await expectLoadingState();
+    expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: scriptProfiles[0].title,
+        name: selectedUpgradeProfile.title,
       }),
     ).toBeInTheDocument();
   });

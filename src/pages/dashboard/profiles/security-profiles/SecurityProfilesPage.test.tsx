@@ -1,15 +1,14 @@
-import { expectLoadingState } from "@/tests/helpers";
-import { packageProfiles } from "@/tests/mocks/package-profiles";
+import { securityProfiles } from "@/tests/mocks/securityProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import SecurityProfilesPage from "./SecurityProfilesPage";
 import userEvent from "@testing-library/user-event";
-import { describe, expect } from "vitest";
-import PackageProfilesPage from "./PackageProfilesPage";
+import { expectLoadingState } from "@/tests/helpers";
 
-describe("PackageProfilesPage", () => {
+describe("SecurityProfilesPage", () => {
   it("has a button to add a profile", async () => {
-    renderWithProviders(<PackageProfilesPage />);
-
+    renderWithProviders(<SecurityProfilesPage />);
     const user = userEvent.setup();
 
     await user.click(
@@ -18,86 +17,88 @@ describe("PackageProfilesPage", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: "Add package profile" }),
+      await screen.findByRole("heading", {
+        name: expect.stringContaining("Add security profile"),
+      }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
 
     expect(
-      screen.queryByRole("heading", { name: "Add package profile" }),
+      screen.queryByRole("heading", { name: "Add security profile" }),
     ).not.toBeInTheDocument();
   });
 
-  it("has a side panel to add constraints", async () => {
+  it("renders a side panel to download", async () => {
     renderWithProviders(
-      <PackageProfilesPage />,
+      <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=add-constraints&profile=${packageProfiles[0].name}`,
+      `/?sidePath=download&profile=${securityProfiles[1].id}`,
     );
 
     expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Add package constraints to "${packageProfiles[0].title}" profile`,
+        name: `Download audit for ${securityProfiles[1].title} security profile`,
       }),
     ).toBeInTheDocument();
   });
 
-  it("has a side panel to duplicate", async () => {
+  it("renders a side panel to duplicate", async () => {
     renderWithProviders(
-      <PackageProfilesPage />,
+      <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=duplicate&profile=${packageProfiles[0].name}`,
+      `/?sidePath=duplicate&profile=${securityProfiles[1].id}`,
     );
 
     expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Duplicate ${packageProfiles[0].title}`,
+        name: `Duplicate ${securityProfiles[1].title}`,
       }),
     ).toBeInTheDocument();
   });
 
-  it("has a side panel to edit", async () => {
+  it("renders a side panel to edit", async () => {
     renderWithProviders(
-      <PackageProfilesPage />,
+      <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${packageProfiles[0].name}`,
+      `/?sidePath=edit&profile=${securityProfiles[1].id}`,
     );
 
     expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Edit ${packageProfiles[0].title}`,
+        name: `Edit ${securityProfiles[1].title}`,
       }),
     ).toBeInTheDocument();
   });
 
-  it("renders a side panel to edit constraints", async () => {
+  it("renders a side panel to run", async () => {
     renderWithProviders(
-      <PackageProfilesPage />,
+      <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=edit-constraints&profile=${packageProfiles[0].name}`,
+      `/?sidePath=run&profile=${securityProfiles[1].id}`,
     );
 
     expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Change "${packageProfiles[0].title}" profile's constraints`,
+        name: `Run "${securityProfiles[1].title}" profile`,
       }),
     ).toBeInTheDocument();
   });
 
   it("renders a side panel to view", async () => {
     renderWithProviders(
-      <PackageProfilesPage />,
+      <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${packageProfiles[0].name}`,
+      `/?sidePath=view&profile=${securityProfiles[1].id}`,
     );
 
     expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: packageProfiles[0].title,
+        name: securityProfiles[1].title,
       }),
     ).toBeInTheDocument();
   });

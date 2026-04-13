@@ -1,15 +1,14 @@
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
+import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import ScriptProfilesTab from "./ScriptProfilesTab";
-import { expectLoadingState } from "@/tests/helpers";
+import WslProfilesPage from "./WslProfilesPage";
 import userEvent from "@testing-library/user-event";
+import { expectLoadingState } from "@/tests/helpers";
 
-describe("ScriptProfilesTab", () => {
+describe("WslProfilesPage", () => {
   it("has a button to add a profile", async () => {
-    renderWithProviders(<ScriptProfilesTab />);
-
+    renderWithProviders(<WslProfilesPage />);
     const user = userEvent.setup();
 
     await user.click(
@@ -18,41 +17,40 @@ describe("ScriptProfilesTab", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: "Add script profile" }),
+      await screen.findByRole("heading", { name: "Add WSL profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
 
     expect(
-      screen.queryByRole("heading", { name: "Add script profile" }),
+      screen.queryByRole("heading", { name: "Add WSL profile" }),
     ).not.toBeInTheDocument();
   });
 
   it("renders a side panel to edit", async () => {
     renderWithProviders(
-      <ScriptProfilesTab />,
+      <WslProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=edit&profile=${wslProfiles[0].name}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Edit ${scriptProfiles[0].title}`,
+        name: `Edit ${wslProfiles[0].title}`,
       }),
     ).toBeInTheDocument();
   });
 
   it("renders a side panel to view", async () => {
     renderWithProviders(
-      <ScriptProfilesTab />,
+      <WslProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=view&profile=${wslProfiles[0].name}`,
     );
 
     await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: scriptProfiles[0].title,
+        name: wslProfiles[0].title,
       }),
     ).toBeInTheDocument();
   });

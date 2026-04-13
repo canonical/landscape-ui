@@ -3,7 +3,6 @@ import SidePanel from "@/components/layout/SidePanel";
 import RepositoryProfileForm from "../RepositoryProfileForm";
 
 const RepositoryProfileManageSidePanel: FC = () => {
-
   return (
     <>
       <SidePanel.Header>Add repository profile</SidePanel.Header>
