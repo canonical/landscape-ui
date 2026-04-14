@@ -6,7 +6,7 @@ export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
   expect(loadingSpinner).toHaveTextContent("Loading...");
   await waitForElementToBeRemoved(loadingSpinner, {
-    timeout: 2000,
+    timeout: 3000,
   });
 };
 

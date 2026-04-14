@@ -18,7 +18,7 @@ describe("RemovalProfileEditSidePanel", () => {
     await expectLoadingState();
 
     expect(
-      screen.findByRole("heading", {
+      screen.getByRole("heading", {
         name: `Edit ${removalProfile.title}`,
       }),
     ).toBeInTheDocument();
