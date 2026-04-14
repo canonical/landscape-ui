@@ -5,6 +5,16 @@ import { describe, expect, it } from "vitest";
 import UpgradeProfilesPage from "./UpgradeProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
+import type * as actualModule from "@/features/profiles";
+
+vi.mock("@/features/profiles", async () => {
+  const actual = await vi.importActual<typeof actualModule>("@/features/profiles");
+
+  return {
+    ...actual,
+    ProfilesContainer: () => <div>Package profiles table</div>
+  };
+});
 
 describe("UpgradeProfilesPage", () => {
   const [selectedUpgradeProfile] = upgradeProfiles;

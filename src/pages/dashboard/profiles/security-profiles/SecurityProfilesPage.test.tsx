@@ -5,6 +5,16 @@ import { describe, expect, it } from "vitest";
 import SecurityProfilesPage from "./SecurityProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
+import type * as actualModule from "@/features/profiles";
+
+vi.mock("@/features/profiles", async () => {
+  const actual = await vi.importActual<typeof actualModule>("@/features/profiles");
+
+  return {
+    ...actual,
+    ProfilesContainer: () => <div>Package profiles table</div>
+  };
+});
 
 describe("SecurityProfilesPage", () => {
   it("has a button to add a profile", async () => {
@@ -18,7 +28,7 @@ describe("SecurityProfilesPage", () => {
 
     expect(
       await screen.findByRole("heading", {
-        name: expect.stringContaining("Add security profile"),
+        name: "Add security profileStep 1 of 5",
       }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));

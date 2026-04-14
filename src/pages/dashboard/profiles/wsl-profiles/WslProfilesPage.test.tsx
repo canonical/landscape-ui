@@ -5,6 +5,16 @@ import { describe, expect, it } from "vitest";
 import WslProfilesPage from "./WslProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
+import type * as actualModule from "@/features/profiles";
+
+vi.mock("@/features/profiles", async () => {
+  const actual = await vi.importActual<typeof actualModule>("@/features/profiles");
+
+  return {
+    ...actual,
+    ProfilesContainer: () => <div>Package profiles table</div>
+  };
+});
 
 describe("WslProfilesPage", () => {
   it("has a button to add a profile", async () => {
@@ -14,7 +24,11 @@ describe("WslProfilesPage", () => {
     await user.click(
       await screen.findByRole("button", { name: "Add profile" }),
     );
-    await expectLoadingState();
+
+    await user.click(
+      await screen.findByRole("button", { name: "Add WSL profile" }),
+    );
+    expectLoadingState();
 
     expect(
       await screen.findByRole("heading", { name: "Add WSL profile" }),

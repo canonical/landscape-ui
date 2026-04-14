@@ -5,6 +5,16 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import PackageProfilesPage from "./PackageProfilesPage";
+import type * as actualModule from "@/features/profiles";
+
+vi.mock("@/features/profiles", async () => {
+  const actual = await vi.importActual<typeof actualModule>("@/features/profiles");
+
+  return {
+    ...actual,
+    ProfilesContainer: () => <div>Package profiles table</div>
+  };
+});
 
 describe("PackageProfilesPage", () => {
   it("has a button to add a profile", async () => {

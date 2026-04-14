@@ -5,6 +5,16 @@ import { describe, expect, it } from "vitest";
 import RebootProfilesPage from "./RebootProfilesPage";
 import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
+import type * as actualModule from "@/features/profiles";
+
+vi.mock("@/features/profiles", async () => {
+  const actual = await vi.importActual<typeof actualModule>("@/features/profiles");
+
+  return {
+    ...actual,
+    ProfilesContainer: () => <div>Package profiles table</div>
+  };
+});
 
 describe("RebootProfilesPage", () => {
   it("has a button to add a profile", async () => {
