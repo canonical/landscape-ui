@@ -46,7 +46,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=add-constraints&profile=${packageProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Add package constraints to "${packageProfiles[0].title}" profile`,
@@ -61,7 +61,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=duplicate&profile=${packageProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Duplicate ${packageProfiles[0].title}`,
@@ -76,7 +76,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=edit&profile=${packageProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${packageProfiles[0].title}`,
@@ -91,7 +91,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=edit-constraints&profile=${packageProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Change "${packageProfiles[0].title}" profile's constraints`,
@@ -106,7 +106,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=view&profile=${packageProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: packageProfiles[0].title,

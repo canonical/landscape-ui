@@ -77,7 +77,6 @@ const RebootProfilesPage: FC = () => {
 
       <SidePanel
         onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
-        key="add"
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

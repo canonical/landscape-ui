@@ -30,7 +30,7 @@ describe("WslProfilesPage", () => {
     await user.click(
       await screen.findByRole("button", { name: "Add WSL profile" }),
     );
-    expectLoadingState();
+    await expectLoadingState();
 
     expect(
       await screen.findByRole("heading", { name: "Add WSL profile" }),
@@ -49,6 +49,7 @@ describe("WslProfilesPage", () => {
       `/?sidePath=edit&profile=${wslProfiles[0].name}`,
     );
 
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${wslProfiles[0].title}`,

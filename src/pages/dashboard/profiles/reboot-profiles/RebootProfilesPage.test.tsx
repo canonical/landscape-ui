@@ -46,7 +46,7 @@ describe("RebootProfilesPage", () => {
       `/?sidePath=duplicate&profile=${rebootProfiles[0].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Duplicate ${rebootProfiles[0].title}`,
@@ -61,7 +61,7 @@ describe("RebootProfilesPage", () => {
       `/?sidePath=edit&profile=${rebootProfiles[0].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${rebootProfiles[0].title}`,
@@ -76,7 +76,7 @@ describe("RebootProfilesPage", () => {
       `/?sidePath=view&profile=${rebootProfiles[0].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: rebootProfiles[0].title,

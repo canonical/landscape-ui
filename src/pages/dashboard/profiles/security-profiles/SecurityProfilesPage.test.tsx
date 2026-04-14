@@ -47,7 +47,7 @@ describe("SecurityProfilesPage", () => {
       `/?sidePath=download&profile=${securityProfiles[1].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Download audit for ${securityProfiles[1].title} security profile`,
@@ -62,7 +62,7 @@ describe("SecurityProfilesPage", () => {
       `/?sidePath=duplicate&profile=${securityProfiles[1].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Duplicate ${securityProfiles[1].title}`,
@@ -77,7 +77,7 @@ describe("SecurityProfilesPage", () => {
       `/?sidePath=edit&profile=${securityProfiles[1].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${securityProfiles[1].title}`,
@@ -92,7 +92,7 @@ describe("SecurityProfilesPage", () => {
       `/?sidePath=run&profile=${securityProfiles[1].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Run "${securityProfiles[1].title}" profile`,
@@ -107,7 +107,7 @@ describe("SecurityProfilesPage", () => {
       `/?sidePath=view&profile=${securityProfiles[1].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: securityProfiles[1].title,

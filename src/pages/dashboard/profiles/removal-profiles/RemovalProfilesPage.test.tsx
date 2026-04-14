@@ -46,7 +46,7 @@ describe("RemovalProfilesPage", () => {
       `/?sidePath=edit&profile=${removalProfiles[0].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${removalProfiles[0].title}`,
@@ -61,7 +61,7 @@ describe("RemovalProfilesPage", () => {
       `/?sidePath=view&profile=${removalProfiles[0].id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: removalProfiles[0].title,

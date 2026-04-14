@@ -45,7 +45,7 @@ describe("RepositoryProfilesPage", () => {
       `/?sidePath=edit&profile=${repositoryProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${repositoryProfiles[0].title}`,
@@ -60,7 +60,7 @@ describe("RepositoryProfilesPage", () => {
       `/?sidePath=view&profile=${repositoryProfiles[0].name}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: repositoryProfiles[0].title,

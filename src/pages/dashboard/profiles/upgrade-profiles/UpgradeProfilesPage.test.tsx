@@ -47,7 +47,7 @@ describe("UpgradeProfilesPage", () => {
       `/?sidePath=edit&profile=${selectedUpgradeProfile.id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${selectedUpgradeProfile.title}`,
@@ -62,7 +62,7 @@ describe("UpgradeProfilesPage", () => {
       `/?sidePath=view&profile=${selectedUpgradeProfile.id}`,
     );
 
-    expectLoadingState();
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: selectedUpgradeProfile.title,
