@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import useRemovePublication from "../../api/useRemovePublication";
+import useDeletePublication from "../../api/useDeletePublication";
 import type { Publication } from "../../types";
 
 interface RemovePublicationModalProps extends Pick<
@@ -20,13 +20,13 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { removePublicationQuery } = useRemovePublication();
-  const { mutateAsync: removePublication, isPending: isRemovingPublication } =
-    removePublicationQuery;
+  const { deletePublicationQuery } = useDeletePublication();
+  const { mutateAsync: deletePublication, isPending: isRemovingPublication } =
+    deletePublicationQuery;
 
   const handleRemovePublication = async () => {
     try {
-      await removePublication({ name: publication.name });
+      await deletePublication({ publicationName: publication.name });
 
       notify.success({
         title: "Publication removed",

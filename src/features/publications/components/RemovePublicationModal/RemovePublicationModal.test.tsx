@@ -10,6 +10,7 @@ import RemovePublicationModal from "./RemovePublicationModal";
 describe("RemovePublicationModal", () => {
   const user = userEvent.setup();
   const [publication] = publications;
+  const publicationLabel = publication.name;
 
   it("does not render when closed", () => {
     const props: ComponentProps<typeof RemovePublicationModal> = {
@@ -39,7 +40,7 @@ describe("RemovePublicationModal", () => {
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(await screen.findByText("Publication removed")).toBeInTheDocument();
     expect(
-      screen.getByText(`Publication "${publication.name}" has been removed.`),
+      screen.getByText(`Publication "${publicationLabel}" has been removed.`),
     ).toBeInTheDocument();
   });
 
@@ -50,7 +51,7 @@ describe("RemovePublicationModal", () => {
       publication,
     };
 
-    setEndpointStatus({ status: "error", path: "RemovePublication" });
+    setEndpointStatus({ status: "error", path: "v1/publications" });
 
     renderWithProviders(<RemovePublicationModal {...props} />);
 

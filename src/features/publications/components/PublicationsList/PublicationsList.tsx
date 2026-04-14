@@ -11,8 +11,6 @@ import type { Publication } from "../../types";
 import PublicationDetails from "../PublicationDetails";
 import PublicationsListActions from "../PublicationsListActions";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -51,34 +49,31 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         ),
       },
       {
-        accessor: "source_type",
-        Header: "source type",
+        accessor: "mirror",
+        Header: "mirror",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <>{original.source_type}</>
+          <StaticLink to="/">{original.mirror}</StaticLink>
         ),
       },
       {
-        accessor: "source",
-        Header: "source",
-        Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to={"/"}>{original.source}</StaticLink>
-        ),
-      },
-      {
-        accessor: "publication_target",
+        accessor: "publicationTarget",
         Header: "publication target",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to={"/"}>{original.publication_target}</StaticLink>
+          <StaticLink to="/">{original.publicationTarget}</StaticLink>
         ),
       },
       {
-        accessor: "date_published",
-        Header: "date published",
+        accessor: "distribution",
+        Header: "distribution",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <>
-            {moment(original.date_published).format(DISPLAY_DATE_TIME_FORMAT)}{" "}
-            UTC
-          </>
+          <>{original.distribution}</>
+        ),
+      },
+      {
+        accessor: "component",
+        Header: "component",
+        Cell: ({ row: { original } }: CellProps<Publication>) => (
+          <>{original.component}</>
         ),
       },
       {

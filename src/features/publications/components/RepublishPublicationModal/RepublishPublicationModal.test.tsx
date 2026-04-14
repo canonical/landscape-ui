@@ -10,6 +10,7 @@ import RepublishPublicationModal from "./RepublishPublicationModal";
 describe("RepublishPublicationModal", () => {
   const user = userEvent.setup();
   const [publication] = publications;
+  const publicationLabel = publication.name;
 
   it("does not render when closed", () => {
     const props: ComponentProps<typeof RepublishPublicationModal> = {
@@ -21,7 +22,7 @@ describe("RepublishPublicationModal", () => {
     renderWithProviders(<RepublishPublicationModal {...props} />);
 
     expect(
-      screen.queryByRole("heading", { name: `Republish ${publication.name}` }),
+      screen.queryByRole("heading", { name: `Republish ${publicationLabel}` }),
     ).not.toBeInTheDocument();
   });
 
@@ -42,7 +43,7 @@ describe("RepublishPublicationModal", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        `Publication "${publication.name}" has been queued for republishing.`,
+        `Publication "${publicationLabel}" has been queued for republishing.`,
       ),
     ).toBeInTheDocument();
   });
@@ -54,7 +55,7 @@ describe("RepublishPublicationModal", () => {
       publication,
     };
 
-    setEndpointStatus({ status: "error", path: "RepublishPublication" });
+    setEndpointStatus({ status: "error", path: "v1/publications/publish" });
 
     renderWithProviders(<RepublishPublicationModal {...props} />);
 

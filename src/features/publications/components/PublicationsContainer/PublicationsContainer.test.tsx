@@ -10,17 +10,31 @@ describe("PublicationsContainer", () => {
     renderWithProviders(<PublicationsContainer />);
 
     expect(
-      await screen.findByRole("button", { name: publications[0].name }),
+      await screen.findByRole("button", {
+        name: publications[0].name,
+      }),
     ).toBeInTheDocument();
   });
 
-  it("renders table empty message when API returns no publications", async () => {
+  it("renders publication target empty state when there are no publication targets", async () => {
+    setEndpointStatus({ status: "empty", path: "publicationTargets" });
+
+    renderWithProviders(<PublicationsContainer />);
+
+    expect(
+      await screen.findByText(
+        /you must first add a publication target in order to add a publication/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders publication empty state when there are no publications", async () => {
     setEndpointStatus({ status: "empty", path: "publications" });
 
     renderWithProviders(<PublicationsContainer />);
 
     expect(
-      await screen.findByText(/no profiles found with the search/i),
+      await screen.findByText(/you don.t have any publications yet/i),
     ).toBeInTheDocument();
   });
 });

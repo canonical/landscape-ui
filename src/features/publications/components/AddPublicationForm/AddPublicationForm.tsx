@@ -3,6 +3,7 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Form,
@@ -16,32 +17,63 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
+import useCreatePublication from "../../api/useCreatePublication";
+import useGetLocals from "../../api/useGetLocals";
+import useGetMirrors from "../../api/useGetMirrors";
+import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
-  PUBLICATION_TARGET_OPTIONS,
+  LOCAL_ARCHITECTURES_PLACEHOLDER,
   SETTINGS_HELP_TEXT,
-  SOURCE_OPTIONS,
+  SOURCE_TYPE_LOCAL_REPOSITORY,
+  SOURCE_TYPE_MIRROR,
   SOURCE_TYPE_OPTIONS,
 } from "./constants";
 import { getPublicationPayload, VALIDATION_SCHEMA } from "./helpers";
 import type { FormProps } from "./types";
 
+interface SelectableSource {
+  label: string;
+  value: string;
+  sourceType: string;
+  distribution?: string;
+  component?: string;
+  components: string[];
+  architectures: string[];
+}
+
+const stripResourcePrefix = (value?: string, prefix?: string) => {
+  if (!value || !prefix) {
+    return value ?? "";
+  }
+
+  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
+};
+
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
+  const { mirrors, isGettingMirrors } = useGetMirrors();
+  const { locals, isGettingLocals } = useGetLocals();
+  const { publicationTargets, isGettingPublicationTargets } =
+    useGetPublicationTargets();
+  const { createPublicationQuery } = useCreatePublication();
+  const { mutateAsync: createPublication, isPending: isCreatingPublication } =
+    createPublicationQuery;
 
   const formik = useFormik<FormProps>({
     initialValues: INITIAL_VALUES,
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
-        await Promise.resolve(getPublicationPayload(values));
+        const payload = getPublicationPayload(values);
+        await createPublication(payload);
 
         notify.success({
-          title: "Publication queued",
-          message: `Publication "${values.name}" has been queued for publishing.`,
+          title: "Publication created",
+          message: `Publication "${values.name}" has been created.`,
         });
 
         closeSidePanel();
@@ -51,24 +83,86 @@ const AddPublicationForm: FC = () => {
     },
   });
 
+  const mirrorSources = useMemo<SelectableSource[]>(
+    () =>
+      mirrors
+        .filter((mirror) => Boolean(mirror.name))
+        .map((mirror) => ({
+          label: mirror.displayName,
+          value: stripResourcePrefix(mirror.name, "mirrors/"),
+          sourceType: SOURCE_TYPE_MIRROR,
+          distribution: mirror.distribution,
+          components: mirror.components ?? [],
+          architectures: mirror.architectures ?? [],
+        })),
+    [mirrors],
+  );
+
+  const localSources = useMemo<SelectableSource[]>(
+    () =>
+      locals
+        .filter((localSource) => Boolean(localSource.name))
+        .map((localSource) => ({
+          label: localSource.displayName,
+          value: stripResourcePrefix(localSource.name, "locals/"),
+          sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
+          distribution: localSource.defaultDistribution,
+          component: localSource.defaultComponent,
+          components: [],
+          architectures: [],
+        })),
+    [locals],
+  );
+
+  const selectableSources = useMemo(() => {
+    if (formik.values.source_type === SOURCE_TYPE_MIRROR) {
+      return mirrorSources;
+    }
+
+    if (formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY) {
+      return localSources;
+    }
+
+    return [];
+  }, [formik.values.source_type, localSources, mirrorSources]);
+
   const sourceOptions = useMemo(
     () => [
       { label: "Select source", value: "" },
-      ...SOURCE_OPTIONS.filter(
-        ({ sourceType }) => sourceType === formik.values.source_type,
-      ).map(({ label, value }) => ({ label, value })),
+      ...selectableSources.map(({ label, value }) => ({ label, value })),
     ],
-    [formik.values.source_type],
+    [selectableSources],
   );
 
-  const selectedSource = SOURCE_OPTIONS.find(
+  const selectedSource = selectableSources.find(
     ({ value }) => value === formik.values.source,
+  );
+
+  const isLocalSourceType =
+    formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY;
+
+  const isGettingSources = isGettingLocals || isGettingMirrors;
+
+  const publicationTargetOptions = useMemo<SelectOption[]>(
+    () => [
+      { label: "Select publication target", value: "" },
+      ...publicationTargets
+        .filter((publicationTarget) => Boolean(publicationTarget.name))
+        .map((publicationTarget) => ({
+          label: publicationTarget.displayName,
+          value: stripResourcePrefix(
+            publicationTarget.name,
+            "publicationTargets/",
+          ),
+        })),
+    ],
+    [publicationTargets],
   );
 
   const componentOptions = useMemo(
     () => [
       {
-        label: selectedSource?.label,
+        label: "Select component",
         value: "",
       },
       ...(selectedSource?.components ?? []).map((component) => ({
@@ -82,7 +176,7 @@ const AddPublicationForm: FC = () => {
   const architectureOptions = useMemo(
     () => [
       {
-        label: selectedSource?.label,
+        label: "Select architecture",
         value: "",
       },
       ...(selectedSource?.architectures ?? []).map((architecture) => ({
@@ -107,13 +201,24 @@ const AddPublicationForm: FC = () => {
     event: React.ChangeEvent<HTMLSelectElement>,
   ): Promise<void> => {
     const sourceValue = event.target.value;
-    const source = SOURCE_OPTIONS.find(({ value }) => value === sourceValue);
+    const source = selectableSources.find(({ value }) => value === sourceValue);
 
     await formik.setFieldValue("source", sourceValue);
     await formik.setFieldValue(
       "uploader_distribution",
       source?.distribution ?? "",
     );
+
+    if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
+      await formik.setFieldValue("uploader_components", source.component ?? "");
+      await formik.setFieldValue(
+        "uploader_architectures",
+        LOCAL_ARCHITECTURES_PLACEHOLDER,
+      );
+
+      return;
+    }
+
     await formik.setFieldValue("uploader_components", "");
     await formik.setFieldValue("uploader_architectures", "");
   };
@@ -149,7 +254,7 @@ const AddPublicationForm: FC = () => {
           <Select
             label="Source"
             required
-            disabled={!formik.values.source_type}
+            disabled={!formik.values.source_type || isGettingSources}
             options={sourceOptions}
             error={getFormikError(formik, "source")}
             {...formik.getFieldProps("source")}
@@ -159,7 +264,8 @@ const AddPublicationForm: FC = () => {
           <Select
             label="Publication target"
             required
-            options={PUBLICATION_TARGET_OPTIONS}
+            disabled={isGettingPublicationTargets}
+            options={publicationTargetOptions}
             error={getFormikError(formik, "publication_target")}
             {...formik.getFieldProps("publication_target")}
           />
@@ -219,24 +325,72 @@ const AddPublicationForm: FC = () => {
             <Icon name="lock-locked" aria-hidden />
           </div>
 
-          <Select
-            label="Components"
-            required
-            disabled={!formik.values.source}
-            options={componentOptions}
-            error={getFormikError(formik, "uploader_components")}
-            {...formik.getFieldProps("uploader_components")}
-          />
+          {isLocalSourceType ? (
+            <>
+              <label
+                className="p-form__label is-required"
+                htmlFor="uploader_components"
+              >
+                Components
+              </label>
+              <div
+                className={classNames(
+                  "u-no-margin--bottom",
+                  classes.derivedDistribution,
+                )}
+              >
+                <span
+                  className={classes.derivedDistributionValue}
+                  id="uploader_components"
+                >
+                  {formik.values.uploader_components || "-"}
+                </span>
+                <Icon name="lock-locked" aria-hidden />
+              </div>
 
-          <Select
-            label="Architectures"
-            required
-            disabled={!formik.values.source}
-            options={architectureOptions}
-            error={getFormikError(formik, "uploader_architectures")}
-            {...formik.getFieldProps("uploader_architectures")}
-            className="u-no-margin--bottom"
-          />
+              <label
+                className="p-form__label is-required"
+                htmlFor="uploader_architectures"
+              >
+                Architectures
+              </label>
+              <div
+                className={classNames(
+                  "u-no-margin--bottom",
+                  classes.derivedDistribution,
+                )}
+              >
+                <span
+                  className={classes.derivedDistributionValue}
+                  id="uploader_architectures"
+                >
+                  {LOCAL_ARCHITECTURES_PLACEHOLDER}
+                </span>
+                <Icon name="lock-locked" aria-hidden />
+              </div>
+            </>
+          ) : (
+            <>
+              <Select
+                label="Components"
+                required
+                disabled={!formik.values.source}
+                options={componentOptions}
+                error={getFormikError(formik, "uploader_components")}
+                {...formik.getFieldProps("uploader_components")}
+              />
+
+              <Select
+                label="Architectures"
+                required
+                disabled={!formik.values.source}
+                options={architectureOptions}
+                error={getFormikError(formik, "uploader_architectures")}
+                {...formik.getFieldProps("uploader_architectures")}
+                className="u-no-margin--bottom"
+              />
+            </>
+          )}
         </Blocks.Item>
 
         <Blocks.Item
@@ -325,7 +479,7 @@ const AddPublicationForm: FC = () => {
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonDisabled={formik.isSubmitting || isCreatingPublication}
         submitButtonText="Add publication"
       />
     </Form>

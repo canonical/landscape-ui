@@ -27,7 +27,7 @@ const NoPublicationTargetEmptyState = () => {
           key="add-publication-target-button"
           type="button"
         >
-          <Icon name="plus" />
+          <Icon name="plus" light />
           <span>Add publication target</span>
         </Button>,
       ]}

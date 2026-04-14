@@ -1,53 +1,17 @@
 import type { SelectOption } from "@/types/SelectOption";
 import type { FormProps } from "./types";
 
-interface SourceOption {
-  label: string;
-  value: string;
-  sourceType: "Mirror" | "Local repository";
-  distribution: string;
-  components: string[];
-  architectures: string[];
-}
+export const SOURCE_TYPE_MIRROR = "Mirror";
+export const SOURCE_TYPE_LOCAL_REPOSITORY = "Local repository";
+export const LOCAL_ARCHITECTURES_PLACEHOLDER = "PLACEHOLDER";
 
 export const SOURCE_TYPE_OPTIONS: SelectOption[] = [
   { label: "Select source type", value: "" },
-  { label: "Mirror", value: "Mirror" },
-  { label: "Local repository", value: "Local repository" },
-];
-
-export const SOURCE_OPTIONS: SourceOption[] = [
+  { label: SOURCE_TYPE_MIRROR, value: SOURCE_TYPE_MIRROR },
   {
-    label: "Ubuntu archive mirror",
-    value: "ubuntu-archive-mirror",
-    sourceType: "Mirror",
-    distribution: "jammy",
-    components: ["main", "restricted", "universe", "multiverse"],
-    architectures: ["amd64", "arm64"],
+    label: SOURCE_TYPE_LOCAL_REPOSITORY,
+    value: SOURCE_TYPE_LOCAL_REPOSITORY,
   },
-  {
-    label: "Security mirror",
-    value: "ubuntu-security-mirror",
-    sourceType: "Mirror",
-    distribution: "noble",
-    components: ["main", "universe"],
-    architectures: ["amd64"],
-  },
-  {
-    label: "Internal packages",
-    value: "internal-packages",
-    sourceType: "Local repository",
-    distribution: "focal",
-    components: ["main"],
-    architectures: ["amd64", "arm64", "ppc64el"],
-  },
-];
-
-export const PUBLICATION_TARGET_OPTIONS: SelectOption[] = [
-  { label: "Select publication target", value: "" },
-  { label: "Primary US mirror", value: "primary-us-mirror" },
-  { label: "EMEA mirror", value: "emea-mirror" },
-  { label: "Internal datacenter", value: "internal-datacenter" },
 ];
 
 export const SETTINGS_HELP_TEXT = {

@@ -1,10 +1,11 @@
 import type { Publication } from "../types";
-import useFetch from "@/hooks/useFetch";
+import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import usePageParams from "@/hooks/usePageParams";
 import type { ApiError } from "@/types/api/ApiError";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
+import type { ListPublicationsResponse } from "../types";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError } from "axios";
+import { useMemo } from "react";
 
 interface UseGetPublicationsReturnType {
   publications: Publication[];
@@ -13,29 +14,67 @@ interface UseGetPublicationsReturnType {
 }
 
 const useGetPublications = (): UseGetPublicationsReturnType => {
-  const authFetch = useFetch();
+  const authFetchDebArchive = useFetchDebArchive();
   const { currentPage, pageSize, search } = usePageParams();
 
-  const paramsWithPagination = {
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    search: search || undefined,
-  };
+  const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
+    queryKey: ["publications", "all"],
+    queryFn: async () => {
+      let pageToken: string | undefined;
+      const publications: Publication[] = [];
 
-  const { data, isLoading } = useQuery<
-    AxiosResponse<ApiPaginatedResponse<Publication>>,
-    AxiosError<ApiError>
-  >({
-    queryKey: ["publications", paramsWithPagination],
-    queryFn: async () =>
-      authFetch.get("publications", {
-        params: paramsWithPagination,
-      }),
+      do {
+        const response =
+          await authFetchDebArchive.get<ListPublicationsResponse>(
+            "publications",
+            {
+              params: {
+                pageSize,
+                pageToken,
+              },
+            },
+          );
+
+        publications.push(...(response.data.publications ?? []));
+        pageToken = response.data.nextPageToken || undefined;
+      } while (pageToken);
+
+      return publications;
+    },
   });
 
+  const filteredPublications = useMemo(() => {
+    const normalizedSearch = search?.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return data ?? [];
+    }
+
+    return (data ?? []).filter((publication) => {
+      const searchFields = [
+        publication.name,
+        publication.publicationId,
+        publication.publicationTarget,
+        publication.mirror,
+        publication.distribution,
+        publication.component,
+      ];
+
+      return searchFields.some((value) =>
+        value.toLowerCase().includes(normalizedSearch),
+      );
+    });
+  }, [data, search]);
+
+  const paginatedPublications = useMemo(() => {
+    const offset = (currentPage - 1) * pageSize;
+
+    return filteredPublications.slice(offset, offset + pageSize);
+  }, [currentPage, filteredPublications, pageSize]);
+
   return {
-    publications: data?.data.results ?? [],
-    publicationsCount: data?.data.count ?? 0,
+    publications: paginatedPublications,
+    publicationsCount: filteredPublications.length,
     isGettingPublications: isLoading,
   };
 };

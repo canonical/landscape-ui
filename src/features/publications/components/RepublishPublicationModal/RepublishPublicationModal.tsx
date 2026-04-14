@@ -2,7 +2,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import useRepublishPublication from "../../api/useRepublishPublication";
+import usePublishPublication from "../../api/usePublishPublication";
 import type { Publication } from "../../types";
 
 interface RepublishPublicationModalProps {
@@ -18,15 +18,21 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { republishPublicationQuery } = useRepublishPublication();
+  const { publishPublicationQuery } = usePublishPublication();
   const {
-    mutateAsync: republishPublication,
+    mutateAsync: publishPublication,
     isPending: isRepublishingPublication,
-  } = republishPublicationQuery;
+  } = publishPublicationQuery;
 
   const handleRepublishPublication = async () => {
     try {
-      await republishPublication({ name: publication.name });
+      await publishPublication({
+        publicationName: publication.name,
+        body: {
+          forceOverwrite: true,
+          forceCleanup: false,
+        },
+      });
 
       notify.success({
         title: "Publication republished",

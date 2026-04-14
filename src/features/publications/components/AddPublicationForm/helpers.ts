@@ -1,5 +1,15 @@
 import * as Yup from "yup";
 import type { FormProps } from "./types";
+import type { PublicationWritable } from "../../types";
+import {
+  LOCAL_ARCHITECTURES_PLACEHOLDER,
+  SOURCE_TYPE_LOCAL_REPOSITORY,
+} from "./constants";
+
+export interface CreatePublicationPayload {
+  publicationId?: string;
+  body: PublicationWritable;
+}
 
 const REQUIRED_FIELD_MESSAGE = "This field is required";
 
@@ -25,11 +35,21 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
       test: (value) => getCsvValues(value).length > 0,
     }),
   uploader_architectures: Yup.string()
-    .required(REQUIRED_FIELD_MESSAGE)
+    .when("source_type", {
+      is: SOURCE_TYPE_LOCAL_REPOSITORY,
+      then: (schema) => schema,
+      otherwise: (schema) => schema.required(REQUIRED_FIELD_MESSAGE),
+    })
     .test({
       name: "has-architectures",
       message: REQUIRED_FIELD_MESSAGE,
-      test: (value) => getCsvValues(value).length > 0,
+      test: (value, context) => {
+        if (context.parent.source_type === SOURCE_TYPE_LOCAL_REPOSITORY) {
+          return true;
+        }
+
+        return getCsvValues(value).length > 0;
+      },
     }),
   preserve_mirror_signing_key: Yup.boolean(),
   mirror_signing_key: Yup.string().when("preserve_mirror_signing_key", {
@@ -48,28 +68,51 @@ export const getPreviewValue = (value?: string): string => {
   return value?.trim() || "-";
 };
 
+const prependResourcePrefix = (value: string, prefix: string) => {
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return "";
+  }
+
+  if (trimmedValue.startsWith(prefix)) {
+    return trimmedValue;
+  }
+
+  return `${prefix}${trimmedValue}`;
+};
+
 export const getPublicationPayload = (values: FormProps) => {
+  const publicationId = values.name.trim() || undefined;
+  const components = getCsvValues(values.uploader_components);
+  const architectures =
+    values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY &&
+    values.uploader_architectures === LOCAL_ARCHITECTURES_PLACEHOLDER
+      ? []
+      : getCsvValues(values.uploader_architectures);
+
   return {
-    name: values.name.trim(),
-    source_type: values.source_type,
-    source: values.source.trim(),
-    publication_target: values.publication_target.trim(),
-    prefix: values.prefix.trim(),
-    uploaders: {
-      distribution: values.uploader_distribution.trim(),
-      components: getCsvValues(values.uploader_components),
-      architectures: getCsvValues(values.uploader_architectures),
-    },
-    signing: {
-      preserve_mirror_signing_key: values.preserve_mirror_signing_key,
-      mirror_signing_key: values.mirror_signing_key.trim() || null,
-    },
-    settings: {
-      hash_indexing: values.hash_indexing,
-      automatic_installation: values.automatic_installation,
-      automatic_upgrades: values.automatic_upgrades,
-      skip_bz2: values.skip_bz2,
-      skip_content_indexing: values.skip_content_indexing,
+    publicationId,
+    body: {
+      publicationTarget: prependResourcePrefix(
+        values.publication_target,
+        "publicationTargets/",
+      ),
+      mirror: prependResourcePrefix(values.source, "mirrors/"),
+      distribution: values.uploader_distribution.trim() || undefined,
+      component: components[0],
+      label: values.prefix.trim() || undefined,
+      architectures: architectures.length > 0 ? architectures : undefined,
+      acquireByHash: values.hash_indexing,
+      notAutomatic: !values.automatic_installation,
+      butAutomaticUpgrades: values.automatic_upgrades,
+      skipBz2: values.skip_bz2,
+      skipContents: values.skip_content_indexing,
+      gpgKey: values.preserve_mirror_signing_key
+        ? undefined
+        : {
+            armor: values.mirror_signing_key.trim(),
+          },
     },
   };
 };

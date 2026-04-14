@@ -1,9 +1,7 @@
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import moment from "moment";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
 
@@ -15,40 +13,40 @@ describe("PublicationsList", () => {
     renderWithProviders(<PublicationsList publications={publications} />);
 
     expect(screen.getByRole("columnheader", { name: "name" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "source type" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "source" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "mirror" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "publication target" }),
     ).toBeVisible();
     expect(
-      screen.getByRole("columnheader", { name: "date published" }),
+      screen.getByRole("columnheader", { name: "distribution" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "component" }),
     ).toBeVisible();
 
     expect(
-      screen.getByRole("button", { name: publication.name }),
+      screen.getByRole("button", {
+        name: publication.name,
+      }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: publication.source }),
+      screen.getByRole("link", { name: publication.mirror }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: publication.publication_target }),
+      screen.getByRole("link", { name: publication.publicationTarget }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        `${moment(publication.date_published).format(DISPLAY_DATE_TIME_FORMAT)} UTC`,
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText(publication.distribution)).toBeInTheDocument();
+    expect(screen.getByText(publication.component)).toBeInTheDocument();
   });
 
   it("opens publication details side panel", async () => {
     renderWithProviders(<PublicationsList publications={publications} />);
+    const publicationLabel = publication.name;
 
-    await user.click(screen.getByRole("button", { name: publication.name }));
+    await user.click(screen.getByRole("button", { name: publicationLabel }));
 
     expect(
-      screen.getByRole("heading", { name: publication.name }),
+      screen.getByRole("heading", { name: publicationLabel }),
     ).toBeInTheDocument();
   });
 

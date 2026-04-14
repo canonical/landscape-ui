@@ -16,6 +16,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
 }) => {
   const { setSidePanelContent } = useSidePanel();
+  const publicationLabel = publication.name;
 
   const {
     value: isRemoveModalOpen,
@@ -40,13 +41,13 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
-      "aria-label": `View details of "${publication.name}" publication`,
+      "aria-label": `View details of "${publicationLabel}" publication`,
       onClick: handlePublicationDetails,
     },
     {
       icon: "upload",
       label: "Republish",
-      "aria-label": `Republish "${publication.name}" publication`,
+      "aria-label": `Republish "${publicationLabel}" publication`,
       onClick: openRepublishModal,
     },
   ];
@@ -55,7 +56,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${publication.name}" publication`,
+      "aria-label": `Remove "${publicationLabel}" publication`,
       onClick: openRemovalModal,
     },
   ];
@@ -63,7 +64,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${publication.name} actions`}
+        toggleAriaLabel={`${publicationLabel} actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />

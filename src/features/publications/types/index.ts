@@ -1,1 +1,17 @@
-export type { Publication } from "./Publication";
+export type {
+  Any,
+  GpgKey,
+  GpgKeyWritable,
+  ListLocalsResponse,
+  ListMirrorsResponse,
+  ListPublicationsResponse,
+  ListPublicationTargetsResponse,
+  Local,
+  Mirror,
+  Publication,
+  PublicationTarget,
+  PublicationWritable,
+  PublishPublicationResponse,
+  Status,
+  Task,
+} from "./Publication";

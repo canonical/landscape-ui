@@ -1,9 +1,7 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { boolToLabel } from "@/utils/output";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import moment from "moment";
 import { useBoolean } from "usehooks-ts";
 import type { Publication } from "../../types";
 import RemovePublicationModal from "../RemovePublicationModal";
@@ -14,6 +12,8 @@ interface PublicationDetailsProps {
 }
 
 const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
+  const publicationLabel = publication.name;
+
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
@@ -40,7 +40,7 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
             className="p-segmented-control__button"
             onClick={openRepublishModal}
             hasIcon
-            aria-label={`Republish ${publication.name}`}
+            aria-label={`Republish ${publicationLabel}`}
           >
             <Icon name="upload" />
             <span>Republish</span>
@@ -51,7 +51,7 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
             className="p-segmented-control__button"
             onClick={openRemoveModal}
             hasIcon
-            aria-label={`Remove ${publication.name}`}
+            aria-label={`Remove ${publicationLabel}`}
           >
             <Icon name={`${ICONS.delete}--negative`} />
             <span className="u-text--negative">Remove</span>
@@ -64,45 +64,33 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
           <InfoGrid>
             <InfoGrid.Item label="Name" value={publication.name} />
 
-            <InfoGrid.Item
-              label="Source type"
-              value={publication.source_type}
-            />
-
-            <InfoGrid.Item label="Source" large value={publication.source} />
+            <InfoGrid.Item label="Mirror" large value={publication.mirror} />
 
             <InfoGrid.Item
               label="Publication target"
               large
-              value={publication.publication_target}
+              value={publication.publicationTarget}
             />
 
             <InfoGrid.Item
-              label="Date published"
-              value={`${moment(publication.date_published).format(DISPLAY_DATE_TIME_FORMAT)} UTC`}
+              label="Distribution"
+              value={publication.distribution}
             />
 
-            <InfoGrid.Item label="Prefix" value={publication.prefix} />
+            <InfoGrid.Item label="Component" value={publication.component} />
+
+            <InfoGrid.Item label="Label" value={publication.label} />
+
+            <InfoGrid.Item label="Origin" value={publication.origin} />
           </InfoGrid>
         </Blocks.Item>
 
         <Blocks.Item title="Uploaders" titleClassName="p-text--small-caps">
           <InfoGrid>
             <InfoGrid.Item
-              label="Distribution"
-              value={publication.uploaders.distribution}
-            />
-
-            <InfoGrid.Item
-              label="Components"
-              large
-              value={publication.uploaders.components.join(", ")}
-            />
-
-            <InfoGrid.Item
               label="Architectures"
               large
-              value={publication.uploaders.architectures.join(", ")}
+              value={publication.architectures.join(", ")}
             />
           </InfoGrid>
         </Blocks.Item>
@@ -111,27 +99,32 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
           <InfoGrid>
             <InfoGrid.Item
               label="Hash indexing"
-              value={boolToLabel(publication.settings.hash_indexing)}
+              value={boolToLabel(Boolean(publication.acquireByHash))}
             />
 
             <InfoGrid.Item
               label="Automatic installation"
-              value={boolToLabel(publication.settings.automatic_installation)}
+              value={boolToLabel(!publication.notAutomatic)}
             />
 
             <InfoGrid.Item
               label="Automatic upgrades"
-              value={boolToLabel(publication.settings.automatic_upgrades)}
+              value={boolToLabel(Boolean(publication.butAutomaticUpgrades))}
+            />
+
+            <InfoGrid.Item
+              label="Multi dist"
+              value={boolToLabel(Boolean(publication.multiDist))}
             />
 
             <InfoGrid.Item
               label="Skip bz2"
-              value={boolToLabel(publication.settings.skip_bz2)}
+              value={boolToLabel(Boolean(publication.skipBz2))}
             />
 
             <InfoGrid.Item
               label="Skip content indexing"
-              value={boolToLabel(publication.settings.skip_content_indexing)}
+              value={boolToLabel(Boolean(publication.skipContents))}
             />
           </InfoGrid>
         </Blocks.Item>

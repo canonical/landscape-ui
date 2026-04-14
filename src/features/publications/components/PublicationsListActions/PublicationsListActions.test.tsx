@@ -8,27 +8,28 @@ import PublicationsListActions from "./PublicationsListActions";
 describe("PublicationsListActions", () => {
   const user = userEvent.setup();
   const [publication] = publications;
+  const publicationLabel = publication.name;
 
   it("shows all dropdown actions", async () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(
-      screen.getByRole("button", { name: `${publication.name} actions` }),
+      screen.getByRole("button", { name: `${publicationLabel} actions` }),
     );
 
     expect(
       screen.getByRole("menuitem", {
-        name: `View details of "${publication.name}" publication`,
+        name: `View details of "${publicationLabel}" publication`,
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("menuitem", {
-        name: `Republish "${publication.name}" publication`,
+        name: `Republish "${publicationLabel}" publication`,
       }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("menuitem", {
-        name: `Remove "${publication.name}" publication`,
+        name: `Remove "${publicationLabel}" publication`,
       }),
     ).toBeInTheDocument();
   });
@@ -37,16 +38,16 @@ describe("PublicationsListActions", () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(
-      screen.getByRole("button", { name: `${publication.name} actions` }),
+      screen.getByRole("button", { name: `${publicationLabel} actions` }),
     );
     await user.click(
       screen.getByRole("menuitem", {
-        name: `View details of "${publication.name}" publication`,
+        name: `View details of "${publicationLabel}" publication`,
       }),
     );
 
     expect(
-      screen.getByRole("heading", { name: publication.name }),
+      screen.getByRole("heading", { name: publicationLabel }),
     ).toBeInTheDocument();
   });
 
@@ -54,16 +55,16 @@ describe("PublicationsListActions", () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(
-      screen.getByRole("button", { name: `${publication.name} actions` }),
+      screen.getByRole("button", { name: `${publicationLabel} actions` }),
     );
     await user.click(
       screen.getByRole("menuitem", {
-        name: `Republish "${publication.name}" publication`,
+        name: `Republish "${publicationLabel}" publication`,
       }),
     );
 
     expect(
-      screen.getByRole("heading", { name: `Republish ${publication.name}` }),
+      screen.getByRole("heading", { name: `Republish ${publicationLabel}` }),
     ).toBeInTheDocument();
   });
 
@@ -71,11 +72,11 @@ describe("PublicationsListActions", () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
     await user.click(
-      screen.getByRole("button", { name: `${publication.name} actions` }),
+      screen.getByRole("button", { name: `${publicationLabel} actions` }),
     );
     await user.click(
       screen.getByRole("menuitem", {
-        name: `Remove "${publication.name}" publication`,
+        name: `Remove "${publicationLabel}" publication`,
       }),
     );
 
