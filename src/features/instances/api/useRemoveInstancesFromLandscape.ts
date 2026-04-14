@@ -16,7 +16,9 @@ export const useRemoveInstancesFromLandscape = () => {
   const queryClient = useQueryClient();
   const authFetch = useFetch();
   const authFetchOld = useFetchOld();
-  const isComputerSoftDeletionEnabled = isFeatureEnabled("computer-soft-deletion");
+  const isComputerSoftDeletionEnabled = isFeatureEnabled(
+    "computer-soft-deletion",
+  );
 
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<Instance[]>,
