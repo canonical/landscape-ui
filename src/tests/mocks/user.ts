@@ -89,13 +89,17 @@ export const users = [
 ] as const satisfies User[];
 
 const accountName = "test-account";
+const secondAccountName = "second-account";
 const email = "example@mail.com";
 
 export const userDetails: UserDetails = {
   email: email,
   name: "Test User",
   preferred_account: accountName,
-  accounts: [{ name: accountName, title: "Test Account", roles: ["Test"] }],
+  accounts: [
+    { name: accountName, title: "Test Account", roles: ["Test"] },
+    { name: secondAccountName, title: "Second Account", roles: ["Test"] },
+  ],
   allowable_emails: [email],
   oidc_identities: [],
   timezone: "America/New_York",
