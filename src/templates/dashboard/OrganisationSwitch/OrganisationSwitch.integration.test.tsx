@@ -18,9 +18,7 @@ describe("OrganisationSwitch (integration)", () => {
       closeSidePanel,
     });
 
-    server.use(
-      http.get(`${API_URL}me`, () => HttpResponse.json(authResponse)),
-    );
+    server.use(http.get(`${API_URL}me`, () => HttpResponse.json(authResponse)));
   });
 
   it("should update the displayed organisation after account switch", async () => {
