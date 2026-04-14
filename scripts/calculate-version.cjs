@@ -11,7 +11,7 @@ function getVersion() {
   const branch = execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
   const buildNum = process.env.GITHUB_RUN_NUMBER || "0";
 
-  if (branch === "main") {
+  if (branch === "main" || branch.startsWith("point/")) {
     return `${calVerBase}.0.${buildNum}-beta`;
   }
   if (branch === "dev") {
