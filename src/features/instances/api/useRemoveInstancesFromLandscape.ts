@@ -14,34 +14,22 @@ export interface RemoveInstancesParams {
 export const useRemoveInstancesFromLandscape = () => {
   const { isFeatureEnabled } = useAuth();
   const queryClient = useQueryClient();
-
-  if (isFeatureEnabled("computer-soft-deletion")) {
-    const authFetch = useFetch();
-    const { isPending, mutateAsync } = useMutation<
-      AxiosResponse<Instance[]>,
-      AxiosError<ApiError>,
-      RemoveInstancesParams
-    >({
-      mutationFn: async (params: RemoveInstancesParams) =>
-        authFetch.post("/computers:delete", params),
-      onSuccess: async () =>
-        queryClient.invalidateQueries({ queryKey: ["instances"] }),
-    });
-
-    return {
-      removeInstancesFromLandscape: mutateAsync,
-      isRemovingInstancesFromLandscape: isPending,
-    };
-  }
-
+  const authFetch = useFetch();
   const authFetchOld = useFetchOld();
+  const isComputerSoftDeletionEnabled = isFeatureEnabled("computer-soft-deletion");
+
   const { isPending, mutateAsync } = useMutation<
     AxiosResponse<Instance[]>,
     AxiosError<ApiError>,
     RemoveInstancesParams
   >({
-    mutationFn: async (params: RemoveInstancesParams) =>
-      authFetchOld.get("RemoveComputers", { params }),
+    mutationFn: async (params: RemoveInstancesParams) => {
+      if (isComputerSoftDeletionEnabled) {
+        return authFetch.post("/computers:delete", params);
+      }
+
+      return authFetchOld.get("RemoveComputers", { params });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["instances"] }),
   });
