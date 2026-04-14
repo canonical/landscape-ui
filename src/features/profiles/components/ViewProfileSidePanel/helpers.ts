@@ -26,16 +26,10 @@ export const getTabs = (type: ProfileTypes) => {
       id: "package-constraints",
     });
   } else if (type === ProfileTypes.repository) {
-    tabs.push(
-      {
-        label: "Pockets",
-        id: "pockets",
-      },
-      {
-        label: "APT sources",
-        id: "apt-sources",
-      },
-    );
+    tabs.push({
+      label: "APT sources",
+      id: "apt-sources",
+    });
   }
 
   return tabs;

@@ -8,7 +8,7 @@ import type { UpgradeProfile } from "../types";
 export const useGetUpgradeProfile = (
   id: number,
   config: Omit<
-    UseQueryOptions<AxiosResponse<UpgradeProfile[], AxiosError<ApiError>>>,
+    UseQueryOptions<AxiosResponse<UpgradeProfile[]>, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
   > = {},
 ) => {

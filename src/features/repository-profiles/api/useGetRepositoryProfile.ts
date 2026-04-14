@@ -9,12 +9,7 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 export function useGetRepositoryProfile(
   name: string,
   config: Omit<
-    UseQueryOptions<
-      AxiosResponse<
-        ApiPaginatedResponse<RepositoryProfile>,
-        AxiosError<ApiError>
-      >
-    >,
+    UseQueryOptions<AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
   > = {},
 ) {

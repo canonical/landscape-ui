@@ -8,7 +8,7 @@ import type { RemovalProfile } from "../types";
 export function useGetRemovalProfile(
   id: number,
   config: Omit<
-    UseQueryOptions<AxiosResponse<RemovalProfile[], AxiosError<ApiError>>>,
+    UseQueryOptions<AxiosResponse<RemovalProfile[]>, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
   > = {},
 ) {

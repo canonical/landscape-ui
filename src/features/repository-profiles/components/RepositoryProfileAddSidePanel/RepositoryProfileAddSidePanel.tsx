@@ -2,7 +2,7 @@ import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import RepositoryProfileForm from "../RepositoryProfileForm";
 
-const RepositoryProfileManageSidePanel: FC = () => {
+const RepositoryProfileAddSidePanel: FC = () => {
   return (
     <>
       <SidePanel.Header>Add repository profile</SidePanel.Header>
@@ -13,4 +13,4 @@ const RepositoryProfileManageSidePanel: FC = () => {
   );
 };
 
-export default RepositoryProfileManageSidePanel;
+export default RepositoryProfileAddSidePanel;

@@ -11,10 +11,7 @@ import {
   isScriptProfile,
 } from "../../helpers";
 import { PackageProfileDetailsConstraints } from "@/features/package-profiles";
-import {
-  ViewRepositoryProfileAptSourcesTab,
-  ViewRepositoryProfilePocketsTab,
-} from "@/features/repository-profiles";
+import { ViewRepositoryProfileAptSourcesTab } from "@/features/repository-profiles";
 import { getTabs, type TabTypes } from "./helpers";
 import type { Profile } from "../../types";
 import type { ProfileTypes } from "../../helpers";
@@ -76,18 +73,13 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
               )}
 
               {isRepositoryProfile(profile) &&
-                ((tabId === "pockets" && (
-                  <ViewRepositoryProfilePocketsTab
+                (tabId === "apt-sources" && (
+                  <ViewRepositoryProfileAptSourcesTab
                     profile={profile}
-                    key="pockets"
+                    key="apt-sources"
                   />
-                )) ||
-                  (tabId === "apt-sources" && (
-                    <ViewRepositoryProfileAptSourcesTab
-                      profile={profile}
-                      key="apt-sources"
-                    />
-                  )))}
+                ))
+              }
             </Suspense>
           </>
         )}

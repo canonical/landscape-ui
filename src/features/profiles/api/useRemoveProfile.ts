@@ -74,6 +74,8 @@ export const useRemoveProfile = (type: ProfileTypes) => {
         return removeUpgradeProfileQuery.isPending;
       case ProfileTypes.wsl:
         return isRemovingWslProfile;
+      default:
+        return false;
     }
   })();
 

@@ -21,6 +21,6 @@ describe("RemovalProfileEditSidePanel", () => {
       screen.findByRole("heading", {
         name: `Edit ${removalProfile.title}`,
       }),
-    );
+    ).toBeInTheDocument();
   });
 });
