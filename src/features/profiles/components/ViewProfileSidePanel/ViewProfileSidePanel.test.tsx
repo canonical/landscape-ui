@@ -24,7 +24,6 @@ vi.mock("@/features/package-profiles", () => ({
 
 vi.mock("@/features/repository-profiles", () => ({
   ViewRepositoryProfileAptSourcesTab: () => <div>apt-sources-tab</div>,
-  ViewRepositoryProfilePocketsTab: () => <div>pockets-tab</div>,
 }));
 
 const [baseProfile] = profiles;
@@ -89,7 +88,7 @@ describe("ViewProfileSidePanel", () => {
     expect(screen.getByText("actions-block")).toBeInTheDocument();
   });
 
-  it("renders repository tabs when selected", async () => {
+  it("renders APT sources tab when selected", async () => {
     const repositoryProfile = { ...baseProfile, apt_sources: [] };
 
     renderWithProviders(
@@ -101,9 +100,6 @@ describe("ViewProfileSidePanel", () => {
 
     expect(screen.queryByText(/Activity history/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Package constraints/i)).not.toBeInTheDocument();
-
-    await userEvent.click(screen.getByText("Pockets"));
-    expect(screen.getByText("pockets-tab")).toBeInTheDocument();
 
     await userEvent.click(screen.getByText("APT sources"));
     expect(screen.getByText("apt-sources-tab")).toBeInTheDocument();

@@ -30,9 +30,7 @@ describe("ViewProfileInfoTab", () => {
     [ProfileTypes.upgrade],
     [ProfileTypes.reboot],
   ])("renders schedule block for %s profile", async (type) => {
-    renderWithProviders(
-      <ViewProfileInfoTab profile={profile} type={type} />,
-    );
+    renderWithProviders(<ViewProfileInfoTab profile={profile} type={type} />);
 
     expect(await screen.findByText("general block")).toBeInTheDocument();
     expect(await screen.findByText("details block")).toBeInTheDocument();
@@ -46,9 +44,7 @@ describe("ViewProfileInfoTab", () => {
     [ProfileTypes.removal],
     [ProfileTypes.wsl],
   ])("does not render schedule block for %s profile", async (type) => {
-    renderWithProviders(
-      <ViewProfileInfoTab profile={profile} type={type} />,
-    );
+    renderWithProviders(<ViewProfileInfoTab profile={profile} type={type} />);
 
     expect(await screen.findByText("general block")).toBeInTheDocument();
     expect(await screen.findByText("details block")).toBeInTheDocument();

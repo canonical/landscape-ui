@@ -72,14 +72,12 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
                 />
               )}
 
-              {isRepositoryProfile(profile) &&
-                (tabId === "apt-sources" && (
-                  <ViewRepositoryProfileAptSourcesTab
-                    profile={profile}
-                    key="apt-sources"
-                  />
-                ))
-              }
+              {isRepositoryProfile(profile) && tabId === "apt-sources" && (
+                <ViewRepositoryProfileAptSourcesTab
+                  profile={profile}
+                  key="apt-sources"
+                />
+              )}
             </Suspense>
           </>
         )}
