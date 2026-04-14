@@ -105,7 +105,7 @@ jobs:
           path: dist/
 
       - name: Install packaging tools
-        run: sudo apt-get update && sudo apt-get install -y debhelper devscripts
+        run: sudo apt-get update && sudo apt-get install -y build-essential debhelper devscripts
 
       - name: Build .deb package
         env:
