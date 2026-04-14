@@ -6,12 +6,13 @@ Landscape UI follows the [Landscape Server Release Cycle](https://docs.google.co
 
 ## 1. Branching Strategy
 
-| Branch          | Release Tier      | Logic                                                                    |
-|-----------------|-------------------|--------------------------------------------------------------------------|
-| `dev`           | **Development**   | Internal testing. Deploys to  `ppa-build-dev`.                           |
-| `main`          | **Beta**          | Feature-complete but may have breaking changes. Deploys to  `ppa-build`. |
-| `stable`        | **Latest Stable** | Production-ready with latest features. Updated every 6 months.           |
-| `release/YY.04` | **LTS**           | Mission-critical stability.                                              |
+| Branch              | Release Tier      | Logic                                                                    |
+|---------------------|-------------------|--------------------------------------------------------------------------|
+| `dev`               | **Development**   | Internal testing. Deploys to  `ppa-build-dev`.                           |
+| `main`              | **Beta**          | Feature-complete but may have breaking changes. Deploys to  `ppa-build`. |
+| `point/YYYY-MM-DD`  | **Beta (pinned)** | Cherry-picked beta from a pinned commit. Deploys to `ppa-build`.         |
+| `stable`            | **Latest Stable** | Production-ready with latest features. Updated every 6 months.           |
+| `release/YY.04`     | **LTS**           | Mission-critical stability.                                              |
 
 ---
 
@@ -84,6 +85,38 @@ Use this workflow if a customer reports a critical bug in an LTS version (e.g., 
 5. **Write Summary:** `Fixed a regression where the search bar would overlap with the sidebar on mobile devices.`
 6. **Push:** Push directly to `release/24.04`.
 7. **Result:** The CI detects the LTS branch and generates a **Point Release** (e.g., $24.04.1.15$) for the specific LTS PPA.
+
+---
+
+### Example C: Shipping a Pinned Beta (Target: Point Release)
+
+Use this workflow when `main` has moved ahead with new features or breaking changes, but you need to ship a beta with only specific fixes on top of an older, known-good commit.
+
+1. **Identify the base commit:** Find the last commit you want to build from (e.g., `07bb3c298`).
+2. **Create the point branch:**
+   ```bash
+   git checkout -b point/2026-04-14 07bb3c298
+   ```
+3. **Cherry-pick the changes you need:**
+   ```bash
+   git cherry-pick <commit-hash-1>
+   git cherry-pick <commit-hash-2>
+   ```
+4. **Generate Changeset:** Run `pnpm changeset`.
+5. **Select Type:** Choose `patch`.
+6. **Write Summary:** `Point release with alert fix and MSW refactor.`
+7. **Push:** Push to `point/2026-04-14`.
+8. **Result:** The CI treats this as a beta and deploys to `ppa-build` (e.g., `26.04.0.63-beta`).
+
+**Adding more changes later:** Push additional cherry-picks to the same `point/` branch. Each push triggers a new CI run with the next `GITHUB_RUN_NUMBER`.
+
+**When main catches up:** Delete the point branch once `main` is ready to resume normal beta releases:
+
+```bash
+git push origin --delete point/2026-04-14
+```
+
+**Multiple point releases per month:** Use the date suffix to keep them unique (e.g., `point/2026-04-14`, `point/2026-04-28`).
 
 ## 6. Troubleshooting
    
