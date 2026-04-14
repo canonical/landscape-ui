@@ -2,7 +2,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
-import { usePublicationTargets } from "../../hooks";
+import useEditPublicationTarget from "../../api/useEditPublicationTarget";
 import type { PublicationTarget, S3Target } from "../../types";
 import {
   CheckboxInput,
@@ -71,7 +71,7 @@ const getInitialValues = (target: PublicationTarget) => ({
 const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { editPublicationTargetQuery } = usePublicationTargets();
+  const { editPublicationTargetQuery } = useEditPublicationTarget();
   const { mutateAsync: editTarget } = editPublicationTargetQuery;
 
   const handleSubmit = async (values: ReturnType<typeof getInitialValues>) => {

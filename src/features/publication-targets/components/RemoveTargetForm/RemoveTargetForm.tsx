@@ -4,7 +4,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Form, Icon } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { usePublicationTargets } from "../../hooks";
+import useRemovePublicationTarget from "../../api/useRemovePublicationTarget";
 import type { PublicationTargetWithPublications } from "../../types";
 import PublicationsTable from "../PublicationsTable/PublicationsTable";
 
@@ -18,7 +18,7 @@ const RemoveTargetForm: FC<RemoveTargetFormProps> = ({ target }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { removePublicationTargetQuery } = usePublicationTargets();
+  const { removePublicationTargetQuery } = useRemovePublicationTarget();
   const { mutateAsync: removeTarget, isPending: isRemoving } =
     removePublicationTargetQuery;
 

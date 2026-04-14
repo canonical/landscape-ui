@@ -9,4 +9,10 @@ export type {
   S3Target,
   SwiftTarget,
 } from "./types";
-export { default as usePublicationTargets } from "./hooks/usePublicationTargets";
+export {
+  useGetPublicationTargets,
+  useGetPublications,
+  useCreatePublicationTarget,
+  useEditPublicationTarget,
+  useRemovePublicationTarget,
+} from "./api";

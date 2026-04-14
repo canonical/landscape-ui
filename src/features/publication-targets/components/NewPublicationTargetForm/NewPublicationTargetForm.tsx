@@ -2,7 +2,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
-import { usePublicationTargets } from "../../hooks";
+import useCreatePublicationTarget from "../../api/useCreatePublicationTarget";
 import {
   CheckboxInput,
   Form,
@@ -17,7 +17,7 @@ import type { NewPublicationTargetFormValues } from "./constants";
 const NewPublicationTargetForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { createPublicationTargetQuery } = usePublicationTargets();
+  const { createPublicationTargetQuery } = useCreatePublicationTarget();
 
   const { mutateAsync } = createPublicationTargetQuery;
 

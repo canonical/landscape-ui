@@ -10,8 +10,8 @@ import RemoveTargetForm from "./RemoveTargetForm";
 
 vi.mock("@/hooks/useSidePanel");
 vi.mock("@/hooks/useDebug");
-vi.mock("@/features/publication-targets/hooks", () => ({
-  usePublicationTargets: vi.fn(() => ({
+vi.mock("@/features/publication-targets/api/useRemovePublicationTarget", () => ({
+  default: vi.fn(() => ({
     removePublicationTargetQuery: {
       mutateAsync: vi.fn().mockResolvedValue({}),
       isPending: false,
@@ -111,10 +111,10 @@ describe("RemoveTargetForm", () => {
     
     // Override the mutation to reject, simulating an API error
     // The component's try/catch calls debug(error), which routes to notify.error()
-    const { usePublicationTargets } = await import(
-      "@/features/publication-targets/hooks"
+    const { default: useRemovePublicationTarget } = await import(
+      "@/features/publication-targets/api/useRemovePublicationTarget"
     );
-    vi.mocked(usePublicationTargets).mockImplementation(() => ({
+    vi.mocked(useRemovePublicationTarget).mockImplementation(() => ({
       removePublicationTargetQuery: {
         mutateAsync: vi.fn().mockRejectedValue(
           new Error("API error: deletion failed"),

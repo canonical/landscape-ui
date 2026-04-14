@@ -1,17 +1,19 @@
 import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import type { PublicationTargetWithPublications } from "../../types";
+import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import PublicationTargetAddButton from "../PublicationTargetAddButton";
 import PublicationTargetList from "../PublicationTargetList";
 
-interface PublicationTargetContainerProps {
-  readonly targets: PublicationTargetWithPublications[];
-}
+const PublicationTargetContainer: FC = () => {
+  const { publicationTargets, isGettingPublicationTargets } =
+    useGetPublicationTargets();
 
-const PublicationTargetContainer: FC<PublicationTargetContainerProps> = ({
-  targets,
-}) => {
-  if (targets.length === 0) {
+  if (isGettingPublicationTargets) {
+    return <LoadingState />;
+  }
+
+  if (publicationTargets.length === 0) {
     return (
       <EmptyState
         title="You don't have any publication targets yet"
@@ -35,7 +37,7 @@ const PublicationTargetContainer: FC<PublicationTargetContainerProps> = ({
     );
   }
 
-  return <PublicationTargetList targets={targets} />;
+  return <PublicationTargetList targets={publicationTargets} />;
 };
 
 export default PublicationTargetContainer;

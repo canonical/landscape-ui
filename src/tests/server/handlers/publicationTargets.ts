@@ -1,13 +1,25 @@
 import { API_URL } from "@/constants";
 import type { PublicationTarget } from "@/features/publication-targets";
-import { publicationTargetsWithPublications } from "@/tests/mocks/publication-targets";
+import {
+  publications,
+  publicationTargets,
+} from "@/tests/mocks/publication-targets";
 import { http, HttpResponse } from "msw";
 
 export default [
   http.get(`${API_URL}publicationTargets`, () => {
     return HttpResponse.json({
-      publication_targets: publicationTargetsWithPublications,
+      publication_targets: publicationTargets,
     });
+  }),
+
+  http.get(`${API_URL}publications`, ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const publicationTarget = searchParams.get("publication_target") ?? undefined;
+    const filtered = publicationTarget
+      ? publications.filter((p) => p.publication_target === publicationTarget)
+      : publications;
+    return HttpResponse.json({ publications: filtered });
   }),
 
   http.post(`${API_URL}publicationTargets`, async ({ request }) => {
