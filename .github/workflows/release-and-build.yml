@@ -78,4 +78,4 @@ jobs:
           branch: ${{ steps.calver.outputs.dest_branch }}
           create_branch: true
           push_options: "--force"
-          commit_message: "Build v${{ steps.calver.outputs.version }} [${{ github.sha }}]"
+          commit_message: "Build v${{ steps.calver.outputs.version }} from ${{ github.ref_name }} [${{ github.sha }}]"
