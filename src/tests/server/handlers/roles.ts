@@ -6,7 +6,7 @@ import { isAction } from "@/tests/server/handlers/_helpers";
 import type { Permission } from "@/types/Permission";
 import type { Role } from "@/types/Role";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, GetRolesParams, Role[]>(API_URL_OLD, ({ request }) => {
@@ -46,7 +46,7 @@ export default [
     const { status, path } = getEndpointStatus();
 
     if (status === "error" && (!path || path === "editRole")) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     const [role] = roleMocks;

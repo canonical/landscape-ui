@@ -7,7 +7,7 @@ import type {
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, KernelManagementInfo>(
@@ -103,7 +103,7 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
 
       return HttpResponse.json(activities[0]);

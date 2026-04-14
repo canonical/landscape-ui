@@ -2,7 +2,8 @@ import { API_URL } from "@/constants";
 import type { EventLog, GetEventsLogParams } from "@/features/events-log";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { eventsLog } from "@/tests/mocks/eventsLog";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "@/tests/server/handlers/_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
@@ -12,8 +13,8 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (shouldApplyEndpointStatus("events") && endpointStatus.status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
       const url = new URL(request.url);

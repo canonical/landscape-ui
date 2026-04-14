@@ -3,6 +3,7 @@ import type { HttpHandler } from "msw";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { createEndpointStatusNetworkError } from "./_constants";
 
 interface GeneratePaginatedResponseProps<D> {
   data: D[];
@@ -73,6 +74,19 @@ export const isAction = (request: Request, actionName: string | string[]) => {
     : actionName.includes(action);
 };
 
+/**
+ * Returns `true` when the global endpoint-status controller has a non-default
+ * status that applies to the given path.  Pass the handler's own path so that
+ * a targeted `setEndpointStatus({ status: "error", path: "/features" })` only
+ * affects the matching handler.
+ */
+export function shouldApplyEndpointStatus(path?: string): boolean {
+  const { status, path: statusPath } = getEndpointStatus();
+  if (status === "default") return false;
+  if (!statusPath) return true;
+  return !!path && statusPath.includes(path);
+}
+
 interface GenerateGetListEndpointParams<T> {
   readonly path: string;
   readonly response: T[];
@@ -82,37 +96,31 @@ export function generateGetListEndpoint<T>({
   path,
   response,
 }: GenerateGetListEndpointParams<T>): HttpHandler {
-  return http.get<never, never, ApiPaginatedResponse<T>>(
-    `${API_URL}${path}`,
-    () => {
-      const endpointStatus = getEndpointStatus();
+  return http.get(`${API_URL}${path}`, () => {
+    if (shouldApplyEndpointStatus(path)) {
+      const { status } = getEndpointStatus();
 
-      if (
-        !endpointStatus.path ||
-        (endpointStatus.path && endpointStatus.path === path)
-      ) {
-        if (endpointStatus.status === "error") {
-          throw new HttpResponse(null, { status: 500 });
-        }
-
-        if (endpointStatus.status === "empty") {
-          return HttpResponse.json({
-            results: [],
-            count: 0,
-            next: null,
-            previous: null,
-          });
-        }
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
-      return HttpResponse.json({
-        results: response,
-        count: response.length,
-        next: null,
-        previous: null,
-      });
-    },
-  );
+      if (status === "empty") {
+        return HttpResponse.json({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        });
+      }
+    }
+
+    return HttpResponse.json({
+      results: response,
+      count: response.length,
+      next: null,
+      previous: null,
+    });
+  });
 }
 
 export const parseArray = (paramValue: string | null): string[] => {

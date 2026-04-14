@@ -10,7 +10,12 @@ import {
 } from "@/tests/mocks/packages";
 import { activities } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { generatePaginatedResponse, isAction } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  isAction,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 
 const parseBooleanParam = (value: string | null): boolean | undefined => {
   if (value === "true") {
@@ -28,10 +33,11 @@ export default [
   http.get<never, GetPackagesParams, ApiPaginatedResponse<Package>>(
     `${API_URL}packages`,
     async ({ request }) => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (shouldApplyEndpointStatus("packages")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusNetworkError();
+        }
       }
 
       const url = new URL(request.url);

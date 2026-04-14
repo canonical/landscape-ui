@@ -1,7 +1,8 @@
 import { API_URL_OLD } from "@/constants";
 import { removalProfiles } from "@/tests/mocks/removalProfiles";
 import { http, HttpResponse } from "msw";
-import { isAction } from "./_helpers";
+import { isAction, shouldApplyEndpointStatus } from "./_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 
 export default [
@@ -10,16 +11,13 @@ export default [
       return;
     }
 
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("GetRemovalProfiles")) {
+      const { status } = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      endpointStatus.path.includes("GetRemovalProfiles")
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json([], { status: 200 });
       }
     }

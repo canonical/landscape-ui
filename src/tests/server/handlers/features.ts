@@ -3,11 +3,11 @@ import { API_URL } from "@/constants";
 import { features } from "@/tests/mocks/features";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import type { Feature } from "@/types/Feature";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [
-  http.get<never, never, ApiPaginatedResponse<Feature>>(
+  http.get(
     `${API_URL}features`,
     () => {
       const endpointStatus = getEndpointStatus();
@@ -23,7 +23,7 @@ export default [
       }
 
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw createEndpointStatusNetworkError();
       }
 
       return HttpResponse.json(

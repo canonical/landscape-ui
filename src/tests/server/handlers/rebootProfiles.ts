@@ -2,26 +2,24 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
-import { generatePaginatedResponse } from "./_helpers";
+import { createEndpointStatusError, createEndpointStatusNetworkError } from "./_constants";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
 
 export default [
   http.get(`${API_URL}rebootprofiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
-    const endpointStatus = getEndpointStatus();
 
     const search = searchParams.get("search")?.toLowerCase() ?? "";
     const limit = parseInt(searchParams.get("limit") ?? "20");
     const offset = parseInt(searchParams.get("offset") ?? "0");
 
-    if (
-      !endpointStatus.path ||
-      endpointStatus.path.includes("rebootprofiles")
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("rebootprofiles")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json({
           results: [],
           count: 0,
@@ -57,15 +55,11 @@ export default [
   }),
 
   http.delete(`${API_URL}rebootprofiles/:id`, ({ params }) => {
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("rebootprofiles/:id")) {
+      const { status } = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes("rebootprofiles/:id"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 

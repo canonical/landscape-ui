@@ -7,7 +7,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { usnPackages, usns } from "@/tests/mocks/usn";
 import { activities } from "@/tests/mocks/activity";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, GetUsnsParams, ApiPaginatedResponse<Usn>>(
@@ -39,7 +39,7 @@ export default [
     const endpointStatus = getEndpointStatus();
 
     if (endpointStatus.status === "error") {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(activities[0]);

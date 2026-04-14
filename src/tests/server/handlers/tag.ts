@@ -11,7 +11,7 @@ import {
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, ApiPaginatedResponse<string>>(`${API_URL}tags`, () => {
@@ -35,7 +35,7 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "tags/profile-diff"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     const { searchParams } = new URL(request.url);

@@ -10,7 +10,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { alerts, alertsSummary, licenseAlert } from "@/tests/mocks/alerts";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, Alert[]>(`${API_URL}alerts`, () => {
@@ -60,7 +60,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === action)
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     const [firstAlert] = alerts;
@@ -80,7 +80,7 @@ export default [
         endpointStatus.status === "error" &&
         (!endpointStatus.path || endpointStatus.path === action)
       ) {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
 
       const [firstAlert] = alerts;

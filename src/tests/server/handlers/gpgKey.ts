@@ -4,7 +4,7 @@ import type { GetGPGKeysParams, GPGKey } from "@/features/gpg-keys";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { gpgKeys } from "@/tests/mocks/gpgKey";
 import { isAction } from "@/tests/server/handlers/_helpers";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, GetGPGKeysParams, GPGKey[]>(API_URL_OLD, ({ request }) => {
@@ -16,7 +16,7 @@ export default [
 
     if (!endpointStatus.path || endpointStatus.path === "gpgKey") {
       if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
 
       if (endpointStatus.status === "empty") {
@@ -38,7 +38,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "importGpgKey")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(gpgKeys[0]);
