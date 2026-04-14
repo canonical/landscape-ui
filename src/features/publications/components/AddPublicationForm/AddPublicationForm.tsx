@@ -17,6 +17,10 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
+import useCreatePublication from "../../api/useCreatePublication";
+import useGetLocals from "../../api/useGetLocals";
+import useGetMirrors from "../../api/useGetMirrors";
+import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
@@ -37,6 +41,24 @@ import {
   useGetMirrors,
   useGetPublicationTargets,
 } from "../../api";
+
+interface SelectableSource {
+  label: string;
+  value: string;
+  sourceType: string;
+  distribution?: string;
+  component?: string;
+  components: string[];
+  architectures: string[];
+}
+
+const stripResourcePrefix = (value?: string, prefix?: string) => {
+  if (!value || !prefix) {
+    return value ?? "";
+  }
+
+  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
+};
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();

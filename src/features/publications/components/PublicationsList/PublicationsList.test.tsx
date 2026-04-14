@@ -40,10 +40,7 @@ describe("PublicationsList", () => {
     );
 
     expect(screen.getByRole("columnheader", { name: "name" })).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "source type" }),
-    ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "source" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "mirror" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "publication target" }),
     ).toBeVisible();
@@ -64,6 +61,8 @@ describe("PublicationsList", () => {
         name: publicationTargetDisplayNames[publication.publicationTarget],
       }),
     ).toBeInTheDocument();
+    expect(screen.getByText(publication.distribution)).toBeInTheDocument();
+    expect(screen.getByText(publication.component)).toBeInTheDocument();
   });
 
   it("opens sidepanel when clicking a publication name", async () => {
