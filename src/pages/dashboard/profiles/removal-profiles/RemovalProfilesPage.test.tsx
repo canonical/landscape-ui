@@ -8,11 +8,13 @@ import userEvent from "@testing-library/user-event";
 import type * as actualModule from "@/features/profiles";
 
 vi.mock("@/features/profiles", async () => {
-  const actual = await vi.importActual<typeof actualModule>("@/features/profiles");
+  const actual = await vi.importActual<typeof actualModule>(
+    "@/features/profiles",
+  );
 
   return {
     ...actual,
-    ProfilesContainer: () => <div>Package profiles table</div>
+    ProfilesContainer: () => <div>Package profiles table</div>,
   };
 });
 
