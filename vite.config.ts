@@ -52,6 +52,11 @@ export default defineConfig(({ mode }) => {
           secure: false,
           rewrite: (path) => path.replace(/^\/debarchive/, ""),
         },
+        "/v1": {
+          target: "http://localhost:8000",
+          changeOrigin: true,
+          secure: false,
+        },
       },
     },
   };

@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import type { AxiosInstance } from "axios";
 import axios from "axios";
-import { API_URL } from "@/constants";
+import { API_URL_DEBARCHIVE } from "@/constants";
 import { AuthContext } from "@/context/auth";
 import {
   setupRequestInterceptor,
@@ -28,7 +28,8 @@ const FetchDebArchiveProvider: FC<FetchDebArchiveProviderProps> = ({
   const { user, logout } = useContext(AuthContext);
 
   const authFetchDebArchive = useMemo(() => {
-    const debArchiveBaseUrl = `${API_URL}v1/`;
+    // for use with docker setup from landscape-packaging
+    const debArchiveBaseUrl = `${API_URL_DEBARCHIVE}v1/`;
 
     return axios.create({ baseURL: debArchiveBaseUrl });
   }, []);

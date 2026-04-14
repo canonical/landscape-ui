@@ -28,9 +28,10 @@ const RemoveTargetForm: FC<RemoveTargetFormProps> = ({ target }) => {
     initialValues: {},
     onSubmit: async () => {
       try {
+        if (!target.name) return;
         await removeTarget({ name: target.name });
         notify.success({
-          message: `"${target.display_name}" publication target removed successfully`,
+          message: `"${target.displayName}" publication target removed successfully`,
           title: "Publication target removed",
         });
         closeSidePanel();

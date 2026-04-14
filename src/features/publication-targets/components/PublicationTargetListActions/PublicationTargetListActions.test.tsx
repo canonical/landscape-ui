@@ -25,7 +25,7 @@ describe("PublicationTargetListActions", () => {
 
     expect(
       screen.getByRole("button", {
-        name: `${targetWithDisplayName.display_name} actions`,
+        name: `${targetWithDisplayName.displayName} actions`,
       }),
     ).toBeInTheDocument();
   });
@@ -37,23 +37,23 @@ describe("PublicationTargetListActions", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: `${targetWithDisplayName.display_name} actions`,
+        name: `${targetWithDisplayName.displayName} actions`,
       }),
     );
 
     expect(
       await screen.findByRole("menuitem", {
-        name: `View details for ${targetWithDisplayName.display_name}`,
+        name: `View details for ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
     expect(
       await screen.findByRole("menuitem", {
-        name: `Edit ${targetWithDisplayName.display_name}`,
+        name: `Edit ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
     expect(
       await screen.findByRole("menuitem", {
-        name: `Remove ${targetWithDisplayName.display_name}`,
+        name: `Remove ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
   });
@@ -65,18 +65,18 @@ describe("PublicationTargetListActions", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: `${targetWithDisplayName.display_name} actions`,
+        name: `${targetWithDisplayName.displayName} actions`,
       }),
     );
     await user.click(
       await screen.findByRole("menuitem", {
-        name: `View details for ${targetWithDisplayName.display_name}`,
+        name: `View details for ${targetWithDisplayName.displayName}`,
       }),
     );
 
-    // Side panel header should show target display_name
+    // Side panel header should show target displayName
     expect(
-      screen.getByRole("heading", { name: targetWithDisplayName.display_name }),
+      screen.getByRole("heading", { name: targetWithDisplayName.displayName }),
     ).toBeInTheDocument();
   });
 
@@ -87,19 +87,19 @@ describe("PublicationTargetListActions", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: `${targetWithDisplayName.display_name} actions`,
+        name: `${targetWithDisplayName.displayName} actions`,
       }),
     );
     await user.click(
       await screen.findByRole("menuitem", {
-        name: `Edit ${targetWithDisplayName.display_name}`,
+        name: `Edit ${targetWithDisplayName.displayName}`,
       }),
     );
 
     // Side panel header should show edit title
     expect(
       screen.getByRole("heading", {
-        name: `Edit "${targetWithDisplayName.display_name}"`,
+        name: `Edit "${targetWithDisplayName.displayName}"`,
       }),
     ).toBeInTheDocument();
   });
@@ -111,19 +111,19 @@ describe("PublicationTargetListActions", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: `${targetWithDisplayName.display_name} actions`,
+        name: `${targetWithDisplayName.displayName} actions`,
       }),
     );
     await user.click(
       await screen.findByRole("menuitem", {
-        name: `Remove ${targetWithDisplayName.display_name}`,
+        name: `Remove ${targetWithDisplayName.displayName}`,
       }),
     );
 
     // Side panel header should show remove title
     expect(
       screen.getByRole("heading", {
-        name: `Remove "${targetWithDisplayName.display_name}"`,
+        name: `Remove "${targetWithDisplayName.displayName}"`,
       }),
     ).toBeInTheDocument();
   });

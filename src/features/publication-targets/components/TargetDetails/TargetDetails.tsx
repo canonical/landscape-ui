@@ -19,8 +19,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
   const handleEditTarget = (): void => {
     setSidePanelContent(
-      `Edit "${target.display_name ?? target.name}"`,
-      <Suspense fallback={<LoadingState />}>
+      `Edit "${target.displayName ?? target.name}"`,      <Suspense fallback={<LoadingState />}>
         <EditTargetForm target={target} />
       </Suspense>,
     );
@@ -28,8 +27,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
   const handleRemoveTarget = (): void => {
     setSidePanelContent(
-      `Remove ${target.display_name}`,
-      <Suspense fallback={<LoadingState />}>
+      `Remove ${target.displayName}`,      <Suspense fallback={<LoadingState />}>
         <RemoveTargetForm target={target} />
       </Suspense>,
     );
@@ -42,10 +40,10 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         endpoint: target.s3.endpoint,
         prefix: target.s3.prefix,
         acl: target.s3.acl,
-        storage_class: target.s3.storage_class,
-        encryption_method: target.s3.encryption_method,
-        disable_multi_del: target.s3.disable_multi_del ? "Yes" : "No",
-        force_sig_v2: target.s3.force_sig_v2 ? "Yes" : "No",
+        storageClass: target.s3.storageClass,
+        encryptionMethod: target.s3.encryptionMethod,
+        disableMultiDel: target.s3.disableMultiDel ? "Yes" : "No",
+        forceSigV2: target.s3.forceSigV2 ? "Yes" : "No",
       }
     : null;
 
@@ -76,7 +74,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
       
       <InfoGrid spaced>
         <h5>DETAILS</h5>
-        <InfoGrid.Item label="Name" large value={target.display_name} />
+        <InfoGrid.Item label="Name" large value={target.displayName} />
 
         {s3Fields && (
           <>
@@ -84,10 +82,10 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
             <InfoGrid.Item label="Bucket Name" value={s3Fields.bucket} />
             <InfoGrid.Item label="Prefix" value={s3Fields.prefix} />
             <InfoGrid.Item label="ACL" value={s3Fields.acl} />
-            <InfoGrid.Item label="Storage class" value={s3Fields.storage_class} />
-            <InfoGrid.Item label="Encryption method" value={s3Fields.encryption_method} />
-            <InfoGrid.Item label="Disable MultiDel" value={s3Fields.disable_multi_del} />
-            <InfoGrid.Item label="Force AWS SIGv2" value={s3Fields.force_sig_v2} />
+            <InfoGrid.Item label="Storage class" value={s3Fields.storageClass} />
+            <InfoGrid.Item label="Encryption method" value={s3Fields.encryptionMethod} />
+            <InfoGrid.Item label="Disable MultiDel" value={s3Fields.disableMultiDel} />
+            <InfoGrid.Item label="Force AWS SIGv2" value={s3Fields.forceSigV2} />
           </>
         )}
 

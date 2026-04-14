@@ -1,4 +1,4 @@
-import useFetch from "@/hooks/useFetch";
+import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -8,7 +8,7 @@ interface RemovePublicationTargetParams {
 }
 
 export default function useRemovePublicationTarget() {
-  const authFetch = useFetch();
+  const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
   const removePublicationTargetQuery = useMutation<
@@ -17,7 +17,7 @@ export default function useRemovePublicationTarget() {
     RemovePublicationTargetParams
   >({
     mutationKey: ["publication-targets", "remove"],
-    mutationFn: async ({ name }) => authFetch.delete(name),
+    mutationFn: async ({ name }) => authFetchDebArchive.delete(name),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["publication-targets"] }),
   });

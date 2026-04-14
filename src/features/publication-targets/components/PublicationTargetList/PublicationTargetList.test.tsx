@@ -97,7 +97,7 @@ describe("PublicationTargetList", () => {
     // Each target should have an actions button with aria-label like "{displayName} actions"
     publicationTargetsWithPublications.forEach((target) => {
       const actionButton = screen.getByRole("button", {
-        name: `${target.display_name} actions`,
+        name: `${target.displayName} actions`,
       });
       expect(actionButton).toBeInTheDocument();
     });

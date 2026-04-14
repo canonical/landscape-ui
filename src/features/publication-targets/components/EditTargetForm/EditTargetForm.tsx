@@ -3,7 +3,6 @@ import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
 import useEditPublicationTarget from "../../api/useEditPublicationTarget";
-import type { PublicationTarget, S3Target } from "../../types";
 import {
   CheckboxInput,
   Form,
@@ -12,59 +11,60 @@ import {
 import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
+import type { PublicationTarget } from "@/api/generated/debArchive.schemas";
 
 interface EditTargetFormProps {
   readonly target: PublicationTarget;
 }
 
 const VALIDATION_SCHEMA = Yup.object().shape({
-  display_name: Yup.string().required("This field is required"),
+  displayName: Yup.string().required("This field is required"),
   bucket: Yup.string().required("This field is required"),
-  aws_access_key_id: Yup.string().required("This field is required"),
-  aws_secret_access_key: Yup.string().required("This field is required"),
+  awsAccessKeyId: Yup.string().required("This field is required"),
+  awsSecretAccessKey: Yup.string().required("This field is required"),
   region: Yup.string(),
   endpoint: Yup.string(),
   prefix: Yup.string(),
   acl: Yup.string(),
-  storage_class: Yup.string(),
-  encryption_method: Yup.string(),
-  disable_multi_del: Yup.boolean(),
-  force_sig_v2: Yup.boolean(),
+  storageClass: Yup.string(),
+  encryptionMethod: Yup.string(),
+  disableMultiDel: Yup.boolean(),
+  forceSigV2: Yup.boolean(),
 });
 
-const getS3InitialValues = (s3: S3Target | undefined) => {
+const getS3InitialValues = (s3: PublicationTarget["s3"] | undefined) => {
   if (!s3) {
     return {
       region: "",
       bucket: "",
       endpoint: "",
-      aws_access_key_id: "",
-      aws_secret_access_key: "",
+      awsAccessKeyId: "",
+      awsSecretAccessKey: "",
       prefix: "",
       acl: "",
-      storage_class: "",
-      encryption_method: "",
-      disable_multi_del: false,
-      force_sig_v2: false,
+      storageClass: "",
+      encryptionMethod: "",
+      disableMultiDel: false,
+      forceSigV2: false,
     };
   }
   return {
     region: s3.region ?? "",
     bucket: s3.bucket,
     endpoint: s3.endpoint ?? "",
-    aws_access_key_id: s3.aws_access_key_id,
-    aws_secret_access_key: s3.aws_secret_access_key,
+    awsAccessKeyId: s3.awsAccessKeyId,
+    awsSecretAccessKey: s3.awsSecretAccessKey,
     prefix: s3.prefix ?? "",
     acl: s3.acl ?? "",
-    storage_class: s3.storage_class ?? "",
-    encryption_method: s3.encryption_method ?? "",
-    disable_multi_del: s3.disable_multi_del ?? false,
-    force_sig_v2: s3.force_sig_v2 ?? false,
+    storageClass: s3.storageClass ?? "",
+    encryptionMethod: s3.encryptionMethod ?? "",
+    disableMultiDel: s3.disableMultiDel ?? false,
+    forceSigV2: s3.forceSigV2 ?? false,
   };
 };
 
 const getInitialValues = (target: PublicationTarget) => ({
-  display_name: target.display_name ?? "",
+  displayName: target.displayName ?? "",
   ...getS3InitialValues(target.s3),
 });
 
@@ -78,21 +78,21 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
     try {
       await editTarget({
         name: target.name,
-        display_name: values.display_name,
+        displayName: values.displayName,
         s3: {
-          bucket: values.bucket,
-          aws_access_key_id: values.aws_access_key_id,
-          aws_secret_access_key: values.aws_secret_access_key,
           ...(values.region && { region: values.region }),
+          bucket: values.bucket,
+          awsAccessKeyId: values.awsAccessKeyId,
+          awsSecretAccessKey: values.awsSecretAccessKey,
           ...(values.endpoint && { endpoint: values.endpoint }),
           ...(values.prefix && { prefix: values.prefix }),
           ...(values.acl && { acl: values.acl }),
-          ...(values.storage_class && { storage_class: values.storage_class }),
-          ...(values.encryption_method && {
-            encryption_method: values.encryption_method,
+          ...(values.storageClass && { storageClass: values.storageClass }),
+          ...(values.encryptionMethod && {
+            encryptionMethod: values.encryptionMethod,
           }),
-          disable_multi_del: values.disable_multi_del,
-          force_sig_v2: values.force_sig_v2,
+          disableMultiDel: values.disableMultiDel,
+          forceSigV2: values.forceSigV2,
         },
       });
       closeSidePanel();
@@ -113,8 +113,8 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         type="text"
         label="Name"
         required
-        error={getFormikError(formik, "display_name")}
-        {...formik.getFieldProps("display_name")}
+        error={getFormikError(formik, "displayName")}
+        {...formik.getFieldProps("displayName")}
       />
       <Input
         type="text"
@@ -141,15 +141,15 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         type="text"
         label="AWS access key ID"
         required
-        error={getFormikError(formik, "aws_access_key_id")}
-        {...formik.getFieldProps("aws_access_key_id")}
+        error={getFormikError(formik, "awsAccessKeyId")}
+        {...formik.getFieldProps("awsAccessKeyId")}
       />
       <Input
         type="password"
         label="AWS secret access key"
         required
-        error={getFormikError(formik, "aws_secret_access_key")}
-        {...formik.getFieldProps("aws_secret_access_key")}
+        error={getFormikError(formik, "awsSecretAccessKey")}
+        {...formik.getFieldProps("awsSecretAccessKey")}
       />
       <Input
         type="text"
@@ -166,31 +166,31 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
       <Input
         type="text"
         label="Storage class"
-        error={getFormikError(formik, "storage_class")}
-        {...formik.getFieldProps("storage_class")}
+        error={getFormikError(formik, "storageClass")}
+        {...formik.getFieldProps("storageClass")}
       />
       <Input
         type="text"
         label="Encryption method"
-        error={getFormikError(formik, "encryption_method")}
-        {...formik.getFieldProps("encryption_method")}
+        error={getFormikError(formik, "encryptionMethod")}
+        {...formik.getFieldProps("encryptionMethod")}
       />
       <CheckboxInput
         label="Disable MultiDel"
-        checked={formik.values.disable_multi_del}
+        checked={formik.values.disableMultiDel}
         onChange={(e) =>
           formik.setFieldValue(
-            "disable_multi_del",
+            "disableMultiDel",
             (e.target as HTMLInputElement).checked,
           )
         }
       />
       <CheckboxInput
         label="Force AWS SIGv2 (disables SIGv4)"
-        checked={formik.values.force_sig_v2}
+        checked={formik.values.forceSigV2}
         onChange={(e) =>
           formik.setFieldValue(
-            "force_sig_v2",
+            "forceSigV2",
             (e.target as HTMLInputElement).checked,
           )
         }

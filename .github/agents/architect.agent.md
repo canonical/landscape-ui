@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Lead Systems Architect for Landscape UI. Plans features and API integrations.
-tools: [ "code_search", "readfile", "ls", "find_references" ]
+tools: [execute/runNotebookCell, execute/testFailure, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/createAndRunTask, execute/runInTerminal, execute/runTests, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/terminalSelection, read/terminalLastCommand, agent/runSubagent, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, browser/openBrowserPage, todo]
 ---
 
 # Role

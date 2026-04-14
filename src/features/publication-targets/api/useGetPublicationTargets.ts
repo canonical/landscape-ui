@@ -1,43 +1,50 @@
-import useFetch from "@/hooks/useFetch";
+import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { PublicationTarget, PublicationTargetWithPublications } from "../types";
+import type { AxiosError } from "axios";
+import type {
+  ListPublicationTargetsResponse,
+  PublicationTarget,
+} from "@/api/generated/debArchive.schemas";
+import type { PublicationTargetWithPublications } from "../types";
 import useGetPublications from "./useGetPublications";
 
-interface GetPublicationTargetsResponse {
-  publication_targets: PublicationTarget[];
-}
-
-interface GetPublicationTargetsParams {
-  limit?: number;
-  offset?: number;
-  search?: string;
-}
-
-export default function useGetPublicationTargets(
-  queryParams: GetPublicationTargetsParams = {},
-) {
-  const authFetch = useFetch();
+export default function useGetPublicationTargets() {
+  const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading: isLoadingTargets } = useQuery<
-    AxiosResponse<GetPublicationTargetsResponse>,
+    PublicationTarget[],
     AxiosError<ApiError>
   >({
-    queryKey: ["publication-targets", queryParams],
-    queryFn: async () =>
-      authFetch.get("publicationTargets", { params: queryParams }),
+    queryKey: ["publication-targets", "all"],
+    queryFn: async () => {
+      let pageToken: string | undefined;
+      const targets: PublicationTarget[] = [];
+
+      do {
+        const response =
+          await authFetchDebArchive.get<ListPublicationTargetsResponse>(
+            "publicationTargets",
+            { params: { pageSize: 100, pageToken } },
+          );
+
+        targets.push(...(response.data.publicationTargets ?? []));
+        pageToken = response.data.nextPageToken || undefined;
+      } while (pageToken);
+
+      return targets;
+    },
   });
 
   const { publications, isGettingPublications } = useGetPublications();
 
-  const targets = data?.data.publication_targets ?? [];
+  const targets = data ?? [];
 
   const publicationTargets: PublicationTargetWithPublications[] = targets.map(
     (target) => ({
       ...target,
       publications: publications.filter(
-        (p) => p.publication_target === target.name,
+        (p) => p.publicationTarget === target.name,
       ),
     }),
   );

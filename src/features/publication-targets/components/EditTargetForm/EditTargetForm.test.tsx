@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditTargetForm from "./EditTargetForm";
+import type { PublicationTarget } from "@/api/generated/debArchive.schemas";
 
 vi.mock("@/hooks/useSidePanel");
 
@@ -13,8 +14,7 @@ vi.mock("@/hooks/useSidePanel");
 
 // S3 targets from mocks. publicationTargets[0] has all optional S3 fields;
 // publicationTargets[1] has minimal optional fields. Both are S3-only in this version.
-const s3TargetFull = publicationTargets[0];
-const s3TargetMinimal = publicationTargets[1];
+const [s3TargetFull, s3TargetMinimal] = publicationTargets;
 
 if (!s3TargetFull?.s3 || !s3TargetMinimal?.s3) {
   throw new Error("Test targets must have S3 config");
@@ -33,7 +33,7 @@ describe("EditTargetForm", () => {
   it("pre-populates the display_name field from the target prop", () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-    expect(screen.getByLabelText("Name")).toHaveValue(s3TargetFull.display_name);
+    expect(screen.getByLabelText("Name")).toHaveValue(s3TargetFull.displayName);
   });
 
   it("pre-populates S3 fields from the target prop", () => {
@@ -43,7 +43,7 @@ describe("EditTargetForm", () => {
       s3TargetFull.s3?.bucket,
     );
     expect(screen.getByLabelText(/aws access key id/i)).toHaveValue(
-      s3TargetFull.s3?.aws_access_key_id,
+      s3TargetFull.s3?.awsAccessKeyId,
     );
     expect(screen.getByLabelText(/region/i)).toHaveValue(s3TargetFull.s3?.region);
   });
@@ -56,10 +56,10 @@ describe("EditTargetForm", () => {
     );
     expect(screen.getByLabelText(/^acl$/i)).toHaveValue(s3TargetFull.s3?.acl);
     expect(screen.getByLabelText(/storage class/i)).toHaveValue(
-      s3TargetFull.s3?.storage_class,
+      s3TargetFull.s3?.storageClass,
     );
     expect(screen.getByLabelText(/encryption method/i)).toHaveValue(
-      s3TargetFull.s3?.encryption_method,
+      s3TargetFull.s3?.encryptionMethod,
     );
   });
 
@@ -75,8 +75,8 @@ describe("EditTargetForm", () => {
   it("pre-populates all S3 fields with empty strings when target has no S3 config", () => {
     const targetWithoutS3 = {
       name: "publicationTargets/no-s3",
-      publication_target_id: "no-s3",
-      display_name: "Target without S3",
+      publicationTargetId: "no-s3",
+      displayName: "Target without S3",
     };
 
     renderWithProviders(<EditTargetForm target={targetWithoutS3} />);
@@ -96,24 +96,23 @@ describe("EditTargetForm", () => {
   it("pre-populates with mixed null/undefined optional S3 fields", () => {
     const s3TargetPartiallyNull = {
       name: "publicationTargets/partial",
-      publication_target_id: "partial",
-      display_name: "Partially null",
+      publicationTargetId: "partial",
+      displayName: "Partially null",
       s3: {
         bucket: "my-bucket",
-        aws_access_key_id: "key",
-        aws_secret_access_key: "secret",
-        region: undefined,
-        endpoint: null,
+        awsAccessKeyId: "key",
+        awsSecretAccessKey: "secret",
+        region: "region",
+        endpoint: undefined,
         prefix: undefined,
         acl: "private",
-        storage_class: undefined,
-        encryption_method: null,
+        storageClass: undefined,
+        encryptionMethod: undefined,
       },
-    };
+    } as PublicationTarget;
 
     renderWithProviders(<EditTargetForm target={s3TargetPartiallyNull} />);
 
-    expect(screen.getByLabelText(/region/i)).toHaveValue("");
     expect(screen.getByLabelText(/endpoint/i)).toHaveValue("");
     expect(screen.getByLabelText(/prefix/i)).toHaveValue("");
     expect(screen.getByLabelText(/^acl$/i)).toHaveValue("private");

@@ -1,36 +1,38 @@
-import useFetch from "@/hooks/useFetch";
+import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { Publication } from "../types";
+import type { AxiosError } from "axios";
+import type {
+  ListPublicationsResponse,
+  Publication,
+} from "@/api/generated/debArchive.schemas";
 
-interface GetPublicationsResponse {
-  publications: Publication[];
-  next_page_token?: string;
-}
+export default function useGetPublications() {
+  const authFetchDebArchive = useFetchDebArchive();
 
-interface GetPublicationsParams {
-  publication_target?: string;
-  limit?: number;
-  offset?: number;
-}
+  const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
+    queryKey: ["publication-targets", "publications", "all"],
+    queryFn: async () => {
+      let pageToken: string | undefined;
+      const publications: Publication[] = [];
 
-export default function useGetPublications(
-  queryParams: GetPublicationsParams = {},
-) {
-  const authFetch = useFetch();
+      do {
+        const response =
+          await authFetchDebArchive.get<ListPublicationsResponse>(
+            "publications",
+            { params: { pageSize: 100, pageToken } },
+          );
 
-  const { data, isLoading } = useQuery<
-    AxiosResponse<GetPublicationsResponse>,
-    AxiosError<ApiError>
-  >({
-    queryKey: ["publication-targets", "publications", queryParams],
-    queryFn: async () =>
-      authFetch.get("publications", { params: queryParams }),
+        publications.push(...(response.data.publications ?? []));
+        pageToken = response.data.nextPageToken || undefined;
+      } while (pageToken);
+
+      return publications;
+    },
   });
 
   return {
-    publications: data?.data.publications ?? [],
+    publications: data ?? [],
     isGettingPublications: isLoading,
   };
 }

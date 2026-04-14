@@ -19,15 +19,14 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
 
   const handleViewTargetDetails = () => {
     setSidePanelContent(
-      target.display_name ?? target.name,
+      target.displayName ?? target.name,
       <TargetDetails target={target} />,
     );
   };
 
   const handleEditTarget = (): void => {
     setSidePanelContent(
-      `Edit "${target.display_name ?? target.name}"`,
-      <Suspense fallback={<LoadingState />}>
+      `Edit "${target.displayName ?? target.name}"`,      <Suspense fallback={<LoadingState />}>
         <EditTargetForm target={target} />
       </Suspense>,
     );
@@ -35,8 +34,7 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
 
   const handleRemoveTarget = (): void => {
     setSidePanelContent(
-      `Remove "${target.display_name ?? target.name}"`,
-      <Suspense fallback={<LoadingState />}>
+      `Remove "${target.displayName ?? target.name}"`,      <Suspense fallback={<LoadingState />}>
         <RemoveTargetForm target={target} />
       </Suspense>,
     );
@@ -46,13 +44,13 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
     {
       icon: "show",
       label: "View details",
-      "aria-label": `View details for ${target.display_name}`,
+      "aria-label": `View details for ${target.displayName}`,
       onClick: handleViewTargetDetails,
     },
     {
       icon: "edit",
       label: "Edit",
-      "aria-label": `Edit ${target.display_name}`,
+      "aria-label": `Edit ${target.displayName}`,
       onClick: handleEditTarget,
     },
   ];
@@ -61,14 +59,14 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove ${target.display_name}`,
+      "aria-label": `Remove ${target.displayName}`,
       onClick: handleRemoveTarget,
     },
   ];
 
   return (
     <ListActions
-      toggleAriaLabel={`${target.display_name} actions`}
+      toggleAriaLabel={`${target.displayName} actions`}
       actions={nondestructiveActions}
       destructiveActions={destructiveActions}
     />

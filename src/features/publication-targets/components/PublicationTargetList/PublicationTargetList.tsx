@@ -21,11 +21,11 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
   const columns = useMemo<Column<PublicationTargetWithPublications>[]>(
     () => [
       {
-        accessor: "display_name",
-        id: "display_name",
+        accessor: "displayName",
+        id: "displayName",
         Header: "Name",
         Cell: ({ row }: CellProps<PublicationTargetWithPublications>) =>
-          row.original.display_name || <NoData />,
+          row.original.displayName || <NoData />,
       },
       {
         accessor: (row) => getTargetType(row),
@@ -56,7 +56,13 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
     [],
   );
 
-  return <ResponsiveTable columns={columns} data={targets} minWidth={800} />;
+  return (
+    <ResponsiveTable
+      columns={columns as Column<Record<string, unknown>>[]}
+      data={targets as unknown as Record<string, unknown>[]}
+      minWidth={800}
+    />
+  );
 };
 
 export default PublicationTargetList;

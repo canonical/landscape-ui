@@ -18,7 +18,7 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
 
   const columns = useMemo<Column<Publication>[]>(
     () => [
-      { accessor: "display_name", Header: "Publication" },
+      { accessor: "label", Header: "Publication" },
       {
         accessor: "mirror",
         Header: "Source",
@@ -42,7 +42,10 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
 
   return (
     <>
-      <ModularTable columns={columns} data={pagedData} />
+      <ModularTable
+        columns={columns as Column<Record<string, unknown>>[]}
+        data={pagedData as unknown as Record<string, unknown>[]}
+      />
       {pageSize != null && publications.length > pageSize && (
         <SidePanelTablePagination
           currentPage={currentPage}

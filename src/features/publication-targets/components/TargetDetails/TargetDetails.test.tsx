@@ -9,10 +9,21 @@ import TargetDetails from "./TargetDetails";
 
 vi.mock("@/hooks/useSidePanel");
 
-// Target with publications (prod-s3-us-east, 3 publications)
-const targetWithPublications = publicationTargetsWithPublications[0];
-// Target without publications (staging-s3-eu-west)
-const targetWithoutPublications = publicationTargetsWithPublications[1];
+const [targetWithPublications, targetWithoutPublications] = publicationTargetsWithPublications;
+const [firstPublication] = publications;
+
+if (
+  !targetWithPublications?.s3 ||
+  !targetWithoutPublications?.s3 ||
+  !firstPublication?.label
+) {
+  throw new Error("Test data is missing required properties");
+}
+
+// Extract narrowed s3 references at module level so type guards propagate into callbacks
+const s3WithPubs = targetWithPublications.s3;
+const s3WithoutPubs = targetWithoutPublications.s3;
+const firstPubLabel = firstPublication.label;
 
 describe("TargetDetails", () => {
   const user = userEvent.setup();
@@ -42,7 +53,7 @@ describe("TargetDetails", () => {
       await user.click(screen.getByRole("button", { name: /edit/i }));
 
       expect(setSidePanelContent).toHaveBeenCalledWith(
-        `Edit "${targetWithPublications.display_name}"`,
+        `Edit "${targetWithPublications.displayName}"`,
         expect.anything(),
       );
     });
@@ -55,7 +66,7 @@ describe("TargetDetails", () => {
       await user.click(screen.getByRole("button", { name: /remove/i }));
 
       expect(setSidePanelContent).toHaveBeenCalledWith(
-        `Remove ${targetWithPublications.display_name}`,
+        `Remove ${targetWithPublications.displayName}`,
         expect.anything(),
       );
     });
@@ -68,48 +79,36 @@ describe("TargetDetails", () => {
       expect(screen.getByText("DETAILS")).toBeInTheDocument();
     });
 
-    it("renders the target display_name", () => {
+    it("renders the target displayName", () => {
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(
-        screen.getByText(targetWithPublications.display_name),
+        screen.getByText(targetWithPublications.displayName),
       ).toBeInTheDocument();
     });
 
-    it("renders all S3 fields: region, bucket, prefix, acl, storage_class, encryption_method, disable_multi_del, force_sig_v2", () => {
+    it("renders all S3 fields: region, bucket, prefix, acl, storageClass, encryptionMethod, disableMultiDel, forceSigV2", () => {
       const { container } = renderWithProviders(
         <TargetDetails target={targetWithPublications} />,
       );
 
-      expect(container).toHaveInfoItem(
-        "Region",
-        targetWithPublications.s3!.region,
-      );
-      expect(container).toHaveInfoItem(
-        "Bucket Name",
-        targetWithPublications.s3!.bucket,
-      );
-      expect(container).toHaveInfoItem(
-        "Prefix",
-        targetWithPublications.s3!.prefix,
-      );
-      expect(container).toHaveInfoItem("ACL", targetWithPublications.s3!.acl);
-      expect(container).toHaveInfoItem(
-        "Storage class",
-        targetWithPublications.s3!.storage_class,
-      );
+      expect(container).toHaveInfoItem("Region", s3WithPubs.region);
+      expect(container).toHaveInfoItem("Bucket Name", s3WithPubs.bucket);
+      expect(container).toHaveInfoItem("Prefix", s3WithPubs.prefix ?? "");
+      expect(container).toHaveInfoItem("ACL", s3WithPubs.acl ?? "");
+      expect(container).toHaveInfoItem("Storage class", s3WithPubs.storageClass ?? "");
       expect(container).toHaveInfoItem(
         "Encryption method",
-        targetWithPublications.s3!.encryption_method,
+        s3WithPubs.encryptionMethod ?? "",
       );
       // Boolean fields should be converted to "Yes"/"No"
       expect(container).toHaveInfoItem(
         "Disable MultiDel",
-        targetWithPublications.s3!.disable_multi_del ? "Yes" : "No",
+        s3WithPubs.disableMultiDel ? "Yes" : "No",
       );
       expect(container).toHaveInfoItem(
         "Force AWS SIGv2",
-        targetWithPublications.s3!.force_sig_v2 ? "Yes" : "No",
+        s3WithPubs.forceSigV2 ? "Yes" : "No",
       );
     });
 
@@ -119,18 +118,12 @@ describe("TargetDetails", () => {
       );
 
       // These fields should still be present even with undefined values
-      expect(container).toHaveInfoItem(
-        "Region",
-        targetWithoutPublications.s3!.region,
-      );
-      expect(container).toHaveInfoItem(
-        "Bucket Name",
-        targetWithoutPublications.s3!.bucket,
-      );
+      expect(container).toHaveInfoItem("Region", s3WithoutPubs.region);
+      expect(container).toHaveInfoItem("Bucket Name", s3WithoutPubs.bucket);
       // Boolean fields should still show "Yes"/"No"
       expect(container).toHaveInfoItem(
         "Disable MultiDel",
-        targetWithoutPublications.s3!.disable_multi_del ? "Yes" : "No",
+        s3WithoutPubs.disableMultiDel ? "Yes" : "No",
       );
     });
   });
@@ -140,10 +133,8 @@ describe("TargetDetails", () => {
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByText("USED IN")).toBeInTheDocument();
-      // Publications table should show publication display names
-      expect(
-        screen.getByText(publications[0].display_name),
-      ).toBeInTheDocument();
+      // Publications table should show publication labels
+      expect(screen.getByText(firstPubLabel)).toBeInTheDocument();
     });
 
     it("hides the USED IN section when target has no publications", () => {
@@ -153,3 +144,4 @@ describe("TargetDetails", () => {
     });
   });
 });
+
