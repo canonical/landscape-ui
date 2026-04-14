@@ -11,6 +11,9 @@ permissions:
 jobs:
   process-release:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.calver.outputs.version }}
+      dest_branch: ${{ steps.calver.outputs.dest_branch }}
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
@@ -57,6 +60,13 @@ jobs:
           VITE_API_URL_OLD: /api/
           VITE_ROOT_PATH: /new_dashboard/
 
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 5
+
       - name: Prepare PPA Branch
         run: |
           # Create a temporary directory to hold build artifacts
@@ -79,3 +89,48 @@ jobs:
           create_branch: true
           push_options: "--force"
           commit_message: "Build v${{ steps.calver.outputs.version }} from ${{ github.ref_name }} [${{ github.sha }}]"
+
+  build-deb:
+    needs: process-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: debian
+
+      - name: Download dist artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Install packaging tools
+        run: sudo apt-get update && sudo apt-get install -y debhelper devscripts
+
+      - name: Build .deb package
+        env:
+          DEBFULLNAME: Landscape Team
+          DEBEMAIL: landscape-team@canonical.com
+          VERSION: ${{ needs.process-release.outputs.version }}
+        run: |
+          # Update debian/changelog with the build version
+          dch --newversion "${VERSION}-0landscape0" \
+              --distribution jammy \
+              "Release ${VERSION} for jammy"
+
+          # Create the orig tarball from the pre-built dist
+          cd dist
+          tar czf "../../landscape-dashboard_${VERSION}.orig.tar.gz" \
+            assets favicon.svg index.html
+          cd ..
+
+          # Build the binary .deb (unsigned)
+          dpkg-buildpackage -us -uc -b
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: landscape-dashboard-deb
+          path: ../landscape-dashboard_*.deb
+          retention-days: 30
+
