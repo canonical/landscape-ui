@@ -13,10 +13,9 @@ import {
 import type { FC } from "react";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { lazy, useEffect } from "react";
+import { lazy } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
-import useProfiles from "@/hooks/useProfiles";
 
 const RemovalProfileAddSidePanel = lazy(async () =>
   import("@/features/removal-profiles").then((module) => ({
@@ -39,11 +38,6 @@ const RemovalProfilesPage: FC = () => {
 
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
-  const { setIsProfileLimitReached } = useProfiles();
-
-  useEffect(() => {
-    setIsProfileLimitReached(false);
-  }, [setIsProfileLimitReached]);
 
   const { removalProfile } = useGetPageRemovalProfile();
 

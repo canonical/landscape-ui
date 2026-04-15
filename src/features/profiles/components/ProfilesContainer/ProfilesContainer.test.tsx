@@ -69,7 +69,8 @@ describe("ProfilesContainer", () => {
   });
 
   it("renders empty table when no profiles with search", () => {
-    renderWithProviders(<ProfilesContainer {...props} profiles={[]} />,
+    renderWithProviders(
+      <ProfilesContainer {...props} profiles={[]} />,
       undefined,
       "/?search=search",
     );
@@ -93,9 +94,10 @@ describe("ProfilesContainer", () => {
   it("shows security profile limit notification when limit is reached", () => {
     mockUseProfiles.mockReturnValue({
       isProfileLimitReached: true,
+      profileLimit: 5,
     } as ReturnType<typeof useProfiles>);
 
-    renderWithProviders(<ProfilesContainer {...props} profilesCount={5} />);
+    renderWithProviders(<ProfilesContainer {...props} />);
 
     expect(screen.getByText("Profile limit reached:")).toBeInTheDocument();
     expect(
@@ -108,6 +110,7 @@ describe("ProfilesContainer", () => {
   it("shows wsl profile limit notification when limit is reached", () => {
     mockUseProfiles.mockReturnValue({
       isProfileLimitReached: true,
+      profileLimit: 100,
     } as ReturnType<typeof useProfiles>);
 
     renderWithProviders(
@@ -116,7 +119,7 @@ describe("ProfilesContainer", () => {
 
     expect(
       screen.getByText(
-        /You've reached the limit of 3 active wsl profiles\. You must remove/i,
+        /You've reached the limit of 100 active wsl profiles\. You must remove/i,
       ),
     ).toBeInTheDocument();
   });

@@ -43,7 +43,7 @@ const WslProfilesPage: FC = () => {
       limit: DEFAULT_PAGE_SIZE,
       offset: 0,
     });
-  const { setIsProfileLimitReached } = useProfiles();
+  const { setIsProfileLimitReached, setProfileLimit } = useProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
@@ -56,7 +56,13 @@ const WslProfilesPage: FC = () => {
 
   useEffect(() => {
     setIsProfileLimitReached(isWslProfileLimitReached);
-  }, [isWslProfileLimitReached, setIsProfileLimitReached]);
+    setProfileLimit(wslProfileLimit);
+  }, [
+    isWslProfileLimitReached,
+    setIsProfileLimitReached,
+    setProfileLimit,
+    wslProfileLimit,
+  ]);
 
   return (
     <PageMain>

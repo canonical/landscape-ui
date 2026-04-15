@@ -11,12 +11,11 @@ import {
   useGetPageUpgradeProfile,
 } from "@/features/upgrade-profiles";
 import type { FC } from "react";
-import { lazy, useEffect } from "react";
+import { lazy } from "react";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
-import useProfiles from "@/hooks/useProfiles";
 
 const UpgradeProfileAddSidePanel = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
@@ -37,11 +36,6 @@ const UpgradeProfilesPage: FC = () => {
 
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
-  const { setIsProfileLimitReached } = useProfiles();
-
-  useEffect(() => {
-    setIsProfileLimitReached(false);
-  }, [setIsProfileLimitReached]);
 
   const { upgradeProfile } = useGetPageUpgradeProfile();
 

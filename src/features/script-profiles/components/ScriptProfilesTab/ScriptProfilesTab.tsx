@@ -11,7 +11,6 @@ import {
   ProfileTypes,
   ViewProfileSidePanel,
 } from "@/features/profiles";
-import { ProfilesProvider } from "@/context/profiles";
 import useProfiles from "@/hooks/useProfiles";
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
@@ -55,7 +54,7 @@ const ScriptProfilesTab: FC = () => {
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
-  const { setIsProfileLimitReached } = useProfiles();
+  const { setIsProfileLimitReached, setProfileLimit } = useProfiles();
 
   const { scriptProfile } = useGetPageScriptProfile();
 
@@ -68,14 +67,20 @@ const ScriptProfilesTab: FC = () => {
 
   useEffect(() => {
     setIsProfileLimitReached(isScriptProfileLimitReached);
-  }, [setIsProfileLimitReached, isScriptProfileLimitReached]);
+    setProfileLimit(scriptProfileLimits?.max_num_profiles ?? 0);
+  }, [
+    setIsProfileLimitReached,
+    isScriptProfileLimitReached,
+    scriptProfileLimits?.max_num_profiles,
+    setProfileLimit,
+  ]);
 
   if (!isGettingActiveScripts && !activeScriptsCount) {
     return <NoScriptsEmptyState />;
   }
 
   return (
-    <ProfilesProvider>
+    <>
       <ProfilesContainer
         type={ProfileTypes.script}
         profiles={scriptProfiles}
@@ -113,7 +118,7 @@ const ScriptProfilesTab: FC = () => {
           </SidePanel.Suspense>
         )}
       </SidePanel>
-    </ProfilesProvider>
+    </>
   );
 };
 

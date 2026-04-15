@@ -65,8 +65,9 @@ const ProfileAssociatedInstancesLink: FC<
   };
 
   const formattedQuery =
-    getPackageComplianceIds()?.map((id) => `id:${id}`).join(" OR ") ??
-    `profile:${query.toLowerCase()}`;
+    getPackageComplianceIds()
+      ?.map((id) => `id:${id}`)
+      .join(" OR ") ?? `profile:${query.toLowerCase()}`;
 
   if (isWslProfile(profile) && query.endsWith(":noncompliant")) {
     return (

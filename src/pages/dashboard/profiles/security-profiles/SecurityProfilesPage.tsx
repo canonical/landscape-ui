@@ -11,6 +11,7 @@ import {
   useGetSecurityProfiles,
   useIsSecurityProfilesLimitReached,
   useGetPageSecurityProfile,
+  ACTIVE_SECURITY_PROFILES_LIMIT,
 } from "@/features/security-profiles";
 import usePageParams from "@/hooks/usePageParams";
 import { lazy, useEffect, type FC } from "react";
@@ -62,7 +63,7 @@ const SecurityProfilesPage: FC = () => {
     passRateFrom,
     passRateTo,
   } = usePageParams();
-  const { setIsProfileLimitReached } = useProfiles();
+  const { setIsProfileLimitReached, setProfileLimit } = useProfiles();
   const {
     value: isRetentionNotificationVisible,
     setTrue: showRetentionNotification,
@@ -75,7 +76,12 @@ const SecurityProfilesPage: FC = () => {
 
   useEffect(() => {
     setIsProfileLimitReached(isSecurityProfileLimitReached);
-  }, [setIsProfileLimitReached, isSecurityProfileLimitReached]);
+    setProfileLimit(ACTIVE_SECURITY_PROFILES_LIMIT);
+  }, [
+    setIsProfileLimitReached,
+    isSecurityProfileLimitReached,
+    setProfileLimit,
+  ]);
 
   useSetDynamicFilterValidation("sidePath", [
     "add",

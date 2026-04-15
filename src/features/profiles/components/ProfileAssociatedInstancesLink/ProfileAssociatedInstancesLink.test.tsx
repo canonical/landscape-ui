@@ -156,6 +156,8 @@ describe("ProfileAssociatedInstancesLink", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "3 instances" }));
 
-    expect(screen.getByText("Instances not compliant with Profile One")).toBeInTheDocument();
+    expect(
+      screen.getByText("Instances not compliant with Profile One"),
+    ).toBeInTheDocument();
   });
 });

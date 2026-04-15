@@ -14,9 +14,8 @@ import {
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { lazy, useEffect } from "react";
+import { lazy } from "react";
 import { ProfileTypes } from "@/features/profiles";
-import useProfiles from "@/hooks/useProfiles";
 
 const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
@@ -52,11 +51,6 @@ const PackageProfilesPage: FC = () => {
   const { getPackageProfilesQuery } = usePackageProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
-  const { setIsProfileLimitReached } = useProfiles();
-
-  useEffect(() => {
-    setIsProfileLimitReached(false);
-  }, [setIsProfileLimitReached]);
 
   const { packageProfile } = useGetPagePackageProfile();
 

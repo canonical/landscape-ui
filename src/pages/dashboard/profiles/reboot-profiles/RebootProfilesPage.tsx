@@ -14,9 +14,8 @@ import {
 } from "@/features/reboot-profiles";
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
-import { lazy, useEffect } from "react";
+import { lazy } from "react";
 import { ProfileTypes } from "@/features/profiles";
-import useProfiles from "@/hooks/useProfiles";
 
 const RebootProfileAddSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
@@ -41,11 +40,6 @@ const RebootProfilesPage: FC = () => {
     useGetRebootProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
-  const { setIsProfileLimitReached } = useProfiles();
-
-  useEffect(() => {
-    setIsProfileLimitReached(false);
-  }, [setIsProfileLimitReached]);
 
   const { rebootProfile } = useGetPageRebootProfile();
 

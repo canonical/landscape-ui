@@ -23,7 +23,7 @@ const ProfilesContainer: FC<ProfilesContainerProps> = ({
   isPending,
   profilesCount,
 }) => {
-  const { isProfileLimitReached } = useProfiles();
+  const { isProfileLimitReached, profileLimit } = useProfiles();
   const { search } = usePageParams();
   const { value: isNotificationVisible, setFalse: hideNotification } =
     useBoolean(true);
@@ -48,9 +48,9 @@ const ProfilesContainer: FC<ProfilesContainerProps> = ({
           title="Profile limit reached:"
           onDismiss={hideNotification}
         >
-          You&apos;ve reached the limit of {profilesCount ?? profiles.length}{" "}
-          active {type} profiles. You must {removalType} an active profile to be
-          able to add a new one.
+          You&apos;ve reached the limit of {profileLimit} active {type}{" "}
+          profiles. You must {removalType} an active profile to be able to add a
+          new one.
         </Notification>
       )}
       <ProfilesList profiles={profiles} type={type} />

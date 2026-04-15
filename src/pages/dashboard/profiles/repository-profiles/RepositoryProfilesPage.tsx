@@ -14,9 +14,8 @@ import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { lazy, useEffect } from "react";
+import { lazy } from "react";
 import { ProfileTypes } from "@/features/profiles";
-import useProfiles from "@/hooks/useProfiles";
 
 const RepositoryProfileEditSidePanel = lazy(async () =>
   import("@/features/repository-profiles").then((module) => ({
@@ -36,11 +35,6 @@ const RepositoryProfilesPage: FC = () => {
     getRepositoryProfilesQuery();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
-  const { setIsProfileLimitReached } = useProfiles();
-
-  useEffect(() => {
-    setIsProfileLimitReached(false);
-  }, [setIsProfileLimitReached]);
 
   const { repositoryProfile } = useGetPageRepositoryProfile();
 
