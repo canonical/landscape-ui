@@ -1,10 +1,7 @@
 import * as Yup from "yup";
 import type { FormProps } from "./types";
 import type { PublicationWritable } from "../../types";
-import {
-  LOCAL_ARCHITECTURES_PLACEHOLDER,
-  SOURCE_TYPE_LOCAL_REPOSITORY,
-} from "./constants";
+import { SOURCE_TYPE_LOCAL_REPOSITORY } from "./constants";
 
 export interface CreatePublicationPayload {
   publicationId?: string;
@@ -27,13 +24,6 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   publication_target: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   prefix: Yup.string(),
   uploader_distribution: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  uploader_components: Yup.string()
-    .required(REQUIRED_FIELD_MESSAGE)
-    .test({
-      name: "has-components",
-      message: REQUIRED_FIELD_MESSAGE,
-      test: (value) => getCsvValues(value).length > 0,
-    }),
   uploader_architectures: Yup.string()
     .when("source_type", {
       is: SOURCE_TYPE_LOCAL_REPOSITORY,
@@ -84,10 +74,12 @@ const prependResourcePrefix = (value: string, prefix: string) => {
 
 export const getPublicationPayload = (values: FormProps) => {
   const publicationId = values.name.trim() || undefined;
-  const components = getCsvValues(values.uploader_components);
+  const sourcePrefix =
+    values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY
+      ? "locals/"
+      : "mirrors/";
   const architectures =
-    values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY &&
-    values.uploader_architectures === LOCAL_ARCHITECTURES_PLACEHOLDER
+    values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY
       ? []
       : getCsvValues(values.uploader_architectures);
 
@@ -98,9 +90,8 @@ export const getPublicationPayload = (values: FormProps) => {
         values.publication_target,
         "publicationTargets/",
       ),
-      mirror: prependResourcePrefix(values.source, "mirrors/"),
+      source: prependResourcePrefix(values.source, sourcePrefix),
       distribution: values.uploader_distribution.trim() || undefined,
-      component: components[0],
       label: values.prefix.trim() || undefined,
       architectures: architectures.length > 0 ? architectures : undefined,
       acquireByHash: values.hash_indexing,

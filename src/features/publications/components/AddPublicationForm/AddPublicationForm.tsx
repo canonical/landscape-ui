@@ -24,7 +24,6 @@ import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
-  LOCAL_ARCHITECTURES_PLACEHOLDER,
   SETTINGS_HELP_TEXT,
   SOURCE_TYPE_LOCAL_REPOSITORY,
   SOURCE_TYPE_MIRROR,
@@ -38,8 +37,6 @@ interface SelectableSource {
   value: string;
   sourceType: string;
   distribution?: string;
-  component?: string;
-  components: string[];
   architectures: string[];
 }
 
@@ -92,7 +89,6 @@ const AddPublicationForm: FC = () => {
           value: stripResourcePrefix(mirror.name, "mirrors/"),
           sourceType: SOURCE_TYPE_MIRROR,
           distribution: mirror.distribution,
-          components: mirror.components ?? [],
           architectures: mirror.architectures ?? [],
         })),
     [mirrors],
@@ -107,8 +103,6 @@ const AddPublicationForm: FC = () => {
           value: stripResourcePrefix(localSource.name, "locals/"),
           sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
           distribution: localSource.defaultDistribution,
-          component: localSource.defaultComponent,
-          components: [],
           architectures: [],
         })),
     [locals],
@@ -159,20 +153,6 @@ const AddPublicationForm: FC = () => {
     [publicationTargets],
   );
 
-  const componentOptions = useMemo(
-    () => [
-      {
-        label: "Select component",
-        value: "",
-      },
-      ...(selectedSource?.components ?? []).map((component) => ({
-        label: component,
-        value: component,
-      })),
-    ],
-    [selectedSource],
-  );
-
   const architectureOptions = useMemo(
     () => [
       {
@@ -193,7 +173,6 @@ const AddPublicationForm: FC = () => {
     await formik.setFieldValue("source_type", event.target.value);
     await formik.setFieldValue("source", "");
     await formik.setFieldValue("uploader_distribution", "");
-    await formik.setFieldValue("uploader_components", "");
     await formik.setFieldValue("uploader_architectures", "");
   };
 
@@ -210,16 +189,11 @@ const AddPublicationForm: FC = () => {
     );
 
     if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
-      await formik.setFieldValue("uploader_components", source.component ?? "");
-      await formik.setFieldValue(
-        "uploader_architectures",
-        LOCAL_ARCHITECTURES_PLACEHOLDER,
-      );
+      await formik.setFieldValue("uploader_architectures", "");
 
       return;
     }
 
-    await formik.setFieldValue("uploader_components", "");
     await formik.setFieldValue("uploader_architectures", "");
   };
 
@@ -325,71 +299,16 @@ const AddPublicationForm: FC = () => {
             <Icon name="lock-locked" aria-hidden />
           </div>
 
-          {isLocalSourceType ? (
-            <>
-              <label
-                className="p-form__label is-required"
-                htmlFor="uploader_components"
-              >
-                Components
-              </label>
-              <div
-                className={classNames(
-                  "u-no-margin--bottom",
-                  classes.derivedDistribution,
-                )}
-              >
-                <span
-                  className={classes.derivedDistributionValue}
-                  id="uploader_components"
-                >
-                  {formik.values.uploader_components || "-"}
-                </span>
-                <Icon name="lock-locked" aria-hidden />
-              </div>
-
-              <label
-                className="p-form__label is-required"
-                htmlFor="uploader_architectures"
-              >
-                Architectures
-              </label>
-              <div
-                className={classNames(
-                  "u-no-margin--bottom",
-                  classes.derivedDistribution,
-                )}
-              >
-                <span
-                  className={classes.derivedDistributionValue}
-                  id="uploader_architectures"
-                >
-                  {LOCAL_ARCHITECTURES_PLACEHOLDER}
-                </span>
-                <Icon name="lock-locked" aria-hidden />
-              </div>
-            </>
-          ) : (
-            <>
-              <Select
-                label="Components"
-                required
-                disabled={!formik.values.source}
-                options={componentOptions}
-                error={getFormikError(formik, "uploader_components")}
-                {...formik.getFieldProps("uploader_components")}
-              />
-
-              <Select
-                label="Architectures"
-                required
-                disabled={!formik.values.source}
-                options={architectureOptions}
-                error={getFormikError(formik, "uploader_architectures")}
-                {...formik.getFieldProps("uploader_architectures")}
-                className="u-no-margin--bottom"
-              />
-            </>
+          {!isLocalSourceType && (
+            <Select
+              label="Architectures"
+              required
+              disabled={!formik.values.source}
+              options={architectureOptions}
+              error={getFormikError(formik, "uploader_architectures")}
+              {...formik.getFieldProps("uploader_architectures")}
+              className="u-no-margin--bottom"
+            />
           )}
         </Blocks.Item>
 

@@ -3,7 +3,6 @@ import type { FormProps } from "./types";
 
 export const SOURCE_TYPE_MIRROR = "Mirror";
 export const SOURCE_TYPE_LOCAL_REPOSITORY = "Local repository";
-export const LOCAL_ARCHITECTURES_PLACEHOLDER = "PLACEHOLDER";
 
 export const SOURCE_TYPE_OPTIONS: SelectOption[] = [
   { label: "Select source type", value: "" },
@@ -28,7 +27,6 @@ export const INITIAL_VALUES: FormProps = {
   publication_target: "",
   prefix: "",
   uploader_distribution: "",
-  uploader_components: "",
   uploader_architectures: "",
   preserve_mirror_signing_key: true,
   mirror_signing_key: "",
