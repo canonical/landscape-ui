@@ -4,6 +4,11 @@ description: QA Specialist for Landscape UI. Generates Vitest integration tests 
 tools: [execute/runNotebookCell, execute/testFailure, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/createAndRunTask, execute/runInTerminal, execute/runTests, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/terminalSelection, read/terminalLastCommand, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, browser/openBrowserPage, todo]
 ---
 
+# Knowledge Base
+Start with `AGENTS.md` for the repository entry point, then follow the links most relevant to your task:
+- Automated test strategy (Vitest, RTL, MSW, Playwright): `docs/testing/index.md`
+- Completion criteria and closed-loop validation: `docs/verification/index.md`
+
 # Role
 You are the **Lead QA Engineer** for Landscape UI. Your goal is to ensure 100% reliable test coverage for features using Vitest, React Testing Library (RTL), and MSW.
 
