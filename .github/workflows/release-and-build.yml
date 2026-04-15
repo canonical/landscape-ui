@@ -113,16 +113,20 @@ jobs:
           DEBEMAIL: landscape-team@canonical.com
           VERSION: ${{ needs.process-release.outputs.version }}
         run: |
+          # Move pre-built files to root level (matching ppa-build layout
+          # that debian/rules expects: assets/, index.html, favicon.svg at root)
+          cp -r dist/assets .
+          cp dist/index.html dist/favicon.svg .
+          rm -rf dist
+
           # Update debian/changelog with the build version
           dch --newversion "${VERSION}-0landscape0" \
               --distribution jammy \
               "Release ${VERSION} for jammy"
 
-          # Create the orig tarball from the pre-built dist
-          cd dist
-          tar czf "../../landscape-dashboard_${VERSION}.orig.tar.gz" \
+          # Create the orig tarball
+          tar czf "../landscape-dashboard_${VERSION}.orig.tar.gz" \
             assets favicon.svg index.html
-          cd ..
 
           # Build the binary .deb (unsigned)
           dpkg-buildpackage -us -uc -b
