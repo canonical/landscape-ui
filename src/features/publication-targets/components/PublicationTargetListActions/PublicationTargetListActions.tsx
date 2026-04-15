@@ -4,11 +4,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
 import TargetDetails from "../TargetDetails";
+import RemoveTargetForm from "../RemoveTargetForm";
 
 const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
-const RemoveTargetForm = lazy(async () => import("../RemoveTargetForm/RemoveTargetForm"));
 
 interface PublicationTargetListActionsProps {
   readonly target: PublicationTarget;
@@ -16,6 +17,11 @@ interface PublicationTargetListActionsProps {
 
 const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ target }) => {
   const { setSidePanelContent } = useSidePanel();
+  const {
+    value: isRemoveModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
 
   const handleViewTargetDetails = () => {
     setSidePanelContent(
@@ -33,11 +39,7 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
   };
 
   const handleRemoveTarget = (): void => {
-    setSidePanelContent(
-      `Remove "${target.displayName ?? target.name}"`,      <Suspense fallback={<LoadingState />}>
-        <RemoveTargetForm target={target} />
-      </Suspense>,
-    );
+    openRemoveModal();
   };
 
   const nondestructiveActions: Action[] = [
@@ -65,11 +67,19 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
   ];
 
   return (
-    <ListActions
-      toggleAriaLabel={`${target.displayName} actions`}
-      actions={nondestructiveActions}
-      destructiveActions={destructiveActions}
-    />
+    <>
+      <ListActions
+        toggleAriaLabel={`${target.displayName} actions`}
+        actions={nondestructiveActions}
+        destructiveActions={destructiveActions}
+      />
+
+      <RemoveTargetForm
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        target={target}
+      />
+    </>
   );
 };
 

@@ -5,7 +5,7 @@ import type { AxiosError } from "axios";
 import type {
   ListPublicationTargetsResponse,
   PublicationTarget,
-} from "@/api/generated/debArchive.schemas";
+} from "@canonical/landscape-openapi";
 
 export default function useGetPublicationTargets() {
   const authFetchDebArchive = useFetchDebArchive();

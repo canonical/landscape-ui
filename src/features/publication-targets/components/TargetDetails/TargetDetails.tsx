@@ -5,11 +5,12 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
 import PublicationsTable from "../PublicationsTable/PublicationsTable";
+import RemoveTargetForm from "../RemoveTargetForm";
 
 const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
-const RemoveTargetForm = lazy(async () => import("../RemoveTargetForm/RemoveTargetForm"));
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
@@ -20,6 +21,11 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
     target.publicationTargetId,
   );
+  const {
+    value: isRemoveModalOpen,
+    setTrue: openRemoveModal,
+    setFalse: closeRemoveModal,
+  } = useBoolean();
 
   const handleEditTarget = (): void => {
     setSidePanelContent(
@@ -30,11 +36,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
   };
 
   const handleRemoveTarget = (): void => {
-    setSidePanelContent(
-      `Remove ${target.displayName}`,      <Suspense fallback={<LoadingState />}>
-        <RemoveTargetForm target={target} />
-      </Suspense>,
-    );
+    openRemoveModal();
   };
 
   const s3Fields = target.s3
@@ -105,6 +107,12 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
           </>
         )
       )}
+
+      <RemoveTargetForm
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        target={target}
+      />
     </>
   );
 };

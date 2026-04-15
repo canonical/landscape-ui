@@ -11,7 +11,7 @@ import {
 import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
-import type { PublicationTarget } from "@/api/generated/debArchive.schemas";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 interface EditTargetFormProps {
   readonly target: PublicationTarget;

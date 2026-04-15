@@ -1,5 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import NoData from "@/components/layout/NoData";
+import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import useSidePanel from "@/hooks/useSidePanel";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
@@ -7,7 +7,7 @@ import { Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement } from "react";
 import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import type { PublicationTarget } from "../../types";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 import PublicationTargetListActions from "../PublicationTargetListActions";
 
 const TargetDetails = lazy(async () => import("../TargetDetails/TargetDetails"));
@@ -52,7 +52,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
     () => {
       const handleViewTargetDetails = (target: PublicationTarget): void => {
         setSidePanelContent(
-          target.displayName ?? target.name,
+          target.displayName ?? NO_DATA_TEXT,
           <Suspense fallback={null}>
             <TargetDetails target={target} />
           </Suspense>,
@@ -74,7 +74,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
               }}
               aria-label={`View details for ${row.original.displayName}`}
             >
-              {row.original.displayName}
+              {row.original.displayName || NO_DATA_TEXT}
             </Button>
           ),
         },

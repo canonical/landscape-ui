@@ -17,15 +17,33 @@ export default [
     return HttpResponse.json(newTarget, { status: 201 });
   }),
 
-  http.delete(
-    `${API_URL_DEBARCHIVE}v1/publicationTargets/:id`,
-    () => new HttpResponse(null, { status: 204 }),
-  ),
-
-  http.patch(`${API_URL_DEBARCHIVE}v1/publicationTargets/:id`, async ({ request }) => {
-    const body = (await request.json()) as PublicationTarget;
-    return HttpResponse.json(body);
+  http.delete(`${API_URL_DEBARCHIVE}v1/publicationTargets/:id`, ({ params }) => {
+    const idx = publicationTargets.findIndex(
+      (t) => t.name === `publicationTargets/${params.id}`,
+    );
+    if (idx !== -1) publicationTargets.splice(idx, 1);
+    return new HttpResponse(null, { status: 204 });
   }),
+
+  http.patch(
+    `${API_URL_DEBARCHIVE}v1/publicationTargets/:id`,
+    async ({ params, request }) => {
+      const body = (await request.json()) as Partial<PublicationTarget>;
+      const idx = publicationTargets.findIndex(
+        (t) => t.name === `publicationTargets/${params.id}`,
+      );
+      const existing = publicationTargets[idx];
+      if (idx === -1 || !existing) return new HttpResponse(null, { status: 404 });
+      const updated: PublicationTarget = {
+        ...existing,
+        ...body,
+        ...(body.s3 ? { s3: { ...existing.s3, ...body.s3 } } : {}),
+        ...(body.swift ? { swift: { ...existing.swift, ...body.swift } } : {}),
+      } as PublicationTarget;
+      publicationTargets[idx] = updated;
+      return HttpResponse.json(updated);
+    },
+  ),
 
   // Fallback GET for integration tests that don't mock useGetPublicationTargets directly
   http.get(`${API_URL_DEBARCHIVE}v1/publicationTargets`, () => {

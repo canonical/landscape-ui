@@ -1,1 +1,1 @@
-export { default } from "./RemoveTargetForm";
+export { default } from "./RemoveTargetModal";

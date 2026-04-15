@@ -3,7 +3,7 @@ import { ModularTable } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import type { Publication } from "@/api/generated/debArchive.schemas";
+import type { Publication } from "@canonical/landscape-openapi";
 
 
 interface PublicationsTableProps {

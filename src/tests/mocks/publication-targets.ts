@@ -1,4 +1,4 @@
-import type { PublicationTarget, Publication } from "@/api/generated/debArchive.schemas";
+import type { PublicationTarget, Publication } from "@canonical/landscape-openapi";
 
 export const publications: Publication[] = [
   {
@@ -61,7 +61,7 @@ export const publicationTargets: PublicationTarget[] = [
   {
     name: "publicationTargets/cccccccc-0000-0000-0000-000000000003",
     publicationTargetId: "cccccccc-0000-0000-0000-000000000003",
-    displayName: "swift-internal",
+    displayName: "",
     swift: {
       container: "landscape-packages",
       username: "admin",

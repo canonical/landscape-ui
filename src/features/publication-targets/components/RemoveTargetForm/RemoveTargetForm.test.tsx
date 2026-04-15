@@ -1,4 +1,3 @@
-import useSidePanel from "@/hooks/useSidePanel";
 import useDebug from "@/hooks/useDebug";
 import { publicationTargets, publications } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
@@ -6,9 +5,8 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Mock } from "vitest";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import RemoveTargetForm from "./RemoveTargetForm";
+import RemoveTargetModal from "./RemoveTargetModal";
 
-vi.mock("@/hooks/useSidePanel");
 vi.mock("@/hooks/useDebug");
 vi.mock("@/features/publication-targets/api/useRemovePublicationTarget", () => ({
   default: vi.fn(() => ({
@@ -35,15 +33,14 @@ if (!publications[0]) {
 
 const [firstPublication] = publications;
 
+const defaultClose = vi.fn();
+
 describe("RemoveTargetForm", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
-    (useSidePanel as Mock).mockReturnValue({
-      setSidePanelContent: vi.fn(),
-      closeSidePanel: vi.fn(),
-    });
     (useDebug as Mock).mockReturnValue(vi.fn());
+    defaultClose.mockReset();
   });
 
   it("renders the irreversible warning", () => {
@@ -52,7 +49,13 @@ describe("RemoveTargetForm", () => {
       isGettingPublications: false,
     });
 
-    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
+    );
 
     expect(screen.getByText(/this action is irreversible/i)).toBeInTheDocument();
   });
@@ -63,7 +66,13 @@ describe("RemoveTargetForm", () => {
       isGettingPublications: false,
     });
 
-    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
+    );
 
     expect(
       screen.getByRole("button", { name: /cancel/i }),
@@ -79,7 +88,13 @@ describe("RemoveTargetForm", () => {
       isGettingPublications: false,
     });
 
-    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
+    );
 
     expect(
       screen.getByText(/currently being used by the following publications/i),
@@ -99,7 +114,11 @@ describe("RemoveTargetForm", () => {
     });
 
     renderWithProviders(
-      <RemoveTargetForm target={targetWithoutPublications} />,
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithoutPublications}
+      />,
     );
 
     expect(
@@ -108,31 +127,43 @@ describe("RemoveTargetForm", () => {
     expect(screen.queryByText("Publication")).not.toBeInTheDocument();
   });
 
-  it("calls closeSidePanel when Cancel is clicked", async () => {
+  it("calls close when Cancel is clicked", async () => {
     (useGetPublicationsByTarget as Mock).mockReturnValue({
       publications: [],
       isGettingPublications: false,
     });
 
-    const { closeSidePanel } = useSidePanel();
-
-    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
+    );
 
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(closeSidePanel).toHaveBeenCalled();
+    expect(defaultClose).toHaveBeenCalled();
   });
 
-  it("immediately submits the deletion on Remove target click without a second confirmation step", async () => {
-    // TODO: If a confirmation step is added before deletion, update this test
-    // to interact with the confirmation UI before asserting success.
+  it("submits the deletion after typing the confirmation text", async () => {
     (useGetPublicationsByTarget as Mock).mockReturnValue({
       publications: [],
       isGettingPublications: false,
     });
 
-    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
+    );
 
+    await user.type(
+      screen.getByPlaceholderText(`remove ${targetWithPublications.displayName}`),
+      `remove ${targetWithPublications.displayName}`,
+    );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
     expect(
@@ -161,8 +192,18 @@ describe("RemoveTargetForm", () => {
       },
     } as never));
 
-    renderWithProviders(<RemoveTargetForm target={targetWithPublications} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
+    );
 
+    await user.type(
+      screen.getByPlaceholderText(`remove ${targetWithPublications.displayName}`),
+      `remove ${targetWithPublications.displayName}`,
+    );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
     // Verify the error handler was invoked with the error
@@ -190,8 +231,18 @@ describe("RemoveTargetForm", () => {
 
     const targetWithoutName = { ...targetWithPublications, name: "" };
 
-    renderWithProviders(<RemoveTargetForm target={targetWithoutName} />);
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithoutName}
+      />,
+    );
 
+    await user.type(
+      screen.getByPlaceholderText(`remove ${targetWithoutName.displayName}`),
+      `remove ${targetWithoutName.displayName}`,
+    );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
     expect(mockRemoveTarget).not.toHaveBeenCalled();

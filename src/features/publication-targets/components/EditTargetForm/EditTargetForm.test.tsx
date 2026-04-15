@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import EditTargetForm from "./EditTargetForm";
-import type { PublicationTarget } from "@/api/generated/debArchive.schemas";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 vi.mock("@/hooks/useSidePanel");
 
