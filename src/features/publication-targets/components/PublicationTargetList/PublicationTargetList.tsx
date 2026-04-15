@@ -1,13 +1,16 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import useSidePanel from "@/hooks/useSidePanel";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-import { Icon } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement } from "react";
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PublicationTarget } from "../../types";
 import PublicationTargetListActions from "../PublicationTargetListActions";
+
+const TargetDetails = lazy(async () => import("../TargetDetails/TargetDetails"));
 
 interface PublicationTargetListProps {
   readonly targets: PublicationTarget[];
@@ -43,15 +46,38 @@ const getTargetType = (target: PublicationTarget): string => {
 };
 
 const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
+  const { setSidePanelContent } = useSidePanel();
+
   const columns = useMemo<Column<PublicationTarget>[]>(
-    () => [
-      {
-        accessor: "displayName",
-        id: "displayName",
-        Header: "Name",
-        Cell: ({ row }: CellProps<PublicationTarget>) =>
-          row.original.displayName || <NoData />,
-      },
+    () => {
+      const handleViewTargetDetails = (target: PublicationTarget): void => {
+        setSidePanelContent(
+          target.displayName ?? target.name,
+          <Suspense fallback={null}>
+            <TargetDetails target={target} />
+          </Suspense>,
+        );
+      };
+
+      return [
+        {
+          accessor: "displayName",
+          id: "displayName",
+          Header: "Name",
+          Cell: ({ row }: CellProps<PublicationTarget>) => (
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+              onClick={() => {
+                handleViewTargetDetails(row.original);
+              }}
+              aria-label={`View details for ${row.original.displayName}`}
+            >
+              {row.original.displayName}
+            </Button>
+          ),
+        },
       {
         accessor: (row) => getTargetType(row),
         id: "type",
@@ -75,8 +101,9 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
           <PublicationTargetListActions target={original} />
         ),
       } as Column<PublicationTarget>,
-    ],
-    [],
+      ];
+    },
+    [setSidePanelContent],
   );
 
   return (
