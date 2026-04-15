@@ -6,13 +6,11 @@ import type {
   ListPublicationTargetsResponse,
   PublicationTarget,
 } from "@/api/generated/debArchive.schemas";
-import type { PublicationTargetWithPublications } from "../types";
-import useGetPublications from "./useGetPublications";
 
 export default function useGetPublicationTargets() {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading: isLoadingTargets } = useQuery<
+  const { data, isLoading } = useQuery<
     PublicationTarget[],
     AxiosError<ApiError>
   >({
@@ -36,21 +34,8 @@ export default function useGetPublicationTargets() {
     },
   });
 
-  const { publications, isGettingPublications } = useGetPublications();
-
-  const targets = data ?? [];
-
-  const publicationTargets: PublicationTargetWithPublications[] = targets.map(
-    (target) => ({
-      ...target,
-      publications: publications.filter(
-        (p) => p.publicationTarget === target.name,
-      ),
-    }),
-  );
-
   return {
-    publicationTargets,
-    isGettingPublicationTargets: isLoadingTargets || isGettingPublications,
+    publicationTargets: data ?? [],
+    isGettingPublicationTargets: isLoading,
   };
 }

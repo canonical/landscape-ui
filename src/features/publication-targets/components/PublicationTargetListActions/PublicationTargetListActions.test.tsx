@@ -1,4 +1,4 @@
-import { publicationTargetsWithPublications } from "@/tests/mocks/publication-targets";
+import { publicationTargets } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -13,7 +13,7 @@ vi.mock("../RemoveTargetForm/RemoveTargetForm", () => ({
   default: () => <div>Remove target form</div>,
 }));
 
-const targetWithDisplayName = publicationTargetsWithPublications[0]!;
+const targetWithDisplayName = publicationTargets[0]!;
 
 describe("PublicationTargetListActions", () => {
   const user = userEvent.setup();
@@ -127,5 +127,4 @@ describe("PublicationTargetListActions", () => {
       }),
     ).toBeInTheDocument();
   });
-
 });

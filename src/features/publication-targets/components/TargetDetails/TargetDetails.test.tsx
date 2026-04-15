@@ -1,5 +1,5 @@
 import useSidePanel from "@/hooks/useSidePanel";
-import { publications, publicationTargetsWithPublications } from "@/tests/mocks/publication-targets";
+import { publications, publicationTargets } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -8,8 +8,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import TargetDetails from "./TargetDetails";
 
 vi.mock("@/hooks/useSidePanel");
+vi.mock("../../api/useGetPublicationsByTarget", () => ({
+  default: vi.fn(),
+}));
 
-const [targetWithPublications, targetWithoutPublications] = publicationTargetsWithPublications;
+import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
+
+const [targetWithPublications, targetWithoutPublications] = publicationTargets;
 const [firstPublication] = publications;
 
 if (
@@ -37,6 +42,11 @@ describe("TargetDetails", () => {
 
   describe("action buttons", () => {
     it("renders Edit and Remove buttons", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: publications,
+        isGettingPublications: false,
+      });
+
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
@@ -46,6 +56,11 @@ describe("TargetDetails", () => {
     });
 
     it("calls setSidePanelContent with edit title when Edit is clicked", async () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       const { setSidePanelContent } = useSidePanel();
 
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
@@ -59,6 +74,11 @@ describe("TargetDetails", () => {
     });
 
     it("calls setSidePanelContent with remove title when Remove is clicked", async () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       const { setSidePanelContent } = useSidePanel();
 
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
@@ -74,12 +94,22 @@ describe("TargetDetails", () => {
 
   describe("S3 target details", () => {
     it("renders the DETAILS heading", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByText("DETAILS")).toBeInTheDocument();
     });
 
     it("renders the target displayName", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(
@@ -88,6 +118,11 @@ describe("TargetDetails", () => {
     });
 
     it("renders all S3 fields: region, bucket, prefix, acl, storageClass, encryptionMethod, disableMultiDel, forceSigV2", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       const { container } = renderWithProviders(
         <TargetDetails target={targetWithPublications} />,
       );
@@ -101,7 +136,6 @@ describe("TargetDetails", () => {
         "Encryption method",
         s3WithPubs.encryptionMethod ?? "",
       );
-      // Boolean fields should be converted to "Yes"/"No"
       expect(container).toHaveInfoItem(
         "Disable MultiDel",
         s3WithPubs.disableMultiDel ? "Yes" : "No",
@@ -113,34 +147,97 @@ describe("TargetDetails", () => {
     });
 
     it("renders S3 configuration with partial fields (missing optional fields have undefined values)", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       const { container } = renderWithProviders(
         <TargetDetails target={targetWithoutPublications} />,
       );
 
-      // These fields should still be present even with undefined values
       expect(container).toHaveInfoItem("Region", s3WithoutPubs.region);
       expect(container).toHaveInfoItem("Bucket Name", s3WithoutPubs.bucket);
-      // Boolean fields should still show "Yes"/"No"
       expect(container).toHaveInfoItem(
         "Disable MultiDel",
         s3WithoutPubs.disableMultiDel ? "Yes" : "No",
       );
     });
+
+    it("renders 'Yes' for forceSigV2 when it is true", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
+      const targetWithForceSigV2: typeof targetWithPublications = {
+        ...targetWithPublications,
+        s3: { ...s3WithPubs, forceSigV2: true },
+      };
+
+      const { container } = renderWithProviders(
+        <TargetDetails target={targetWithForceSigV2} />,
+      );
+
+      expect(container).toHaveInfoItem("Force AWS SIGv2", "Yes");
+    });
   });
 
   describe("USED IN section", () => {
     it("shows the USED IN section and publications table when target has publications", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: publications,
+        isGettingPublications: false,
+      });
+
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByText("USED IN")).toBeInTheDocument();
-      // Publications table should show publication labels
       expect(screen.getByText(firstPubLabel)).toBeInTheDocument();
     });
 
     it("hides the USED IN section when target has no publications", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
       renderWithProviders(<TargetDetails target={targetWithoutPublications} />);
 
       expect(screen.queryByText("USED IN")).not.toBeInTheDocument();
+    });
+
+    it("shows LoadingState while publications are loading", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: true,
+      });
+
+      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+
+      expect(screen.getByText("DETAILS")).toBeInTheDocument();
+      expect(screen.queryByText("USED IN")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Swift target", () => {
+    it("renders DETAILS without S3 fields for a Swift target", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
+      const swiftTarget = publicationTargets[2];
+      if (!swiftTarget) throw new Error("Missing swift mock target");
+
+      const { container } = renderWithProviders(
+        <TargetDetails target={swiftTarget} />,
+      );
+
+      expect(screen.getByText("DETAILS")).toBeInTheDocument();
+      // S3-specific InfoGrid items should not be present
+      expect(container.textContent).not.toContain("Region");
+      expect(container.textContent).not.toContain("Bucket Name");
     });
   });
 });

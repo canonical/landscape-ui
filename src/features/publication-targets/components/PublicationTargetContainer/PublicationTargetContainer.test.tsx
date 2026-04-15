@@ -1,4 +1,4 @@
-import { publicationTargetsWithPublications } from "@/tests/mocks/publication-targets";
+import { publicationTargets } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
@@ -50,7 +50,7 @@ describe("PublicationTargetContainer", () => {
 
   it("renders the publication targets list when targets are present", () => {
     vi.mocked(useGetPublicationTargets).mockReturnValue({
-      publicationTargets: publicationTargetsWithPublications,
+      publicationTargets: publicationTargets,
       isGettingPublicationTargets: false,
     });
 
@@ -61,7 +61,7 @@ describe("PublicationTargetContainer", () => {
 
   it("does not render the empty state when targets are present", () => {
     vi.mocked(useGetPublicationTargets).mockReturnValue({
-      publicationTargets: publicationTargetsWithPublications,
+      publicationTargets: publicationTargets,
       isGettingPublicationTargets: false,
     });
 

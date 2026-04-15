@@ -1,15 +1,44 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import type { PublicationTargetWithPublications } from "@/features/publication-targets";
-import { publicationTargetsWithPublications, publications } from "@/tests/mocks/publication-targets";
+import type { PublicationTarget } from "@/features/publication-targets";
+import { publicationTargets, publications } from "@/tests/mocks/publication-targets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import type { Mock } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import PublicationTargetList from "./PublicationTargetList";
 
+vi.mock("../../api/useGetPublicationsByTarget", () => ({
+  default: vi.fn(),
+}));
+vi.mock("@/hooks/useSidePanel", () => ({
+  default: vi.fn(() => ({
+    setSidePanelContent: vi.fn(),
+    closeSidePanel: vi.fn(),
+  })),
+}));
+
+import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
+
 describe("PublicationTargetList", () => {
+  beforeEach(() => {
+    // Default: prod-s3-us-east has 3 publications, others have 0
+    (useGetPublicationsByTarget as Mock).mockImplementation(
+      (publicationTargetId: string | undefined) => {
+        if (
+          publicationTargetId ===
+          "aaaaaaaa-0000-0000-0000-000000000001"
+        ) {
+          return { publications, isGettingPublications: false };
+        }
+
+        return { publications: [], isGettingPublications: false };
+      },
+    );
+  });
+
   it("renders table headers", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     expect(screen.getByRole("table")).toHaveTexts([
@@ -21,7 +50,7 @@ describe("PublicationTargetList", () => {
 
   it("renders the display_name for each target", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     expect(screen.getByText("prod-s3-us-east")).toBeInTheDocument();
@@ -31,7 +60,7 @@ describe("PublicationTargetList", () => {
 
   it("renders S3 type label for S3 targets", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     // Two S3 targets: prod-s3-us-east and staging-s3-eu-west
@@ -40,7 +69,7 @@ describe("PublicationTargetList", () => {
 
   it("renders Swift type label for Swift targets", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     expect(screen.getByText("Swift")).toBeInTheDocument();
@@ -48,7 +77,7 @@ describe("PublicationTargetList", () => {
 
   it("renders the publication count for a target with publications", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     // prod-s3-us-east has 3 publications
@@ -57,7 +86,7 @@ describe("PublicationTargetList", () => {
 
   it("renders NoData placeholder when a target has no publications", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     // staging-s3-eu-west and swift-internal each have 0 publications → two NoData cells
@@ -65,14 +94,16 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders singular 'publication' when a target has exactly one publication", () => {
-    const targetWithOnePublication: PublicationTargetWithPublications = {
-      ...publicationTargetsWithPublications[0],
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
       publications: [publications[0]],
-    };
+      isGettingPublications: false,
+    });
 
-    renderWithProviders(
-      <PublicationTargetList targets={[targetWithOnePublication]} />,
-    );
+    const [firstTarget] = publicationTargets;
+    if (!firstTarget) throw new Error("Missing mock target");
+    const singleTarget: PublicationTarget[] = [firstTarget];
+
+    renderWithProviders(<PublicationTargetList targets={singleTarget} />);
 
     expect(screen.getByText("1 publication")).toBeInTheDocument();
   });
@@ -91,15 +122,77 @@ describe("PublicationTargetList", () => {
 
   it("renders PublicationTargetListActions component in actions column", () => {
     renderWithProviders(
-      <PublicationTargetList targets={publicationTargetsWithPublications} />,
+      <PublicationTargetList targets={publicationTargets} />,
     );
 
     // Each target should have an actions button with aria-label like "{displayName} actions"
-    publicationTargetsWithPublications.forEach((target) => {
+    publicationTargets.forEach((target) => {
       const actionButton = screen.getByRole("button", {
         name: `${target.displayName} actions`,
       });
       expect(actionButton).toBeInTheDocument();
     });
+  });
+
+  it("renders 'Unknown' type when target has neither S3 nor Swift", () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
+    const unknownTarget: PublicationTarget = {
+      name: "publicationTargets/dddddddd-0000-0000-0000-000000000004",
+      publicationTargetId: "dddddddd-0000-0000-0000-000000000004",
+      displayName: "unknown-target",
+    };
+
+    renderWithProviders(<PublicationTargetList targets={[unknownTarget]} />);
+
+    expect(screen.getByText("Unknown")).toBeInTheDocument();
+  });
+
+  it("renders NoData placeholder in Name cell when target has no displayName", () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
+    const noNameTarget: PublicationTarget = {
+      name: "publicationTargets/eeeeeeee-0000-0000-0000-000000000005",
+      publicationTargetId: "eeeeeeee-0000-0000-0000-000000000005",
+      displayName: "",
+      s3: {
+        region: "us-east-1",
+        bucket: "test-bucket",
+        disableMultiDel: false,
+        forceSigV2: false,
+        awsAccessKeyId: "AKIA...",
+        awsSecretAccessKey: "SECRET...",
+      },
+    };
+
+    renderWithProviders(<PublicationTargetList targets={[noNameTarget]} />);
+
+    // Name cell and Publications cell both show NoData — there are two instances
+    expect(screen.getAllByText(NO_DATA_TEXT).length).toBeGreaterThanOrEqual(1);
+    // Verify the Name column in particular is NoData by checking the first cell in the row
+    const cells = screen.getAllByRole("cell");
+    expect(cells[0]).toHaveTextContent(NO_DATA_TEXT);
+  });
+
+  it("renders spinner while publications count is loading", () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: true,
+    });
+
+    const [firstTarget] = publicationTargets;
+    if (!firstTarget) throw new Error("Missing mock target");
+
+    renderWithProviders(<PublicationTargetList targets={[firstTarget]} />);
+
+    // aria-hidden spinner icon is rendered while loading
+    const spinner = document.querySelector(".u-animation--spin");
+    expect(spinner).toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-export type { Publication, PublicationTargetWithPublications } from "./Publication";
+export type { Publication } from "./Publication";
 export type {
   PublicationTarget,
   S3Target,

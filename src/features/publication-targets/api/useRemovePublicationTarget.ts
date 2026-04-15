@@ -19,7 +19,10 @@ export default function useRemovePublicationTarget() {
     mutationKey: ["publication-targets", "remove"],
     mutationFn: async ({ name }) => authFetchDebArchive.delete(name),
     onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["publication-targets"] }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["publication-targets"] }),
+        queryClient.invalidateQueries({ queryKey: ["publications"] }),
+      ]),
   });
 
   return {

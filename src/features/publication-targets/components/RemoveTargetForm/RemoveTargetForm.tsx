@@ -4,12 +4,13 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Form, Icon } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
+import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import useRemovePublicationTarget from "../../api/useRemovePublicationTarget";
-import type { PublicationTargetWithPublications } from "../../types";
+import type { PublicationTarget } from "../../types";
 import PublicationsTable from "../PublicationsTable/PublicationsTable";
 
 interface RemoveTargetFormProps {
-  readonly target: PublicationTargetWithPublications;
+  readonly target: PublicationTarget;
 }
 
 const PAGE_SIZE = 5;
@@ -21,8 +22,11 @@ const RemoveTargetForm: FC<RemoveTargetFormProps> = ({ target }) => {
   const { removePublicationTargetQuery } = useRemovePublicationTarget();
   const { mutateAsync: removeTarget, isPending: isRemoving } =
     removePublicationTargetQuery;
+  const { publications, isGettingPublications } = useGetPublicationsByTarget(
+    target.publicationTargetId,
+  );
 
-  const hasPublications = target.publications.length > 0;
+  const hasPublications = !isGettingPublications && publications.length > 0;
 
   const formik = useFormik({
     initialValues: {},
@@ -50,7 +54,7 @@ const RemoveTargetForm: FC<RemoveTargetFormProps> = ({ target }) => {
             This publication target is currently being used by the following
             publications:
           </p>
-          <PublicationsTable publications={target.publications} pageSize={PAGE_SIZE} />
+          <PublicationsTable publications={publications} pageSize={PAGE_SIZE} />
         </>
       )}
       <p>

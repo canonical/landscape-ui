@@ -3,7 +3,8 @@ import { ModularTable } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
-import type { Publication } from "../../types";
+import type { Publication } from "@/api/generated/debArchive.schemas";
+
 
 interface PublicationsTableProps {
   readonly publications: Publication[];

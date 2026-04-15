@@ -1,21 +1,25 @@
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
+import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import type { PublicationTargetWithPublications } from "../../types";
+import type { PublicationTarget } from "../../types";
 import PublicationsTable from "../PublicationsTable/PublicationsTable";
 
 const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
 const RemoveTargetForm = lazy(async () => import("../RemoveTargetForm/RemoveTargetForm"));
 
 interface TargetDetailsProps {
-  readonly target: PublicationTargetWithPublications;
+  readonly target: PublicationTarget;
 }
 
 const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
   const { setSidePanelContent } = useSidePanel();
+  const { publications, isGettingPublications } = useGetPublicationsByTarget(
+    target.publicationTargetId,
+  );
 
   const handleEditTarget = (): void => {
     setSidePanelContent(
@@ -91,11 +95,15 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
       </InfoGrid>
 
-      {target.publications.length > 0 && (
-        <>
-          <h5>USED IN</h5>
-          <PublicationsTable publications={target.publications} />
-        </>
+      {isGettingPublications ? (
+        <LoadingState />
+      ) : (
+        publications.length > 0 && (
+          <>
+            <h5>USED IN</h5>
+            <PublicationsTable publications={publications} />
+          </>
+        )
       )}
     </>
   );

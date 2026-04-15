@@ -1,10 +1,3 @@
-import type {
-  Publication,
-  PublicationTarget,
-} from "@/api/generated/debArchive.schemas";
+import type { Publication } from "@/features/publications";
 
 export type { Publication };
-
-export interface PublicationTargetWithPublications extends PublicationTarget {
-  publications: Publication[];
-}

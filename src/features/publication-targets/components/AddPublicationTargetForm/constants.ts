@@ -1,4 +1,4 @@
-export interface NewPublicationTargetFormValues {
+export interface AddPublicationTargetFormValues {
   displayName: string;
   region: string;
   bucket: string;
@@ -13,7 +13,7 @@ export interface NewPublicationTargetFormValues {
   forceSigV2: boolean;
 }
 
-export const INITIAL_VALUES: NewPublicationTargetFormValues = {
+export const INITIAL_VALUES: AddPublicationTargetFormValues = {
   displayName: "",
   region: "",
   bucket: "",

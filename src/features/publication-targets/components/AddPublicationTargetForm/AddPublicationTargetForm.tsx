@@ -12,16 +12,16 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
 import { INITIAL_VALUES } from "./constants";
-import type { NewPublicationTargetFormValues } from "./constants";
+import type { AddPublicationTargetFormValues } from "./constants";
 
-const NewPublicationTargetForm: FC = () => {
+const AddPublicationTargetForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { createPublicationTargetQuery } = useCreatePublicationTarget();
 
   const { mutateAsync } = createPublicationTargetQuery;
 
-  const formik = useFormik<NewPublicationTargetFormValues>({
+  const formik = useFormik<AddPublicationTargetFormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: Yup.object().shape({
       displayName: Yup.string().required("This field is required"),
@@ -159,4 +159,4 @@ const NewPublicationTargetForm: FC = () => {
   );
 };
 
-export default NewPublicationTargetForm;
+export default AddPublicationTargetForm;

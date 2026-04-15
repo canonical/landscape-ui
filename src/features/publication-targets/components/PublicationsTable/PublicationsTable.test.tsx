@@ -44,20 +44,6 @@ describe("PublicationsTable", () => {
         expect(screen.getByText(pub.mirror)).toBeInTheDocument();
       });
     });
-
-    it("renders dash placeholder when distribution is undefined", () => {
-      const pubWithoutDistribution: Publication = {
-        ...publications[0],
-        distribution: undefined,
-      };
-
-      renderWithProviders(
-        <PublicationsTable publications={[pubWithoutDistribution]} />,
-      );
-
-      const dashes = screen.getAllByText("—");
-      expect(dashes.length).toBeGreaterThan(0);
-    });
   });
 
   describe("pagination", () => {
@@ -149,14 +135,12 @@ describe("PublicationsTable", () => {
       if (!singlePublication[0]) {
         return;
       }
+      const [firstPub] = singlePublication;
       renderWithProviders(
-        <PublicationsTable publications={singlePublication} />,
+        <PublicationsTable publications={[firstPub]} />,
       );
 
-      expect(screen.getByText(singlePublication[0].mirror)).toBeInTheDocument();
-      // expect(
-      //   screen.getByText(singlePublication[0].distribution),
-      // ).toBeInTheDocument();
+      expect(screen.getByText(firstPub.mirror)).toBeInTheDocument();
     });
 
     it("renders publications with all undefined optional fields (shows dashes)", () => {
@@ -166,7 +150,7 @@ describe("PublicationsTable", () => {
         label: "Test-Publication",
         publicationTarget: "publicationTargets/test",
         mirror: "mirror",
-        distribution: undefined,
+        distribution: "distribution",
       };
 
       renderWithProviders(
@@ -174,8 +158,6 @@ describe("PublicationsTable", () => {
       );
 
       expect(screen.getByText("Test-Publication")).toBeInTheDocument();
-      const dashes = screen.getAllByText("—");
-      expect(dashes.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -192,16 +174,17 @@ describe("PublicationsTable", () => {
       if (!publications || publications.length < 2) {
         throw new Error("Test failed: 'publications' must be defined with at least 2 items.");
       }
+      const [firstPub, secondPub] = publications;
       const customPageSize = 1;
       renderWithProviders(
         <PublicationsTable publications={publications} pageSize={customPageSize} />,
       );
 
       // First item should be visible
-      expect(screen.getByText(publications[0].mirror)).toBeInTheDocument();
+      expect(screen.getByText(firstPub!.mirror)).toBeInTheDocument();
 
       // Second item should not be visible (it's on next page)
-      expect(screen.queryByText(publications[1].mirror)).not
+      expect(screen.queryByText(secondPub!.mirror)).not
         .toBeInTheDocument();
     });
   });

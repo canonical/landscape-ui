@@ -1,30 +1,55 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
+import { Icon } from "@canonical/react-components";
 import type { FC, ReactElement } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import type { PublicationTargetWithPublications } from "../../types";
+import type { PublicationTarget } from "../../types";
 import PublicationTargetListActions from "../PublicationTargetListActions";
 
 interface PublicationTargetListProps {
-  readonly targets: PublicationTargetWithPublications[];
+  readonly targets: PublicationTarget[];
 }
 
-const getTargetType = (target: PublicationTargetWithPublications): string => {
+interface PublicationsCountCellProps {
+  readonly publicationTargetId: string | undefined;
+}
+
+const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
+  publicationTargetId,
+}) => {
+  const { publications, isGettingPublications } =
+    useGetPublicationsByTarget(publicationTargetId);
+
+  if (isGettingPublications) {
+    return <Icon name="spinner" className="u-animation--spin" aria-hidden />;
+  }
+
+  const { length } = publications;
+  if (length === 0) return <NoData />;
+  return (
+    <span>
+      {length} {length === 1 ? "publication" : "publications"}
+    </span>
+  );
+};
+
+const getTargetType = (target: PublicationTarget): string => {
   if (target.s3) return "S3";
   if (target.swift) return "Swift";
   return "Unknown";
 };
 
 const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
-  const columns = useMemo<Column<PublicationTargetWithPublications>[]>(
+  const columns = useMemo<Column<PublicationTarget>[]>(
     () => [
       {
         accessor: "displayName",
         id: "displayName",
         Header: "Name",
-        Cell: ({ row }: CellProps<PublicationTargetWithPublications>) =>
+        Cell: ({ row }: CellProps<PublicationTarget>) =>
           row.original.displayName || <NoData />,
       },
       {
@@ -33,25 +58,23 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
         Header: "Type",
       },
       {
-        accessor: (row) => row.publications.length,
+        accessor: (row) => row.publicationTargetId,
         id: "publications",
         Header: "Publications",
-        Cell: ({ row }: CellProps<PublicationTargetWithPublications>) => {
-          const { length } = row.original.publications;
-          if (length === 0) return <NoData />;
-          return (
-            <span>
-              {length} {length === 1 ? "publication" : "publications"}
-            </span>
-          );
-        },
+        Cell: ({ row }: CellProps<PublicationTarget>): ReactElement => (
+          <PublicationsCountCell
+            publicationTargetId={row.original.publicationTargetId}
+          />
+        ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original } }: CellProps<PublicationTargetWithPublications>): ReactElement => (
-                  <PublicationTargetListActions target={original} />
-                ),
-      } as Column<PublicationTargetWithPublications>,
+        Cell: ({
+          row: { original },
+        }: CellProps<PublicationTarget>): ReactElement => (
+          <PublicationTargetListActions target={original} />
+        ),
+      } as Column<PublicationTarget>,
     ],
     [],
   );

@@ -1,7 +1,4 @@
 import type { PublicationTarget, Publication } from "@/api/generated/debArchive.schemas";
-import type {
-  PublicationTargetWithPublications,
-} from "@/features/publication-targets";
 
 export const publications: Publication[] = [
   {
@@ -74,19 +71,3 @@ export const publicationTargets: PublicationTarget[] = [
     },
   },
 ];
-
-export const publicationTargetsWithPublications: PublicationTargetWithPublications[] =
-  [
-    {
-      ...(publicationTargets[0] as PublicationTarget),
-      publications: publications,
-    },
-    {
-      ...(publicationTargets[1] as PublicationTarget),
-      publications: [],
-    },
-    {
-      ...(publicationTargets[2] as PublicationTarget),
-      publications: [],
-    },
-  ];

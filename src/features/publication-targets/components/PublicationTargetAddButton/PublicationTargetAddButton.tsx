@@ -4,11 +4,11 @@ import { Button, Icon } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 
 
-const NewPublicationTargetForm = lazy(
+const AddPublicationTargetForm = lazy(
   async () =>
     import(
-      "@/features/publication-targets/components/NewPublicationTargetForm"
-    ).then((m) => ({ default: m.NewPublicationTargetForm })),
+      "@/features/publication-targets/components/AddPublicationTargetForm"
+    ).then((m) => ({ default: m.AddPublicationTargetForm })),
 );
 
 const PublicationTargetAddButton: FC = () => {
@@ -18,7 +18,7 @@ const PublicationTargetAddButton: FC = () => {
     setSidePanelContent(
       "Add publication target",
       <Suspense fallback={<LoadingState />}>
-        <NewPublicationTargetForm />
+        <AddPublicationTargetForm />
       </Suspense>,
     );
   };

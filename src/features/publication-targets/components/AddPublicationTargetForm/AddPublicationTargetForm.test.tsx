@@ -4,13 +4,13 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import NewPublicationTargetForm from "./NewPublicationTargetForm";
+import AddPublicationTargetForm from "./AddPublicationTargetForm";
 
 vi.mock("@/hooks/useSidePanel");
 
 // TODO: Add tests for Swift target type when Swift form support is implemented.
 
-describe("NewPublicationTargetForm", () => {
+describe("AddPublicationTargetForm", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe("NewPublicationTargetForm", () => {
   });
 
   it("renders all required S3 fields", () => {
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     expect(screen.getByLabelText("Name")).toBeInTheDocument();
     expect(screen.getByLabelText(/region/i)).toBeInTheDocument();
@@ -31,7 +31,7 @@ describe("NewPublicationTargetForm", () => {
   });
 
   it("renders optional S3 fields", () => {
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     expect(screen.getByLabelText(/endpoint/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/prefix/i)).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("NewPublicationTargetForm", () => {
   });
 
   it("renders the submit button", () => {
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     expect(
       screen.getByRole("button", { name: /add publication target/i }),
@@ -47,7 +47,7 @@ describe("NewPublicationTargetForm", () => {
   });
 
   it("shows validation errors when required fields are empty on submit", async () => {
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     await user.click(
       screen.getByRole("button", { name: /add publication target/i }),
@@ -61,7 +61,7 @@ describe("NewPublicationTargetForm", () => {
   it("submits the form and calls closeSidePanel on success", async () => {
     const { closeSidePanel } = useSidePanel();
 
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     await user.type(screen.getByLabelText("Name"), "My New Target");
     await user.type(screen.getByLabelText(/bucket name/i), "my-bucket");
@@ -86,7 +86,7 @@ describe("NewPublicationTargetForm", () => {
   it("includes optional fields in submission when all fields are provided", async () => {
     const { closeSidePanel } = useSidePanel();
 
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     await user.type(screen.getByLabelText("Name"), "Full Target");
     await user.type(screen.getByLabelText(/region/i), "us-east-1");
@@ -115,7 +115,7 @@ describe("NewPublicationTargetForm", () => {
   });
 
   it("toggles the disable_multi_del checkbox", async () => {
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     const checkbox = screen.getByRole("checkbox", { name: /disable multidel/i });
     expect(checkbox).not.toBeChecked();
@@ -128,7 +128,7 @@ describe("NewPublicationTargetForm", () => {
   });
 
   it("toggles the force_sig_v2 checkbox", async () => {
-    renderWithProviders(<NewPublicationTargetForm />);
+    renderWithProviders(<AddPublicationTargetForm />);
 
     const checkbox = screen.getByRole("checkbox", {
       name: /force aws sigv2/i,

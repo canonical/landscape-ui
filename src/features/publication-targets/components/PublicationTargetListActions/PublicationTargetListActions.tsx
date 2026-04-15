@@ -4,14 +4,14 @@ import useSidePanel from "@/hooks/useSidePanel";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import type { PublicationTargetWithPublications } from "../../types";
+import type { PublicationTarget } from "../../types";
 import TargetDetails from "../TargetDetails";
 
 const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
 const RemoveTargetForm = lazy(async () => import("../RemoveTargetForm/RemoveTargetForm"));
 
 interface PublicationTargetListActionsProps {
-  readonly target: PublicationTargetWithPublications;
+  readonly target: PublicationTarget;
 }
 
 const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ target }) => {

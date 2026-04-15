@@ -5,9 +5,9 @@ import { describe, expect, it, vi } from "vitest";
 import PublicationTargetAddButton from "./PublicationTargetAddButton";
 
 vi.mock(
-  "@/features/publication-targets/components/NewPublicationTargetForm",
+  "@/features/publication-targets/components/AddPublicationTargetForm",
   () => ({
-    NewPublicationTargetForm: () => <div>New publication target form</div>,
+    AddPublicationTargetForm: () => <div>New publication target form</div>,
   }),
 );
 
@@ -34,7 +34,7 @@ describe("PublicationTargetAddButton", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders NewPublicationTargetForm inside the side panel", async () => {
+  it("renders AddPublicationTargetForm inside the side panel", async () => {
     renderWithProviders(<PublicationTargetAddButton />);
 
     await user.click(
