@@ -64,7 +64,7 @@ const WslProfilesPage: FC = () => {
         title="WSL profiles"
         actions={
           wslProfilesCount
-            ? [<AddProfileButton isWsl key="add-wsl-profile" />]
+            ? [<AddProfileButton key="add-wsl-profile" />]
             : undefined
         }
       />

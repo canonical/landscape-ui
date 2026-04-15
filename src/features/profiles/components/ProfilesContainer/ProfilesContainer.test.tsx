@@ -4,13 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import ProfilesContainer from "./ProfilesContainer";
 import { ProfileTypes } from "../../helpers";
 import type { Profile } from "../../types";
-import usePageParams from "@/hooks/usePageParams";
 import useProfiles from "@/hooks/useProfiles";
 import { profiles as profileList } from "@/tests/mocks/profiles";
-
-vi.mock("@/hooks/usePageParams", () => ({
-  default: vi.fn(),
-}));
+import type { ComponentProps } from "react";
 
 vi.mock("@/hooks/useProfiles", () => ({
   default: vi.fn(),
@@ -39,10 +35,9 @@ vi.mock("@/components/layout/TablePagination", () => ({
   ),
 }));
 
-const mockUsePageParams = vi.mocked(usePageParams);
 const mockUseProfiles = vi.mocked(useProfiles);
 
-const props = {
+const props: ComponentProps<typeof ProfilesContainer> = {
   type: ProfileTypes.security,
   profiles: profileList,
   isPending: false,
@@ -50,10 +45,6 @@ const props = {
 
 describe("ProfilesContainer", () => {
   beforeEach(() => {
-    mockUsePageParams.mockReturnValue({
-      search: "",
-    } as unknown as ReturnType<typeof usePageParams>);
-
     mockUseProfiles.mockReturnValue({
       isProfileLimitReached: false,
     } as unknown as ReturnType<typeof useProfiles>);
@@ -78,11 +69,10 @@ describe("ProfilesContainer", () => {
   });
 
   it("renders empty table when no profiles with search", () => {
-    mockUsePageParams.mockReturnValue({
-      search: "search",
-    } as ReturnType<typeof usePageParams>);
-
-    renderWithProviders(<ProfilesContainer {...props} profiles={[]} />);
+    renderWithProviders(<ProfilesContainer {...props} profiles={[]} />,
+      undefined,
+      "/?search=search",
+    );
 
     expect(screen.getByText("list:empty")).toBeInTheDocument();
   });

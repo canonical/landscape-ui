@@ -135,7 +135,7 @@ describe("ProfilesListActions", () => {
         script_id: 1,
         archived: true,
       },
-      ProfileTypes.security,
+      ProfileTypes.script,
       actionLabels.archivedScript,
     ],
   ])(

@@ -54,7 +54,7 @@ describe("AddProfileButton", () => {
   });
 
   it("opens confirmation modal for WSL when not acknowledged", async () => {
-    renderWithProviders(<AddProfileButton isWsl />);
+    renderWithProviders(<AddProfileButton />, undefined, "/profiles/wsl");
 
     await userEvent.click(screen.getByRole("button", { name: /add profile/i }));
 
@@ -73,7 +73,7 @@ describe("AddProfileButton", () => {
   it("skips modal for WSL when already acknowledged", async () => {
     localStorage.setItem("_landscape_isWslPopupClosed", "true");
 
-    renderWithProviders(<AddProfileButton isWsl />);
+    renderWithProviders(<AddProfileButton />, undefined, "/profiles/wsl");
 
     await userEvent.click(screen.getByRole("button", { name: /add profile/i }));
 

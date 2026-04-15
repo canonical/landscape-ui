@@ -47,7 +47,7 @@ interface ViewProfileDetailsBlockProps {
 const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
   profile,
 }) => {
-  const profileDetailsBlock = (() => {
+  const getProfileDetailsBlock = () => {
     if (isRemovalProfile(profile)) {
       return <ViewRemovalProfileDetailsBlock profile={profile} />;
     }
@@ -68,8 +68,9 @@ const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
       return <ViewWslProfileDetailsBlock profile={profile} />;
     }
     return;
-  })();
+  };
 
+  const profileDetailsBlock = getProfileDetailsBlock();
   if (profileDetailsBlock) {
     return (
       <Blocks.Item title="Details">

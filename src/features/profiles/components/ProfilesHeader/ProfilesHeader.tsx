@@ -15,7 +15,7 @@ interface ProfilesHeaderProps {
 const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
   const hasFilters = canArchiveProfile(type);
 
-  const filters: FilterKey[] = (() => {
+  const getFilters = (): FilterKey[] => {
     switch (type) {
       case ProfileTypes.script:
         return ["search", "status"];
@@ -24,9 +24,9 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
       default:
         return ["search"];
     }
-  })();
+  };
 
-  const actionsClass = (() => {
+  const getActionsClass = () => {
     switch (type) {
       case ProfileTypes.script:
         return classes.actions;
@@ -35,13 +35,13 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
       default:
         return undefined;
     }
-  })();
+  };
 
   return (
     <>
       <HeaderWithSearch
         actions={
-          <div className={actionsClass}>
+          <div className={getActionsClass()}>
             {hasFilters && (
               <>
                 <PageParamFilter
@@ -60,7 +60,7 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
         }
       />
       <TableFilterChips
-        filtersToDisplay={filters}
+        filtersToDisplay={getFilters()}
         statusOptions={hasFilters ? STATUS_OPTIONS : undefined}
       />
     </>

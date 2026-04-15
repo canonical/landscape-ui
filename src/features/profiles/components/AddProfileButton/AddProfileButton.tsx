@@ -1,20 +1,22 @@
 import { Button, ConfirmationModal, Icon } from "@canonical/react-components";
 import { type FC } from "react";
+import { useLocation } from "react-router";
 import useProfiles from "@/hooks/useProfiles";
 import usePageParams from "@/hooks/usePageParams";
 import { useBoolean } from "usehooks-ts";
+import { PROFILES_PATHS } from "@/libs/routes/profiles";
 
 const LOCAL_STORAGE_ITEM = "_landscape_isWslPopupClosed";
 
 interface AddProfileButtonProps {
-  readonly isWsl?: boolean;
   readonly isInsideScriptHeader?: boolean;
 }
 
 const AddProfileButton: FC<AddProfileButtonProps> = ({
-  isWsl = false,
   isInsideScriptHeader = false,
 }) => {
+  const { pathname } = useLocation();
+  const isWsl = pathname.includes(`/${PROFILES_PATHS.wsl}`);
   const { createPageParamsSetter } = usePageParams();
   const { isProfileLimitReached } = useProfiles();
 

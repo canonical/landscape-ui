@@ -12,9 +12,7 @@ export interface UseGetPackageProfileParams {
 export const useGetPackageProfile = (
   name: string,
   config: Omit<
-    UseQueryOptions<
-      AxiosResponse<{ result: [PackageProfile] }, AxiosError<ApiError>>
-    >,
+    UseQueryOptions<AxiosResponse<{ result: [PackageProfile] }>, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
   > = {},
 ) => {

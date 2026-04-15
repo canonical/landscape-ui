@@ -35,7 +35,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const [currentTab, setCurrentTab] = useState(0);
 
   const debug = useDebug();
-  const { createPageParamsSetter } = usePageParams();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const { getDistributionsQuery } = useDistributions();
@@ -168,6 +168,8 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
         onCancel={closeSidePanel}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

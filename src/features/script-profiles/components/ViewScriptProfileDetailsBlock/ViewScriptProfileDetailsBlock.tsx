@@ -3,8 +3,8 @@ import type { FC } from "react";
 import type { ScriptProfile } from "../../types";
 import { Link } from "react-router";
 import { ROUTES } from "@/libs/routes";
-import { Spinner } from "@canonical/react-components";
 import { useGetSingleScript } from "@/features/scripts";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface ViewScriptProfileDetailsBlockProps {
   readonly profile: ScriptProfile;
@@ -28,7 +28,7 @@ const ViewScriptProfileDetailsBlock: FC<ViewScriptProfileDetailsBlockProps> = ({
               {script.title}
             </Link>
           ) : (
-            <Spinner />
+            <LoadingState inline />
           )
         }
       />

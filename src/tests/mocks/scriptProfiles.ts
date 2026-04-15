@@ -25,7 +25,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } as ScriptProfile,
+  },
   {
     name: "script-profile-2",
     access_group: "global",
@@ -48,7 +48,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-3",
     access_group: "global",
@@ -71,7 +71,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } as ScriptProfile,
+  },
   {
     name: "script-profile-4",
     access_group: "global",
@@ -94,7 +94,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-5",
     access_group: "global",
@@ -117,7 +117,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-6",
     access_group: "global",
@@ -140,7 +140,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-7",
     access_group: "global",
@@ -168,7 +168,7 @@ export const scriptProfiles = [
     },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-8",
     access_group: "global",
@@ -191,7 +191,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-9",
     access_group: "global",
@@ -214,7 +214,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-10",
     access_group: "global",
@@ -242,7 +242,7 @@ export const scriptProfiles = [
     },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-11",
     access_group: "global",
@@ -265,7 +265,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-12",
     access_group: "global",
@@ -288,7 +288,7 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
   {
     name: "script-profile-13",
     access_group: "global",
@@ -311,5 +311,5 @@ export const scriptProfiles = [
     trigger: { trigger_type: "event", event_type: "post_enrollment" },
     username: "root",
     last_edited_at: "",
-  } satisfies ScriptProfile as ScriptProfile,
+  },
 ] as const satisfies ScriptProfile[];

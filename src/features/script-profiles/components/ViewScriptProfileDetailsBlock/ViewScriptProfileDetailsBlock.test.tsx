@@ -21,7 +21,7 @@ describe("ViewScriptProfileDetailsBlock", () => {
 
     renderWithProviders(<ViewScriptProfileDetailsBlock profile={profile} />);
 
-    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeInTheDocument();
 
     expect(screen.getByText("Run as User")).toBeInTheDocument();
     expect(screen.getByText("root")).toBeInTheDocument();

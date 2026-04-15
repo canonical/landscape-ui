@@ -56,7 +56,7 @@ export const useRemoveProfile = (type: ProfileTypes) => {
     }
   };
 
-  const isRemovingProfile = (() => {
+  const getIsRemovingProfile = () => {
     switch (type) {
       case ProfileTypes.package:
         return removePackageProfileQuery.isPending;
@@ -77,10 +77,10 @@ export const useRemoveProfile = (type: ProfileTypes) => {
       default:
         return false;
     }
-  })();
+  };
 
   return {
     removeProfile,
-    isRemovingProfile,
+    isRemovingProfile: getIsRemovingProfile(),
   };
 };

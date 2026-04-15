@@ -7,7 +7,7 @@ import { capitalize } from "@/utils/_helpers";
 import { getModalMessage, getNotificationMessage } from "./helpers";
 import { canArchiveProfile, type ProfileTypes } from "../../helpers";
 import { useRemoveProfile } from "../../api/useRemoveProfile";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 
 interface RemoveProfileModalProps {
   readonly profile: Profile;
@@ -29,7 +29,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
 
   const { notify } = useNotify();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { setPageParams } = usePageParams();
 
   const { removeProfile, isRemovingProfile } = useRemoveProfile(type);
 
@@ -40,7 +40,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
         name: profile.name,
       });
 
-      closeSidePanel();
+      setPageParams({ sidePath: [], profile: "" });
 
       notify.success({
         title: `${capitalize(type)} profile ${removalType}d`,

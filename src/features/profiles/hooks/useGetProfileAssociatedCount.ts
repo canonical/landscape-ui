@@ -21,9 +21,7 @@ export const useGetProfileAssociatedCount = (profile: Profile) => {
       query: `profile:repository:${profile.id}`,
     },
     { listenToUrlParams: false },
-    {
-      enabled: isAssociationQueryEnabled,
-    },
+    { enabled: isAssociationQueryEnabled },
   );
 
   const getAssociationFromProfile = () => {

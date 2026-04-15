@@ -1,24 +1,10 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ProfileAssociatedInstancesLink from "./ProfileAssociatedInstancesLink";
-import useSidePanel from "@/hooks/useSidePanel";
 import { profiles } from "@/tests/mocks/profiles";
-
-vi.mock("@/hooks/useSidePanel", () => ({
-  default: vi.fn(),
-}));
-
-vi.mock("@/components/layout/NoData", () => ({
-  default: () => <span>No data</span>,
-}));
-
-vi.mock("@/features/wsl-profiles", () => ({
-  WslProfileNonCompliantInstancesList: () => <div>WSL list</div>,
-}));
-
-const mockUseSidePanel = vi.mocked(useSidePanel);
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const [profile] = profiles;
 
@@ -34,16 +20,7 @@ const packageProfile = {
 };
 
 describe("ProfileAssociatedInstancesLink", () => {
-  const setSidePanelContent = vi.fn();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockUseSidePanel.mockReturnValue({
-      setSidePanelContent,
-    } as unknown as ReturnType<typeof useSidePanel>);
-  });
-
-  it("renders spinner if isPending is true", () => {
+  it("renders loading state if isPending is true", () => {
     renderWithProviders(
       <ProfileAssociatedInstancesLink
         count={4}
@@ -53,7 +30,7 @@ describe("ProfileAssociatedInstancesLink", () => {
       />,
     );
 
-    expect(screen.getByRole("alert")).toHaveTextContent("Loading");
+    expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
   it("renders no data when profile has no associations", () => {
@@ -65,7 +42,7 @@ describe("ProfileAssociatedInstancesLink", () => {
       />,
     );
 
-    expect(screen.getByText("No data")).toBeInTheDocument();
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("renders no data for post-enrollment script profiles", () => {
@@ -86,7 +63,7 @@ describe("ProfileAssociatedInstancesLink", () => {
       />,
     );
 
-    expect(screen.getByText("No data")).toBeInTheDocument();
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("renders 0 instances text when association count is zero", () => {
@@ -179,10 +156,6 @@ describe("ProfileAssociatedInstancesLink", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "3 instances" }));
 
-    expect(setSidePanelContent).toHaveBeenCalledWith(
-      "Instances not compliant with Profile One",
-      expect.anything(),
-      "large",
-    );
+    expect(screen.getByText("Instances not compliant with Profile One")).toBeInTheDocument();
   });
 });

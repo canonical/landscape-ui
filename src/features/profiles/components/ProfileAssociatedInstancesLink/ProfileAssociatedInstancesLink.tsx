@@ -3,7 +3,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { WslProfileNonCompliantInstancesList } from "@/features/wsl-profiles";
 import { ROUTES } from "@/libs/routes";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import { Button, Spinner } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import { Suspense, type FC } from "react";
 import type { Profile } from "../../types";
 import {
@@ -35,7 +35,7 @@ const ProfileAssociatedInstancesLink: FC<
   const { setSidePanelContent } = useSidePanel();
 
   if (isPending) {
-    return <Spinner />;
+    return <LoadingState inline />;
   }
 
   const hasNoAssociations =
@@ -54,7 +54,7 @@ const ProfileAssociatedInstancesLink: FC<
       ? "All instances"
       : pluralizeWithCount(count, "instance");
 
-  const packageComplianceIds = (() => {
+  const getPackageComplianceIds = () => {
     if (isPackageProfile(profile) && !isGeneralAssociation) {
       return query.endsWith(":noncompliant")
         ? profile.computers["non-compliant"]
@@ -62,10 +62,10 @@ const ProfileAssociatedInstancesLink: FC<
             (id) => !profile.computers["non-compliant"].includes(id),
           );
     }
-  })();
+  };
 
   const formattedQuery =
-    packageComplianceIds?.map((id) => `id:${id}`).join(" OR ") ??
+    getPackageComplianceIds()?.map((id) => `id:${id}`).join(" OR ") ??
     `profile:${query.toLowerCase()}`;
 
   if (isWslProfile(profile) && query.endsWith(":noncompliant")) {

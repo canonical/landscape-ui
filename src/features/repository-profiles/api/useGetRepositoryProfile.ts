@@ -35,7 +35,7 @@ export function useGetRepositoryProfile(
     ...config,
   });
 
-  const repositoryProfile = response?.data.results[0];
+  const repositoryProfile = response?.data.results.find((profile) => profile.name === name);
 
   return {
     repositoryProfile,
