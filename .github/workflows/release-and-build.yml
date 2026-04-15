@@ -131,10 +131,13 @@ jobs:
           # Build the binary .deb (unsigned)
           dpkg-buildpackage -us -uc -b
 
+          # Copy .deb into workspace (upload-artifact doesn't allow ../ paths)
+          cp ../landscape-dashboard_*.deb .
+
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
         with:
           name: landscape-dashboard-deb
-          path: ../landscape-dashboard_*.deb
+          path: landscape-dashboard_*.deb
           retention-days: 30
 
