@@ -48,7 +48,7 @@ describe("PublicationTargetList", () => {
     ]);
   });
 
-  it("renders the display_name for each target", () => {
+  it("renders the displayName for each target", () => {
     renderWithProviders(
       <PublicationTargetList targets={publicationTargets} />,
     );

@@ -73,22 +73,21 @@ describe("TargetDetails", () => {
       );
     });
 
-    it("calls setSidePanelContent with remove title when Remove is clicked", async () => {
+    it("opens the remove confirmation modal when Remove is clicked", async () => {
       (useGetPublicationsByTarget as Mock).mockReturnValue({
         publications: [],
         isGettingPublications: false,
       });
 
-      const { setSidePanelContent } = useSidePanel();
-
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       await user.click(screen.getByRole("button", { name: /remove/i }));
 
-      expect(setSidePanelContent).toHaveBeenCalledWith(
-        `Remove ${targetWithPublications.displayName}`,
-        expect.anything(),
-      );
+      expect(
+        screen.getByRole("dialog", {
+          name: `Remove "${targetWithPublications.displayName}"`,
+        }),
+      ).toBeInTheDocument();
     });
   });
 

@@ -61,7 +61,7 @@ export const publicationTargets: PublicationTarget[] = [
   {
     name: "publicationTargets/cccccccc-0000-0000-0000-000000000003",
     publicationTargetId: "cccccccc-0000-0000-0000-000000000003",
-    displayName: "",
+    displayName: "swift-internal",
     swift: {
       container: "landscape-packages",
       username: "admin",
