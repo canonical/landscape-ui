@@ -20,11 +20,21 @@ export const ProfilesContext =
 
 interface ProfilesProviderProps {
   readonly children: ReactNode;
+  readonly path: string;
 }
 
-export const ProfilesProvider: FC<ProfilesProviderProps> = ({ children }) => {
+export const ProfilesProvider: FC<ProfilesProviderProps> = ({
+  children,
+  path,
+}) => {
   const [isProfileLimitReached, setIsProfileLimitReached] = useState(false);
   const [profileLimit, setProfileLimit] = useState(0);
+  const [resetKey, setResetKey] = useState(path);
+
+  if (path !== resetKey) {
+    setIsProfileLimitReached(false);
+    setResetKey(path);
+  }
 
   return (
     <ProfilesContext.Provider

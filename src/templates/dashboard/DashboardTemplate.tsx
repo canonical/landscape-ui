@@ -22,7 +22,7 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
 
   return (
     <div id={applicationId} className="l-application" role="presentation">
-      <ProfilesProvider key={pathname}>
+      <ProfilesProvider path={pathname}>
         <SidePanelProvider>
           <Sidebar />
           <ApplicationIdContext value={applicationId}>

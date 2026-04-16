@@ -1,45 +1,26 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProfileTypes } from "../../helpers";
 import RemoveProfileModal from "./RemoveProfileModal";
-import useNotify from "@/hooks/useNotify";
-import useDebug from "@/hooks/useDebug";
 import { useRemoveProfile } from "../../api/useRemoveProfile";
 import { profiles } from "@/tests/mocks/profiles";
+import { renderWithProviders } from "@/tests/render";
 
 vi.mock("../../api/useRemoveProfile", () => ({
   useRemoveProfile: vi.fn(),
 }));
 
-vi.mock("@/hooks/useNotify", () => ({
-  default: vi.fn(),
-}));
-
-vi.mock("@/hooks/useDebug", () => ({
-  default: vi.fn(),
-}));
-
-const mockUseNotify = vi.mocked(useNotify);
-const mockUseDebug = vi.mocked(useDebug);
 const mockUseRemoveProfile = vi.mocked(useRemoveProfile);
 
 const [baseProfile] = profiles;
 
 describe("RemoveProfileModal", () => {
-  const notifySuccess = vi.fn();
-  const debug = vi.fn();
   const removeProfile = vi.fn();
   const closeModal = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockUseNotify.mockReturnValue({
-      notify: { success: notifySuccess },
-    } as unknown as ReturnType<typeof useNotify>);
-
-    mockUseDebug.mockReturnValue(debug);
 
     mockUseRemoveProfile.mockReturnValue({
       removeProfile,
@@ -48,9 +29,7 @@ describe("RemoveProfileModal", () => {
   });
 
   it("submits archive and shows success notification", async () => {
-    removeProfile.mockResolvedValue(undefined);
-
-    render(
+    renderWithProviders(
       <RemoveProfileModal
         profile={baseProfile}
         type={ProfileTypes.script}
@@ -68,14 +47,13 @@ describe("RemoveProfileModal", () => {
       id: baseProfile.id,
       name: baseProfile.name,
     });
-    expect(notifySuccess).toHaveBeenCalled();
+
+    expect(screen.getByText("Script profile archived")).toBeInTheDocument();
     expect(closeModal).toHaveBeenCalled();
   });
 
   it("submits remove and shows success notification", async () => {
-    removeProfile.mockResolvedValue(undefined);
-
-    render(
+    renderWithProviders(
       <RemoveProfileModal
         profile={baseProfile}
         type={ProfileTypes.repository}
@@ -93,7 +71,8 @@ describe("RemoveProfileModal", () => {
       id: baseProfile.id,
       name: baseProfile.name,
     });
-    expect(notifySuccess).toHaveBeenCalled();
+
+    expect(screen.getByText("Repository profile removed")).toBeInTheDocument();
     expect(closeModal).toHaveBeenCalled();
   });
 
@@ -101,7 +80,7 @@ describe("RemoveProfileModal", () => {
     const error = new Error("request failed");
     removeProfile.mockRejectedValue(error);
 
-    render(
+    renderWithProviders(
       <RemoveProfileModal
         profile={baseProfile}
         type={ProfileTypes.package}
@@ -114,7 +93,7 @@ describe("RemoveProfileModal", () => {
     await userEvent.click(screen.getByRole("button", { name: "Remove" }));
 
     expect(closeModal).toHaveBeenCalled();
-    expect(debug).toHaveBeenCalledWith(error);
+    expect(screen.getByText("request failed")).toBeInTheDocument();
   });
 
   it("disables confirm button while request is pending", () => {
@@ -123,7 +102,7 @@ describe("RemoveProfileModal", () => {
       isRemovingProfile: true,
     });
 
-    render(
+    renderWithProviders(
       <RemoveProfileModal
         profile={baseProfile}
         type={ProfileTypes.script}

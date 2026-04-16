@@ -14,7 +14,7 @@ vi.mock("@/features/profiles", async () => {
 
   return {
     ...actual,
-    ProfilesContainer: () => <div>Package profiles table</div>,
+    ProfilesContainer: () => <div>Reboot profiles table</div>,
   };
 });
 

@@ -14,13 +14,13 @@ vi.mock("@/features/profiles", async () => {
 
   return {
     ...actual,
-    ProfilesContainer: () => <div>Package profiles table</div>,
+    ProfilesContainer: () => <div>WSL profiles table</div>,
   };
 });
 
 describe("WslProfilesPage", () => {
   it("has a button to add a profile", async () => {
-    renderWithProviders(<WslProfilesPage />);
+    renderWithProviders(<WslProfilesPage />, undefined, "/profiles/wsl");
     const user = userEvent.setup();
 
     await user.click(
