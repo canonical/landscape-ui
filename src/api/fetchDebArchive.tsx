@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import type { AxiosInstance } from "axios";
 import axios from "axios";
-import { API_URL } from "@/constants";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { AuthContext } from "@/context/auth";
 import {
   setupRequestInterceptor,
@@ -28,7 +28,7 @@ const FetchDebArchiveProvider: FC<FetchDebArchiveProviderProps> = ({
   const { user, logout } = useContext(AuthContext);
 
   const authFetchDebArchive = useMemo(() => {
-    const debArchiveBaseUrl = `${API_URL}v1/`;
+    const debArchiveBaseUrl = API_URL_DEB_ARCHIVE;
 
     return axios.create({ baseURL: debArchiveBaseUrl });
   }, []);
