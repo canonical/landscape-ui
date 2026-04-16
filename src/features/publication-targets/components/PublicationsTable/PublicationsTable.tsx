@@ -4,6 +4,7 @@ import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import type { Publication } from "@canonical/landscape-openapi";
+import PublicationLink from "./PublicationLink/PublicationLink";
 
 
 interface PublicationsTableProps {
@@ -17,9 +18,16 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
+  // TODO: replace label with displayName once it's available in the API, link mirror to /mirrors with sidebar open
   const columns = useMemo<Column<Publication>[]>(
     () => [
-      { accessor: "label", Header: "Publication" },
+      {
+        accessor: "label",
+        Header: "Publication",
+        Cell: ({ row }: CellProps<Publication>): ReactNode => (
+          <PublicationLink publication={row.original} />
+        ),
+      },
       {
         accessor: "mirror",
         Header: "Source",

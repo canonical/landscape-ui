@@ -21,5 +21,6 @@ export const useGetPublication = (id: string) => {
   return {
     publication: data,
     isGettingPublication: isLoading,
+    publicationError: error,
   };
 };

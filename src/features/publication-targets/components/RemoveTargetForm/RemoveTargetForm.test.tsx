@@ -1,21 +1,14 @@
-import useDebug from "@/hooks/useDebug";
+import { API_URL_DEBARCHIVE } from "@/constants";
 import { publicationTargets, publications } from "@/tests/mocks/publication-targets";
+import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { Mock } from "vitest";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import RemoveTargetModal from "./RemoveTargetModal";
 
-vi.mock("@/hooks/useDebug");
-vi.mock("@/features/publication-targets/api/useRemovePublicationTarget", () => ({
-  default: vi.fn(() => ({
-    removePublicationTargetQuery: {
-      mutateAsync: vi.fn().mockResolvedValue({}),
-      isPending: false,
-    },
-  })),
-}));
 vi.mock("../../api/useGetPublicationsByTarget", () => ({
   default: vi.fn(),
 }));
@@ -39,7 +32,6 @@ describe("RemoveTargetForm", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
-    (useDebug as Mock).mockReturnValue(vi.fn());
     defaultClose.mockReset();
   });
 
@@ -147,6 +139,12 @@ describe("RemoveTargetForm", () => {
   });
 
   it("submits the deletion after typing the confirmation text", async () => {
+    server.use(
+      http.delete(`${API_URL_DEBARCHIVE}v1/publicationTargets/:id`, () =>
+        new HttpResponse(null, { status: 204 }),
+      ),
+    );
+
     (useGetPublicationsByTarget as Mock).mockReturnValue({
       publications: [],
       isGettingPublications: false,
@@ -171,26 +169,17 @@ describe("RemoveTargetForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls debug when deletion fails with an error", async () => {
-    const mockDebug = vi.fn();
-    (useDebug as Mock).mockReturnValue(mockDebug);
+  it("shows an error notification when deletion fails", async () => {
+    server.use(
+      http.delete(`${API_URL_DEBARCHIVE}v1/publicationTargets/:id`, () =>
+        HttpResponse.json({ message: "deletion failed" }, { status: 500 }),
+      ),
+    );
+
     (useGetPublicationsByTarget as Mock).mockReturnValue({
       publications: [],
       isGettingPublications: false,
     });
-
-    // Override the mutation to reject, simulating an API error
-    const { default: useRemovePublicationTarget } = await import(
-      "@/features/publication-targets/api/useRemovePublicationTarget"
-    );
-    vi.mocked(useRemovePublicationTarget).mockImplementation(() => ({
-      removePublicationTargetQuery: {
-        mutateAsync: vi.fn().mockRejectedValue(
-          new Error("API error: deletion failed"),
-        ),
-        isPending: false,
-      },
-    } as never));
 
     renderWithProviders(
       <RemoveTargetModal
@@ -206,24 +195,10 @@ describe("RemoveTargetForm", () => {
     );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
-    // Verify the error handler was invoked with the error
-    await vi.waitFor(() => {
-      expect(mockDebug).toHaveBeenCalledWith(expect.any(Error));
-    });
+    expect(await screen.findByText("deletion failed")).toBeInTheDocument();
   });
 
   it("does nothing on submit when target has no name", async () => {
-    const mockRemoveTarget = vi.fn();
-    const { default: useRemovePublicationTarget } = await import(
-      "@/features/publication-targets/api/useRemovePublicationTarget"
-    );
-    vi.mocked(useRemovePublicationTarget).mockImplementation(() => ({
-      removePublicationTargetQuery: {
-        mutateAsync: mockRemoveTarget,
-        isPending: false,
-      },
-    } as never));
-
     (useGetPublicationsByTarget as Mock).mockReturnValue({
       publications: [],
       isGettingPublications: false,
@@ -245,6 +220,8 @@ describe("RemoveTargetForm", () => {
     );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
-    expect(mockRemoveTarget).not.toHaveBeenCalled();
+    expect(
+      screen.queryByText(/removed successfully/i),
+    ).not.toBeInTheDocument();
   });
 });

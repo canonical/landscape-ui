@@ -28,18 +28,49 @@ describe("PublicationsTable", () => {
   });
 
   describe("column data rendering", () => {
-    it("renders display_name in Publication column", () => {
+    it("renders label as a link in Publication column", () => {
       renderWithProviders(<PublicationsTable publications={publications} />);
 
       publications.forEach((pub) => {
-        expect(screen.getByText(pub.mirror)).toBeInTheDocument();
+        const link = screen.getByRole("link", { name: pub.label ?? pub.name });
+        expect(link).toBeInTheDocument();
       });
+    });
+
+    it("Publication column links point to publications page with correct params", () => {
+      renderWithProviders(<PublicationsTable publications={publications} />);
+
+      publications.forEach((pub) => {
+        const link = screen.getByRole("link", {
+          name: pub.label ?? pub.name,
+        }) as HTMLAnchorElement;
+        expect(link.href).toContain("/repositories/publications");
+        expect(link.href).toContain("sidePath=view");
+        expect(link.href).toContain(`publication=${pub.publicationId}`);
+      });
+    });
+
+    it("falls back to publication name when label is undefined", () => {
+      const pubWithoutLabel: Publication = {
+        name: "publications/no-label-id",
+        publicationId: "no-label-id",
+        publicationTarget: "publicationTargets/test",
+        mirror: "mirrors/test",
+        distribution: "jammy",
+      };
+
+      renderWithProviders(
+        <PublicationsTable publications={[pubWithoutLabel]} />,
+      );
+
+      expect(
+        screen.getByRole("link", { name: pubWithoutLabel.name }),
+      ).toBeInTheDocument();
     });
 
     it("renders mirror value in Source column when available", () => {
       renderWithProviders(<PublicationsTable publications={publications} />);
 
-      // All mock publications have mirror values
       publications.forEach((pub) => {
         expect(screen.getByText(pub.mirror)).toBeInTheDocument();
       });
