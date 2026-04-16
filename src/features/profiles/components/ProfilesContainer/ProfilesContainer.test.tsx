@@ -1,38 +1,14 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ProfilesContainer from "./ProfilesContainer";
 import { ProfileTypes } from "../../helpers";
-import type { Profile } from "../../types";
 import useProfiles from "@/hooks/useProfiles";
 import { profiles as profileList } from "@/tests/mocks/profiles";
 import type { ComponentProps } from "react";
 
 vi.mock("@/hooks/useProfiles", () => ({
   default: vi.fn(),
-}));
-
-vi.mock("../ProfilesHeader", () => ({
-  default: ({ type }: { type: string }) => <div>{`header:${type}`}</div>,
-}));
-
-vi.mock("../ProfilesList", () => ({
-  default: ({ profiles }: { profiles: Profile[] }) => {
-    if (profiles.length) {
-      return <div>{`list:${profiles.length}`}</div>;
-    }
-    return <div>list:empty</div>;
-  },
-}));
-
-vi.mock("../ProfilesEmptyState", () => ({
-  default: ({ type }: { type: string }) => <div>{`empty:${type}`}</div>,
-}));
-
-vi.mock("@/components/layout/TablePagination", () => ({
-  TablePagination: ({ totalItems }: { readonly totalItems: number }) => (
-    <div>{`pagination:${totalItems}`}</div>
-  ),
 }));
 
 const mockUseProfiles = vi.mocked(useProfiles);
@@ -65,7 +41,9 @@ describe("ProfilesContainer", () => {
       />,
     );
 
-    expect(screen.getByText("empty:package")).toBeInTheDocument();
+    expect(
+      screen.getByText("You haven't added any package profiles yet."),
+    ).toBeInTheDocument();
   });
 
   it("renders empty table when no profiles with search", () => {
@@ -75,20 +53,28 @@ describe("ProfilesContainer", () => {
       "/?search=search",
     );
 
-    expect(screen.getByText("list:empty")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "No security profiles found according to your search parameters.",
+      ),
+    ).toBeInTheDocument();
   });
 
-  it("renders header and list when data exists", () => {
+  it("renders header and list when data exists", async () => {
     renderWithProviders(<ProfilesContainer {...props} />);
 
-    expect(screen.getByText("header:security")).toBeInTheDocument();
-    expect(screen.getByText("list:3")).toBeInTheDocument();
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
+    expect(screen.getByRole("button", {
+      name: 'Open "Profile One" profile details',
+    })).toBeInTheDocument();
+    expect(screen.getByText("Profile Two")).toBeInTheDocument();
+    expect(screen.getByText("Profile Three")).toBeInTheDocument();
   });
 
   it("renders pagination when count exists", () => {
     renderWithProviders(<ProfilesContainer {...props} profilesCount={10} />);
 
-    expect(screen.getByText("pagination:10")).toBeInTheDocument();
+    expect(screen.getByText("Showing 3 of 10 results")).toBeInTheDocument();
   });
 
   it("shows security profile limit notification when limit is reached", () => {

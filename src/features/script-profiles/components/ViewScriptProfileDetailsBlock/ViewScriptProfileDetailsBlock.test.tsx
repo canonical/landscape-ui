@@ -1,25 +1,19 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ViewScriptProfileDetailsBlock from "./ViewScriptProfileDetailsBlock";
-import { useGetSingleScript } from "@/features/scripts";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
-
-vi.mock("@/features/scripts", () => ({
-  useGetSingleScript: vi.fn(),
-}));
-
-const mockUseGetSingleScript = vi.mocked(useGetSingleScript);
+import { detailedScriptsData } from "@/tests/mocks/script";
 
 const [profile] = scriptProfiles;
 
 describe("ViewScriptProfileDetailsBlock", () => {
   it("renders spinner for script while script details are unavailable", () => {
-    mockUseGetSingleScript.mockReturnValue({
-      script: undefined,
-    } as unknown as ReturnType<typeof useGetSingleScript>);
-
-    renderWithProviders(<ViewScriptProfileDetailsBlock profile={profile} />);
+    renderWithProviders(
+      <ViewScriptProfileDetailsBlock
+        profile={{ ...profile, script_id: 999_999 }}
+      />,
+    );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
 
@@ -29,15 +23,11 @@ describe("ViewScriptProfileDetailsBlock", () => {
     expect(screen.getByText("300s")).toBeInTheDocument();
   });
 
-  it("renders script link when script is resolved", () => {
-    mockUseGetSingleScript.mockReturnValue({
-      script: { id: 9, title: "Hardening script" },
-    } as unknown as ReturnType<typeof useGetSingleScript>);
-
+  it("renders script link when script is resolved", async () => {
     renderWithProviders(<ViewScriptProfileDetailsBlock profile={profile} />);
 
     expect(
-      screen.getByRole("link", { name: "Hardening script" }),
+      await screen.findByRole("link", { name: detailedScriptsData[0].title }),
     ).toBeInTheDocument();
   });
 });

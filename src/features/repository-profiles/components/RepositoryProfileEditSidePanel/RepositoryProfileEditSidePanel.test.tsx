@@ -1,36 +1,20 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import RepositoryProfileEditSidePanel from "./RepositoryProfileEditSidePanel";
-import { useGetPageRepositoryProfile } from "../../api/useGetPageRepositoryProfile";
-
-vi.mock("../../api/useGetPageRepositoryProfile", () => ({
-  useGetPageRepositoryProfile: vi.fn(),
-}));
-
-vi.mock("../RepositoryProfileForm", () => ({
-  default: ({ action }: { action: string }) => <div>{`form:${action}`}</div>,
-}));
-
-const mockUseGetPageRepositoryProfile = vi.mocked(useGetPageRepositoryProfile);
+import { renderWithProviders } from "@/tests/render";
+import { expectLoadingState } from "@/tests/helpers";
 
 describe("RepositoryProfileManageSidePanel", () => {
-  it("renders loading state while profile is fetching", () => {
-    mockUseGetPageRepositoryProfile.mockReturnValue({
-      isGettingRepositoryProfile: true,
-    } as unknown as ReturnType<typeof useGetPageRepositoryProfile>);
+  it("renders title and form after loading", async () => {
+    renderWithProviders(<RepositoryProfileEditSidePanel />, undefined, "?sidePath=edit&profile=repo-profile-1");
 
-    render(<RepositoryProfileEditSidePanel />);
-    expect(screen.getByRole("status")).toBeInTheDocument();
-  });
+    await expectLoadingState();
 
-  it("renders title and form", () => {
-    mockUseGetPageRepositoryProfile.mockReturnValue({
-      isGettingRepositoryProfile: false,
-      repositoryProfile: { title: "Repo One" },
-    } as unknown as ReturnType<typeof useGetPageRepositoryProfile>);
-
-    render(<RepositoryProfileEditSidePanel />);
-    expect(screen.getByText("Edit Repo One")).toBeInTheDocument();
-    expect(screen.getByText("form:edit")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Edit Repository profile 1" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Details" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "APT sources" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Pockets" })).toBeInTheDocument();
+    
+    expect(screen.getByRole("button", { name: "Edit repository profile" })).toBeInTheDocument();
   });
 });

@@ -1,5 +1,4 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
@@ -31,7 +30,6 @@ interface ProfilesListProps {
 const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
   const { search } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
-  const { getTableRowsRef } = useExpandableRow();
 
   const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
 
@@ -88,7 +86,6 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
 
   return (
     <ResponsiveTable
-      ref={getTableRowsRef}
       columns={columns}
       data={filteredProfiles}
       emptyMsg={`No ${type} profiles found according to your search parameters.`}

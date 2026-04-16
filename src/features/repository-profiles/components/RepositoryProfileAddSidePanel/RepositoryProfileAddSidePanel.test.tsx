@@ -1,15 +1,15 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import RepositoryProfileAddSidePanel from "./RepositoryProfileAddSidePanel";
-
-vi.mock("../RepositoryProfileForm", () => ({
-  default: ({ action }: { action: string }) => <div>{`form:${action}`}</div>,
-}));
+import { renderWithProviders } from "@/tests/render";
 
 describe("RepositoryProfileAddSidePanel", () => {
   it("renders title and form", () => {
-    render(<RepositoryProfileAddSidePanel />);
-    expect(screen.getByText("Add repository profile")).toBeInTheDocument();
-    expect(screen.getByText(`form:add`)).toBeInTheDocument();
+    renderWithProviders(<RepositoryProfileAddSidePanel />);
+    expect(screen.getByRole("heading", { name: "Add repository profile" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Details" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "APT sources" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Pockets" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add a new repository profile" })).toBeInTheDocument();
   });
 });

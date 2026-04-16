@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ProfilesList from "./ProfilesList";
 import { ProfileTypes } from "../../helpers";
 import { profiles } from "@/tests/mocks/profiles";
@@ -8,30 +8,6 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { securityProfiles } from "@/tests/mocks/securityProfiles";
 import { capitalize } from "@/utils/_helpers";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
-
-const accessGroupTitle = "Global Access";
-
-vi.mock("@/hooks/useRoles", () => ({
-  default: () => ({
-    getAccessGroupQuery: () => ({
-      data: { data: [{ name: "global", title: accessGroupTitle }] },
-    }),
-  }),
-}));
-
-vi.mock("@/hooks/useExpandableRow", () => ({
-  useExpandableRow: () => ({
-    expandedRowIndex: -1,
-    getTableRowsRef: vi.fn(),
-  }),
-}));
-
-vi.mock("@/utils/table", () => ({
-  createTablePropGetters: () => ({
-    getCellProps: () => () => ({}),
-    getRowProps: () => () => ({}),
-  }),
-}));
 
 describe("ProfilesList", () => {
   it.each([
@@ -129,7 +105,7 @@ describe("ProfilesList", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders rows with security profile data", () => {
+  it("renders rows with security profile data", async () => {
     const selectedProfiles = securityProfiles.slice(0, 2);
     renderWithProviders(
       <ProfilesList profiles={selectedProfiles} type={ProfileTypes.security} />,
@@ -149,7 +125,9 @@ describe("ProfilesList", () => {
         within(row).getByText(capitalize(profile.status)),
       ).toBeInTheDocument();
 
-      expect(within(row).getByText(accessGroupTitle)).toBeInTheDocument();
+      expect(
+        await within(row).findByText("Global access"),
+      ).toBeInTheDocument();
 
       if (profile.associated_instances) {
         expect(
