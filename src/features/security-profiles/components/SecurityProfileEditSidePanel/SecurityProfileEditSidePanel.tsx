@@ -3,7 +3,7 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useUpdateSecurityProfile } from "../../api";
-import useGetPageSecurityProfile from "../../api/useGetPageSecurityProfile";
+import { useGetPageSecurityProfile } from "../../api/useGetPageSecurityProfile";
 import { getInitialValues } from "../../helpers";
 import SecurityProfileForm from "../SecurityProfileForm";
 

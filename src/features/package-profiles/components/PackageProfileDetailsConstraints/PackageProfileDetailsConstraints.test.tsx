@@ -12,11 +12,10 @@ describe("PackageProfileDetailsConstraints", () => {
     );
   });
 
-  it("should render profile constraint list with the search and CTA", async () => {
+  it("should render profile constraint list with the search", async () => {
     await expectLoadingState();
 
     expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
-    expect(screen.getByText("Change package constraints")).toBeInTheDocument();
 
     packageProfiles[0].constraints.forEach((constraint) => {
       expect(

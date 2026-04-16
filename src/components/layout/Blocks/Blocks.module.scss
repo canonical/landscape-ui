@@ -3,5 +3,6 @@
 .blocks {
   display: flex;
   flex-direction: column;
-  gap: $sp-unit * 5;
+  gap: $sp-unit * 4;
+  padding-bottom: $spv--x-large;
 }

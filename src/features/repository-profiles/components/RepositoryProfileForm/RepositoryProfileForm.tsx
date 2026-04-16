@@ -17,10 +17,10 @@ import { useAPTSources } from "@/features/apt-sources";
 import useDebug from "@/hooks/useDebug";
 import { useDistributions } from "@/features/mirrors";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import usePageParams from "@/hooks/usePageParams";
 
 type RepositoryProfileFormProps =
   | {
@@ -35,7 +35,8 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const [currentTab, setCurrentTab] = useState(0);
 
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const { getDistributionsQuery } = useDistributions();
   const { getAccessGroupQuery } = useRoles();
@@ -108,7 +109,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       access_group: props.profile.access_group,
       all_computers: props.profile.all_computers,
       apt_sources: props.profile.apt_sources,
-      description: props.profile.description,
+      description: props.profile.description ?? "",
       pockets: props.profile.pockets.map(({ id }) => id),
       tags: props.profile.tags,
       title: props.profile.title,
@@ -166,6 +167,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
+        onCancel={closeSidePanel}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

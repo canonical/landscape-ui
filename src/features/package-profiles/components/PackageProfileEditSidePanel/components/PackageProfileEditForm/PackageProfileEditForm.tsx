@@ -60,7 +60,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
     enableReinitialize: true,
     initialValues: {
       all_computers: profile.all_computers,
-      description: profile.description,
+      description: profile.description ?? "",
       tags: profile.tags,
       title: profile.title,
     },

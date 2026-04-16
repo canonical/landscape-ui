@@ -141,4 +141,12 @@ export default [
       min_interval: 30,
     });
   }),
+
+  http.post(`${API_URL}script-profiles/:profileId\\:archive`, () => {
+    const endpointStatus = getEndpointStatus();
+    if (endpointStatus.status === "error") {
+      throw ENDPOINT_STATUS_API_ERROR;
+    }
+    return HttpResponse.json();
+  }),
 ];

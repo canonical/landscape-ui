@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPageUpgradeProfile from "../../api/useGetPageUpgradeProfile";
+import { useGetPageUpgradeProfile } from "../../api/useGetPageUpgradeProfile";
 import SingleUpgradeProfileForm from "../SingleUpgradeProfileForm";
 
 const UpgradeProfileEditSidePanel: FC = () => {
@@ -13,11 +13,9 @@ const UpgradeProfileEditSidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>
-        Edit &quot;{upgradeProfile.title}&quot; profile
-      </SidePanel.Header>
+      <SidePanel.Header>Edit {upgradeProfile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <SingleUpgradeProfileForm action="edit" profile={upgradeProfile} />;
+        <SingleUpgradeProfileForm action="edit" profile={upgradeProfile} />
       </SidePanel.Content>
     </>
   );

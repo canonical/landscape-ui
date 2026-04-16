@@ -20,7 +20,8 @@ export const getTo = (profile: Profile) => {
       });
     case "repository":
       return ROUTES.profiles.repository({
-        search: profile.title || "",
+        sidePath: ["view"],
+        profile: profile.name || "",
       });
     case "script":
       return ROUTES.scripts.root({

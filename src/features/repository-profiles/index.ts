@@ -1,7 +1,6 @@
-export { default as RepositoryProfileAddButton } from "./components/RepositoryProfileAddButton";
-export { default as RepositoryProfileContainer } from "./components/RepositoryProfileContainer";
-export { default as RepositoryProfileForm } from "./components/RepositoryProfileForm";
-export { default as RepositoryProfileHeader } from "./components/RepositoryProfileHeader";
-export { default as RepositoryProfileList } from "./components/RepositoryProfileList";
+export { useGetPageRepositoryProfile } from "./api";
+export { default as RepositoryProfileEditSidePanel } from "./components/RepositoryProfileEditSidePanel";
+export { default as RepositoryProfileAddSidePanel } from "./components/RepositoryProfileAddSidePanel";
+export { default as ViewRepositoryProfileAptSourcesTab } from "./components/ViewRepositoryProfileAptSourcesTab";
 export { useRepositoryProfiles } from "./hooks";
 export type { RepositoryProfile } from "./types";

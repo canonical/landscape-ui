@@ -1,2 +1,5 @@
 export type { RepositoryProfileFormValues } from "./RepositoryProfileFormValues";
-export type { RepositoryProfile } from "./RepositoryProfile";
+export type {
+  RepositoryProfile,
+  RepositoryProfilePocket,
+} from "./RepositoryProfile";

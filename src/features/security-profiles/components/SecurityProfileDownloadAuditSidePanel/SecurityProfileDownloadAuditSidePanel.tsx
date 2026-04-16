@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPageSecurityProfile from "../../api/useGetPageSecurityProfile";
+import { useGetPageSecurityProfile } from "../../api/useGetPageSecurityProfile";
 import SecurityProfileDownloadAuditForm from "./components/SecurityProfileDownloadAuditForm";
 
 const SecurityProfileDownloadAuditSidePanel: FC = () => {
