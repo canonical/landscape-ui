@@ -14,8 +14,9 @@ import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const RepositoryProfileEditSidePanel = lazy(async () =>
   import("@/features/repository-profiles").then((module) => ({
@@ -37,6 +38,16 @@ const RepositoryProfilesPage: FC = () => {
     usePageParams();
 
   const { repositoryProfile } = useGetPageRepositoryProfile();
+
+  const { removeRepositoryProfileQuery } = useRepositoryProfiles();
+  const { setRemoveProfile, setIsRemovingProfile } = useProfiles();
+
+  useEffect(() => {
+    setRemoveProfile(({ name }) =>
+      removeRepositoryProfileQuery.mutateAsync({ name }),
+    );
+    setIsRemovingProfile(removeRepositoryProfileQuery.isPending);
+  }, [setRemoveProfile, removeRepositoryProfileQuery, setIsRemovingProfile]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 

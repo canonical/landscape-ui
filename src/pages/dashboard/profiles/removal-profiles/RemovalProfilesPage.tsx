@@ -13,9 +13,10 @@ import {
 import type { FC } from "react";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const RemovalProfileAddSidePanel = lazy(async () =>
   import("@/features/removal-profiles").then((module) => ({
@@ -40,6 +41,16 @@ const RemovalProfilesPage: FC = () => {
     usePageParams();
 
   const { removalProfile } = useGetPageRemovalProfile();
+
+  const { removeRemovalProfileQuery } = useRemovalProfiles();
+  const { setRemoveProfile, setIsRemovingProfile } = useProfiles();
+
+  useEffect(() => {
+    setRemoveProfile(({ name }) =>
+      removeRemovalProfileQuery.mutateAsync({ name }),
+    );
+    setIsRemovingProfile(removeRemovalProfileQuery.isPending);
+  }, [setRemoveProfile, setIsRemovingProfile, removeRemovalProfileQuery]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 

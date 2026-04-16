@@ -10,6 +10,7 @@ import { useGetWslLimits } from "@/features/wsl";
 import {
   useGetPageWslProfile,
   useGetWslProfiles,
+  useRemoveWslProfile,
 } from "@/features/wsl-profiles";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Notification } from "@canonical/react-components";
@@ -43,11 +44,28 @@ const WslProfilesPage: FC = () => {
       limit: DEFAULT_PAGE_SIZE,
       offset: 0,
     });
-  const { setIsProfileLimitReached, setProfileLimit } = useProfiles();
+  const {
+    setIsProfileLimitReached,
+    setProfileLimit,
+    setRemoveProfile,
+    setIsRemovingProfile,
+  } = useProfiles();
   const { sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
   const { wslProfile } = useGetPageWslProfile();
+
+  const { removeWslProfile, isRemovingWslProfile } = useRemoveWslProfile();
+
+  useEffect(() => {
+    setRemoveProfile(({ name }) => removeWslProfile({ name }));
+    setIsRemovingProfile(isRemovingWslProfile);
+  }, [
+    setRemoveProfile,
+    setIsRemovingProfile,
+    removeWslProfile,
+    isRemovingWslProfile,
+  ]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 

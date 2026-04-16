@@ -1,6 +1,7 @@
 import { useGetScripts } from "@/features/scripts";
 import { lazy, useEffect, type FC } from "react";
 import {
+  useArchiveScriptProfile,
   useGetPageScriptProfile,
   useGetScriptProfileLimits,
   useGetScriptProfiles,
@@ -54,9 +55,27 @@ const ScriptProfilesTab: FC = () => {
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
-  const { setIsProfileLimitReached, setProfileLimit } = useProfiles();
+  const {
+    setIsProfileLimitReached,
+    setProfileLimit,
+    setRemoveProfile,
+    setIsRemovingProfile,
+  } = useProfiles();
 
   const { scriptProfile } = useGetPageScriptProfile();
+
+  const { archiveScriptProfile, isArchivingScriptProfile } =
+    useArchiveScriptProfile();
+
+  useEffect(() => {
+    setRemoveProfile(({ id }) => archiveScriptProfile({ id }));
+    setIsRemovingProfile(isArchivingScriptProfile);
+  }, [
+    setRemoveProfile,
+    setIsRemovingProfile,
+    archiveScriptProfile,
+    isArchivingScriptProfile,
+  ]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 

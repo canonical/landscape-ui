@@ -125,9 +125,7 @@ describe("ProfilesList", () => {
         within(row).getByText(capitalize(profile.status)),
       ).toBeInTheDocument();
 
-      expect(
-        await within(row).findByText("Global access"),
-      ).toBeInTheDocument();
+      expect(await within(row).findByText("Global access")).toBeInTheDocument();
 
       if (profile.associated_instances) {
         expect(

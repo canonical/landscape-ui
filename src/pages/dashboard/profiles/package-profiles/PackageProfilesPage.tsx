@@ -14,8 +14,9 @@ import {
 import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const PackageProfileAddSidePanel = lazy(async () =>
   import("@/features/package-profiles").then((module) => ({
@@ -68,6 +69,16 @@ const PackageProfilesPage: FC = () => {
     isPending: isGettingPackageProfiles,
   } = getPackageProfilesQuery();
   const packageProfiles = getPackageProfilesQueryResult?.data.result ?? [];
+
+  const { removePackageProfileQuery } = usePackageProfiles();
+  const { setRemoveProfile, setIsRemovingProfile } = useProfiles();
+
+  useEffect(() => {
+    setRemoveProfile(({ name }) =>
+      removePackageProfileQuery.mutateAsync({ name }),
+    );
+    setIsRemovingProfile(removePackageProfileQuery.isPending);
+  }, [setRemoveProfile, removePackageProfileQuery, setIsRemovingProfile]);
 
   return (
     <PageMain>

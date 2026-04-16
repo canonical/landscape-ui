@@ -12,6 +12,7 @@ import {
   useIsSecurityProfilesLimitReached,
   useGetPageSecurityProfile,
   ACTIVE_SECURITY_PROFILES_LIMIT,
+  useArchiveSecurityProfile,
 } from "@/features/security-profiles";
 import usePageParams from "@/hooks/usePageParams";
 import { lazy, useEffect, type FC } from "react";
@@ -63,7 +64,12 @@ const SecurityProfilesPage: FC = () => {
     passRateFrom,
     passRateTo,
   } = usePageParams();
-  const { setIsProfileLimitReached, setProfileLimit } = useProfiles();
+  const {
+    setIsProfileLimitReached,
+    setProfileLimit,
+    setRemoveProfile,
+    setIsRemovingProfile,
+  } = useProfiles();
   const {
     value: isRetentionNotificationVisible,
     setTrue: showRetentionNotification,
@@ -71,6 +77,19 @@ const SecurityProfilesPage: FC = () => {
   } = useBoolean(false);
 
   const { securityProfile } = useGetPageSecurityProfile();
+
+  const { archiveSecurityProfile, isArchivingSecurityProfile } =
+    useArchiveSecurityProfile();
+
+  useEffect(() => {
+    setRemoveProfile(({ id }) => archiveSecurityProfile({ id }));
+    setIsRemovingProfile(isArchivingSecurityProfile);
+  }, [
+    setRemoveProfile,
+    setIsRemovingProfile,
+    isArchivingSecurityProfile,
+    archiveSecurityProfile,
+  ]);
 
   const isSecurityProfileLimitReached = useIsSecurityProfilesLimitReached();
 

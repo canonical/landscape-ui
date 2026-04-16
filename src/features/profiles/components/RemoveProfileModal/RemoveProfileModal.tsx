@@ -6,8 +6,8 @@ import useNotify from "@/hooks/useNotify";
 import { capitalize } from "@/utils/_helpers";
 import { getModalMessage, getNotificationMessage } from "./helpers";
 import { canArchiveProfile, type ProfileTypes } from "../../helpers";
-import { useRemoveProfile } from "../../api/useRemoveProfile";
 import usePageParams from "@/hooks/usePageParams";
+import useProfiles from "@/hooks/useProfiles";
 
 interface RemoveProfileModalProps {
   readonly profile: Profile;
@@ -30,8 +30,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
   const { notify } = useNotify();
   const debug = useDebug();
   const { setPageParams } = usePageParams();
-
-  const { removeProfile, isRemovingProfile } = useRemoveProfile(type);
+  const { removeProfile, isRemovingProfile } = useProfiles();
 
   const handleRemoveProfile = async () => {
     try {

@@ -11,11 +11,12 @@ import {
   useGetPageUpgradeProfile,
 } from "@/features/upgrade-profiles";
 import type { FC } from "react";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const UpgradeProfileAddSidePanel = lazy(() =>
   import("@/features/upgrade-profiles").then((module) => ({
@@ -38,6 +39,16 @@ const UpgradeProfilesPage: FC = () => {
     usePageParams();
 
   const { upgradeProfile } = useGetPageUpgradeProfile();
+
+  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
+  const { setRemoveProfile, setIsRemovingProfile } = useProfiles();
+
+  useEffect(() => {
+    setRemoveProfile(({ name }) =>
+      removeUpgradeProfileQuery.mutateAsync({ name }),
+    );
+    setIsRemovingProfile(removeUpgradeProfileQuery.isPending);
+  }, [setRemoveProfile, removeUpgradeProfileQuery, setIsRemovingProfile]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 

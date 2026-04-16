@@ -3,15 +3,15 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProfileTypes } from "../../helpers";
 import RemoveProfileModal from "./RemoveProfileModal";
-import { useRemoveProfile } from "../../api/useRemoveProfile";
+import useProfiles from "@/hooks/useProfiles";
 import { profiles } from "@/tests/mocks/profiles";
 import { renderWithProviders } from "@/tests/render";
 
-vi.mock("../../api/useRemoveProfile", () => ({
-  useRemoveProfile: vi.fn(),
+vi.mock("@/hooks/useProfiles", () => ({
+  default: vi.fn(),
 }));
 
-const mockUseRemoveProfile = vi.mocked(useRemoveProfile);
+const mockUseProfiles = vi.mocked(useProfiles);
 
 const [baseProfile] = profiles;
 
@@ -22,10 +22,10 @@ describe("RemoveProfileModal", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockUseRemoveProfile.mockReturnValue({
+    mockUseProfiles.mockReturnValue({
       removeProfile,
       isRemovingProfile: false,
-    });
+    } as unknown as ReturnType<typeof useProfiles>);
   });
 
   it("submits archive and shows success notification", async () => {
@@ -97,10 +97,10 @@ describe("RemoveProfileModal", () => {
   });
 
   it("disables confirm button while request is pending", () => {
-    mockUseRemoveProfile.mockReturnValue({
+    mockUseProfiles.mockReturnValue({
       removeProfile,
       isRemovingProfile: true,
-    });
+    } as unknown as ReturnType<typeof useProfiles>);
 
     renderWithProviders(
       <RemoveProfileModal

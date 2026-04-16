@@ -64,9 +64,11 @@ describe("ProfilesContainer", () => {
     renderWithProviders(<ProfilesContainer {...props} />);
 
     expect(await screen.findByRole("searchbox")).toBeInTheDocument();
-    expect(screen.getByRole("button", {
-      name: 'Open "Profile One" profile details',
-    })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: 'Open "Profile One" profile details',
+      }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Profile Two")).toBeInTheDocument();
     expect(screen.getByText("Profile Three")).toBeInTheDocument();
   });

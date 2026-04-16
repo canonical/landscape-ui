@@ -11,11 +11,13 @@ import {
 import {
   useGetRebootProfiles,
   useGetPageRebootProfile,
+  useRemoveRebootProfile,
 } from "@/features/reboot-profiles";
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
-import { lazy } from "react";
+import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
+import useProfiles from "@/hooks/useProfiles";
 
 const RebootProfileAddSidePanel = lazy(async () =>
   import("@/features/reboot-profiles").then((module) => ({
@@ -42,6 +44,20 @@ const RebootProfilesPage: FC = () => {
     usePageParams();
 
   const { rebootProfile } = useGetPageRebootProfile();
+
+  const { removeRebootProfile, isRemovingRebootProfile } =
+    useRemoveRebootProfile();
+  const { setRemoveProfile, setIsRemovingProfile } = useProfiles();
+
+  useEffect(() => {
+    setRemoveProfile(({ id }) => removeRebootProfile({ id }));
+    setIsRemovingProfile(isRemovingRebootProfile);
+  }, [
+    setRemoveProfile,
+    setIsRemovingProfile,
+    removeRebootProfile,
+    isRemovingRebootProfile,
+  ]);
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
