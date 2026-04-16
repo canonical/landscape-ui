@@ -22,7 +22,7 @@ const VALIDATION_SCHEMA = Yup.object().shape({
   bucket: Yup.string().required("This field is required"),
   awsAccessKeyId: Yup.string().required("This field is required"),
   awsSecretAccessKey: Yup.string().required("This field is required"),
-  region: Yup.string(),
+  region: Yup.string().required("This field is required"),
   endpoint: Yup.string(),
   prefix: Yup.string(),
   acl: Yup.string(),
@@ -133,7 +133,6 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
       <Input
         type="text"
         label="Endpoint"
-        required
         error={getFormikError(formik, "endpoint")}
         {...formik.getFieldProps("endpoint")}
       />
