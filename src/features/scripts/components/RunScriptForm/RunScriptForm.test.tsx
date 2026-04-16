@@ -1,6 +1,6 @@
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import RunScriptForm from "./RunScriptForm";
@@ -152,5 +152,36 @@ describe("RunScriptForm", () => {
     expect(
       await screen.findByText(/script execution queued/i),
     ).toBeInTheDocument();
+  });
+
+  it("should show warning notification on tag blur when selected tags have no associated instances", async () => {
+    const scriptWithoutTaggedInstances = {
+      ...script,
+      access_group: "empty-access-group access-group:empty-access-group",
+    };
+
+    renderWithProviders(
+      <RunScriptForm script={scriptWithoutTaggedInstances} />,
+    );
+
+    await selectTag(user, "appservers");
+
+    const tagsCombobox = screen.getByRole("combobox", { name: "Tags" });
+    const runAsUserInput = screen.getByRole("textbox", {
+      name: /run as user/i,
+    });
+
+    tagsCombobox.focus();
+    fireEvent.blur(tagsCombobox, { relatedTarget: runAsUserInput });
+
+    expect(
+      await screen.findByText(
+        "There are no instances associated with those tags, please select a different set of tags to continue.",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(/this script will run on the following instances/i),
+    ).not.toBeInTheDocument();
   });
 });

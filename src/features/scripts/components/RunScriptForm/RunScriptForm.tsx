@@ -19,7 +19,7 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment/moment";
-import { type FC } from "react";
+import { type FC, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useEditScript, useRunScript } from "../../api";
 import { getCode, getEncodedCode } from "../../helpers";
@@ -35,6 +35,9 @@ interface RunScriptFormProps {
   readonly submittedCode?: string;
   readonly onBack?: () => void;
 }
+
+const NO_TAGGED_INSTANCES_WARNING_MESSAGE =
+  "There are no instances associated with the selected tags.";
 
 const RunScriptForm: FC<RunScriptFormProps> = ({
   script,
@@ -59,6 +62,8 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
   const { runScript } = useRunScript();
   const { editScript } = useEditScript();
+  const [isTagDropdownOpen, setIsTagDropdownOpen] = useState(false);
+  const [hasClosedTagDropdown, setHasClosedTagDropdown] = useState(false);
 
   const originalCode =
     submittedCode ??
@@ -153,14 +158,6 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     },
   );
 
-  if (isGettingTags || isGettingInstances) {
-    return <LoadingState />;
-  }
-
-  if (taggedInstancesError) {
-    debug(taggedInstancesError);
-  }
-
   const tagOptions: MultiSelectItem[] =
     tags.map((tag) => ({
       label: tag,
@@ -184,6 +181,15 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
       return getFeatures(instance).scripts;
     }) ?? [];
 
+  const shouldShowNoTaggedInstancesWarning =
+    hasClosedTagDropdown &&
+    !isTagDropdownOpen &&
+    formik.values.queryType === "tags" &&
+    formik.values.tags.length > 0 &&
+    !isGettingTaggedInstances &&
+    !taggedInstancesError &&
+    !taggedInstancesWithScriptsFeature.length;
+
   const proceedWithRun = () => {
     if (formik.values.queryType === "tags") {
       showRunConfirm();
@@ -191,6 +197,14 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
       submitRun(formik.values);
     }
   };
+
+  if (isGettingTags || isGettingInstances) {
+    return <LoadingState />;
+  }
+
+  if (taggedInstancesError) {
+    debug(taggedInstancesError);
+  }
 
   return (
     <>
@@ -213,6 +227,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
                     formik.setFieldValue("instanceIds", []),
                     formik.setFieldTouched("instanceIds", false),
                   ]);
+
+                  setIsTagDropdownOpen(false);
+                  setHasClosedTagDropdown(false);
                 }}
                 value="tags"
                 checked={formik.values.queryType === "tags"}
@@ -249,10 +266,20 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
                       "tags",
                       items.map(({ value }) => value),
                     );
-
+                  }}
+                  onOpen={() => {
+                    setIsTagDropdownOpen(true);
+                  }}
+                  onClose={() => {
+                    setIsTagDropdownOpen(false);
+                    setHasClosedTagDropdown(true);
                     formik.setFieldTouched("tags", true, false);
                   }}
                   error={getFormikError(formik, "tags")}
+                  warning={
+                    shouldShowNoTaggedInstancesWarning &&
+                    NO_TAGGED_INSTANCES_WARNING_MESSAGE
+                  }
                 />
               )}
 
@@ -352,22 +379,28 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
           confirmButtonDisabled={
             formik.isSubmitting ||
             !!taggedInstancesError ||
-            isGettingTaggedInstances
+            isGettingTaggedInstances ||
+            !taggedInstancesWithScriptsFeature.length
           }
           confirmButtonLoading={isGettingTaggedInstances}
           close={hideRunConfirm}
           confirmButtonAppearance="positive"
         >
-          <p>
-            This script will run on the following instances, which are
-            associated with the selected{" "}
-            {formik.values.tags.length == 1 ? "tag" : "tags"}.
-          </p>
-
-          <RunScriptFormInstanceList
-            instances={taggedInstancesWithScriptsFeature}
-            tags={formik.values.tags}
-          />
+          {taggedInstancesWithScriptsFeature.length > 0 ? (
+            <>
+              <p>
+                This script will run on the following instances, which are
+                associated with the selected{" "}
+                {formik.values.tags.length == 1 ? "tag" : "tags"}.
+              </p>
+              <RunScriptFormInstanceList
+                instances={taggedInstancesWithScriptsFeature}
+                tags={formik.values.tags}
+              />
+            </>
+          ) : (
+            <p>There are no instances with the selected tags.</p>
+          )}
         </ConfirmationModal>
       )}
     </>
