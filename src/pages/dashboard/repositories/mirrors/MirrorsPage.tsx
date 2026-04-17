@@ -1,118 +1,95 @@
-import LoadingState from "@/components/layout/LoadingState";
+import EmptyState from "@/components/layout/EmptyState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { DistributionContainer } from "@/features/mirrors";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { MenuLink } from "@canonical/react-components";
-import { Button, ContextualMenu } from "@canonical/react-components";
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
+import SidePanel from "@/components/layout/SidePanel";
+import { useListMirrors } from "@/features/mirrors";
+import { MirrorsList } from "@/features/mirrors";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import { Button, Icon, ICONS } from "@canonical/react-components";
+import { lazy, type FC } from "react";
 
-const NewDistributionForm = lazy(async () =>
-  import("@/features/mirrors").then((module) => ({
-    default: module.NewDistributionForm,
-  })),
-);
 const NewSeriesForm = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
     default: module.NewSeriesForm,
   })),
 );
 
-const DistributionsPage: FC = () => {
-  const [distributionsLength, setDistributionsLength] = useState(0);
+const MirrorsPage: FC = () => {
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
-  const isLargeScreen = useMediaQuery("(min-width: 620px)");
-  const { setSidePanelContent } = useSidePanel();
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
 
-  const handleAddDistribution = () => {
-    setSidePanelContent(
-      "Add distribution",
-      <Suspense fallback={<LoadingState />}>
-        <NewDistributionForm />
-      </Suspense>,
-    );
-  };
+  const { data } = useListMirrors({ pageSize: 20 });
 
-  const handleCreateMirror = () => {
-    setSidePanelContent(
-      "Add new mirror",
-      <Suspense fallback={<LoadingState />}>
-        <NewSeriesForm />
-      </Suspense>,
-    );
-  };
+  const openAddMirrorForm = createPageParamsSetter({
+    sidePath: ["add"],
+    profile: "",
+  });
 
   const buttons = [
-    {
-      label: "Add distribution",
-      ariaLabel: "Add distribution",
-      onClick: handleAddDistribution,
-      disabled: false,
-      appearance: undefined,
-    },
-    {
-      label: "Add mirror",
-      ariaLabel: "Add mirror",
-      onClick: handleCreateMirror,
-      disabled: distributionsLength === 0,
-      appearance: "positive",
-    },
+    <Button key="add" appearance="positive" onClick={openAddMirrorForm} hasIcon>
+      <Icon name={ICONS.plus} light />
+      <span>Add mirror</span>
+    </Button>,
   ];
 
-  const largeScreenButtons = buttons.map((item) => (
-    <Button
-      key={`${item.label}-button`}
-      type="button"
-      className="u-no-margin--right"
-      aria-label={item.ariaLabel}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
-      appearance={item.appearance}
-      disabled={item.disabled}
-      onClick={item.onClick}
-    >
-      {item.label}
-    </Button>
-  ));
-
-  const contextualMenuLinks: MenuLink[] = buttons.map((item) => ({
-    children: item.label,
-    "aria-label": item.ariaLabel,
-    onClick: item.onClick,
-    disabled: item.disabled,
-  }));
+  const { actions, children, hasTable } = data.data.mirrors?.length
+    ? {
+        actions: buttons,
+        children: <MirrorsList mirrors={data.data.mirrors} />,
+        hasTable: true,
+      }
+    : {
+        children: (
+          <EmptyState
+            title="You don't have any mirrors yet."
+            body={
+              <>
+                <p>This feature allows you to mirror Debian repositories.</p>
+                <p>
+                  <a>Learn more about repository mirroring</a>
+                </p>
+              </>
+            }
+            cta={buttons}
+          />
+        ),
+      };
 
   return (
     <PageMain>
-      <PageHeader
-        title="Mirrors"
-        actions={
-          isLargeScreen
-            ? largeScreenButtons
-            : [
-                <ContextualMenu
-                  key="menu"
-                  hasToggleIcon
-                  toggleLabel="Actions"
-                  toggleClassName="u-no-margin--bottom"
-                  links={contextualMenuLinks}
-                />,
-              ]
-        }
-      />
-      <PageContent>
-        <DistributionContainer
-          onDistributionsLengthChange={(length) => {
-            setDistributionsLength(length);
-          }}
-        />
-      </PageContent>
+      <PageHeader title="Mirrors" actions={actions} />
+      <PageContent hasTable={hasTable}>{children}</PageContent>
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <NewSeriesForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="add">
+            <NewSeriesForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "publish" && (
+          <SidePanel.Suspense key="add">
+            <NewSeriesForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="add">
+            <NewSeriesForm />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };
 
-export default DistributionsPage;
+export default MirrorsPage;

@@ -7,11 +7,11 @@ export const SNAPSHOT_START_DATE = "2023-02-28";
 export const SNAPSHOT_TIMESTAMP_FORMAT = "YYYYMMDD[T]HHmmss[Z]";
 
 export const INITIAL_VALUES: FormProps = {
-  type: "ubuntu",
   name: "",
+  type: "ubuntu-archive",
+  mirror_uri: "http://archive.ubuntu.com/ubuntu",
   distribution: "",
   mirror_series: "",
-  mirror_uri: "",
   gpg_key: "",
   pockets: [],
   components: [],

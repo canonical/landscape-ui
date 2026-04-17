@@ -1,4 +1,3 @@
-export { default as DistributionContainer } from "./components/DistributionContainer";
 export { default as NewDistributionForm } from "./components/NewDistributionForm";
 export { default as NewSeriesForm } from "./components/NewSeriesForm";
 export { distributionCardClasses } from "./components/DistributionCard";
@@ -15,3 +14,5 @@ export type {
   RepoInfo,
   Series,
 } from "./types";
+export * from "./api";
+export { default as MirrorsList } from "./components/MirrorsList";
