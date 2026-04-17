@@ -2,6 +2,9 @@ import * as Yup from "yup";
 import type { FormProps } from "./types";
 import { deliveryValidationSchema } from "@/components/form/DeliveryScheduling";
 
+export const NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE =
+  "There are no instances with the selected tags that can run scripts.";
+
 export const INITIAL_VALUES: Omit<FormProps, "code"> = {
   deliver_after: "",
   deliver_immediately: true,

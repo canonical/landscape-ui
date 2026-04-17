@@ -154,6 +154,56 @@ describe("RunScriptForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("should show 'no instances to run script on' modal when submitting with tags that have no script-capable instances", async () => {
+    const scriptWithoutTaggedInstances = {
+      ...script,
+      access_group: "empty-access-group access-group:empty-access-group",
+    };
+
+    renderWithProviders(
+      <RunScriptForm script={scriptWithoutTaggedInstances} />,
+    );
+
+    await selectTag(user, "appservers");
+
+    const runButton = await screen.findByRole("button", {
+      name: /run script/i,
+    });
+
+    await user.click(runButton);
+
+    expect(
+      await screen.findByText(/no instances to run script on/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/please select different tags and try again/i),
+    ).toBeInTheDocument();
+  });
+
+  it("should show instance list and confirmation message in run modal when tags have script-capable instances", async () => {
+    renderWithProviders(<RunScriptForm script={script} />);
+
+    await selectTag(user, "appservers");
+
+    const runButton = await screen.findByRole("button", {
+      name: /run script/i,
+    });
+    expect(runButton).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(runButton);
+
+    expect(
+      await screen.findByText(
+        /this script will run on the following instances/i,
+      ),
+    ).toBeInTheDocument();
+
+    const dialog = screen.getByRole("dialog");
+    expect(
+      within(dialog).getByRole("columnheader", { name: /instance/i }),
+    ).toBeInTheDocument();
+  });
+
   it("should show warning notification on tag blur when selected tags have no associated instances", async () => {
     const scriptWithoutTaggedInstances = {
       ...script,
@@ -166,17 +216,13 @@ describe("RunScriptForm", () => {
 
     await selectTag(user, "appservers");
 
-    const tagsCombobox = screen.getByRole("combobox", { name: "Tags" });
-    const runAsUserInput = screen.getByRole("textbox", {
-      name: /run as user/i,
-    });
-
-    tagsCombobox.focus();
-    fireEvent.blur(tagsCombobox, { relatedTarget: runAsUserInput });
+    // Click another input to close the dropdown and trigger the onClose callback,
+    // which sets hasClosedTagDropdown=true (required to display the warning).
+    await user.click(screen.getByRole("textbox", { name: /run as user/i }));
 
     expect(
       await screen.findByText(
-        "There are no instances associated with those tags, please select a different set of tags to continue.",
+        "There are no instances with the selected tags that can run scripts.",
       ),
     ).toBeInTheDocument();
 

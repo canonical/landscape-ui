@@ -26,18 +26,20 @@ import { getCode, getEncodedCode } from "../../helpers";
 import type { Script } from "../../types";
 import EditScriptConfirmationModal from "../EditScriptConfirmationModal";
 import RunScriptFormInstanceList from "../RunScriptFormInstanceList";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import {
+  INITIAL_VALUES,
+  NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE,
+  VALIDATION_SCHEMA,
+} from "./constants";
 import classes from "./RunScriptForm.module.scss";
 import type { FormProps } from "./types";
+import { pluralize } from "@/utils/_helpers";
 
 interface RunScriptFormProps {
   readonly script: Script;
   readonly submittedCode?: string;
   readonly onBack?: () => void;
 }
-
-const NO_TAGGED_INSTANCES_WARNING_MESSAGE =
-  "There are no instances associated with the selected tags.";
 
 const RunScriptForm: FC<RunScriptFormProps> = ({
   script,
@@ -278,7 +280,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
                   error={getFormikError(formik, "tags")}
                   warning={
                     shouldShowNoTaggedInstancesWarning &&
-                    NO_TAGGED_INSTANCES_WARNING_MESSAGE
+                    NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE
                   }
                 />
               )}
@@ -367,7 +369,25 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
         />
       )}
 
-      {isRunConfirmVisible && (
+      {isRunConfirmVisible &&
+        taggedInstancesWithScriptsFeature.length === 0 && (
+          <ConfirmationModal
+            renderInPortal
+            confirmButtonLabel="OK"
+            confirmButtonAppearance="positive"
+            onConfirm={hideRunConfirm}
+            cancelButtonProps={{ style: { display: "none" } }}
+            title="No instances to run script on"
+            close={hideRunConfirm}
+          >
+            <p>
+              {NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE} Please select
+              different tags and try again.
+            </p>
+          </ConfirmationModal>
+        )}
+
+      {isRunConfirmVisible && taggedInstancesWithScriptsFeature.length > 0 && (
         <ConfirmationModal
           renderInPortal
           title={`Run "${script.title}" script on ${formik.values.tags.length > 1 ? `${formik.values.tags.length} tags` : `${formik.values.tags[0]} tag`}`}
@@ -386,21 +406,15 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
           close={hideRunConfirm}
           confirmButtonAppearance="positive"
         >
-          {taggedInstancesWithScriptsFeature.length > 0 ? (
-            <>
-              <p>
-                This script will run on the following instances, which are
-                associated with the selected{" "}
-                {formik.values.tags.length == 1 ? "tag" : "tags"}.
-              </p>
-              <RunScriptFormInstanceList
-                instances={taggedInstancesWithScriptsFeature}
-                tags={formik.values.tags}
-              />
-            </>
-          ) : (
-            <p>There are no instances with the selected tags.</p>
-          )}
+          <p>
+            This script will run on the following instances, which are
+            associated with the selected{" "}
+            {pluralize(formik.values.tags.length, "tag")}.
+          </p>
+          <RunScriptFormInstanceList
+            instances={taggedInstancesWithScriptsFeature}
+            tags={formik.values.tags}
+          />
         </ConfirmationModal>
       )}
     </>
