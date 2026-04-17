@@ -381,8 +381,8 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
             close={hideRunConfirm}
           >
             <p>
-              {NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE} Please select
-              different tags and try again.
+              {NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE} Select different
+              tags and try again.
             </p>
           </ConfirmationModal>
         )}
