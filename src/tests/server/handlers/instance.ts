@@ -451,6 +451,11 @@ export default [
     },
   ),
 
+  http.post(`${API_URL}computers\\:delete`, async () => {
+    await delay();
+    return HttpResponse.json();
+  }),
+
   http.get(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, ["AddTagsToComputers"])) {
       return;
