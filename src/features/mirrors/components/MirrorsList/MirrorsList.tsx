@@ -1,21 +1,25 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
-import { Button } from "@canonical/react-components";
+import { Button, Spinner } from "@canonical/react-components";
 import moment from "moment";
-import { useMemo, type FC } from "react";
+import { Suspense, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import ListActions, {
   LIST_ACTIONS_COLUMN_PROPS,
 } from "@/components/layout/ListActions";
 import MirrorPublicationsLink from "../MirrorPublicationsLink";
 import NoData from "@/components/layout/NoData";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
+import MirrorPackagesCount from "../MirrorPackagesCount";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
 }
 
 const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
+  const { createPageParamsSetter } = usePageParams();
+
   const columns = useMemo<Column<Mirror>[]>(
     () => [
       {
@@ -25,6 +29,9 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top"
+            onClick={createPageParamsSetter({
+              sidePath: ["view"],
+            })}
           >
             {mirror.displayName}
           </Button>
@@ -44,7 +51,20 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
         Header: "Packages",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name !== undefined ? (
-            <MirrorPublicationsLink mirrorName={mirror.name} />
+            <Suspense fallback={<Spinner />}>
+              <MirrorPackagesCount mirrorName={mirror.name} />
+            </Suspense>
+          ) : (
+            <NoData />
+          ),
+      },
+      {
+        Header: "Publications",
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
+          mirror.name !== undefined ? (
+            <Suspense fallback={<Spinner />}>
+              <MirrorPublicationsLink mirrorName={mirror.name} />
+            </Suspense>
           ) : (
             <NoData />
           ),
@@ -58,6 +78,9 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
               {
                 icon: "show",
                 label: "View details",
+                onClick: createPageParamsSetter({
+                  sidePath: ["view"],
+                }),
               },
               {
                 icon: "edit",
@@ -82,7 +105,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
         ),
       },
     ],
-    [],
+    [createPageParamsSetter],
   );
 
   return (

@@ -13,9 +13,10 @@ import {
   publicationTargets,
 } from "@/tests/mocks/publications";
 import type { StrictResponse } from "msw";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { generateFilteredResponse } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import type { ListMirrorPackagesResponse } from "@canonical/landscape-openapi";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("publications");
@@ -250,7 +251,9 @@ export default [
     return getBatchLocalsResponse(request);
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}mirrors`, ({ request }) => {
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+    await delay();
+
     const endpointStatus = getEndpointStatus();
 
     if (
@@ -261,6 +264,26 @@ export default [
     }
 
     return getMirrorsResponse(request.url);
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName/packages`, async () => {
+    await delay();
+
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to get packages" },
+        { status: 500 },
+      );
+    }
+
+    return HttpResponse.json<ListMirrorPackagesResponse>({
+      mirrorPackages: ["package-1", "package-2", "package-3"],
+    });
   }),
 
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
@@ -296,7 +319,9 @@ export default [
     return getPublicationTargetsResponse(request.url);
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}publications`, ({ request }) => {
+  http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
+    await delay();
+
     const endpointStatus = getEndpointStatus();
 
     if (

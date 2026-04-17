@@ -16,3 +16,4 @@ export type {
 } from "./types";
 export * from "./api";
 export { default as MirrorsList } from "./components/MirrorsList";
+export { default as MirrorDetails } from "./components/MirrorDetails";

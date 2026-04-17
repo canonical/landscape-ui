@@ -9,7 +9,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 export function useListMirrors(
-  params: ListMirrorsData["query"],
+  params: ListMirrorsData["query"] = {},
   options: Omit<
     UseQueryOptions<AxiosResponse<ListMirrorsResponse>, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
@@ -22,7 +22,7 @@ export function useListMirrors(
     AxiosError<ApiError>
   >({
     queryKey: ["mirrors", params],
-    queryFn: async () => authFetchDebArchive.get("mirrors"),
+    queryFn: async () => authFetchDebArchive.get("mirrors", { params }),
     ...options,
   });
 }

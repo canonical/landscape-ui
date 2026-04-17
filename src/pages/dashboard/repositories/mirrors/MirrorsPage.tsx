@@ -17,6 +17,12 @@ const NewSeriesForm = lazy(async () =>
   })),
 );
 
+const MirrorDetails = lazy(async () =>
+  import("@/features/mirrors").then((module) => ({
+    default: module.MirrorDetails,
+  })),
+);
+
 const MirrorsPage: FC = () => {
   const { search, sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
@@ -87,7 +93,7 @@ const MirrorsPage: FC = () => {
         )}
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="add">
-            <NewSeriesForm />
+            <MirrorDetails />
           </SidePanel.Suspense>
         )}
       </SidePanel>

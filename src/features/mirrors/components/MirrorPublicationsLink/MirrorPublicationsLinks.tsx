@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useListPublications } from "../../api/useListPublications";
+import { useListPublications } from "../../api";
 import { pluralizeNew } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
@@ -28,7 +28,7 @@ const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
       }}
     >
       {pluralizeNew(data.data.publications.length, "publication", {
-        showCount: data.data.nextPageToken ? "limited" : "exact",
+        showCount: data.data.nextPageToken === undefined ? "exact" : "limited",
       })}
     </StaticLink>
   );
