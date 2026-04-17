@@ -1,3 +1,4 @@
+import type { APTSource } from "@/features/apt-sources";
 import type { Distribution, Pocket, Series } from "@/features/mirrors";
 
 type RepositoryProfilePocket = Pocket & {
@@ -8,7 +9,7 @@ type RepositoryProfilePocket = Pocket & {
 export interface RepositoryProfile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;
-  apt_sources: number[];
+  apt_sources: APTSource[];
   description: string;
   id: number;
   name: string;

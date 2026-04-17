@@ -1,4 +1,5 @@
 import type { Activity } from "@/features/activities";
+import type { APTSource } from "@/features/apt-sources";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";
@@ -18,7 +19,7 @@ export interface CreateRepositoryProfileParams {
   title: string;
   access_group?: string;
   all_computers?: boolean;
-  apt_sources?: number[];
+  apt_sources?: APTSource[];
   description?: string;
   pockets?: number[];
   tags?: string[];
@@ -27,7 +28,8 @@ export interface CreateRepositoryProfileParams {
 interface EditRepositoryProfileParams {
   name: string;
   all_computers?: boolean;
-  apt_sources?: number[];
+  add_apt_sources?: APTSource[];
+  remove_apt_sources?: number[];
   description?: string;
   pockets?: number[];
   tags?: string[];
@@ -64,7 +66,15 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     CreateRepositoryProfileParams
   >({
-    mutationFn: async (params) => authFetch.post("repositoryprofiles", params),
+    mutationFn: async ({ apt_sources, ...params }) =>
+      authFetch.post("repositoryprofiles", {
+        ...params,
+        apt_sources: apt_sources?.map(({ name: sourceName, line, gpg_key }) => ({
+          name: sourceName,
+          line,
+          gpg_key: gpg_key ? { content: gpg_key } : null,
+        })),
+      }),
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["aptSources"],
@@ -79,8 +89,15 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     EditRepositoryProfileParams
   >({
-    mutationFn: async ({ name, ...params }) =>
-      authFetch.put(`repositoryprofiles/${name}`, params),
+    mutationFn: async ({ name, add_apt_sources, ...params }) =>
+      authFetch.put(`repositoryprofiles/${name}`, {
+        ...params,
+        add_apt_sources: add_apt_sources?.map(({ name: sourceName, line, gpg_key }) => ({
+          name: sourceName,
+          line,
+          gpg_key: gpg_key ? { content: gpg_key } : null,
+        })),
+      }),
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["aptSources"],

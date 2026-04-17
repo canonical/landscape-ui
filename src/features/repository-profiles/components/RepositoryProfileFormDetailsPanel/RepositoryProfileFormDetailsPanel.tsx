@@ -1,7 +1,6 @@
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
 import { Input, Select } from "@canonical/react-components";
-import AssociationBlock from "@/components/form/AssociationBlock";
 import type { RepositoryProfileFormValues } from "../../types";
 import type { AccessGroup } from "@/features/access-groups";
 import { getFormikError } from "@/utils/formikErrors";
@@ -50,7 +49,6 @@ const RepositoryProfileFormDetailsPanel: FC<
         error={getFormikError(formik, "access_group")}
         {...formik.getFieldProps("access_group")}
       />
-      <AssociationBlock formik={formik} />
     </>
   );
 };

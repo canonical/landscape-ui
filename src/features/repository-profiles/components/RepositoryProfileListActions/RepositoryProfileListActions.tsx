@@ -8,7 +8,7 @@ import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useRepositoryProfiles } from "../../hooks";
+import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 
 const RepositoryProfileForm = lazy(

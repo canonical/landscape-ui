@@ -1,6 +1,7 @@
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
+import type { RepositoryProfile } from "@/features/repository-profiles";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse } from "./_helpers";
 
@@ -36,5 +37,14 @@ export default [
 
   http.post(`${API_URL}repositoryprofiles`, async () => {
     return HttpResponse.json(repositoryProfiles[0], { status: 201 });
+  }),
+
+  http.put(`${API_URL}repositoryprofiles/:name`, async ({ params, request }) => {
+    const body = (await request.json()) as Partial<RepositoryProfile>;
+    const profile = repositoryProfiles.find((p) => p.name === params.name);
+    if (!profile) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    return HttpResponse.json({ ...profile, ...body }, { status: 200 });
   }),
 ];

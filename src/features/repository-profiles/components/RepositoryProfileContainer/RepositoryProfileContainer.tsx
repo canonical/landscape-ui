@@ -6,7 +6,7 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import type { FC } from "react";
-import { useRepositoryProfiles } from "../../hooks";
+import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
 import RepositoryProfileHeader from "../RepositoryProfileHeader";

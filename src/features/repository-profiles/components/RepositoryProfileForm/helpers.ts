@@ -6,7 +6,6 @@ export const getValidationSchema = (action: "add" | "edit") => {
     all_computers: Yup.boolean(),
     apt_sources: Yup.array().of(Yup.string()),
     description: Yup.string(),
-    pockets: Yup.array().of(Yup.string()),
     tags: Yup.array().of(Yup.string()),
     title: Yup.string().test({
       message: "This field is required.",
