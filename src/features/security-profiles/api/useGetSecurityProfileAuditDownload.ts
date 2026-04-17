@@ -11,12 +11,15 @@ export const useGetSecurityProfileAuditDownload = () => {
   const authFetch = useFetch();
 
   const { isPending, mutateAsync } = useMutation<
-    AxiosResponse<string>,
+    AxiosResponse<Blob>,
     AxiosError<ApiError>,
     GetSecurityProfileAuditDownloadParams
   >({
     mutationFn: async ({ path }) =>
-      authFetch.get(`security-profiles/blob?path=${path}`),
+      authFetch.get("security-profiles/blob", {
+        params: { path },
+        responseType: "blob",
+      }),
   });
 
   return {

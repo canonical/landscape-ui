@@ -111,7 +111,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         {open && (
           <>
             <div className={classNames("p-panel__header", classes.header)}>
-              <h3 className="p-panel__title">{title}</h3>
+              <h3 className={classNames("p-panel__title", classes.title)}>
+                {title}
+              </h3>
               <p className="u-text--muted">
                 <i>{titleLabel}</i>
               </p>

@@ -19,8 +19,22 @@
       }
     }
   }
-}
 
-.errorMessage {
-  margin-top: $spv--medium;
+  &:global(.is-caution) {
+    :global(.multi-select__select-button) {
+      border-bottom-color: $color-caution;
+
+      &:not(:hover, [aria-expanded="true"]) {
+        background-color: $color-caution-background;
+      }
+
+      &:hover:not([aria-expanded="true"]) {
+        background-color: $color-caution-background--hover;
+      }
+
+      &[aria-expanded="true"] {
+        background-color: $color-caution-background--focus;
+      }
+    }
+  }
 }

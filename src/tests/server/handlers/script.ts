@@ -1,13 +1,19 @@
-import { API_URL } from "@/constants";
+import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   detailedScriptsData,
+  scriptAttachment,
+  scriptAttachmentHtml,
   scripts,
   scriptVersion,
   scriptVersionsWithPagination,
 } from "@/tests/mocks/script";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { activities } from "@/tests/mocks/activity";
+import {
+  generatePaginatedResponse,
+  isAction,
+} from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
 
 export default [
@@ -49,7 +55,26 @@ export default [
   }),
 
   http.get(`${API_URL}scripts/:id/script-profiles`, async () => {
-    return HttpResponse.json({ script_profiles: scriptProfiles });
+    const endpointStatus = getEndpointStatus();
+    if (
+      (!endpointStatus.path ||
+        endpointStatus.path.includes("script-profiles")) &&
+      endpointStatus.status === "empty"
+    ) {
+      return HttpResponse.json({
+        results: [],
+        count: 0,
+        next: null,
+        previous: null,
+      });
+    }
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: scriptProfiles,
+        limit: 20,
+        offset: 0,
+      }),
+    );
   }),
 
   http.get(`${API_URL}scripts/:id`, async ({ params }) => {
@@ -65,8 +90,25 @@ export default [
     return HttpResponse.json(scriptVersion);
   }),
 
-  http.get(`${API_URL}scripts-attachment/:id`, async () => {
-    return HttpResponse.json("attachment");
+  http.get(`${API_URL}scripts/:id/attachments/:attachmentId`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.path &&
+      endpointStatus.path.includes("scripts/attachments/html")
+    ) {
+      return new HttpResponse(scriptAttachmentHtml, {
+        headers: {
+          "Content-Type": "text/html",
+        },
+      });
+    }
+
+    return new HttpResponse(scriptAttachment, {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    });
   }),
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {
@@ -84,5 +126,33 @@ export default [
         searchFields: ["title"],
       }),
     );
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "EditScript")) {
+      return;
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.post(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "EditScript")) {
+      return;
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.post(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "CreateScriptAttachment")) {
+      return;
+    }
+    return HttpResponse.json({});
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "ExecuteScript")) {
+      return;
+    }
+    return HttpResponse.json(activities[0]);
   }),
 ];
