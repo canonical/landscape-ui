@@ -35,6 +35,7 @@ const propsWithInitialAttachmentDelete: ComponentProps<typeof AttachmentFile> =
 
 describe("AttachmentFile", () => {
   afterEach(() => {
+    vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 

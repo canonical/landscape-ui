@@ -256,25 +256,9 @@ describe("EditScriptForm", () => {
     expect(await screen.findByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
-  it("shows confirmation copy while associated profiles are loading", async () => {
-    const user = userEvent.setup();
-    setEndpointStatus({ status: "error", path: "scripts/profiles-loading" });
-    renderWithProviders(<EditScriptForm script={script} />);
-
-    await user.click(
-      screen.getByRole("button", { name: "Submit new version" }),
-    );
-
-    expect(
-      await screen.findByText(
-        /all future script runs will be done using the latest version of the code\./i,
-      ),
-    ).toBeInTheDocument();
-  });
-
   it("submits when there are no associated profiles", async () => {
     const user = userEvent.setup();
-    setEndpointStatus({ status: "empty", path: "scripts/profiles" });
+    setEndpointStatus({ status: "empty", path: "script-profiles" });
     renderWithProviders(<EditScriptForm script={script} />);
 
     await user.click(

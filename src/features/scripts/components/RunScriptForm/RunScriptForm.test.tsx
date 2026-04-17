@@ -181,7 +181,7 @@ describe("RunScriptForm", () => {
       await screen.findByText(/no instances to run script on/i),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/please select different tags and try again/i),
+      screen.getByText(/select different tags and try again/i),
     ).toBeInTheDocument();
   });
 

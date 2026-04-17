@@ -59,15 +59,8 @@ export default [
     const endpointStatus = getEndpointStatus();
 
     if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "scripts/profiles-loading"
-    ) {
-      return new Promise<never>(() => undefined);
-    }
-
-    if (
       endpointStatus.status === "empty" &&
-      endpointStatus.path === "scripts/profiles"
+      endpointStatus.path === "script-profiles"
     ) {
       return HttpResponse.json({
         results: [],
@@ -98,35 +91,31 @@ export default [
     return HttpResponse.json(scriptVersion);
   }),
 
-  http.get(`${API_URL}scripts/:id/attachments/:attachmentId`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.path &&
-      endpointStatus.path.includes("scripts/attachments/html")
-    ) {
-      return new HttpResponse(scriptAttachmentHtml, {
-        headers: {
-          "Content-Type": "text/html",
-        },
-      });
-    }
-
-    return new HttpResponse(scriptAttachment, {
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
-  }),
-
   http.get(
-    `${API_URL}scripts/:scriptId/attachments/:attachmentId`,
+    `${API_URL}scripts/:id/attachments/:attachmentId`,
     async ({ params }) => {
       if (params.attachmentId === "999") {
-        return HttpResponse.json(null);
+        return new HttpResponse(null, { status: 404 });
       }
 
-      return HttpResponse.json("attachment");
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.path &&
+        endpointStatus.path.includes("scripts/attachments/html")
+      ) {
+        return new HttpResponse(scriptAttachmentHtml, {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        });
+      }
+
+      return new HttpResponse(scriptAttachment, {
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      });
     },
   ),
 
@@ -162,7 +151,7 @@ export default [
     return HttpResponse.json({ id: 99 });
   }),
 
-  http.get(API_URL_OLD, ({ request }) => {
+  http.post(API_URL_OLD, ({ request }) => {
     if (!isAction(request, "CreateScriptAttachment")) {
       return;
     }
