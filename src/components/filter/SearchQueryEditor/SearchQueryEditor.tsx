@@ -20,6 +20,7 @@ interface SearchQueryEditorProps {
   readonly labelClassName?: string;
   readonly headerContent?: React.ReactNode;
   readonly options?: React.ComponentProps<typeof CodeEditor>["options"];
+  readonly warning?: string | false;
   readonly languageId: string;
   readonly terms: string[];
   readonly languageConfig: LanguageConfig;
@@ -42,6 +43,7 @@ const SearchQueryEditor: FC<SearchQueryEditorProps> = ({
   labelClassName,
   headerContent,
   options,
+  warning,
   languageId,
   terms,
   languageConfig,
@@ -63,6 +65,7 @@ const SearchQueryEditor: FC<SearchQueryEditorProps> = ({
       onChange={onChange}
       onBlur={onBlur}
       error={error}
+      warning={warning}
       required={required}
       className={className}
       labelClassName={labelClassName}

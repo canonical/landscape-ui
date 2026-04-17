@@ -13,7 +13,7 @@ import { useMemo, useState } from "react";
 import { USG_STATUSES, WSL_STATUSES } from "./constants";
 import { configureSearchLanguage } from "./helpers/searchQueryLanguage";
 import { VALIDATION_SCHEMA } from "./helpers/searchQuerySchema";
-import { validateSearchField } from "./helpers/searchQueryValidation";
+import { validateSearchQuery } from "./helpers/searchQueryValidation";
 import type { FormProps } from "./types";
 
 const INSTANCE_SEARCH_LANGUAGE_ID = "instance-search-query";
@@ -53,12 +53,12 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
 
   const hasInitialSearch = Boolean(initialValues.search?.trim());
 
-  const initialSearchError = hasInitialSearch
-    ? validateSearchField(initialValues.search, "strict", validationConfig)
+  const initialSearchWarning = hasInitialSearch
+    ? validateSearchQuery(initialValues.search, true, validationConfig)
     : undefined;
 
-  const [searchError, setSearchError] = useState<string | undefined>(
-    initialSearchError,
+  const [searchWarning, setSearchWarning] = useState<string | undefined>(
+    initialSearchWarning,
   );
 
   const formik = useFormik<FormProps>({
@@ -82,7 +82,7 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
           instanceSearchHelpTerms.flatMap(({ term }) =>
             term
               .split(/\s+OR\s+/i)
-              .map((part) => part.split(":")[0])
+              .map((part) => part.split(":")[0]?.split(".")[0])
               .filter((part) => part !== undefined),
           ),
         ),
@@ -92,36 +92,18 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
 
   const handleSearchBlur = () => {
     formik.setFieldTouched("search", true, false);
-
-    const strictError = validateSearchField(
-      formik.values.search,
-      "strict",
-      validationConfig,
+    setSearchWarning(
+      validateSearchQuery(formik.values.search, true, validationConfig),
     );
-    setSearchError(strictError);
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const strictSearchError = validateSearchField(
-      formik.values.search,
-      "strict",
-      validationConfig,
+    setSearchWarning(
+      validateSearchQuery(formik.values.search, true, validationConfig),
     );
-    setSearchError(strictSearchError);
-
-    if (strictSearchError) {
-      return;
-    }
-
     formik.handleSubmit();
   };
-
-  const submitDisabled =
-    formik.isSubmitting ||
-    !formik.values.search.trim() ||
-    Boolean(formik.errors.title);
 
   return (
     <Form noValidate onSubmit={handleFormSubmit}>
@@ -147,14 +129,12 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
           formik.setFieldValue("search", newValue);
           formik.setFieldTouched("search", true, false);
 
-          const typingError = validateSearchField(
-            newValue,
-            "typing",
-            validationConfig,
+          setSearchWarning(
+            validateSearchQuery(newValue, false, validationConfig),
           );
-          setSearchError(typingError);
         }}
-        error={formik.touched.search ? searchError : undefined}
+        error={getFormikError(formik, "search")}
+        warning={searchWarning}
         languageId={INSTANCE_SEARCH_LANGUAGE_ID}
         terms={searchTerms}
         options={{
@@ -171,7 +151,7 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
           mode === "create" ? "Add saved search" : "Save changes"
         }
         submitButtonLoading={formik.isSubmitting}
-        submitButtonDisabled={submitDisabled}
+        submitButtonDisabled={formik.isSubmitting}
         hasBackButton={Boolean(onBackButtonPress)}
         onBackButtonPress={onBackButtonPress}
       />

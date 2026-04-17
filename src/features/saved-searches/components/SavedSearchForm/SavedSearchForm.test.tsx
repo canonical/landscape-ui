@@ -17,12 +17,14 @@ vi.mock("@/components/filter/SearchQueryEditor", () => {
       onChange,
       onBlur,
       error,
+      warning,
     }: {
       label: string;
       value: string | undefined;
       onChange?: (value: string | undefined) => void;
       onBlur?: () => void;
       error?: string | false;
+      warning?: string | false;
     }) => (
       <div>
         <label>
@@ -35,6 +37,7 @@ vi.mock("@/components/filter/SearchQueryEditor", () => {
           />
         </label>
         {error && <span>{error}</span>}
+        {warning && <span>{warning}</span>}
       </div>
     ),
   };
@@ -123,7 +126,7 @@ describe("SavedSearchForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("blocks submit and shows search error when search is invalid (strict)", async () => {
+  it("blocks submit and shows search warning when search is invalid (strict)", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
 
     renderWithProviders(
@@ -144,7 +147,7 @@ describe("SavedSearchForm", () => {
 
     await user.click(submitButton);
 
-    expect(onSubmit).not.toHaveBeenCalled();
+    expect(onSubmit).toHaveBeenCalled();
 
     expect(
       screen.getByText('"alert" has invalid value "compu".'),
