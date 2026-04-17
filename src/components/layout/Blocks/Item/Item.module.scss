@@ -7,6 +7,9 @@
 }
 
 .heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
   margin: -$sp-unit 0 $sp-unit * 4;
   padding: 0;
 }

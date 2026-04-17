@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import { Button, Form, Icon } from "@canonical/react-components";
+import { Button, Form, Icon, Link } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AssociationBlock from "@/components/form/AssociationBlock";
 import RepositoryProfileFormDetailsPanel from "../RepositoryProfileFormDetailsPanel";
@@ -16,6 +16,7 @@ import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
+import { getFormikError } from "@/utils/formikErrors";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import Blocks from "@/components/layout/Blocks/Blocks";
 
@@ -32,7 +33,12 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const [showSourceOverlay, setShowSourceOverlay] = useState(false);
 
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, setSidePanelTitle } = useSidePanel();
+
+  const panelTitle =
+    props.action === "add"
+      ? "Add repository profile"
+      : `Edit ${props.profile.title}`;
 
   const { getAccessGroupQuery } = useRoles();
   const { createRepositoryProfileQuery, editRepositoryProfileQuery } =
@@ -105,12 +111,17 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     });
   }, [props]);
 
+  const closeSourceOverlay = () => {
+    setShowSourceOverlay(false);
+    setSidePanelTitle(panelTitle);
+  };
+
   const handleAddSource = (source: APTSource) => {
     formik.setFieldValue("apt_sources", [
       ...formik.values.apt_sources,
       { ...source, id: 0 },
     ]);
-    setShowSourceOverlay(false);
+    closeSourceOverlay();
   };
 
   const handleRemoveSource = (source: APTSource) => {
@@ -145,6 +156,17 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
                 appearance="base"
                 onClick={() => {
                   setShowSourceOverlay(true);
+                  setSidePanelTitle(
+                    <>
+                      <Link
+                        className="u-no-margin--bottom"
+                        onClick={closeSourceOverlay}
+                      >
+                        {panelTitle}
+                      </Link>
+                      {" / Add source"}
+                    </>,
+                  );
                 }}
               >
                 <Icon name="plus" />
@@ -155,6 +177,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             <RepositoryProfileFormSourcesSection
               sources={formik.values.apt_sources}
               onRemoveSource={handleRemoveSource}
+              error={getFormikError(formik, "apt_sources")}
             />
           </Blocks.Item>
 
@@ -172,9 +195,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
       {showSourceOverlay && (
         <RepositoryProfileSourceFormOverlay
-          onClose={() => {
-            setShowSourceOverlay(false);
-          }}
+          onClose={closeSourceOverlay}
           onSourceAdded={handleAddSource}
         />
       )}

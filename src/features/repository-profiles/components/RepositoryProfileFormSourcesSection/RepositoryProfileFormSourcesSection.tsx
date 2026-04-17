@@ -14,6 +14,7 @@ interface SourceRow extends Record<string, unknown> {
 interface RepositoryProfileFormSourcesSectionProps {
   readonly sources: APTSource[];
   readonly onRemoveSource: (source: APTSource) => void;
+  readonly error?: string;
 }
 
 const RepositoryProfileFormSourcesSection: FC<
@@ -21,6 +22,7 @@ const RepositoryProfileFormSourcesSection: FC<
 > = ({
   sources,
   onRemoveSource,
+  error,
 }) => {
   const rows: SourceRow[] = useMemo(
     () =>
@@ -80,11 +82,18 @@ const RepositoryProfileFormSourcesSection: FC<
   );
 
   return (
-    <ModularTable
-      columns={columns}
-      data={rows}
-      emptyMsg="No sources have been added yet."
-    />
+    <>
+      <ModularTable
+        columns={columns}
+        data={rows}
+        emptyMsg="No sources have been added yet."
+      />
+      {error && (
+        <div className="p-form-validation is-error">
+          <p className="p-form-validation__message">{error}</p>
+        </div>
+      )}
+    </>
   );
 };
 
