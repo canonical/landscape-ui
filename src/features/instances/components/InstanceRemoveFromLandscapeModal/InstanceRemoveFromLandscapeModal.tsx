@@ -28,6 +28,8 @@ const InstanceRemoveFromLandscapeModal: FC<
     `instances`,
   );
 
+  const title = `Remove ${label} from Landscape`;
+
   const removeFromLandscape = async () => {
     try {
       await removeInstancesFromLandscape({
@@ -56,7 +58,7 @@ const InstanceRemoveFromLandscapeModal: FC<
     <TextConfirmationModal
       isOpen={isOpen}
       close={close}
-      title={`Remove ${label} from Landscape`}
+      title={title}
       confirmButtonLabel="Remove"
       confirmButtonAppearance="negative"
       confirmButtonDisabled={isRemovingInstancesFromLandscape}
