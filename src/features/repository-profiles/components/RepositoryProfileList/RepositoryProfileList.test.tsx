@@ -1,12 +1,14 @@
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
 
 describe("RepositoryProfileList", () => {
+  const user = userEvent.setup();
+
   it("renders table headers and rows", async () => {
     renderWithProviders(
       <RepositoryProfileList repositoryProfiles={repositoryProfiles} />,
@@ -22,8 +24,6 @@ describe("RepositoryProfileList", () => {
       });
       expect(row).toBeInTheDocument();
 
-      // todo: test for correct associated count once that API is implemented
-
       const accessGroup = accessGroups.find(
         (group) => group.name === profile.access_group,
       )?.title;
@@ -31,6 +31,22 @@ describe("RepositoryProfileList", () => {
 
       expect(await within(row).findByText(accessGroup)).toBeInTheDocument();
     }
+  });
+
+  it("renders applied count for each profile row", async () => {
+    const [firstProfile] = repositoryProfiles;
+    renderWithProviders(
+      <RepositoryProfileList repositoryProfiles={[firstProfile]} />,
+    );
+
+    const table = screen.getByRole("table");
+    const row = within(table).getByRole("row", {
+      name: (name) => name.toLowerCase().includes(firstProfile.title.toLowerCase()),
+    });
+
+    expect(
+      await within(row).findByText(String(firstProfile.applied_count)),
+    ).toBeInTheDocument();
   });
 
   it("filters with search param", () => {

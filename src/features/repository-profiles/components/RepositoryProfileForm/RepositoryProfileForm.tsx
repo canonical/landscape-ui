@@ -31,6 +31,7 @@ type RepositoryProfileFormProps =
 
 const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const [showSourceOverlay, setShowSourceOverlay] = useState(false);
+  const [sourceToEdit, setSourceToEdit] = useState<APTSource | null>(null);
 
   const debug = useDebug();
   const { closeSidePanel, setSidePanelTitle } = useSidePanel();
@@ -113,6 +114,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   const closeSourceOverlay = () => {
     setShowSourceOverlay(false);
+    setSourceToEdit(null);
     setSidePanelTitle(panelTitle);
   };
 
@@ -131,6 +133,36 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         s.id !== 0 ? s.id !== source.id : s.name !== source.name,
       ),
     );
+  };
+
+  const handleEditSource = (source: APTSource) => {
+    setSourceToEdit(source);
+    setShowSourceOverlay(true);
+    setSidePanelTitle(
+      <>
+        <Link
+          className="u-no-margin--bottom"
+          onClick={closeSourceOverlay}
+        >
+          {panelTitle}
+        </Link>
+        {" / Edit source"}
+      </>,
+    );
+  };
+
+  const handleSourceEdited = (updatedSource: APTSource) => {
+    formik.setFieldValue(
+      "apt_sources",
+      formik.values.apt_sources.map((s) => {
+        const matches =
+          s.id !== 0
+            ? s.id === sourceToEdit?.id
+            : s.name === sourceToEdit?.name;
+        return matches ? { ...updatedSource, id: 0 } : s;
+      }),
+    );
+    closeSourceOverlay();
   };
 
   return (
@@ -177,6 +209,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             <RepositoryProfileFormSourcesSection
               sources={formik.values.apt_sources}
               onRemoveSource={handleRemoveSource}
+              onEditSource={handleEditSource}
               error={getFormikError(formik, "apt_sources")}
             />
           </Blocks.Item>
@@ -196,7 +229,8 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       {showSourceOverlay && (
         <RepositoryProfileSourceFormOverlay
           onClose={closeSourceOverlay}
-          onSourceAdded={handleAddSource}
+          onSourceAdded={sourceToEdit ? handleSourceEdited : handleAddSource}
+          sourceToEdit={sourceToEdit}
         />
       )}
     </div>

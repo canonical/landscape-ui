@@ -14,6 +14,7 @@ interface SourceRow extends Record<string, unknown> {
 interface RepositoryProfileFormSourcesSectionProps {
   readonly sources: APTSource[];
   readonly onRemoveSource: (source: APTSource) => void;
+  readonly onEditSource: (source: APTSource) => void;
   readonly error?: string;
 }
 
@@ -22,6 +23,7 @@ const RepositoryProfileFormSourcesSection: FC<
 > = ({
   sources,
   onRemoveSource,
+  onEditSource,
   error,
 }) => {
   const rows: SourceRow[] = useMemo(
@@ -64,21 +66,34 @@ const RepositoryProfileFormSourcesSection: FC<
         id: "actions",
         Header: "Actions",
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
-          <Button
-            appearance="base"
-            hasIcon
-            type="button"
-            aria-label={`Remove ${original.name}`}
-            onClick={() => {
-              onRemoveSource(original.source);
-            }}
-          >
-            <Icon name="delete" />
-          </Button>
+          <>
+            <Button
+              appearance="base"
+              hasIcon
+              type="button"
+              aria-label={`Edit ${original.name}`}
+              onClick={() => {
+                onEditSource(original.source);
+              }}
+            >
+              <Icon name="edit" />
+            </Button>
+            <Button
+              appearance="base"
+              hasIcon
+              type="button"
+              aria-label={`Remove ${original.name}`}
+              onClick={() => {
+                onRemoveSource(original.source);
+              }}
+            >
+              <Icon name="delete" />
+            </Button>
+          </>
         ),
       },
     ],
-    [onRemoveSource],
+    [onRemoveSource, onEditSource],
   );
 
   return (

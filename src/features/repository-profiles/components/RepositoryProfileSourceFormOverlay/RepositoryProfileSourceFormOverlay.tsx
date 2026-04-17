@@ -6,17 +6,27 @@ import classes from "./RepositoryProfileSourceFormOverlay.module.scss";
 interface RepositoryProfileSourceFormOverlayProps {
   readonly onClose: () => void;
   readonly onSourceAdded: (source: APTSource) => void;
+  readonly sourceToEdit?: APTSource | null;
 }
 
 const RepositoryProfileSourceFormOverlay: FC<
   RepositoryProfileSourceFormOverlayProps
-> = ({ onClose, onSourceAdded }) => {
+> = ({ onClose, onSourceAdded, sourceToEdit }) => {
+  const derivedInitialValues = sourceToEdit
+    ? {
+        name: sourceToEdit.name,
+        deb_line: sourceToEdit.line,
+        gpg_key_name: sourceToEdit.gpg_key ?? "",
+      }
+    : undefined;
+
   return (
     <div className={classes.overlay}>
       <div className={classes.content}>
         <RepositoryProfileSourceForm
           onSuccess={onSourceAdded}
           onCancel={onClose}
+          initialValues={derivedInitialValues}
         />
       </div>
     </div>

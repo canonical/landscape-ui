@@ -9,6 +9,7 @@ type RepositoryProfilePocket = Pocket & {
 export interface RepositoryProfile extends Record<string, unknown> {
   access_group: string;
   all_computers: boolean;
+  applied_count: number;
   apt_sources: APTSource[];
   description: string;
   id: number;

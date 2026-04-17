@@ -11,14 +11,16 @@ import { getValidationSchema } from "./helpers";
 interface RepositoryProfileSourceFormProps {
   readonly onSuccess: (source: APTSource) => void;
   readonly onCancel: () => void;
+  readonly initialValues?: RepositoryProfileSourceFormValues;
 }
 
 const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
   onSuccess,
   onCancel,
+  initialValues,
 }) => {
   const formik = useFormik<RepositoryProfileSourceFormValues>({
-    initialValues: INITIAL_VALUES,
+    initialValues: initialValues ?? INITIAL_VALUES,
     validationSchema: getValidationSchema(),
     onSubmit: (values) => {
       const source: APTSource = {

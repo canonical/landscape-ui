@@ -13,10 +13,19 @@ import type { FC } from "react";
 import { Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RepositoryProfile } from "../../types";
+import { useGetProfileInstancesCount } from "../../api";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 import RepositoryProfileDetails from "../RepositoryProfileDetails";
+
+const AssociatedCountCell: FC<{ readonly profileId: number }> = ({ profileId }) => {
+  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(profileId);
+  if (isLoadingCount) {
+    return <LoadingState inline />;
+  }
+  return <>{associatedCount}</>;
+};
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
@@ -96,34 +105,29 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         meta: {
           ariaLabel: ({ original }) => `${original.title} profile associated machines count`,
         },
-        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
-          accessGroupOptions.find(
-            ({ value }) => original.access_group === value,
-          )?.label ?? original.access_group,
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
+          <AssociatedCountCell profileId={original.id} />
+        ),
       },
       {
-        accessor: "compliant",
-        Header: "Compliant",
-        className: classes.compliant,
+        accessor: "applied_count",
+        Header: "Applied",
+        className: classes.applied,
         meta: {
-          ariaLabel: ({ original }) => `${original.title} profile compliant machines count`,
+          ariaLabel: ({ original }) => `${original.title} profile applied machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
-          accessGroupOptions.find(
-            ({ value }) => original.access_group === value,
-          )?.label ?? original.access_group,
+          <>{original.applied_count ?? 0}</>,
       },
       {
-        accessor: "notCompliant",
-        Header: "Not Compliant",
-        className: classes.notCompliant,
+        accessor: "pending_count",
+        Header: "Pending",
+        className: classes.pending,
         meta: {
-          ariaLabel: ({ original }) => `${original.title} profile not compliant machines count`,
+          ariaLabel: ({ original }) => `${original.title} profile pending machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
-          accessGroupOptions.find(
-            ({ value }) => original.access_group === value,
-          )?.label ?? original.access_group,
+          <>{original.pending_count ?? 0}</>,
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
