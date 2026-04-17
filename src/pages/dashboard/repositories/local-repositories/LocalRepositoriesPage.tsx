@@ -1,86 +1,102 @@
-import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { APTSourcesList, useGetAPTSources } from "@/features/apt-sources";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
+import SidePanel from "@/components/layout/SidePanel";
+import { useGetLocalRepositories, LocalRepositoriesContainer, AddLocalRepositoryButton } from "@/features/local-repositories";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-// import { GPG_KEYS_DOCS_URL } from "./constants";
+import { lazy } from "react";
 
-const NewAPTSourceForm = lazy(async () =>
-  import("@/features/apt-sources").then((module) => ({
-    default: module.NewAPTSourceForm,
+const AddLocalRepositorySidePanel = lazy(async () =>
+  import("@/features/local-repositories").then((module) => ({
+    default: module.AddLocalRepositorySidePanel,
   })),
 );
 
-const APTSourcesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
-  const { aptSources: items, isGettingAPTSources: isLoading } =
-    useGetAPTSources();
+const ViewLocalRepositorySidePanel = lazy(async () =>
+  import("@/features/local-repositories").then((module) => ({
+    default: module.ViewLocalRepositorySidePanel,
+  })),
+);
 
-  const handleOpen = () => {
-    setSidePanelContent(
-      "Add APT source",
-      <Suspense fallback={<LoadingState />}>
-        <NewAPTSourceForm />
-      </Suspense>,
-    );
-  };
+const EditLocalRepositorySidePanel = lazy(async () =>
+  import("@/features/local-repositories").then((module) => ({
+    default: module.EditLocalRepositorySidePanel,
+  })),
+);
+
+const EditLocalRepoPackagesSidePanel = lazy(async () =>
+  import("@/features/local-repositories").then((module) => ({
+    default: module.EditLocalRepoPackagesSidePanel,
+  })),
+);
+
+const PublishLocalRepositorySidePanel = lazy(async () =>
+  import("@/features/local-repositories").then((module) => ({
+    default: module.PublishLocalRepositorySidePanel,
+  })),
+);
+
+const LocalRepositoriesPage: FC = () => {
+  const { lastSidePathSegment, sidePath, createPageParamsSetter } = usePageParams();
+  const { result, isGettingLocalRepos } = useGetLocalRepositories();
+  const localRepos = result?.locals ?? [];
+
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "publish",
+    "edit",
+    "edit-packages",
+    "view",
+  ]);
 
   return (
     <PageMain>
       <PageHeader
-        title="APT sources"
-        actions={[
-          <Button
-            key="new-key-button"
-            appearance="positive"
-            onClick={handleOpen}
-            type="button"
-          >
-            Add APT source
-          </Button>,
-        ]}
+        title="Local Repositories"
+        actions={localRepos.length ? [<AddLocalRepositoryButton key="add-local-repository" />] : undefined}
       />
       <PageContent hasTable>
-        {isLoading && <LoadingState />}
-        {!isLoading && items.length === 0 && (
-          <EmptyState
-            title="No APT sources found"
-            icon="connected"
-            body={
-              <>
-                <p className="u-no-margin--bottom">
-                  You haven’t added any APT sources yet.
-                </p>
-                <a
-                  href="#" // TODO: discard
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  How to manage APT sources in Landscape
-                </a>
-              </>
-            }
-            cta={[
-              <Button
-                appearance="positive"
-                key="table-add-new-mirror"
-                onClick={handleOpen}
-                type="button"
-              >
-                Add APT source
-              </Button>,
-            ]}
-          />
-        )}
-        {!isLoading && items.length > 0 && <APTSourcesList items={items} />}
+        <LocalRepositoriesContainer isPending={isGettingLocalRepos} items={localRepos} />
       </PageContent>
+
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], repository: "" })}
+        isOpen={!!sidePath.length}
+      >
+       {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <AddLocalRepositorySidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <ViewLocalRepositorySidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <EditLocalRepositorySidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit-packages" && (
+          <SidePanel.Suspense key="edit-packages">
+            <EditLocalRepoPackagesSidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "publish" && (
+          <SidePanel.Suspense key="publish">
+            <PublishLocalRepositorySidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };
 
-export default APTSourcesPage;
+export default LocalRepositoriesPage;
