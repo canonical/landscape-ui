@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@canonical/landscape-openapi':
-        specifier: 0.0.49
-        version: 0.0.49
+        specifier: 0.0.50
+        version: 0.0.50
       '@canonical/react-components':
         specifier: 4.2.0
         version: 4.2.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(formik@2.4.9(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vanilla-framework@4.46.0(sass@1.99.0))
@@ -279,8 +279,8 @@ packages:
   '@cacheable/utils@2.4.1':
     resolution: {integrity: sha512-eiFgzCbIneyMlLOmNG4g9xzF7Hv3Mga4LjxjcSC/ues6VYq2+gUbQI8JqNuw/ZM8tJIeIaBGpswAsqV2V7ApgA==}
 
-  '@canonical/landscape-openapi@0.0.49':
-    resolution: {integrity: sha512-V2jLOkvsqp7fXDwc0mv+CKyWne59uNvCR39C/RoLlysaDcEShi2w+QfMs1sP8GiKfwr1gV/Yh8854X/rhxPYdg==}
+  '@canonical/landscape-openapi@0.0.50':
+    resolution: {integrity: sha512-D9quhDND6+EJKhqUl97xkXp/sjipDTxSMLi1Obdj9fKs09GxQrR0IicIJaxgljfGQYT/yAine7I1GeTQCxOpEw==}
 
   '@canonical/react-components@4.2.0':
     resolution: {integrity: sha512-e4rYL0fvJTHynQtd7bfDtzYf25NxYGQq+BXtSMbpTU6cYxsw47EgITxYouB8yNa18iuAxYxINP3tRZugQK6qOw==}
@@ -4212,7 +4212,7 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@canonical/landscape-openapi@0.0.49': {}
+  '@canonical/landscape-openapi@0.0.50': {}
 
   '@canonical/react-components@4.2.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(formik@2.4.9(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vanilla-framework@4.46.0(sass@1.99.0))':
     dependencies:

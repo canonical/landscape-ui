@@ -1,3 +1,4 @@
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import EmptyState from "@/components/layout/EmptyState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
@@ -17,12 +18,12 @@ const NewSeriesForm = lazy(async () =>
 );
 
 const MirrorsPage: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { search, sidePath, lastSidePathSegment, createPageParamsSetter } =
     usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
 
-  const { data } = useListMirrors({ pageSize: 20 });
+  const { data } = useListMirrors({ filter: search, pageSize: 20 });
 
   const openAddMirrorForm = createPageParamsSetter({
     sidePath: ["add"],
@@ -39,7 +40,12 @@ const MirrorsPage: FC = () => {
   const { actions, children, hasTable } = data.data.mirrors?.length
     ? {
         actions: buttons,
-        children: <MirrorsList mirrors={data.data.mirrors} />,
+        children: (
+          <>
+            <HeaderWithSearch />
+            <MirrorsList mirrors={data.data.mirrors} />
+          </>
+        ),
         hasTable: true,
       }
     : {
@@ -49,9 +55,6 @@ const MirrorsPage: FC = () => {
             body={
               <>
                 <p>This feature allows you to mirror Debian repositories.</p>
-                <p>
-                  <a>Learn more about repository mirroring</a>
-                </p>
               </>
             }
             cta={buttons}

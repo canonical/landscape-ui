@@ -8,8 +8,8 @@ import type { CellProps, Column } from "react-table";
 import ListActions, {
   LIST_ACTIONS_COLUMN_PROPS,
 } from "@/components/layout/ListActions";
-import StaticLink from "@/components/layout/StaticLink";
-import { ROUTES } from "@/libs/routes";
+import MirrorPublicationsLink from "../MirrorPublicationsLink";
+import NoData from "@/components/layout/NoData";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -42,11 +42,12 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
       },
       {
         Header: "Packages",
-        Cell: () => (
-          <StaticLink to={ROUTES.repositories.publications()}>
-            publications
-          </StaticLink>
-        ),
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
+          mirror.name !== undefined ? (
+            <MirrorPublicationsLink mirrorName={mirror.name} />
+          ) : (
+            <NoData />
+          ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
