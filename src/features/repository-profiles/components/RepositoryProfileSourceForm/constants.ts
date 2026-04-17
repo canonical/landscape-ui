@@ -1,4 +1,4 @@
-import type { RepositoryProfileSourceFormValues } from "@/features/repository-profiles/types";
+import type { RepositoryProfileSourceFormValues } from "../../types";
 
 export const INITIAL_VALUES: RepositoryProfileSourceFormValues = {
   name: "",

@@ -13,7 +13,7 @@ describe("RepositoryProfileList", () => {
     );
 
     const table = screen.getByRole("table");
-    expect(table).toHaveTexts(["Title", "Description", "Access group"]);
+    expect(table).toHaveTexts(["Profile Name", "Associated", "Access group"]);
 
     for (const profile of repositoryProfiles) {
       const row = within(table).getByRole("row", {
@@ -22,13 +22,7 @@ describe("RepositoryProfileList", () => {
       });
       expect(row).toBeInTheDocument();
 
-      if (profile.description) {
-        expect(within(row).getByText(profile.description)).toBeInTheDocument();
-      } else {
-        expect(
-          within(row).getByRole("cell", { name: /description/i }),
-        ).toHaveTextContent(NO_DATA_TEXT);
-      }
+      // todo: test for correct associated count once that API is implemented
 
       const accessGroup = accessGroups.find(
         (group) => group.name === profile.access_group,

@@ -27,25 +27,11 @@ describe("RepositoryProfileForm", () => {
     );
 
     const saveButton = await screen.findByRole("button", {
-      name: /edit repository profile/i,
+      name: /save changes/i,
     });
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toHaveAttribute("type", "submit");
     expect(saveButton).toHaveTextContent(/Save changes/i);
-  });
-
-  it("resets to first tab on validation error", async () => {
-    renderWithProviders(<RepositoryProfileForm action="add" />);
-
-    await user.click(screen.getByRole("tab", { name: "Pockets" }));
-    await user.click(
-      screen.getByRole("button", { name: /Add a new repository profile/i }),
-    );
-
-    expect(screen.getByRole("tab", { name: "Details" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
   });
 
   it("shows validation errors for required fields", async () => {
@@ -56,14 +42,6 @@ describe("RepositoryProfileForm", () => {
     );
 
     expect(screen.getByText(/this field is required/i)).toBeInTheDocument();
-  });
-
-  it("shows correct tab content when switching tabs", async () => {
-    renderWithProviders(<RepositoryProfileForm action="add" />);
-    await user.click(screen.getByRole("tab", { name: "Pockets" }));
-    expect(screen.getByText("Distribution")).toBeInTheDocument();
-    await user.click(screen.getByRole("tab", { name: "Details" }));
-    expect(screen.getByLabelText("Title")).toBeInTheDocument();
   });
 
   it("shows enabled access group field in add mode", async () => {

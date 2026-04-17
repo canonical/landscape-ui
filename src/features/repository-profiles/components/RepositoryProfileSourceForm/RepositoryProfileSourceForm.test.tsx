@@ -28,7 +28,7 @@ describe("RepositoryProfileSourceForm", () => {
   it("shows required validation errors when submitting empty form", async () => {
     renderWithProviders(<RepositoryProfileSourceForm {...defaultProps} />);
 
-    await user.click(screen.getByRole("button", { name: /add source/i }));
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     expect(
       await screen.findAllByText("This field is required."),
@@ -43,7 +43,7 @@ describe("RepositoryProfileSourceForm", () => {
       screen.getByLabelText(/deb line/i),
       "deb http://example.com/ubuntu focal main",
     );
-    await user.click(screen.getByRole("button", { name: /add source/i }));
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     const expected: APTSource = {
       id: 0,
@@ -67,7 +67,7 @@ describe("RepositoryProfileSourceForm", () => {
       "deb http://example.com/ubuntu focal main",
     );
     await user.type(screen.getByLabelText(/gpg key/i), "sign-key");
-    await user.click(screen.getByRole("button", { name: /add source/i }));
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     const expected: APTSource = {
       id: 0,
@@ -89,7 +89,7 @@ describe("RepositoryProfileSourceForm", () => {
       screen.getByLabelText(/deb line/i),
       "deb http://example.com/ubuntu focal main",
     );
-    await user.click(screen.getByRole("button", { name: /add source/i }));
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
 
     expect(defaultProps.onSuccess).toHaveBeenCalledOnce();
   });
