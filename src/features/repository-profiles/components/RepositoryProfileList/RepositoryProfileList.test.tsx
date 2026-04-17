@@ -2,13 +2,10 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
 
 describe("RepositoryProfileList", () => {
-  const user = userEvent.setup();
-
   it("renders table headers and rows", async () => {
     renderWithProviders(
       <RepositoryProfileList repositoryProfiles={repositoryProfiles} />,
