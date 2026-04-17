@@ -1,6 +1,6 @@
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { fireEvent, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it } from "vitest";
 import RunScriptForm from "./RunScriptForm";
