@@ -12,6 +12,7 @@ import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<
@@ -87,6 +88,32 @@ export default [
       });
     },
   ),
+  http.post(`${API_URL}autoinstall:validate`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "autoinstall:validate-override"
+    ) {
+      return HttpResponse.json(
+        {
+          error: "AutoinstallOverrideWarning",
+          message:
+            "The autoinstall file you submitted overrides fields users, identity",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "autoinstall:validate"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
+  }),
 
   http.delete<{ autoinstallFileId: string }, DeleteAutoinstallFileParams, null>(
     `${API_URL}autoinstall/:autoinstallFileId`,

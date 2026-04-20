@@ -135,6 +135,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
         ref={inputRef}
         className="u-hide"
         type="file"
+        data-testid="edit-script-upload-input"
         onChange={handleInputChange}
       />
 

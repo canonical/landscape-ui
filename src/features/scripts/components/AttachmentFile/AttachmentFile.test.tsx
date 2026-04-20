@@ -1,9 +1,8 @@
-import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { beforeEach, describe, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import AttachmentFile from "./AttachmentFile";
 
 const createObjectURLMock = vi.fn((_object: Blob | MediaSource) => "blob:test");
@@ -35,9 +34,9 @@ const propsWithInitialAttachmentDelete: ComponentProps<typeof AttachmentFile> =
   };
 
 describe("AttachmentFile", () => {
-  beforeEach(() => {
-    setEndpointStatus("default");
+  afterEach(() => {
     vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("should display attachment file with script id prop", async () => {
@@ -74,32 +73,75 @@ describe("AttachmentFile", () => {
     expect(deleteButton).toBeInTheDocument();
   });
 
-  it("downloads blob attachments and revokes object URL", async () => {
-    const clickSpy = vi
-      .spyOn(HTMLAnchorElement.prototype, "click")
-      .mockImplementation(() => undefined);
+  it("calls delete callback when remove button is clicked", async () => {
     const user = userEvent.setup();
 
+    renderWithProviders(
+      <AttachmentFile {...propsWithInitialAttachmentDelete} />,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: `Remove ${propsWithInitialAttachmentDelete.filename} attachment`,
+      }),
+    );
+
+    expect(
+      propsWithInitialAttachmentDelete.onInitialAttachmentDelete,
+    ).toHaveBeenCalledTimes(1);
+  });
+
+  it("downloads attachment file when download button is clicked", async () => {
+    const user = userEvent.setup();
+    const anchorClickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => undefined);
+    const createObjectUrlSpy = vi
+      .spyOn(URL, "createObjectURL")
+      .mockReturnValue("blob:attachment");
+    const revokeObjectUrlSpy = vi.spyOn(URL, "revokeObjectURL");
+
     renderWithProviders(<AttachmentFile {...propsWithScriptId} />);
+
     await user.click(
       screen.getByRole("button", {
         name: `Download ${propsWithScriptId.filename}`,
       }),
     );
 
-    await waitFor(() => {
-      expect(createObjectURLMock).toHaveBeenCalledTimes(1);
-      expect(clickSpy).toHaveBeenCalledTimes(1);
-      expect(revokeObjectURLMock).toHaveBeenCalledWith("blob:test");
-    });
+    expect(createObjectUrlSpy).toHaveBeenCalledTimes(1);
 
-    const blobToDownload = createObjectURLMock.mock.calls[0]?.[0];
-    expect(blobToDownload).toBeInstanceOf(Blob);
-    if (!(blobToDownload instanceof Blob)) {
-      throw new Error("Expected downloaded data to be a Blob.");
-    }
-    expect(blobToDownload.type).toContain("text/plain");
+    const [downloadedAttachmentBlob] = createObjectUrlSpy.mock.calls[0] ?? [];
+    expect(downloadedAttachmentBlob).toBeInstanceOf(Blob);
+    expect(await (downloadedAttachmentBlob as Blob).text()).toContain(
+      "attachment",
+    );
 
-    clickSpy.mockRestore();
+    expect(anchorClickSpy).toHaveBeenCalledTimes(1);
+    expect(revokeObjectUrlSpy).toHaveBeenCalledWith("blob:attachment");
+  });
+
+  it("does not try to download when attachment data is missing", async () => {
+    const user = userEvent.setup();
+    const createObjectUrlSpy = vi.spyOn(URL, "createObjectURL");
+    const anchorClickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => undefined);
+    const missingDataProps: ComponentProps<typeof AttachmentFile> = {
+      attachmentId: 999,
+      filename: "missing.txt",
+      scriptId: 999,
+    };
+
+    renderWithProviders(<AttachmentFile {...missingDataProps} />);
+
+    await user.click(
+      screen.getByRole("button", {
+        name: `Download ${missingDataProps.filename}`,
+      }),
+    );
+
+    expect(createObjectUrlSpy).not.toHaveBeenCalled();
+    expect(anchorClickSpy).not.toHaveBeenCalled();
   });
 });

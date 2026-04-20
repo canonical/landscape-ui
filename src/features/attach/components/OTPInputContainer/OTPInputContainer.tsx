@@ -24,7 +24,7 @@ const OTPInputContainer: FC = () => {
 
   const formik = useFormik<FormikProps>({
     initialValues: {
-      code: Object.assign(Array(OTP_LENGTH).fill(""), code?.split("") || []),
+      code: Object.assign(Array(OTP_LENGTH).fill(""), code.split("")),
     },
     validationSchema: Yup.object().shape({
       code: Yup.array().test(

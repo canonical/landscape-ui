@@ -166,10 +166,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
       value: tag,
     })) ?? [];
 
-  const instancesWithScriptsFeature =
-    instances.filter((instance) => {
-      return getFeatures(instance).scripts;
-    }) ?? [];
+  const instancesWithScriptsFeature = instances.filter((instance) => {
+    return getFeatures(instance).scripts;
+  });
 
   const instanceOptions: MultiSelectItem[] = instancesWithScriptsFeature.map(
     ({ title, id }) => ({
@@ -178,10 +177,11 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
     }),
   );
 
-  const taggedInstancesWithScriptsFeature =
-    taggedInstances.filter((instance) => {
+  const taggedInstancesWithScriptsFeature = taggedInstances.filter(
+    (instance) => {
       return getFeatures(instance).scripts;
-    }) ?? [];
+    },
+  );
 
   const shouldShowNoTaggedInstancesWarning =
     hasClosedTagDropdown &&

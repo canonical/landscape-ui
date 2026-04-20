@@ -13,21 +13,31 @@ import { AppProviders } from "@/providers/AppProviders";
 import App from "./App";
 import { BrowserRouter } from "react-router";
 
-Sentry.init({
+export const getSentryConfig = (
+  appVersion = APP_VERSION,
+  isDevEnv = IS_DEV_ENV,
+) => ({
   dsn: "https://774322e0f66e6944afb57769632eca62@o4510662863749120.ingest.de.sentry.io/4510674271338576",
-  release: APP_VERSION || "local-dev",
-  environment: IS_DEV_ENV ? "development" : "production",
-  enabled: !IS_DEV_ENV,
+  release: appVersion || "local-dev",
+  environment: isDevEnv ? "development" : "production",
+  enabled: !isDevEnv,
 });
 
-const initApp = async () => {
-  if (IS_DEV_ENV && IS_MSW_ENABLED) {
-    const { worker } = await import("@/tests/browser");
-    await worker.start();
-  }
+Sentry.init(getSentryConfig());
 
-  const container = document.getElementById("root") as HTMLElement;
-  const root = createRoot(container);
+type WorkerLoader = () => Promise<{
+  worker: {
+    start: () => Promise<unknown> | unknown;
+  };
+}>;
+
+const defaultLoadWorker: WorkerLoader = () => import("@/tests/browser");
+
+export const renderApp = (
+  createAppRoot: typeof createRoot = createRoot,
+  container = document.getElementById("root") as HTMLElement,
+) => {
+  const root = createAppRoot(container);
 
   root.render(
     <StrictMode>
@@ -42,4 +52,33 @@ const initApp = async () => {
   );
 };
 
-initApp();
+interface StartAppOptions {
+  mode?: string;
+  isDevEnv?: boolean;
+  isMswEnabled?: boolean;
+  loadWorker?: WorkerLoader;
+  render?: () => void;
+}
+
+export const startApp = async ({
+  mode = import.meta.env.MODE,
+  isDevEnv = IS_DEV_ENV,
+  isMswEnabled = IS_MSW_ENABLED,
+  loadWorker = defaultLoadWorker,
+  render = () => {
+    renderApp();
+  },
+}: StartAppOptions = {}) => {
+  if (mode === "test") {
+    return;
+  }
+
+  if (isDevEnv && isMswEnabled) {
+    const { worker } = await loadWorker();
+    await worker.start();
+  }
+
+  render();
+};
+
+void startApp();

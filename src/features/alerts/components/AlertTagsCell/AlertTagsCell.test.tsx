@@ -1,12 +1,20 @@
 import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { MultiSelectItem } from "@canonical/react-components";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import AlertTagsCell from "./AlertTagsCell";
 
-const mockAlert = alerts[0];
+const [mockAlert] = alerts;
+assert(mockAlert);
+const nonAllAlert = alerts.find((alert) => !alert.all_computers);
+assert(nonAllAlert);
+const taggedNonAllAlert = {
+  ...nonAllAlert,
+  tags: ["tag1", "tag2"],
+};
 
 const mockAvailableTagOptions: MultiSelectItem[] = [
   { value: "All", label: "All instances" },
@@ -16,6 +24,10 @@ const mockAvailableTagOptions: MultiSelectItem[] = [
 ];
 
 describe("AlertTagsCell", () => {
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("allows selecting and deselecting tags", async () => {
     renderWithProviders(
       <AlertTagsCell
@@ -77,5 +89,110 @@ describe("AlertTagsCell", () => {
 
     expect(screen.getByText("Save changes")).toHaveAttribute("aria-disabled");
     expect(screen.getByText("Revert")).toHaveAttribute("aria-disabled");
+  });
+
+  it("saves all-instances selection and shows success message", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AlertTagsCell
+        alert={mockAlert}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("checkbox", { name: "All instances" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByText("Alert tags updated")).toBeInTheDocument();
+  });
+
+  it("saves deselected all-instances tags and shows success message", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AlertTagsCell
+        alert={mockAlert}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("checkbox", { name: "All instances" }));
+    await user.click(screen.getByRole("checkbox", { name: "Tag 2" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByText("Alert tags updated")).toBeInTheDocument();
+  });
+
+  it("saves tag additions/removals for non-all alert and shows success message", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AlertTagsCell
+        alert={nonAllAlert}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("checkbox", { name: "Tag 1" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByText("Alert tags updated")).toBeInTheDocument();
+  });
+
+  it("saves all-instances selection for non-all alerts", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AlertTagsCell
+        alert={nonAllAlert}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("checkbox", { name: "All instances" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByText("Alert tags updated")).toBeInTheDocument();
+  });
+
+  it("saves deselected tags for non-all alerts with preselected tags", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <AlertTagsCell
+        alert={taggedNonAllAlert}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("checkbox", { name: "Tag 2" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(await screen.findByText("Alert tags updated")).toBeInTheDocument();
+  });
+
+  it("shows an error notification when saving tags fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ status: "error", path: "AssociateAlert" });
+
+    renderWithProviders(
+      <AlertTagsCell
+        alert={nonAllAlert}
+        availableTagOptions={mockAvailableTagOptions}
+      />,
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("checkbox", { name: "Tag 1" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    expect(
+      await screen.findByText('The endpoint status is set to "error".'),
+    ).toBeInTheDocument();
   });
 });
