@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { useCreateDistributionUpgrades } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -51,7 +51,7 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { isGettingDistributionUpgradeTargets, eligibleIds, tableData } =
     useDistributionUpgradesTableData(selectedInstances);

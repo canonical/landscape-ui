@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { ComponentProps } from "react";
 import ActivitiesHeader from "./ActivitiesHeader";
+import { EXCLUDED_ACTIVITY_TYPE_OPTIONS } from "../../constants";
 
 const props: ComponentProps<typeof ActivitiesHeader> = {
   selected: [],
@@ -40,6 +41,16 @@ describe("ActivitiesHeader", () => {
 
     const dateFilterButton = screen.getByRole("button", { name: /date/i });
     expect(dateFilterButton).toBeInTheDocument();
+  });
+
+  it("should not show excluded activity types in the type filter", async () => {
+    await user.click(screen.getByRole("button", { name: "Type" }));
+
+    expect(
+      screen.queryByRole("button", {
+        name: EXCLUDED_ACTIVITY_TYPE_OPTIONS[0],
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("should allow typing in search box", async () => {

@@ -15,7 +15,6 @@ interface ActivityActions {
   approvable: boolean;
   cancelable: boolean;
   reappliable: boolean;
-  revertable: boolean;
 }
 
 export interface ActivityCommon extends Record<string, unknown> {

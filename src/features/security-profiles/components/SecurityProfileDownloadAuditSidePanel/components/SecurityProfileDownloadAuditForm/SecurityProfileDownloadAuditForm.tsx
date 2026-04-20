@@ -2,7 +2,7 @@ import RadioGroup from "@/components/form/RadioGroup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import { useActivities } from "@/features/activities";
+import { useGetSingleActivity } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
@@ -39,7 +39,6 @@ const SecurityProfileDownloadAuditForm: FC<
   const debug = useDebug();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
 
-  const { getSingleActivityQuery } = useActivities();
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
     useGetSecurityProfileReport();
 
@@ -55,11 +54,7 @@ const SecurityProfileDownloadAuditForm: FC<
 
   const pendingReport = pendingReports.find((report) => report.profileId == id);
 
-  const {
-    data: getSingleActivityQueryResponse,
-    isLoading: isGettingActivity,
-    isError: isActivityError,
-  } = getSingleActivityQuery(
+  const { activity, isLoadingActivity, isActivityError } = useGetSingleActivity(
     {
       activityId: pendingReport?.activityId ?? 0,
     },
@@ -76,19 +71,19 @@ const SecurityProfileDownloadAuditForm: FC<
   }
 
   useEffect(() => {
-    if (!getSingleActivityQueryResponse) {
+    if (!activity) {
       return;
     }
 
-    if (getSingleActivityQueryResponse.data.activity_status == "succeeded") {
+    if (activity.activity_status == "succeeded") {
       setStatus({
         type: "ready",
-        report_uri: getSingleActivityQueryResponse.data.result_text as string,
+        report_uri: activity.result_text as string,
       });
     } else {
       setStatus({ type: "pending" });
     }
-  }, [getSingleActivityQueryResponse]);
+  }, [activity]);
 
   const formik = useFormik<SecurityProfileDownloadAuditFormValues>({
     initialValues: {
@@ -171,7 +166,7 @@ const SecurityProfileDownloadAuditForm: FC<
     },
   });
 
-  if (isGettingActivity) {
+  if (isLoadingActivity) {
     return <LoadingState />;
   }
 

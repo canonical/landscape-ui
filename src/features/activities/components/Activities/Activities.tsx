@@ -3,24 +3,22 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { BREAKPOINT_PX, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import moment from "moment/moment";
 import type { FC } from "react";
-import { lazy, Suspense, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import { ACTIVITY_STATUSES } from "../../constants";
-import { useOpenActivityDetails } from "../../hooks";
+import {
+  useOpenActivityDetails,
+  useOpenActivityDetailsPanel,
+} from "../../hooks";
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-
-const ActivityDetails = lazy(
-  async () => import("@/features/activities/components/ActivityDetails"),
-);
 
 interface ActivitiesProps {
   readonly activities: ActivityCommon[];
@@ -39,19 +37,7 @@ const Activities: FC<ActivitiesProps> = ({
   selectedActivities,
   setSelectedActivities,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
-
-  const handleActivityDetailsOpen = useCallback(
-    (activity: ActivityCommon) => {
-      setSidePanelContent(
-        activity.summary,
-        <Suspense fallback={<LoadingState />}>
-          <ActivityDetails activityId={activity.id} />
-        </Suspense>,
-      );
-    },
-    [setSidePanelContent],
-  );
+  const handleActivityDetailsOpen = useOpenActivityDetailsPanel();
 
   const isMedium = useMediaQuery(`(max-width: ${BREAKPOINT_PX.md}px)`);
 

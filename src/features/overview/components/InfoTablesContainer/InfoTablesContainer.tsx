@@ -4,7 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
-import { useActivities, useGetActivities } from "@/features/activities";
+import { useApproveActivities, useGetActivities } from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
@@ -52,12 +52,10 @@ const InfoTablesContainer: FC = () => {
   const { notify } = useNotify();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
-  const { approveActivitiesQuery } = useActivities();
 
   const { mutateAsync: upgradePackages, isPending: isUpgrading } =
     upgradePackagesQuery;
-  const { mutateAsync: approveActivities, isPending: isApproving } =
-    approveActivitiesQuery;
+  const { approveActivities, isApprovingActivities } = useApproveActivities();
 
   const [packagesLimit, setPackagesLimit] = useState(MAX_PACKAGE_COUNT);
   const [usnsLimit, setUsnsLimit] = useState(MAX_USN_COUNT);
@@ -541,8 +539,8 @@ const InfoTablesContainer: FC = () => {
                 ),
                 confirmButtonLabel: "Approve",
                 confirmButtonAppearance: "positive",
-                confirmButtonDisabled: isApproving,
-                confirmButtonLoading: isApproving,
+                confirmButtonDisabled: isApprovingActivities,
+                confirmButtonLoading: isApprovingActivities,
                 onConfirm: handleApproveActivities,
               }}
             >

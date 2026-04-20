@@ -14,7 +14,6 @@ describe("ActivitiesActions", () => {
         approvable: true,
         cancelable: true,
         reappliable: true,
-        revertable: true,
       },
     },
     {
@@ -23,7 +22,6 @@ describe("ActivitiesActions", () => {
         approvable: true,
         cancelable: true,
         reappliable: true,
-        revertable: true,
       },
     },
   ] as const satisfies Activity[];
@@ -52,7 +50,6 @@ describe("ActivitiesActions", () => {
             approvable: false,
             cancelable: true,
             reappliable: true,
-            revertable: true,
           },
         },
       ];
@@ -145,7 +142,6 @@ describe("ActivitiesActions", () => {
             approvable: true,
             cancelable: false,
             reappliable: true,
-            revertable: true,
           },
         },
       ];
@@ -214,99 +210,6 @@ describe("ActivitiesActions", () => {
     });
   });
 
-  describe("Undo button", () => {
-    it("should be disabled when no activities are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={[]} />);
-
-      const undoButton = screen.getByRole("button", { name: "Undo" });
-      expect(undoButton).toHaveAttribute("aria-disabled", "true");
-    });
-
-    it("should be enabled when activities with revertable action are selected", () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
-
-      const undoButton = screen.getByRole("button", { name: "Undo" });
-      expect(undoButton).not.toHaveAttribute("aria-disabled");
-      expect(undoButton).toBeEnabled();
-    });
-
-    it("should be disabled when selected activities are not revertable", () => {
-      const nonRevertableActivities = [
-        {
-          ...activities[0],
-          actions: {
-            approvable: true,
-            cancelable: true,
-            reappliable: true,
-            revertable: false,
-          },
-        },
-      ];
-
-      renderWithProviders(
-        <ActivitiesActions selected={nonRevertableActivities} />,
-      );
-
-      const undoButton = screen.getByRole("button", { name: "Undo" });
-      expect(undoButton).toHaveAttribute("aria-disabled", "true");
-    });
-
-    it("should show confirmation modal and undo single activity", async () => {
-      const singleActivity = [mockActivities[0]];
-      renderWithProviders(<ActivitiesActions selected={singleActivity} />);
-
-      await userEvent.click(screen.getByRole("button", { name: "Undo" }));
-
-      const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Undo activity")).toBeInTheDocument();
-      expect(
-        within(modal).getByText(
-          "Are you sure you want to undo selected activity?",
-        ),
-      ).toBeInTheDocument();
-
-      await userEvent.click(
-        within(modal).getByRole("button", { name: "Undo" }),
-      );
-
-      expect(
-        await screen.findByText("You have successfully undone an activity."),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "An activity has been queued to revert the changes delivered by this activity.",
-        ),
-      ).toBeInTheDocument();
-    });
-
-    it("should show confirmation modal and undo multiple activities", async () => {
-      renderWithProviders(<ActivitiesActions selected={mockActivities} />);
-
-      await userEvent.click(screen.getByRole("button", { name: "Undo" }));
-
-      const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Undo activities")).toBeInTheDocument();
-      expect(
-        within(modal).getByText(
-          "Are you sure you want to undo selected activities?",
-        ),
-      ).toBeInTheDocument();
-
-      await userEvent.click(
-        within(modal).getByRole("button", { name: "Undo" }),
-      );
-
-      expect(
-        await screen.findByText("You have successfully undone 2 activities."),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Activities have been queued to revert the changes delivered by these activities.",
-        ),
-      ).toBeInTheDocument();
-    });
-  });
-
   describe("Redo button", () => {
     it("should be disabled when no activities are selected", () => {
       renderWithProviders(<ActivitiesActions selected={[]} />);
@@ -331,7 +234,6 @@ describe("ActivitiesActions", () => {
             approvable: true,
             cancelable: true,
             reappliable: false,
-            revertable: true,
           },
         },
       ];
@@ -409,7 +311,6 @@ describe("ActivitiesActions", () => {
             approvable: true,
             cancelable: true,
             reappliable: true,
-            revertable: true,
           },
         },
         {
@@ -418,7 +319,6 @@ describe("ActivitiesActions", () => {
             approvable: false,
             cancelable: true,
             reappliable: true,
-            revertable: true,
           },
         },
       ];
