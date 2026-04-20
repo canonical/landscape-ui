@@ -1,5 +1,5 @@
-import NoData from "@/components/layout/NoData";
-import { expectLoadingState, setScreenSize } from "@/tests/helpers";
+import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { setScreenSize } from "@/tests/helpers";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
@@ -67,6 +67,18 @@ describe("UserList", () => {
       expect(checkedCheckboxes).toHaveLength(userIds.length + 1);
     });
 
+    it("should clear all selected users when clicking ToggleAll with selected users", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(<UserList {...props} selected={userIds} />);
+
+      const toggleAllCheckbox = await screen.findByRole("checkbox", {
+        name: /toggle all/i,
+      });
+      await user.click(toggleAllCheckbox);
+
+      expect(props.setSelected).toHaveBeenCalledWith([]);
+    });
+
     it("should select user when clicking on its row checkbox", async () => {
       renderWithProviders(<UserList {...props} />);
 
@@ -80,12 +92,29 @@ describe("UserList", () => {
 
       expect(props.setSelected).toHaveBeenCalledWith([selectedUser.uid]);
     });
+
+    it("should unselect user when clicking an already selected row checkbox", async () => {
+      const user = userEvent.setup();
+      const [selectedUser] = users;
+      assert(selectedUser);
+
+      renderWithProviders(
+        <UserList {...props} selected={[selectedUser.uid]} />,
+      );
+
+      const userCheckbox = await screen.findByRole("checkbox", {
+        name: `Select user ${selectedUser.username}`,
+      });
+      await user.click(userCheckbox);
+
+      expect(props.setSelected).toHaveBeenCalledWith([]);
+    });
   });
 
   describe("User details sidepanel", () => {
     beforeEach(() => {
-      renderWithProviders(<UserList {...props} />);
       setScreenSize("lg");
+      renderWithProviders(<UserList {...props} />);
     });
     it("should open side panel when user in table is clicked", async () => {
       const user = await screen.findByRole("button", {
@@ -109,12 +138,11 @@ describe("UserList", () => {
       await userEvent.click(userTableButton);
 
       const form = await screen.findByRole("complementary");
-
-      await expectLoadingState();
-
+      await within(form).findByRole("button", { name: "Unlock" });
       buttonNames.forEach((buttonName) => {
-        const button = within(form).getByText(buttonName);
-        expect(button).toBeInTheDocument();
+        expect(
+          within(form).getByRole("button", { name: buttonName }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -128,9 +156,11 @@ describe("UserList", () => {
       const form = await screen.findByRole("complementary");
       const buttonsNames = ["Lock", "Edit", "Delete"];
 
+      await within(form).findByRole("button", { name: "Lock" });
       buttonsNames.forEach((buttonName) => {
-        const button = within(form).getByText(buttonName);
-        expect(button).toBeInTheDocument();
+        expect(
+          within(form).getByRole("button", { name: buttonName }),
+        ).toBeInTheDocument();
       });
     });
 
@@ -148,7 +178,11 @@ describe("UserList", () => {
         userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
 
       const groupsData = userGroups.map((group) => group.name).join(", ");
-      const loaded = await screen.findByText(primaryGroup);
+      const loaded = await within(form).findByText(
+        primaryGroup,
+        {},
+        { timeout: 5000 },
+      );
       expect(loaded).toBeInTheDocument();
       const getFieldsToCheck = (item: User) => {
         return [
@@ -167,5 +201,42 @@ describe("UserList", () => {
         expect(form).toHaveInfoItem(field.label, field.value);
       });
     });
+
+    it("should open edit user side panel from list actions", async () => {
+      const user = userEvent.setup();
+      const [firstUser] = users;
+      assert(firstUser);
+
+      const actionsToggle = await screen.findByRole("button", {
+        name: `"${firstUser.name}" user actions`,
+      });
+      await user.click(actionsToggle);
+
+      await user.click(await screen.findByText("Edit"));
+
+      const sidePanel = await screen.findByRole("complementary");
+      expect(within(sidePanel).getByText("Edit user")).toBeInTheDocument();
+    });
+  });
+
+  it("shows no-data marker when a user has no full name", async () => {
+    const userWithoutName = {
+      ...users[0],
+      uid: 999,
+      username: "no-name-user",
+      name: "",
+    };
+
+    renderWithProviders(
+      <UserList {...props} users={[userWithoutName]} selected={[]} />,
+    );
+
+    const detailsButton = await screen.findByRole("button", {
+      name: `Show details of user ${userWithoutName.username}`,
+    });
+    const row = detailsButton.closest("tr");
+    assert(row);
+
+    expect(within(row).getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 });

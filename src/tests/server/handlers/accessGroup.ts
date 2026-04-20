@@ -4,6 +4,7 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import type { AccessGroup } from "@/features/access-groups";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, never, AccessGroup[]>(API_URL_OLD, ({ request }) => {
@@ -12,6 +13,13 @@ export default [
     }
 
     const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "GetAccessGroups"
+    ) {
+      throw getEndpointStatusApiError();
+    }
 
     if (endpointStatus.status === "empty") {
       return HttpResponse.json([]);

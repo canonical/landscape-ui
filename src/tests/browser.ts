@@ -17,11 +17,7 @@ const handlers: RequestHandler[] = [
       return passthrough();
     }
 
-    if (
-      MSW_ENDPOINTS_TO_INTERCEPT.some((url: string) =>
-        request.url.includes(url),
-      )
-    ) {
+    if (MSW_ENDPOINTS_TO_INTERCEPT.some((url) => request.url.includes(url))) {
       return;
     }
 

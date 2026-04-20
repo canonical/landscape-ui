@@ -1,5 +1,6 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
 import {
   detailedScriptsData,
   scriptAttachment,
@@ -9,12 +10,12 @@ import {
   scriptVersionsWithPagination,
 } from "@/tests/mocks/script";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
-import { activities } from "@/tests/mocks/activity";
 import {
   generatePaginatedResponse,
   isAction,
 } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get(`${API_URL}scripts`, async ({ request }) => {
@@ -56,10 +57,10 @@ export default [
 
   http.get(`${API_URL}scripts/:id/script-profiles`, async () => {
     const endpointStatus = getEndpointStatus();
+
     if (
-      (!endpointStatus.path ||
-        endpointStatus.path.includes("script-profiles")) &&
-      endpointStatus.status === "empty"
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "script-profiles"
     ) {
       return HttpResponse.json({
         results: [],
@@ -68,13 +69,13 @@ export default [
         previous: null,
       });
     }
-    return HttpResponse.json(
-      generatePaginatedResponse({
-        data: scriptProfiles,
-        limit: 20,
-        offset: 0,
-      }),
-    );
+
+    return HttpResponse.json({
+      results: scriptProfiles,
+      count: scriptProfiles.length,
+      next: null,
+      previous: null,
+    });
   }),
 
   http.get(`${API_URL}scripts/:id`, async ({ params }) => {
@@ -90,26 +91,33 @@ export default [
     return HttpResponse.json(scriptVersion);
   }),
 
-  http.get(`${API_URL}scripts/:id/attachments/:attachmentId`, async () => {
-    const endpointStatus = getEndpointStatus();
+  http.get(
+    `${API_URL}scripts/:id/attachments/:attachmentId`,
+    async ({ params }) => {
+      if (params.attachmentId === "999") {
+        return new HttpResponse(null, { status: 404 });
+      }
 
-    if (
-      endpointStatus.path &&
-      endpointStatus.path.includes("scripts/attachments/html")
-    ) {
-      return new HttpResponse(scriptAttachmentHtml, {
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.path &&
+        endpointStatus.path.includes("scripts/attachments/html")
+      ) {
+        return new HttpResponse(scriptAttachmentHtml, {
+          headers: {
+            "Content-Type": "text/html",
+          },
+        });
+      }
+
+      return new HttpResponse(scriptAttachment, {
         headers: {
-          "Content-Type": "text/html",
+          "Content-Type": "text/plain",
         },
       });
-    }
-
-    return new HttpResponse(scriptAttachment, {
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
-  }),
+    },
+  ),
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {
     const DEFAULT_PAGE_SIZE = 20;
@@ -128,24 +136,63 @@ export default [
     );
   }),
 
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "EditScript")) {
-      return;
-    }
-    return HttpResponse.json({});
-  }),
-
   http.post(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "EditScript")) {
+    if (!isAction(request, "CreateScript")) {
       return;
     }
-    return HttpResponse.json({});
+
+    if (
+      getEndpointStatus().status === "error" &&
+      getEndpointStatus().path === "CreateScript"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({ id: 99 });
   }),
 
   http.post(API_URL_OLD, ({ request }) => {
     if (!isAction(request, "CreateScriptAttachment")) {
       return;
     }
+
+    if (
+      getEndpointStatus().status === "error" &&
+      getEndpointStatus().path === "CreateScriptAttachment"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.post(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "EditScript")) {
+      return;
+    }
+
+    if (
+      getEndpointStatus().status === "error" &&
+      getEndpointStatus().path === "EditScript"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "RemoveScriptAttachment")) {
+      return;
+    }
+
+    if (
+      getEndpointStatus().status === "error" &&
+      getEndpointStatus().path === "RemoveScriptAttachment"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
     return HttpResponse.json({});
   }),
 
@@ -153,6 +200,14 @@ export default [
     if (!isAction(request, "ExecuteScript")) {
       return;
     }
+
+    if (
+      getEndpointStatus().status === "error" &&
+      getEndpointStatus().path === "ExecuteScript"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
     return HttpResponse.json(activities[0]);
   }),
 ];

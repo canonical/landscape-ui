@@ -74,19 +74,20 @@ const PackageList: FC<PackageListProps> = ({
     pullPackagesToPocketQuery;
 
   const handleSync = (): void => {
-    if ("mirror" === pocket.mode) {
-      syncMirrorPocket({
-        name: pocket.name,
-        series: seriesName,
-        distribution: distributionName,
-      });
-    } else if ("pull" === pocket.mode) {
+    if ("pull" === pocket.mode) {
       pullPackagesToPocket({
         name: pocket.name,
         series: seriesName,
         distribution: distributionName,
       });
+      return;
     }
+
+    syncMirrorPocket({
+      name: pocket.name,
+      series: seriesName,
+      distribution: distributionName,
+    });
   };
 
   const handleEditPocket = (): void => {
@@ -289,6 +290,8 @@ const PackageList: FC<PackageListProps> = ({
           size: 6,
           medium: 3,
         };
+  const isSyncButtonDisabled =
+    isSynchronizingMirrorPocket || isPullingPackagesToPocket;
 
   return (
     <>
@@ -306,9 +309,7 @@ const PackageList: FC<PackageListProps> = ({
                   className="p-segmented-control__button"
                   type="button"
                   onClick={handleSync}
-                  disabled={
-                    isSynchronizingMirrorPocket && isPullingPackagesToPocket
-                  }
+                  disabled={isSyncButtonDisabled}
                   aria-label={
                     "mirror" === pocket.mode
                       ? `Synchronize ${pocket.name} pocket of ${distributionName}/${seriesName}`

@@ -3,8 +3,11 @@ import type { GetUsnsParams } from "@/features/usns";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Usn } from "@/types/Usn";
 import { API_URL } from "@/constants";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { usnPackages, usns } from "@/tests/mocks/usn";
+import { activities } from "@/tests/mocks/activity";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, GetUsnsParams, ApiPaginatedResponse<Usn>>(
@@ -30,5 +33,15 @@ export default [
 
   http.get(`${API_URL}usns/:usnName`, () => {
     return HttpResponse.json(usnPackages);
+  }),
+
+  http.post(`${API_URL}computers/usns/upgrade-packages`, () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error") {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json(activities[0]);
   }),
 ];

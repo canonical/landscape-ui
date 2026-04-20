@@ -14,7 +14,7 @@ interface ScriptFormAttachmentsProps {
   readonly onFileInputChange: (
     key: keyof ScriptFormValues["attachments"],
   ) => ChangeEventHandler<HTMLInputElement>;
-  readonly onInitialAttachmentDelete: (attachment: string) => void;
+  readonly onInitialAttachmentDelete?: (attachment: string) => void;
   readonly scriptId?: number;
 }
 
@@ -51,7 +51,7 @@ const ScriptFormAttachments: FC<ScriptFormAttachmentsProps> = ({
             filename={initialAttachment.filename}
             scriptId={scriptId}
             onInitialAttachmentDelete={() => {
-              onInitialAttachmentDelete(initialAttachment.filename);
+              onInitialAttachmentDelete?.(initialAttachment.filename);
             }}
           />
         );

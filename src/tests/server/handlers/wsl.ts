@@ -2,10 +2,12 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type { WslInstanceType } from "@/features/wsl";
 import type { MakeWindowsInstancesCompliantParams } from "@/features/wsl-profiles";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { instanceChildren, wslInstanceNames } from "@/tests/mocks/wsl";
 import type { InstanceChild } from "@/types/Instance";
 import { http, HttpResponse } from "msw";
 import { isAction } from "./_helpers";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<{ id: string }, never, { children: InstanceChild[] }>(
@@ -28,6 +30,15 @@ export default [
   ),
 
   http.post(`${API_URL}child-instance-profiles/:name\\:reapply`, () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "child-instance-profiles/:name:reapply"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
     return HttpResponse.json();
   }),
 

@@ -26,6 +26,7 @@ import process from "./process";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
 import repo from "./repo";
+import reports from "./reports";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
@@ -67,6 +68,7 @@ export default [
   ...rebootProfiles,
   ...removalProfiles,
   ...repo,
+  ...reports,
   ...repositoryProfiles,
   ...roles,
   ...savedSearches,
