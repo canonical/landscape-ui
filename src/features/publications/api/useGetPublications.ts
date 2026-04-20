@@ -13,6 +13,8 @@ interface UseGetPublicationsReturnType {
   isGettingPublications: boolean;
 }
 
+const FETCH_PAGE_SIZE = 1000;
+
 const useGetPublications = (): UseGetPublicationsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
   const { currentPage, pageSize, search } = usePageParams();
@@ -20,26 +22,16 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
   const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
     queryKey: ["publications", "all"],
     queryFn: async () => {
-      let pageToken: string | undefined;
-      const publications: Publication[] = [];
+      const response = await authFetchDebArchive.get<ListPublicationsResponse>(
+        "publications",
+        {
+          params: {
+            pageSize: FETCH_PAGE_SIZE,
+          },
+        },
+      );
 
-      do {
-        const response =
-          await authFetchDebArchive.get<ListPublicationsResponse>(
-            "publications",
-            {
-              params: {
-                pageSize,
-                pageToken,
-              },
-            },
-          );
-
-        publications.push(...(response.data.publications ?? []));
-        pageToken = response.data.nextPageToken || undefined;
-      } while (pageToken);
-
-      return publications;
+      return response.data.publications ?? [];
     },
   });
 
@@ -50,20 +42,9 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
       return data ?? [];
     }
 
-    return (data ?? []).filter((publication) => {
-      const searchFields = [
-        publication.name,
-        publication.publicationId,
-        publication.publicationTarget,
-        publication.mirror,
-        publication.distribution,
-        publication.component,
-      ];
-
-      return searchFields.some((value) =>
-        value.toLowerCase().includes(normalizedSearch),
-      );
-    });
+    return (data ?? []).filter((publication) =>
+      publication.name.toLowerCase().includes(normalizedSearch),
+    );
   }, [data, search]);
 
   const paginatedPublications = useMemo(() => {

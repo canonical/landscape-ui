@@ -23,10 +23,7 @@ export default function usePublishPublication() {
   >({
     mutationKey: ["publications", "publish"],
     mutationFn: async ({ publicationName, body }) =>
-      authFetchDebArchive.post(
-        `publications/${encodeURIComponent(publicationName)}:publish`,
-        body,
-      ),
+      authFetchDebArchive.post(`${publicationName}:publish`, body),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["publications"] }),
   });

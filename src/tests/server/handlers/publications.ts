@@ -59,7 +59,153 @@ const getPaginatedResponse = <T extends Record<string, unknown>>(
   };
 };
 
+const getMirrorsResponse = (requestUrl: string) => {
+  const { pageSize, pageToken } = getPaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getPaginatedResponse(
+    mirrors,
+    pageToken,
+    pageSize,
+  );
+
+  return HttpResponse.json({
+    mirrors: paginatedData,
+    nextPageToken,
+  });
+};
+
+const getLocalsResponse = (requestUrl: string) => {
+  const { pageSize, pageToken } = getPaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getPaginatedResponse(
+    locals,
+    pageToken,
+    pageSize,
+  );
+
+  return HttpResponse.json({
+    locals: paginatedData,
+    nextPageToken,
+  });
+};
+
+const getPublicationTargetsResponse = (requestUrl: string) => {
+  const { pageSize, pageToken } = getPaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getPaginatedResponse(
+    publicationTargets,
+    pageToken,
+    pageSize,
+  );
+
+  return HttpResponse.json({
+    publicationTargets: paginatedData,
+    nextPageToken,
+  });
+};
+
+const getPublicationsResponse = (requestUrl: string) => {
+  const { searchParams } = new URL(requestUrl);
+  const search = searchParams.get("search") ?? undefined;
+  const { pageSize, pageToken } = getPaginationParams(requestUrl);
+
+  const filteredPublications = search
+    ? generateFilteredResponse(publications, search, [
+        "name",
+        "mirror",
+        "publicationTarget",
+      ])
+    : publications;
+
+  const { paginatedData, nextPageToken } = getPaginatedResponse(
+    filteredPublications,
+    pageToken,
+    pageSize,
+  );
+
+  return HttpResponse.json({
+    publications: paginatedData,
+    nextPageToken,
+  });
+};
+
+const getCreatePublicationResponse = async (request: Request) => {
+  const publicationBody = toObjectBody(await request.json());
+
+  return HttpResponse.json(
+    {
+      ...publications[0],
+      ...publicationBody,
+    },
+    { status: 200 },
+  );
+};
+
+const getPublicationDetailsResponse = (publicationName: string) => {
+  const publication = getPublicationParam(publicationName);
+
+  if (!publication) {
+    return HttpResponse.json(
+      { message: "Publication not found" },
+      { status: 404 },
+    );
+  }
+
+  return HttpResponse.json(publication);
+};
+
+const getUpdatePublicationResponse = async (
+  publicationName: string,
+  request: Request,
+) => {
+  const publication = getPublicationParam(publicationName);
+
+  if (!publication) {
+    return HttpResponse.json(
+      { message: "Publication not found" },
+      { status: 404 },
+    );
+  }
+
+  const body = toObjectBody(await request.json());
+
+  return HttpResponse.json({
+    ...publication,
+    ...body,
+  });
+};
+
+const getDeletePublicationResponse = () => {
+  return HttpResponse.json({}, { status: 200 });
+};
+
+const getPublishPublicationResponse = () => {
+  return HttpResponse.json(
+    {
+      task: {
+        name: "tasks/2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
+        displayName:
+          "publish publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
+        taskId: "2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
+        status: "RUNNING",
+        output: "",
+      },
+    },
+    { status: 200 },
+  );
+};
+
 export default [
+  http.get("/v1/mirrors", ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "mirrors"
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    return getMirrorsResponse(request.url);
+  }),
+
   http.get(`${API_URL}v1/mirrors`, ({ request }) => {
     const endpointStatus = getEndpointStatus();
 
@@ -70,17 +216,17 @@ export default [
       throw new HttpResponse(null, { status: 500 });
     }
 
-    const { pageSize, pageToken } = getPaginationParams(request.url);
-    const { paginatedData, nextPageToken } = getPaginatedResponse(
-      mirrors,
-      pageToken,
-      pageSize,
-    );
+    return getMirrorsResponse(request.url);
+  }),
 
-    return HttpResponse.json({
-      mirrors: paginatedData,
-      nextPageToken,
-    });
+  http.get("/v1/locals", ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error" && endpointStatus.path === "locals") {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    return getLocalsResponse(request.url);
   }),
 
   http.get(`${API_URL}v1/locals`, ({ request }) => {
@@ -90,17 +236,30 @@ export default [
       throw new HttpResponse(null, { status: 500 });
     }
 
-    const { pageSize, pageToken } = getPaginationParams(request.url);
-    const { paginatedData, nextPageToken } = getPaginatedResponse(
-      locals,
-      pageToken,
-      pageSize,
-    );
+    return getLocalsResponse(request.url);
+  }),
 
-    return HttpResponse.json({
-      locals: paginatedData,
-      nextPageToken,
-    });
+  http.get("/v1/publicationTargets", ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "publicationTargets"
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "publicationTargets"
+    ) {
+      return HttpResponse.json({
+        publicationTargets: [],
+        nextPageToken: "",
+      });
+    }
+
+    return getPublicationTargetsResponse(request.url);
   }),
 
   http.get(`${API_URL}v1/publicationTargets`, ({ request }) => {
@@ -123,17 +282,30 @@ export default [
       });
     }
 
-    const { pageSize, pageToken } = getPaginationParams(request.url);
-    const { paginatedData, nextPageToken } = getPaginatedResponse(
-      publicationTargets,
-      pageToken,
-      pageSize,
-    );
+    return getPublicationTargetsResponse(request.url);
+  }),
 
-    return HttpResponse.json({
-      publicationTargets: paginatedData,
-      nextPageToken,
-    });
+  http.get("/v1/publications", ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json({
+        publications: [],
+        nextPageToken: "",
+      });
+    }
+
+    return getPublicationsResponse(request.url);
   }),
 
   http.get(`${API_URL}v1/publications`, ({ request }) => {
@@ -156,28 +328,23 @@ export default [
       });
     }
 
-    const { searchParams } = new URL(request.url);
-    const search = searchParams.get("search") ?? undefined;
-    const { pageSize, pageToken } = getPaginationParams(request.url);
+    return getPublicationsResponse(request.url);
+  }),
 
-    const filteredPublications = search
-      ? generateFilteredResponse(publications, search, [
-          "name",
-          "mirror",
-          "publicationTarget",
-        ])
-      : publications;
+  http.post("/v1/publications", async ({ request }) => {
+    const endpointStatus = getEndpointStatus();
 
-    const { paginatedData, nextPageToken } = getPaginatedResponse(
-      filteredPublications,
-      pageToken,
-      pageSize,
-    );
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to create publication" },
+        { status: 500 },
+      );
+    }
 
-    return HttpResponse.json({
-      publications: paginatedData,
-      nextPageToken,
-    });
+    return getCreatePublicationResponse(request);
   }),
 
   http.post(`${API_URL}v1/publications`, async ({ request }) => {
@@ -193,14 +360,23 @@ export default [
       );
     }
 
-    const publicationBody = toObjectBody(await request.json());
-    return HttpResponse.json(
-      {
-        ...publications[0],
-        ...publicationBody,
-      },
-      { status: 200 },
-    );
+    return getCreatePublicationResponse(request);
+  }),
+
+  http.get("/v1/publications/:publicationName", ({ params }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to get publication" },
+        { status: 500 },
+      );
+    }
+
+    return getPublicationDetailsResponse(params.publicationName as string);
   }),
 
   http.get(`${API_URL}v1/publications/:publicationName`, ({ params }) => {
@@ -216,17 +392,30 @@ export default [
       );
     }
 
-    const publication = getPublicationParam(params.publicationName as string);
-
-    if (!publication) {
-      return HttpResponse.json(
-        { message: "Publication not found" },
-        { status: 404 },
-      );
-    }
-
-    return HttpResponse.json(publication);
+    return getPublicationDetailsResponse(params.publicationName as string);
   }),
+
+  http.patch(
+    "/v1/publications/:publicationName",
+    async ({ params, request }) => {
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "error" &&
+        matchesPublicationsPath(endpointStatus.path)
+      ) {
+        return HttpResponse.json(
+          { message: "Failed to update publication" },
+          { status: 500 },
+        );
+      }
+
+      return getUpdatePublicationResponse(
+        params.publicationName as string,
+        request,
+      );
+    },
+  ),
 
   http.patch(
     `${API_URL}v1/publications/:publicationName`,
@@ -243,23 +432,28 @@ export default [
         );
       }
 
-      const publication = getPublicationParam(params.publicationName as string);
-
-      if (!publication) {
-        return HttpResponse.json(
-          { message: "Publication not found" },
-          { status: 404 },
-        );
-      }
-
-      const body = toObjectBody(await request.json());
-
-      return HttpResponse.json({
-        ...publication,
-        ...body,
-      });
+      return getUpdatePublicationResponse(
+        params.publicationName as string,
+        request,
+      );
     },
   ),
+
+  http.delete("/v1/publications/:publicationName", () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to remove publication" },
+        { status: 500 },
+      );
+    }
+
+    return getDeletePublicationResponse();
+  }),
 
   http.delete(`${API_URL}v1/publications/:publicationName`, () => {
     const endpointStatus = getEndpointStatus();
@@ -274,7 +468,23 @@ export default [
       );
     }
 
-    return HttpResponse.json({}, { status: 200 });
+    return getDeletePublicationResponse();
+  }),
+
+  http.post(new RegExp(`/v1/publications/.+:publish$`), () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to republish publication" },
+        { status: 500 },
+      );
+    }
+
+    return getPublishPublicationResponse();
   }),
 
   http.post(new RegExp(`${API_URL}v1/publications/.+:publish$`), () => {
@@ -290,18 +500,6 @@ export default [
       );
     }
 
-    return HttpResponse.json(
-      {
-        task: {
-          name: "tasks/2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-          displayName:
-            "publish publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
-          taskId: "2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-          status: "RUNNING",
-          output: "",
-        },
-      },
-      { status: 200 },
-    );
+    return getPublishPublicationResponse();
   }),
 ];

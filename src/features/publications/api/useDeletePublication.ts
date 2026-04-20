@@ -18,9 +18,7 @@ export default function useDeletePublication() {
   >({
     mutationKey: ["publications", "delete"],
     mutationFn: async ({ publicationName }) =>
-      authFetchDebArchive.delete(
-        `publications/${encodeURIComponent(publicationName)}`,
-      ),
+      authFetchDebArchive.delete(publicationName),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["publications"] }),
   });

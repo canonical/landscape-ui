@@ -23,10 +23,7 @@ export default function useGetPublication(
     AxiosError<ApiError>
   >({
     queryKey: ["publications", "details", publicationName],
-    queryFn: async () =>
-      authFetchDebArchive.get(
-        `publications/${encodeURIComponent(publicationName)}`,
-      ),
+    queryFn: async () => authFetchDebArchive.get(publicationName),
     ...options,
   });
 

@@ -307,7 +307,6 @@ const AddPublicationForm: FC = () => {
               options={architectureOptions}
               error={getFormikError(formik, "uploader_architectures")}
               {...formik.getFieldProps("uploader_architectures")}
-              className="u-no-margin--bottom"
             />
           )}
         </Blocks.Item>

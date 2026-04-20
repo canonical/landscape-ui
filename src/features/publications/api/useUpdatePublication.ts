@@ -20,10 +20,7 @@ export default function useUpdatePublication() {
   >({
     mutationKey: ["publications", "update"],
     mutationFn: async ({ publicationName, body }) =>
-      authFetchDebArchive.patch(
-        `publications/${encodeURIComponent(publicationName)}`,
-        body,
-      ),
+      authFetchDebArchive.patch(publicationName, body),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["publications"] }),
   });

@@ -63,7 +63,7 @@ export interface PublicationTarget extends Record<string, unknown> {
 export interface PublicationWritable {
   name?: string;
   publicationTarget: string;
-  source: string;
+  mirror: string;
   distribution?: string;
   component?: string;
   label?: string;
