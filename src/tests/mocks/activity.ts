@@ -331,6 +331,7 @@ export const activityTypes = [
   "StubReappliableRequest",
   "StubRequest",
   "StubRequestImportant",
+  "StubRevertableRequest",
   "SyncPocketRequest",
   "UnholdSnaps",
   "UnlockUserRequest",

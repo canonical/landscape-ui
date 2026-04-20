@@ -54,7 +54,7 @@ const SecurityProfileDownloadAuditForm: FC<
 
   const pendingReport = pendingReports.find((report) => report.profileId == id);
 
-  const { activity, isGettingActivity, isActivityError } = useGetSingleActivity(
+  const { activity, isLoadingActivity, isActivityError } = useGetSingleActivity(
     {
       activityId: pendingReport?.activityId ?? 0,
     },
@@ -166,7 +166,7 @@ const SecurityProfileDownloadAuditForm: FC<
     },
   });
 
-  if (isGettingActivity) {
+  if (isLoadingActivity) {
     return <LoadingState />;
   }
 

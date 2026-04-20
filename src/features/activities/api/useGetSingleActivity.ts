@@ -17,6 +17,7 @@ const useGetSingleActivity = (
   const {
     data: response,
     isPending,
+    isLoading,
     isError,
     error,
   } = useQuery<AxiosResponse<Activity>, AxiosError<ApiError>>({
@@ -31,6 +32,7 @@ const useGetSingleActivity = (
     activityError: error,
     isActivityError: isError,
     isGettingActivity: isPending,
+    isLoadingActivity: isLoading,
   };
 };
 
