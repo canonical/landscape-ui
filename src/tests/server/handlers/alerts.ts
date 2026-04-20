@@ -11,6 +11,7 @@ import { alerts, alertsSummary, licenseAlert } from "@/tests/mocks/alerts";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, never, Alert[]>(`${API_URL}alerts`, () => {

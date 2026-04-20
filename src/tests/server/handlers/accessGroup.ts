@@ -28,7 +28,6 @@ export default [
     return HttpResponse.json(accessGroups);
   }),
 
-
   http.get(API_URL_OLD, ({ request }) => {
     if (
       !isAction(request, ["ChangeComputersAccessGroup", "RemoveAccessGroup"])

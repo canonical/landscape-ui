@@ -36,75 +36,72 @@ import {
 import { createEndpointStatusError } from "./_constants";
 
 export default [
-  http.get(
-    `${API_URL}computers`,
-    async ({ request }) => {
-      const url = new URL(request.url);
-      const query = url.searchParams.get("query") || "";
+  http.get(`${API_URL}computers`, async ({ request }) => {
+    const url = new URL(request.url);
+    const query = url.searchParams.get("query") || "";
 
-      if (shouldApplyEndpointStatus("computers")) {
-        const { status, path } = getEndpointStatus();
+    if (shouldApplyEndpointStatus("computers")) {
+      const { status, path } = getEndpointStatus();
 
-        if (
-          status === "error" &&
-          path === "computers-tagged-loading" &&
-          query.includes(" OR ")
-        ) {
-          return new Promise<never>(() => undefined);
-        }
-
-        if (
-          status === "error" &&
-          (!path ||
-            path === "computers" ||
-            (path === "computers-tagged-error" && query.includes(" OR ")))
-        ) {
-          throw createEndpointStatusError();
-        }
+      if (
+        status === "error" &&
+        path === "computers-tagged-loading" &&
+        query.includes(" OR ")
+      ) {
+        return new Promise<never>(() => undefined);
       }
 
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 1;
-
-      if (query.includes("has-pro-management:false")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: [instances[1], instances[2]],
-            limit,
-            offset,
-          }),
-        );
+      if (
+        status === "error" &&
+        (!path ||
+          path === "computers" ||
+          (path === "computers-tagged-error" && query.includes(" OR ")))
+      ) {
+        throw createEndpointStatusError();
       }
+    }
 
-      if (query.includes("access-group:singular-access-group")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: [instances[0]],
-            limit,
-            offset,
-          }),
-        );
-      }
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || 1;
 
-      if (query.includes("access-group:empty-access-group")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: [],
-            limit,
-            offset,
-          }),
-        );
-      }
-
+    if (query.includes("has-pro-management:false")) {
       return HttpResponse.json(
         generatePaginatedResponse<Instance>({
-          data: instances,
+          data: [instances[1], instances[2]],
           limit,
           offset,
         }),
       );
-    },
-  ),
+    }
+
+    if (query.includes("access-group:singular-access-group")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [instances[0]],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (query.includes("access-group:empty-access-group")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: instances,
+        limit,
+        offset,
+      }),
+    );
+  }),
 
   http.get(`${API_URL}computers/release-upgrade-targets`, ({ request }) => {
     const url = new URL(request.url);
@@ -275,6 +272,29 @@ export default [
   }),
 
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error") {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json(activities[0]);
+  }),
+
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:computerId/restart`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw getEndpointStatusApiError();
+      }
+
+      return HttpResponse.json(activities[0]);
+    },
+  ),
+
+  http.post(`${API_URL}computers/upgrade-packages`, async () => {
     if (shouldApplyEndpointStatus("computers/upgrade-packages")) {
       const { status } = getEndpointStatus();
       if (status === "error") {
@@ -285,38 +305,32 @@ export default [
     return HttpResponse.json(activities[0]);
   }),
 
-  http.post(
-    `${API_URL}computers/:computerId/restart`,
-    async () => {
-      if (shouldApplyEndpointStatus("computers/:computerId/restart")) {
-        const { status } = getEndpointStatus();
-        if (status === "error") {
-          throw createEndpointStatusError();
-        }
+  http.post(`${API_URL}computers/:computerId/restart`, async () => {
+    if (shouldApplyEndpointStatus("computers/:computerId/restart")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
+    }
 
-      return HttpResponse.json(activities[0]);
-    },
-  ),
+    return HttpResponse.json(activities[0]);
+  }),
 
-  http.get(
-    `${API_URL}computers/:computerId`,
-    async ({ request }) => {
-      if (shouldApplyEndpointStatus("computers/:computerId")) {
-        const { status } = getEndpointStatus();
-        if (status === "error") {
-          throw createEndpointStatusError();
-        }
+  http.get(`${API_URL}computers/:computerId`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("computers/:computerId")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
+    }
 
-      const url = new URL(request.url);
-      const computerId = url.pathname.split("/").pop();
+    const url = new URL(request.url);
+    const computerId = url.pathname.split("/").pop();
 
-      return HttpResponse.json(
-        instances.find((inst) => inst.id === Number(computerId)) || null,
-      );
-    },
-  ),
+    return HttpResponse.json(
+      instances.find((inst) => inst.id === Number(computerId)) || null,
+    );
+  }),
 
   http.put(`${API_URL}computers/:computerId`, async () => {
     if (shouldApplyEndpointStatus("editInstance")) {
