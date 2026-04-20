@@ -5,21 +5,35 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import PackageProfilesPage from "./PackageProfilesPage";
+import type * as actualModule from "@/features/profiles";
+
+vi.mock("@/features/profiles", async () => {
+  const actual = await vi.importActual<typeof actualModule>(
+    "@/features/profiles",
+  );
+
+  return {
+    ...actual,
+    ProfilesContainer: () => <div>Package profiles table</div>,
+  };
+});
 
 describe("PackageProfilesPage", () => {
-  it("has a button to add a package profile", async () => {
+  it("has a button to add a profile", async () => {
     renderWithProviders(<PackageProfilesPage />);
 
     const user = userEvent.setup();
 
     await user.click(
-      screen.getByRole("button", { name: "Add package profile" }),
+      await screen.findByRole("button", { name: "Add profile" }),
     );
     await expectLoadingState();
+
     expect(
-      screen.getByRole("heading", { name: "Add package profile" }),
+      await screen.findByRole("heading", { name: "Add package profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
+
     expect(
       screen.queryByRole("heading", { name: "Add package profile" }),
     ).not.toBeInTheDocument();
@@ -32,6 +46,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=add-constraints&profile=${packageProfiles[0].name}`,
     );
 
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Add package constraints to "${packageProfiles[0].title}" profile`,
@@ -46,6 +61,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=duplicate&profile=${packageProfiles[0].name}`,
     );
 
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Duplicate ${packageProfiles[0].title}`,
@@ -60,6 +76,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=edit&profile=${packageProfiles[0].name}`,
     );
 
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${packageProfiles[0].title}`,
@@ -74,6 +91,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=edit-constraints&profile=${packageProfiles[0].name}`,
     );
 
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Change "${packageProfiles[0].title}" profile's constraints`,
@@ -88,6 +106,7 @@ describe("PackageProfilesPage", () => {
       `/?sidePath=view&profile=${packageProfiles[0].name}`,
     );
 
+    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: packageProfiles[0].title,

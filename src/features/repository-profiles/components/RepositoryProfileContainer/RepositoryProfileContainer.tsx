@@ -1,12 +1,8 @@
 import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
-import { TablePagination } from "@/components/layout/TablePagination";
-import usePageParams from "@/hooks/usePageParams";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import type { FC } from "react";
-import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
 import RepositoryProfileHeader from "../RepositoryProfileHeader";
@@ -24,19 +20,6 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     error: unfilteredRepositoryProfilesError,
   },
 }) => {
-  const { currentPage, pageSize, search } = usePageParams();
-  const { getRepositoryProfilesQuery } = useRepositoryProfiles();
-
-  const {
-    data: repositoryProfilesResponse,
-    isPending: isPendingRepositoryProfiles,
-    error: repositoryProfilesError,
-  } = getRepositoryProfilesQuery({
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    search: search ? [search] : undefined,
-  });
-
   if (!unfilteredRepositoryProfilesResponse) {
     throw unfilteredRepositoryProfilesError;
   }
@@ -62,23 +45,11 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     );
   }
 
-  if (isPendingRepositoryProfiles) {
-    return <LoadingState />;
-  }
-
-  if (!repositoryProfilesResponse) {
-    throw repositoryProfilesError;
-  }
-
   return (
     <>
       <RepositoryProfileHeader />
       <RepositoryProfileList
-        repositoryProfiles={repositoryProfilesResponse.data.results}
-      />
-      <TablePagination
-        totalItems={repositoryProfilesResponse.data.count}
-        currentItemCount={repositoryProfilesResponse.data.results.length}
+        repositoryProfiles={unfilteredRepositoryProfilesResponse.data.results}
       />
     </>
   );

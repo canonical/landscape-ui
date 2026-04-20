@@ -12,32 +12,6 @@ const [profileWithSources, profileWithoutSources] = repositoryProfiles;
 describe("RepositoryProfileDetails", () => {
   const user = userEvent.setup();
 
-  it("renders profile fields", async () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithSources} />,
-    );
-
-    expect(
-      screen.getByRole("heading", { name: "General" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(profileWithSources.title)).toBeInTheDocument();
-    expect(
-      screen.getByText(profileWithSources.description),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(profileWithSources.access_group),
-    ).toBeInTheDocument();
-    expect(screen.getByText("No")).toBeInTheDocument();
-  });
-
-  it("renders all_computers as Yes when true", () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithoutSources} />,
-    );
-
-    expect(screen.getByText("Yes")).toBeInTheDocument();
-  });
-
   it("renders apt sources table with source names", () => {
     renderWithProviders(
       <RepositoryProfileDetails profile={profileWithSources} />,

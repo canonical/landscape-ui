@@ -4,6 +4,7 @@ import ListTitle, {
 } from "@/components/layout/ListTitle";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -34,7 +35,7 @@ interface RepositoryProfileListProps {
 const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   repositoryProfiles,
 }) => {
-  const { search } = usePageParams();
+  const { search, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
@@ -55,6 +56,11 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
       return profile.title.toLowerCase().includes(search.toLowerCase());
     });
   }, [repositoryProfiles, search]);
+
+  const pagedProfiles = useMemo(
+    () => profiles.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [profiles, currentPage, pageSize],
+  );
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => {
@@ -141,13 +147,19 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={profiles}
-      getCellProps={getCellProps()}
-      getRowProps={getRowProps()}
-      emptyMsg={`No repository profiles found with the search "${search}"`}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedProfiles}
+        getCellProps={getCellProps()}
+        getRowProps={getRowProps()}
+        emptyMsg={`No repository profiles found with the search "${search}"`}
+      />
+      <TablePagination
+        totalItems={profiles.length}
+        currentItemCount={pagedProfiles.length}
+      />
+    </>
   );
 };
 

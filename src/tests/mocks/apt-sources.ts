@@ -53,4 +53,66 @@ export const aptSources = [
     name: "source5",
     profiles: [] as string[],
   },
+  {
+    id: 6,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source6",
+    profiles: ["repo-profile-1",] as string[],
+  },
+
+  {
+    id: 7,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source7",
+    profiles: ["repo-profile-1",] as string[],
+  },
+
+  {
+    id: 8,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source8",
+    profiles: ["repo-profile-1",] as string[],
+  },
+
+  {
+    id: 9,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source9",
+    profiles: ["repo-profile-1",] as string[],
+  },
+
+  {
+    id: 10,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source10",
+    profiles: ["repo-profile-1",] as string[],
+  },
+
+  {
+    id: 11,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source11",
+    profiles: ["repo-profile-1",] as string[],
+  },
+
+  {
+    id: 12,
+    access_group: "group1",
+    gpg_key: "key1",
+    line: "deb http://example.com/ubuntu focal main",
+    name: "source12",
+    profiles: ["repo-profile-1",] as string[],
+  },
 ] as const satisfies APTSource[];

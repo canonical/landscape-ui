@@ -1,5 +1,6 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { PackageProfile } from "../types";
@@ -8,7 +9,16 @@ export interface UseGetPackageProfileParams {
   name: string;
 }
 
-export const useGetPackageProfile = (name: string) => {
+export const useGetPackageProfile = (
+  name: string,
+  config: Omit<
+    UseQueryOptions<
+      AxiosResponse<{ result: [PackageProfile] }>,
+      AxiosError<ApiError>
+    >,
+    "queryKey" | "queryFn"
+  > = {},
+) => {
   const authFetch = useFetch();
 
   const {
@@ -25,6 +35,7 @@ export const useGetPackageProfile = (name: string) => {
         params: { names: [name] },
         signal,
       }),
+    ...config,
   });
 
   const packageProfile = response?.data.result[0];

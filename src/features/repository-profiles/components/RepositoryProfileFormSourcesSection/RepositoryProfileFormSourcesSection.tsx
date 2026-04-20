@@ -1,7 +1,8 @@
 import type { APTSource } from "@/features/apt-sources";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { Button, Icon, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 
 interface SourceRow extends Record<string, unknown> {
@@ -26,6 +27,9 @@ const RepositoryProfileFormSourcesSection: FC<
   onEditSource,
   error,
 }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
   const rows: SourceRow[] = useMemo(
     () =>
       sources.map((s) => ({
@@ -35,6 +39,13 @@ const RepositoryProfileFormSourcesSection: FC<
         source: s,
       })),
     [sources],
+  );
+
+  const safePage = Math.min(currentPage, Math.max(1, Math.ceil(rows.length / pageSize)));
+
+  const pagedRows = useMemo(
+    () => rows.slice((safePage - 1) * pageSize, safePage * pageSize),
+    [rows, safePage, pageSize],
   );
 
   const columns = useMemo<Column<SourceRow>[]>(
@@ -100,8 +111,14 @@ const RepositoryProfileFormSourcesSection: FC<
     <>
       <ModularTable
         columns={columns}
-        data={rows}
+        data={pagedRows}
         emptyMsg="No sources have been added yet."
+      />
+      <ModalTablePagination
+        current={safePage}
+        max={Math.max(1, Math.ceil(rows.length / pageSize))}
+        onPrev={() => { setCurrentPage(safePage - 1); }}
+        onNext={() => { setCurrentPage(safePage + 1); }}
       />
       {error && (
         <div className="p-form-validation is-error">

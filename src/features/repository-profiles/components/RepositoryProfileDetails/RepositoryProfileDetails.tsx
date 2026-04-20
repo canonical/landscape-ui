@@ -1,25 +1,29 @@
-import ProfileAssociationInfo from "@/components/form/ProfileAssociationInfo";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
+import ViewProfileGeneralBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileGeneralBlock/ViewProfileGeneralBlock";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ModularTable } from "@canonical/react-components";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { APTSource } from "@/features/apt-sources";
 import type { FC } from "react";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useMemo, useState } from "react";
 import type { Column, CellProps } from "react-table";
 import { useBoolean } from "usehooks-ts";
-import { useGetProfileInstancesCount, useRepositoryProfiles } from "../../api";
+import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 import Blocks from "@/components/layout/Blocks/Blocks";
+import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileAssociationBlock/ViewProfileAssociationBlock";
+import { ProfileTypes } from "@/features/profiles";
 
 const RepositoryProfileForm = lazy(async () => import("../RepositoryProfileForm"));
 
 interface RepositoryProfileDetailsProps {
   readonly profile: RepositoryProfile;
 }
+
+const SOURCES_PAGE_SIZE = 10;
 
 const aptSourceColumns: Column<APTSource>[] = [
   {
@@ -41,7 +45,13 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
 
-  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(profile.id);
+  const [sourcesPage, setSourcesPage] = useState(1);
+  const totalSourcePages = Math.max(1, Math.ceil(profile.apt_sources.length / SOURCES_PAGE_SIZE));
+  const safeSourcesPage = Math.min(sourcesPage, totalSourcePages);
+  const pagedSources = useMemo(
+    () => profile.apt_sources.slice((safeSourcesPage - 1) * SOURCES_PAGE_SIZE, safeSourcesPage * SOURCES_PAGE_SIZE),
+    [profile.apt_sources, safeSourcesPage],
+  );
 
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
   const { mutateAsync: removeRepositoryProfile, isPending: isRemoving } =
@@ -107,64 +117,23 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
         </div>
       </div>
 
-      <Blocks.Item title="General">
-        <InfoGrid spaced>
-          <InfoGrid.Item label="Title" large value={profile.title} />
-
-          {profile.description && (
-            <InfoGrid.Item label="Description" large value={profile.description} />
-          )}
-
-          <InfoGrid.Item label="Access group" value={profile.access_group} />
-
-          <InfoGrid.Item
-            label="All computers"
-            value={profile.all_computers ? "Yes" : "No"}
-          />
-        </InfoGrid>
-      </Blocks.Item>
+      <ViewProfileGeneralBlock profile={profile} type={ProfileTypes.repository} />
 
       <Blocks.Item title="Sources">
         <ModularTable
           columns={aptSourceColumns}
-          data={profile.apt_sources}
+          data={pagedSources}
           emptyMsg="No sources have been added yet."
+        />
+        <ModalTablePagination
+          current={safeSourcesPage}
+          max={totalSourcePages}
+          onPrev={() => { setSourcesPage(safeSourcesPage - 1); }}
+          onNext={() => { setSourcesPage(safeSourcesPage + 1); }}
         />
       </Blocks.Item>
 
-      <Blocks.Item title="Association">
-        <ProfileAssociationInfo profile={profile}>
-          <InfoGrid spaced>
-            <InfoGrid.Item
-              label="Tags"
-              large
-              value={profile.tags.join(", ")}
-              type="truncated"
-            />
-            <InfoGrid.Item
-              label="Pending"
-              value={String(profile.pending_count)}
-            />
-          </InfoGrid>
-        </ProfileAssociationInfo>
-      </Blocks.Item>
-
-      <Blocks.Item title="Instances">
-        <InfoGrid spaced>
-          <InfoGrid.Item
-            label="Associated"
-            value={isLoadingCount ? "\u2026" : String(associatedCount)}
-          />
-          <InfoGrid.Item
-            label="Applied"
-            value={isLoadingCount ? "\u2026" : String(Math.max(0, associatedCount - profile.pending_count))}
-          />
-          <InfoGrid.Item
-            label="Pending"
-            value={String(profile.pending_count)}
-          />
-        </InfoGrid>
-      </Blocks.Item>
+      <ViewProfileAssociationBlock profile={profile} type={ProfileTypes.repository} />
 
       <TextConfirmationModal
         isOpen={isModalOpen}

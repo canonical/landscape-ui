@@ -12,9 +12,7 @@ import type { FC } from "react";
 const RepositoryProfilesPage: FC = () => {
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
 
-  const unfilteredRepositoryProfilesResult = getRepositoryProfilesQuery({
-    limit: 0,
-  });
+  const unfilteredRepositoryProfilesResult = getRepositoryProfilesQuery();
 
   if (unfilteredRepositoryProfilesResult.isPending) {
     return <LoadingState />;

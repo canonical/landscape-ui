@@ -42,7 +42,7 @@ describe("RepositoryProfileFormSourcesSection", () => {
   it("renders source names and deb lines", () => {
     renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
 
-    for (const source of aptSources) {
+    for (const source of aptSources.slice(0, 10)) {
       expect(screen.getByText(source.name)).toBeInTheDocument();
     }
   });
