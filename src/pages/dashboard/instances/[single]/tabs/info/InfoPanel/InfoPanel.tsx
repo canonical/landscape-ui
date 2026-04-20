@@ -264,11 +264,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     ? getAccessGroupQueryResult.data
     : [];
 
+  const instanceFeatures = getFeatures(instance);
   const hasRecoveryKey = Boolean(recoveryKey);
   const shouldShowRecoveryKeyWarningInLabel = Boolean(
     recoveryKeyRegenerationAttemptMessage,
   );
-  const shouldShowRecoveryKeyActions = isRecoveryKeyFetched;
+  const shouldShowRecoveryKeyActions =
+    isRecoveryKeyFetched && instanceFeatures.recoveryKey;
   const shouldShowGenerateRecoveryKey =
     shouldShowRecoveryKeyActions &&
     !hasRecoveryKey &&
@@ -325,19 +327,19 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               icon: "restart",
               label: "Restart",
               onClick: openRestartModal,
-              excluded: !getFeatures(instance).power,
+              excluded: !instanceFeatures.power,
             },
             {
               icon: "power-off",
               label: "Shut down",
               onClick: openShutDownModal,
-              excluded: !getFeatures(instance).power,
+              excluded: !instanceFeatures.power,
             },
             {
               icon: "code",
               label: "Run script",
               onClick: openRunScriptForm,
-              excluded: !getFeatures(instance).scripts,
+              excluded: !instanceFeatures.scripts,
             },
             {
               icon: "private-key",
@@ -360,7 +362,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               collapsed: true,
               excluded:
                 !isFeatureEnabled("employee-management") ||
-                !getFeatures(instance).employees ||
+                !instanceFeatures.employees ||
                 instance.employee_id !== null,
             },
             {
@@ -370,7 +372,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               collapsed: true,
               excluded:
                 !isFeatureEnabled("employee-management") ||
-                !getFeatures(instance).employees ||
+                !instanceFeatures.employees ||
                 instance.employee_id === null,
             },
           ],
@@ -380,14 +382,14 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               label: "Reinstall",
               onClick: openReinstallModal,
               collapsed: true,
-              excluded: !getFeatures(instance).uninstallation,
+              excluded: !instanceFeatures.uninstallation,
             },
             {
               icon: "close",
               label: "Uninstall",
               onClick: openUninstallModal,
               collapsed: true,
-              excluded: !getFeatures(instance).uninstallation,
+              excluded: !instanceFeatures.uninstallation,
             },
             {
               icon: "restart",
