@@ -1,6 +1,8 @@
 import type { ActivityStatus } from "./types";
 import classes from "./activities.module.scss";
 
+export const EXCLUDED_ACTIVITY_TYPE_OPTIONS = ["StubRevertableRequest"];
+
 export const ACTIVITY_STATUSES: Record<
   ActivityStatus,
   { icon: string; label: string }

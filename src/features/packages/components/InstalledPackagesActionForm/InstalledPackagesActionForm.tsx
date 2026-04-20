@@ -5,7 +5,7 @@ import {
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import InfoItem from "@/components/layout/InfoItem";
 import type { Activity } from "@/features/activities";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -39,7 +39,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { closeSidePanel } = useSidePanel();
   const {
     downgradePackageVersionQuery,

@@ -1,6 +1,6 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import {
   GenerateRecoveryKeyModal,
   isRecoveryKeyActivityInProgress,
@@ -30,7 +30,7 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const navigate = useNavigate();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
   const { recoveryKey, recoveryKeyActivityStatus, isRecoveryKeyFetched } =

@@ -1,5 +1,5 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
@@ -24,7 +24,7 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { detachToken, isDetachingToken } = useDetachToken();
 
   const count = instanceCount ?? computerIds.length;

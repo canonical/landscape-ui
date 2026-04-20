@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -20,7 +20,7 @@ const PackagesInstallForm: FC = () => {
   const { notify } = useNotify();
   const { packagesActionQuery } = usePackages();
   const { closeSidePanel } = useSidePanel();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 

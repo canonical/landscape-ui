@@ -175,19 +175,6 @@ export default [
   }),
 
   http.post<never, { activity_ids: number[] }, number[]>(
-    `${API_URL}activities/revert`,
-    async () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
-      }
-
-      return HttpResponse.json([activities[0].id, activities[1].id]);
-    },
-  ),
-
-  http.post<never, { activity_ids: number[] }, number[]>(
     `${API_URL}activities/reapply`,
     async () => {
       const endpointStatus = getEndpointStatus();

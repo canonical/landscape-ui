@@ -14,7 +14,7 @@ import {
   REBOOT_OR_SHUT_DOWN_INITIAL_VALUES,
   REBOOT_OR_SHUT_DOWN_VALIDATION_SCHEMA,
 } from "../../constants";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { pluralizeArray } from "@/utils/_helpers";
 
 interface RestartModalProps {
@@ -26,7 +26,7 @@ const RestartModal: FC<RestartModalProps> = ({ instances, close }) => {
   const debug = useDebug();
   const { notify } = useNotify();
 
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { restartInstances, isRestartingInstances } = useRestartInstances();
 

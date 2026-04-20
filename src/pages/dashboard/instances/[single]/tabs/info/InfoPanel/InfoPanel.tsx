@@ -5,7 +5,7 @@ import HeaderActions from "@/components/layout/HeaderActions";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import {
   useDisassociateEmployeeFromInstance,
   useGetEmployee,
@@ -86,7 +86,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { employee, isGettingEmployee } = useGetEmployee(
     { id: instance.employee_id ?? 0 },
     { enabled: !!instance.employee_id },

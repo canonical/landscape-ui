@@ -1,6 +1,6 @@
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -27,7 +27,7 @@ const WslInstanceInstallForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { isGettingWslInstanceTypes, wslInstanceTypes } =
     useGetWslInstanceTypes();
