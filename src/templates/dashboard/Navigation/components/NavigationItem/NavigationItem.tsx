@@ -18,7 +18,7 @@ const NavigationItem: FC<NavigationItemProps> = ({ item }) => {
     <li
       key={item.path}
       className={classNames("p-side-navigation__item", {
-        [classes.hasDivider]: item.hasDivider,
+        [classes.hasDivider as string]: item.hasDivider,
       })}
     >
       {item.items && item.items.length > 0 ? (

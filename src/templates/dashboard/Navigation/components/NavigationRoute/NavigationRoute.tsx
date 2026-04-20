@@ -9,16 +9,18 @@ interface NavigationRouteProps {
   readonly item: MenuItem;
   readonly current?: boolean;
   readonly className?: string;
+  readonly withLinkStyle?: boolean;
 }
 
 const NavigationRoute: FC<NavigationRouteProps> = ({
   item,
   current,
   className,
+  withLinkStyle = true,
 }) => {
   return (
     <Link
-      className={classNames("p-side-navigation__link", classes.link, className)}
+      className={classNames("p-side-navigation__link", { [classes.link as string]: withLinkStyle }, className)}
       to={item.path}
       aria-current={current ? "page" : undefined}
     >
@@ -32,7 +34,7 @@ const NavigationRoute: FC<NavigationRouteProps> = ({
       )}
       <span
         className={classNames("p-side-navigation__label", classes.label, {
-          [classes.hasBadge]: item.badge !== undefined && item.badge.count > 0,
+          [classes.hasBadge as string]: item.badge !== undefined && item.badge.count > 0,
         })}
       >
         {item.label}
