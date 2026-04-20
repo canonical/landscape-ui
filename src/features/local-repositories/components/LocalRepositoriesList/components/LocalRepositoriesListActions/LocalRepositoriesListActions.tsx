@@ -21,7 +21,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({ r
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${repository.name} actions`}
+        toggleAriaLabel={`${repository.display_name} actions`}
         actions={[viewAction, ...actions]}
         destructiveActions={destructiveActions}
       />

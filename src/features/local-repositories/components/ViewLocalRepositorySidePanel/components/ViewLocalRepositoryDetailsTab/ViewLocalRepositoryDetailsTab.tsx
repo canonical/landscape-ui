@@ -15,7 +15,7 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
     <Blocks>
       <Blocks.Item title="Details">
         <InfoGrid>
-          <InfoGrid.Item label="Name" value={repository.name} />
+          <InfoGrid.Item label="Name" value={repository.display_name} />
 
           <InfoGrid.Item
             label="Description"
@@ -25,12 +25,12 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
 
           <InfoGrid.Item
             label="Default distribution"
-            value={repository.default_distribution}
+            value={repository.distribution}
           />
 
           <InfoGrid.Item
             label="Default component"
-            value={repository.default_component}
+            value={repository.component}
           />
         </InfoGrid>
       </Blocks.Item>

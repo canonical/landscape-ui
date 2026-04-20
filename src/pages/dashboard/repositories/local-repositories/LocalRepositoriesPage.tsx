@@ -20,15 +20,15 @@ const ViewLocalRepositorySidePanel = lazy(async () =>
   })),
 );
 
-const EditLocalRepositorySidePanel = lazy(async () =>
-  import("@/features/local-repositories").then((module) => ({
-    default: module.EditLocalRepositorySidePanel,
-  })),
-);
+// const EditLocalRepositorySidePanel = lazy(async () =>
+//   import("@/features/local-repositories").then((module) => ({
+//     default: module.EditLocalRepositorySidePanel,
+//   })),
+// );
 
-const EditLocalRepoPackagesSidePanel = lazy(async () =>
+const EditRepositoryPackagesSidePanel = lazy(async () =>
   import("@/features/local-repositories").then((module) => ({
-    default: module.EditLocalRepoPackagesSidePanel,
+    default: module.EditRepositoryPackagesSidePanel,
   })),
 );
 
@@ -46,7 +46,7 @@ const LocalRepositoriesPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", [
     "add",
     "publish",
-    "edit",
+    // "edit",
     "edit-packages",
     "view",
   ]);
@@ -77,15 +77,15 @@ const LocalRepositoriesPage: FC = () => {
           </SidePanel.Suspense>
         )}
 
-        {lastSidePathSegment === "edit" && (
+        {/* {lastSidePathSegment === "edit" && (
           <SidePanel.Suspense key="edit">
             <EditLocalRepositorySidePanel />
           </SidePanel.Suspense>
-        )}
+        )} */}
 
         {lastSidePathSegment === "edit-packages" && (
           <SidePanel.Suspense key="edit-packages">
-            <EditLocalRepoPackagesSidePanel />
+            <EditRepositoryPackagesSidePanel />
           </SidePanel.Suspense>
         )}
 

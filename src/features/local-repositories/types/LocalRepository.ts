@@ -19,7 +19,7 @@ export interface LocalRepository extends Record<string, unknown> {
   local_id: string,
   display_name: string,
   comment?: string,
-  default_distribution?: string,
-  default_component?: string,
+  distribution: string,
+  component: string,
   uploaders?: Uploaders,
 }

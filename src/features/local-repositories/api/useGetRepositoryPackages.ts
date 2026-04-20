@@ -24,7 +24,7 @@ export const useGetRepositoryPackages = (
     AxiosError<ApiError>
   >({
     queryKey: ["packages", repository, params],
-    queryFn: async () => authFetchDebArchive.get(`locals/${repository}/packages`, { params }),
+    queryFn: async () => authFetchDebArchive.get(`${repository}/packages`, { params }),
   });
 
   return {

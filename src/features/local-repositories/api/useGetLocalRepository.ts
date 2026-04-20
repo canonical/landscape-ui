@@ -12,7 +12,7 @@ export const useGetLocalRepository = (name: string) => {
     AxiosError<ApiError>
   >({
     queryKey: ["local", name],
-    queryFn: async () => authFetchDebArchive.get(`locals/${name}`),
+    queryFn: async () => authFetchDebArchive.get(name),
   });
 
   return {

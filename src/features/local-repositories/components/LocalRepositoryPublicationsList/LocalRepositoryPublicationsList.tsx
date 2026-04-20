@@ -12,7 +12,7 @@ interface LocalRepositoryPublicationsListProps {
 }
 
 const LocalRepositoryPublicationsList: FC<LocalRepositoryPublicationsListProps> = ({ repository }) => {
-  const { data, isGettingPublications } = useGetPublications({ filter: `source=locals/${repository.name}` });
+  const { data, isGettingPublications } = useGetPublications({ filter: `source=${repository.name}` });
   const publications = data?.publications ?? [];
   
   const columns = useMemo<Column<Publication>[]>(() => [

@@ -21,13 +21,11 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   const { notify } = useNotify();
   const debug = useDebug();
   const { setPageParams } = usePageParams();
-  const { removeLocalRepository, isRemovingLocalRepository } = useRemoveLocalRepository();
+  const { removeRepository, isRemovingRepository } = useRemoveLocalRepository();
 
   const handleRemoveLocalRepository = async () => {
     try {
-      await removeLocalRepository({
-        name: repository.name,
-      });
+      await removeRepository({ name: repository.name });
 
       setPageParams({ sidePath: [], repository: "" });
 
@@ -45,12 +43,11 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   if (isOpen) {
     return (
       <ConfirmationModal
-        title={`Local repository`}
+        title={`Remove ${repository.display_name}`}
         confirmButtonLabel="Remove local repository"
         confirmButtonAppearance="negative"
         onConfirm={handleRemoveLocalRepository}
-        confirmButtonDisabled={isRemovingLocalRepository}
-        confirmButtonLoading={isRemovingLocalRepository}
+        confirmButtonLoading={isRemovingRepository}
         close={close}
         renderInPortal
       >

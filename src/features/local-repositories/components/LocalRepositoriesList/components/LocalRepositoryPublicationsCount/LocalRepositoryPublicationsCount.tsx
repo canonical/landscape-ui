@@ -13,7 +13,7 @@ interface LocalRepositoryPublicationsCountProps {
 const LocalRepositoryPublicationsCount: FC<LocalRepositoryPublicationsCountProps> = ({
   repository,
 }) => {
-  const { data, isGettingPublications } = useGetPublications({ filter: `source=locals/${repository.name}` });
+  const { data, isGettingPublications } = useGetPublications({ filter: `source=${repository.name}` });
   const publications = data?.publications ?? [];
 
   if (isGettingPublications) {

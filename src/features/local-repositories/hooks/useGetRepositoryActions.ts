@@ -8,33 +8,40 @@ interface UseGetRepositoryActionsProps {
 }
 
 export const useGetRepositoryActions = ({ repository, openModal }: UseGetRepositoryActionsProps) => {
-  const { createPageParamsSetter } = usePageParams();
+  const { sidePath, createSidePathPusher, createPageParamsSetter } = usePageParams();
+
+  const openSidePanel = (action: string) => {
+    if (!sidePath.length) {
+      return createPageParamsSetter({ sidePath: [action], repository: repository.local_id });
+    }
+    return createSidePathPusher(action);
+  };
 
   const viewAction: Action = {
       icon: "show",
       label: "View details",
-      "aria-label": `View details of "${repository.name}" repository`,
-      onClick: createPageParamsSetter({ sidePath: ["view"], repository: repository.name }),
+      "aria-label": `View details of "${repository.display_name}" repository`,
+      onClick: openSidePanel("view"),
     };
 
   const actions: Action[] = [
-    {
-      icon: "edit",
-      label: "Edit",
-      "aria-label": `Edit "${repository.name}" repository`,
-      onClick: createPageParamsSetter({ sidePath: ["edit"], repository: repository.name }),
-    },
+    // {
+    //   icon: "edit",
+    //   label: "Edit",
+    //   "aria-label": `Edit "${repository.name}" repository`,
+    //   onClick: createPageParamsSetter({ sidePath: ["edit"], repository: repository.name }),
+    // },
     {
       icon: "edit",
       label: "Edit packages",
-      "aria-label": `Edit packages for "${repository.name}" repository`,
-      onClick: createPageParamsSetter({ sidePath: ["edit-packages"], repository: repository.name }),
+      "aria-label": `Edit packages for "${repository.display_name}" repository`,
+      onClick: openSidePanel("edit-packages"),
     },
     {
       icon: "upload",
       label: "Publish",
-      "aria-label": `Publish "${repository.name}" repository`,
-      onClick: createPageParamsSetter({ sidePath: ["publish"], repository: repository.name }),
+      "aria-label": `Publish "${repository.display_name}" repository`,
+      onClick: openSidePanel("publish"),
     },
   ];
 
@@ -42,7 +49,7 @@ export const useGetRepositoryActions = ({ repository, openModal }: UseGetReposit
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${repository.name}" repository`,
+      "aria-label": `Remove "${repository.display_name}" repository`,
       onClick: openModal,
     },
   ];

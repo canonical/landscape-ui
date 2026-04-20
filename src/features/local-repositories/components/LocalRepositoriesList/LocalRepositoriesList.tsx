@@ -32,7 +32,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              repository: repository.name,
+              repository: repository.local_id,
             })}
           >
             {repository.display_name}

@@ -6,6 +6,6 @@ export { default as ViewLocalRepositorySidePanel } from "./components/ViewLocalR
 export { default as AddLocalRepositorySidePanel } from "./components/AddLocalRepositorySidePanel";
 export { default as PublishLocalRepositorySidePanel } from "./components/PublishLocalRepositorySidePanel";
 export { default as EditLocalRepositorySidePanel } from "./components/EditLocalRepositorySidePanel";
-export { default as EditLocalRepoPackagesSidePanel } from "./components/EditLocalRepoPackagesSidePanel";
+export { default as EditRepositoryPackagesSidePanel } from "./components/EditRepositoryPackagesSidePanel";
 
 export type { LocalRepository } from "./types";
