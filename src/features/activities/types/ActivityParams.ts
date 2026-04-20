@@ -16,6 +16,6 @@ export interface ApproveActivitiesParams {
   query: string;
 }
 
-export interface RedoUndoActivitiesParams {
+export interface RedoActivitiesParams {
   activity_ids: number[];
 }

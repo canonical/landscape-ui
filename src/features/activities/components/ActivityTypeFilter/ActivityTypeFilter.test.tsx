@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import ActivityTypeFilter from "./ActivityTypeFilter";
+import { EXCLUDED_ACTIVITY_TYPE_OPTIONS } from "./constants";
 
 const options = activityTypes.map((type) => ({
   label: type,
@@ -18,6 +19,18 @@ const props: ComponentProps<typeof ActivityTypeFilter> = {
 describe("ActivityTypeFilter", () => {
   const user = userEvent.setup();
 
+  it("excludes undo-related activity types from the options", async () => {
+    renderWithProviders(<ActivityTypeFilter {...props} />);
+
+    await user.click(screen.getByRole("button", { name: "Type" }));
+
+    expect(
+      screen.queryByRole("button", {
+        name: EXCLUDED_ACTIVITY_TYPE_OPTIONS[0],
+      }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders filter label and options", async () => {
     renderWithProviders(<ActivityTypeFilter {...props} />);
 
@@ -26,8 +39,14 @@ describe("ActivityTypeFilter", () => {
 
     await user.click(toggle);
 
-    const listItems = screen.getAllByRole("listitem");
-    expect(listItems).toHaveLength(options.length);
+    expect(
+      screen.getByRole("button", { name: activityTypes[0] }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: EXCLUDED_ACTIVITY_TYPE_OPTIONS[0],
+      }),
+    ).not.toBeInTheDocument();
   });
 
   it("handles case-insensitive search", async () => {

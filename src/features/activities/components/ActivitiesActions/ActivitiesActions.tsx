@@ -13,12 +13,8 @@ interface ActivitiesActionsProps {
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const {
-    approveActivitiesQuery,
-    cancelActivitiesQuery,
-    redoActivitiesQuery,
-    undoActivitiesQuery,
-  } = useActivities();
+  const { approveActivitiesQuery, cancelActivitiesQuery, redoActivitiesQuery } =
+    useActivities();
 
   const {
     mutateAsync: approveActivities,
@@ -28,8 +24,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
     cancelActivitiesQuery;
   const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
     redoActivitiesQuery;
-  const { mutateAsync: undoActivities, isPending: undoActivitiesLoading } =
-    undoActivitiesQuery;
 
   const selectedIds = selected.map((activity) => activity.id);
   const quantifiedActivity = pluralizeArray(
@@ -79,23 +73,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           selected.length,
           "An activity has been queued to re-run this activity.",
           "Activities have been queued to re-run these activities.",
-        )}`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleUndoActivities = async () => {
-    try {
-      await undoActivities({ activity_ids: selectedIds });
-
-      notify.success({
-        title: `You have successfully undone ${quantifiedActivity}.`,
-        message: `${pluralize(
-          selected.length,
-          "An activity has been queued to revert the changes delivered by this activity.",
-          "Activities have been queued to revert the changes delivered by these activities.",
         )}`,
       });
     } catch (error) {
@@ -153,30 +130,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           }}
         >
           Cancel
-        </ConfirmationButton>
-        <ConfirmationButton
-          className="p-segmented-control__button"
-          type="button"
-          disabled={
-            !selected.length ||
-            undoActivitiesLoading ||
-            selected.some((activity) => !activity.actions?.revertable)
-          }
-          confirmationModalProps={{
-            title: `Undo ${pluralizedActivity}`,
-            children: (
-              <p>
-                Are you sure you want to undo selected {pluralizedActivity}?
-              </p>
-            ),
-            confirmButtonLabel: "Undo",
-            confirmButtonAppearance: "positive",
-            confirmButtonDisabled: undoActivitiesLoading,
-            confirmButtonLoading: undoActivitiesLoading,
-            onConfirm: handleUndoActivities,
-          }}
-        >
-          Undo
         </ConfirmationButton>
         <ConfirmationButton
           className="p-segmented-control__button"

@@ -16,7 +16,6 @@ export const RELEASE_UPGRADE_ACTIVITY: Activity = {
     approvable: false,
     cancelable: true,
     reappliable: false,
-    revertable: false,
   },
   approval_time: null,
   delivery_time: null,
@@ -35,7 +34,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-04-15T15:47:07Z",
     creator: {
@@ -66,7 +64,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-04-15T15:46:50Z",
     creator: {
@@ -97,7 +94,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-04-15T14:42:34Z",
     creator: {
@@ -128,7 +124,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T12:23:39Z",
     creator: {
@@ -159,7 +154,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T12:16:24Z",
     creator: {
@@ -190,7 +184,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T08:47:54Z",
     creator: {
@@ -221,7 +214,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T08:47:22Z",
     creator: {
@@ -252,7 +244,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T08:47:22Z",
     creator: {
@@ -340,7 +331,6 @@ export const activityTypes = [
   "StubReappliableRequest",
   "StubRequest",
   "StubRequestImportant",
-  "StubRevertableRequest",
   "SyncPocketRequest",
   "UnholdSnaps",
   "UnlockUserRequest",

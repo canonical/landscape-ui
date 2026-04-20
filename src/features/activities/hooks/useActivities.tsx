@@ -14,7 +14,7 @@ import type {
   ApproveActivitiesParams,
   CancelActivitiesParams,
   GetSingleActivityParams,
-  RedoUndoActivitiesParams,
+  RedoActivitiesParams,
 } from "../types";
 
 const ActivityDetails = lazy(
@@ -81,19 +81,9 @@ export default function useActivities() {
   const redoActivitiesQuery = useMutation<
     number[],
     AxiosError<ApiError>,
-    RedoUndoActivitiesParams
+    RedoActivitiesParams
   >({
     mutationFn: async (params) => authFetch.post("activities/reapply", params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["activities"] }),
-  });
-
-  const undoActivitiesQuery = useMutation<
-    number[],
-    AxiosError<ApiError>,
-    RedoUndoActivitiesParams
-  >({
-    mutationFn: async (params) => authFetch.post("activities/revert", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["activities"] }),
   });
@@ -113,7 +103,6 @@ export default function useActivities() {
     cancelActivitiesQuery,
     approveActivitiesQuery,
     redoActivitiesQuery,
-    undoActivitiesQuery,
     openActivityDetails,
   };
 }

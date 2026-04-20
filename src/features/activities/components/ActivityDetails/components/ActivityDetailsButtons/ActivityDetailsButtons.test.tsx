@@ -14,7 +14,6 @@ describe("ActivityDetailsButtons", () => {
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
   };
 
@@ -63,7 +62,6 @@ describe("ActivityDetailsButtons", () => {
           approvable: false,
           cancelable: true,
           reappliable: false,
-          revertable: false,
         },
       };
       renderWithProviders(
@@ -104,41 +102,6 @@ describe("ActivityDetailsButtons", () => {
 
       expect(
         await screen.findByText("You have successfully canceled an activity."),
-      ).toBeInTheDocument();
-    });
-  });
-
-  describe("Undo button", () => {
-    it("should render when activity is revertable", () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
-      expect(screen.getByRole("button", { name: "Undo" })).toBeInTheDocument();
-    });
-
-    it("should not render when activity is not revertable", () => {
-      const nonRevertableActivity = {
-        ...mockActivity,
-        actions: { ...mockActivity.actions, revertable: false },
-      };
-      renderWithProviders(
-        <ActivityDetailsButtons activity={nonRevertableActivity} />,
-      );
-      expect(
-        screen.queryByRole("button", { name: "Undo" }),
-      ).not.toBeInTheDocument();
-    });
-
-    it("should show confirmation modal and undo activity", async () => {
-      renderWithProviders(<ActivityDetailsButtons activity={mockActivity} />);
-
-      await user.click(screen.getByRole("button", { name: "Undo" }));
-
-      const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Undo activity")).toBeInTheDocument();
-
-      await user.click(within(modal).getByRole("button", { name: "Undo" }));
-
-      expect(
-        await screen.findByText("You have successfully undone an activity."),
       ).toBeInTheDocument();
     });
   });
