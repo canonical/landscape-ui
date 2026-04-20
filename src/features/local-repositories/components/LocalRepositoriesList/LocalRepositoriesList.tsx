@@ -6,8 +6,9 @@ import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
 import type { LocalRepository } from "../../types";
 import usePageParams from "@/hooks/usePageParams";
-import LocalRepositoriesListActions from "../LocalRepositoriesListActions";
-import LocalRepositoryPackagesCount from "../LocalRepositoryPackagesCount";
+import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
+import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
+import LocalRepositoryPublicationsCount from "./components/LocalRepositoryPublicationsCount";
 
 interface LocalRepositoriesListProps {
   readonly items: LocalRepository[];
@@ -59,30 +60,15 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
           <LocalRepositoryPackagesCount repository={repository} />
         ),
       },
-      // {
-      //   Header: "Publications",
-      //   meta: {
-      //     ariaLabel: ({ original }) => `${original.display_name} profile tags`,
-      //     isExpandable: true,
-      //   },
-      //   Cell: ({ row: { original, index } }: CellProps<Local>) =>
-      //     original.tags.length > 0 ? (
-      //       <TruncatedCell
-      //         content={original.tags.map((tag) => (
-      //           <span className="truncatedItem" key={tag}>
-      //             {tag}
-      //           </span>
-      //         ))}
-      //         isExpanded={index == expandedRowIndex}
-      //         onExpand={() => {
-      //           handleExpand(index);
-      //         }}
-      //         showCount
-      //       />
-      //     ) : (
-      //       <NoData />
-      //     ),
-      // },
+      {
+        Header: "Publications",
+        meta: {
+          ariaLabel: ({ original: repository }) => 
+            `${repository.display_name} local repository publications`,
+        },
+        Cell: ({ row: { original: repository } }: CellProps<LocalRepository>) =>
+          <LocalRepositoryPublicationsCount repository={repository} />
+      },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         meta: {

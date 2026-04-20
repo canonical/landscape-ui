@@ -1,0 +1,34 @@
+import LoadingState from "@/components/layout/LoadingState";
+import type { FC } from "react";
+import type { LocalRepository } from "../../../../types";
+import useGetPublications from "../../../../api/useGetPublications";
+import { pluralizeWithCount } from "@/utils/_helpers";
+import StaticLink from "@/components/layout/StaticLink";
+import { ROUTES } from "@/libs/routes";
+
+interface LocalRepositoryPublicationsCountProps {
+  readonly repository: LocalRepository;
+}
+
+const LocalRepositoryPublicationsCount: FC<LocalRepositoryPublicationsCountProps> = ({
+  repository,
+}) => {
+  const { data, isGettingPublications } = useGetPublications({ filter: `source=locals/${repository.name}` });
+  const publications = data?.publications ?? [];
+
+  if (isGettingPublications) {
+    return <LoadingState inline/>;
+  }
+
+  if (!publications.length) {
+    return "0 publications";
+  }
+
+  return (
+    <StaticLink to={ROUTES.repositories.publications({ query: `source:${repository.name}` })}>
+      {pluralizeWithCount(publications.length, "publication")}
+    </StaticLink>
+  );
+};
+
+export default LocalRepositoryPublicationsCount;

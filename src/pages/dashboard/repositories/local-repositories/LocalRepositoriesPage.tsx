@@ -40,7 +40,7 @@ const PublishLocalRepositorySidePanel = lazy(async () =>
 
 const LocalRepositoriesPage: FC = () => {
   const { lastSidePathSegment, sidePath, createPageParamsSetter } = usePageParams();
-  const { result, isGettingLocalRepos } = useGetLocalRepositories();
+  const { result, isGettingLocalRepositories } = useGetLocalRepositories();
   const localRepos = result?.locals ?? [];
 
   useSetDynamicFilterValidation("sidePath", [
@@ -58,7 +58,7 @@ const LocalRepositoriesPage: FC = () => {
         actions={localRepos.length ? [<AddLocalRepositoryButton key="add-local-repository" />] : undefined}
       />
       <PageContent hasTable>
-        <LocalRepositoriesContainer isPending={isGettingLocalRepos} items={localRepos} />
+        <LocalRepositoriesContainer isPending={isGettingLocalRepositories} items={localRepos} />
       </PageContent>
 
       <SidePanel

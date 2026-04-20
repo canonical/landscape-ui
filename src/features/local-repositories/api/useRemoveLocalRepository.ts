@@ -1,4 +1,4 @@
-import useFetch from "@/hooks/useFetch";
+import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -8,7 +8,7 @@ interface RemoveLocalRepositoryParams {
 }
 
 export const useRemoveLocalRepository = () => {
-  const authFetch = useFetch();
+  const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
@@ -17,13 +17,13 @@ export const useRemoveLocalRepository = () => {
     RemoveLocalRepositoryParams
   >({
     mutationKey: ["locals", "delete"],
-    mutationFn: async ({ name }) => authFetch.delete(`locals/${name}`),
+    mutationFn: async ({ name }) => authFetchDebArchive.delete(`locals/${name}`),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["locals"] }),
   });
 
   return {
-    removeLocalRepository: mutateAsync,
-    isRemovingLocalRepository: isPending,
+    removeRepository: mutateAsync,
+    isRemovingRepository: isPending,
   };
 };

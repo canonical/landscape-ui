@@ -5,7 +5,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
 import { ConfirmationModal } from "@canonical/react-components";
-import RepositoryPublicationsList from "./RepositoryPublicationsList/RepositoryPublicationsList";
+import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
 
 interface RemoveLocalRepositoryModalProps {
   readonly isOpen: boolean;
@@ -42,27 +42,30 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     }
   };
 
-  return (
-    <ConfirmationModal
-      open={isOpen}
-      title={`Local repository`}
-      confirmButtonLabel="Remove local repository"
-      confirmButtonAppearance="negative"
-      onConfirm={handleRemoveLocalRepository}
-      confirmButtonDisabled={isRemovingLocalRepository}
-      confirmButtonLoading={isRemovingLocalRepository}
-      close={close}
-      renderInPortal
-    >
-      <p>
-        This repository is associated with the following publications:
-      </p>
-      <RepositoryPublicationsList repository={repository} />
-      <p>
-        After removal you won&apos;t be able to update any of these publications, but they will continue to be available. This action is <strong>irreversible</strong>.
-      </p>
-    </ConfirmationModal>
-  );
+  if (isOpen) {
+    return (
+      <ConfirmationModal
+        title={`Local repository`}
+        confirmButtonLabel="Remove local repository"
+        confirmButtonAppearance="negative"
+        onConfirm={handleRemoveLocalRepository}
+        confirmButtonDisabled={isRemovingLocalRepository}
+        confirmButtonLoading={isRemovingLocalRepository}
+        close={close}
+        renderInPortal
+      >
+        <p>
+          This repository is associated with the following publications:
+        </p>
+        <LocalRepositoryPublicationsList repository={repository} />
+        <p>
+          After removal you won&apos;t be able to update any of these publications, but they will continue to be available. This action is <strong>irreversible</strong>.
+        </p>
+      </ConfirmationModal>
+    );
+  }
+
+  return null;
 };
 
 export default RemoveLocalRepositoryModal;

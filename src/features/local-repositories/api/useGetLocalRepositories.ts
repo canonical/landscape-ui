@@ -1,4 +1,4 @@
-import useFetch from "@/hooks/useFetch";
+import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -16,18 +16,18 @@ interface GetLocalRepositoriesResponse {
 }
 
 export const useGetLocalRepositories = (params?: GetLocalRepositoriesParams) => {
-  const authFetch = useFetch();
+  const authFetchDebArchive = useFetchDebArchive();
 
   const { data: response, isPending } = useQuery<
     AxiosResponse<GetLocalRepositoriesResponse>,
     AxiosError<ApiError>
   >({
     queryKey: ["locals", params],
-    queryFn: async () => authFetch.get("locals", { params }),
+    queryFn: async () => authFetchDebArchive.get("locals", { params }),
   });
 
   return {
     result: response?.data,
-    isGettingLocalRepos: isPending,
+    isGettingLocalRepositories: isPending,
   };
 };
