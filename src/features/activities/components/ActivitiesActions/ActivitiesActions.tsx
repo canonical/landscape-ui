@@ -1,10 +1,14 @@
 import type { FC } from "react";
-import { useActivities } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { ActivityCommon } from "../../types";
 import { pluralize, pluralizeArray } from "@/utils/_helpers";
 import { ConfirmationButton } from "@canonical/react-components";
+import {
+  useApproveActivities,
+  useCancelActivities,
+  useRedoActivities,
+} from "../../api";
 
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
@@ -13,17 +17,9 @@ interface ActivitiesActionsProps {
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const { approveActivitiesQuery, cancelActivitiesQuery, redoActivitiesQuery } =
-    useActivities();
-
-  const {
-    mutateAsync: approveActivities,
-    isPending: approveActivitiesLoading,
-  } = approveActivitiesQuery;
-  const { mutateAsync: cancelActivities, isPending: cancelActivitiesLoading } =
-    cancelActivitiesQuery;
-  const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
-    redoActivitiesQuery;
+  const { approveActivities, isApprovingActivities } = useApproveActivities();
+  const { cancelActivities, isCancelingActivities } = useCancelActivities();
+  const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const selectedIds = selected.map((activity) => activity.id);
   const quantifiedActivity = pluralizeArray(
@@ -88,7 +84,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           type="button"
           disabled={
             !selected.length ||
-            approveActivitiesLoading ||
+            isApprovingActivities ||
             selected.some((activity) => !activity.actions?.approvable)
           }
           confirmationModalProps={{
@@ -100,8 +96,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             ),
             confirmButtonLabel: "Approve",
             confirmButtonAppearance: "positive",
-            confirmButtonDisabled: approveActivitiesLoading,
-            confirmButtonLoading: approveActivitiesLoading,
+            confirmButtonDisabled: isApprovingActivities,
+            confirmButtonLoading: isApprovingActivities,
             onConfirm: handleApproveActivities,
           }}
         >
@@ -112,7 +108,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           type="button"
           disabled={
             !selected.length ||
-            cancelActivitiesLoading ||
+            isCancelingActivities ||
             selected.some((activity) => !activity.actions?.cancelable)
           }
           confirmationModalProps={{
@@ -124,8 +120,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             ),
             confirmButtonLabel: "Confirm",
             confirmButtonAppearance: "negative",
-            confirmButtonDisabled: cancelActivitiesLoading,
-            confirmButtonLoading: cancelActivitiesLoading,
+            confirmButtonDisabled: isCancelingActivities,
+            confirmButtonLoading: isCancelingActivities,
             onConfirm: handleCancelActivities,
           }}
         >
@@ -136,7 +132,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           type="button"
           disabled={
             !selected.length ||
-            redoActivitiesLoading ||
+            isRedoingActivities ||
             selected.some((activity) => !activity.actions?.reappliable)
           }
           confirmationModalProps={{
@@ -148,8 +144,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             ),
             confirmButtonLabel: "Redo",
             confirmButtonAppearance: "positive",
-            confirmButtonDisabled: redoActivitiesLoading,
-            confirmButtonLoading: redoActivitiesLoading,
+            confirmButtonDisabled: isRedoingActivities,
+            confirmButtonLoading: isRedoingActivities,
             onConfirm: handleRedoActivities,
           }}
         >

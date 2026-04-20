@@ -1,4 +1,9 @@
-import { useActivities, type Activity } from "@/features/activities";
+import {
+  useApproveActivities,
+  useCancelActivities,
+  useRedoActivities,
+  type Activity,
+} from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -15,17 +20,9 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { approveActivitiesQuery, cancelActivitiesQuery, redoActivitiesQuery } =
-    useActivities();
-
-  const {
-    mutateAsync: approveActivities,
-    isPending: approveActivitiesLoading,
-  } = approveActivitiesQuery;
-  const { mutateAsync: cancelActivities, isPending: cancelActivitiesLoading } =
-    cancelActivitiesQuery;
-  const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
-    redoActivitiesQuery;
+  const { approveActivities, isApprovingActivities } = useApproveActivities();
+  const { cancelActivities, isCancelingActivities } = useCancelActivities();
+  const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const handleApproveActivity = async (a: Activity) => {
     try {
@@ -81,7 +78,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
           <ConfirmationButton
             className="p-segmented-control__button u-no-margin"
             type="button"
-            disabled={approveActivitiesLoading}
+            disabled={isApprovingActivities}
             confirmationModalProps={{
               title: "Approve activity",
               children: (
@@ -91,8 +88,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
               ),
               confirmButtonLabel: "Approve",
               confirmButtonAppearance: "positive",
-              confirmButtonDisabled: approveActivitiesLoading,
-              confirmButtonLoading: approveActivitiesLoading,
+              confirmButtonDisabled: isApprovingActivities,
+              confirmButtonLoading: isApprovingActivities,
               onConfirm: async () => handleApproveActivity(activity),
             }}
           >
@@ -103,7 +100,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
           <ConfirmationButton
             className="p-segmented-control__button u-no-margin"
             type="button"
-            disabled={cancelActivitiesLoading}
+            disabled={isCancelingActivities}
             confirmationModalProps={{
               title: "Cancel activity",
               children: (
@@ -113,8 +110,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
               ),
               confirmButtonLabel: "Confirm",
               confirmButtonAppearance: "negative",
-              confirmButtonDisabled: cancelActivitiesLoading,
-              confirmButtonLoading: cancelActivitiesLoading,
+              confirmButtonDisabled: isCancelingActivities,
+              confirmButtonLoading: isCancelingActivities,
               onConfirm: async () => handleCancelActivity(activity),
             }}
           >
@@ -127,7 +124,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
           <ConfirmationButton
             className="p-segmented-control__button u-no-margin"
             type="button"
-            disabled={redoActivitiesLoading}
+            disabled={isRedoingActivities}
             confirmationModalProps={{
               title: "Redo activity",
               children: (
@@ -137,8 +134,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
               ),
               confirmButtonLabel: "Redo",
               confirmButtonAppearance: "positive",
-              confirmButtonDisabled: redoActivitiesLoading,
-              confirmButtonLoading: redoActivitiesLoading,
+              confirmButtonDisabled: isRedoingActivities,
+              confirmButtonLoading: isRedoingActivities,
               onConfirm: async () => handleRedoActivity(activity),
             }}
           >

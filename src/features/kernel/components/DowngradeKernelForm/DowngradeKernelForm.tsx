@@ -3,7 +3,7 @@ import {
   RandomizationBlock,
 } from "@/components/form/DeliveryScheduling";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -46,7 +46,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const { downgradeKernelQuery } = useKernel();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { mutateAsync: downgradeKernel, isPending: isDowngradingKernel } =
     downgradeKernelQuery;

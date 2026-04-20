@@ -4,7 +4,6 @@ import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
 import { useState } from "react";
-import { EXCLUDED_ACTIVITY_TYPE_OPTIONS } from "./constants";
 
 interface ActivityTypeFilterProps {
   readonly options: SelectOption[];
@@ -15,10 +14,8 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
 
   const { setPageParams, type } = usePageParams();
 
-  const newOptions = options.filter(
-    (option) =>
-      !EXCLUDED_ACTIVITY_TYPE_OPTIONS.includes(option.value) &&
-      option.label.toLowerCase().includes(searchText.toLowerCase()),
+  const newOptions = options.filter((option) =>
+    option.label.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   useSetDynamicFilterValidation(
