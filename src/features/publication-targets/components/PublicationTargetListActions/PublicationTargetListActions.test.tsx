@@ -99,7 +99,7 @@ describe("PublicationTargetListActions", () => {
     // Side panel header should show edit title
     expect(
       screen.getByRole("heading", {
-        name: `Edit "${targetWithDisplayName.displayName}"`,
+        name: `Edit ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
   });
@@ -123,7 +123,7 @@ describe("PublicationTargetListActions", () => {
     // Side panel header should show remove title
     expect(
       screen.getByRole("heading", {
-        name: `Remove "${targetWithDisplayName.displayName}"`,
+        name: `Remove ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
   });

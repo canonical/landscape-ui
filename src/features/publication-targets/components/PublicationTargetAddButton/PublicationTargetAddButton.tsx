@@ -1,27 +1,11 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
-
-
-const AddPublicationTargetForm = lazy(
-  async () =>
-    import(
-      "@/features/publication-targets/components/AddPublicationTargetForm"
-    ).then((m) => ({ default: m.AddPublicationTargetForm })),
-);
+import type { FC } from "react";
 
 const PublicationTargetAddButton: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
 
-  const handleAdd = () => {
-    setSidePanelContent(
-      "Add publication target",
-      <Suspense fallback={<LoadingState />}>
-        <AddPublicationTargetForm />
-      </Suspense>,
-    );
-  };
+  const handleAdd = createPageParamsSetter({ sidePath: ["add"], name: "" });
 
   return (
     <Button appearance="positive" hasIcon onClick={handleAdd} type="button">

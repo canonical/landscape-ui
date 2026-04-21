@@ -58,13 +58,11 @@ pnpm changeset                  # create a changeset for changelog (required bef
 
 Note: `pnpm test` runs Playwright, not Vitest. Use `pnpm vitest` for unit and component test work.
 
-<<<<<<< HEAD
 ## Environment Setup
 
 Copy `.env.local.example` to `.env.local` and fill in values for your local Landscape instance. Required variables include `VITE_API_URL`, `VITE_API_URL_OLD`, and `VITE_ROOT_PATH`. Set `VITE_MSW_ENABLED=true` to use Mock Service Worker for offline development. See `.env.local.example` for the full list.
 
 Node.js ≥24 is required (`engines` in `package.json`).
-=======
 ## Agent Failure Protocol
 
 **Stop and ask the user instead of retrying** when:
@@ -74,4 +72,3 @@ Node.js ≥24 is required (`engines` in `package.json`).
 - A `replace_string_in_file` cannot find a unique anchor because the target content is duplicated or spans more than ~30 lines.
 
 In these cases: describe the exact manual action needed (file path, line numbers, what to delete/change) and wait for the user to confirm it is done before continuing.
->>>>>>> 21c758433 (update AGENTS.md, feature plans, and editTargetForm)

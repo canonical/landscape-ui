@@ -23,7 +23,7 @@ export default function useGetPublicationTargets() {
         const response =
           await authFetchDebArchive.get<ListPublicationTargetsResponse>(
             "publicationTargets",
-            { params: { pageSize: 100, pageToken } },
+            { params: { pageSize: 1000, pageToken } },
           );
 
         targets.push(...(response.data.publicationTargets ?? []));

@@ -6,15 +6,16 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import {
   AddPublicationButton,
+  AddPublicationForm,
   PublicationDetailsSidePanel,
   PublicationsContainer,
 } from "@/features/publications";
 import type { FC } from "react";
 
 const PublicationsPage: FC = () => {
-  const { sidePath, createPageParamsSetter } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } = usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", ["view"]);
+  useSetDynamicFilterValidation("sidePath", ["add", "view"]);
 
 const PublicationsPage: FC = () => {
   return (
@@ -31,7 +32,13 @@ const PublicationsPage: FC = () => {
         isOpen={!!sidePath.length}
         onClose={createPageParamsSetter({ sidePath: [], name: "" })}
       >
-        {sidePath.includes("view") && (
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <SidePanel.Header>Add publication</SidePanel.Header>
+            <AddPublicationForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <PublicationDetailsSidePanel />
           </SidePanel.Suspense>

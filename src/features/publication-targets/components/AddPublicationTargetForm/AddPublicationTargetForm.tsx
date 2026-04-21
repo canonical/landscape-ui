@@ -13,10 +13,12 @@ import type { FC } from "react";
 import * as Yup from "yup";
 import { INITIAL_VALUES } from "./constants";
 import type { AddPublicationTargetFormValues } from "./constants";
+import useNotify from "@/hooks/useNotify";
 
 const AddPublicationTargetForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
+  const { notify } = useNotify();
   const { createPublicationTargetQuery } = useCreatePublicationTarget();
 
   const { mutateAsync } = createPublicationTargetQuery;
@@ -57,7 +59,13 @@ const AddPublicationTargetForm: FC = () => {
             forceSigV2: values.forceSigV2,
           },
         });
+
         closeSidePanel();
+
+        notify.success({
+          title: "Publication target created",
+          message: `You have successfully added ${values.displayName}`,
+        });
       } catch (error) {
         debug(error);
       }
@@ -101,7 +109,7 @@ const AddPublicationTargetForm: FC = () => {
         {...formik.getFieldProps("awsAccessKeyId")}
       />
       <Input
-        type="password"
+        type="text"
         label="AWS secret access key"
         required
         error={getFormikError(formik, "awsSecretAccessKey")}

@@ -63,6 +63,10 @@ export const useGetPublications = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const { currentPage, pageSize, query } = usePageParams();
 
+  const filter = publicationTargetId
+    ? `publication_target="PublicationTargets/${publicationTargetId}"`
+    : undefined;
+
   const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
     queryKey: ["publications", "all"],
     queryFn: async () => {

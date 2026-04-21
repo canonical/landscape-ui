@@ -47,7 +47,6 @@ export interface Publication extends Record<string, unknown> {
   publicationTarget: string;
   source: string;
   distribution: string;
-  component: string;
   label: string;
   origin: string;
   architectures: string[];

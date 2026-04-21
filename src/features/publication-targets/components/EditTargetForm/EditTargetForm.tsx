@@ -1,6 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import useEditPublicationTarget from "../../api/useEditPublicationTarget";
 import {
@@ -12,6 +12,8 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
+import useNotify from "@/hooks/useNotify";
 
 interface EditTargetFormProps {
   readonly target: PublicationTarget;
@@ -70,7 +72,9 @@ const getInitialValues = (target: PublicationTarget) => ({
 
 const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
+  const closeForm = createPageParamsSetter({ sidePath: [], name: "" });
+  const { notify } = useNotify();
   const { editPublicationTargetQuery } = useEditPublicationTarget();
   const { mutateAsync: editTarget } = editPublicationTargetQuery;
 
@@ -95,7 +99,12 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           forceSigV2: values.forceSigV2,
         },
       });
-      closeSidePanel();
+      closeForm();
+
+      notify.success({
+        title: "Publication target edited",
+        message: `You have successfully edited ${values.displayName}`,
+      });
     } catch (error) {
       debug(error);
     }
@@ -116,24 +125,21 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         error={getFormikError(formik, "displayName")}
         {...formik.getFieldProps("displayName")}
       />
-      <Input
-        type="text"
+      <ReadOnlyField
         label="Region"
         required
-        error={getFormikError(formik, "region")}
+        tooltipMessage="The region cannot be changed after the target has been created. To use a different region, create a new publication target."
         {...formik.getFieldProps("region")}
       />
-      <Input
-        type="text"
+      <ReadOnlyField
         label="Bucket name"
         required
-        error={getFormikError(formik, "bucket")}
+        tooltipMessage="The bucket name cannot be changed after the target has been created. To use a different bucket, create a new publication target."
         {...formik.getFieldProps("bucket")}
       />
-      <Input
-        type="text"
+      <ReadOnlyField
         label="Endpoint"
-        error={getFormikError(formik, "endpoint")}
+        tooltipMessage="The endpoint cannot be changed after the target has been created. To use a different endpoint, create a new publication target."
         {...formik.getFieldProps("endpoint")}
       />
       <Input
@@ -144,16 +150,15 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         {...formik.getFieldProps("awsAccessKeyId")}
       />
       <Input
-        type="password"
+        type="text"
         label="AWS secret access key"
         required
         error={getFormikError(formik, "awsSecretAccessKey")}
         {...formik.getFieldProps("awsSecretAccessKey")}
       />
-      <Input
-        type="text"
+      <ReadOnlyField
         label="Prefix"
-        error={getFormikError(formik, "prefix")}
+        tooltipMessage="The prefix cannot be changed after the target has been created. To use a different prefix, create a new publication target."
         {...formik.getFieldProps("prefix")}
       />
       <Input
@@ -197,6 +202,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
+        onCancel={closeForm}
       />
     </Form>
   );

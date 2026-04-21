@@ -5,7 +5,7 @@ import useGetPublication from "./useGetPublication";
 const useGetPagePublication = ():
   | { publication: Publication; isGettingPublication: false }
   | { publication: undefined; isGettingPublication: true } => {
-  const { publication: publicationId } = usePageParams();
+  const { name: publicationId } = usePageParams();
 
   const { publication, isGettingPublication, publicationError } =
     useGetPublication({ publicationName: publicationId });

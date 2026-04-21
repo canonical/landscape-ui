@@ -1,42 +1,33 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
-import TargetDetails from "../TargetDetails";
 import RemoveTargetForm from "../RemoveTargetForm";
 
-const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
 
 interface PublicationTargetListActionsProps {
   readonly target: PublicationTarget;
 }
 
 const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ target }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const handleViewTargetDetails = () => {
-    setSidePanelContent(
-      target.displayName ?? target.name,
-      <TargetDetails target={target} />,
-    );
-  };
+  const handleViewTargetDetails = createPageParamsSetter({
+    sidePath: ["view"],
+    name: target.publicationTargetId ?? "",
+  });
 
-  const handleEditTarget = (): void => {
-    setSidePanelContent(
-      `Edit "${target.displayName ?? target.name}"`,      <Suspense fallback={<LoadingState />}>
-        <EditTargetForm target={target} />
-      </Suspense>,
-    );
-  };
+  const handleEditTarget = createPageParamsSetter({
+    sidePath: ["edit"],
+    name: target.publicationTargetId ?? "",
+  });
 
   const handleRemoveTarget = (): void => {
     openRemoveModal();

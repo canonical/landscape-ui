@@ -1,23 +1,25 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import useSidePanel from "@/hooks/useSidePanel";
+import { TablePagination } from "@/components/layout/TablePagination";
+import usePageParams from "@/hooks/usePageParams";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
 import PublicationTargetListActions from "../PublicationTargetListActions";
-
-const TargetDetails = lazy(async () => import("../TargetDetails/TargetDetails"));
+import StaticLink from "@/components/layout/StaticLink";
+import { ROUTES } from "@/libs/routes";
+import { pluralizeNew } from "@/utils/_helpers";
 
 interface PublicationTargetListProps {
   readonly targets: PublicationTarget[];
 }
 
 interface PublicationsCountCellProps {
-  readonly publicationTargetId: string | undefined;
+  readonly publicationTargetId: string;
 }
 
 const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
@@ -33,9 +35,16 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
   const { length } = publications;
   if (length === 0) return <NoData />;
   return (
-    <span>
-      {length} {length === 1 ? "publication" : "publications"}
-    </span>
+    <StaticLink
+      to={{
+        pathname: ROUTES.repositories.publications(),
+        search: `?query=${encodeURIComponent(`publicationTargetId="${publicationTargetId}"`)}`,
+      }}
+    >
+      {pluralizeNew(publications.length, "publication", {
+        showCount: "exact",
+      })}
+    </StaticLink>
   );
 };
 
@@ -46,20 +55,15 @@ const getTargetType = (target: PublicationTarget): string => {
 };
 
 const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { currentPage, pageSize, createPageParamsSetter } = usePageParams();
+
+  const pagedTargets = useMemo(
+    () => targets.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [targets, currentPage, pageSize],
+  );
 
   const columns = useMemo<Column<PublicationTarget>[]>(
-    () => {
-      const handleViewTargetDetails = (target: PublicationTarget): void => {
-        setSidePanelContent(
-          target.displayName ?? NO_DATA_TEXT,
-          <Suspense fallback={null}>
-            <TargetDetails target={target} />
-          </Suspense>,
-        );
-      };
-
-      return [
+    () => [
         {
           accessor: "displayName",
           id: "displayName",
@@ -69,9 +73,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={() => {
-                handleViewTargetDetails(row.original);
-              }}
+              onClick={createPageParamsSetter({ sidePath: ["view"], name: row.original.publicationTargetId ?? "" })}
               aria-label={`View details for ${row.original.displayName}`}
             >
               {row.original.displayName || NO_DATA_TEXT}
@@ -84,12 +86,12 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
         Header: "Type",
       },
       {
-        accessor: (row) => row.publicationTargetId,
+        accessor: "publicationTargetId",
         id: "publications",
         Header: "Publications",
         Cell: ({ row }: CellProps<PublicationTarget>): ReactElement => (
           <PublicationsCountCell
-            publicationTargetId={row.original.publicationTargetId}
+            publicationTargetId={row.original.publicationTargetId ?? ""}
           />
         ),
       },
@@ -101,17 +103,22 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
           <PublicationTargetListActions target={original} />
         ),
       } as Column<PublicationTarget>,
-      ];
-    },
-    [setSidePanelContent],
+      ],
+    [createPageParamsSetter],
   );
 
   return (
-    <ResponsiveTable
-      columns={columns as Column<Record<string, unknown>>[]}
-      data={targets as unknown as Record<string, unknown>[]}
-      minWidth={800}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns as Column<Record<string, unknown>>[]}
+        data={pagedTargets as unknown as Record<string, unknown>[]}
+        minWidth={800}
+      />
+      <TablePagination
+        totalItems={targets.length}
+        currentItemCount={pagedTargets.length}
+      />
+    </>
   );
 };
 

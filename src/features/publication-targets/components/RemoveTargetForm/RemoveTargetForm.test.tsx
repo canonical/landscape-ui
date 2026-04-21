@@ -95,7 +95,7 @@ describe("RemoveTargetForm", () => {
     expect(screen.getByText("Publication")).toBeInTheDocument();
     // first publication's label
     expect(
-      screen.getByText(firstPublication.label ?? ""),
+      screen.getByText(firstPublication.name ?? ""),
     ).toBeInTheDocument();
   });
 

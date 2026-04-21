@@ -28,7 +28,7 @@ if (
 // Extract narrowed s3 references at module level so type guards propagate into callbacks
 const s3WithPubs = targetWithPublications.s3;
 const s3WithoutPubs = targetWithoutPublications.s3;
-const firstPubLabel = firstPublication.label;
+const firstPubName = firstPublication.name;
 
 describe("TargetDetails", () => {
   const user = userEvent.setup();
@@ -85,7 +85,7 @@ describe("TargetDetails", () => {
 
       expect(
         screen.getByRole("dialog", {
-          name: `Remove "${targetWithPublications.displayName}"`,
+          name: `Remove ${targetWithPublications.displayName}`,
         }),
       ).toBeInTheDocument();
     });
@@ -100,7 +100,7 @@ describe("TargetDetails", () => {
 
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
-      expect(screen.getByText("DETAILS")).toBeInTheDocument();
+      expect(screen.getByText("Details")).toBeInTheDocument();
     });
 
     it("renders the target displayName", () => {
@@ -182,8 +182,8 @@ describe("TargetDetails", () => {
     });
   });
 
-  describe("USED IN section", () => {
-    it("shows the USED IN section and publications table when target has publications", () => {
+  describe("Used In section", () => {
+    it("shows the Used In section and publications table when target has publications", () => {
       (useGetPublicationsByTarget as Mock).mockReturnValue({
         publications: publications,
         isGettingPublications: false,
@@ -191,11 +191,11 @@ describe("TargetDetails", () => {
 
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
-      expect(screen.getByText("USED IN")).toBeInTheDocument();
-      expect(screen.getByText(firstPubLabel)).toBeInTheDocument();
+      expect(screen.getByText("Used In")).toBeInTheDocument();
+      expect(screen.getByText(firstPubName)).toBeInTheDocument();
     });
 
-    it("hides the USED IN section when target has no publications", () => {
+    it("hides the Used In section when target has no publications", () => {
       (useGetPublicationsByTarget as Mock).mockReturnValue({
         publications: [],
         isGettingPublications: false,
@@ -203,7 +203,7 @@ describe("TargetDetails", () => {
 
       renderWithProviders(<TargetDetails target={targetWithoutPublications} />);
 
-      expect(screen.queryByText("USED IN")).not.toBeInTheDocument();
+      expect(screen.queryByText("Used In")).not.toBeInTheDocument();
     });
 
     it("shows LoadingState while publications are loading", () => {
@@ -214,8 +214,8 @@ describe("TargetDetails", () => {
 
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
-      expect(screen.getByText("DETAILS")).toBeInTheDocument();
-      expect(screen.queryByText("USED IN")).not.toBeInTheDocument();
+      expect(screen.getByText("Details")).toBeInTheDocument();
+      expect(screen.queryByText("Used In")).not.toBeInTheDocument();
     });
   });
 
@@ -233,7 +233,7 @@ describe("TargetDetails", () => {
         <TargetDetails target={swiftTarget} />,
       );
 
-      expect(screen.getByText("DETAILS")).toBeInTheDocument();
+      expect(screen.getByText("Details")).toBeInTheDocument();
       // S3-specific InfoGrid items should not be present
       expect(container.textContent).not.toContain("Region");
       expect(container.textContent).not.toContain("Bucket Name");

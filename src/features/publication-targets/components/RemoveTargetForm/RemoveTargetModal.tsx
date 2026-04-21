@@ -36,7 +36,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
       if (!target.name) return;
       await removeTarget({ name: target.name });
       notify.success({
-        message: `"${target.displayName}" publication target removed successfully`,
+        message: `You have successfully removed ${target.displayName}`,
         title: "Publication target removed",
       });
     } catch (error) {
@@ -49,7 +49,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
   return (
     <TextConfirmationModal
       isOpen={isOpen}
-      title={`Remove "${target.displayName}"`}
+      title={`Remove ${target.displayName}`}
       confirmButtonLabel="Remove target"
       confirmButtonAppearance="negative"
       confirmButtonLoading={isRemoving}
@@ -57,6 +57,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
       confirmationText={`remove ${target.displayName}`}
       onConfirm={handleRemoveTarget}
       close={close}
+      renderInPortal
     >
       {hasPublications && (
         <>
@@ -64,7 +65,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
             This publication target is currently being used by the following
             publications:
           </p>
-          <PublicationsTable publications={publications} pageSize={PAGE_SIZE} />
+          <PublicationsTable publications={publications} pageSize={PAGE_SIZE} openInNewTab />
         </>
       )}
       <p>

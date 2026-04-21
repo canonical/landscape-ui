@@ -1,23 +1,22 @@
 import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import usePageParams from "@/hooks/usePageParams";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
 import PublicationsTable from "../PublicationsTable/PublicationsTable";
 import RemoveTargetForm from "../RemoveTargetForm";
-
-const EditTargetForm = lazy(async () => import("../EditTargetForm/EditTargetForm"));
+import Blocks from "@/components/layout/Blocks/Blocks";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
 }
 
 const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
     target.publicationTargetId,
   );
@@ -27,13 +26,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const handleEditTarget = (): void => {
-    setSidePanelContent(
-      `Edit "${target.displayName ?? target.name}"`,      <Suspense fallback={<LoadingState />}>
-        <EditTargetForm target={target} />
-      </Suspense>,
-    );
-  };
+  const handleEditTarget = createPageParamsSetter({ sidePath: ["edit"] });
 
   const handleRemoveTarget = (): void => {
     openRemoveModal();
@@ -55,7 +48,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
   return (
     <>
-      <div className="p-segmented-control u-no-margin--bottom">
+      <div className="p-segmented-control u-sv2">
         <Button
           type="button"
           hasIcon
@@ -67,52 +60,52 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         </Button>
         <Button
           type="button"
-          appearance="negative"
           className="p-segmented-control__button"
           hasIcon
           onClick={handleRemoveTarget}
         >
-          <Icon light={true} name="delete" />
-          <span>Remove</span>
+          <Icon name={`${ICONS.delete}--negative`} />
+          <span className="u-text--negative">Remove</span>
         </Button>
       </div>
+      <Blocks dense>
+        <Blocks.Item title="Details">
+        <InfoGrid dense>
+            <InfoGrid.Item label="Name" large value={target.displayName} />
 
-      
-      <InfoGrid spaced>
-        <h5>DETAILS</h5>
-        <InfoGrid.Item label="Name" large value={target.displayName} />
+            {s3Fields && (
+              <>
+                <InfoGrid.Item label="Region" value={s3Fields.region} />
+                <InfoGrid.Item label="Bucket Name" value={s3Fields.bucket} />
+                <InfoGrid.Item label="Prefix" value={s3Fields.prefix} />
+                <InfoGrid.Item label="ACL" value={s3Fields.acl} />
+                <InfoGrid.Item label="Storage class" value={s3Fields.storageClass} />
+                <InfoGrid.Item label="Encryption method" value={s3Fields.encryptionMethod} />
+                <InfoGrid.Item label="Disable MultiDel" value={s3Fields.disableMultiDel} />
+                <InfoGrid.Item label="Force AWS SIGv2" value={s3Fields.forceSigV2} />
+              </>
+            )}
 
-        {s3Fields && (
-          <>
-            <InfoGrid.Item label="Region" value={s3Fields.region} />
-            <InfoGrid.Item label="Bucket Name" value={s3Fields.bucket} />
-            <InfoGrid.Item label="Prefix" value={s3Fields.prefix} />
-            <InfoGrid.Item label="ACL" value={s3Fields.acl} />
-            <InfoGrid.Item label="Storage class" value={s3Fields.storageClass} />
-            <InfoGrid.Item label="Encryption method" value={s3Fields.encryptionMethod} />
-            <InfoGrid.Item label="Disable MultiDel" value={s3Fields.disableMultiDel} />
-            <InfoGrid.Item label="Force AWS SIGv2" value={s3Fields.forceSigV2} />
-          </>
-        )}
+          </InfoGrid>
+        </Blocks.Item>
 
-      </InfoGrid>
-
-      {isGettingPublications ? (
-        <LoadingState />
-      ) : (
-        publications.length > 0 && (
-          <>
-            <h5>USED IN</h5>
+        {!isGettingPublications && publications.length > 0 && (
+          <Blocks.Item title="Used In">
             <PublicationsTable publications={publications} />
-          </>
-        )
-      )}
+          </Blocks.Item>
+        )}
+      </Blocks>
 
-      <RemoveTargetForm
-        isOpen={isRemoveModalOpen}
-        close={closeRemoveModal}
-        target={target}
-      />
+      {isGettingPublications && <LoadingState />}
+
+      {createPortal(
+        <RemoveTargetForm
+          isOpen={isRemoveModalOpen}
+          close={closeRemoveModal}
+          target={target}
+        />,
+        document.body,
+      )}
     </>
   );
 };

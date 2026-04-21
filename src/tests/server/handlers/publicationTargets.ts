@@ -9,9 +9,10 @@ export default [
       PublicationTarget,
       "name" | "publicationTargetId"
     >;
+    const now = Date.now();
     const newTarget: PublicationTarget = {
-      name: `publicationTargets/new-${Date.now()}`,
-      publicationTargetId: `new-${Date.now()}`,
+      name: `publicationTargets/new-${now}`,
+      publicationTargetId: `new-${now}`,
       ...body,
     };
     return HttpResponse.json(newTarget, { status: 201 });

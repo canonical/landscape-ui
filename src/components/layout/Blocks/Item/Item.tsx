@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Item.module.scss";
+import { useBlocksDense } from "../Blocks";
 
 export interface ItemProps {
   readonly children: ReactNode;
@@ -14,17 +15,25 @@ const Item: FC<ItemProps> = ({
   title,
   titleClassName,
   containerClassName,
-}: ItemProps) => (
-  <section className={classNames(classes.item, containerClassName)}>
-    {title && (
-      <h4
-        className={classNames(classes.heading, "p-heading--5", titleClassName)}
-      >
-        {title}
-      </h4>
-    )}
-    {children}
-  </section>
-);
+}: ItemProps) => {
+  const dense = useBlocksDense();
+  return (
+    <section className={classNames(classes.item, containerClassName)}>
+      {title && (
+        <h4
+          className={classNames(
+            classes.heading,
+            { [classes.denseHeading as string]: dense },
+            "p-heading--5",
+            titleClassName,
+          )}
+        >
+          {title}
+        </h4>
+      )}
+      {children}
+    </section>
+  );
+};
 
 export default Item;

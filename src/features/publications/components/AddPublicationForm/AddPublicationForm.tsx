@@ -2,7 +2,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import {
@@ -17,10 +17,6 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
-import useCreatePublication from "../../api/useCreatePublication";
-import useGetLocals from "../../api/useGetLocals";
-import useGetMirrors from "../../api/useGetMirrors";
-import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
@@ -63,7 +59,8 @@ const stripResourcePrefix = (value?: string, prefix?: string) => {
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
+  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
   const { mirrors, isGettingMirrors } = useGetMirrors();
   const { locals, isGettingLocals } = useGetLocals();
   const { publicationTargets, isGettingPublicationTargets } =
@@ -78,7 +75,7 @@ const AddPublicationForm: FC = () => {
         const payload = getPublicationPayload(values);
         await createPublication(payload);
 
-        closeSidePanel();
+        closePanel();
 
         notify.success({
           title: "Publication created",

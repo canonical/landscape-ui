@@ -14,12 +14,13 @@ const InfoGrid: FC<InfoGridProps> & { Item: FC<ItemProps> } = ({
   className,
   spaced,
   dense,
+  dense,
   ...props
 }: InfoGridProps) => (
   <div
     className={classNames(
       classes.infoGrid,
-      { [classes.spacedInfoGrid]: spaced },
+      { [classes.spacedInfoGrid as string]: spaced },
       className,
     )}
   >

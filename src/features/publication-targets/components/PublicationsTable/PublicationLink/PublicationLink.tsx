@@ -5,14 +5,16 @@ import type { FC } from "react";
 
 interface PublicationLinkProps {
   readonly publication: Publication;
+  readonly openInNewTab?: boolean;
 }
 
-const PublicationLink: FC<PublicationLinkProps> = ({ publication }) => (
+const PublicationLink: FC<PublicationLinkProps> = ({ publication, openInNewTab=false }) => (
   <StaticLink
     to={ROUTES.repositories.publications({
       sidePath: ["view"],
-      publication: publication.publicationId ?? "",
+      name: publication.publicationId,
     })}
+    target={openInNewTab ? "_blank" : undefined}
   >
     {publication.label ?? publication.name}
   </StaticLink>
