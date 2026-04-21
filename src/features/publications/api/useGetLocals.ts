@@ -9,31 +9,24 @@ interface UseGetLocalsReturnType {
   isGettingLocals: boolean;
 }
 
+const FETCH_PAGE_SIZE = 1000;
+
 const useGetLocals = (): UseGetLocalsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<Local[], AxiosError<ApiError>>({
     queryKey: ["locals", "all"],
     queryFn: async () => {
-      let pageToken: string | undefined;
-      const locals: Local[] = [];
-
-      do {
-        const response = await authFetchDebArchive.get<ListLocalsResponse>(
-          "locals",
-          {
-            params: {
-              pageSize: 100,
-              pageToken,
-            },
+      const response = await authFetchDebArchive.get<ListLocalsResponse>(
+        "locals",
+        {
+          params: {
+            pageSize: FETCH_PAGE_SIZE,
           },
-        );
+        },
+      );
 
-        locals.push(...(response.data.locals ?? []));
-        pageToken = response.data.nextPageToken || undefined;
-      } while (pageToken);
-
-      return locals;
+      return response.data.locals ?? [];
     },
   });
 

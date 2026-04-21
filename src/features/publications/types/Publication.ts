@@ -1,34 +1,23 @@
-export interface Any {
-  "@type"?: string;
-  [key: string]: unknown;
-}
-
-export interface Status {
-  code?: number;
-  message?: string;
-  details?: Any[];
-}
-
-export interface GpgKeyWritable {
+interface GpgKeyWritable {
   armor: string;
 }
 
-export interface GpgKey extends Record<string, unknown> {
+interface GpgKey extends Record<string, unknown> {
   armor: string;
 }
 
-export interface UploadersGroup {
+interface UploadersGroup {
   title: string;
   users?: string[];
 }
 
-export interface UploadersRule {
+interface UploadersRule {
   condition: string;
   allow?: string[];
   deny?: string[];
 }
 
-export interface Uploaders {
+interface Uploaders {
   groups?: UploadersGroup[];
   rules?: UploadersRule[];
 }
@@ -117,7 +106,7 @@ export interface ListPublicationTargetsResponse {
   nextPageToken?: string;
 }
 
-export interface Task {
+interface Task {
   name?: string;
   displayName?: string;
   taskId?: string;
@@ -127,4 +116,9 @@ export interface Task {
 
 export interface PublishPublicationResponse {
   task?: Task;
+}
+
+export interface PublicationServicePublishPublicationBody {
+  forceOverwrite: boolean;
+  forceCleanup: boolean;
 }

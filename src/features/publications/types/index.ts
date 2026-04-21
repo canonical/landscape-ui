@@ -1,7 +1,4 @@
 export type {
-  Any,
-  GpgKey,
-  GpgKeyWritable,
   ListLocalsResponse,
   ListMirrorsResponse,
   ListPublicationsResponse,
@@ -12,6 +9,4 @@ export type {
   PublicationTarget,
   PublicationWritable,
   PublishPublicationResponse,
-  Status,
-  Task,
 } from "./Publication";

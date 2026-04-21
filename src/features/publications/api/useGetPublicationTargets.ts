@@ -12,6 +12,8 @@ interface UseGetPublicationTargetsReturnType {
   isGettingPublicationTargets: boolean;
 }
 
+const FETCH_PAGE_SIZE = 1000;
+
 const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
 
@@ -21,26 +23,17 @@ const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
   >({
     queryKey: ["publicationTargets", "all"],
     queryFn: async () => {
-      let pageToken: string | undefined;
-      const publicationTargets: PublicationTarget[] = [];
-
-      do {
-        const response =
-          await authFetchDebArchive.get<ListPublicationTargetsResponse>(
-            "publicationTargets",
-            {
-              params: {
-                pageSize: 100,
-                pageToken,
-              },
+      const response =
+        await authFetchDebArchive.get<ListPublicationTargetsResponse>(
+          "publicationTargets",
+          {
+            params: {
+              pageSize: FETCH_PAGE_SIZE,
             },
-          );
+          },
+        );
 
-        publicationTargets.push(...(response.data.publicationTargets ?? []));
-        pageToken = response.data.nextPageToken || undefined;
-      } while (pageToken);
-
-      return publicationTargets;
+      return response.data.publicationTargets ?? [];
     },
   });
 

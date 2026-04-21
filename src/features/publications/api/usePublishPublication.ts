@@ -1,11 +1,9 @@
-import type {
-  PublicationServicePublishPublicationBody,
-  PublishPublicationResponse,
-} from "../types";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
+import type { PublishPublicationResponse } from "../types";
+import type { PublicationServicePublishPublicationBody } from "../types/Publication";
 
 interface PublishPublicationParams {
   publicationName: string;

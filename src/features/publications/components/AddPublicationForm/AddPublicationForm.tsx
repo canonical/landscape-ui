@@ -253,12 +253,14 @@ const AddPublicationForm: FC = () => {
 
           <span>Signing GPG key</span>
 
-          <Input
-            type="checkbox"
-            label="Preserve mirror signing key"
-            checked={formik.values.preserve_mirror_signing_key}
-            {...formik.getFieldProps("preserve_mirror_signing_key")}
-          />
+          {!isLocalSourceType && (
+            <Input
+              type="checkbox"
+              label="Preserve mirror signing key"
+              checked={formik.values.preserve_mirror_signing_key}
+              {...formik.getFieldProps("preserve_mirror_signing_key")}
+            />
+          )}
 
           <Textarea
             label="Mirror signing key"

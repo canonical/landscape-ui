@@ -9,31 +9,24 @@ interface UseGetMirrorsReturnType {
   isGettingMirrors: boolean;
 }
 
+const FETCH_PAGE_SIZE = 1000;
+
 const useGetMirrors = (): UseGetMirrorsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<Mirror[], AxiosError<ApiError>>({
     queryKey: ["mirrors", "all"],
     queryFn: async () => {
-      let pageToken: string | undefined;
-      const mirrors: Mirror[] = [];
-
-      do {
-        const response = await authFetchDebArchive.get<ListMirrorsResponse>(
-          "mirrors",
-          {
-            params: {
-              pageSize: 100,
-              pageToken,
-            },
+      const response = await authFetchDebArchive.get<ListMirrorsResponse>(
+        "mirrors",
+        {
+          params: {
+            pageSize: FETCH_PAGE_SIZE,
           },
-        );
+        },
+      );
 
-        mirrors.push(...(response.data.mirrors ?? []));
-        pageToken = response.data.nextPageToken || undefined;
-      } while (pageToken);
-
-      return mirrors;
+      return response.data.mirrors ?? [];
     },
   });
 

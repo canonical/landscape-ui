@@ -28,10 +28,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
     try {
       await publishPublication({
         publicationName: publication.name,
-        body: {
-          forceOverwrite: true,
-          forceCleanup: false,
-        },
+        body: { forceOverwrite: true, forceCleanup: false },
       });
 
       notify.success({

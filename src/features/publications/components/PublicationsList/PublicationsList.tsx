@@ -52,14 +52,14 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         accessor: "mirror",
         Header: "mirror",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">{original.mirror}</StaticLink>
+          <StaticLink to="/">{original.mirror}</StaticLink> // TODO change
         ),
       },
       {
         accessor: "publicationTarget",
         Header: "publication target",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">{original.publicationTarget}</StaticLink>
+          <StaticLink to="/">{original.publicationTarget}</StaticLink> // TODO change
         ),
       },
       {

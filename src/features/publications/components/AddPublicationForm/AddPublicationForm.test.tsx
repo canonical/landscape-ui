@@ -145,4 +145,26 @@ describe("AddPublicationForm", () => {
 
     expect(publicationTargetSelect).toHaveValue("internal-datacenter");
   });
+
+  it("hides preserve mirror signing key when local source is selected", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<AddPublicationForm />);
+
+    await selectMirrorSource(user);
+
+    const preserveKeyCheckbox = screen.getByRole("checkbox", {
+      name: /Preserve mirror signing key/i,
+    });
+
+    expect(preserveKeyCheckbox).toBeInTheDocument();
+
+    await selectLocalSource(user);
+
+    expect(
+      screen.queryByRole("checkbox", {
+        name: /Preserve mirror signing key/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
 });

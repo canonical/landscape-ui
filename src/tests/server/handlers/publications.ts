@@ -1,11 +1,13 @@
 import { API_URL } from "@/constants";
+import type { PublishPublicationResponse } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   locals,
   mirrors,
-  publicationTargets,
   publications,
+  publicationTargets,
 } from "@/tests/mocks/publications";
+import type { StrictResponse } from "msw";
 import { http, HttpResponse } from "msw";
 import { generateFilteredResponse } from "./_helpers";
 
@@ -176,21 +178,22 @@ const getDeletePublicationResponse = () => {
   return HttpResponse.json({}, { status: 200 });
 };
 
-const getPublishPublicationResponse = () => {
-  return HttpResponse.json(
-    {
-      task: {
-        name: "tasks/2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-        displayName:
-          "publish publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
-        taskId: "2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-        status: "RUNNING",
-        output: "",
+const getPublishPublicationResponse =
+  (): StrictResponse<PublishPublicationResponse> => {
+    return HttpResponse.json(
+      {
+        task: {
+          name: "tasks/2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
+          displayName:
+            "publish publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
+          taskId: "2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
+          status: "RUNNING",
+          output: "",
+        },
       },
-    },
-    { status: 200 },
-  );
-};
+      { status: 200 },
+    );
+  };
 
 export default [
   http.get("/v1/mirrors", ({ request }) => {
