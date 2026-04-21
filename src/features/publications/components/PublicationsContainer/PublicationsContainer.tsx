@@ -5,6 +5,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import useGetPublications from "../../api/useGetPublications";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 
 const PublicationsContainer = () => {
   const { publicationTargets, isGettingPublicationTargets } =
@@ -26,6 +27,7 @@ const PublicationsContainer = () => {
 
   return (
     <>
+      <HeaderWithSearch />
       <PublicationsList publications={publications} />
       <TablePagination totalItems={publicationsCount} />
     </>

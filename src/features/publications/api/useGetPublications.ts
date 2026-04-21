@@ -55,7 +55,7 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
 
   return {
     publications: paginatedPublications,
-    publicationsCount: filteredPublications.length,
+    publicationsCount: data?.length ?? 0,
     isGettingPublications: isLoading,
   };
 };

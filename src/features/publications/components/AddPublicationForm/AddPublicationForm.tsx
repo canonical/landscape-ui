@@ -251,24 +251,25 @@ const AddPublicationForm: FC = () => {
             {...formik.getFieldProps("prefix")}
           />
 
-          <span>Signing GPG key</span>
-
           {!isLocalSourceType && (
-            <Input
-              type="checkbox"
-              label="Preserve mirror signing key"
-              checked={formik.values.preserve_mirror_signing_key}
-              {...formik.getFieldProps("preserve_mirror_signing_key")}
-            />
+            <>
+              <span>Signing GPG key</span>
+              <Input
+                type="checkbox"
+                label="Preserve mirror signing key"
+                checked={formik.values.preserve_mirror_signing_key}
+                {...formik.getFieldProps("preserve_mirror_signing_key")}
+              />
+            </>
           )}
 
           <Textarea
-            label="Mirror signing key"
+            label="Signing GPG key"
+            labelClassName={!isLocalSourceType ? "u-off-screen" : undefined}
             rows={4}
             disabled={formik.values.preserve_mirror_signing_key}
             error={getFormikError(formik, "mirror_signing_key")}
             {...formik.getFieldProps("mirror_signing_key")}
-            className="u-no-margin--bottom"
           />
         </Blocks.Item>
 

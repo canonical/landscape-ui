@@ -11,6 +11,7 @@ import type { Publication } from "../../types";
 import PublicationDetails from "../PublicationDetails";
 import PublicationsListActions from "../PublicationsListActions";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { getSourceType } from "./helpers";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -49,6 +50,14 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         ),
       },
       {
+        id: "sourceType",
+        accessor: "source",
+        Header: "source type",
+        Cell: ({ row: { original } }: CellProps<Publication>) => (
+          <>{getSourceType(original.source)}</>
+        ),
+      },
+      {
         accessor: "source",
         Header: "source",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
@@ -60,13 +69,6 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         Header: "publication target",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink to="/">{original.publicationTarget}</StaticLink> // TODO change
-        ),
-      },
-      {
-        accessor: "distribution",
-        Header: "distribution",
-        Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <>{original.distribution}</>
         ),
       },
       {
