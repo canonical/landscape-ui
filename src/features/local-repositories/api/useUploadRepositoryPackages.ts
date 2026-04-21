@@ -18,7 +18,8 @@ export const useUploadRepositoryPackages = () => {
     UploadRepositoryPackagesParams
   >({
     mutationKey: ["locals", "packages", "upload"],
-    mutationFn: async ({ name, ...params }) => authFetchDebArchive.post(`${name}/uploads`, params),
+    mutationFn: async ({ name, ...params }) =>
+      authFetchDebArchive.post(`${name}/uploads`, params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["locals", "packages"] }),
   });

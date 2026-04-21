@@ -21,7 +21,10 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const { actions, destructiveActions } = useGetRepositoryActions({ repository, openModal }); 
+  const { actions, destructiveActions } = useGetRepositoryActions({
+    repository,
+    openModal,
+  });
   const buttons = [...actions, ...destructiveActions];
   const isNegative = (action: Action) => action.appearance === "negative";
 
@@ -48,7 +51,7 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
             </span>
           </Button>
         ))}
-        collapseFrom={"xxl"}
+        collapseFrom={"xs"}
         menuPosition="left"
       />
 

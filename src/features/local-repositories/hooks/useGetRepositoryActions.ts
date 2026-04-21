@@ -7,22 +7,29 @@ interface UseGetRepositoryActionsProps {
   readonly openModal: () => void;
 }
 
-export const useGetRepositoryActions = ({ repository, openModal }: UseGetRepositoryActionsProps) => {
-  const { sidePath, createSidePathPusher, createPageParamsSetter } = usePageParams();
+export const useGetRepositoryActions = ({
+  repository,
+  openModal,
+}: UseGetRepositoryActionsProps) => {
+  const { sidePath, createSidePathPusher, createPageParamsSetter } =
+    usePageParams();
 
   const openSidePanel = (action: string) => {
     if (!sidePath.length) {
-      return createPageParamsSetter({ sidePath: [action], repository: repository.local_id });
+      return createPageParamsSetter({
+        sidePath: [action],
+        repository: repository.local_id,
+      });
     }
     return createSidePathPusher(action);
   };
 
   const viewAction: Action = {
-      icon: "show",
-      label: "View details",
-      "aria-label": `View details of "${repository.display_name}" repository`,
-      onClick: openSidePanel("view"),
-    };
+    icon: "show",
+    label: "View details",
+    "aria-label": `View details of "${repository.display_name}" repository`,
+    onClick: openSidePanel("view"),
+  };
 
   const actions: Action[] = [
     // {

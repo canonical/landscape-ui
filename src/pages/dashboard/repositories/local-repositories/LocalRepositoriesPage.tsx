@@ -2,7 +2,11 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
-import { useGetLocalRepositories, LocalRepositoriesContainer, AddLocalRepositoryButton } from "@/features/local-repositories";
+import {
+  useGetLocalRepositories,
+  LocalRepositoriesContainer,
+  AddLocalRepositoryButton,
+} from "@/features/local-repositories";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
@@ -39,7 +43,8 @@ const PublishLocalRepositorySidePanel = lazy(async () =>
 );
 
 const LocalRepositoriesPage: FC = () => {
-  const { lastSidePathSegment, sidePath, createPageParamsSetter } = usePageParams();
+  const { lastSidePathSegment, sidePath, createPageParamsSetter } =
+    usePageParams();
   const { result, isGettingLocalRepositories } = useGetLocalRepositories();
   const localRepos = result?.locals ?? [];
 
@@ -55,17 +60,24 @@ const LocalRepositoriesPage: FC = () => {
     <PageMain>
       <PageHeader
         title="Local Repositories"
-        actions={localRepos.length ? [<AddLocalRepositoryButton key="add-local-repository" />] : undefined}
+        actions={
+          localRepos.length
+            ? [<AddLocalRepositoryButton key="add-local-repository" />]
+            : undefined
+        }
       />
       <PageContent hasTable>
-        <LocalRepositoriesContainer isPending={isGettingLocalRepositories} items={localRepos} />
+        <LocalRepositoriesContainer
+          isPending={isGettingLocalRepositories}
+          items={localRepos}
+        />
       </PageContent>
 
       <SidePanel
         onClose={createPageParamsSetter({ sidePath: [], repository: "" })}
         isOpen={!!sidePath.length}
       >
-       {lastSidePathSegment === "add" && (
+        {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <AddLocalRepositorySidePanel />
           </SidePanel.Suspense>

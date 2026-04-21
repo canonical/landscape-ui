@@ -13,3 +13,13 @@
 .label {
   padding-top: $spv--small !important;
 }
+
+.line {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: $spv--small;
+
+  > div {
+    margin-right: $sph--x-large;
+  }
+}

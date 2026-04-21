@@ -5,10 +5,10 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { LocalRepository } from "../types";
 
 interface CreateLocalRepositoryParams {
-  display_name: string,
-  comment?: string,
-  distribution: string,
-  component: string,
+  display_name: string;
+  comment?: string;
+  distribution: string;
+  component: string;
 }
 
 export const useCreateLocalRepository = () => {

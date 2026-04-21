@@ -9,14 +9,19 @@ interface LocalRepositoriesListActionsProps {
   readonly repository: LocalRepository;
 }
 
-const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({ repository }) => {
+const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
+  repository,
+}) => {
   const {
     value: isModalOpen,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean();
 
-  const { viewAction, actions, destructiveActions } = useGetRepositoryActions({ repository, openModal });
+  const { viewAction, actions, destructiveActions } = useGetRepositoryActions({
+    repository,
+    openModal,
+  });
 
   return (
     <>

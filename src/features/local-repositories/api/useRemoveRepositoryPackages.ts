@@ -18,7 +18,8 @@ export const useRemoveRepositoryPackages = () => {
     RemoveRepositoryPackagesParams
   >({
     mutationKey: ["locals", "packages", "delete"],
-    mutationFn: async ({ name, ...params }) => authFetchDebArchive.delete(`${name}/packages`, { params }),
+    mutationFn: async ({ name, ...params }) =>
+      authFetchDebArchive.delete(`${name}/packages`, { params }),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["locals", "packages"] }),
   });

@@ -10,14 +10,15 @@ interface LocalRepositoryPublicationsCountProps {
   readonly repository: LocalRepository;
 }
 
-const LocalRepositoryPublicationsCount: FC<LocalRepositoryPublicationsCountProps> = ({
-  repository,
-}) => {
-  const { data, isGettingPublications } = useGetPublications({ filter: `source=${repository.name}` });
-  const publications = data?.publications ?? [];
+const LocalRepositoryPublicationsCount: FC<
+  LocalRepositoryPublicationsCountProps
+> = ({ repository }) => {
+  const { publications, isGettingPublications } = useGetPublications({
+    filter: `source=${repository.name}`,
+  });
 
   if (isGettingPublications) {
-    return <LoadingState inline/>;
+    return <LoadingState inline />;
   }
 
   if (!publications.length) {
@@ -25,7 +26,9 @@ const LocalRepositoryPublicationsCount: FC<LocalRepositoryPublicationsCountProps
   }
 
   return (
-    <StaticLink to={ROUTES.repositories.publications({ query: `source:${repository.name}` })}>
+    <StaticLink
+      to={ROUTES.repositories.publications({ search: repository.local_id })}
+    >
       {pluralizeWithCount(publications.length, "publication")}
     </StaticLink>
   );

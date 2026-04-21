@@ -1,34 +1,35 @@
 import { ROUTES } from "@/libs/routes";
-import type { LocalRepository, Publication } from "../../types";
+import type { Publication } from "../../types";
 import { useMemo, type FC } from "react";
 import StaticLink from "@/components/layout/StaticLink";
-import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { Column, CellProps } from "react-table";
-import useGetPublications from "../../api/useGetPublications";
 
 interface LocalRepositoryPublicationsListProps {
-  readonly repository: LocalRepository;
+  readonly publications: Publication[];
 }
 
-const LocalRepositoryPublicationsList: FC<LocalRepositoryPublicationsListProps> = ({ repository }) => {
-  const { data, isGettingPublications } = useGetPublications({ filter: `source=${repository.name}` });
-  const publications = data?.publications ?? [];
-  
-  const columns = useMemo<Column<Publication>[]>(() => [
-    {
+const LocalRepositoryPublicationsList: FC<
+  LocalRepositoryPublicationsListProps
+> = ({ publications }) => {
+  const columns = useMemo<Column<Publication>[]>(
+    () => [
+      {
         Header: "Publication",
         meta: {
           ariaLabel: ({ original: publication }) =>
-            `${publication.name} publication name`,
+            `${publication.label} publication name`,
         },
         Cell: ({ row: { original: publication } }: CellProps<Publication>) => (
-          <StaticLink to={
-            ROUTES.repositories.publications({
-              search: publication.name,
-            })
-          }>{publication.name}</StaticLink>
-        )
+          <StaticLink
+            to={ROUTES.repositories.publications({
+              sidePath: ["view"],
+              publication: publication.publicationId,
+            })}
+          >
+            {publication.label}
+          </StaticLink>
+        ),
       },
       {
         Header: "Date published",
@@ -36,15 +37,12 @@ const LocalRepositoryPublicationsList: FC<LocalRepositoryPublicationsListProps> 
           ariaLabel: ({ original: publication }) =>
             `Date when the ${publication.name} publication was published`,
         },
-        Cell: ({ row: { original: publication } }: CellProps<Publication>) => publication.publishTime
+        Cell: ({ row: { original: publication } }: CellProps<Publication>) =>
+          publication.publishTime,
       },
     ],
     [],
   );
-
-  if (isGettingPublications) {
-    return <LoadingState />;
-  }
 
   return (
     <ResponsiveTable

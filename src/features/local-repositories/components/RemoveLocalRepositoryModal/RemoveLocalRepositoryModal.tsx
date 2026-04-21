@@ -6,6 +6,8 @@ import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
 import { ConfirmationModal } from "@canonical/react-components";
 import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
+import useGetPublications from "../../api/useGetPublications";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface RemoveLocalRepositoryModalProps {
   readonly isOpen: boolean;
@@ -22,6 +24,33 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   const debug = useDebug();
   const { setPageParams } = usePageParams();
   const { removeRepository, isRemovingRepository } = useRemoveLocalRepository();
+  const { publications, isGettingPublications } = useGetPublications({
+    filter: `source=${repository.name}`,
+  });
+
+  const noPublicationsText = (
+    <p>
+      This action will remove the local repository from Landscape and it
+      won&apos;t be available to be published in the future.{" "}
+      <strong>This action is irreversible.</strong>
+    </p>
+  );
+
+  const publicationsContent = (
+    <>
+      <p>This repository is associated with the following publications:</p>
+      <LocalRepositoryPublicationsList publications={publications} />
+      <p>
+        After removal you won&apos;t be able to update any of these
+        publications, but they will continue to be available.{" "}
+        <strong>This action is irreversible.</strong>
+      </p>
+    </>
+  );
+
+  const content = !publications.length
+    ? noPublicationsText
+    : publicationsContent;
 
   const handleRemoveLocalRepository = async () => {
     try {
@@ -40,6 +69,10 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     }
   };
 
+  if (isGettingPublications) {
+    return <LoadingState />;
+  }
+
   if (isOpen) {
     return (
       <ConfirmationModal
@@ -51,13 +84,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
         close={close}
         renderInPortal
       >
-        <p>
-          This repository is associated with the following publications:
-        </p>
-        <LocalRepositoryPublicationsList repository={repository} />
-        <p>
-          After removal you won&apos;t be able to update any of these publications, but they will continue to be available. This action is <strong>irreversible</strong>.
-        </p>
+        {content}
       </ConfirmationModal>
     );
   }

@@ -26,6 +26,8 @@ interface RadioGroupProps<
     onSelect?: () => Promise<void> | void;
   })[];
   readonly label?: ReactNode;
+  readonly labelHeading?: boolean;
+  readonly sideByside?: boolean;
 }
 
 const RadioGroup = <
@@ -37,19 +39,22 @@ const RadioGroup = <
   formik,
   inputs = [],
   label,
+  labelHeading = true,
+  sideByside = false,
 }: RadioGroupProps<TField, TValue, TFormik>) => {
   return (
     <>
       <p
         className={classNames(
-          "u-no-margin--bottom p-heading--5",
+          "u-no-margin--bottom",
+          labelHeading ? "p-heading--5" : undefined,
           classes.label,
         )}
       >
         {label}
       </p>
 
-      <div>
+      <div className={sideByside ? classes.line : undefined}>
         {inputs.map(({ expansion, help, key, value, onSelect, ...input }) => {
           const checked = formik.values[field] == value;
 

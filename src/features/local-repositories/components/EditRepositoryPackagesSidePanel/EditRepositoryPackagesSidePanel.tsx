@@ -17,22 +17,41 @@ import { useUploadRepositoryPackages } from "../../api/useUploadRepositoryPackag
 const EditRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, repository: repositoryId, createPageParamsSetter } = usePageParams();
+  const {
+    sidePath,
+    popSidePath,
+    repository: repositoryId,
+    createPageParamsSetter,
+  } = usePageParams();
   const { repository, isGettingRepository } = useGetPageLocalRepository();
-  const { uploadRepositoryPackages, isUploadingRepositoryPackages } = useUploadRepositoryPackages();
-  const { removeRepositoryPackages, isRemovingRepositoryPackages } = useRemoveRepositoryPackages();
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], repository: "" });
+  const { uploadRepositoryPackages, isUploadingRepositoryPackages } =
+    useUploadRepositoryPackages();
+  const { removeRepositoryPackages, isRemovingRepositoryPackages } =
+    useRemoveRepositoryPackages();
+  const closeSidePanel = createPageParamsSetter({
+    sidePath: [],
+    repository: "",
+  });
 
   const repositoryName = `locals/${repositoryId}`;
 
-  const handleSubmit = async (values: { source: string; packages: string[] }) => {
+  const handleSubmit = async (values: {
+    source: string;
+    packages: string[];
+  }) => {
     try {
       if (values.source) {
-        await uploadRepositoryPackages({ name: repositoryName, source: values.source });
+        await uploadRepositoryPackages({
+          name: repositoryName,
+          source: values.source,
+        });
       }
 
       if (values.packages.length) {
-        await removeRepositoryPackages({ name: repositoryName, packages: values.packages });
+        await removeRepositoryPackages({
+          name: repositoryName,
+          packages: values.packages,
+        });
       }
 
       closeSidePanel();
@@ -49,17 +68,22 @@ const EditRepositoryPackagesSidePanel: FC = () => {
   const formik = useFormik({
     initialValues: { source: "", packages: new Array<string>() },
     onSubmit: handleSubmit,
-    validationSchema: Yup.object().shape({ source: Yup.string(), packages: Yup.array(Yup.string()) }),
+    validationSchema: Yup.object().shape({
+      source: Yup.string(),
+      packages: Yup.array(Yup.string()),
+    }),
     validateOnMount: true,
   });
 
   if (isGettingRepository) {
-    return <SidePanel.LoadingState/>;
+    return <SidePanel.LoadingState />;
   }
 
   return (
     <>
-      <SidePanel.Header>Edit packages for {repository.display_name}</SidePanel.Header>
+      <SidePanel.Header>
+        Edit packages for {repository.display_name}
+      </SidePanel.Header>
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Blocks>
@@ -69,7 +93,9 @@ const EditRepositoryPackagesSidePanel: FC = () => {
                 label="Source URL"
                 {...formik.getFieldProps("source")}
                 error={getFormikError(formik, "source")}
-                help={"In order to upload packages, provide a URL for Landscape to fetch the packages from."}
+                help={
+                  "In order to upload packages, provide a URL for Landscape to fetch the packages from."
+                }
               />
             </Blocks.Item>
           </Blocks>
@@ -87,8 +113,15 @@ const EditRepositoryPackagesSidePanel: FC = () => {
           />
 
           <SidePanelFormButtons
-            submitButtonDisabled={!formik.isValid || !formik.values.packages.length && !formik.values.source}
-            submitButtonLoading={formik.isSubmitting || isRemovingRepositoryPackages || isUploadingRepositoryPackages}
+            submitButtonDisabled={
+              !formik.isValid ||
+              (!formik.values.packages.length && !formik.values.source)
+            }
+            submitButtonLoading={
+              formik.isSubmitting ||
+              isRemovingRepositoryPackages ||
+              isUploadingRepositoryPackages
+            }
             submitButtonText="Save changes"
             hasBackButton={sidePath.length > 1}
             onBackButtonPress={popSidePath}

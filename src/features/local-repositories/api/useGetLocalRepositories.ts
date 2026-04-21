@@ -5,17 +5,19 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { LocalRepository } from "../types";
 
 interface GetLocalRepositoriesParams {
-  page_size?: number,
-  page_token?: string,
-  filter?: string,
+  page_size?: number;
+  page_token?: string;
+  filter?: string;
 }
 
 interface GetLocalRepositoriesResponse {
-  locals: LocalRepository[],
-  next_page_token: string,
+  locals: LocalRepository[];
+  next_page_token: string;
 }
 
-export const useGetLocalRepositories = (params?: GetLocalRepositoriesParams) => {
+export const useGetLocalRepositories = (
+  params?: GetLocalRepositoriesParams,
+) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data: response, isPending } = useQuery<

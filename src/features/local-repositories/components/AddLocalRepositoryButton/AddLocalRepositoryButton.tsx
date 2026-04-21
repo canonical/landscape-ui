@@ -7,12 +7,7 @@ const AddLocalRepositoryButton: FC = () => {
   const handleOpen = createPageParamsSetter({ sidePath: ["add"] });
 
   return (
-    <Button
-      appearance="positive"
-      hasIcon
-      onClick={handleOpen}
-      type="button"
-    >
+    <Button appearance="positive" hasIcon onClick={handleOpen} type="button">
       <Icon name="plus" light />
       <span>Add local repository</span>
     </Button>

@@ -18,19 +18,34 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   packagesToDelete,
   onPackageDelete,
 }) => {
-  const { result, isGettingRepositoryPackages } = useGetRepositoryPackages({ repository: repository.name });
+  const { result, isGettingRepositoryPackages } = useGetRepositoryPackages({
+    repository: repository.name,
+  });
   const packageNames = result?.local_packages ?? [];
   const packages = packageNames.map((name) => ({ name: name }));
-  
+
   const columns = useMemo<Column<{ name: string }>[]>(() => {
-    const columnArray: Column<{ name: string }>[] = [{
-      Header: "Package name",
-      meta: {
-        ariaLabel: ({ original: { name } }) => `${name} package name`,
+    const columnArray: Column<{ name: string }>[] = [
+      {
+        Header: "Package name",
+        meta: {
+          ariaLabel: ({ original: { name } }) => `${name} package name`,
+        },
+        Cell: ({
+          row: {
+            original: { name },
+          },
+        }: CellProps<{ name: string }>) => (
+          <span
+            className={
+              packagesToDelete?.includes(name) ? "u-text--muted" : undefined
+            }
+          >
+            {name}
+          </span>
+        ),
       },
-      Cell: ({ row: { original: { name } } }: CellProps<{ name: string }>) => 
-        <span className={packagesToDelete?.includes(name) ? "u-text--muted" : undefined}>{name}</span>
-    }];
+    ];
 
     if (onPackageDelete && packagesToDelete !== undefined) {
       columnArray.push({
@@ -39,9 +54,15 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
         meta: {
           ariaLabel: ({ original: { name } }) => `Remove ${name} package`,
         },
-        Cell: ({ row: { original: { name } } }: CellProps<{ name: string }>) => (
+        Cell: ({
+          row: {
+            original: { name },
+          },
+        }: CellProps<{ name: string }>) => (
           <Button
-            onClick={() => { onPackageDelete(name); }}
+            onClick={() => {
+              onPackageDelete(name);
+            }}
             disabled={packagesToDelete.includes(name)}
             hasIcon
             appearance="base"
@@ -50,7 +71,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
           >
             <Icon name={ICONS.delete} />
           </Button>
-        )
+        ),
       });
     }
 

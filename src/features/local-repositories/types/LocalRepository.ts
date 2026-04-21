@@ -1,25 +1,25 @@
 export interface UploadersGroup {
-  title: string,
-  users?: string[],
+  title: string;
+  users?: string[];
 }
 
-export interface  UploadersRule {
-  condition: string,
-  allow?: string[],
-  deny?: string[],
+export interface UploadersRule {
+  condition: string;
+  allow?: string[];
+  deny?: string[];
 }
 
 export interface Uploaders {
-  groups?: UploadersGroup[],
-  rules?: UploadersRule[],
+  groups?: UploadersGroup[];
+  rules?: UploadersRule[];
 }
 
 export interface LocalRepository extends Record<string, unknown> {
-  name: string,
-  local_id: string,
-  display_name: string,
-  comment?: string,
-  distribution: string,
-  component: string,
-  uploaders?: Uploaders,
+  name: string;
+  local_id: string;
+  display_name: string;
+  comment?: string;
+  distribution: string;
+  component: string;
+  uploaders?: Uploaders;
 }

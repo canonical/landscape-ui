@@ -7,10 +7,11 @@ import type { LocalRepository } from "../types";
 export const useGetLocalRepository = (name: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data: response, isPending, error } = useQuery<
-    AxiosResponse<LocalRepository>,
-    AxiosError<ApiError>
-  >({
+  const {
+    data: response,
+    isPending,
+    error,
+  } = useQuery<AxiosResponse<LocalRepository>, AxiosError<ApiError>>({
     queryKey: ["local", name],
     queryFn: async () => authFetchDebArchive.get(name),
   });

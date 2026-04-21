@@ -7,7 +7,11 @@ import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { type AddLocalRepositoryFormValues, INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import {
+  type AddLocalRepositoryFormValues,
+  INITIAL_VALUES,
+  VALIDATION_SCHEMA,
+} from "./constants";
 import { useCreateLocalRepository } from "../../api/useCreateLocalRepository";
 import Blocks from "@/components/layout/Blocks";
 
@@ -17,7 +21,10 @@ const AddLocalRepositorySidePanel: FC = () => {
   const { createPageParamsSetter } = usePageParams();
   const { createRepository, isCreatingRepository } = useCreateLocalRepository();
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], repository: "" });
+  const closeSidePanel = createPageParamsSetter({
+    sidePath: [],
+    repository: "",
+  });
 
   const handleSubmit = async (values: AddLocalRepositoryFormValues) => {
     const valuesforCreation = {
@@ -95,7 +102,9 @@ const AddLocalRepositorySidePanel: FC = () => {
                 label="Source URL"
                 {...formik.getFieldProps("source")}
                 error={getFormikError(formik, "source")}
-                help={"In order to upload packages, provide a URL for Landscape to fetch the packages from."}
+                help={
+                  "In order to upload packages, provide a URL for Landscape to fetch the packages from."
+                }
               />
             </Blocks.Item>
           </Blocks>

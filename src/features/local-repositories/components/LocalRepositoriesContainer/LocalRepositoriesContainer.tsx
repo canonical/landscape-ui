@@ -7,7 +7,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import type { LocalRepository } from "../../types";
 
 interface LocalRepositoriesContainerProps {
-  readonly isPending: boolean,
+  readonly isPending: boolean;
   readonly items: LocalRepository[];
 }
 
@@ -15,7 +15,6 @@ const LocalRepositoriesContainer: FC<LocalRepositoriesContainerProps> = ({
   isPending,
   items,
 }) => {
-
   if (isPending) {
     return <LoadingState />;
   }
@@ -27,7 +26,9 @@ const LocalRepositoriesContainer: FC<LocalRepositoriesContainerProps> = ({
         body={
           <>
             <p className="u-no-margin--bottom">
-              Use local repositories to host internal packages and distribute them to your fleet, either through publications or via repository profiles.
+              Use local repositories to host internal packages and distribute
+              them to your fleet, either through publications or via repository
+              profiles.
             </p>
             <a
               href="https://ubuntu.com/landscape/docs/repositories"
@@ -38,7 +39,7 @@ const LocalRepositoriesContainer: FC<LocalRepositoriesContainerProps> = ({
             </a>
           </>
         }
-        cta={[<AddLocalRepositoryButton key="add-local-repository"/>]}
+        cta={[<AddLocalRepositoryButton key="add-local-repository" />]}
       />
     );
   }

@@ -17,7 +17,8 @@ interface LocalRepositoriesListProps {
 const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
   const { search, createPageParamsSetter } = usePageParams();
 
-  const columns = useMemo<Column<LocalRepository>[]>(() => [
+  const columns = useMemo<Column<LocalRepository>[]>(
+    () => [
       {
         accessor: "name",
         Header: "Name",
@@ -25,7 +26,9 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
           ariaLabel: ({ original: repository }) =>
             `${repository.display_name} local repository name`,
         },
-        Cell: ({ row: { original: repository } }: CellProps<LocalRepository>) => (
+        Cell: ({
+          row: { original: repository },
+        }: CellProps<LocalRepository>) => (
           <Button
             type="button"
             appearance="link"
@@ -56,33 +59,38 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
           ariaLabel: ({ original: repository }) =>
             `${repository.display_name} local repository packages`,
         },
-        Cell: ({ row: { original: repository } }: CellProps<LocalRepository>) => (
+        Cell: ({
+          row: { original: repository },
+        }: CellProps<LocalRepository>) => (
           <LocalRepositoryPackagesCount repository={repository} />
         ),
       },
       {
         Header: "Publications",
         meta: {
-          ariaLabel: ({ original: repository }) => 
+          ariaLabel: ({ original: repository }) =>
             `${repository.display_name} local repository publications`,
         },
-        Cell: ({ row: { original: repository } }: CellProps<LocalRepository>) =>
+        Cell: ({
+          row: { original: repository },
+        }: CellProps<LocalRepository>) => (
           <LocalRepositoryPublicationsCount repository={repository} />
+        ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         meta: {
           ariaLabel: ({ original: repository }) =>
             `"${repository.display_name}" local repository actions`,
-          },
-        Cell: ({ row: { original: repository } }: CellProps<LocalRepository>) => (
+        },
+        Cell: ({
+          row: { original: repository },
+        }: CellProps<LocalRepository>) => (
           <LocalRepositoriesListActions repository={repository} />
         ),
       },
     ],
-    [
-      createPageParamsSetter,
-    ],
+    [createPageParamsSetter],
   );
 
   return (

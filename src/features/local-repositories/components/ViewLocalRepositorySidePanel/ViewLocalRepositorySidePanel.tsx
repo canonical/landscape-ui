@@ -8,7 +8,6 @@ import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetai
 import LocalRepositoryPackagesList from "../LocalRepositoryPackagesList";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 
-
 const ViewLocalRepositorySidePanel: FC = () => {
   const [tabId, setTabId] = useState<"details" | "packages">("details");
   const { repository, isGettingRepository } = useGetPageLocalRepository();
@@ -17,7 +16,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const tabs: { label: string, id: "details" | "packages"}[] = [
+  const tabs: { label: string; id: "details" | "packages" }[] = [
     {
       label: "General details",
       id: "details",
@@ -25,7 +24,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
     {
       label: "Packages",
       id: "packages",
-    }
+    },
   ];
 
   const links = tabs.map(({ label, id }) => ({
@@ -41,17 +40,23 @@ const ViewLocalRepositorySidePanel: FC = () => {
       <SidePanel.Header>{repository.display_name}</SidePanel.Header>
       <SidePanel.Content>
         <ViewRepositoryActionsBlock repository={repository} />
-        <Tabs listClassName={classes.marginBottom} links={links} /> 
-           
+        <Tabs listClassName={classes.marginBottom} links={links} />
+
         {tabId === "details" && (
           <Suspense fallback={<LoadingState />}>
-            <ViewLocalRepositoryDetailsTab repository={repository} key="details" />
+            <ViewLocalRepositoryDetailsTab
+              repository={repository}
+              key="details"
+            />
           </Suspense>
         )}
 
         {tabId === "packages" && (
           <Suspense fallback={<LoadingState />}>
-            <LocalRepositoryPackagesList repository={repository} key="packages" />
+            <LocalRepositoryPackagesList
+              repository={repository}
+              key="packages"
+            />
           </Suspense>
         )}
       </SidePanel.Content>

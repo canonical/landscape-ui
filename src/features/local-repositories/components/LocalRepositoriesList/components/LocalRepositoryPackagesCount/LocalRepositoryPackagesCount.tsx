@@ -11,11 +11,13 @@ interface LocalRepositoryPackagesCountProps {
 const LocalRepositoryPackagesCount: FC<LocalRepositoryPackagesCountProps> = ({
   repository,
 }) => {
-  const { result, isGettingRepositoryPackages } = useGetRepositoryPackages({ repository: repository.name });
+  const { result, isGettingRepositoryPackages } = useGetRepositoryPackages({
+    repository: repository.name,
+  });
   const packages = result?.local_packages ?? [];
 
   if (isGettingRepositoryPackages) {
-    return <LoadingState inline/>;
+    return <LoadingState inline />;
   }
 
   return pluralizeWithCount(packages.length, "package");

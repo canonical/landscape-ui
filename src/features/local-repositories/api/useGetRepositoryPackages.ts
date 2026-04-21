@@ -4,19 +4,20 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 interface GetRepositoryPackagesParams {
-  repository: string,
-  page_size?: number,
-  page_token?: string,
+  repository: string;
+  page_size?: number;
+  page_token?: string;
 }
 
 interface GetRepositoryPackagesResponse {
-  local_packages: string[],
-  next_page_token: string,
+  local_packages: string[];
+  next_page_token: string;
 }
 
-export const useGetRepositoryPackages = (
-  { repository, ...params }: GetRepositoryPackagesParams,
-) => {
+export const useGetRepositoryPackages = ({
+  repository,
+  ...params
+}: GetRepositoryPackagesParams) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data: response, isPending } = useQuery<
@@ -24,7 +25,8 @@ export const useGetRepositoryPackages = (
     AxiosError<ApiError>
   >({
     queryKey: ["packages", repository, params],
-    queryFn: async () => authFetchDebArchive.get(`${repository}/packages`, { params }),
+    queryFn: async () =>
+      authFetchDebArchive.get(`${repository}/packages`, { params }),
   });
 
   return {
