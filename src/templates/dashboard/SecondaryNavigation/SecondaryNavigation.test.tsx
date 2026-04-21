@@ -15,6 +15,15 @@ vi.mock("usehooks-ts", async () => {
   };
 });
 
+// Mock useMediaQuery to simulate large screen
+vi.mock("usehooks-ts", async () => {
+  const actual = await vi.importActual("usehooks-ts");
+  return {
+    ...actual,
+    useMediaQuery: vi.fn(() => true), // Always return true for large screen
+  };
+});
+
 describe("SecondaryNavigation", () => {
   it("renders correctly", () => {
     renderWithProviders(
