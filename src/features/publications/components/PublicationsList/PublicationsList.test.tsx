@@ -13,15 +13,12 @@ describe("PublicationsList", () => {
     renderWithProviders(<PublicationsList publications={publications} />);
 
     expect(screen.getByRole("columnheader", { name: "name" })).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "mirror" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "source" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "publication target" }),
     ).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "distribution" }),
-    ).toBeVisible();
-    expect(
-      screen.getByRole("columnheader", { name: "component" }),
     ).toBeVisible();
 
     expect(
@@ -30,13 +27,12 @@ describe("PublicationsList", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: publication.mirror }),
+      screen.getByRole("link", { name: publication.source }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: publication.publicationTarget }),
     ).toBeInTheDocument();
     expect(screen.getByText(publication.distribution)).toBeInTheDocument();
-    expect(screen.getByText(publication.component)).toBeInTheDocument();
   });
 
   it("opens publication details side panel", async () => {

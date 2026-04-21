@@ -90,8 +90,7 @@ export const getPublicationPayload = (values: FormProps) => {
         values.publication_target,
         "publicationTargets/",
       ),
-      // TODO: rename back to `source` once the backend supports it
-      mirror: prependResourcePrefix(values.source, sourcePrefix),
+      source: prependResourcePrefix(values.source, sourcePrefix),
       distribution: values.uploader_distribution.trim() || undefined,
       label: values.prefix.trim() || undefined,
       architectures: architectures.length > 0 ? architectures : undefined,

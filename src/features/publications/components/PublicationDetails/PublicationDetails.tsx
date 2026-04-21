@@ -64,7 +64,7 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
           <InfoGrid>
             <InfoGrid.Item label="Name" value={publication.name} />
 
-            <InfoGrid.Item label="Mirror" large value={publication.mirror} />
+            <InfoGrid.Item label="Source" large value={publication.source} />
 
             <InfoGrid.Item
               label="Publication target"
@@ -76,8 +76,6 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
               label="Distribution"
               value={publication.distribution}
             />
-
-            <InfoGrid.Item label="Component" value={publication.component} />
 
             <InfoGrid.Item label="Label" value={publication.label} />
 

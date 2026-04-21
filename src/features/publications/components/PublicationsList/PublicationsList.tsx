@@ -49,10 +49,10 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         ),
       },
       {
-        accessor: "mirror",
-        Header: "mirror",
+        accessor: "source",
+        Header: "source",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">{original.mirror}</StaticLink> // TODO change
+          <StaticLink to="/">{original.source}</StaticLink> // TODO change
         ),
       },
       {
@@ -67,13 +67,6 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         Header: "distribution",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <>{original.distribution}</>
-        ),
-      },
-      {
-        accessor: "component",
-        Header: "component",
-        Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <>{original.component}</>
         ),
       },
       {

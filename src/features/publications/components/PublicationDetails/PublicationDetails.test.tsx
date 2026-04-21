@@ -16,13 +16,12 @@ describe("PublicationDetails", () => {
 
     const infoItems = [
       { label: "Name", value: publication.name },
-      { label: "Mirror", value: publication.mirror },
+      { label: "Source", value: publication.source },
       {
         label: "Publication target",
         value: publication.publicationTarget,
       },
       { label: "Distribution", value: publication.distribution },
-      { label: "Component", value: publication.component },
       { label: "Label", value: publication.label },
       { label: "Origin", value: publication.origin },
       {

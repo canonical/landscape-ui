@@ -1,4 +1,4 @@
-import { API_URL } from "@/constants";
+import { API_URL, API_URL_DEB_ARCHIVE } from "@/constants";
 import type { PublishPublicationResponse } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
@@ -111,7 +111,7 @@ const getPublicationsResponse = (requestUrl: string) => {
   const filteredPublications = search
     ? generateFilteredResponse(publications, search, [
         "name",
-        "mirror",
+        "source",
         "publicationTarget",
       ])
     : publications;
@@ -222,6 +222,19 @@ export default [
     return getMirrorsResponse(request.url);
   }),
 
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "mirrors"
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    return getMirrorsResponse(request.url);
+  }),
+
   http.get("/v1/locals", ({ request }) => {
     const endpointStatus = getEndpointStatus();
 
@@ -233,6 +246,16 @@ export default [
   }),
 
   http.get(`${API_URL}v1/locals`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error" && endpointStatus.path === "locals") {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    return getLocalsResponse(request.url);
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
     const endpointStatus = getEndpointStatus();
 
     if (endpointStatus.status === "error" && endpointStatus.path === "locals") {
@@ -266,6 +289,29 @@ export default [
   }),
 
   http.get(`${API_URL}v1/publicationTargets`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "publicationTargets"
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "publicationTargets"
+    ) {
+      return HttpResponse.json({
+        publicationTargets: [],
+        nextPageToken: "",
+      });
+    }
+
+    return getPublicationTargetsResponse(request.url);
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
     const endpointStatus = getEndpointStatus();
 
     if (
@@ -334,6 +380,29 @@ export default [
     return getPublicationsResponse(request.url);
   }),
 
+  http.get(`${API_URL_DEB_ARCHIVE}publications`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json({
+        publications: [],
+        nextPageToken: "",
+      });
+    }
+
+    return getPublicationsResponse(request.url);
+  }),
+
   http.post("/v1/publications", async ({ request }) => {
     const endpointStatus = getEndpointStatus();
 
@@ -366,6 +435,22 @@ export default [
     return getCreatePublicationResponse(request);
   }),
 
+  http.post(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to create publication" },
+        { status: 500 },
+      );
+    }
+
+    return getCreatePublicationResponse(request);
+  }),
+
   http.get("/v1/publications/:publicationName", ({ params }) => {
     const endpointStatus = getEndpointStatus();
 
@@ -383,6 +468,22 @@ export default [
   }),
 
   http.get(`${API_URL}v1/publications/:publicationName`, ({ params }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to get publication" },
+        { status: 500 },
+      );
+    }
+
+    return getPublicationDetailsResponse(params.publicationName as string);
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}publications/:publicationName`, ({ params }) => {
     const endpointStatus = getEndpointStatus();
 
     if (
@@ -442,6 +543,28 @@ export default [
     },
   ),
 
+  http.patch(
+    `${API_URL_DEB_ARCHIVE}publications/:publicationName`,
+    async ({ params, request }) => {
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "error" &&
+        matchesPublicationsPath(endpointStatus.path)
+      ) {
+        return HttpResponse.json(
+          { message: "Failed to update publication" },
+          { status: 500 },
+        );
+      }
+
+      return getUpdatePublicationResponse(
+        params.publicationName as string,
+        request,
+      );
+    },
+  ),
+
   http.delete("/v1/publications/:publicationName", () => {
     const endpointStatus = getEndpointStatus();
 
@@ -474,6 +597,22 @@ export default [
     return getDeletePublicationResponse();
   }),
 
+  http.delete(`${API_URL_DEB_ARCHIVE}publications/:publicationName`, () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to remove publication" },
+        { status: 500 },
+      );
+    }
+
+    return getDeletePublicationResponse();
+  }),
+
   http.post(new RegExp(`/v1/publications/.+:publish$`), () => {
     const endpointStatus = getEndpointStatus();
 
@@ -491,6 +630,22 @@ export default [
   }),
 
   http.post(new RegExp(`${API_URL}v1/publications/.+:publish$`), () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return HttpResponse.json(
+        { message: "Failed to republish publication" },
+        { status: 500 },
+      );
+    }
+
+    return getPublishPublicationResponse();
+  }),
+
+  http.post(new RegExp(`${API_URL_DEB_ARCHIVE}publications/.+:publish$`), () => {
     const endpointStatus = getEndpointStatus();
 
     if (
