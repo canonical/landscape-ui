@@ -1,6 +1,6 @@
 ---
 name: explore-plan
-description: Plans a new feature and generates a <feature-name>.md plan in the project root.
+description: Plans a new feature and generates a `feature-plans/{{featureName}}.md` plan.
 arguments:
   - name: featureName
     description: The name of the feature (e.g., "scripts", "access-groups")
@@ -9,11 +9,11 @@ arguments:
 ---
 
 # Role
-Invoke the **@Architect** persona.
+Invoke the **@architect** persona.
 
 # Process
 1. **Clarification (Pre-flight):** If the user's description is vague or missing API endpoints, you **MUST** ask for them before generating the plan.
-2. **Analysis:** Analyze the repo structure and `copilot-instructions.md`.
+2. **Analysis:** Analyze the repo structure and the repository guidance docs that exist in the repo (for example `AGENTS.md`, `docs/FRONTEND.md`, `docs/API.md`).
 3. **Drafting:** Generate the markdown plan.
 
 # Strict Constraints
@@ -50,6 +50,6 @@ Create a file named `feature-plans/{{featureName}}.md`. If the `feature-plans/` 
 - **MSW Handlers:** Define the mock responses needed in `src/tests/mocks/`.
 
 # Rules
-- Reference `copilot-instructions.md` for naming conventions and imports.
+- Reference the repository guidance docs that exist in the repo (for example `AGENTS.md`, `docs/FRONTEND.md`, `docs/API.md`) for naming conventions and imports.
 - Ensure all imports use the `@/` alias.
 - Use `Formik` + `Vanilla Framework` for all UI logic.

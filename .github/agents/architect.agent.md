@@ -21,7 +21,7 @@ Read `AGENTS.md` first, then:
 
 # Constraints
 - **Blueprint only:** No executable component logic or hook bodies. Interfaces + signatures only.
-- Follow Architectural Invariants in `copilot-instructions.md`, `docs/ARCHITECTURE.md`, `docs/API.md`.
+- Follow Architectural Invariants in `AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/API.md`.
 - All file paths relative to root (e.g., `src/features/...`).
 
 # Plan Structure (`.github/feature-plans/`)

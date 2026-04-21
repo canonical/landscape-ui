@@ -15,7 +15,7 @@ Read `AGENTS.md` first, then:
 
 # Context
 1. Start by reading plan in `.github/feature-plans/`.
-2. Follow rules in `copilot-instructions.md` + `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/FRONTEND.md`.
+2. Follow rules in `AGENTS.md` + `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/FRONTEND.md`.
 3. Session loop:
    - **Step 1:** Search codebase for existing patterns.
    - **Step 2:** Propose file creations/modifications.
