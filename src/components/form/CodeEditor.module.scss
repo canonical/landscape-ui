@@ -10,7 +10,7 @@
   margin-bottom: $input-margin-bottom;
   min-height: 16rem;
 
-  &:not(.error):not(.warning) {
+  &:not(.error, .warning) {
     border-bottom-color: $colors--theme--border-high-contrast;
   }
 
