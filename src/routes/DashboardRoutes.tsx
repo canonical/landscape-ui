@@ -7,6 +7,7 @@ import SecondaryNavigation from "@/templates/dashboard/SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/constants";
 import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
+import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 
 export const DashboardRoutes = (
   <Route
@@ -77,34 +78,54 @@ export const DashboardRoutes = (
       <Route
         path={PATHS.repositories.root}
         element={
-          <>
+          <SelfHostedGuard>
             <SecondaryNavigation
               title="Repositories"
               items={REPOSITORY_SUBMENU}
             />
             <Outlet />
-          </>
+          </SelfHostedGuard>
         }
       >
         <Route
           path={PATHS.repositories.mirrors}
-          element={<Pages.MirrorsPage />}
+          element={
+          <SelfHostedGuard>
+            <Pages.MirrorsPage />
+          </SelfHostedGuard>
+        }
         />
         <Route
           path={PATHS.repositories.localRepositories}
-          element={<Pages.LocalRepositoriesPage />}
+          element={
+            <SelfHostedGuard>
+              <Pages.LocalRepositoriesPage />
+            </SelfHostedGuard>
+          }
         />
         <Route
           path={PATHS.repositories.publications}
-          element={<Pages.PublicationsPage />}
+          element={
+            <SelfHostedGuard>
+              <Pages.PublicationsPage />
+            </SelfHostedGuard>
+          }
         />
         <Route
           path={PATHS.repositories.publicationTargets}
-          element={<Pages.PublicationTargetsPage />}
+          element={
+            <SelfHostedGuard>
+              <Pages.PublicationTargetsPage />
+            </SelfHostedGuard>
+          }
         />
         <Route
           path={PATHS.repositories.repositoryProfiles}
-          element={<Pages.RepositoryProfilesPage />}
+          element={
+            <SelfHostedGuard>
+              <Pages.RepositoryProfilesPage />
+            </SelfHostedGuard>
+          }     
         />
       </Route>
 
