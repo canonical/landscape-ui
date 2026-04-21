@@ -6,7 +6,7 @@ import { lazy, Suspense } from "react";
 import type { Distribution } from "../../types";
 import classes from "./EmptyDistribution.module.scss";
 
-const NewSeriesForm = lazy(async () => import("../NewSeriesForm"));
+const NewSeriesForm = lazy(async () => import("../AddMirrorForm"));
 
 interface EmptyDistributionProps {
   readonly distribution: Distribution;

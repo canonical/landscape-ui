@@ -9,19 +9,19 @@ import {
   DEFAULT_MIRROR_URI,
   PRE_SELECTED_POCKETS,
 } from "../../constants";
-import NewSeriesForm from "./NewSeriesForm";
+import AddMirrorForm from "./AddMirrorForm";
 import { getStrippedUrl } from "./helpers";
 
 const [distribution] = distributions;
 
-const props: ComponentProps<typeof NewSeriesForm> = {
+const props: ComponentProps<typeof AddMirrorForm> = {
   distribution: distribution,
   ctaText: "Add series",
 };
 
-describe("NewSeriesForm", () => {
+describe("AddMirrorForm", () => {
   it("renders form", () => {
-    const { container } = renderWithProviders(<NewSeriesForm />);
+    const { container } = renderWithProviders(<AddMirrorForm />);
     expect(container).toHaveTexts([
       "Type",
       "Mirror URI",
@@ -49,7 +49,7 @@ describe("NewSeriesForm", () => {
 
   it("handles ubuntu archive type change correctly", async () => {
     renderWithProviders(
-      <NewSeriesForm distribution={distribution} ctaText="Add series" />,
+      <AddMirrorForm distribution={distribution} ctaText="Add series" />,
     );
     const typeSelect = screen.getByRole("combobox", { name: /type/i });
 
@@ -78,7 +78,7 @@ describe("NewSeriesForm", () => {
   });
 
   it("handles snapshot type change correctly", async () => {
-    renderWithProviders(<NewSeriesForm {...props} />);
+    renderWithProviders(<AddMirrorForm {...props} />);
     const typeSelect = screen.getByRole("combobox", { name: /type/i });
 
     await userEvent.selectOptions(typeSelect, "ubuntu-snapshot");
@@ -106,7 +106,7 @@ describe("NewSeriesForm", () => {
   });
 
   it("handles third-party type change correctly", async () => {
-    renderWithProviders(<NewSeriesForm {...props} />);
+    renderWithProviders(<AddMirrorForm {...props} />);
 
     const typeSelect = screen.getByRole("combobox", { name: /type/i });
 

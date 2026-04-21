@@ -11,15 +11,27 @@ import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 
-const NewSeriesForm = lazy(async () =>
+const EditMirrorForm = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
-    default: module.NewSeriesForm,
+    default: module.EditMirrorForm,
+  })),
+);
+
+const AddMirrorForm = lazy(async () =>
+  import("@/features/mirrors").then((module) => ({
+    default: module.AddMirrorForm,
   })),
 );
 
 const MirrorDetails = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
     default: module.MirrorDetails,
+  })),
+);
+
+const PublishMirrorForm = lazy(async () =>
+  import("@/features/mirrors").then((module) => ({
+    default: module.PublishMirrorForm,
   })),
 );
 
@@ -78,21 +90,21 @@ const MirrorsPage: FC = () => {
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <NewSeriesForm />
+            <AddMirrorForm />
           </SidePanel.Suspense>
         )}
         {lastSidePathSegment === "edit" && (
-          <SidePanel.Suspense key="add">
-            <NewSeriesForm />
+          <SidePanel.Suspense key="edit">
+            <EditMirrorForm />
           </SidePanel.Suspense>
         )}
         {lastSidePathSegment === "publish" && (
-          <SidePanel.Suspense key="add">
-            <NewSeriesForm />
+          <SidePanel.Suspense key="publish">
+            <PublishMirrorForm />
           </SidePanel.Suspense>
         )}
         {lastSidePathSegment === "view" && (
-          <SidePanel.Suspense key="add">
+          <SidePanel.Suspense key="view">
             <MirrorDetails />
           </SidePanel.Suspense>
         )}

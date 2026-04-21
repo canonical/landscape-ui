@@ -16,7 +16,11 @@ import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { generateFilteredResponse } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
-import type { ListMirrorPackagesResponse } from "@canonical/landscape-openapi";
+import type {
+  DeleteMirrorResponse,
+  SyncMirrorResponse,
+  ListMirrorPackagesResponse,
+} from "@canonical/landscape-openapi";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("publications");
@@ -267,6 +271,16 @@ export default [
   }),
 
   http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName/packages`, async () => {
+    await delay();
+    return HttpResponse.json<SyncMirrorResponse>();
+  }),
+
+  http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {
+    await delay();
+    return HttpResponse.json<DeleteMirrorResponse>();
+  }),
+
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName\\:sync`, async () => {
     await delay();
 
     const endpointStatus = getEndpointStatus();

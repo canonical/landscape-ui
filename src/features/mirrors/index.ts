@@ -1,5 +1,5 @@
 export { default as NewDistributionForm } from "./components/NewDistributionForm";
-export { default as NewSeriesForm } from "./components/NewSeriesForm";
+export { default as AddMirrorForm } from "./components/AddMirrorForm";
 export { distributionCardClasses } from "./components/DistributionCard";
 export { seriesCardClasses } from "./components/SeriesCard";
 export { useDistributions } from "./hooks";
@@ -17,3 +17,5 @@ export type {
 export * from "./api";
 export { default as MirrorsList } from "./components/MirrorsList";
 export { default as MirrorDetails } from "./components/MirrorDetails";
+export { default as EditMirrorForm } from "./components/EditMirrorForm";
+export { default as PublishMirrorForm } from "./components/PublishMirrorForm";

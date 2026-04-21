@@ -1,3 +1,6 @@
 export * from "./useListMirrors";
 export * from "./useListMirrorPackages";
 export * from "./useListPublications";
+export * from "./useDeleteMirror";
+export * from "./useUpdateMirror";
+export * from "./useSyncMirror";

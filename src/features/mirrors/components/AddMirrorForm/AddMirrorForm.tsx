@@ -23,7 +23,6 @@ import {
   PRE_SELECTED_POCKETS,
 } from "../../constants";
 import { useDistributions, useSeries } from "../../hooks";
-import type { Distribution } from "../../types";
 import {
   POCKET_OPTIONS,
   SNAPSHOT_START_DATE,
@@ -38,15 +37,7 @@ import type { FormProps } from "./types";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import Blocks from "@/components/layout/Blocks";
 
-interface NewSeriesFormProps {
-  readonly distribution?: Distribution;
-  readonly ctaText?: string;
-}
-
-const NewSeriesForm: FC<NewSeriesFormProps> = ({
-  distribution,
-  ctaText = "Add mirror",
-}) => {
+const AddMirrorForm: FC = () => {
   const [mirrorUri, setMirrorUri] = useState(DEFAULT_MIRROR_URI);
   const [seriesOptions, setSeriesOptions] = useState<SelectOption[]>([]);
 
@@ -56,10 +47,9 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   const { createSeriesQuery, getRepoInfo } = useSeries();
   const { getDistributionsQuery } = useDistributions();
 
-  const { data: getDistributionsQueryResult } = getDistributionsQuery(
-    { include_latest_sync: true },
-    { enabled: !distribution },
-  );
+  const { data: getDistributionsQueryResult } = getDistributionsQuery({
+    include_latest_sync: true,
+  });
 
   const distributions = getDistributionsQueryResult?.data ?? [];
 
@@ -75,8 +65,8 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   }));
 
   const formik = useFormik<FormProps>({
-    initialValues: getInitialValues(distribution),
-    validationSchema: getValidationSchema(distributions, distribution),
+    initialValues: getInitialValues(),
+    validationSchema: getValidationSchema(distributions),
     onSubmit: async (values) => {
       try {
         await createSeries({
@@ -439,8 +429,8 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
           <UdebCheckboxInput formik={formik} />
 
           <SidePanelFormButtons
-            submitButtonDisabled={formik.isSubmitting}
-            submitButtonText={ctaText}
+            submitButtonLoading={formik.isSubmitting}
+            submitButtonText="Add mirror"
           />
         </Form>
       </SidePanel.Content>
@@ -448,4 +438,4 @@ const NewSeriesForm: FC<NewSeriesFormProps> = ({
   );
 };
 
-export default NewSeriesForm;
+export default AddMirrorForm;

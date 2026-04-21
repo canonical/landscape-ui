@@ -5,13 +5,12 @@ import { Button, Spinner } from "@canonical/react-components";
 import moment from "moment";
 import { Suspense, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
-import ListActions, {
-  LIST_ACTIONS_COLUMN_PROPS,
-} from "@/components/layout/ListActions";
+import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import MirrorPublicationsLink from "../MirrorPublicationsLink";
 import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams/usePageParams";
 import MirrorPackagesCount from "../MirrorPackagesCount";
+import MirrorActions from "../MirrorActions";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -72,36 +71,8 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
-        Cell: () => (
-          <ListActions
-            actions={[
-              {
-                icon: "show",
-                label: "View details",
-                onClick: createPageParamsSetter({
-                  sidePath: ["view"],
-                }),
-              },
-              {
-                icon: "edit",
-                label: "Edit",
-              },
-              {
-                icon: "restart",
-                label: "Update",
-              },
-              {
-                icon: "upload",
-                label: "Publish",
-              },
-            ]}
-            destructiveActions={[
-              {
-                icon: "delete",
-                label: "Remove",
-              },
-            ]}
-          />
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+          <MirrorActions mirror={mirror} />
         ),
       },
     ],

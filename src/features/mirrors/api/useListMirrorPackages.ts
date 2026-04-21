@@ -1,7 +1,7 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import type {
   ListMirrorPackagesData,
+  ListMirrorPackagesError,
   ListMirrorPackagesResponse,
 } from "@canonical/landscape-openapi";
 import type { UseQueryOptions } from "@tanstack/react-query";
@@ -14,7 +14,7 @@ export function useListMirrorPackages(
   options: Omit<
     UseQueryOptions<
       AxiosResponse<ListMirrorPackagesResponse>,
-      AxiosError<ApiError>
+      AxiosError<ListMirrorPackagesError>
     >,
     "queryKey" | "queryFn"
   > = {},
@@ -23,9 +23,9 @@ export function useListMirrorPackages(
 
   return useSuspenseQuery<
     AxiosResponse<ListMirrorPackagesResponse>,
-    AxiosError<ApiError>
+    AxiosError<ListMirrorPackagesError>
   >({
-    queryKey: [`mirrorPackages`, mirrorName, params],
+    queryKey: ["mirrorPackages", mirrorName, params],
     queryFn: async () =>
       authFetchDebArchive.get(`${mirrorName}/packages`, { params }),
     ...options,
