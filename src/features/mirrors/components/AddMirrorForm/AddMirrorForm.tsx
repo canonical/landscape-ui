@@ -10,7 +10,7 @@ import {
   Textarea,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { ChangeEventHandler, FC } from "react";
+import type { ComponentProps, FC } from "react";
 import type { FormProps } from "./types";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import Blocks from "@/components/layout/Blocks";
@@ -20,32 +20,24 @@ import {
   useGetUbuntuEsmInfo,
 } from "../../api";
 import { getInitialValues } from "./helpers";
-import MultiSelectField from "@/components/form/MultiSelectField/MultiSelectField";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import SelectableMirrorContentsBlock from "../SelectableMirrorContentsBlock";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { createPageParamsSetter } = usePageParams();
 
-  const {
-    data: { data: ubuntuArchiveInfo },
-  } = useGetUbuntuArchiveInfo();
-  const {
-    data: {
-      data: { results: ubuntuEsmInfo },
-    },
-  } = useGetUbuntuEsmInfo();
-
-  const { mutateAsync: createMirror } = useCreateMirror();
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [] });
+  const ubuntuArchiveInfo = useGetUbuntuArchiveInfo().data.data;
+  const ubuntuEsmInfo = useGetUbuntuEsmInfo().data.data.results;
+  const createMirror = useCreateMirror().mutateAsync;
+  const close = createPageParamsSetter({ sidePath: [] });
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues({
-      ubuntuArchiveDistributions: ubuntuArchiveInfo.distributions,
-      ubuntuEsmInfo: ubuntuEsmInfo,
+      ubuntuArchiveInfo,
+      ubuntuEsmInfo,
     }),
     onSubmit: async (values) => {
       try {
@@ -56,16 +48,18 @@ const AddMirrorForm: FC = () => {
 
         await createMirror({
           archiveRoot,
-          components: values.components,
+          components: values.components.map((component) => component.trim()),
           displayName: values.name,
-          architectures: values.architectures,
+          architectures: values.architectures.map((architecture) =>
+            architecture.trim(),
+          ),
           distribution: values.distribution,
           downloadInstaller: values.downloadInstallerFiles,
           downloadSources: values.downloadSources,
           downloadUdebs: values.downloadUdebPackages,
         });
 
-        closeSidePanel();
+        close();
 
         notify.success({
           title: `You have successfully added ${values.name}.`,
@@ -83,57 +77,6 @@ const AddMirrorForm: FC = () => {
       value: mirror_type,
     }),
   );
-
-  const distributions =
-    formik.values.sourceType === "ubuntu-archive" ||
-    formik.values.sourceType === "ubuntu-snapshots"
-      ? ubuntuArchiveInfo.distributions
-      : formik.values.sourceType === "ubuntu-pro"
-        ? ubuntuEsmInfo.find(
-            ({ mirror_type }) => mirror_type === formik.values.proService,
-          )!.distributions
-        : [];
-
-  const distributionOptions: SelectOption[] = distributions.map(
-    ({ label, slug }) => ({
-      label,
-      value: slug,
-    }),
-  );
-
-  const componentOptions: SelectOption[] =
-    distributions
-      .find(({ slug }) => slug === formik.values.distribution)
-      ?.components.map((component) => ({
-        label: component.slug,
-        value: component.slug,
-      })) ?? [];
-
-  const architectureOptions: SelectOption[] =
-    distributions
-      .find(({ slug }) => slug === formik.values.distribution)
-      ?.architectures.map((architecture) => ({
-        label: architecture.slug,
-        value: architecture.slug,
-      })) ?? [];
-
-  const handleChangeSourceType: ChangeEventHandler<HTMLSelectElement> = (
-    event,
-  ) => {
-    const sourceType = event.target.value as FormProps["sourceType"];
-
-    formik.setValues({
-      ...getInitialValues({
-        sourceType,
-        ubuntuArchiveDistributions: ubuntuArchiveInfo.distributions,
-        ubuntuEsmInfo: ubuntuEsmInfo,
-      }),
-      name: formik.values.name,
-      downloadUdebPackages: formik.values.downloadUdebPackages,
-      downloadInstallerFiles: formik.values.downloadInstallerFiles,
-      downloadSources: formik.values.downloadSources,
-    });
-  };
 
   return (
     <>
@@ -171,7 +114,31 @@ const AddMirrorForm: FC = () => {
                   { label: "Third party", value: "third-party" },
                 ]}
                 {...formik.getFieldProps("sourceType")}
-                onChange={handleChangeSourceType}
+                onChange={(event) => {
+                  if (
+                    !(
+                      event.target.value === "ubuntu-archive" ||
+                      event.target.value === "ubuntu-snapshots" ||
+                      event.target.value === "ubuntu-pro" ||
+                      event.target.value === "third-party"
+                    )
+                  ) {
+                    throw new Error();
+                  }
+
+                  formik.setValues({
+                    ...getInitialValues({
+                      sourceType: event.target.value,
+                      ubuntuArchiveInfo,
+                      ubuntuEsmInfo,
+                    }),
+                    name: formik.values.name,
+                    downloadUdebPackages: formik.values.downloadUdebPackages,
+                    downloadInstallerFiles:
+                      formik.values.downloadInstallerFiles,
+                    downloadSources: formik.values.downloadSources,
+                  });
+                }}
                 error={getFormikError(formik, "sourceType")}
               />
               {formik.values.sourceType === "ubuntu-pro" && (
@@ -211,45 +178,51 @@ const AddMirrorForm: FC = () => {
                   error={getFormikError(formik, "proService")}
                 />
               )}
-              <Select
-                label="Distribution"
-                required
-                options={distributionOptions}
-                {...formik.getFieldProps("distribution")}
-                error={getFormikError(formik, "distribution")}
-              />
-              <MultiSelectField
-                variant="condensed"
-                hasSelectedItemsFirst={false}
-                label="Components"
-                {...formik.getFieldProps("components")}
-                items={componentOptions}
-                selectedItems={componentOptions.filter(({ value }) =>
-                  formik.values.components?.includes(value),
-                )}
-                onItemsUpdate={async (items) =>
-                  formik.setFieldValue(
-                    "components",
-                    items.map(({ value }) => value),
-                  )
-                }
-              />
-              <MultiSelectField
-                variant="condensed"
-                hasSelectedItemsFirst={false}
-                label="Architectures"
-                {...formik.getFieldProps("architectures")}
-                items={architectureOptions}
-                selectedItems={architectureOptions.filter(({ value }) =>
-                  formik.values.architectures?.includes(value),
-                )}
-                onItemsUpdate={async (items) =>
-                  formik.setFieldValue(
-                    "architectures",
-                    items.map(({ value }) => value),
-                  )
-                }
-              />
+              {formik.values.sourceType === "third-party" ? (
+                <>
+                  <Input
+                    type="text"
+                    label="Distribution"
+                    required
+                    {...formik.getFieldProps("distribution")}
+                    error={getFormikError(formik, "distribution")}
+                  />
+                  <Input
+                    type="text"
+                    label="Components"
+                    {...formik.getFieldProps("components")}
+                    error={getFormikError(formik, "components")}
+                    onChange={async (event) => {
+                      await formik.setFieldValue(
+                        "components",
+                        event.target.value.split(","),
+                      );
+                    }}
+                  />
+                  <Input
+                    type="text"
+                    label="Architectures"
+                    {...formik.getFieldProps("architectures")}
+                    error={getFormikError(formik, "architectures")}
+                    onChange={async (event) => {
+                      await formik.setFieldValue(
+                        "architectures",
+                        event.target.value.split(","),
+                      );
+                    }}
+                  />
+                </>
+              ) : (
+                <SelectableMirrorContentsBlock
+                  formik={
+                    formik as ComponentProps<
+                      typeof SelectableMirrorContentsBlock
+                    >["formik"]
+                  }
+                  ubuntuArchiveInfo={ubuntuArchiveInfo}
+                  ubuntuEsmInfo={ubuntuEsmInfo}
+                />
+              )}
               <p>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages"
@@ -280,7 +253,7 @@ const AddMirrorForm: FC = () => {
           <SidePanelFormButtons
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Add mirror"
-            onCancel={closeSidePanel}
+            onCancel={close}
           />
         </Form>
       </SidePanel.Content>

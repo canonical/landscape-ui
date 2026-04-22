@@ -17,13 +17,13 @@ export function getStrippedUrl(url: string): string {
 }
 
 export function getInitialSourceType({
-  ubuntuArchiveDistributions,
+  ubuntuArchiveInfo,
   ubuntuEsmInfo,
 }: {
-  ubuntuArchiveDistributions: Distribution[];
+  ubuntuArchiveInfo: UbuntuArchiveInfo;
   ubuntuEsmInfo: UbuntuArchiveInfo[];
 }) {
-  if (ubuntuArchiveDistributions.length) {
+  if (ubuntuArchiveInfo.distributions.length) {
     return "ubuntu-archive";
   } else if (ubuntuEsmInfo.length) {
     return "ubuntu-pro";
@@ -77,20 +77,20 @@ export function getInitialBaseValues(
 }
 
 export function getInitialUbuntuArchiveValues(
-  distributions: Distribution[],
+  ubuntuArchiveInfo: UbuntuArchiveInfo,
 ): UbuntuArchiveFormProps {
   return {
-    ...getInitialBaseValues(distributions),
+    ...getInitialBaseValues(ubuntuArchiveInfo.distributions),
     sourceType: "ubuntu-archive",
     sourceUrl: UBUNTU_ARCHIVE_SOURCE_URL,
   };
 }
 
 export function getInitialUbuntuSnapshotsValues(
-  distributions: Distribution[],
+  ubuntuArchiveInfo: UbuntuArchiveInfo,
 ): UbuntuSnapshotsFormProps {
   return {
-    ...getInitialBaseValues(distributions),
+    ...getInitialBaseValues(ubuntuArchiveInfo.distributions),
     sourceType: "ubuntu-snapshots",
     sourceUrl: UBUNTU_ARCHIVE_SOURCE_URL,
     snapshotDate: moment().format(INPUT_DATE_FORMAT),
@@ -98,14 +98,14 @@ export function getInitialUbuntuSnapshotsValues(
 }
 
 export const getInitialUbuntuProValues = (
-  services: UbuntuArchiveInfo[],
+  ubuntuEsmInfo: UbuntuArchiveInfo[],
 ): UbuntuProFormProps => {
   return {
-    ...getInitialBaseValues(services[0]!.distributions),
+    ...getInitialBaseValues(ubuntuEsmInfo[0]!.distributions),
     sourceType: "ubuntu-pro",
     token: "",
     sourceUrl: "https://esm.ubuntu.com/",
-    proService: services[0]!.mirror_type,
+    proService: ubuntuEsmInfo[0]!.mirror_type,
   };
 };
 
@@ -120,23 +120,23 @@ export const getInitialThirdPartyValues = (): ThirdPartyFormProps => {
 
 export const getInitialValues = ({
   sourceType,
-  ubuntuArchiveDistributions,
+  ubuntuArchiveInfo,
   ubuntuEsmInfo,
 }: {
   sourceType?: FormProps["sourceType"];
-  ubuntuArchiveDistributions: Distribution[];
+  ubuntuArchiveInfo: UbuntuArchiveInfo;
   ubuntuEsmInfo: UbuntuArchiveInfo[];
 }): FormProps => {
   sourceType ??= getInitialSourceType({
-    ubuntuArchiveDistributions,
+    ubuntuArchiveInfo,
     ubuntuEsmInfo,
   });
 
   switch (sourceType) {
     case "ubuntu-archive":
-      return getInitialUbuntuArchiveValues(ubuntuArchiveDistributions);
+      return getInitialUbuntuArchiveValues(ubuntuArchiveInfo);
     case "ubuntu-snapshots":
-      return getInitialUbuntuSnapshotsValues(ubuntuArchiveDistributions);
+      return getInitialUbuntuSnapshotsValues(ubuntuArchiveInfo);
     case "ubuntu-pro":
       return getInitialUbuntuProValues(ubuntuEsmInfo);
     case "third-party":
