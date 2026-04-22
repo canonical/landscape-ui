@@ -1,12 +1,5 @@
-export interface Component {
-  slug: string;
-  preselected: boolean;
-}
-
-export interface Architecture {
-  slug: string;
-  preselected: boolean;
-}
+import type { Architecture } from "./Architecture";
+import type { Component } from "./Component";
 
 export interface Distribution {
   slug: string;

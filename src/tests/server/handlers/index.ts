@@ -26,7 +26,6 @@ import process from "./process";
 import publications from "./publications";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
-import repo from "./repo";
 import reports from "./reports";
 import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
@@ -70,7 +69,6 @@ export default [
   ...publications,
   ...rebootProfiles,
   ...removalProfiles,
-  ...repo,
   ...reports,
   ...repository,
   ...repositoryProfiles,

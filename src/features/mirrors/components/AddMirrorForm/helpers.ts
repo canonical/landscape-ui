@@ -8,9 +8,13 @@ import type {
   UbuntuProFormProps,
   UbuntuSnapshotsFormProps,
 } from "./types";
-import type { Distribution, UbuntuArchiveInfo } from "../../types";
-import { UBUNTU_ARCHIVE_SOURCE_URL, UBUNTU_PRO_HOST } from "../../constants";
-import type { Architecture, Component } from "../../types/Distribution";
+import type {
+  Architecture,
+  Component,
+  Distribution,
+  UbuntuArchiveInfo,
+} from "../../types";
+import { UBUNTU_ARCHIVE_HOST, UBUNTU_PRO_HOST } from "../../constants";
 
 export function getStrippedUrl(url: string): string {
   return url.replace(/\/[^\\/@]*@/, "/");
@@ -82,7 +86,7 @@ export function getInitialUbuntuArchiveValues(
   return {
     ...getInitialBaseValues(ubuntuArchiveInfo.distributions),
     sourceType: "ubuntu-archive",
-    sourceUrl: UBUNTU_ARCHIVE_SOURCE_URL,
+    sourceUrl: `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
   };
 }
 
@@ -92,7 +96,7 @@ export function getInitialUbuntuSnapshotsValues(
   return {
     ...getInitialBaseValues(ubuntuArchiveInfo.distributions),
     sourceType: "ubuntu-snapshots",
-    sourceUrl: UBUNTU_ARCHIVE_SOURCE_URL,
+    sourceUrl: `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
     snapshotDate: moment().format(INPUT_DATE_FORMAT),
   };
 }
