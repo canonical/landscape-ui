@@ -4,11 +4,7 @@ import { boolToLabel } from "@/utils/output";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import type { Publication } from "../../types";
-import {
-  getPublicationName,
-  getPublicationTargetName,
-  getSourceName,
-} from "../../helpers";
+import { getPublicationTargetName, getSourceName } from "../../helpers";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 
@@ -17,8 +13,6 @@ interface PublicationDetailsProps {
 }
 
 const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
-  const publicationLabel = getPublicationName(publication);
-
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
@@ -45,7 +39,7 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
             className="p-segmented-control__button"
             onClick={openRepublishModal}
             hasIcon
-            aria-label={`Republish ${publicationLabel}`}
+            aria-label={`Republish ${publication.label}`}
           >
             <Icon name="upload" />
             <span>Republish</span>
@@ -56,7 +50,7 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
             className="p-segmented-control__button"
             onClick={openRemoveModal}
             hasIcon
-            aria-label={`Remove ${publicationLabel}`}
+            aria-label={`Remove ${publication.label}`}
           >
             <Icon name={`${ICONS.delete}--negative`} />
             <span className="u-text--negative">Remove</span>
@@ -67,10 +61,7 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
       <Blocks>
         <Blocks.Item title="Details" titleClassName="p-text--small-caps">
           <InfoGrid>
-            <InfoGrid.Item
-              label="Name"
-              value={getPublicationName(publication)}
-            />
+            <InfoGrid.Item label="Name" value={publication.label} />
 
             <InfoGrid.Item
               label="Source"

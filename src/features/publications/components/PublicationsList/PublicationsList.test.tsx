@@ -4,11 +4,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
-import {
-  getPublicationName,
-  getPublicationTargetName,
-  getSourceName,
-} from "../../helpers";
+import { getPublicationTargetName, getSourceName } from "../../helpers";
 
 describe("PublicationsList", () => {
   const user = userEvent.setup();
@@ -28,7 +24,7 @@ describe("PublicationsList", () => {
 
     expect(
       screen.getByRole("button", {
-        name: getPublicationName(publication),
+        name: publication.label,
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText("Mirror")).toHaveLength(publications.length);
@@ -44,7 +40,7 @@ describe("PublicationsList", () => {
 
   it("opens publication details side panel", async () => {
     renderWithProviders(<PublicationsList publications={publications} />);
-    const publicationLabel = getPublicationName(publication);
+    const publicationLabel = publication.label;
 
     await user.click(screen.getByRole("button", { name: publicationLabel }));
 

@@ -7,7 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useMemo } from "react";
 import {
-  getPublicationName,
   getPublicationTargetName,
   getSourceName,
   getSourceType,
@@ -62,9 +61,7 @@ const matchesSearch = (
     case "sourceType:":
       return getSourceType(publication.source).toLowerCase().includes(value);
     default:
-      return (getPublicationName(publication) ?? "")
-        .toLowerCase()
-        .includes(value);
+      return publication.label.toLowerCase().includes(value);
   }
 };
 

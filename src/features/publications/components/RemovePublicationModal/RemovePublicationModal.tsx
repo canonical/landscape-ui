@@ -5,7 +5,6 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import useDeletePublication from "../../api/useDeletePublication";
 import type { Publication } from "../../types";
-import { getPublicationName } from "../../helpers";
 
 interface RemovePublicationModalProps extends Pick<
   TextConfirmationModalProps,
@@ -29,7 +28,7 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
 
       notify.success({
         title: "Publication removed",
-        message: `Publication "${getPublicationName(publication)}" has been removed.`,
+        message: `Publication "${publication.label}" has been removed.`,
       });
     } catch (error) {
       debug(error);

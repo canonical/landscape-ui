@@ -11,7 +11,6 @@ import type { Publication } from "../../types";
 import PublicationDetails from "../PublicationDetails";
 import PublicationsListActions from "../PublicationsListActions";
 import {
-  getPublicationName,
   getPublicationTargetName,
   getSourceName,
   getSourceType,
@@ -28,7 +27,7 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
   const openPublicationDetails = useCallback(
     (publication: Publication) => {
       setSidePanelContent(
-        getPublicationName(publication),
+        publication.label,
         <PublicationDetails publication={publication} />,
       );
     },
@@ -49,7 +48,7 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
               openPublicationDetails(row.original);
             }}
           >
-            {getPublicationName(row.original)}
+            {row.original.label}
           </Button>
         ),
       },

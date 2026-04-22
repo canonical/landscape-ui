@@ -4,7 +4,6 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import usePublishPublication from "../../api/usePublishPublication";
 import type { Publication } from "../../types";
-import { getPublicationName } from "../../helpers";
 
 interface RepublishPublicationModalProps {
   readonly publication: Publication;
@@ -31,7 +30,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
 
       notify.success({
         title: "Publication republished",
-        message: `Publication "${getPublicationName(publication)}" has been queued for republishing.`,
+        message: `Publication "${publication.label}" has been queued for republishing.`,
       });
     } catch (error) {
       debug(error);
@@ -48,7 +47,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
     <ConfirmationModal
       renderInPortal
       close={close}
-      title={`Republish ${getPublicationName(publication)}`}
+      title={`Republish ${publication.label}`}
       confirmButtonLabel="Republish"
       confirmButtonAppearance="positive"
       confirmButtonLoading={isPublishingPublication}

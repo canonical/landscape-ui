@@ -6,12 +6,11 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import RemovePublicationModal from "./RemovePublicationModal";
-import { getPublicationName } from "../../helpers";
 
 describe("RemovePublicationModal", () => {
   const user = userEvent.setup();
   const [publication] = publications;
-  const publicationLabel = getPublicationName(publication);
+  const publicationLabel = publication.label;
 
   it("does not render when closed", () => {
     const props: ComponentProps<typeof RemovePublicationModal> = {

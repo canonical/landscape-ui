@@ -4,7 +4,6 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationsContainer from "./PublicationsContainer";
-import { getPublicationName } from "../../helpers";
 
 describe("PublicationsContainer", () => {
   it("renders publications list data", async () => {
@@ -12,7 +11,7 @@ describe("PublicationsContainer", () => {
 
     expect(
       await screen.findByRole("button", {
-        name: getPublicationName(publications[0]),
+        name: publications[0].label,
       }),
     ).toBeInTheDocument();
   });
