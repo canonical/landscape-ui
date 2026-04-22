@@ -1,5 +1,4 @@
 import type { CellProps, Column } from "react-table";
-import { useListPublications } from "../../api";
 import { useMemo, type FC } from "react";
 import type { Publication } from "@canonical/landscape-openapi";
 import { ModularTable } from "@canonical/react-components";
@@ -8,21 +7,12 @@ import { useCounter } from "usehooks-ts";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 
 interface MirrorPublicationsListProps {
-  readonly mirrorName: string;
+  readonly publications: Publication[];
 }
 
 const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
-  mirrorName,
+  publications,
 }) => {
-  const {
-    data: {
-      data: { publications = [] },
-    },
-  } = useListPublications({
-    filter: `source="${mirrorName}"`,
-    pageSize: 1000,
-  });
-
   const { count, increment, decrement } = useCounter(1);
 
   const columns = useMemo<Column<Publication>[]>(

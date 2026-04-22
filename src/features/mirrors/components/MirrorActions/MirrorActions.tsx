@@ -69,20 +69,18 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
           },
         ]}
       />
-      {isUpdateModalOpen && (
-        <UpdateMirrorModal
-          close={closeUpdateModal}
-          mirrorDisplayName={mirror.displayName}
-          mirrorName={mirrorName}
-        />
-      )}
-      {isRemoveModalOpen && (
-        <RemoveMirrorModal
-          close={closeRemoveModal}
-          mirrorDisplayName={mirror.displayName}
-          mirrorName={mirrorName}
-        />
-      )}
+      <UpdateMirrorModal
+        isOpen={isUpdateModalOpen}
+        close={closeUpdateModal}
+        mirrorDisplayName={mirror.displayName}
+        mirrorName={mirrorName}
+      />
+      <RemoveMirrorModal
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        mirrorDisplayName={mirror.displayName}
+        mirrorName={mirrorName}
+      />
     </>
   );
 };

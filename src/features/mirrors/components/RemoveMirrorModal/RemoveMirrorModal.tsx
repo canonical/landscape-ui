@@ -1,20 +1,21 @@
 import useDebug from "@/hooks/useDebug";
 import { ConfirmationModal, Icon } from "@canonical/react-components";
-import { Suspense, type FC } from "react";
-import { useDeleteMirror } from "../../api";
+import type { FC } from "react";
+import { useDeleteMirror, useListPublications } from "../../api";
 import useNotify from "@/hooks/useNotify";
 import MirrorPublicationsList from "../MirrorPublicationsList";
-import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;
+  readonly isOpen: boolean;
   readonly mirrorDisplayName: string;
   readonly mirrorName: string;
 }
 
 const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   close,
+  isOpen,
   mirrorDisplayName,
   mirrorName,
 }) => {
@@ -22,8 +23,17 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
 
+  const { publications = [] } = useListPublications({
+    filter: `source="${mirrorName}"`,
+    pageSize: 1000,
+  }).data.data;
+
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
     useDeleteMirror();
+
+  if (!isOpen) {
+    return;
+  }
 
   const tryRemoveMirror = async () => {
     try {
@@ -57,15 +67,23 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       close={close}
       confirmButtonLoading={isDeletingMirror}
     >
-      <p>This mirror is associated with the following publications:</p>
-      <Suspense fallback={<LoadingState />}>
-        <MirrorPublicationsList mirrorName={mirrorName} />
-      </Suspense>
-      <p>
-        After removal you won’t be able to update any of these publications, but
-        they will continue to be available.{" "}
-        <strong>This action is irreversible.</strong>
-      </p>
+      {publications.length ? (
+        <>
+          <p>This mirror is associated with the following publications:</p>
+          <MirrorPublicationsList publications={publications} />
+          <p>
+            After removal you won’t be able to update any of these publications,
+            but they will continue to be available.{" "}
+            <strong>This action is irreversible.</strong>
+          </p>
+        </>
+      ) : (
+        <p>
+          This action will remove the mirror from Landscape and it won’t be
+          available to be published in the future.{" "}
+          <strong>This action is irreversible.</strong>
+        </p>
+      )}
     </ConfirmationModal>
   );
 };

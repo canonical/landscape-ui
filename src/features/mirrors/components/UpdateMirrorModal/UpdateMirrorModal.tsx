@@ -11,12 +11,14 @@ import useNotify from "@/hooks/useNotify";
 
 interface UpdateMirrorModalProps {
   readonly close: () => void;
+  readonly isOpen: boolean;
   readonly mirrorDisplayName: string;
   readonly mirrorName: string;
 }
 
 const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
   close,
+  isOpen,
   mirrorDisplayName,
   mirrorName,
 }) => {
@@ -33,6 +35,10 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
   const { value: forceUpdate, toggle: toggleForceUpdate } = useBoolean();
   const { value: skipExistingPackages, toggle: toggleSkipExistingPackages } =
     useBoolean();
+
+  if (!isOpen) {
+    return;
+  }
 
   const tryUpdateMirror = async () => {
     try {

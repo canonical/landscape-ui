@@ -73,7 +73,9 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
-          <MirrorActions mirror={mirror} />
+          <Suspense fallback={<Spinner />}>
+            <MirrorActions mirror={mirror} />
+          </Suspense>
         ),
       },
     ],

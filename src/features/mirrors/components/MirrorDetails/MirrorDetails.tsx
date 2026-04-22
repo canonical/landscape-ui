@@ -3,7 +3,7 @@ import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import { Button, Icon } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { useGetMirror } from "../../api";
+import { useGetMirror, useListPublications } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { getSourceType } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
@@ -28,6 +28,11 @@ const MirrorDetails: FC = () => {
   } = useBoolean();
 
   const mirror = useGetMirror(decodeURIComponent(name)).data.data;
+
+  const { publications = [] } = useListPublications({
+    filter: `source="${name}"`,
+    pageSize: 1000,
+  }).data.data;
 
   return (
     <>
@@ -136,24 +141,22 @@ const MirrorDetails: FC = () => {
             </InfoGrid>
           </Blocks.Item>
           <Blocks.Item title="Used in">
-            <MirrorPublicationsList mirrorName={name} />
+            <MirrorPublicationsList publications={publications} />
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
-      {isUpdateModalOpen && (
-        <UpdateMirrorModal
-          close={closeUpdateModal}
-          mirrorDisplayName={mirror.displayName}
-          mirrorName={name}
-        />
-      )}
-      {isRemoveModalOpen && (
-        <RemoveMirrorModal
-          close={closeRemoveModal}
-          mirrorDisplayName={mirror.displayName}
-          mirrorName={name}
-        />
-      )}
+      <UpdateMirrorModal
+        isOpen={isUpdateModalOpen}
+        close={closeUpdateModal}
+        mirrorDisplayName={mirror.displayName}
+        mirrorName={name}
+      />
+      <RemoveMirrorModal
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        mirrorDisplayName={mirror.displayName}
+        mirrorName={name}
+      />
     </>
   );
 };
