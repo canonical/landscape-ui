@@ -29,3 +29,11 @@ export const repositories: LocalRepository[] = [
 ] as const;
 
 export const repoPackages = ["package 1", "package 2", "package 3"] as const;
+
+export const validateTask = {
+  name: "task/vvvv-tttt-pppp",
+  display_name: "validate packages",
+  task_id: "vvvv-tttt-pppp",
+  status: "done",
+  output: "package-A, package-B"
+};

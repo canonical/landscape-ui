@@ -32,17 +32,17 @@ export const useGetRepositoryActions = ({
   };
 
   const actions: Action[] = [
-    // {
-    //   icon: "edit",
-    //   label: "Edit",
-    //   "aria-label": `Edit "${repository.name}" repository`,
-    //   onClick: createPageParamsSetter({ sidePath: ["edit"], repository: repository.name }),
-    // },
     {
       icon: "edit",
-      label: "Edit packages",
-      "aria-label": `Edit packages for "${repository.display_name}" repository`,
-      onClick: openSidePanel("edit-packages"),
+      label: "Edit",
+      "aria-label": `Edit "${repository.display_name}" repository`,
+      onClick: openSidePanel("edit"),
+    },
+    {
+      icon: "import",
+      label: "Import packages",
+      "aria-label": `Import packages to "${repository.display_name}" repository`,
+      onClick: openSidePanel("import-packages"),
     },
     {
       icon: "upload",

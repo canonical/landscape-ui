@@ -5,7 +5,7 @@ import { Tabs } from "@canonical/react-components";
 import classes from "./ViewLocalRepositorySidePanel.module.scss";
 import ViewRepositoryActionsBlock from "./components/ViewRepositoryActionsBlock";
 import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetailsTab";
-import LocalRepositoryPackagesList from "../LocalRepositoryPackagesList";
+import LocalRepositoryPackagesList from "./components/LocalRepositoryPackagesList";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 
 const ViewLocalRepositorySidePanel: FC = () => {

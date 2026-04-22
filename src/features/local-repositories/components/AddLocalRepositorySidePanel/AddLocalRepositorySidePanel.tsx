@@ -32,7 +32,6 @@ const AddLocalRepositorySidePanel: FC = () => {
       comment: values.description,
       distribution: values.distribution,
       component: values.component,
-      uploaders: values.source,
     };
 
     try {
@@ -41,8 +40,8 @@ const AddLocalRepositorySidePanel: FC = () => {
       closeSidePanel();
 
       notify.success({
-        title: "Local repository added",
-        message: `The local repository "${values.name}" has been added successfully`,
+        title: `You have successfully added ${values.name}`,
+        message: "The local repository has been created and is now available to import packages.",
       });
     } catch (error) {
       debug(error);
@@ -93,18 +92,6 @@ const AddLocalRepositorySidePanel: FC = () => {
                 required
                 {...formik.getFieldProps("component")}
                 error={getFormikError(formik, "component")}
-              />
-            </Blocks.Item>
-
-            <Blocks.Item title="Repository Contents">
-              <Input
-                type="text"
-                label="Source URL"
-                {...formik.getFieldProps("source")}
-                error={getFormikError(formik, "source")}
-                help={
-                  "In order to upload packages, provide a URL for Landscape to fetch the packages from."
-                }
               />
             </Blocks.Item>
           </Blocks>

@@ -59,8 +59,8 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
       setPageParams({ sidePath: [], repository: "" });
 
       notify.success({
-        title: `Local repository removed`,
-        message: `You have successfully removed "${repository.display_name}" local repository.`,
+        title: `You have successfully removed ${repository.display_name}`,
+        message: "The local repository has been removed from Landscape.",
       });
     } catch (error) {
       debug(error);

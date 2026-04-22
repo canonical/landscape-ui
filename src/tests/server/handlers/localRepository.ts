@@ -3,6 +3,7 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import {
   repoPackages,
   repositories,
+  validateTask,
 } from "@/tests/mocks/localRepositories";
 
 export default [
@@ -21,6 +22,14 @@ export default [
     );
   }),
 
+  http.patch(`${API_URL_DEB_ARCHIVE}locals/:repository`, ({ request }) => {
+    const url = new URL(request.url);
+    const repository = url.pathname.split("/").pop();
+    return HttpResponse.json(
+      repositories.find(({ local_id }) => local_id === repository),
+    );
+  }),
+
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository`, () => {
     return HttpResponse.json(repositories[0]);
   }),
@@ -32,8 +41,8 @@ export default [
     });
   }),
 
-  http.post(`${API_URL_DEB_ARCHIVE}locals/:repository/uploads`, () => {
-    return HttpResponse.json(repoPackages[0]);
+  http.post(`${API_URL_DEB_ARCHIVE}locals/:repository/import`, () => {
+    return HttpResponse.json(validateTask);
   }),
 
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {

@@ -5,7 +5,6 @@ export interface AddLocalRepositoryFormValues {
   description: string;
   distribution: string;
   component: string;
-  source: string;
 }
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
@@ -13,7 +12,6 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   description: Yup.string(),
   distribution: Yup.string().required("This field is required."),
   component: Yup.string().required("This field is required."),
-  source: Yup.string(),
 });
 
 export const INITIAL_VALUES = {
@@ -21,5 +19,4 @@ export const INITIAL_VALUES = {
   description: "",
   distribution: "",
   component: "",
-  source: "",
 };

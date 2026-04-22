@@ -1,0 +1,11 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.button {
+  margin: 2.5rem 0 auto $sph--large;
+  width: 13.5rem;
+}
