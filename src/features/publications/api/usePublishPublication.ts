@@ -14,7 +14,7 @@ export default function usePublishPublication() {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
-  const publishPublicationQuery = useMutation<
+  const { mutateAsync, isPending } = useMutation<
     AxiosResponse<PublishPublicationResponse>,
     AxiosError<ApiError>,
     PublishPublicationParams
@@ -27,6 +27,7 @@ export default function usePublishPublication() {
   });
 
   return {
-    publishPublicationQuery,
+    publishPublication: mutateAsync,
+    isPublishingPublication: isPending,
   };
 }

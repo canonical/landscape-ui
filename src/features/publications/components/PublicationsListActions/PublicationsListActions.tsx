@@ -7,6 +7,7 @@ import type { Action } from "@/types/Action";
 import PublicationDetails from "../PublicationDetails";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import RemovePublicationModal from "../RemovePublicationModal";
+import { getPublicationName } from "../../helpers";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -16,7 +17,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
 }) => {
   const { setSidePanelContent } = useSidePanel();
-  const publicationLabel = publication.name;
+  const publicationLabel = getPublicationName(publication);
 
   const {
     value: isRemoveModalOpen,
@@ -32,7 +33,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
 
   const handlePublicationDetails = () => {
     setSidePanelContent(
-      publication.name,
+      getPublicationName(publication),
       <PublicationDetails publication={publication} />,
     );
   };

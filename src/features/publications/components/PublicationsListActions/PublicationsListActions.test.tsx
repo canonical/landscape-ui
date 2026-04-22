@@ -4,11 +4,12 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsListActions from "./PublicationsListActions";
+import { getPublicationName } from "../../helpers";
 
 describe("PublicationsListActions", () => {
   const user = userEvent.setup();
   const [publication] = publications;
-  const publicationLabel = publication.name;
+  const publicationLabel = getPublicationName(publication);
 
   it("shows all dropdown actions", async () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);

@@ -10,7 +10,7 @@ interface UseGetMirrorsReturnType {
 }
 
 const FETCH_PAGE_SIZE = 1000;
-
+// TODO: remove
 const useGetMirrors = (): UseGetMirrorsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
 
@@ -19,11 +19,7 @@ const useGetMirrors = (): UseGetMirrorsReturnType => {
     queryFn: async () => {
       const response = await authFetchDebArchive.get<ListMirrorsResponse>(
         "mirrors",
-        {
-          params: {
-            pageSize: FETCH_PAGE_SIZE,
-          },
-        },
+        { params: { pageSize: FETCH_PAGE_SIZE } },
       );
 
       return response.data.mirrors ?? [];

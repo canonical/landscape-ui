@@ -13,7 +13,7 @@ interface UseGetPublicationTargetsReturnType {
 }
 
 const FETCH_PAGE_SIZE = 1000;
-
+// TODO: remove
 const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
 
@@ -26,11 +26,7 @@ const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
       const response =
         await authFetchDebArchive.get<ListPublicationTargetsResponse>(
           "publicationTargets",
-          {
-            params: {
-              pageSize: FETCH_PAGE_SIZE,
-            },
-          },
+          { params: { pageSize: FETCH_PAGE_SIZE } },
         );
 
       return response.data.publicationTargets ?? [];

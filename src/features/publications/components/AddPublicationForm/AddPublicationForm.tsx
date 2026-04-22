@@ -56,9 +56,7 @@ const AddPublicationForm: FC = () => {
   const { locals, isGettingLocals } = useGetLocals();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
-  const { createPublicationQuery } = useCreatePublication();
-  const { mutateAsync: createPublication, isPending: isCreatingPublication } =
-    createPublicationQuery;
+  const { createPublication, isCreatingPublication } = useCreatePublication();
 
   const formik = useFormik<FormProps>({
     initialValues: INITIAL_VALUES,

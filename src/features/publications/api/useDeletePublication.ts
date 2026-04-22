@@ -11,7 +11,7 @@ export default function useDeletePublication() {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
-  const deletePublicationQuery = useMutation<
+  const { mutateAsync, isPending } = useMutation<
     AxiosResponse<Record<string, unknown>>,
     AxiosError<ApiError>,
     DeletePublicationParams
@@ -24,6 +24,7 @@ export default function useDeletePublication() {
   });
 
   return {
-    deletePublicationQuery,
+    deletePublication: mutateAsync,
+    isRemovingPublication: isPending,
   };
 }

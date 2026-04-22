@@ -4,6 +4,11 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationDetails from "./PublicationDetails";
+import {
+  getPublicationName,
+  getPublicationTargetName,
+  getSourceName,
+} from "../../helpers";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
@@ -15,11 +20,11 @@ describe("PublicationDetails", () => {
     );
 
     const infoItems = [
-      { label: "Name", value: publication.name },
-      { label: "Source", value: publication.source },
+      { label: "Name", value: getPublicationName(publication) },
+      { label: "Source", value: getSourceName(publication.source) },
       {
         label: "Publication target",
-        value: publication.publicationTarget,
+        value: getPublicationTargetName(publication.publicationTarget),
       },
       { label: "Distribution", value: publication.distribution },
       { label: "Label", value: publication.label },
@@ -43,7 +48,7 @@ describe("PublicationDetails", () => {
 
   it("opens republish modal", async () => {
     renderWithProviders(<PublicationDetails publication={publication} />);
-    const publicationLabel = publication.name;
+    const publicationLabel = getPublicationName(publication);
 
     await user.click(
       screen.getByRole("button", { name: `Republish ${publicationLabel}` }),
@@ -56,7 +61,7 @@ describe("PublicationDetails", () => {
 
   it("opens remove modal", async () => {
     renderWithProviders(<PublicationDetails publication={publication} />);
-    const publicationLabel = publication.name;
+    const publicationLabel = getPublicationName(publication);
 
     await user.click(
       screen.getByRole("button", { name: `Remove ${publicationLabel}` }),

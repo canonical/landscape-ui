@@ -28,7 +28,7 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
   const openPublicationDetails = useCallback(
     (publication: Publication) => {
       setSidePanelContent(
-        publication.name,
+        getPublicationName(publication),
         <PublicationDetails publication={publication} />,
       );
     },

@@ -4,6 +4,7 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import usePublishPublication from "../../api/usePublishPublication";
 import type { Publication } from "../../types";
+import { getPublicationName } from "../../helpers";
 
 interface RepublishPublicationModalProps {
   readonly publication: Publication;
@@ -18,11 +19,8 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { publishPublicationQuery } = usePublishPublication();
-  const {
-    mutateAsync: publishPublication,
-    isPending: isRepublishingPublication,
-  } = publishPublicationQuery;
+  const { publishPublication, isPublishingPublication } =
+    usePublishPublication();
 
   const handleRepublishPublication = async () => {
     try {
@@ -33,7 +31,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
 
       notify.success({
         title: "Publication republished",
-        message: `Publication "${publication.name}" has been queued for republishing.`,
+        message: `Publication "${getPublicationName(publication)}" has been queued for republishing.`,
       });
     } catch (error) {
       debug(error);
@@ -50,11 +48,11 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
     <ConfirmationModal
       renderInPortal
       close={close}
-      title={`Republish ${publication.name}`}
+      title={`Republish ${getPublicationName(publication)}`}
       confirmButtonLabel="Republish"
       confirmButtonAppearance="positive"
-      confirmButtonLoading={isRepublishingPublication}
-      confirmButtonDisabled={isRepublishingPublication}
+      confirmButtonLoading={isPublishingPublication}
+      confirmButtonDisabled={isPublishingPublication}
       onConfirm={handleRepublishPublication}
     >
       <p>

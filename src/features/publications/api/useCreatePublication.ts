@@ -13,7 +13,7 @@ export default function useCreatePublication() {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
-  const createPublicationQuery = useMutation<
+  const { mutateAsync, isPending } = useMutation<
     AxiosResponse<Publication>,
     AxiosError<ApiError>,
     CreatePublicationParams
@@ -28,6 +28,7 @@ export default function useCreatePublication() {
   });
 
   return {
-    createPublicationQuery,
+    createPublication: mutateAsync,
+    isCreatingPublication: isPending,
   };
 }

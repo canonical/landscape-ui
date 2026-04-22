@@ -19,11 +19,7 @@ const useGetLocals = (): UseGetLocalsReturnType => {
     queryFn: async () => {
       const response = await authFetchDebArchive.get<ListLocalsResponse>(
         "locals",
-        {
-          params: {
-            pageSize: FETCH_PAGE_SIZE,
-          },
-        },
+        { params: { pageSize: FETCH_PAGE_SIZE } },
       );
 
       return response.data.locals ?? [];

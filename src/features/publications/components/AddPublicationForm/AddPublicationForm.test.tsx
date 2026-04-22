@@ -88,7 +88,7 @@ describe("AddPublicationForm", () => {
       }),
     );
     await user.type(
-      screen.getByRole("textbox", { name: "Mirror signing key" }),
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
       "-----BEGIN PGP PRIVATE KEY BLOCK-----test-key",
     );
     await user.click(
@@ -113,7 +113,7 @@ describe("AddPublicationForm", () => {
       screen.getByRole("textbox", { name: "Directory prefix" }),
     ).toHaveValue("edge");
     expect(
-      screen.getByRole("textbox", { name: "Mirror signing key" }),
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
     ).toHaveValue("-----BEGIN PGP PRIVATE KEY BLOCK-----test-key");
   });
 
