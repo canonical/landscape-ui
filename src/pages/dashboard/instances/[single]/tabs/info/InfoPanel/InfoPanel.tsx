@@ -409,7 +409,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               label: "Sanitize",
               onClick: openSanitizeModal,
               collapsed: true,
-              excluded: !getFeatures(instance).sanitization,
+              excluded: !instanceFeatures.sanitization,
             },
           ],
         }}
@@ -455,47 +455,52 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               value={getProfilesValue()}
               type="truncated"
             />
-            {getFeatures(instance).employees && (
+            {instanceFeatures.employees && (
               <InfoGrid.Item
                 label="Associated employee"
                 value={employee?.name}
               />
             )}
-            <InfoGrid.Item
-              label={
-                <>
-                  Recovery key
-                  {shouldShowRecoveryKeyWarningInLabel && (
-                    <Tooltip
-                      position="top-center"
-                      message={recoveryKeyRegenerationAttemptMessage}
-                      className={classes.recoveryKeyTooltip}
-                    >
-                      <Icon name="warning" aria-label="Recovery key warning" />
-                    </Tooltip>
-                  )}
-                </>
-              }
-              value={
-                <RecoveryKeyStatus
-                  instanceId={instance.id}
-                  showWarningTooltip={false}
-                />
-              }
-            />
+            {instanceFeatures.recoveryKey && (
+              <InfoGrid.Item
+                label={
+                  <>
+                    Recovery key
+                    {shouldShowRecoveryKeyWarningInLabel && (
+                      <Tooltip
+                        position="top-center"
+                        message={recoveryKeyRegenerationAttemptMessage}
+                        className={classes.recoveryKeyTooltip}
+                      >
+                        <Icon
+                          name="warning"
+                          aria-label="Recovery key warning"
+                        />
+                      </Tooltip>
+                    )}
+                  </>
+                }
+                value={
+                  <RecoveryKeyStatus
+                    instanceId={instance.id}
+                    showWarningTooltip={false}
+                  />
+                }
+              />
+            )}
           </InfoGrid>
         </Blocks.Item>
         <Blocks.Item title="Registration details">
           <InfoGrid>
             <InfoGrid.Item label="Hostname" value={instance.hostname} />
             <InfoGrid.Item label="ID" value={instance.id} />
-            {getFeatures(instance).hardware && (
+            {instanceFeatures.hardware && (
               <InfoGrid.Item
                 label="Serial number"
                 value={instance.grouped_hardware?.system.serial}
               />
             )}
-            {getFeatures(instance).hardware && (
+            {instanceFeatures.hardware && (
               <InfoGrid.Item
                 label="Product identifier"
                 value={instance.grouped_hardware?.system.model}
@@ -505,7 +510,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               label="OS"
               value={instance.distribution_info?.description}
             />
-            {getFeatures(instance).hardware && (
+            {instanceFeatures.hardware && (
               <InfoGrid.Item
                 label="IP addresses"
                 value={
