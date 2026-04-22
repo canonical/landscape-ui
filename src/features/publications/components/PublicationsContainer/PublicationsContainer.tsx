@@ -5,9 +5,11 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import useGetPublications from "../../api/useGetPublications";
-import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import usePageParams from "@/hooks/usePageParams";
+import PublicationsHeader from "../PublicationsHeader";
 
 const PublicationsContainer = () => {
+  const { query } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { publications, publicationsCount, isGettingPublications } =
@@ -21,13 +23,13 @@ const PublicationsContainer = () => {
     return <NoPublicationTargetEmptyState />;
   }
 
-  if (publicationsCount === 0) {
+  if (publicationsCount === 0 && !query) {
     return <NoPublicationsEmptyState />;
   }
 
   return (
     <>
-      <HeaderWithSearch />
+      <PublicationsHeader />
       <PublicationsList publications={publications} />
       <TablePagination totalItems={publicationsCount} />
     </>

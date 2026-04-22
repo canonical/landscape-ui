@@ -67,7 +67,7 @@ const matchesSearch = (
 
 const useGetPublications = (): UseGetPublicationsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
-  const { currentPage, pageSize, search } = usePageParams();
+  const { currentPage, pageSize, query } = usePageParams();
 
   const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
     queryKey: ["publications", "all"],
@@ -86,7 +86,7 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
   });
 
   const filteredPublications = useMemo(() => {
-    const normalizedSearch = search?.trim() ?? "";
+    const normalizedSearch = query?.trim() ?? "";
 
     if (!normalizedSearch) {
       return data ?? [];
@@ -97,7 +97,7 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
     return (data ?? []).filter((publication) =>
       matchesSearch(publication, prefix, value),
     );
-  }, [data, search]);
+  }, [data, query]);
 
   const paginatedPublications = useMemo(() => {
     const offset = (currentPage - 1) * pageSize;
@@ -107,7 +107,7 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
 
   return {
     publications: paginatedPublications,
-    publicationsCount: data?.length ?? 0,
+    publicationsCount: filteredPublications.length ?? 0,
     isGettingPublications: isLoading,
   };
 };

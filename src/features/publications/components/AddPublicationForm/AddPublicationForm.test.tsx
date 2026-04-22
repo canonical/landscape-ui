@@ -167,4 +167,56 @@ describe("AddPublicationForm", () => {
       }),
     ).not.toBeInTheDocument();
   });
+
+  it("resets preserve_mirror_signing_key to default when switching source type", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<AddPublicationForm />);
+
+    await selectMirrorSource(user);
+
+    const preserveKeyCheckbox = screen.getByRole("checkbox", {
+      name: /Preserve mirror signing key/i,
+    });
+
+    await user.click(preserveKeyCheckbox);
+    expect(preserveKeyCheckbox).not.toBeChecked();
+
+    await selectLocalSource(user);
+
+    const sourceTypeSelect = screen.getByRole("combobox", {
+      name: "Source type",
+    });
+    await user.selectOptions(sourceTypeSelect, "Mirror");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("checkbox", { name: /Preserve mirror signing key/i }),
+      ).toBeChecked();
+    });
+  });
+
+  it("resets mirror_signing_key when switching source type", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(<AddPublicationForm />);
+
+    await selectMirrorSource(user);
+
+    await user.click(
+      screen.getByRole("checkbox", { name: /Preserve mirror signing key/i }),
+    );
+
+    const signingKeyTextarea = screen.getByRole("textbox", {
+      name: "Signing GPG key",
+    });
+    await user.type(signingKeyTextarea, "my-signing-key");
+    expect(signingKeyTextarea).toHaveValue("my-signing-key");
+
+    await selectLocalSource(user);
+
+    expect(
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
+    ).toHaveValue("");
+  });
 });

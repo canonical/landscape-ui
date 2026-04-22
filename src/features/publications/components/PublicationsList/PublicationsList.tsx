@@ -21,7 +21,7 @@ interface PublicationsListProps {
 }
 
 const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
-  const { search } = usePageParams();
+  const { query } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
   const openPublicationDetails = useCallback(
@@ -90,7 +90,7 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
     <ResponsiveTable
       columns={columns}
       data={publications}
-      emptyMsg={`No profiles found with the search: "${search}"`}
+      emptyMsg={`No publications found with the search: "${query}"`}
     />
   );
 };
