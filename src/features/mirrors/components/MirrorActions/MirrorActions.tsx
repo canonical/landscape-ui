@@ -39,6 +39,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
             label: "View details",
             onClick: createPageParamsSetter({
               sidePath: ["view"],
+              name: encodeURIComponent(mirror.name ?? ""),
             }),
           },
           {
@@ -46,6 +47,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
             label: "Edit",
             onClick: createPageParamsSetter({
               sidePath: ["edit"],
+              name: encodeURIComponent(mirror.name ?? ""),
             }),
           },
           {
@@ -58,6 +60,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
             label: "Publish",
             onClick: createPageParamsSetter({
               sidePath: ["publish"],
+              name: encodeURIComponent(mirror.name ?? ""),
             }),
           },
         ]}
