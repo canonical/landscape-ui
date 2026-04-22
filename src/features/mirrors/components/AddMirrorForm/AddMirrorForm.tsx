@@ -58,6 +58,12 @@ const AddMirrorForm: FC = () => {
           downloadInstaller: values.downloadInstallerFiles,
           downloadSources: values.downloadSources,
           downloadUdebs: values.downloadUdebPackages,
+          gpgKey:
+            values.verificationGpgKey === undefined
+              ? undefined
+              : {
+                  armor: values.verificationGpgKey,
+                },
         });
 
         close();
