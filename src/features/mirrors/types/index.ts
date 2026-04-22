@@ -40,3 +40,4 @@ export type {
   RemoveUploaderGPGKeysFromPocketParams,
   SyncMirrorPocketParams,
 } from "./PocketParams";
+export * from "./UbuntuArchiveInfo";

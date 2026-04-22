@@ -21,7 +21,7 @@ import type { FC } from "react";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
-  DEFAULT_MIRROR_URI,
+  UBUNTU_ARCHIVE_SOURCE_URL,
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
 } from "../../constants";
@@ -91,7 +91,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
             components: PRE_SELECTED_COMPONENTS.ubuntu,
             architectures: PRE_SELECTED_ARCHITECTURES.ubuntu,
             mirror_uri:
-              formik.values.mode === "mirror" ? DEFAULT_MIRROR_URI : "",
+              formik.values.mode === "mirror" ? UBUNTU_ARCHIVE_SOURCE_URL : "",
           }
         : {
             type: newType,
@@ -111,7 +111,7 @@ const NewPocketForm: FC<NewPocketFormProps> = ({ distribution, series }) => {
   ): void => {
     const newMode = event.target.value;
     if (newMode === "mirror" && formik.values.type === "ubuntu") {
-      formik.setFieldValue("mirror_uri", DEFAULT_MIRROR_URI);
+      formik.setFieldValue("mirror_uri", UBUNTU_ARCHIVE_SOURCE_URL);
     } else {
       formik.setFieldValue("mirror_uri", "");
     }

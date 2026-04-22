@@ -1,25 +1,7 @@
-import { INPUT_DATE_FORMAT } from "@/constants";
 import type { SelectOption } from "@/types/SelectOption";
-import moment from "moment";
-import type { FormProps } from "./types";
 
 export const SNAPSHOT_START_DATE = "2023-02-28";
 export const SNAPSHOT_TIMESTAMP_FORMAT = "YYYYMMDD[T]HHmmss[Z]";
-
-export const INITIAL_VALUES: FormProps = {
-  name: "",
-  type: "ubuntu-archive",
-  mirror_uri: "http://archive.ubuntu.com/ubuntu",
-  distribution: "",
-  mirror_series: "",
-  gpg_key: "",
-  pockets: [],
-  components: [],
-  architectures: [],
-  include_udeb: false,
-  hasPockets: false,
-  snapshotDate: moment().format(INPUT_DATE_FORMAT),
-};
 
 export const POCKET_OPTIONS: SelectOption[] = [
   {

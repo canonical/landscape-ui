@@ -1,8 +1,7 @@
 import type { SelectOption } from "@/types/SelectOption";
 import type { PreSelected } from "./types/FormTypes";
 
-export const DEFAULT_MIRROR_URI = "http://archive.ubuntu.com/ubuntu";
-export const DEFAULT_SNAPSHOT_URI = "https://snapshot.ubuntu.com/ubuntu";
+export const UBUNTU_ARCHIVE_SOURCE_URL = "http://archive.ubuntu.com/ubuntu/";
 
 export const PRE_SELECTED_COMPONENTS: PreSelected = {
   ubuntu: ["main", "universe", "restricted", "multiverse"],

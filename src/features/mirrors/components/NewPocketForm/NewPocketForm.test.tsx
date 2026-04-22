@@ -6,7 +6,7 @@ import type { ComponentProps } from "react";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
-  DEFAULT_MIRROR_URI,
+  UBUNTU_ARCHIVE_SOURCE_URL,
 } from "../../constants";
 import NewPocketForm from "./NewPocketForm";
 
@@ -45,7 +45,7 @@ describe("NewPocketForm", () => {
 
     const mirrorUri = screen.getByRole("textbox", { name: /mirror uri/i });
     expect(mirrorUri).toBeVisible();
-    expect(mirrorUri).toHaveValue(DEFAULT_MIRROR_URI);
+    expect(mirrorUri).toHaveValue(UBUNTU_ARCHIVE_SOURCE_URL);
 
     await userEvent.selectOptions(typeSelect, "third-party");
     expect(mirrorUri).toHaveValue("");

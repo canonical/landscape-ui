@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { DEFAULT_SNAPSHOT_URI } from "../../constants";
+import { UBUNTU_ARCHIVE_SOURCE_URL } from "../../constants";
 import type { Distribution } from "../../types";
 import SeriesCard from "./SeriesCard";
 
@@ -72,7 +72,7 @@ const findDistributionWithoutSnapshot = (): Distribution => {
         (p) =>
           p.mode !== "mirror" ||
           (p.mode === "mirror" &&
-            !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)),
+            !p.mirror_uri.startsWith(UBUNTU_ARCHIVE_SOURCE_URL)),
       ),
     ),
   );
@@ -85,7 +85,8 @@ const distributionWithoutSnapshot = findDistributionWithoutSnapshot();
 const seriesWithoutSnapshot = distributionWithoutSnapshot.series.find((s) =>
   s.pockets.some(
     (p) =>
-      p.mode === "mirror" && !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI),
+      p.mode === "mirror" &&
+      !p.mirror_uri.startsWith(UBUNTU_ARCHIVE_SOURCE_URL),
   ),
 );
 assert(seriesWithoutSnapshot);

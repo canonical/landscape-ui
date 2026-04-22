@@ -1,6 +1,6 @@
 import type { SelectOption } from "@/types/SelectOption";
 import {
-  DEFAULT_MIRROR_URI,
+  UBUNTU_ARCHIVE_SOURCE_URL,
   PRE_SELECTED_ARCHITECTURES,
   PRE_SELECTED_COMPONENTS,
 } from "../../constants";
@@ -34,7 +34,7 @@ export const INITIAL_VALUES: FormProps = {
   mode: "mirror",
   pull_pocket: "",
   pull_series: "",
-  mirror_uri: DEFAULT_MIRROR_URI,
+  mirror_uri: UBUNTU_ARCHIVE_SOURCE_URL,
   upload_allow_unsigned: false,
   mirror_suite: "",
   mirror_gpg_key: "",

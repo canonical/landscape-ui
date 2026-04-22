@@ -1,8 +1,17 @@
-import type { Series } from "./Series";
+export interface Component {
+  slug: string;
+  preselected: boolean;
+}
+
+export interface Architecture {
+  slug: string;
+  preselected: boolean;
+}
 
 export interface Distribution {
-  access_group: string;
-  creation_time: string;
-  name: string;
-  series: Series[];
+  slug: string;
+  label: string;
+  preselected: boolean;
+  components: Component[];
+  architectures: Architecture[];
 }

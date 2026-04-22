@@ -3,7 +3,7 @@ export { default as AddMirrorForm } from "./components/AddMirrorForm";
 export { distributionCardClasses } from "./components/DistributionCard";
 export { seriesCardClasses } from "./components/SeriesCard";
 export { useDistributions } from "./hooks";
-export { DEFAULT_SNAPSHOT_URI } from "./constants";
+export { UBUNTU_ARCHIVE_SOURCE_URL as DEFAULT_SNAPSHOT_URI } from "./constants";
 export type {
   DiffPullPocketParams,
   Distribution,
@@ -13,6 +13,7 @@ export type {
   Pocket,
   RepoInfo,
   Series,
+  UbuntuArchiveInfo,
 } from "./types";
 export * from "./api";
 export { default as MirrorsList } from "./components/MirrorsList";

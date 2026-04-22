@@ -4,11 +4,12 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { DEFAULT_SNAPSHOT_URI } from "../../constants";
+import { UBUNTU_ARCHIVE_SOURCE_URL } from "../../constants";
 import EditPocketForm from "./EditPocketForm";
 
 const mirrorPocket = pockets.find(
-  (p) => p.mode === "mirror" && !p.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI),
+  (p) =>
+    p.mode === "mirror" && !p.mirror_uri.startsWith(UBUNTU_ARCHIVE_SOURCE_URL),
 );
 assert(mirrorPocket);
 const mirrorPocketProps: ComponentProps<typeof EditPocketForm> = {

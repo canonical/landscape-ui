@@ -18,7 +18,7 @@ import type { FC } from "react";
 import {
   ARCHITECTURE_OPTIONS,
   COMPONENT_OPTIONS,
-  DEFAULT_SNAPSHOT_URI,
+  UBUNTU_ARCHIVE_SOURCE_URL,
 } from "../../constants";
 import { useGPGKeysOptions, usePockets } from "../../hooks";
 import type { Distribution, Pocket, Series } from "../../types";
@@ -207,7 +207,7 @@ const EditPocketForm: FC<EditPocketFormProps> = ({
       />
 
       {"mirror" === pocket.mode &&
-        !pocket.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI) && (
+        !pocket.mirror_uri.startsWith(UBUNTU_ARCHIVE_SOURCE_URL) && (
           <>
             <Input
               type="text"

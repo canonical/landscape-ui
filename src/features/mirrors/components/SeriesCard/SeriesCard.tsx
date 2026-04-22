@@ -14,7 +14,7 @@ import moment from "moment";
 import type { FC } from "react";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { DEFAULT_SNAPSHOT_URI } from "../../constants";
+import { UBUNTU_ARCHIVE_SOURCE_URL } from "../../constants";
 import { useSeries } from "../../hooks";
 import type { Distribution, Series, SyncPocketRef } from "../../types";
 import SeriesPocketList from "../SeriesPocketList";
@@ -46,7 +46,7 @@ const SeriesCard: FC<SeriesCardProps> = ({
     if (
       !pocket ||
       pocket.mode !== "mirror" ||
-      !pocket.mirror_uri.startsWith(DEFAULT_SNAPSHOT_URI)
+      !pocket.mirror_uri.startsWith(UBUNTU_ARCHIVE_SOURCE_URL)
     ) {
       return;
     }

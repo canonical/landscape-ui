@@ -6,7 +6,7 @@ import type { ComponentProps } from "react";
 import { describe, it } from "vitest";
 import {
   ARCHITECTURE_OPTIONS,
-  DEFAULT_MIRROR_URI,
+  UBUNTU_ARCHIVE_SOURCE_URL,
   PRE_SELECTED_POCKETS,
 } from "../../constants";
 import AddMirrorForm from "./AddMirrorForm";
@@ -59,7 +59,7 @@ describe("AddMirrorForm", () => {
 
     const mirrorUri = screen.getByRole("textbox", { name: /mirror uri/i });
     expect(mirrorUri).toBeVisible();
-    expect(mirrorUri).toHaveValue(DEFAULT_MIRROR_URI);
+    expect(mirrorUri).toHaveValue(UBUNTU_ARCHIVE_SOURCE_URL);
 
     PRE_SELECTED_POCKETS.ubuntu.forEach((component) => {
       expect(
