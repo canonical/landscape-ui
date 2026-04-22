@@ -1,14 +1,10 @@
 import * as Yup from "yup";
 
-export interface PublishLocalRepositoryFormValues {
-  new_publication: boolean;
+export interface PublishRepositoryNewFormValues {
   name: string;
   publication_target: string;
-  prefix: string;
   distribution: string;
-  component: string;
-  architectures: string;
-  mirror_signing_key: string;
+  signing_key: string;
   hash_indexing: boolean;
   automatic_installation: boolean;
   automatic_upgrades: boolean;
@@ -18,20 +14,20 @@ export interface PublishLocalRepositoryFormValues {
 
 const REQUIRED_FIELD_MESSAGE = "This field is required";
 
-export const VALIDATION_SCHEMA = Yup.object().shape({
-  new_publication: Yup.boolean(),
+export const VALIDATION_SCHEMA_NEW = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   publication_target: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  prefix: Yup.string(),
   distribution: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  component: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  architectures: Yup.string(),
-  mirror_signing_key: Yup.string(),
+  signing_key: Yup.string(),
   hash_indexing: Yup.boolean(),
   automatic_installation: Yup.boolean(),
   automatic_upgrades: Yup.boolean(),
   skip_bz2: Yup.boolean(),
   skip_content_indexing: Yup.boolean(),
+});
+
+export const VALIDATION_SCHEMA_EXISTING = Yup.object().shape({
+  name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
 });
 
 export const SETTINGS_HELP_TEXT = {

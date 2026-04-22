@@ -14,50 +14,44 @@ import {
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
 import {
-  type PublishLocalRepositoryFormValues,
+  type PublishRepositoryNewFormValues,
   SETTINGS_HELP_TEXT,
-  VALIDATION_SCHEMA,
-} from "../constants";
+  VALIDATION_SCHEMA_NEW,
+} from "../../constants";
 import useNotify from "@/hooks/useNotify";
-import { usePublishLocalRepository } from "../../../api/usePublishLocalRepository";
-import classNames from "classnames";
-import classes from "./PublishLocalRepositoryForm.module.scss";
+import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import useGetPublicationTargets from "../../../api/useGetPublicationTargets";
-import RadioGroup from "@/components/form/RadioGroup";
-import useGetPublications from "../../../api/useGetPublications";
-import type { LocalRepository } from "../../../types";
+import useGetPublicationTargets from "../../../../api/useGetPublicationTargets";
+import type { LocalRepository } from "../../../../types";
+import { useAddPublication } from "../../../../api/useAddPublication";
+import { usePublishPublication } from "../../../../api/usePublishPublicaton";
+import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
-interface PublishLocalRepositoryFormProps {
+interface PublishRepositoryNewFormProps {
   readonly repository: LocalRepository;
 }
 
-const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
+const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   repository,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
-  const { publications, isGettingPublications } = useGetPublications();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
-  const { publishRepository, isPublishingRepository } =
-    usePublishLocalRepository();
+  const { addPublication, isAddingPublication } = useAddPublication();
+  const { publishPublication, isPublishingPublication } = usePublishPublication();
 
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
     repository: "",
   });
 
-  const initialValues: PublishLocalRepositoryFormValues = {
-    new_publication: true,
+  const initialValues: PublishRepositoryNewFormValues = {
     name: "",
     publication_target: "",
-    prefix: "",
     distribution: repository.distribution,
-    component: repository.component,
-    architectures: "",
-    mirror_signing_key: "",
+    signing_key: "",
     hash_indexing: false,
     automatic_installation: false,
     automatic_upgrades: false,
@@ -65,30 +59,31 @@ const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
     skip_content_indexing: false,
   };
 
-  const handleSubmit = async (values: PublishLocalRepositoryFormValues) => {
+  const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
     const valuesforCreation = {
-      name: values.name,
       publication_target: values.publication_target,
-      prefix: values.prefix,
+      source: repository.name,
       distribution: values.distribution,
-      components: values.component,
-      architectures: values.architectures,
-      mirror_signing_key: values.mirror_signing_key,
       hash_indexing: values.hash_indexing,
       automatic_installation: values.automatic_installation,
       automatic_upgrades: values.automatic_upgrades,
       skip_bz2: values.skip_bz2,
       skip_content_indexing: values.skip_content_indexing,
+      gpg_key: values.signing_key,
     };
 
     try {
-      await publishRepository(valuesforCreation);
+      const publication = await addPublication(valuesforCreation);
+
+      formik.setFieldValue("name", publication.data.name);
+
+      await publishPublication({ name: values.name });
 
       closeSidePanel();
 
       notify.success({
-        title: "Local repository added",
-        message: `The local repository "${values.name}" has been added successfully`,
+        title: `You have marked ${repository.display_name} to be published`,
+        message: "A publication has been created and an activity has been queued to publish it to the designated target.",
       });
     } catch (error) {
       debug(error);
@@ -98,27 +93,15 @@ const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA,
-    validateOnMount: true,
+    validationSchema: VALIDATION_SCHEMA_NEW,
   });
-
-  const publicationOptions = useMemo<SelectOption[]>(
-    () => [
-      { label: "Select publication", value: "" },
-      ...publications.map((publication) => ({
-        label: publication.label,
-        value: publication.publicationId,
-      })),
-    ],
-    [publications],
-  );
 
   const publicationTargetOptions = useMemo<SelectOption[]>(
     () => [
       { label: "Select publication target", value: "" },
       ...publicationTargets.map((publicationTarget) => ({
         label: publicationTarget.displayName,
-        value: publicationTarget.publication_target_id,
+        value: publicationTarget.name,
       })),
     ],
     [publicationTargets],
@@ -128,44 +111,13 @@ const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Blocks>
         <Blocks.Item title="Details">
-          <RadioGroup
-            label="Publish to"
-            formik={formik}
-            field="new_publication"
-            inputs={[
-              {
-                key: "new",
-                value: true,
-                label: "New publication",
-              },
-              {
-                key: "existing",
-                value: false,
-                label: "Existing publication",
-              },
-            ]}
-            labelHeading={false}
-            sideByside
+          <Input
+            type="text"
+            label="Publication name"
+            required
+            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("name")}
           />
-
-          {formik.values.new_publication ? (
-            <Input
-              type="text"
-              label="Publication name"
-              required
-              error={getFormikError(formik, "name")}
-              {...formik.getFieldProps("name")}
-            />
-          ) : (
-            <Select
-              label="Publication name"
-              required
-              disabled={isGettingPublications}
-              options={publicationOptions}
-              error={getFormikError(formik, "name")}
-              {...formik.getFieldProps("name")}
-            />
-          )}
 
           <Select
             label="Publication target"
@@ -176,47 +128,17 @@ const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
             {...formik.getFieldProps("publication_target")}
           />
 
-          <Input
-            type="text"
-            label="Directory prefix"
-            error={getFormikError(formik, "prefix")}
-            {...formik.getFieldProps("prefix")}
-          />
-
           <Textarea
             label="Signing GPG key"
             rows={4}
-            error={getFormikError(formik, "mirror_signing_key")}
-            {...formik.getFieldProps("mirror_signing_key")}
+            error={getFormikError(formik, "signing_key")}
+            {...formik.getFieldProps("signing_key")}
             className="u-no-margin--bottom"
           />
         </Blocks.Item>
 
-        <Blocks.Item title="Contents">
-          <label className="p-form__label is-required" htmlFor="distribution">
-            Distribution
-          </label>
-          <div
-            className={classNames("u-no-margin--bottom", classes.distribution)}
-          >
-            <span className="u-text--muted" id="distribution">
-              {formik.values.distribution}
-            </span>
-            <Icon name="lock-locked" aria-hidden />
-          </div>
-
-          <label className="p-form__label is-required" htmlFor="component">
-            Component
-          </label>
-          <div
-            className={classNames("u-no-margin--bottom", classes.distribution)}
-          >
-            <span className="u-text--muted" id="component">
-              {formik.values.component}
-            </span>
-            <Icon name="lock-locked" aria-hidden />
-          </div>
-        </Blocks.Item>
+        
+        <PublishRepositoryContentsBlock repository={repository} />
 
         <Blocks.Item title="Settings">
           <Input
@@ -298,7 +220,7 @@ const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonDisabled={!formik.isValid}
-        submitButtonLoading={formik.isSubmitting || isPublishingRepository}
+        submitButtonLoading={formik.isSubmitting || isAddingPublication || isPublishingPublication}
         submitButtonText="Publish repository"
         onCancel={closeSidePanel}
         hasBackButton={sidePath.length > 1}
@@ -308,4 +230,4 @@ const PublishLocalRepositoryForm: FC<PublishLocalRepositoryFormProps> = ({
   );
 };
 
-export default PublishLocalRepositoryForm;
+export default PublishRepositoryNewForm;
