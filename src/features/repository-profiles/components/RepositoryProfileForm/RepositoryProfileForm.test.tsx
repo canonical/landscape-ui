@@ -134,4 +134,34 @@ describe("RepositoryProfileForm", () => {
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
+
+  it("clears error notification when a pending source is edited", async () => {
+    renderWithProviders(<RepositoryProfileForm action="add" />);
+
+    await user.type(screen.getByLabelText(/Title/i), "repo-test");
+    await fillAndAddSource();
+
+    setEndpointStatus({ status: "error", path: "repositoryprofiles" });
+    await user.click(
+      screen.getByRole("button", { name: /Add a new repository profile/i }),
+    );
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+
+    setEndpointStatus("default");
+
+    await user.click(
+      screen.getByRole("button", { name: /Edit my-source/i }),
+    );
+    await user.click(
+      await screen.findByRole("button", { name: /save changes/i }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

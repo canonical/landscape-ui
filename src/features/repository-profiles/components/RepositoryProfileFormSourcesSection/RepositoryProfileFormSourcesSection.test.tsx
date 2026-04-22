@@ -22,8 +22,7 @@ describe("RepositoryProfileFormSourcesSection", () => {
     renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
 
     expect(screen.getByText("Source name")).toBeInTheDocument();
-    expect(screen.getByText("Deb line")).toBeInTheDocument();
-    expect(screen.getByText("Actions")).toBeInTheDocument();
+    expect(screen.getByText("Type")).toBeInTheDocument();
   });
 
   it("renders empty state message when no sources", () => {
@@ -39,7 +38,7 @@ describe("RepositoryProfileFormSourcesSection", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders source names and deb lines", () => {
+  it("renders source names and types", () => {
     renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
 
     for (const source of aptSources.slice(0, 10)) {

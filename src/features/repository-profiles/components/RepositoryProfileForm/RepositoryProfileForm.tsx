@@ -12,6 +12,7 @@ import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile, RepositoryProfileFormValues } from "../../types";
 import type { APTSource } from "@/features/apt-sources";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
@@ -34,6 +35,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const [sourceToEdit, setSourceToEdit] = useState<APTSource | null>(null);
 
   const debug = useDebug();
+  const { notify } = useNotify();
   const { closeSidePanel, setSidePanelTitle } = useSidePanel();
 
   const panelTitle =
@@ -72,6 +74,11 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           ...valuesToSubmit,
           apt_sources: values.apt_sources,
         });
+        closeSidePanel();
+        notify.success({
+          title: "Repository profile created",
+          message: `Repository profile "${values.title}" created successfully`,
+        });
       } else {
         const originalSources = props.profile.apt_sources ?? [];
         await editRepositoryProfile({
@@ -82,9 +89,12 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             .filter((orig) => !values.apt_sources.some((cur) => cur.id === orig.id))
             .map((s) => s.id),
         });
+        closeSidePanel();
+        notify.success({
+          title: "Repository profile updated",
+          message: `Repository profile "${values.title}" updated successfully`,
+        });
       }
-
-      closeSidePanel();
     } catch (error) {
       debug(error);
     }
@@ -152,6 +162,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   };
 
   const handleSourceEdited = (updatedSource: APTSource) => {
+    if (sourceToEdit?.id === 0) {
+      notify.clear();
+    }
     formik.setFieldValue(
       "apt_sources",
       formik.values.apt_sources.map((s) => {

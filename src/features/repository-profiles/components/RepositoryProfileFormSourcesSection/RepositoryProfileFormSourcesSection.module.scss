@@ -1,0 +1,12 @@
+.nameColumn {
+  width: 50%;
+}
+.actionsColumn {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actionsCell {
+  display: flex;
+  justify-content: flex-end;
+}

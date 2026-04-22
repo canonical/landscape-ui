@@ -4,6 +4,7 @@ import { Button, Icon, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
+import classes from "./RepositoryProfileFormSourcesSection.module.scss";
 
 interface SourceRow extends Record<string, unknown> {
   name: string;
@@ -53,6 +54,7 @@ const RepositoryProfileFormSourcesSection: FC<
       {
         accessor: "name",
         Header: "Source name",
+        className: classes.nameColumn,
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
           <>
             {original.name}
@@ -65,42 +67,49 @@ const RepositoryProfileFormSourcesSection: FC<
         ),
       },
       {
-        accessor: "line",
-        Header: "Deb line",
-        Cell: ({ value }: CellProps<SourceRow>) => (
-          <span className="u-truncate" title={value}>
-            {value}
+        accessor: "type",
+        Header: "Type",
+        // todo: update with other source types
+        // Cell: ({ value }: CellProps<SourceRow>) => (
+        Cell: () => (
+          <span className="u-truncate" title="Deb line">
+            Deb line
           </span>
         ),
       },
       {
         id: "actions",
-        Header: "Actions",
+        Header: "",
+        className: classes.actionsColumn,
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
-          <>
+          <div className={classes.actionsCell}>
             <Button
               appearance="base"
               hasIcon
+              dense
               type="button"
+              className="u-no-margin--bottom u-no-padding"
               aria-label={`Edit ${original.name}`}
               onClick={() => {
                 onEditSource(original.source);
               }}
             >
-              <Icon name="edit" />
+              <Icon name="edit" className="u-no-margin--left u-no-margin--right" />
             </Button>
             <Button
               appearance="base"
               hasIcon
+              dense
               type="button"
+              className="u-no-margin--bottom u-no-padding"
               aria-label={`Remove ${original.name}`}
               onClick={() => {
                 onRemoveSource(original.source);
               }}
             >
-              <Icon name="delete" />
+              <Icon name="delete" className="u-no-margin--left u-no-margin--right" />
             </Button>
-          </>
+          </div>
         ),
       },
     ],
