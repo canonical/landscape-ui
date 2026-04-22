@@ -4,27 +4,30 @@ import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_cons
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it } from "vitest";
+import { beforeEach, describe, it } from "vitest";
 import RepositoryProfileForm from "./RepositoryProfileForm";
 
-const user = userEvent.setup();
-
-const fillAndAddSource = async () => {
-  await user.click(
-    screen.getByRole("button", { name: /add source/i }),
-  );
-  await user.type(
-    await screen.findByLabelText(/source name/i),
-    "my-source",
-  );
-  await user.type(
-    screen.getByLabelText(/deb line/i),
-    "deb http://archive.ubuntu.com/ubuntu focal main",
-  );
-  await user.click(screen.getByRole("button", { name: /save changes/i }));
-};
-
 describe("RepositoryProfileForm", () => {
+  let user: ReturnType<typeof userEvent.setup>;
+
+  beforeEach(() => {
+    user = userEvent.setup();
+  });
+
+  const fillAndAddSource = async () => {
+    await user.click(
+      screen.getByRole("button", { name: /add source/i }),
+    );
+    await user.type(
+      await screen.findByLabelText(/source name/i),
+      "my-source",
+    );
+    await user.type(
+      screen.getByLabelText(/deb line/i),
+      "deb http://archive.ubuntu.com/ubuntu focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+  };
   it("submits without errors on valid add form", async () => {
     renderWithProviders(<RepositoryProfileForm action="add" />);
 
@@ -60,10 +63,10 @@ describe("RepositoryProfileForm", () => {
       <RepositoryProfileForm action="edit" profile={repositoryProfiles[0]} />,
     );
 
-    const saveButton = await screen.findByRole("button", {
-      name: /Save changes to repository profile/i,
-    });
-    await user.click(saveButton);
+    await screen.findByDisplayValue(repositoryProfiles[0].title);
+    await user.click(
+      screen.getByRole("button", { name: /Save changes to repository profile/i }),
+    );
 
     expect(screen.queryByText(/this field is required/i)).not.toBeInTheDocument();
   });

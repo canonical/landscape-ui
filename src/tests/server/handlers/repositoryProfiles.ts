@@ -4,7 +4,7 @@ import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import type { RepositoryProfile } from "@/features/repository-profiles";
 import type { APTSource } from "@/features/apt-sources";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { getEndpointStatusApiError } from "./_constants";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 
 export default [
@@ -52,7 +52,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "repositoryprofiles")
     ) {
-      throw ENDPOINT_STATUS_API_ERROR;
+      throw getEndpointStatusApiError();
     }
     return HttpResponse.json(repositoryProfiles[0], { status: 201 });
   }),
@@ -70,7 +70,7 @@ export default [
 
     const { add_apt_sources, remove_apt_sources, ...rest } = body;
 
-    let updatedSources = profile.apt_sources ?? [];
+    let updatedSources: APTSource[] = profile.apt_sources ?? [];
     if (remove_apt_sources?.length) {
       updatedSources = updatedSources.filter((s) => !remove_apt_sources.includes(s.id));
     }
@@ -102,7 +102,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "RemoveRepositoryProfile")
     ) {
-      throw ENDPOINT_STATUS_API_ERROR;
+      throw getEndpointStatusApiError();
     }
 
     return HttpResponse.json({ id: 1 }, { status: 200 });
