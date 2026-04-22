@@ -9,7 +9,7 @@ import type {
   UbuntuSnapshotsFormProps,
 } from "./types";
 import type { Distribution, UbuntuArchiveInfo } from "../../types";
-import { UBUNTU_ARCHIVE_SOURCE_URL } from "../../constants";
+import { UBUNTU_ARCHIVE_SOURCE_URL, UBUNTU_PRO_HOST } from "../../constants";
 import type { Architecture, Component } from "../../types/Distribution";
 
 export function getStrippedUrl(url: string): string {
@@ -104,7 +104,7 @@ export const getInitialUbuntuProValues = (
     ...getInitialBaseValues(ubuntuEsmInfo[0]!.distributions),
     sourceType: "ubuntu-pro",
     token: "",
-    sourceUrl: "https://esm.ubuntu.com/",
+    sourceUrl: `https://${UBUNTU_PRO_HOST}/`,
     proService: ubuntuEsmInfo[0]!.mirror_type,
   };
 };

@@ -23,17 +23,17 @@ const PackageProfileListActions: FC<PackageProfileListActionsProps> = ({
 
   const handleConstraintsChange = createPageParamsSetter({
     sidePath: ["edit-constraints"],
-    profile: profile.name,
+    name: profile.name,
   });
 
   const handlePackageProfileEdit = createPageParamsSetter({
     sidePath: ["edit"],
-    profile: profile.name,
+    name: profile.name,
   });
 
   const handlePackageProfileDuplicate = createPageParamsSetter({
     sidePath: ["duplicate"],
-    profile: profile.name,
+    name: profile.name,
   });
 
   const actions: Action[] = [

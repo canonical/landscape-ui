@@ -23,6 +23,7 @@ import { getInitialValues } from "./helpers";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import SelectableMirrorContentsBlock from "../SelectableMirrorContentsBlock";
+import { UBUNTU_SNAPSHOTS_HOST } from "../../constants";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
@@ -43,7 +44,7 @@ const AddMirrorForm: FC = () => {
       try {
         const archiveRoot =
           values.sourceType === "ubuntu-snapshots"
-            ? `https://snapshot.ubuntu.com/ubuntu/${values.snapshotDate}`
+            ? `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${values.snapshotDate}`
             : values.sourceUrl;
 
         await createMirror({

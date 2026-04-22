@@ -1,7 +1,11 @@
 import type { SelectOption } from "@/types/SelectOption";
 import type { PreSelected } from "./types/FormTypes";
 
-export const UBUNTU_ARCHIVE_SOURCE_URL = "http://archive.ubuntu.com/ubuntu/";
+export const UBUNTU_ARCHIVE_HOST = "archive.ubuntu.com";
+export const UBUNTU_SNAPSHOTS_HOST = "snapshot.ubuntu.com";
+export const UBUNTU_PRO_HOST = "esm.ubuntu.com";
+
+export const UBUNTU_ARCHIVE_SOURCE_URL = `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`;
 
 export const PRE_SELECTED_COMPONENTS: PreSelected = {
   ubuntu: ["main", "universe", "restricted", "multiverse"],

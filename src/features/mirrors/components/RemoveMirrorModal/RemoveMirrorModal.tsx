@@ -3,8 +3,9 @@ import { ConfirmationModal, Icon } from "@canonical/react-components";
 import { Suspense, type FC } from "react";
 import { useDeleteMirror } from "../../api";
 import useNotify from "@/hooks/useNotify";
-import RemoveMirrorModalBody from "./components/RemoveMirrorModalBody";
+import MirrorPublicationsList from "../MirrorPublicationsList";
 import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;
@@ -19,6 +20,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
+  const { setPageParams } = usePageParams();
 
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
     useDeleteMirror();
@@ -29,6 +31,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
         mirrorName,
       });
 
+      setPageParams({ sidePath: [], name: "" });
       close();
 
       notify.success({
@@ -56,7 +59,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
     >
       <p>This mirror is associated with the following publications:</p>
       <Suspense fallback={<LoadingState />}>
-        <RemoveMirrorModalBody mirrorName={mirrorName} />
+        <MirrorPublicationsList mirrorName={mirrorName} />
       </Suspense>
       <p>
         After removal you won’t be able to update any of these publications, but

@@ -7,3 +7,4 @@ export * from "./useSyncMirror";
 export * from "./useGetUbuntuArchiveInfo";
 export * from "./useGetUbuntuEsmInfo";
 export * from "./useCreateMirror";
+export * from "./useGetMirror";

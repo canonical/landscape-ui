@@ -23,7 +23,7 @@ const WslProfileAddButton: FC<WslProfileAddButtonProps> = ({ disabled }) => {
 
   const openAddSidePanel = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   const handleClick = () => {

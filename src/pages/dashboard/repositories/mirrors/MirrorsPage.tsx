@@ -45,7 +45,7 @@ const MirrorsPage: FC = () => {
 
   const openAddMirrorForm = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   const buttons = [
@@ -85,7 +85,7 @@ const MirrorsPage: FC = () => {
       <PageHeader title="Mirrors" actions={actions} />
       <PageContent hasTable={hasTable}>{children}</PageContent>
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

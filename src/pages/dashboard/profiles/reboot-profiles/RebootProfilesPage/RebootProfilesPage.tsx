@@ -46,7 +46,7 @@ const RebootProfilesPage: FC = () => {
 
   const handleAddProfile = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   return (
@@ -69,7 +69,7 @@ const RebootProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         key="add"
         isOpen={!!sidePath.length}
       >

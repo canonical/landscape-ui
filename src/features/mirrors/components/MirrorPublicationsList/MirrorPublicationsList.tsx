@@ -1,5 +1,5 @@
-import type { Column } from "react-table";
-import { useListPublications } from "../../../../api";
+import type { CellProps, Column } from "react-table";
+import { useListPublications } from "../../api";
 import { useMemo, type FC } from "react";
 import type { Publication } from "@canonical/landscape-openapi";
 import { ModularTable } from "@canonical/react-components";
@@ -7,11 +7,11 @@ import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { useCounter } from "usehooks-ts";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 
-interface RemoveMirrorModalBodyProps {
+interface MirrorPublicationsListProps {
   readonly mirrorName: string;
 }
 
-const RemoveMirrorModalBody: FC<RemoveMirrorModalBodyProps> = ({
+const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
   mirrorName,
 }) => {
   const {
@@ -29,7 +29,9 @@ const RemoveMirrorModalBody: FC<RemoveMirrorModalBodyProps> = ({
     () => [
       {
         Header: "Publication",
-        accessor: "name",
+        Cell: ({ row: { original: publication } }: CellProps<Publication>) => {
+          return <a>{publication.label}</a>;
+        },
       },
     ],
     [],
@@ -54,4 +56,4 @@ const RemoveMirrorModalBody: FC<RemoveMirrorModalBodyProps> = ({
   );
 };
 
-export default RemoveMirrorModalBody;
+export default MirrorPublicationsList;
