@@ -1,17 +1,21 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions/constants";
+import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { useCallback } from "react";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { Publication } from "../../types";
 import PublicationDetails from "../PublicationDetails";
 import PublicationsListActions from "../PublicationsListActions";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { getSourceType } from "./helpers";
+import {
+  getPublicationName,
+  getPublicationTargetName,
+  getSourceName,
+  getSourceType,
+} from "../../helpers";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -45,7 +49,7 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
               openPublicationDetails(row.original);
             }}
           >
-            {row.original.name}
+            {getPublicationName(row.original)}
           </Button>
         ),
       },
@@ -61,14 +65,16 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         accessor: "source",
         Header: "source",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">{original.source}</StaticLink> // TODO change
+          <StaticLink to="/">{getSourceName(original.source)}</StaticLink> // TODO change
         ),
       },
       {
         accessor: "publicationTarget",
         Header: "publication target",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">{original.publicationTarget}</StaticLink> // TODO change
+          <StaticLink to="/">
+            {getPublicationTargetName(original.publicationTarget)}
+          </StaticLink> // TODO change
         ),
       },
       {

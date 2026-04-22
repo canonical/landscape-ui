@@ -6,6 +6,12 @@ import type { ListPublicationsResponse } from "../types";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import { useMemo } from "react";
+import {
+  getPublicationName,
+  getPublicationTargetName,
+  getSourceName,
+  getSourceType,
+} from "../helpers";
 
 interface UseGetPublicationsReturnType {
   publications: Publication[];
@@ -14,6 +20,53 @@ interface UseGetPublicationsReturnType {
 }
 
 const FETCH_PAGE_SIZE = 1000;
+
+const SEARCH_PREFIXES = [
+  "publicationTarget:",
+  "source:",
+  "sourceType:",
+] as const;
+type SearchPrefix = (typeof SEARCH_PREFIXES)[number];
+
+const parseSearchQuery = (
+  search: string,
+):
+  | { prefix: SearchPrefix; value: string }
+  | { prefix: null; value: string } => {
+  for (const prefix of SEARCH_PREFIXES) {
+    if (search.startsWith(prefix)) {
+      return {
+        prefix,
+        value: search.slice(prefix.length).trim().toLowerCase(),
+      };
+    }
+  }
+  return { prefix: null, value: search.trim().toLowerCase() };
+};
+
+const matchesSearch = (
+  publication: Publication,
+  prefix: SearchPrefix | null,
+  value: string,
+): boolean => {
+  if (!value) return true;
+  switch (prefix) {
+    case "publicationTarget:":
+      return (getPublicationTargetName(publication.publicationTarget) ?? "")
+        .toLowerCase()
+        .includes(value);
+    case "source:":
+      return (getSourceName(publication.source) ?? "")
+        .toLowerCase()
+        .includes(value);
+    case "sourceType:":
+      return getSourceType(publication.source).toLowerCase().includes(value);
+    default:
+      return (getPublicationName(publication) ?? "")
+        .toLowerCase()
+        .includes(value);
+  }
+};
 
 const useGetPublications = (): UseGetPublicationsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
@@ -36,14 +89,16 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
   });
 
   const filteredPublications = useMemo(() => {
-    const normalizedSearch = search?.trim().toLowerCase();
+    const normalizedSearch = search?.trim() ?? "";
 
     if (!normalizedSearch) {
       return data ?? [];
     }
 
+    const { prefix, value } = parseSearchQuery(normalizedSearch);
+
     return (data ?? []).filter((publication) =>
-      publication.name.toLowerCase().includes(normalizedSearch),
+      matchesSearch(publication, prefix, value),
     );
   }, [data, search]);
 
