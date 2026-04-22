@@ -8,6 +8,7 @@ import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/cons
 import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
 
 export const DashboardRoutes = (
   <Route
@@ -83,17 +84,19 @@ export const DashboardRoutes = (
               title="Repositories"
               items={REPOSITORY_SUBMENU}
             />
-            <Outlet />
+            <div className={classes.pageContent}>
+              <Outlet />
+            </div>
           </SelfHostedGuard>
         }
       >
         <Route
           path={PATHS.repositories.mirrors}
           element={
-          <SelfHostedGuard>
-            <Pages.MirrorsPage />
-          </SelfHostedGuard>
-        }
+            <SelfHostedGuard>
+              <Pages.MirrorsPage />
+            </SelfHostedGuard>
+          }
         />
         <Route
           path={PATHS.repositories.localRepositories}
@@ -125,7 +128,7 @@ export const DashboardRoutes = (
             <SelfHostedGuard>
               <Pages.RepositoryProfilesPage />
             </SelfHostedGuard>
-          }     
+          }
         />
       </Route>
 
@@ -175,7 +178,9 @@ export const DashboardRoutes = (
             >
               <DarkModeSwitch />
             </SecondaryNavigation>
-            <Outlet />
+            <div className={classes.pageContent}>
+              <Outlet />
+            </div>
           </>
         }
       >
