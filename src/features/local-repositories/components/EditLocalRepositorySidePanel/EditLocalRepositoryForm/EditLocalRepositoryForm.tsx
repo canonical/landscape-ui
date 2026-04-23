@@ -92,7 +92,6 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={formik.isSubmitting || isUpdatingRepository}
         submitButtonText="Save changes"
         hasBackButton={sidePath.length > 1}

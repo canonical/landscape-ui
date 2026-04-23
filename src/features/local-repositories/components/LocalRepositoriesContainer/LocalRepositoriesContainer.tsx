@@ -5,21 +5,24 @@ import LocalRepositoriesList from "../LocalRepositoriesList";
 import AddLocalRepositoryButton from "../AddLocalRepositoryButton";
 import EmptyState from "@/components/layout/EmptyState";
 import type { LocalRepository } from "../../types";
+import usePageParams from "@/hooks/usePageParams";
 
 interface LocalRepositoriesContainerProps {
   readonly isPending: boolean;
-  readonly items: LocalRepository[];
+  readonly repositories: LocalRepository[];
 }
 
 const LocalRepositoriesContainer: FC<LocalRepositoriesContainerProps> = ({
   isPending,
-  items,
+  repositories,
 }) => {
+  const { search } = usePageParams();
+
   if (isPending) {
     return <LoadingState />;
   }
 
-  if (!items.length) {
+  if (!search && !repositories.length) {
     return (
       <EmptyState
         title="You don't have any local repositories yet"
@@ -47,7 +50,7 @@ const LocalRepositoriesContainer: FC<LocalRepositoriesContainerProps> = ({
   return (
     <>
       <HeaderWithSearch />
-      <LocalRepositoriesList items={items} />
+      <LocalRepositoriesList repositories={repositories} />
     </>
   );
 };

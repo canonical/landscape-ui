@@ -3,7 +3,6 @@ import * as Yup from "yup";
 export interface PublishRepositoryNewFormValues {
   name: string;
   publication_target: string;
-  distribution: string;
   signing_key: string;
   hash_indexing: boolean;
   automatic_installation: boolean;
@@ -17,7 +16,6 @@ const REQUIRED_FIELD_MESSAGE = "This field is required";
 export const VALIDATION_SCHEMA_NEW = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   publication_target: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  distribution: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   signing_key: Yup.string(),
   hash_indexing: Yup.boolean(),
   automatic_installation: Yup.boolean(),

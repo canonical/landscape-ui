@@ -16,3 +16,17 @@
   padding: $spv--small $sph--small;
   background-color: $colors--theme--background-inputs;
 }
+
+.radio {
+  display: flex;
+  align-items: end;
+  margin-bottom: $spv--large;
+
+  > label {
+    margin-right: $sph--x-large;
+  }
+
+  & span {
+    padding-left: $sph--x-large;
+  }
+}

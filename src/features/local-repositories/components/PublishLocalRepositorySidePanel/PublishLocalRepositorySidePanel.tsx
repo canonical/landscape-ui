@@ -5,6 +5,7 @@ import PublishRepositoryNewForm from "./components/PublishRepositoryNewForm";
 import PublishRepositoryExistingForm from "./components/PublishRepositoryExistingForm";
 import { RadioInput } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
+import classes from "./PublishLocalRepositorySidePanel.module.scss";
 
 const PublishLocalRepositorySidePanel: FC = () => {
   const { repository, isGettingRepository } = useGetPageLocalRepository();
@@ -18,16 +19,19 @@ const PublishLocalRepositorySidePanel: FC = () => {
     <>
       <SidePanel.Header>Publish {repository.display_name}</SidePanel.Header>
       <SidePanel.Content>
-        <RadioInput
-          label="New publication"
-          checked={useNewPublication}
-          onChange={toggle}
-        />
-        <RadioInput
-          label="Existing publication"
-          checked={!useNewPublication}
-          onChange={toggle}
-        />
+        <label>Publish to</label>
+        <div className={classes.radio}>
+          <RadioInput
+            label="New publication"
+            checked={useNewPublication}
+            onChange={toggle}
+          />
+          <RadioInput
+            label="Existing publication"
+            checked={!useNewPublication}
+            onChange={toggle}
+          />
+        </div>
 
         {useNewPublication 
           ? <PublishRepositoryNewForm repository={repository} />

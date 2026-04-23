@@ -2,13 +2,7 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Task } from "../types/Task";
-
-interface ImportRepositoryPackagesParams {
-  name: string;
-  url: string;
-  validate_only?: boolean;
-}
+import type { ImportLocalPackagesRequest, Task } from "../types";
 
 export const useImportRepositoryPackages = () => {
   const authFetchDebArchive = useFetchDebArchive();
@@ -17,11 +11,11 @@ export const useImportRepositoryPackages = () => {
   const { mutateAsync, isPending } = useMutation<
     AxiosResponse<Task>,
     AxiosError<ApiError>,
-    ImportRepositoryPackagesParams
+    ImportLocalPackagesRequest
   >({
     mutationKey: ["locals", "packages", "import"],
     mutationFn: async ({ name, ...params }) =>
-      authFetchDebArchive.post(`${name}/import`, params),
+      authFetchDebArchive.post(`${name}:importPackages`, params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["locals", "packages"] }),
   });

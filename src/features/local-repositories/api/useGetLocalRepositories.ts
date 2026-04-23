@@ -1,35 +1,47 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError } from "axios";
 import type { LocalRepository } from "../types";
 
-interface GetLocalRepositoriesParams {
-  page_size?: number;
-  page_token?: string;
-  filter?: string;
-}
-
-interface GetLocalRepositoriesResponse {
+interface ListLocalsResponse {
   locals: LocalRepository[];
   next_page_token: string;
 }
 
-export const useGetLocalRepositories = (
-  params?: GetLocalRepositoriesParams,
-) => {
+export const useGetLocalRepositories = (search?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data: response, isPending } = useQuery<
-    AxiosResponse<GetLocalRepositoriesResponse>,
+  const { data, isPending } = useQuery<
+    LocalRepository[],
     AxiosError<ApiError>
   >({
-    queryKey: ["locals", params],
-    queryFn: async () => authFetchDebArchive.get("locals", { params }),
+    queryKey: ["locals", search],
+    queryFn: async () => {
+      let page_token: string | undefined;
+      const repositories: LocalRepository[] = [];
+
+      do {
+        const response = await authFetchDebArchive.get<ListLocalsResponse>(
+          "locals", 
+          { params: 
+            {
+              filter: search ? `display_name="*${search}*"` : undefined,
+              page_size: 1000,
+              page_token,
+            },
+          });
+
+        repositories.push(...((response.data.locals ?? [])));
+        page_token = response.data.next_page_token;
+      } while (page_token);
+
+      return repositories;
+    },
   });
 
   return {
-    result: response?.data,
-    isGettingLocalRepositories: isPending,
+    repositories: data ?? [],
+    isGettingRepositories: isPending,
   };
 };

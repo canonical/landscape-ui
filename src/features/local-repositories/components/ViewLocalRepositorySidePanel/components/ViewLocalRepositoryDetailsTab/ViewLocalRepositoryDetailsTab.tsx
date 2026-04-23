@@ -4,7 +4,7 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LocalRepositoryPublicationsList from "../../../LocalRepositoryPublicationsList";
 import LoadingState from "@/components/layout/LoadingState";
-import useGetPublications from "../../../../api/useGetPublications";
+import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
 
 interface ViewLocalRepositoryDetailsTabProps {
   readonly repository: LocalRepository;
@@ -13,9 +13,10 @@ interface ViewLocalRepositoryDetailsTabProps {
 const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   repository,
 }) => {
-  const { publications, isGettingPublications } = useGetPublications({
-    filter: `source=${repository.name}`,
-  });
+  const { 
+    publications,
+    isGettingPublications
+  } = useGetPublicationsBySource(repository.name);
 
   return (
     <Blocks>

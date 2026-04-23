@@ -1,4 +1,6 @@
 @import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
 
 .row {
   display: flex;
@@ -8,4 +10,8 @@
 .button {
   margin: 2.5rem 0 auto $sph--large;
   width: 13.5rem;
+}
+
+.file {
+  padding: $spv--small 0 $spv--large;
 }

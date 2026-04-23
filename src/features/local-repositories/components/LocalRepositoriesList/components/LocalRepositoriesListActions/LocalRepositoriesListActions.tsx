@@ -31,11 +31,12 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
         destructiveActions={destructiveActions}
       />
 
-      <RemoveLocalRepositoryModal
-        isOpen={isModalOpen}
-        close={closeModal}
-        repository={repository}
-      />
+      {isModalOpen && 
+        <RemoveLocalRepositoryModal
+          close={closeModal}
+          repository={repository}
+        />
+      }
     </>
   );
 };

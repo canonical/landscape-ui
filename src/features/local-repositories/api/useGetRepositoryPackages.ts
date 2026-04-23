@@ -1,36 +1,45 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError } from "axios";
 
-interface GetRepositoryPackagesParams {
-  repository: string;
-  page_size?: number;
-  page_token?: string;
-}
-
-interface GetRepositoryPackagesResponse {
+interface ListLocalPackagesResponse {
   local_packages: string[];
   next_page_token: string;
 }
 
-export const useGetRepositoryPackages = ({
-  repository,
-  ...params
-}: GetRepositoryPackagesParams) => {
+export const useGetRepositoryPackages = (repository: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data: response, isPending } = useQuery<
-    AxiosResponse<GetRepositoryPackagesResponse>,
+  const { data, isPending } = useQuery<
+    string[],
     AxiosError<ApiError>
   >({
-    queryKey: ["packages", repository, params],
-    queryFn: async () =>
-      authFetchDebArchive.get(`${repository}/packages`, { params }),
+    queryKey: ["packages", repository],
+    queryFn: async () => {
+      let page_token: string | undefined;
+      const packages: string[] = [];
+
+      do {
+        const response = await authFetchDebArchive.get<ListLocalPackagesResponse>(
+          `${repository}/packages`, 
+          { params: 
+            {
+              page_size: 1000,
+              page_token,
+            },
+          });
+
+        packages.push(...((response.data.local_packages ?? [])));
+        page_token = response.data.next_page_token;
+      } while (page_token);
+
+      return packages;
+    },
   });
 
   return {
-    result: response?.data,
+    packages: data?.map((name) => ({ name: name })) ?? [],
     isGettingRepositoryPackages: isPending,
   };
 };

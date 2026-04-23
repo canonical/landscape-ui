@@ -1,9 +1,11 @@
 import { ROUTES } from "@/libs/routes";
-import type { Publication } from "../../types";
+import type { Publication } from "@/features/publications";
 import { useMemo, type FC } from "react";
 import StaticLink from "@/components/layout/StaticLink";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { Column, CellProps } from "react-table";
+import usePageParams from "@/hooks/usePageParams";
+import { TablePagination } from "@/components/layout/TablePagination";
 
 interface LocalRepositoryPublicationsListProps {
   readonly publications: Publication[];
@@ -12,6 +14,13 @@ interface LocalRepositoryPublicationsListProps {
 const LocalRepositoryPublicationsList: FC<
   LocalRepositoryPublicationsListProps
 > = ({ publications }) => {
+  const { currentPage, pageSize } = usePageParams();
+
+  const pagedPublications = useMemo(() => 
+    publications.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [publications, currentPage, pageSize]
+  );
+
   const columns = useMemo<Column<Publication>[]>(
     () => [
       {
@@ -45,12 +54,18 @@ const LocalRepositoryPublicationsList: FC<
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={publications}
-      emptyMsg={"No publications associated with this local repository."}
-      minWidth={320}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedPublications}
+        emptyMsg={"No publications associated with this local repository."}
+        minWidth={320}
+      />
+      <TablePagination
+        totalItems={publications.length}
+        currentItemCount={pagedPublications.length}
+      />
+    </>
   );
 };
 

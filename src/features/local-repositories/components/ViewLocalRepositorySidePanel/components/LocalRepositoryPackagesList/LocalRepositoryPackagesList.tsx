@@ -4,6 +4,9 @@ import { useGetRepositoryPackages } from "../../../../api";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { Column, CellProps } from "react-table";
 import LoadingState from "@/components/layout/LoadingState";
+import { TablePagination } from "@/components/layout/TablePagination";
+import usePageParams from "@/hooks/usePageParams";
+import type { LocalPackage } from "../../../../types";
 
 interface LocalRepositoryPackagesListProps {
   readonly repository: LocalRepository;
@@ -12,23 +15,21 @@ interface LocalRepositoryPackagesListProps {
 const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   repository,
 }) => {
-  const { result, isGettingRepositoryPackages } = useGetRepositoryPackages({
-    repository: repository.name,
-  });
-  const packageNames = result?.local_packages ?? [];
-  const packages = packageNames.map((name) => ({ name: name }));
+  const { currentPage, pageSize } = usePageParams();
+  const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(repository.name);
 
-  const columns = useMemo<Column<{ name: string }>[]>(() => [
+  const pagedPackages = useMemo(() => 
+    packages.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [packages, currentPage, pageSize]
+  );
+
+  const columns = useMemo<Column<LocalPackage>[]>(() => [
     {
       Header: "Package name",
       meta: {
         ariaLabel: ({ original: { name } }) => `${name} package name`,
       },
-      Cell: ({
-        row: {
-          original: { name },
-        },
-      }: CellProps<{ name: string }>) => name
+      Cell: ({ row: { original: { name } } }: CellProps<LocalPackage>) => name
     },
   ], []);
 
@@ -37,12 +38,18 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   }
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={packages}
-      emptyMsg={"No packages associated with this local repository."}
-      minWidth={320}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedPackages}
+        emptyMsg={"No packages associated with this local repository."}
+        minWidth={320}
+      />
+      <TablePagination
+        totalItems={packages.length}
+        currentItemCount={pagedPackages.length}
+      />
+    </>
   );
 };
 

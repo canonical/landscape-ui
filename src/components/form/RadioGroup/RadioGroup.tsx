@@ -39,22 +39,19 @@ const RadioGroup = <
   formik,
   inputs = [],
   label,
-  labelHeading = true,
-  sideByside = false,
 }: RadioGroupProps<TField, TValue, TFormik>) => {
   return (
     <>
       <p
         className={classNames(
-          "u-no-margin--bottom",
-          labelHeading ? "p-heading--5" : undefined,
+          "u-no-margin--bottom u-heading--5",
           classes.label,
         )}
       >
         {label}
       </p>
 
-      <div className={sideByside ? classes.line : undefined}>
+      <div>
         {inputs.map(({ expansion, help, key, value, onSelect, ...input }) => {
           const checked = formik.values[field] == value;
 

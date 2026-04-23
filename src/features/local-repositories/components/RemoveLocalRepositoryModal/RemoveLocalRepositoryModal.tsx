@@ -6,17 +6,15 @@ import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
 import { ConfirmationModal } from "@canonical/react-components";
 import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
-import useGetPublications from "../../api/useGetPublications";
+import useGetPublicationsBySource from "../../api/useGetPublicationsBySource";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface RemoveLocalRepositoryModalProps {
-  readonly isOpen: boolean;
   readonly close: () => void;
   readonly repository: LocalRepository;
 }
 
 const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
-  isOpen,
   close,
   repository,
 }) => {
@@ -24,9 +22,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   const debug = useDebug();
   const { setPageParams } = usePageParams();
   const { removeRepository, isRemovingRepository } = useRemoveLocalRepository();
-  const { publications, isGettingPublications } = useGetPublications({
-    filter: `source=${repository.name}`,
-  });
+  const { publications, isGettingPublications } = useGetPublicationsBySource(repository.name);
 
   const noPublicationsText = (
     <p>
@@ -73,23 +69,19 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     return <LoadingState />;
   }
 
-  if (isOpen) {
-    return (
-      <ConfirmationModal
-        title={`Remove ${repository.display_name}`}
-        confirmButtonLabel="Remove local repository"
-        confirmButtonAppearance="negative"
-        onConfirm={handleRemoveLocalRepository}
-        confirmButtonLoading={isRemovingRepository}
-        close={close}
-        renderInPortal
-      >
-        {content}
-      </ConfirmationModal>
-    );
-  }
-
-  return null;
+  return (
+    <ConfirmationModal
+      title={`Remove ${repository.display_name}`}
+      confirmButtonLabel="Remove local repository"
+      confirmButtonAppearance="negative"
+      onConfirm={handleRemoveLocalRepository}
+      confirmButtonLoading={isRemovingRepository}
+      close={close}
+      renderInPortal
+    >
+      {content}
+    </ConfirmationModal>
+  );
 };
 
 export default RemoveLocalRepositoryModal;

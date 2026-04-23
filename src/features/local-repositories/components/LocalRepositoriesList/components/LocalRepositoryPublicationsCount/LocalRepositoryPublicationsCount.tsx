@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import type { LocalRepository } from "../../../../types";
-import useGetPublications from "../../../../api/useGetPublications";
+import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
@@ -13,9 +13,7 @@ interface LocalRepositoryPublicationsCountProps {
 const LocalRepositoryPublicationsCount: FC<
   LocalRepositoryPublicationsCountProps
 > = ({ repository }) => {
-  const { publications, isGettingPublications } = useGetPublications({
-    filter: `source=${repository.name}`,
-  });
+  const { publications, isGettingPublications } = useGetPublicationsBySource(repository.name);
 
   if (isGettingPublications) {
     return <LoadingState inline />;

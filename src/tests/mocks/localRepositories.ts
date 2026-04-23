@@ -30,10 +30,34 @@ export const repositories: LocalRepository[] = [
 
 export const repoPackages = ["package 1", "package 2", "package 3"] as const;
 
-export const validateTask = {
+export const succeededTask = {
   name: "task/vvvv-tttt-pppp",
   display_name: "validate packages",
   task_id: "vvvv-tttt-pppp",
-  status: "done",
+  status: "succeeded",
   output: "package-A, package-B"
+};
+
+export const failedTask = {
+  name: "task/vvvv-tttt-pppp",
+  display_name: "validate packages",
+  task_id: "vvvv-tttt-pppp",
+  status: "failed",
+  output: "package-A, package-B"
+};
+
+export const inProgressTask = {
+  name: "task/vvvv-tttt-pppp",
+  display_name: "validate packages",
+  task_id: "vvvv-tttt-pppp",
+  status: "in progress",
+  output: ""
+};
+
+export const emptyTask = {
+  name: "task/vvvv-tttt-pppp",
+  display_name: "validate packages",
+  task_id: "vvvv-tttt-pppp",
+  status: "succeeded",
+  output: ""
 };

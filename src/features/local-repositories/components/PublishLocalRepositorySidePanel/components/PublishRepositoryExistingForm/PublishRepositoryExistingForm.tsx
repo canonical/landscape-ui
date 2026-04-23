@@ -19,9 +19,9 @@ import {
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import useGetPublications from "../../../../api/useGetPublications";
+import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
 import type { LocalRepository } from "../../../../types";
-import { usePublishPublication } from "../../../../api/usePublishPublicaton";
+import { usePublishPublication } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
@@ -38,7 +38,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
   const { 
     publications,
     isGettingPublications
-  } = useGetPublications({ filter: `source=${repository.name}` });
+  } = useGetPublicationsBySource(repository.name);
   const { publishPublication, isPublishingPublication } = usePublishPublication();
 
   const closeSidePanel = createPageParamsSetter({ sidePath: [], repository: "" });

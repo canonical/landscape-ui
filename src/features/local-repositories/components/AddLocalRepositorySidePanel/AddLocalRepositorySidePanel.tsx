@@ -97,7 +97,6 @@ const AddLocalRepositorySidePanel: FC = () => {
           </Blocks>
 
           <SidePanelFormButtons
-            submitButtonDisabled={!formik.isValid}
             submitButtonLoading={formik.isSubmitting || isCreatingRepository}
             submitButtonText="Add repository"
             onCancel={closeSidePanel}

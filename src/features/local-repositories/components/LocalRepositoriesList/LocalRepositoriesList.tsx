@@ -6,16 +6,22 @@ import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
 import type { LocalRepository } from "../../types";
 import usePageParams from "@/hooks/usePageParams";
+import { TablePagination } from "@/components/layout/TablePagination";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
 import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
 import LocalRepositoryPublicationsCount from "./components/LocalRepositoryPublicationsCount";
 
 interface LocalRepositoriesListProps {
-  readonly items: LocalRepository[];
+  readonly repositories: LocalRepository[];
 }
 
-const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
-  const { search, createPageParamsSetter } = usePageParams();
+const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ repositories }) => {
+  const { search, currentPage, pageSize, createPageParamsSetter } = usePageParams();
+
+  const pagedRepositories = useMemo(() => 
+    repositories.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [repositories, currentPage, pageSize]
+  );
 
   const columns = useMemo<Column<LocalRepository>[]>(
     () => [
@@ -94,11 +100,17 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ items }) => {
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={items}
-      emptyMsg={`No local repositories found with the search: "${search}"`}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedRepositories}
+        emptyMsg={`No local repositories found with the search: "${search}"`}
+      />
+      <TablePagination
+        totalItems={repositories.length}
+        currentItemCount={pagedRepositories.length}
+      />
+    </>
   );
 };
 

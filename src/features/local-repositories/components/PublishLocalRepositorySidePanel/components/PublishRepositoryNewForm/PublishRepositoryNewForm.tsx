@@ -21,10 +21,9 @@ import {
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import useGetPublicationTargets from "../../../../api/useGetPublicationTargets";
+import useGetPublicationTargets from "@/features/publication-targets";
 import type { LocalRepository } from "../../../../types";
-import { useAddPublication } from "../../../../api/useAddPublication";
-import { usePublishPublication } from "../../../../api/usePublishPublicaton";
+import { useAddPublication, usePublishPublication } from "@/features/publications";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
 interface PublishRepositoryNewFormProps {
@@ -50,7 +49,6 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   const initialValues: PublishRepositoryNewFormValues = {
     name: "",
     publication_target: "",
-    distribution: repository.distribution,
     signing_key: "",
     hash_indexing: false,
     automatic_installation: false,
@@ -63,7 +61,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     const valuesforCreation = {
       publication_target: values.publication_target,
       source: repository.name,
-      distribution: values.distribution,
+      distribution: repository.distribution,
       hash_indexing: values.hash_indexing,
       automatic_installation: values.automatic_installation,
       automatic_upgrades: values.automatic_upgrades,
@@ -73,11 +71,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     };
 
     try {
-      const publication = await addPublication(valuesforCreation);
+      const { data: publication } = await addPublication(valuesforCreation);
 
-      formik.setFieldValue("name", publication.data.name);
-
-      await publishPublication({ name: values.name });
+      await publishPublication({ name: publication.name });
 
       closeSidePanel();
 
