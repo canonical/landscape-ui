@@ -207,10 +207,11 @@ const AddMirrorForm: FC = () => {
                     label="Components"
                     {...formik.getFieldProps("components")}
                     error={getFormikError(formik, "components")}
+                    value={formik.values.components.join(", ")}
                     onChange={async (event) => {
                       await formik.setFieldValue(
                         "components",
-                        event.target.value.split(","),
+                        event.target.value.split(", "),
                       );
                     }}
                   />
@@ -219,10 +220,11 @@ const AddMirrorForm: FC = () => {
                     label="Architectures"
                     {...formik.getFieldProps("architectures")}
                     error={getFormikError(formik, "architectures")}
+                    value={formik.values.architectures.join(", ")}
                     onChange={async (event) => {
                       await formik.setFieldValue(
                         "architectures",
-                        event.target.value.split(","),
+                        event.target.value.split(", "),
                       );
                     }}
                   />

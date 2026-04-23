@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import usePageParams from "@/hooks/usePageParams/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -133,7 +133,7 @@ const EditMirrorForm: FC = () => {
                 UBUNTU_ARCHIVE_HOST,
                 UBUNTU_SNAPSHOTS_HOST,
                 UBUNTU_PRO_HOST,
-              ].includes(mirror.archiveRoot) && (
+              ].includes(new URL(mirror.archiveRoot).host) && (
                 <Blocks.Item title="Authentication">
                   <Textarea
                     label="Verification GPG key"

@@ -17,6 +17,7 @@ import gpgKey from "./gpgKey";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
+import mirrors from "./mirrors";
 import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
@@ -61,6 +62,7 @@ export default [
   ...instance,
   ...invitations,
   ...kernel,
+  ...mirrors,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,

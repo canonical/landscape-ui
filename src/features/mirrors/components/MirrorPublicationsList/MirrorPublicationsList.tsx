@@ -20,7 +20,7 @@ const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
       {
         Header: "Publication",
         Cell: ({ row: { original: publication } }: CellProps<Publication>) => {
-          return <a>{publication.label}</a>;
+          return publication.label;
         },
       },
     ],

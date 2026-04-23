@@ -8,7 +8,7 @@ import type { CellProps, Column } from "react-table";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import MirrorPublicationsLink from "../MirrorPublicationsLink";
 import NoData from "@/components/layout/NoData";
-import usePageParams from "@/hooks/usePageParams/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import MirrorActions from "../MirrorActions";
 
