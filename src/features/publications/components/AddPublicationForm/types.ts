@@ -14,3 +14,11 @@ export interface FormProps {
   skip_bz2: boolean;
   skip_content_indexing: boolean;
 }
+
+export interface SelectableSource {
+  label: string;
+  value: string;
+  sourceType: string;
+  distribution?: string;
+  architectures: string[];
+}

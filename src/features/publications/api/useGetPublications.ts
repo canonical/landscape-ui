@@ -12,12 +12,6 @@ import {
   getSourceType,
 } from "../helpers";
 
-interface UseGetPublicationsReturnType {
-  publications: Publication[];
-  publicationsCount: number;
-  isGettingPublications: boolean;
-}
-
 const FETCH_PAGE_SIZE = 1000;
 
 const SEARCH_PREFIXES = [
@@ -65,7 +59,7 @@ const matchesSearch = (
   }
 };
 
-const useGetPublications = (): UseGetPublicationsReturnType => {
+export const useGetPublications = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const { currentPage, pageSize, query } = usePageParams();
 
@@ -111,5 +105,3 @@ const useGetPublications = (): UseGetPublicationsReturnType => {
     isGettingPublications: isLoading,
   };
 };
-
-export default useGetPublications;

@@ -3,8 +3,8 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import useDeletePublication from "../../api/useDeletePublication";
 import type { Publication } from "../../types";
+import { useDeletePublication } from "../../api";
 
 interface RemovePublicationModalProps extends Pick<
   TextConfirmationModalProps,

@@ -1,6 +1,7 @@
-import { publications } from "@/tests/mocks/publications";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
@@ -55,7 +56,7 @@ describe("RepublishPublicationModal", () => {
       publication,
     };
 
-    setEndpointStatus({ status: "error", path: "v1/publications/publish" });
+    setEndpointStatus({ status: "error", path: "publications/publish" });
 
     renderWithProviders(<RepublishPublicationModal {...props} />);
 
@@ -63,7 +64,7 @@ describe("RepublishPublicationModal", () => {
 
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(
-      await screen.findByText("Failed to republish publication"),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

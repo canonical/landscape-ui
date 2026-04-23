@@ -1,12 +1,14 @@
-import type { FC } from "react";
-import type { Publication } from "../../types";
 import ListActions from "@/components/layout/ListActions";
+import LoadingState from "@/components/layout/SidePanel/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { useBoolean } from "usehooks-ts";
 import type { Action } from "@/types/Action";
-import PublicationDetails from "../PublicationDetails";
-import RepublishPublicationModal from "../RepublishPublicationModal";
+import { lazy, Suspense, type FC } from "react";
+import { useBoolean } from "usehooks-ts";
+import type { Publication } from "../../types";
 import RemovePublicationModal from "../RemovePublicationModal";
+import RepublishPublicationModal from "../RepublishPublicationModal";
+
+const PublicationDetails = lazy(() => import("../PublicationDetails"));
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -33,7 +35,9 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   const handlePublicationDetails = () => {
     setSidePanelContent(
       publication.label,
-      <PublicationDetails publication={publication} />,
+      <Suspense fallback={<LoadingState />}>
+        <PublicationDetails publication={publication} />
+      </Suspense>,
     );
   };
 

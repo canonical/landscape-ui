@@ -1,4 +1,7 @@
 export type {
+  BatchGetLocalsResponse,
+  BatchGetMirrorsResponse,
+  BatchGetPublicationTargetsResponse,
   ListLocalsResponse,
   ListMirrorsResponse,
   ListPublicationsResponse,

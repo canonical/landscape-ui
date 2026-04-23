@@ -7,26 +7,26 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-interface UseGetPublicationTargetsReturnType {
-  publicationTargets: PublicationTarget[];
-  isGettingPublicationTargets: boolean;
+const DEFAULT_PAGE_SIZE = 1000;
+interface UseGetPublicationTargetsOptions {
+  pageSize?: number;
 }
 
-const FETCH_PAGE_SIZE = 1000;
-// TODO: remove
-const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
+export const useGetPublicationTargets = ({
+  pageSize = DEFAULT_PAGE_SIZE,
+}: UseGetPublicationTargetsOptions = {}) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<
     PublicationTarget[],
     AxiosError<ApiError>
   >({
-    queryKey: ["publicationTargets", "all"],
+    queryKey: ["publicationTargets", "all", pageSize],
     queryFn: async () => {
       const response =
         await authFetchDebArchive.get<ListPublicationTargetsResponse>(
           "publicationTargets",
-          { params: { pageSize: FETCH_PAGE_SIZE } },
+          { params: { pageSize } },
         );
 
       return response.data.publicationTargets ?? [];
@@ -38,5 +38,3 @@ const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
     isGettingPublicationTargets: isLoading,
   };
 };
-
-export default useGetPublicationTargets;

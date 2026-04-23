@@ -2,8 +2,8 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import usePublishPublication from "../../api/usePublishPublication";
 import type { Publication } from "../../types";
+import { usePublishPublication } from "../../api";
 
 interface RepublishPublicationModalProps {
   readonly publication: Publication;

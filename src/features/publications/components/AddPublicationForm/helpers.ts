@@ -107,3 +107,11 @@ export const getPublicationPayload = (values: FormProps) => {
     },
   };
 };
+
+export const stripResourcePrefix = (value?: string, prefix?: string) => {
+  if (!value || !prefix) {
+    return value ?? "";
+  }
+
+  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
+};

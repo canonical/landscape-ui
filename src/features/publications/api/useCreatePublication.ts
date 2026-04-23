@@ -9,7 +9,7 @@ interface CreatePublicationParams {
   publicationId?: string;
 }
 
-export default function useCreatePublication() {
+export const useCreatePublication = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
@@ -31,4 +31,4 @@ export default function useCreatePublication() {
     createPublication: mutateAsync,
     isCreatingPublication: isPending,
   };
-}
+};

@@ -4,15 +4,20 @@ import { boolToLabel } from "@/utils/output";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import type { Publication } from "../../types";
-import { getPublicationTargetName, getSourceName } from "../../helpers";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
+  readonly sourceDisplayName?: string;
+  readonly publicationTargetDisplayName?: string;
 }
 
-const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
+const PublicationDetails = ({
+  publication,
+  sourceDisplayName,
+  publicationTargetDisplayName,
+}: PublicationDetailsProps) => {
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
@@ -63,16 +68,12 @@ const PublicationDetails = ({ publication }: PublicationDetailsProps) => {
           <InfoGrid>
             <InfoGrid.Item label="Name" value={publication.label} />
 
-            <InfoGrid.Item
-              label="Source"
-              large
-              value={getSourceName(publication.source)}
-            />
+            <InfoGrid.Item label="Source" large value={sourceDisplayName} />
 
             <InfoGrid.Item
               label="Publication target"
               large
-              value={getPublicationTargetName(publication.publicationTarget)}
+              value={publicationTargetDisplayName}
             />
 
             <InfoGrid.Item

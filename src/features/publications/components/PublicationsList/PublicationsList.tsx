@@ -5,22 +5,30 @@ import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { useCallback, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { Publication } from "../../types";
-import PublicationDetails from "../PublicationDetails";
 import PublicationsListActions from "../PublicationsListActions";
 import {
   getPublicationTargetName,
   getSourceName,
   getSourceType,
 } from "../../helpers";
+import LoadingState from "@/components/layout/LoadingState";
+
+const PublicationDetails = lazy(() => import("../PublicationDetails"));
 
 interface PublicationsListProps {
   readonly publications: Publication[];
+  readonly sourceDisplayNames?: Record<string, string>;
+  readonly publicationTargetDisplayNames?: Record<string, string>;
 }
 
-const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
+const PublicationsList: FC<PublicationsListProps> = ({
+  publications,
+  sourceDisplayNames = {},
+  publicationTargetDisplayNames = {},
+}) => {
   const { query } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
 
@@ -28,10 +36,22 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
     (publication: Publication) => {
       setSidePanelContent(
         publication.label,
-        <PublicationDetails publication={publication} />,
+        <Suspense fallback={<LoadingState />}>
+          <PublicationDetails
+            publication={publication}
+            sourceDisplayName={
+              sourceDisplayNames[publication.source] ??
+              getSourceName(publication.source)
+            }
+            publicationTargetDisplayName={
+              publicationTargetDisplayNames[publication.publicationTarget] ??
+              getPublicationTargetName(publication.publicationTarget)
+            }
+          />
+        </Suspense>,
       );
     },
-    [setSidePanelContent],
+    [setSidePanelContent, sourceDisplayNames, publicationTargetDisplayNames],
   );
 
   const columns = useMemo<Column<Publication>[]>(
@@ -64,7 +84,10 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         accessor: "source",
         Header: "source",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">{getSourceName(original.source)}</StaticLink> // TODO change
+          <StaticLink to="/">
+            {sourceDisplayNames[original.source] ??
+              getSourceName(original.source)}
+          </StaticLink>
         ),
       },
       {
@@ -72,8 +95,9 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         Header: "publication target",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink to="/">
-            {getPublicationTargetName(original.publicationTarget)}
-          </StaticLink> // TODO change
+            {publicationTargetDisplayNames[original.publicationTarget] ??
+              getPublicationTargetName(original.publicationTarget)}
+          </StaticLink>
         ),
       },
       {
@@ -83,7 +107,7 @@ const PublicationsList: FC<PublicationsListProps> = ({ publications }) => {
         ),
       },
     ],
-    [openPublicationDetails],
+    [openPublicationDetails, sourceDisplayNames, publicationTargetDisplayNames],
   );
 
   return (

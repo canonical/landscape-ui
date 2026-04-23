@@ -4,14 +4,9 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-interface UseGetLocalsReturnType {
-  locals: Local[];
-  isGettingLocals: boolean;
-}
-
 const FETCH_PAGE_SIZE = 1000;
 
-const useGetLocals = (): UseGetLocalsReturnType => {
+export const useGetLocals = () => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<Local[], AxiosError<ApiError>>({
@@ -31,5 +26,3 @@ const useGetLocals = (): UseGetLocalsReturnType => {
     isGettingLocals: isLoading,
   };
 };
-
-export default useGetLocals;

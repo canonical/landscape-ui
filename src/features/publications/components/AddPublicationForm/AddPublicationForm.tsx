@@ -17,10 +17,6 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
-import useCreatePublication from "../../api/useCreatePublication";
-import useGetLocals from "../../api/useGetLocals";
-import useGetMirrors from "../../api/useGetMirrors";
-import useGetPublicationTargets from "../../api/useGetPublicationTargets";
 import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
@@ -29,24 +25,18 @@ import {
   SOURCE_TYPE_MIRROR,
   SOURCE_TYPE_OPTIONS,
 } from "./constants";
-import { getPublicationPayload, VALIDATION_SCHEMA } from "./helpers";
-import type { FormProps } from "./types";
-
-interface SelectableSource {
-  label: string;
-  value: string;
-  sourceType: string;
-  distribution?: string;
-  architectures: string[];
-}
-
-const stripResourcePrefix = (value?: string, prefix?: string) => {
-  if (!value || !prefix) {
-    return value ?? "";
-  }
-
-  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
-};
+import {
+  getPublicationPayload,
+  stripResourcePrefix,
+  VALIDATION_SCHEMA,
+} from "./helpers";
+import type { FormProps, SelectableSource } from "./types";
+import {
+  useCreatePublication,
+  useGetLocals,
+  useGetMirrors,
+  useGetPublicationTargets,
+} from "../../api";
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
@@ -66,12 +56,12 @@ const AddPublicationForm: FC = () => {
         const payload = getPublicationPayload(values);
         await createPublication(payload);
 
+        closeSidePanel();
+
         notify.success({
           title: "Publication created",
           message: `Publication "${values.name}" has been created.`,
         });
-
-        closeSidePanel();
       } catch (error) {
         debug(error);
       }

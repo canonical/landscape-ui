@@ -11,7 +11,7 @@ interface UseGetMirrorsReturnType {
 
 const FETCH_PAGE_SIZE = 1000;
 // TODO: remove
-const useGetMirrors = (): UseGetMirrorsReturnType => {
+export const useGetMirrors = (): UseGetMirrorsReturnType => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<Mirror[], AxiosError<ApiError>>({
@@ -31,5 +31,3 @@ const useGetMirrors = (): UseGetMirrorsReturnType => {
     isGettingMirrors: isLoading,
   };
 };
-
-export default useGetMirrors;

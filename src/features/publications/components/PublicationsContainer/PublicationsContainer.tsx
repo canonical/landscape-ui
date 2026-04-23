@@ -3,19 +3,75 @@ import NoPublicationTargetEmptyState from "../NoPublicationsTargetEmptyState/NoP
 import NoPublicationsEmptyState from "../NoPublicationsEmptyState/NoPublicationsEmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import useGetPublicationTargets from "../../api/useGetPublicationTargets";
-import useGetPublications from "../../api/useGetPublications";
 import usePageParams from "@/hooks/usePageParams";
 import PublicationsHeader from "../PublicationsHeader";
+import { useMemo } from "react";
+import {
+  useBatchGetLocals,
+  useBatchGetMirrors,
+  useBatchGetPublicationTargets,
+  useGetPublications,
+  useGetPublicationTargets,
+} from "../../api";
 
 const PublicationsContainer = () => {
   const { query } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
-    useGetPublicationTargets();
+    useGetPublicationTargets({ pageSize: 1 });
   const { publications, publicationsCount, isGettingPublications } =
     useGetPublications();
 
-  if (isGettingPublicationTargets || isGettingPublications) {
+  const publicationTargetNames = useMemo(
+    () => [...new Set(publications.map((p) => p.publicationTarget))],
+    [publications],
+  );
+
+  const mirrorNames = useMemo(
+    () => [
+      ...new Set(
+        publications
+          .map((p) => p.source)
+          .filter((s) => s.startsWith("mirrors/")),
+      ),
+    ],
+    [publications],
+  );
+
+  const localNames = useMemo(
+    () => [
+      ...new Set(
+        publications
+          .map((p) => p.source)
+          .filter((s) => s.startsWith("locals/")),
+      ),
+    ],
+    [publications],
+  );
+
+  const {
+    publicationTargetDisplayNames,
+    isLoadingPublicationTargetDisplayNames,
+  } = useBatchGetPublicationTargets(publicationTargetNames);
+  const { mirrorDisplayNames, isLoadingMirrorDisplayNames } =
+    useBatchGetMirrors(mirrorNames);
+  const { localDisplayNames, isLoadingLocalDisplayNames } =
+    useBatchGetLocals(localNames);
+
+  const sourceDisplayNames = useMemo(
+    () => ({ ...mirrorDisplayNames, ...localDisplayNames }),
+    [mirrorDisplayNames, localDisplayNames],
+  );
+
+  const isLoadingDisplayNames =
+    isLoadingPublicationTargetDisplayNames ||
+    isLoadingMirrorDisplayNames ||
+    isLoadingLocalDisplayNames;
+
+  if (
+    isGettingPublicationTargets ||
+    isGettingPublications ||
+    isLoadingDisplayNames
+  ) {
     return <LoadingState />;
   }
 
@@ -30,7 +86,11 @@ const PublicationsContainer = () => {
   return (
     <>
       <PublicationsHeader />
-      <PublicationsList publications={publications} />
+      <PublicationsList
+        publications={publications}
+        sourceDisplayNames={sourceDisplayNames}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />
       <TablePagination totalItems={publicationsCount} />
     </>
   );

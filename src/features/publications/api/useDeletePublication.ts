@@ -7,7 +7,7 @@ interface DeletePublicationParams {
   publicationName: string;
 }
 
-export default function useDeletePublication() {
+export const useDeletePublication = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
@@ -27,4 +27,4 @@ export default function useDeletePublication() {
     deletePublication: mutateAsync,
     isRemovingPublication: isPending,
   };
-}
+};

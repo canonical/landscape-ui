@@ -80,12 +80,14 @@ export const DashboardRoutes = (
         path={PATHS.repositories.root}
         element={
           <SelfHostedGuard>
-            <SecondaryNavigation
-              title="Repositories"
-              items={REPOSITORY_SUBMENU}
-            />
-            <div className={classes.pageContent}>
-              <Outlet />
+            <div className={classes.wrapper}>
+              <SecondaryNavigation
+                title="Repositories"
+                items={REPOSITORY_SUBMENU}
+              />
+              <div className={classes.pageContent}>
+                <Outlet />
+              </div>
             </div>
           </SelfHostedGuard>
         }
@@ -172,14 +174,16 @@ export const DashboardRoutes = (
         path={PATHS.account.root}
         element={
           <>
-            <SecondaryNavigation
-              title={ACCOUNT_SETTINGS.label}
-              items={ACCOUNT_SETTINGS.items}
-            >
-              <DarkModeSwitch />
-            </SecondaryNavigation>
-            <div className={classes.pageContent}>
-              <Outlet />
+            <div className={classes.wrapper}>
+              <SecondaryNavigation
+                title={ACCOUNT_SETTINGS.label}
+                items={ACCOUNT_SETTINGS.items}
+              >
+                <DarkModeSwitch />
+              </SecondaryNavigation>
+              <div className={classes.pageContent}>
+                <Outlet />
+              </div>
             </div>
           </>
         }

@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import RemovePublicationModal from "./RemovePublicationModal";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 describe("RemovePublicationModal", () => {
   const user = userEvent.setup();
@@ -51,7 +52,7 @@ describe("RemovePublicationModal", () => {
       publication,
     };
 
-    setEndpointStatus({ status: "error", path: "v1/publications" });
+    setEndpointStatus({ status: "error", path: "/publications" });
 
     renderWithProviders(<RemovePublicationModal {...props} />);
 
@@ -59,7 +60,7 @@ describe("RemovePublicationModal", () => {
 
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(
-      await screen.findByText("Failed to remove publication"),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

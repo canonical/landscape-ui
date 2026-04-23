@@ -10,7 +10,7 @@ interface PublishPublicationParams {
   body: PublicationServicePublishPublicationBody;
 }
 
-export default function usePublishPublication() {
+export const usePublishPublication = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
@@ -30,4 +30,4 @@ export default function usePublishPublication() {
     publishPublication: mutateAsync,
     isPublishingPublication: isPending,
   };
-}
+};

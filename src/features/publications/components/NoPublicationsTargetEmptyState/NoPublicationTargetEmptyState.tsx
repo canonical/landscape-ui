@@ -1,5 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import { Button, Icon } from "@canonical/react-components";
+import { DOCUMENTATION_URL } from "./constants";
 
 const NoPublicationTargetEmptyState = () => {
   return (
@@ -12,7 +13,7 @@ const NoPublicationTargetEmptyState = () => {
             a mirror or a local repository.
           </p>
           <a
-            href="https://ubuntu.com/landscape/docs/managing-computers"
+            href={DOCUMENTATION_URL}
             target="_blank"
             rel="nofollow noopener noreferrer"
           >

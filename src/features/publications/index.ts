@@ -7,4 +7,7 @@ export type {
   Local,
   Mirror,
   PublishPublicationResponse,
+  BatchGetLocalsResponse,
+  BatchGetMirrorsResponse,
+  BatchGetPublicationTargetsResponse,
 } from "./types";

@@ -112,6 +112,18 @@ interface Task {
   output?: string;
 }
 
+export interface BatchGetPublicationTargetsResponse {
+  publicationTargets?: PublicationTarget[];
+}
+
+export interface BatchGetMirrorsResponse {
+  mirrors?: Mirror[];
+}
+
+export interface BatchGetLocalsResponse {
+  locals?: Local[];
+}
+
 export interface PublishPublicationResponse {
   task?: Task;
 }

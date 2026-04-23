@@ -1,17 +1,46 @@
-import { publications } from "@/tests/mocks/publications";
+import {
+  mirrors,
+  publicationTargets,
+  publications,
+} from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
-import { getPublicationTargetName, getSourceName } from "../../helpers";
+
+const buildDisplayNameMaps = (pubs: typeof publications) => {
+  const sourceDisplayNames: Record<string, string> = {};
+  const publicationTargetDisplayNames: Record<string, string> = {};
+
+  for (const pub of pubs) {
+    const mirror = mirrors.find((m) => m.name === pub.source);
+    if (mirror?.name) sourceDisplayNames[mirror.name] = mirror.displayName;
+
+    const target = publicationTargets.find(
+      (t) => t.name === pub.publicationTarget,
+    );
+    if (target?.name)
+      publicationTargetDisplayNames[target.name] = target.displayName;
+  }
+
+  return { sourceDisplayNames, publicationTargetDisplayNames };
+};
 
 describe("PublicationsList", () => {
   const user = userEvent.setup();
   const [publication] = publications;
+  const { sourceDisplayNames, publicationTargetDisplayNames } =
+    buildDisplayNameMaps(publications);
 
   it("renders list columns and row data", () => {
-    renderWithProviders(<PublicationsList publications={publications} />);
+    renderWithProviders(
+      <PublicationsList
+        publications={publications}
+        sourceDisplayNames={sourceDisplayNames}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
 
     expect(screen.getByRole("columnheader", { name: "name" })).toBeVisible();
     expect(
@@ -29,35 +58,44 @@ describe("PublicationsList", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Mirror")).toHaveLength(publications.length);
     expect(
-      screen.getByRole("link", { name: getSourceName(publication.source) }),
+      screen.getByRole("link", {
+        name: sourceDisplayNames[publication.source],
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", {
-        name: getPublicationTargetName(publication.publicationTarget),
+        name: publicationTargetDisplayNames[publication.publicationTarget],
       }),
     ).toBeInTheDocument();
   });
 
-  it("opens publication details side panel", async () => {
-    renderWithProviders(<PublicationsList publications={publications} />);
+  it("opens publication details side panel with resolved display names", async () => {
+    renderWithProviders(
+      <PublicationsList
+        publications={publications}
+        sourceDisplayNames={sourceDisplayNames}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
     const publicationLabel = publication.label;
 
     await user.click(screen.getByRole("button", { name: publicationLabel }));
 
-    expect(
-      screen.getByRole("heading", { name: publicationLabel }),
-    ).toBeInTheDocument();
+    const heading = screen.getByRole("heading", { name: publicationLabel });
+    expect(heading).toBeInTheDocument();
   });
 
   it("shows empty message with search query", () => {
     renderWithProviders(
       <PublicationsList publications={[]} />,
       undefined,
-      "/?search=test-publication",
+      "/?query=test-publication",
     );
 
     expect(
-      screen.getByText('No profiles found with the search: "test-publication"'),
+      screen.getByText(
+        'No publications found with the search: "test-publication"',
+      ),
     ).toBeInTheDocument();
   });
 });
