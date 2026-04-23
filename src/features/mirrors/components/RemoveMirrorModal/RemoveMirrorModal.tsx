@@ -66,6 +66,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       title={`Remove ${mirrorDisplayName}`}
       close={close}
       confirmButtonLoading={isDeletingMirror}
+      renderInPortal
     >
       {publications.length ? (
         <>

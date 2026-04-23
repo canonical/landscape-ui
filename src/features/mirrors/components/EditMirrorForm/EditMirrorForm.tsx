@@ -21,6 +21,7 @@ import {
   UBUNTU_PRO_HOST,
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
@@ -85,42 +86,32 @@ const EditMirrorForm: FC = () => {
                 {...formik.getFieldProps("name")}
                 error={getFormikError(formik, "name")}
               />
-              <Input
-                type="text"
+              <ReadOnlyField
                 label="Source type"
-                required
-                readOnly
                 value={getSourceType(mirror.archiveRoot)}
+                tooltipMessage="You can’t change the source type after the mirror is created."
               />
-              <Input
-                type="text"
+              <ReadOnlyField
                 label="Source URL"
-                required
-                readOnly
                 value={mirror.archiveRoot}
+                tooltipMessage="You can’t change the source URL after the mirror is created."
               />
             </Blocks.Item>
             <Blocks.Item title="Mirror contents">
-              <Input
-                type="text"
+              <ReadOnlyField
                 label="Distribution"
-                required
-                readOnly
                 value={mirror.distribution}
+                tooltipMessage="You can’t change the distribution after the mirror is created."
               />
-              <Input
-                type="text"
+              <ReadOnlyField
                 label="Components"
-                required
-                readOnly
                 value={mirror.components.join(", ")}
+                tooltipMessage="You can’t change the components after the mirror is created."
               />
-              <Input
-                type="text"
+              <ReadOnlyField
                 label="Architectures"
-                required
-                readOnly
                 value={mirror.architectures?.join(", ")}
+                tooltipMessage="You can’t change the architectures after the mirror is created."
               />
               <p>Download options:</p>
               <CheckboxInput

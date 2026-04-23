@@ -24,6 +24,7 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import SelectableMirrorContentsBlock from "../SelectableMirrorContentsBlock";
 import { UBUNTU_SNAPSHOTS_HOST } from "../../constants";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
@@ -157,14 +158,21 @@ const AddMirrorForm: FC = () => {
                   error={getFormikError(formik, "token")}
                 />
               )}
-              <Input
-                type="text"
-                label="Source URL"
-                required
-                {...formik.getFieldProps("sourceUrl")}
-                error={getFormikError(formik, "sourceUrl")}
-                readOnly={formik.values.sourceType !== "third-party"}
-              />
+              {formik.values.sourceType === "third-party" ? (
+                <Input
+                  type="text"
+                  label="Source URL"
+                  required
+                  {...formik.getFieldProps("sourceUrl")}
+                  error={getFormikError(formik, "sourceUrl")}
+                />
+              ) : (
+                <ReadOnlyField
+                  label="Source URL"
+                  value={formik.values.sourceUrl}
+                  tooltipMessage="The source URL is set automatically by the source type."
+                />
+              )}
             </Blocks.Item>
             <Blocks.Item title="Mirror contents">
               {formik.values.sourceType === "ubuntu-snapshots" && (

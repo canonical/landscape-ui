@@ -82,6 +82,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
       title={`Update ${mirrorDisplayName}`}
       close={close}
       confirmButtonLoading={isSyncingMirror}
+      renderInPortal
     >
       <p>
         By updating this mirror you will synchronize the local copy of that

@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, ICONS } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useGetMirror, useListPublications } from "../../api";
@@ -27,7 +27,9 @@ const MirrorDetails: FC = () => {
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const mirror = useGetMirror(decodeURIComponent(name)).data.data;
+  const decodedName = decodeURIComponent(name);
+
+  const mirror = useGetMirror(decodedName).data.data;
 
   const { publications = [] } = useListPublications({
     filter: `source="${name}"`,
@@ -72,13 +74,13 @@ const MirrorDetails: FC = () => {
             className="p-segmented-control__button"
             onClick={openRemoveModal}
           >
-            <Icon name="delete" />
-            <span>Remove</span>
+            <Icon name={`${ICONS.delete}--negative`} />
+            <span className="u-text--negative">Remove</span>
           </Button>
         </div>
         <Blocks>
           <Blocks.Item title="Details">
-            <InfoGrid>
+            <InfoGrid dense>
               <InfoGrid.Item label="Name" value={mirror.displayName} />
               <InfoGrid.Item
                 label="Source type"
@@ -114,7 +116,7 @@ const MirrorDetails: FC = () => {
             </InfoGrid>
           </Blocks.Item>
           <Blocks.Item title="Contents">
-            <InfoGrid>
+            <InfoGrid dense>
               <InfoGrid.Item label="Distribution" value={mirror.distribution} />
               <InfoGrid.Item
                 label="Components"
@@ -149,13 +151,13 @@ const MirrorDetails: FC = () => {
         isOpen={isUpdateModalOpen}
         close={closeUpdateModal}
         mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
+        mirrorName={decodedName}
       />
       <RemoveMirrorModal
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
         mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
+        mirrorName={decodedName}
       />
     </>
   );
