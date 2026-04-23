@@ -12,3 +12,5 @@ export type {
   BatchGetMirrorsResponse,
   BatchGetPublicationTargetsResponse,
 } from "./types";
+export { useAddPublication } from "./api/useAddPublication";
+export { usePublishPublication } from "./api/usePublishPublicaton";

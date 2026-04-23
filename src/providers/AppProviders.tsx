@@ -8,6 +8,7 @@ import EnvProvider from "@/context/env";
 import ThemeProvider from "@/context/theme";
 import AccountsProvider from "@/context/accounts";
 import ReactQueryProvider from "@/context/reactQuery";
+import FetchDebArchiveProvider from "@/api/fetchDebArchive";
 
 interface AppProvidersProps {
   readonly children: ReactNode;
