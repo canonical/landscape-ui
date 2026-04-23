@@ -8,7 +8,8 @@ export default [
   http.get(`${API_URL_DEB_ARCHIVE}publications`, ({ request }) => {
     const url = new URL(request.url);
     const sourceName =
-      url.searchParams.get("filter")?.split("=").pop()?.replaceAll('"', "") ?? "";
+      url.searchParams.get("filter")?.split("=").pop()?.replaceAll('"', "") ??
+      "";
     const endpointStatus = getEndpointStatus();
 
     if (endpointStatus.status === "error") {
@@ -19,8 +20,8 @@ export default [
       return HttpResponse.json({ publications: [] });
     }
 
-    return HttpResponse.json({ publications:
-      publications.filter(({ source }) => source === sourceName),
+    return HttpResponse.json({
+      publications: publications.filter(({ source }) => source === sourceName),
     });
   }),
 
