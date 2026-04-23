@@ -1,13 +1,10 @@
-import {
-  mirrors,
-  publicationTargets,
-  publications,
-} from "@/tests/mocks/publications";
+import { publicationTargets, publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
+import { mirrors } from "@/tests/mocks/mirrors";
 
 const buildDisplayNameMaps = (pubs: typeof publications) => {
   const sourceDisplayNames: Record<string, string> = {};

@@ -45,7 +45,11 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
       {
         Header: "Last update",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          moment(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT),
+          mirror.lastDownloadDate ? (
+            moment(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT)
+          ) : (
+            <NoData />
+          ),
       },
       {
         Header: "Packages",

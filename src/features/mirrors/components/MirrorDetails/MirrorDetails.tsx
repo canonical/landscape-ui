@@ -99,9 +99,12 @@ const MirrorDetails: FC = () => {
               />
               <InfoGrid.Item
                 label="Last update"
-                value={moment(mirror.lastDownloadDate).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
+                value={
+                  mirror.lastDownloadDate &&
+                  moment(mirror.lastDownloadDate).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  )
+                }
               />
               <InfoGrid.Item
                 label="Packages"

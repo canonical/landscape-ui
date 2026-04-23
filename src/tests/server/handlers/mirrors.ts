@@ -1,7 +1,7 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type { BatchGetMirrorsResponse } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { mirrors } from "@/tests/mocks/publications";
+import { mirrors } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
