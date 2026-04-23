@@ -35,13 +35,16 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
-  const { 
-    publications,
-    isGettingPublications
-  } = useGetPublicationsBySource(repository.name);
-  const { publishPublication, isPublishingPublication } = usePublishPublication();
+  const { publications, isGettingPublications } = useGetPublicationsBySource(
+    repository.name,
+  );
+  const { publishPublication, isPublishingPublication } =
+    usePublishPublication();
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], repository: "" });
+  const closeSidePanel = createPageParamsSetter({
+    sidePath: [],
+    repository: "",
+  });
 
   const handleSubmit = async (values: { name: string }) => {
     try {
@@ -51,7 +54,8 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
       notify.success({
         title: `You have marked ${repository.display_name} to be published`,
-        message: "An activity has been queued to publish the selected publication to the designated target.",
+        message:
+          "An activity has been queued to publish the selected publication to the designated target.",
       });
     } catch (error) {
       debug(error);
@@ -75,7 +79,9 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     [publications],
   );
 
-  const publication = publications.find(({ name }) => name === formik.values.name);
+  const publication = publications.find(
+    ({ name }) => name === formik.values.name,
+  );
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -93,7 +99,9 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
           <ReadOnlyField
             label="Publication target"
             value={publication?.publicationTarget ?? ""}
-            tooltipMessage={"The publication target is defined by the publication."}
+            tooltipMessage={
+              "The publication target is defined by the publication."
+            }
           />
 
           <ReadOnlyField

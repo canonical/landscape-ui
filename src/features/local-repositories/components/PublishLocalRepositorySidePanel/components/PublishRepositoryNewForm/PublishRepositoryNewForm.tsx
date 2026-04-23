@@ -23,7 +23,10 @@ import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import useGetPublicationTargets from "@/features/publication-targets";
 import type { LocalRepository } from "../../../../types";
-import { useAddPublication, usePublishPublication } from "@/features/publications";
+import {
+  useAddPublication,
+  usePublishPublication,
+} from "@/features/publications";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
 interface PublishRepositoryNewFormProps {
@@ -39,7 +42,8 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { addPublication, isAddingPublication } = useAddPublication();
-  const { publishPublication, isPublishingPublication } = usePublishPublication();
+  const { publishPublication, isPublishingPublication } =
+    usePublishPublication();
 
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
@@ -79,7 +83,8 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 
       notify.success({
         title: `You have marked ${repository.display_name} to be published`,
-        message: "A publication has been created and an activity has been queued to publish it to the designated target.",
+        message:
+          "A publication has been created and an activity has been queued to publish it to the designated target.",
       });
     } catch (error) {
       debug(error);
@@ -133,7 +138,6 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
           />
         </Blocks.Item>
 
-        
         <PublishRepositoryContentsBlock repository={repository} />
 
         <Blocks.Item title="Settings">
@@ -216,7 +220,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonDisabled={!formik.isValid}
-        submitButtonLoading={formik.isSubmitting || isAddingPublication || isPublishingPublication}
+        submitButtonLoading={
+          formik.isSubmitting || isAddingPublication || isPublishingPublication
+        }
         submitButtonText="Publish repository"
         onCancel={closeSidePanel}
         hasBackButton={sidePath.length > 1}

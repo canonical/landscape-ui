@@ -12,33 +12,33 @@ interface ListLocalsResponse {
 export const useGetLocalRepositories = (search?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending } = useQuery<
-    LocalRepository[],
-    AxiosError<ApiError>
-  >({
-    queryKey: ["locals", search],
-    queryFn: async () => {
-      let page_token: string | undefined;
-      const repositories: LocalRepository[] = [];
+  const { data, isPending } = useQuery<LocalRepository[], AxiosError<ApiError>>(
+    {
+      queryKey: ["locals", search],
+      queryFn: async () => {
+        let page_token: string | undefined;
+        const repositories: LocalRepository[] = [];
 
-      do {
-        const response = await authFetchDebArchive.get<ListLocalsResponse>(
-          "locals", 
-          { params: 
+        do {
+          const response = await authFetchDebArchive.get<ListLocalsResponse>(
+            "locals",
             {
-              filter: search ? `display_name="*${search}*"` : undefined,
-              page_size: 1000,
-              page_token,
+              params: {
+                filter: search ? `display_name="*${search}*"` : undefined,
+                page_size: 1000,
+                page_token,
+              },
             },
-          });
+          );
 
-        repositories.push(...((response.data.locals ?? [])));
-        page_token = response.data.next_page_token;
-      } while (page_token);
+          repositories.push(...(response.data.locals ?? []));
+          page_token = response.data.next_page_token;
+        } while (page_token);
 
-      return repositories;
+        return repositories;
+      },
     },
-  });
+  );
 
   return {
     repositories: data ?? [],

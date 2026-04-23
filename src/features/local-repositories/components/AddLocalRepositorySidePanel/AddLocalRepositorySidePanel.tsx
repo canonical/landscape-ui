@@ -41,7 +41,8 @@ const AddLocalRepositorySidePanel: FC = () => {
 
       notify.success({
         title: `You have successfully added ${values.name}`,
-        message: "The local repository has been created and is now available to import packages.",
+        message:
+          "The local repository has been created and is now available to import packages.",
       });
     } catch (error) {
       debug(error);

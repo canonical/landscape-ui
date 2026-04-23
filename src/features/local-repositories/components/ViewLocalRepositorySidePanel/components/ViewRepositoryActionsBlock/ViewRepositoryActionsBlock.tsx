@@ -55,12 +55,12 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
         menuPosition="left"
       />
 
-      {isModalOpen &&
+      {isModalOpen && (
         <RemoveLocalRepositoryModal
           close={closeModal}
           repository={repository}
         />
-      }
+      )}
     </>
   );
 };

@@ -13,10 +13,9 @@ interface ViewLocalRepositoryDetailsTabProps {
 const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   repository,
 }) => {
-  const { 
-    publications,
-    isGettingPublications
-  } = useGetPublicationsBySource(repository.name);
+  const { publications, isGettingPublications } = useGetPublicationsBySource(
+    repository.name,
+  );
 
   return (
     <Blocks>

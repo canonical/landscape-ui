@@ -22,7 +22,9 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   const debug = useDebug();
   const { setPageParams } = usePageParams();
   const { removeRepository, isRemovingRepository } = useRemoveLocalRepository();
-  const { publications, isGettingPublications } = useGetPublicationsBySource(repository.name);
+  const { publications, isGettingPublications } = useGetPublicationsBySource(
+    repository.name,
+  );
 
   const noPublicationsText = (
     <p>

@@ -16,9 +16,10 @@ const LocalRepositoryPublicationsList: FC<
 > = ({ publications }) => {
   const { currentPage, pageSize } = usePageParams();
 
-  const pagedPublications = useMemo(() => 
-    publications.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [publications, currentPage, pageSize]
+  const pagedPublications = useMemo(
+    () =>
+      publications.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [publications, currentPage, pageSize],
   );
 
   const columns = useMemo<Column<Publication>[]>(

@@ -33,10 +33,11 @@ const PublishLocalRepositorySidePanel: FC = () => {
           />
         </div>
 
-        {useNewPublication 
-          ? <PublishRepositoryNewForm repository={repository} />
-          : <PublishRepositoryExistingForm repository={repository} />
-        }
+        {useNewPublication ? (
+          <PublishRepositoryNewForm repository={repository} />
+        ) : (
+          <PublishRepositoryExistingForm repository={repository} />
+        )}
       </SidePanel.Content>
     </>
   );

@@ -7,7 +7,7 @@ const EditLocalRepositorySidePanel: FC = () => {
   const { repository, isGettingRepository } = useGetPageLocalRepository();
 
   if (isGettingRepository) {
-    return <SidePanel.LoadingState/>;
+    return <SidePanel.LoadingState />;
   }
 
   return (

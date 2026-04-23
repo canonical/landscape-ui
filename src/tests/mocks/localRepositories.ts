@@ -1,6 +1,4 @@
-import type {
-  LocalRepository,
-} from "@/features/local-repositories";
+import type { LocalRepository } from "@/features/local-repositories";
 
 export const repositories: LocalRepository[] = [
   {
@@ -35,7 +33,7 @@ export const succeededTask = {
   display_name: "validate packages",
   task_id: "vvvv-tttt-pppp",
   status: "succeeded",
-  output: "package-A, package-B"
+  output: "package-A, package-B",
 };
 
 export const failedTask = {
@@ -43,7 +41,7 @@ export const failedTask = {
   display_name: "validate packages",
   task_id: "vvvv-tttt-pppp",
   status: "failed",
-  output: "package-A, package-B"
+  output: "package-A, package-B",
 };
 
 export const inProgressTask = {
@@ -51,7 +49,7 @@ export const inProgressTask = {
   display_name: "validate packages",
   task_id: "vvvv-tttt-pppp",
   status: "in progress",
-  output: ""
+  output: "",
 };
 
 export const emptyTask = {
@@ -59,5 +57,5 @@ export const emptyTask = {
   display_name: "validate packages",
   task_id: "vvvv-tttt-pppp",
   status: "succeeded",
-  output: ""
+  output: "",
 };

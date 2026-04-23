@@ -11,26 +11,25 @@ interface ListLocalPackagesResponse {
 export const useGetRepositoryPackages = (repository: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending } = useQuery<
-    string[],
-    AxiosError<ApiError>
-  >({
+  const { data, isPending } = useQuery<string[], AxiosError<ApiError>>({
     queryKey: ["packages", repository],
     queryFn: async () => {
       let page_token: string | undefined;
       const packages: string[] = [];
 
       do {
-        const response = await authFetchDebArchive.get<ListLocalPackagesResponse>(
-          `${repository}/packages`, 
-          { params: 
+        const response =
+          await authFetchDebArchive.get<ListLocalPackagesResponse>(
+            `${repository}/packages`,
             {
-              page_size: 1000,
-              page_token,
+              params: {
+                page_size: 1000,
+                page_token,
+              },
             },
-          });
+          );
 
-        packages.push(...((response.data.local_packages ?? [])));
+        packages.push(...(response.data.local_packages ?? []));
         page_token = response.data.next_page_token;
       } while (page_token);
 

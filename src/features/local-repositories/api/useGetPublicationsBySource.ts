@@ -12,10 +12,7 @@ interface ListPublicationsResponse {
 const useGetPublicationsBySource = (source: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<
-    Publication[],
-    AxiosError<ApiError>
-  >({
+  const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
     queryKey: ["publications", source],
     queryFn: async () => {
       let page_token: string | undefined;
@@ -34,7 +31,7 @@ const useGetPublicationsBySource = (source: string) => {
             },
           );
 
-        publications.push(...((response.data.publications ?? [])));
+        publications.push(...(response.data.publications ?? []));
         page_token = response.data.next_page_token;
       } while (page_token);
 

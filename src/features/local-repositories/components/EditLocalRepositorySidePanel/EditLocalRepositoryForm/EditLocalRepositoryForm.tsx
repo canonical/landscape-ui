@@ -6,7 +6,10 @@ import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { type EditLocalRepositoryFormValues, VALIDATION_SCHEMA } from "./constants";
+import {
+  type EditLocalRepositoryFormValues,
+  VALIDATION_SCHEMA,
+} from "./constants";
 import Blocks from "@/components/layout/Blocks";
 import { useUpdateLocalRepository } from "../../../api/useUpdateLocalRepository";
 import type { LocalRepository } from "../../../types";
@@ -24,7 +27,10 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { updateRepository, isUpdatingRepository } = useUpdateLocalRepository();
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], repository: "" });
+  const closeSidePanel = createPageParamsSetter({
+    sidePath: [],
+    repository: "",
+  });
 
   const handleSubmit = async (values: EditLocalRepositoryFormValues) => {
     const localToUpdate = {

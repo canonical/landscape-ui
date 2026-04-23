@@ -8,4 +8,8 @@ export { default as PublishLocalRepositorySidePanel } from "./components/Publish
 export { default as EditLocalRepositorySidePanel } from "./components/EditLocalRepositorySidePanel";
 export { default as ImportRepositoryPackagesSidePanel } from "./components/ImportRepositoryPackagesSidePanel";
 
-export type { LocalRepository, Task, ImportLocalPackagesRequest } from "./types";
+export type {
+  LocalRepository,
+  Task,
+  ImportLocalPackagesRequest,
+} from "./types";

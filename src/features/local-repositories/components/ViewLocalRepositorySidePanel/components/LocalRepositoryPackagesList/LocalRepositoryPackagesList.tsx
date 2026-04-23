@@ -16,22 +16,31 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   repository,
 }) => {
   const { currentPage, pageSize } = usePageParams();
-  const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(repository.name);
-
-  const pagedPackages = useMemo(() => 
-    packages.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [packages, currentPage, pageSize]
+  const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(
+    repository.name,
   );
 
-  const columns = useMemo<Column<LocalPackage>[]>(() => [
-    {
-      Header: "Package name",
-      meta: {
-        ariaLabel: ({ original: { name } }) => `${name} package name`,
+  const pagedPackages = useMemo(
+    () => packages.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [packages, currentPage, pageSize],
+  );
+
+  const columns = useMemo<Column<LocalPackage>[]>(
+    () => [
+      {
+        Header: "Package name",
+        meta: {
+          ariaLabel: ({ original: { name } }) => `${name} package name`,
+        },
+        Cell: ({
+          row: {
+            original: { name },
+          },
+        }: CellProps<LocalPackage>) => name,
       },
-      Cell: ({ row: { original: { name } } }: CellProps<LocalPackage>) => name
-    },
-  ], []);
+    ],
+    [],
+  );
 
   if (isGettingRepositoryPackages) {
     return <LoadingState />;

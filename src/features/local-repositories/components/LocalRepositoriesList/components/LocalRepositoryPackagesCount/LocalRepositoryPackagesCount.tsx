@@ -11,7 +11,9 @@ interface LocalRepositoryPackagesCountProps {
 const LocalRepositoryPackagesCount: FC<LocalRepositoryPackagesCountProps> = ({
   repository,
 }) => {
-  const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(repository.name);
+  const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(
+    repository.name,
+  );
 
   if (isGettingRepositoryPackages) {
     return <LoadingState inline />;

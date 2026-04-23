@@ -20,8 +20,9 @@ export default [
     }
 
     return HttpResponse.json({
-      locals: repositories.filter(({ display_name }) => 
-        display_name.includes(search.substring(2, search.length - 2))),
+      locals: repositories.filter(({ display_name }) =>
+        display_name.includes(search),
+      ),
     });
   }),
 
@@ -51,25 +52,28 @@ export default [
     });
   }),
 
-  http.post<never, ImportLocalPackagesRequest>(`${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`, async ({ request }) => {
-    const { url } = await request.json();
+  http.post<never, ImportLocalPackagesRequest>(
+    `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
+    async ({ request }) => {
+      const { url } = await request.json();
 
-    delay(1000);
-    
-    if (url === "failed") {
-      return HttpResponse.json(failedTask);
-    }
+      delay(1000);
 
-    if (url === "in/progress") {
-      return HttpResponse.json(inProgressTask);
-    }
+      if (url === "failed") {
+        return HttpResponse.json(failedTask);
+      }
 
-    if (url === "empty") {
-      return HttpResponse.json(emptyTask);
-    }
-    
-    return HttpResponse.json(succeededTask);
-  }),
+      if (url === "in/progress") {
+        return HttpResponse.json(inProgressTask);
+      }
+
+      if (url === "empty") {
+        return HttpResponse.json(emptyTask);
+      }
+
+      return HttpResponse.json(succeededTask);
+    },
+  ),
 
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
     return HttpResponse.json(repoPackages[0]);

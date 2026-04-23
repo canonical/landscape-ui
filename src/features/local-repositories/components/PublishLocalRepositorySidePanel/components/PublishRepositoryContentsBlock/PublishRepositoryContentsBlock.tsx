@@ -7,9 +7,9 @@ interface PublishRepositoryContentsBlockProps {
   readonly repository: LocalRepository;
 }
 
-const PublishRepositoryContentsBlock: FC<PublishRepositoryContentsBlockProps> = ({
-  repository,
-}) => {
+const PublishRepositoryContentsBlock: FC<
+  PublishRepositoryContentsBlockProps
+> = ({ repository }) => {
   return (
     <Blocks.Item title="Contents">
       <ReadOnlyField

@@ -15,12 +15,16 @@ interface LocalRepositoriesListProps {
   readonly repositories: LocalRepository[];
 }
 
-const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({ repositories }) => {
-  const { search, currentPage, pageSize, createPageParamsSetter } = usePageParams();
+const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
+  repositories,
+}) => {
+  const { search, currentPage, pageSize, createPageParamsSetter } =
+    usePageParams();
 
-  const pagedRepositories = useMemo(() => 
-    repositories.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [repositories, currentPage, pageSize]
+  const pagedRepositories = useMemo(
+    () =>
+      repositories.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [repositories, currentPage, pageSize],
   );
 
   const columns = useMemo<Column<LocalRepository>[]>(

@@ -13,7 +13,9 @@ interface LocalRepositoryPublicationsCountProps {
 const LocalRepositoryPublicationsCount: FC<
   LocalRepositoryPublicationsCountProps
 > = ({ repository }) => {
-  const { publications, isGettingPublications } = useGetPublicationsBySource(repository.name);
+  const { publications, isGettingPublications } = useGetPublicationsBySource(
+    repository.name,
+  );
 
   if (isGettingPublications) {
     return <LoadingState inline />;

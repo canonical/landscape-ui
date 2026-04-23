@@ -46,7 +46,8 @@ const LocalRepositoriesPage: FC = () => {
   const { search, lastSidePathSegment, sidePath, createPageParamsSetter } =
     usePageParams();
 
-  const { repositories, isGettingRepositories } = useGetLocalRepositories(search);
+  const { repositories, isGettingRepositories } =
+    useGetLocalRepositories(search);
 
   useSetDynamicFilterValidation("sidePath", [
     "add",
