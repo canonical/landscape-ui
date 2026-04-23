@@ -8,7 +8,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 export const useGetProfileInstancesCount = (profileId: number) => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
+  const { data: response, isPending } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Instance>>,
     AxiosError<ApiError>
   >({
@@ -18,12 +18,13 @@ export const useGetProfileInstancesCount = (profileId: number) => {
         params: {
           query: `profile:repository:${profileId}`,
           root_only: false,
+          limit: 1
         },
       }),
   });
 
   return {
     associatedCount: response?.data.count ?? 0,
-    isLoadingCount: isLoading,
+    isLoadingCount: isPending,
   };
 };

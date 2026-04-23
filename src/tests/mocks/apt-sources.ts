@@ -18,7 +18,7 @@ export const aptSources = [
       "repo-profile-9",
       "repo-profile-10",
       "repo-profile-11",
-      "repo-profile-12",
+      "repo-profile-12"
     ] as string[],
   },
   {
@@ -68,7 +68,7 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source7",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 
   {
@@ -77,7 +77,7 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source8",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 
   {
@@ -86,7 +86,7 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source9",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 
   {
@@ -95,7 +95,7 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source10",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 
   {
@@ -104,7 +104,7 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source11",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 
   {
@@ -113,6 +113,6 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source12",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 ] as const satisfies APTSource[];
