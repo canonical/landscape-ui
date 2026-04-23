@@ -69,8 +69,6 @@ const RepositoryProfileFormSourcesSection: FC<
       {
         accessor: "type",
         Header: "Type",
-        // todo: update with other source types
-        // Cell: ({ value }: CellProps<SourceRow>) => (
         Cell: () => (
           <span className="u-truncate" title="Deb line">
             Deb line
