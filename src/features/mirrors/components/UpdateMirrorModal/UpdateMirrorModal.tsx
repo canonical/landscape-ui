@@ -57,12 +57,6 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
       notify.success({
         title: `You have marked ${mirrorDisplayName} to be updated.`,
         message: "An activity has been queued to update the mirror contents.",
-        actions: [
-          {
-            label: "See activity details",
-            onClick: () => undefined,
-          },
-        ],
       });
     } catch (error) {
       debug(error);

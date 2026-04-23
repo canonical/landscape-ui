@@ -30,7 +30,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
             className="u-no-margin--bottom u-no-padding--top"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              name: encodeURIComponent(mirror.name ?? ""),
+              name: mirror.name,
             })}
           >
             {mirror.displayName}

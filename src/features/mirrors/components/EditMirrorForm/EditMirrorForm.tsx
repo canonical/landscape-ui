@@ -29,7 +29,7 @@ const EditMirrorForm: FC = () => {
   const { name, sidePath, popSidePath, createPageParamsSetter } =
     usePageParams();
 
-  const mirror = useGetMirror(decodeURIComponent(name)).data.data;
+  const mirror = useGetMirror(name).data.data;
   const updateMirror = useUpdateMirror().mutateAsync;
 
   const close = createPageParamsSetter({ sidePath: [], name: "" });

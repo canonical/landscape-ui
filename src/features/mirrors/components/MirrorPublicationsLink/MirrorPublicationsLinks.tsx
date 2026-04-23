@@ -24,7 +24,7 @@ const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
     <StaticLink
       to={{
         pathname: ROUTES.repositories.publications(),
-        search: `?search=${encodeURIComponent(`source="${mirrorName}"`)}`,
+        search: `?query=${encodeURIComponent(`source="${mirrorName}"`)}`,
       }}
     >
       {pluralizeNew(data.data.publications.length, "publication", {

@@ -27,9 +27,7 @@ const MirrorDetails: FC = () => {
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const decodedName = decodeURIComponent(name);
-
-  const mirror = useGetMirror(decodedName).data.data;
+  const mirror = useGetMirror(name).data.data;
 
   const { publications = [] } = useListPublications({
     filter: `source="${name}"`,
@@ -151,13 +149,13 @@ const MirrorDetails: FC = () => {
         isOpen={isUpdateModalOpen}
         close={closeUpdateModal}
         mirrorDisplayName={mirror.displayName}
-        mirrorName={decodedName}
+        mirrorName={name}
       />
       <RemoveMirrorModal
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
         mirrorDisplayName={mirror.displayName}
-        mirrorName={decodedName}
+        mirrorName={name}
       />
     </>
   );

@@ -21,6 +21,8 @@ import type {
   SyncMirrorResponse,
   ListMirrorPackagesResponse,
   GetMirrorResponse,
+  UpdateMirrorResponse,
+  CreateMirrorResponse,
 } from "@canonical/landscape-openapi";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
@@ -271,6 +273,11 @@ export default [
     return getMirrorsResponse(request.url);
   }),
 
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async () => {
+    await delay();
+    return HttpResponse.json<CreateMirrorResponse>();
+  }),
+
   http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {
     await delay();
     return HttpResponse.json<GetMirrorResponse>(mirrors[0]);
@@ -279,6 +286,11 @@ export default [
   http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName/packages`, async () => {
     await delay();
     return HttpResponse.json<SyncMirrorResponse>();
+  }),
+
+  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {
+    await delay();
+    return HttpResponse.json<UpdateMirrorResponse>();
   }),
 
   http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {

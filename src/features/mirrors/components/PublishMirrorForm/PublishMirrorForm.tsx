@@ -16,7 +16,7 @@ const PublishMirrorForm: FC = () => {
   const { name, sidePath, popSidePath, createPageParamsSetter } =
     usePageParams();
 
-  const mirror = useGetMirror(decodeURIComponent(name)).data.data;
+  const mirror = useGetMirror(name).data.data;
 
   const close = createPageParamsSetter({ sidePath: [], name: "" });
 
