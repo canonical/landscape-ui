@@ -6,32 +6,6 @@ interface GpgKey extends Record<string, unknown> {
   armor: string;
 }
 
-interface UploadersGroup {
-  title: string;
-  users?: string[];
-}
-
-interface UploadersRule {
-  condition: string;
-  allow?: string[];
-  deny?: string[];
-}
-
-interface Uploaders {
-  groups?: UploadersGroup[];
-  rules?: UploadersRule[];
-}
-
-export interface Local extends Record<string, unknown> {
-  name?: string;
-  localId?: string;
-  displayName: string;
-  comment?: string;
-  defaultDistribution?: string;
-  defaultComponent?: string;
-  uploaders?: Uploaders;
-}
-
 export interface Mirror extends Record<string, unknown> {
   name?: string;
   mirrorId?: string;
@@ -69,6 +43,7 @@ export interface PublicationWritable {
 export interface Publication extends Record<string, unknown> {
   publicationId: string;
   name: string;
+  displayName: string;
   publicationTarget: string;
   source: string;
   distribution: string;
@@ -86,11 +61,6 @@ export interface Publication extends Record<string, unknown> {
 
 export interface ListPublicationsResponse {
   publications?: Publication[];
-  nextPageToken?: string;
-}
-
-export interface ListLocalsResponse {
-  locals?: Local[];
   nextPageToken?: string;
 }
 
@@ -118,10 +88,6 @@ export interface BatchGetPublicationTargetsResponse {
 
 export interface BatchGetMirrorsResponse {
   mirrors?: Mirror[];
-}
-
-export interface BatchGetLocalsResponse {
-  locals?: Local[];
 }
 
 export interface PublishPublicationResponse {

@@ -5,10 +5,10 @@ export { default as PublicationDetailsSidePanel } from "./components/Publication
 export type {
   Publication,
   PublicationTarget,
-  Local,
   Mirror,
   PublishPublicationResponse,
-  BatchGetLocalsResponse,
   BatchGetMirrorsResponse,
   BatchGetPublicationTargetsResponse,
 } from "./types";
+export { useAddPublication } from "./api/useAddPublication";
+export { usePublishPublication } from "./api/usePublishPublicaton";
