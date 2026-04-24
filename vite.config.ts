@@ -46,6 +46,12 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        "/debarchive": {
+          target: env.VITE_DEBARCHIVE_PROXY_TARGET || "http://localhost:8000",
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/debarchive/, ""),
+        },
       },
     },
   };
