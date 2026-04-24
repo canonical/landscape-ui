@@ -61,6 +61,39 @@ export const publications = [
   },
 ] as const satisfies Publication[];
 
+export const mirrors = [
+  {
+    name: "mirrors/ubuntu-archive-mirror",
+    mirrorId: "ubuntu-archive-mirror",
+    displayName: "Ubuntu archive mirror",
+    archiveRoot: "https://archive.ubuntu.com/ubuntu",
+    distribution: "jammy",
+    components: ["main", "restricted", "universe", "multiverse"],
+    architectures: ["amd64", "arm64"],
+  },
+  {
+    name: "mirrors/ubuntu-security-mirror",
+    mirrorId: "ubuntu-security-mirror",
+    displayName: "Security mirror",
+    archiveRoot: "https://security.ubuntu.com/ubuntu",
+    publicationId: "g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
+    publicationTarget: "publicationTargets/local",
+    source: "locals/aaaa-bbbb-cccc",
+    distribution: "noble",
+    components: ["main", "universe"],
+    label: "Local publication",
+    origin: "Canonical",
+    architectures: ["amd64"],
+    acquireByHash: false,
+    butAutomaticUpgrades: false,
+    notAutomatic: true,
+    multiDist: false,
+    skipBz2: true,
+    skipContents: true,
+    publishTime: "April 20, 2026",
+  },
+] as const satisfies Mirror[];
+
 export const publicationTargets: PublicationTarget[] = [
   {
     name: "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",

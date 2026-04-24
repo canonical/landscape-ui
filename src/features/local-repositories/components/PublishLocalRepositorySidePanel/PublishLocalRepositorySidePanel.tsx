@@ -1,17 +1,22 @@
-import { type FC } from "react";
+import { RadioInput } from "@canonical/react-components";
+import type { FC } from "react";
+import classes from "./PublishLocalRepositorySidePanel.module.scss";
+import useGetPublicationsBySource from "../../api/useGetPublicationsBySource";
 import SidePanel from "@/components/layout/SidePanel";
-import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import PublishRepositoryNewForm from "./components/PublishRepositoryNewForm";
 import PublishRepositoryExistingForm from "./components/PublishRepositoryExistingForm";
-import { RadioInput } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
-import classes from "./PublishLocalRepositorySidePanel.module.scss";
+import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 
 const PublishLocalRepositorySidePanel: FC = () => {
   const { repository, isGettingRepository } = useGetPageLocalRepository();
+  const { publications, isGettingPublications } = useGetPublicationsBySource(
+    repository?.name,
+  );
+
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingRepository) {
+  if (isGettingRepository || isGettingPublications) {
     return <SidePanel.LoadingState />;
   }
 
@@ -19,24 +24,31 @@ const PublishLocalRepositorySidePanel: FC = () => {
     <>
       <SidePanel.Header>Publish {repository.display_name}</SidePanel.Header>
       <SidePanel.Content>
-        <label>Publish to</label>
-        <div className={classes.radio}>
-          <RadioInput
-            label="New publication"
-            checked={useNewPublication}
-            onChange={toggle}
-          />
-          <RadioInput
-            label="Existing publication"
-            checked={!useNewPublication}
-            onChange={toggle}
-          />
-        </div>
+        {!!publications.length && (
+          <>
+            <label>Publish to</label>
+            <div className={classes.radio}>
+              <RadioInput
+                label="New publication"
+                checked={useNewPublication}
+                onChange={toggle}
+              />
+              <RadioInput
+                label="Existing publication"
+                checked={!useNewPublication}
+                onChange={toggle}
+              />
+            </div>
+          </>
+        )}
 
         {useNewPublication ? (
           <PublishRepositoryNewForm repository={repository} />
         ) : (
-          <PublishRepositoryExistingForm repository={repository} />
+          <PublishRepositoryExistingForm
+            repository={repository}
+            publications={publications}
+          />
         )}
       </SidePanel.Content>
     </>

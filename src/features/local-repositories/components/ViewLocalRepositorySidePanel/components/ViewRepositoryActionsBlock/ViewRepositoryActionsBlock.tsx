@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import { ResponsiveButtons } from "@/components/ui";
 import { useGetRepositoryActions } from "../../../../hooks/useGetRepositoryActions";
 import { useBoolean } from "usehooks-ts";
@@ -7,23 +7,31 @@ import { Button, Icon } from "@canonical/react-components";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import classes from "../../ViewLocalRepositorySidePanel.module.scss";
 import type { Action } from "@/types/Action";
+import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
 
 interface ViewRepositoryActionsBlockProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
   repository: repository,
 }) => {
   const {
-    value: isModalOpen,
-    setTrue: openModal,
-    setFalse: closeModal,
+    value: isRemovalModalOpen,
+    setTrue: openRemovalModal,
+    setFalse: closeRemovalModal,
+  } = useBoolean();
+
+  const {
+    value: isPublishGuardOpen,
+    setTrue: openPublishGuard,
+    setFalse: closePublishGuard,
   } = useBoolean();
 
   const { actions, destructiveActions } = useGetRepositoryActions({
     repository,
-    openModal,
+    openRemovalModal,
+    openPublishGuard,
   });
   const buttons = [...actions, ...destructiveActions];
   const isNegative = (action: Action) => action.appearance === "negative";
@@ -55,9 +63,16 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
         menuPosition="left"
       />
 
-      {isModalOpen && (
+      {isRemovalModalOpen && (
         <RemoveLocalRepositoryModal
-          close={closeModal}
+          close={closeRemovalModal}
+          repository={repository}
+        />
+      )}
+
+      {isPublishGuardOpen && (
+        <PublishLocalRepositoryGuard
+          close={closePublishGuard}
           repository={repository}
         />
       )}

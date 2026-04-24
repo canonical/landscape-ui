@@ -1,10 +1,10 @@
 import Blocks from "@/components/layout/Blocks";
 import type { FC } from "react";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface PublishRepositoryContentsBlockProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const PublishRepositoryContentsBlock: FC<

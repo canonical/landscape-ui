@@ -1,4 +1,4 @@
-export interface LocalRepository extends Record<string, unknown> {
+export interface Local extends Record<string, unknown> {
   name: string;
   local_id: string;
   display_name: string;
@@ -9,6 +9,17 @@ export interface LocalRepository extends Record<string, unknown> {
 
 export interface LocalPackage {
   name: string;
+}
+
+export interface CreateLocalRequest {
+  display_name: string;
+  comment?: string;
+  distribution: string;
+  component: string;
+}
+
+export interface BatchGetLocalsRequest {
+  names: string[];
 }
 
 export interface ImportLocalPackagesRequest {

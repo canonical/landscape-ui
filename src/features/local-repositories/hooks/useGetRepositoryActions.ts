@@ -1,15 +1,17 @@
 import usePageParams from "@/hooks/usePageParams";
-import type { LocalRepository } from "../types";
+import type { Local } from "../types";
 import type { Action } from "@/types/Action";
 
 interface UseGetRepositoryActionsProps {
-  readonly repository: LocalRepository;
-  readonly openModal: () => void;
+  readonly repository: Local;
+  readonly openRemovalModal: () => void;
+  readonly openPublishGuard: () => void;
 }
 
 export const useGetRepositoryActions = ({
   repository,
-  openModal,
+  openRemovalModal,
+  openPublishGuard,
 }: UseGetRepositoryActionsProps) => {
   const { sidePath, createSidePathPusher, createPageParamsSetter } =
     usePageParams();
@@ -48,7 +50,7 @@ export const useGetRepositoryActions = ({
       icon: "upload",
       label: "Publish",
       "aria-label": `Publish "${repository.display_name}" repository`,
-      onClick: openSidePanel("publish"),
+      onClick: openPublishGuard,
     },
   ];
 
@@ -57,7 +59,7 @@ export const useGetRepositoryActions = ({
       icon: "delete",
       label: "Remove",
       "aria-label": `Remove "${repository.display_name}" repository`,
-      onClick: openModal,
+      onClick: openRemovalModal,
     },
   ];
 

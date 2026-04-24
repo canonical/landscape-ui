@@ -2,22 +2,22 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import type { LocalRepository } from "../types";
+import type { Local } from "../types";
 
 interface ListLocalsResponse {
-  locals: LocalRepository[];
+  locals: Local[];
   next_page_token: string;
 }
 
 export const useGetLocalRepositories = (search?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending } = useQuery<LocalRepository[], AxiosError<ApiError>>(
+  const { data, isPending } = useQuery<Local[], AxiosError<ApiError>>(
     {
       queryKey: ["locals", search],
       queryFn: async () => {
         let page_token: string | undefined;
-        const repositories: LocalRepository[] = [];
+        const repositories: Local[] = [];
 
         do {
           const response = await authFetchDebArchive.get<ListLocalsResponse>(

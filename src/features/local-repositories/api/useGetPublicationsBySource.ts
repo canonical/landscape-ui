@@ -9,11 +9,12 @@ interface ListPublicationsResponse {
   next_page_token?: string;
 }
 
-const useGetPublicationsBySource = (source: string) => {
+const useGetPublicationsBySource = (source?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
     queryKey: ["publications", source],
+    enabled: !!source,
     queryFn: async () => {
       let page_token: string | undefined;
       const publications: Publication[] = [];

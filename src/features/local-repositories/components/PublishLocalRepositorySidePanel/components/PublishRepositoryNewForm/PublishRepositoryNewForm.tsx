@@ -22,7 +22,7 @@ import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import useGetPublicationTargets from "@/features/publication-targets";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import {
   useAddPublication,
   usePublishPublication,
@@ -30,7 +30,7 @@ import {
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
 interface PublishRepositoryNewFormProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({

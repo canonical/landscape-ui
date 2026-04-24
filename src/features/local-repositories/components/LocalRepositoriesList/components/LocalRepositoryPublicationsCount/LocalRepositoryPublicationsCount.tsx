@@ -1,13 +1,13 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 
 interface LocalRepositoryPublicationsCountProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const LocalRepositoryPublicationsCount: FC<
@@ -27,7 +27,9 @@ const LocalRepositoryPublicationsCount: FC<
 
   return (
     <StaticLink
-      to={ROUTES.repositories.publications({ search: repository.local_id })}
+      to={ROUTES.repositories.publications({
+        search: `source="${repository.name}"`,
+      })}
     >
       {pluralizeWithCount(publications.length, "publication")}
     </StaticLink>

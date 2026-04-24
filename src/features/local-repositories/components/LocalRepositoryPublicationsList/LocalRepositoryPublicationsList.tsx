@@ -9,11 +9,12 @@ import { TablePagination } from "@/components/layout/TablePagination";
 
 interface LocalRepositoryPublicationsListProps {
   readonly publications: Publication[];
+  readonly openNewTab?: boolean;
 }
 
 const LocalRepositoryPublicationsList: FC<
   LocalRepositoryPublicationsListProps
-> = ({ publications }) => {
+> = ({ publications, openNewTab }) => {
   const { currentPage, pageSize } = usePageParams();
 
   const pagedPublications = useMemo(
@@ -22,8 +23,15 @@ const LocalRepositoryPublicationsList: FC<
     [publications, currentPage, pageSize],
   );
 
-  const columns = useMemo<Column<Publication>[]>(
-    () => [
+  const columns = useMemo<Column<Publication>[]>(() => {
+    const newTabProps = openNewTab
+      ? {
+          target: "_blank",
+          rel: "noopener noreferrer",
+        }
+      : undefined;
+
+    return [
       {
         Header: "Publication",
         meta: {
@@ -36,6 +44,7 @@ const LocalRepositoryPublicationsList: FC<
               sidePath: ["view"],
               publication: publication.publicationId,
             })}
+            {...newTabProps}
           >
             {publication.label}
           </StaticLink>
@@ -50,9 +59,8 @@ const LocalRepositoryPublicationsList: FC<
         Cell: ({ row: { original: publication } }: CellProps<Publication>) =>
           publication.publishTime,
       },
-    ],
-    [],
-  );
+    ];
+  }, [openNewTab]);
 
   return (
     <>

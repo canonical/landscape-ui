@@ -2,11 +2,9 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type {
   PublishPublicationResponse,
   BatchGetPublicationTargetsResponse,
-  BatchGetLocalsResponse,
 } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
-  locals,
   publications,
   publicationTargets,
 } from "@/tests/mocks/publications";
@@ -38,20 +36,6 @@ const toObjectBody = (value: unknown): Record<string, unknown> => {
   }
 
   return {};
-};
-
-const getLocalsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
-    locals,
-    pageToken,
-    pageSize,
-  );
-
-  return HttpResponse.json({
-    locals: paginatedData,
-    nextPageToken,
-  });
 };
 
 const getPublicationTargetsResponse = (requestUrl: string) => {
@@ -171,17 +155,6 @@ const getBatchPublicationTargetsResponse = async (
   return HttpResponse.json({ publicationTargets: matched });
 };
 
-const getBatchLocalsResponse = async (
-  request: Request,
-): Promise<StrictResponse<BatchGetLocalsResponse>> => {
-  const body = (await request.json()) as { names?: string[] };
-  const requestedNames = body.names ?? [];
-  const matched = locals.filter(({ name }) =>
-    name ? requestedNames.includes(name) : false,
-  );
-  return HttpResponse.json({ locals: matched });
-};
-
 export default [
   http.post(
     `${API_URL_DEB_ARCHIVE}publicationTargets:batchGet`,
@@ -189,20 +162,6 @@ export default [
       return getBatchPublicationTargetsResponse(request);
     },
   ),
-
-  http.post(`${API_URL_DEB_ARCHIVE}locals:batchGet`, async ({ request }) => {
-    return getBatchLocalsResponse(request);
-  }),
-
-  http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error" && endpointStatus.path === "locals") {
-      return ENDPOINT_STATUS_API_ERROR;
-    }
-
-    return getLocalsResponse(request.url);
-  }),
 
   http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
     const endpointStatus = getEndpointStatus();

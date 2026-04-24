@@ -2,23 +2,17 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { LocalRepository } from "../types";
-
-interface CreateLocalRepositoryParams {
-  display_name: string;
-  comment?: string;
-  distribution: string;
-  component: string;
-}
+import type { Local } from "../types";
+import type { CreateLocalRequest } from "../types/LocalRepository";
 
 export const useCreateLocalRepository = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<LocalRepository>,
+    AxiosResponse<Local>,
     AxiosError<ApiError>,
-    CreateLocalRepositoryParams
+    CreateLocalRequest
   >({
     mutationKey: ["local", "create"],
     mutationFn: async (params) => authFetchDebArchive.post("locals", params),

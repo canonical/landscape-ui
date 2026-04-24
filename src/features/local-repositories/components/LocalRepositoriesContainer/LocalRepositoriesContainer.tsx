@@ -4,12 +4,12 @@ import type { FC } from "react";
 import LocalRepositoriesList from "../LocalRepositoriesList";
 import AddLocalRepositoryButton from "../AddLocalRepositoryButton";
 import EmptyState from "@/components/layout/EmptyState";
-import type { LocalRepository } from "../../types";
+import type { Local } from "../../types";
 import usePageParams from "@/hooks/usePageParams";
 
 interface LocalRepositoriesContainerProps {
   readonly isPending: boolean;
-  readonly repositories: LocalRepository[];
+  readonly repositories: Local[];
 }
 
 const LocalRepositoriesContainer: FC<LocalRepositoriesContainerProps> = ({

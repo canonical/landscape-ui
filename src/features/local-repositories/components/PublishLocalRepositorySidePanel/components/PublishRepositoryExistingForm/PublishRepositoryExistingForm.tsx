@@ -19,25 +19,26 @@ import {
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
-import type { LocalRepository } from "../../../../types";
-import { usePublishPublication } from "@/features/publications";
+import type { Local } from "../../../../types";
+import {
+  type Publication,
+  usePublishPublication,
+} from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
 interface PublishRepositoryExistingFormProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
+  readonly publications: Publication[];
 }
 
 const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
   repository,
+  publications,
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
-  const { publications, isGettingPublications } = useGetPublicationsBySource(
-    repository.name,
-  );
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
@@ -90,7 +91,6 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
           <Select
             label="Publication name"
             required
-            disabled={isGettingPublications}
             options={publicationOptions}
             error={getFormikError(formik, "name")}
             {...formik.getFieldProps("name")}
@@ -106,7 +106,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Signing GPG key"
-            value={publication?.gpgKey?.fingerprint ?? ""}
+            value={publication?.gpgKey?.armor ?? ""}
             tooltipMessage={"The GPG key is defined by the publication."}
           />
         </Blocks.Item>

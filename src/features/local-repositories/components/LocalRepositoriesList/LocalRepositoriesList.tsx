@@ -4,7 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { Button } from "@canonical/react-components";
 import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
-import type { LocalRepository } from "../../types";
+import type { Local } from "../../types";
 import usePageParams from "@/hooks/usePageParams";
 import { TablePagination } from "@/components/layout/TablePagination";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
@@ -12,7 +12,7 @@ import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCo
 import LocalRepositoryPublicationsCount from "./components/LocalRepositoryPublicationsCount";
 
 interface LocalRepositoriesListProps {
-  readonly repositories: LocalRepository[];
+  readonly repositories: Local[];
 }
 
 const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
@@ -27,7 +27,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
     [repositories, currentPage, pageSize],
   );
 
-  const columns = useMemo<Column<LocalRepository>[]>(
+  const columns = useMemo<Column<Local>[]>(
     () => [
       {
         accessor: "name",
@@ -38,7 +38,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         },
         Cell: ({
           row: { original: repository },
-        }: CellProps<LocalRepository>) => (
+        }: CellProps<Local>) => (
           <Button
             type="button"
             appearance="link"
@@ -60,7 +60,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
               ? `${repository.display_name} profile description`
               : `No description for ${repository.display_name} profile`,
         },
-        Cell: ({ row: { original: repository } }: CellProps<LocalRepository>) =>
+        Cell: ({ row: { original: repository } }: CellProps<Local>) =>
           repository.comment || <NoData />,
       },
       {
@@ -71,7 +71,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         },
         Cell: ({
           row: { original: repository },
-        }: CellProps<LocalRepository>) => (
+        }: CellProps<Local>) => (
           <LocalRepositoryPackagesCount repository={repository} />
         ),
       },
@@ -83,7 +83,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         },
         Cell: ({
           row: { original: repository },
-        }: CellProps<LocalRepository>) => (
+        }: CellProps<Local>) => (
           <LocalRepositoryPublicationsCount repository={repository} />
         ),
       },
@@ -95,7 +95,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         },
         Cell: ({
           row: { original: repository },
-        }: CellProps<LocalRepository>) => (
+        }: CellProps<Local>) => (
           <LocalRepositoriesListActions repository={repository} />
         ),
       },

@@ -1,6 +1,6 @@
-import type { LocalRepository } from "@/features/local-repositories";
+import type { Local } from "@/features/local-repositories";
 
-export const repositories: LocalRepository[] = [
+export const repositories: Local[] = [
   {
     name: "locals/aaaa-bbbb-cccc",
     local_id: "aaaa-bbbb-cccc",

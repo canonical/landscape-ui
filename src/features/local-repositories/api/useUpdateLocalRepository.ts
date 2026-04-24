@@ -2,11 +2,11 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { LocalRepository } from "../types";
+import type { Local } from "../types";
 
 interface UpdateLocalRepositoryParams {
-  readonly local: Partial<LocalRepository> &
-    Required<Pick<LocalRepository, "name">>;
+  readonly local: Partial<Local> &
+    Required<Pick<Local, "name">>;
   readonly field_mask?: string[];
 }
 
@@ -15,7 +15,7 @@ export const useUpdateLocalRepository = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<LocalRepository>,
+    AxiosResponse<Local>,
     AxiosError<ApiError>,
     UpdateLocalRepositoryParams
   >({

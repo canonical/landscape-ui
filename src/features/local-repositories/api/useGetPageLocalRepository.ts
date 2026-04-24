@@ -1,10 +1,10 @@
-import type { LocalRepository } from "../types";
+import type { Local } from "../types";
 import { useGetLocalRepository } from "./useGetLocalRepository";
 import usePageParams from "@/hooks/usePageParams";
 
 type GetPageLocalRepositoryReturnType =
   | {
-      repository: LocalRepository;
+      repository: Local;
       isGettingRepository: false;
     }
   | {
@@ -30,7 +30,7 @@ export const useGetPageLocalRepository =
     }
 
     return {
-      repository: repository as LocalRepository,
+      repository: repository as Local,
       isGettingRepository: false,
     };
   };

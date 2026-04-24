@@ -9,7 +9,9 @@ export { default as EditLocalRepositorySidePanel } from "./components/EditLocalR
 export { default as ImportRepositoryPackagesSidePanel } from "./components/ImportRepositoryPackagesSidePanel";
 
 export type {
-  LocalRepository,
+  Local,
   Task,
   ImportLocalPackagesRequest,
+  CreateLocalRequest,
+  BatchGetLocalsRequest,
 } from "./types";

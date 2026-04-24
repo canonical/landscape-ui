@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LocalRepositoryPublicationsList from "../../../LocalRepositoryPublicationsList";
@@ -7,7 +7,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
 
 interface ViewLocalRepositoryDetailsTabProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({

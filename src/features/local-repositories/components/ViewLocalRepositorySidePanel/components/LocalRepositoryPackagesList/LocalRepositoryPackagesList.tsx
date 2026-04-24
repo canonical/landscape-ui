@@ -1,5 +1,5 @@
 import { useMemo, type FC } from "react";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import { useGetRepositoryPackages } from "../../../../api";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { Column, CellProps } from "react-table";
@@ -9,7 +9,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { LocalPackage } from "../../../../types";
 
 interface LocalRepositoryPackagesListProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({

@@ -1,11 +1,11 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import type { LocalRepository } from "../../../../types";
+import type { Local } from "../../../../types";
 import { useGetRepositoryPackages } from "../../../../api";
 import { pluralizeWithCount } from "@/utils/_helpers";
 
 interface LocalRepositoryPackagesCountProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const LocalRepositoryPackagesCount: FC<LocalRepositoryPackagesCountProps> = ({

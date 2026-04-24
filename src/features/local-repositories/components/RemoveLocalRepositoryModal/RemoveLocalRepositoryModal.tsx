@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { LocalRepository } from "../../types";
+import type { Local } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
@@ -11,7 +11,7 @@ import LoadingState from "@/components/layout/LoadingState";
 
 interface RemoveLocalRepositoryModalProps {
   readonly close: () => void;
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
@@ -37,7 +37,8 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   const publicationsContent = (
     <>
       <p>This repository is associated with the following publications:</p>
-      <LocalRepositoryPublicationsList publications={publications} />
+      <LocalRepositoryPublicationsList publications={publications} openNewTab />
+      <br />
       <p>
         After removal you won&apos;t be able to update any of these
         publications, but they will continue to be available.{" "}

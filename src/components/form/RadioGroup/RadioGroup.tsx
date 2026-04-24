@@ -44,7 +44,7 @@ const RadioGroup = <
     <>
       <p
         className={classNames(
-          "u-no-margin--bottom u-heading--5",
+          "u-no-margin--bottom p-heading--5",
           classes.label,
         )}
       >

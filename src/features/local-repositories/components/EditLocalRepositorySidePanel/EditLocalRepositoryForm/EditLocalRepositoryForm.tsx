@@ -12,11 +12,11 @@ import {
 } from "./constants";
 import Blocks from "@/components/layout/Blocks";
 import { useUpdateLocalRepository } from "../../../api/useUpdateLocalRepository";
-import type { LocalRepository } from "../../../types";
+import type { Local } from "../../../types";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface EditLocalRepositoryFormProps {
-  readonly repository: LocalRepository;
+  readonly repository: Local;
 }
 
 const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
@@ -55,7 +55,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
   const formik = useFormik({
     initialValues: {
-      name: repository.display_name,
+      displayName: repository.display_name,
       description: repository.comment,
     },
     onSubmit: handleSubmit,
@@ -71,8 +71,8 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
             type="text"
             label="Name"
             required
-            {...formik.getFieldProps("name")}
-            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("displayName")}
+            error={getFormikError(formik, "displayName")}
           />
 
           <Input
