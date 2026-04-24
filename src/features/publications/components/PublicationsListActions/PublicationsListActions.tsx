@@ -36,7 +36,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
       "aria-label": `View details of "${publicationLabel}" publication`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
-        publication: publication.publicationId,
+        name: publication.publicationId,
       }),
     },
     {

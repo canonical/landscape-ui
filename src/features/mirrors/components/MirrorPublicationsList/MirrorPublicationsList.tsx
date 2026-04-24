@@ -5,6 +5,7 @@ import { ModularTable } from "@canonical/react-components";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { useCounter } from "usehooks-ts";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
+import { Link } from "react-router";
 
 interface MirrorPublicationsListProps {
   readonly publications: Publication[];
@@ -20,7 +21,16 @@ const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
       {
         Header: "Publication",
         Cell: ({ row: { original: publication } }: CellProps<Publication>) => {
-          return publication.label;
+          return (
+            <Link
+              to={{
+                pathname: "/repositories/publications",
+                search: `?sidePath=view&name=${publication.publicationId}`,
+              }}
+            >
+              {publication.label}
+            </Link>
+          );
         },
       },
     ],

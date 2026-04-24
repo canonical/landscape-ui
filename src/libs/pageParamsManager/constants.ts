@@ -140,9 +140,4 @@ export const PARAMS_CONFIG: ParamsConfig = [
     shouldResetPage: false,
     defaultValue: DEFAULT_EMPTY_STRING,
   },
-  {
-    urlParam: "publication",
-    shouldResetPage: false,
-    defaultValue: DEFAULT_EMPTY_STRING,
-  },
 ];

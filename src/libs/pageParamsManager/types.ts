@@ -32,7 +32,6 @@ export interface PageParams {
   wsl: string[];
   code: string;
   sidePath: string[];
-  publication: string;
   name: string;
 }
 
