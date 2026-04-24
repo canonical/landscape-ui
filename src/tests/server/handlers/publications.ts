@@ -4,10 +4,7 @@ import type {
   BatchGetPublicationTargetsResponse,
 } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import {
-  publications,
-  publicationTargets,
-} from "@/tests/mocks/publications";
+import { publications, publicationTargets } from "@/tests/mocks/publications";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import {
@@ -272,18 +269,16 @@ export default [
     return getDeletePublicationResponse();
   }),
 
-  http.post(`${API_URL_DEB_ARCHIVE}publications/:publication\\:publish`,
-    () => {
-      const endpointStatus = getEndpointStatus();
+  http.post(`${API_URL_DEB_ARCHIVE}publications/:publication\\:publish`, () => {
+    const endpointStatus = getEndpointStatus();
 
-      if (
-        endpointStatus.status === "error" &&
-        matchesPublicationsPath(endpointStatus.path)
-      ) {
-        return ENDPOINT_STATUS_API_ERROR;
-      }
+    if (
+      endpointStatus.status === "error" &&
+      matchesPublicationsPath(endpointStatus.path)
+    ) {
+      return ENDPOINT_STATUS_API_ERROR;
+    }
 
-      return getPublishPublicationResponse();
-    },
-  ),
+    return getPublishPublicationResponse();
+  }),
 ];
