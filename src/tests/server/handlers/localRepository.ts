@@ -25,7 +25,7 @@ export default [
 
     return HttpResponse.json({
       locals: repositories.filter(({ display_name }) =>
-        display_name.includes(search),
+        display_name.includes(search.substring(2, search.length - 2)),
       ),
     });
   }),

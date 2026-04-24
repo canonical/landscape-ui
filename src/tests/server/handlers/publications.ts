@@ -272,8 +272,7 @@ export default [
     return getDeletePublicationResponse();
   }),
 
-  http.post(
-    new RegExp(`${API_URL_DEB_ARCHIVE}publications/.+:publish$`),
+  http.post(`${API_URL_DEB_ARCHIVE}publications/:publication\\:publish`,
     () => {
       const endpointStatus = getEndpointStatus();
 
