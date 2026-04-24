@@ -37,7 +37,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
     (event) => {
       if (
         event.target instanceof Element &&
-        !event.target.closest("truncatedItem")
+        !event.target.closest(".truncatedItem")
       ) {
         setExpandedCell(null);
       }
