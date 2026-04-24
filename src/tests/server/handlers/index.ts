@@ -18,6 +18,7 @@ import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
 import mirrors from "./mirrors";
+import localRepository from "./localRepository";
 import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
@@ -63,6 +64,7 @@ export default [
   ...invitations,
   ...kernel,
   ...mirrors,
+  ...localRepository,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,
