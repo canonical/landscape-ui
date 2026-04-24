@@ -95,6 +95,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     initialValues: initialValues,
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA_NEW,
+    validateOnMount: true,
   });
 
   const publicationTargetOptions = useMemo<SelectOption[]>(

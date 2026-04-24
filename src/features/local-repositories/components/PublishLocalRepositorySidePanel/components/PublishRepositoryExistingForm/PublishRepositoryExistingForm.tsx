@@ -67,6 +67,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     initialValues: { name: "" },
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA_EXISTING,
+    validateOnMount: true,
   });
 
   const publicationOptions = useMemo<SelectOption[]>(
