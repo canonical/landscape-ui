@@ -23,6 +23,7 @@ import packageProfile from "./packageProfile";
 import packages from "./packages";
 import pockets from "./pockets";
 import process from "./process";
+import publications from "./publications";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
 import repo from "./repo";
@@ -65,6 +66,7 @@ export default [
   ...packages,
   ...pockets,
   ...process,
+  ...publications,
   ...rebootProfiles,
   ...removalProfiles,
   ...repo,

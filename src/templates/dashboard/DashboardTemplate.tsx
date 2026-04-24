@@ -19,7 +19,8 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
         <Sidebar />
         <ApplicationIdContext value={applicationId}>
           <main className={classNames("l-main", classes.wrapper)}>
-            {children}
+            <div className={classes.pageContent}>{children}</div>
+            {/* {children} */}
           </main>
         </ApplicationIdContext>
       </SidePanelProvider>
