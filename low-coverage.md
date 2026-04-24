@@ -1,0 +1,102 @@
+# Low Coverage Files (updated after coverage improvement work)
+
+> Generated from `reports/coverage-summary.json`. Overall = average of Lines, Statements, Functions, Branches.
+> Filters: `.tsx` files only, excluding `/mirrors/` and `profile`.
+> **93 files** tracked. **63 files at 95%+** coverage.
+> Files marked ✅ have reached 95%+ overall coverage.
+
+| File | Overall | Lines | Statements | Functions | Branches |
+| ----- | ------- | ------ | ---------- | --------- | -------- |
+| ❌ src/pages/dashboard/instances/[single]/SingleInstanceTabs/SingleInstanceTabs.tsx | 58.8% | 71.0% | 71.0% | 30.8% | 62.5% |
+| ❌ src/features/scripts/components/ScriptDetails/ScriptDetails.tsx | 68.5% | 65.7% | 68.4% | 75.0% | 64.7% |
+| ❌ src/pages/dashboard/instances/[single]/tabs/info/InfoPanel/InfoPanel.tsx | 69.5% | 69.3% | 70.1% | 55.5% | 82.8% |
+| ❌ src/pages/dashboard/instances/[single]/tabs/packages/PackagesPanel/PackagesPanel.tsx | 70.4% | 81.0% | 81.0% | 33.3% | 86.4% |
+| ✅ src/features/employees/components/EmployeeList/EmployeeList.tsx | 96.1% | 96.3% | 96.4% | 100.0% | 91.7% |
+| ✅ src/pages/dashboard/settings/roles/RoleList/RoleList.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ❌ src/features/scripts/components/RunInstanceScriptForm/RunInstanceScriptForm.tsx | 77.2% | 85.7% | 85.7% | 100.0% | 37.5% |
+| ⚠️ src/pages/dashboard/scripts/ScriptsPage/ScriptsPage.tsx | 80.4% | 85.7% | 85.7% | 50.0% | 100.0% |
+| ⚠️ src/features/overview/components/InfoTablesContainer/InfoTablesContainer.tsx | 81.1% | 81.2% | 81.5% | 91.7% | 70.0% |
+| ⚠️ src/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssuesPanelHeader/SecurityIssuesPanelHeader.tsx | 83.3% | 83.3% | 83.3% | 66.7% | 100.0% |
+| ⚠️ src/features/scripts/components/ScriptDropdown/ScriptDropdown.tsx | 83.4% | 81.0% | 81.0% | 92.3% | 79.3% |
+| ⚠️ src/features/scripts/hooks/useArchiveScriptModal.tsx | 84.0% | 88.9% | 88.9% | 75.0% | 83.3% |
+| ⚠️ src/features/usns/components/UsnPackagesContainer/UsnPackagesContainer.tsx | 85.5% | 90.9% | 84.6% | 66.7% | 100.0% |
+| ⚠️ src/features/instances/components/AvailabilityZoneFilter/AvailabilityZoneFilter.tsx | 86.7% | 93.3% | 93.3% | 83.3% | 76.9% |
+| ⚠️ src/features/kernel/components/DowngradeKernelForm/DowngradeKernelForm.tsx | 86.8% | 92.0% | 92.0% | 83.3% | 80.0% |
+| ⚠️ src/features/kernel/components/UpgradeKernelForm/UpgradeKernelForm.tsx | 86.8% | 92.0% | 92.0% | 83.3% | 80.0% |
+| ⚠️ src/features/instances/components/TagsAddForm/TagsAddForm.tsx | 87.2% | 86.4% | 87.9% | 93.1% | 81.5% |
+| ⚠️ src/pages/dashboard/instances/[single]/tabs/wsl/WslPanel/WslPanel.tsx | 87.3% | 84.6% | 84.6% | 100.0% | 80.0% |
+| ⚠️ src/features/kernel/components/KernelHeader/KernelHeader.tsx | 87.5% | 100.0% | 100.0% | 100.0% | 50.0% |
+| ⚠️ src/features/scripts/hooks/useDeleteScriptModal.tsx | 88.2% | 88.9% | 88.9% | 75.0% | 100.0% |
+| ⚠️ src/features/scripts/components/ScriptVersionHistoryDetails/ScriptVersionHistoryDetails.tsx | 89.0% | 90.5% | 90.5% | 100.0% | 75.0% |
+| ⚠️ src/features/scripts/components/ScriptsVersionHistory/ScriptsVersionHistory.tsx | 89.9% | 90.9% | 90.9% | 77.8% | 100.0% |
+| ⚠️ src/features/instances/components/RestartModal/RestartModal.tsx | 90.6% | 89.5% | 89.5% | 83.3% | 100.0% |
+| ⚠️ src/features/instances/components/ShutDownModal/ShutDownModal.tsx | 90.6% | 89.5% | 89.5% | 83.3% | 100.0% |
+| ⚠️ src/pages/dashboard/instances/PendingInstancesForm/PendingInstancesForm.tsx | 90.7% | 91.9% | 92.1% | 88.9% | 90.0% |
+| ⚠️ src/features/usns/components/UsnList/UsnList.tsx | 90.9% | 92.8% | 92.8% | 86.4% | 91.4% |
+| ⚠️ src/features/saved-searches/components/SearchBoxWithSavedSearches/SearchBoxWithSavedSearches.tsx | 92.2% | 95.9% | 95.9% | 93.8% | 83.3% |
+| ⚠️ src/features/wsl/components/WslInstanceInstallForm/WslInstanceInstallForm.tsx | 93.1% | 97.0% | 97.1% | 90.9% | 87.5% |
+| ⚠️ src/features/wsl/components/WslInstanceListActions/WslInstanceListActions.tsx | 93.3% | 96.7% | 96.7% | 100.0% | 80.0% |
+| ⚠️ src/components/form/AssociationBlock/AssociationBlock.tsx | 93.8% | 100.0% | 100.0% | 100.0% | 75.0% |
+| ⚠️ src/features/instances/components/InstanceList/helpers.tsx | 94.7% | 98.7% | 98.8% | 94.7% | 86.8% |
+| ⚠️ src/features/saved-searches/components/CreateSavedSearchButton/CreateSavedSearchButton.tsx | 94.8% | 95.0% | 95.2% | 100.0% | 88.9% |
+| ✅ src/features/account-creation/components/AccountCreationSaaSForm/AccountCreationSaaSForm.tsx | 95.0% | 90.0% | 90.0% | 100.0% | 100.0% |
+| ✅ src/features/access-groups/components/AccessGroupList/AccessGroupList.tsx | 95.0% | 96.4% | 96.7% | 94.1% | 92.8% |
+| ✅ src/features/packages/components/PackageList/PackageList.tsx | 95.5% | 95.2% | 95.3% | 91.3% | 100.0% |
+| ✅ src/features/auth/components/AvailableProviderList/AvailableProviderList.tsx | 95.8% | 95.5% | 95.5% | 100.0% | 92.3% |
+| ✅ src/features/activities/components/ActivitiesHeader/ActivitiesHeader.tsx | 95.8% | 100.0% | 100.0% | 100.0% | 83.3% |
+| ✅ src/features/alert-notifications/components/AlertNotificationsList/AlertNotificationsList.tsx | 95.8% | 100.0% | 100.0% | 100.0% | 83.3% |
+| ✅ src/features/ubuntupro/components/TokenFormBase/TokenFormBase.tsx | 96.1% | 94.9% | 95.1% | 100.0% | 94.4% |
+| ✅ src/features/organisation-settings/components/EditOrganisationPreferencesForm/EditOrganisationPreferencesForm.tsx | 96.3% | 96.2% | 96.2% | 100.0% | 92.8% |
+| ✅ src/pages/dashboard/settings/administrators/tabs/administrators/AdministratorListActions/AdministratorListActions.tsx | 96.4% | 92.8% | 92.8% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/settings/employees/tabs/autoinstall-files/AutoinstallFilesPanel.tsx | 96.4% | 100.0% | 100.0% | 100.0% | 85.7% |
+| ✅ src/features/upgrades/components/tabPanels/instances/InstancesPanel/InstancesPanel.tsx | 96.4% | 100.0% | 100.0% | 100.0% | 85.7% |
+| ✅ src/components/ui/ResponsiveButtons/ResponsiveButtons.tsx | 96.4% | 97.6% | 97.6% | 100.0% | 90.6% |
+| ✅ src/pages/dashboard/settings/administrators/tabs/invites/InvitesPanel/InvitesPanel.tsx | 96.6% | 93.1% | 93.3% | 100.0% | 100.0% |
+| ✅ src/features/access-groups/components/NewAccessGroupForm/NewAccessGroupForm.tsx | 96.7% | 93.3% | 93.3% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/settings/roles/RoleListActions/RoleListActions.tsx | 96.7% | 93.3% | 93.3% | 100.0% | 100.0% |
+| ✅ src/features/snaps/components/EditSnap/EditSnap.tsx | 97.0% | 97.1% | 97.1% | 100.0% | 93.6% |
+| ✅ src/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm/EditAdministratorForm.tsx | 97.1% | 93.9% | 94.3% | 100.0% | 100.0% |
+| ✅ src/features/saved-searches/components/EditSavedSearchButton/EditSavedSearchButton.tsx | 97.1% | 94.1% | 94.4% | 100.0% | 100.0% |
+| ✅ src/features/wsl/components/WslInstanceRemoveFromLandscapeModal/WslInstanceRemoveFromLandscapeModal.tsx | 97.4% | 94.7% | 95.0% | 100.0% | 100.0% |
+| ✅ src/components/form/SelectGrouped.tsx | 97.5% | 100.0% | 100.0% | 100.0% | 90.0% |
+| ✅ src/features/snaps/components/InstallSnaps/InstallSnaps.tsx | 97.7% | 95.5% | 95.5% | 100.0% | 100.0% |
+| ✅ src/components/layout/HeaderActions/HeaderActions.tsx | 98.1% | 98.2% | 98.3% | 100.0% | 96.0% |
+| ✅ src/templates/dashboard/UserInfo/UserInfo.tsx | 98.4% | 100.0% | 100.0% | 100.0% | 93.8% |
+| ✅ src/pages/auth/login/LoginPage.tsx | 99.1% | 100.0% | 100.0% | 100.0% | 96.4% |
+| ✅ src/features/apt-sources/components/NewAPTSourceForm/NewAPTSourceForm.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/autoinstall-files/components/AutoinstallFileVersionHistory/AutoinstallFileVersionHistory.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/overview/components/PieChart/PieChart.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/templates/dashboard/Sidebar.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/components/layout/SidePanel/CloseContext.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/usns/components/UsnPackagesRemoveButton/UsnPackagesRemoveButton.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/instances/[single]/SingleInstanceEmptyState/SingleInstanceEmptyState.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/auth/invitation/InvitationPage/InvitationPage.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/autoinstall-files/components/AutoinstallFileDetails/AutoinstallFileDetails.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/settings/roles/AddRoleForm/AddRoleForm.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/general-settings/components/ChangePasswordForm/ChangePasswordForm.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/components/form/ScheduleBlock/components/OnSelect/OnSelect.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/auth/components/ProviderListActions/ProviderListActions.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/components/form/SearchBoxWithDescriptionButton/SearchBoxWithDescriptionButton.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/components/layout/LabelWithDescription/LabelWithDescription.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/gpg-keys/components/GPGKeysListActions/GPGKeysListActions.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/settings/administrators/AdministratorsPage/AdministratorsPage.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/templates/dashboard/DesktopHeader.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/upgrades/components/tabPanels/instances/AffectedPackages/AffectedPackages.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/settings/roles/RolesContainer/RolesContainer.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/context/theme.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/activities/components/ActivitiesDateFilter/ActivitiesDateFilter.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/scripts/components/ScriptsHeader/ScriptsHeader.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/components/ui/ResponsiveDropdownItem/ResponsiveDropdownItem.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/saved-searches/components/ManageSavedSeachesSidePanel/ManageSavedSearchesSidePanel.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/ubuntupro/components/UbuntuProHeader/UbuntuProHeader.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/context/notify.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/context/sidePanel.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/access-groups/components/AccessGroupContainer/AccessGroupContainer.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/instances/[single]/SingleInstanceTabs/helpers.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/autoinstall-files/components/AutoinstallFileEditForm/AutoinstallFileEditForm.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/instances/[single]/tabs/security-issues/SecurityIssueList/SecurityIssueList.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/wsl/components/WslInstanceList/components/GroupHeader/GroupHeader.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/invitation/components/InvitationForm/InvitationForm.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/packages/components/UbuntuProNotification/UbuntuProNotification.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/pages/dashboard/settings/identity-providers/IdentityProvidersPage/IdentityProvidersPage.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
+| ✅ src/features/overview/components/Legend/Legend.tsx | 100.0% | 100.0% | 100.0% | 100.0% | 100.0% |
