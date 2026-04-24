@@ -1,10 +1,12 @@
 import { API_URL, API_URL_OLD } from "@/constants";
-import type { Activity } from "@/features/activities";
+import type { Activity, GetActivitiesParams } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
+  manyDeliveredActivities,
+  manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
 import {
@@ -76,6 +78,7 @@ export default [
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || 1;
     const query = url.searchParams.get("query") ?? "";
+    const endpointStatus = getEndpointStatus();
 
     if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
       throw HttpResponse.json(
@@ -88,6 +91,21 @@ export default [
     }
 
     const { status, type, searchQuery } = parseActivitiesQuery(query);
+
+    if (endpointStatus.path === "many-activities") {
+      const bulkData =
+        status === "unapproved"
+          ? manyUnapprovedActivities
+          : manyDeliveredActivities;
+      return HttpResponse.json(
+        generatePaginatedResponse<Activity>({
+          data: bulkData,
+          limit,
+          offset,
+        }),
+      );
+    }
+
     const filteredActivities = activities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
@@ -110,6 +128,66 @@ export default [
       }),
     );
   }),
+
+  http.get<{ id: string }, GetActivitiesParams, Activity>(
+    `${API_URL}activities/:id`,
+    async ({ params: { id } }) => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw new HttpResponse(null, { status: 500 });
+      }
+
+      return HttpResponse.json<Activity>(
+        activities.find((activity) => activity.id === parseInt(id)) ?? {
+          activity_status: "succeeded",
+          approval_time: null,
+          children: [],
+          completion_time: null,
+          computer_id: 0,
+          creation_time: "",
+          creator: { email: "", id: 0, name: "" },
+          deliver_after_time: null,
+          deliver_before_time: null,
+          delivery_time: null,
+          id: 0,
+          modification_time: "",
+          parent_id: null,
+          result_code: null,
+          result_text: null,
+          schedule_after_time: null,
+          schedule_before_time: null,
+          summary: "",
+          type: "",
+        },
+        { status: 400 },
+      );
+    },
+  ),
+
+  //   const { status, type, searchQuery } = parseActivitiesQuery(query);
+  //   const filteredActivities = activities.filter((activity) => {
+  //     if (status && activity.activity_status !== status) {
+  //       return false;
+  //     }
+
+  //     if (type && activity.type !== type) {
+  //       return false;
+  //     }
+
+  //     return true;
+  //   });
+
+  //   return HttpResponse.json(
+  //     generatePaginatedResponse<Activity>({
+  //       data: filteredActivities,
+  //       limit,
+  //       offset,
+  //       search: searchQuery,
+  //       searchFields: ["summary"],
+  //     }),
+  //   );
+  // }),
 
   http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {
     if (shouldApplyEndpointStatus("activities/:id")) {
@@ -163,6 +241,14 @@ export default [
   http.get<never, never, string[]>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "ApproveActivities")) {
       return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "ApproveActivities")
+    ) {
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json([

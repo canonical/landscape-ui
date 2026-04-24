@@ -15,7 +15,10 @@ import {
   isAction,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { createEndpointStatusNetworkError } from "./_constants";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 
 const parseBooleanParam = (value: string | null): boolean | undefined => {
   if (value === "true") {
@@ -43,6 +46,20 @@ export default [
       const url = new URL(request.url);
       const limit = Number(url.searchParams.get("limit"));
       const offset = Number(url.searchParams.get("offset")) || 0;
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "empty" &&
+        endpointStatus.path === "empty-packages"
+      ) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Package>({
+            data: [],
+            limit,
+            offset,
+          }),
+        );
+      }
 
       return HttpResponse.json(
         generatePaginatedResponse<Package>({
@@ -55,6 +72,15 @@ export default [
   ),
 
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "computers-packages"
+    ) {
+      throw new HttpResponse(null, { status: 500 });
+    }
+
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit"));
     const offset = Number(url.searchParams.get("offset")) || 0;
@@ -134,6 +160,14 @@ export default [
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "UpgradePackages")) {
       return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "UpgradePackages")
+    ) {
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json<Activity>(activities[0]);

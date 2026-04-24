@@ -5,9 +5,27 @@ import { renderWithProviders } from "@/tests/render";
 import PendingInstancesForm from "./PendingInstancesForm";
 import { pendingInstances } from "@/tests/mocks/instance";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { authUser } from "@/tests/mocks/auth";
+import useAuth from "@/hooks/useAuth";
+
+vi.mock("@/hooks/useAuth");
 
 describe("PendingInstancesForm", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue({
+      user: authUser,
+      authLoading: false,
+      authorized: true,
+      hasAccounts: true,
+      logout: vi.fn(),
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      setUser: vi.fn(),
+      isFeatureEnabled: vi.fn().mockReturnValue(false),
+    });
+  });
 
   afterEach(() => {
     setEndpointStatus("default");

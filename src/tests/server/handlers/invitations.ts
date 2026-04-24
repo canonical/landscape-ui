@@ -46,6 +46,17 @@ export default [
   ),
 
   http.post(`${API_URL}accept-invitation`, () => {
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path ||
+        endpointStatus.path.includes("accept-invitation"))
+    ) {
+      return HttpResponse.json(
+        { error: "InternalServerError", message: "Accept failed" },
+        { status: 500 },
+      );
+    }
     invitationState.accepted = true;
     return HttpResponse.json({
       account_id: 4,
@@ -54,6 +65,25 @@ export default [
   }),
 
   http.post(`${API_URL}reject-invitation`, () => {
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path ||
+        endpointStatus.path.includes("reject-invitation"))
+    ) {
+      return HttpResponse.json(
+        { error: "InternalServerError", message: "Reject failed" },
+        { status: 500 },
+      );
+    }
     return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.delete(`${API_URL}invitations/:id`, () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  http.post(`${API_URL}invitations/:id`, () => {
+    return new HttpResponse(null, { status: 200 });
   }),
 ];

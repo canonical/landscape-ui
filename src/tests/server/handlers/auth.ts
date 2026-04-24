@@ -108,8 +108,37 @@ export default [
     return HttpResponse.json(createdAccount);
   }),
 
+  http.post(`${API_URL}logout`, () => {
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path.includes("logout"))
+    ) {
+      return HttpResponse.json(
+        { error: "InternalServerError", message: "Logout failed" },
+        { status: 500 },
+      );
+    }
+    return new HttpResponse(null, { status: 200 });
+  }),
+
   http.get(`${API_URL}identity-providers`, () => {
     return HttpResponse.json(identityProviders);
+  }),
+
+  http.delete(`${API_URL}auth/oidc-providers/:id`, () => {
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path ||
+        endpointStatus.path.includes("oidc-providers"))
+    ) {
+      return HttpResponse.json(
+        { error: "InternalServerError", message: "Delete failed" },
+        { status: 500 },
+      );
+    }
+    return new HttpResponse(null, { status: 204 });
   }),
 
   http.get<{ id: string }, never, SingleIdentityProvider>(

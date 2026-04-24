@@ -22,3 +22,10 @@ export const setEndpointStatus = (
     endpointStatus = value;
   }
 };
+
+let manySavedSearches = false;
+
+export const getManySavedSearches = (): boolean => manySavedSearches;
+export const setManySavedSearches = (value: boolean): void => {
+  manySavedSearches = value;
+};

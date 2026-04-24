@@ -52,7 +52,7 @@ describe("GroupHeader", () => {
     expect(checkbox).toBeChecked();
   });
 
-  it("calls setSelectedWslInstances when checkbox is toggled", async () => {
+  it("calls setSelectedWslInstances with added instance when checkbox is checked", async () => {
     const setSelected = vi.fn();
 
     render(
@@ -67,6 +67,68 @@ describe("GroupHeader", () => {
     await user.click(screen.getByRole("checkbox"));
 
     expect(setSelected).toHaveBeenCalledWith([compliantInstanceChild]);
+  });
+
+  it("calls setSelectedWslInstances with removed instance when checkbox is unchecked", async () => {
+    const setSelected = vi.fn();
+
+    render(
+      <GroupHeader
+        label="Ubuntu 22.04"
+        wslInstances={[compliantInstanceChild]}
+        selectedWslInstances={[compliantInstanceChild]}
+        setSelectedWslInstances={setSelected}
+      />,
+    );
+
+    await user.click(screen.getByRole("checkbox"));
+
+    expect(setSelected).toHaveBeenCalledWith([]);
+  });
+
+  it("calls setSelectedWslInstances correctly when checking from indeterminate state", async () => {
+    const setSelected = vi.fn();
+
+    const secondCompliant: InstanceChild = {
+      ...compliantInstanceChild,
+      name: "second-instance",
+      computer_id: 8,
+    };
+
+    render(
+      <GroupHeader
+        label="Ubuntu 22.04"
+        wslInstances={[compliantInstanceChild, secondCompliant]}
+        selectedWslInstances={[compliantInstanceChild]}
+        setSelectedWslInstances={setSelected}
+      />,
+    );
+
+    await user.click(screen.getByRole("checkbox"));
+
+    expect(setSelected).toHaveBeenCalledWith(
+      expect.arrayContaining([compliantInstanceChild, secondCompliant]),
+    );
+  });
+
+  it("shows indeterminate state when some instances are selected", () => {
+    const secondCompliant: InstanceChild = {
+      ...compliantInstanceChild,
+      name: "second-instance",
+      computer_id: 8,
+    };
+
+    render(
+      <GroupHeader
+        label="Ubuntu 22.04"
+        wslInstances={[compliantInstanceChild, secondCompliant]}
+        selectedWslInstances={[compliantInstanceChild]}
+        setSelectedWslInstances={vi.fn()}
+      />,
+    );
+
+    const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
+    expect(checkbox.indeterminate).toBe(true);
   });
 
   it("disables checkbox when all instances are pending", () => {

@@ -18,4 +18,21 @@ export default [
     }
     return HttpResponse.json({});
   }),
+
+  http.put(`${API_URL}password`, async () => {
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "password")
+    ) {
+      return HttpResponse.json(
+        {
+          error: "InternalServerError",
+          message: "Error response",
+        },
+        { status: 500 },
+      );
+    }
+    return HttpResponse.json({});
+  }),
 ];

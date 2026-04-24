@@ -2,7 +2,6 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
-import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
 import moment from "moment";
@@ -39,7 +38,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   } = useBoolean();
 
   const { setSidePanelContent } = useSidePanel();
-  const debug = useDebug();
 
   const { script } = useGetSingleScript(scriptId);
 
@@ -66,57 +64,37 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   });
 
   const viewVersionHistory = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
-      return;
-    }
-
     setSidePanelContent(
-      script.title,
+      script!.title,
       <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} initialTabId="version-history" />
+        <ScriptDetails scriptId={script!.id} initialTabId="version-history" />
       </Suspense>,
     );
   };
 
   const handleBackToDetails = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
-      return;
-    }
-
     setSidePanelContent(
-      script.title,
+      script!.title,
       <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
+        <ScriptDetails scriptId={script!.id} />
       </Suspense>,
     );
   };
 
   const handleEditScript = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
-      return;
-    }
-
     setSidePanelContent(
-      `Edit "${script.title}" script`,
+      `Edit "${script!.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <EditScriptForm script={script} onBack={handleBackToDetails} />
+        <EditScriptForm script={script!} onBack={handleBackToDetails} />
       </Suspense>,
     );
   };
 
   const handleRunScript = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
-      return;
-    }
-
     setSidePanelContent(
-      `Run "${script.title}" script`,
+      `Run "${script!.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} onBack={handleBackToDetails} />
+        <RunScriptForm script={script!} onBack={handleBackToDetails} />
       </Suspense>,
     );
   };
