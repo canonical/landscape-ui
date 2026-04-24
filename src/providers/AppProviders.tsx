@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from "react";
 import AuthProvider from "@/context/auth";
 import FetchProvider from "@/api/fetch";
+import FetchDebArchiveProvider from "@/api/fetchDebArchive";
 import FetchOldProvider from "@/api/fetchOld";
 import NotifyProvider from "@/context/notify";
 import EnvProvider from "@/context/env";
@@ -21,7 +22,9 @@ export const AppProviders: FC<AppProvidersProps> = ({ children }) => {
             <AuthProvider>
               <AccountsProvider>
                 <FetchOldProvider>
-                  <FetchProvider>{children}</FetchProvider>
+                  <FetchDebArchiveProvider>
+                    <FetchProvider>{children}</FetchProvider>
+                  </FetchDebArchiveProvider>
                 </FetchOldProvider>
               </AccountsProvider>
             </AuthProvider>

@@ -8,6 +8,7 @@ import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/cons
 import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
 
 export const DashboardRoutes = (
   <Route
@@ -79,21 +80,25 @@ export const DashboardRoutes = (
         path={PATHS.repositories.root}
         element={
           <SelfHostedGuard>
-            <SecondaryNavigation
-              title="Repositories"
-              items={REPOSITORY_SUBMENU}
-            />
-            <Outlet />
+            <div className={classes.wrapper}>
+              <SecondaryNavigation
+                title="Repositories"
+                items={REPOSITORY_SUBMENU}
+              />
+              <div className={classes.pageContent}>
+                <Outlet />
+              </div>
+            </div>
           </SelfHostedGuard>
         }
       >
         <Route
           path={PATHS.repositories.mirrors}
           element={
-          <SelfHostedGuard>
-            <Pages.MirrorsPage />
-          </SelfHostedGuard>
-        }
+            <SelfHostedGuard>
+              <Pages.MirrorsPage />
+            </SelfHostedGuard>
+          }
         />
         <Route
           path={PATHS.repositories.localRepositories}
@@ -125,7 +130,7 @@ export const DashboardRoutes = (
             <SelfHostedGuard>
               <Pages.RepositoryProfilesPage />
             </SelfHostedGuard>
-          }     
+          }
         />
       </Route>
 
@@ -169,13 +174,17 @@ export const DashboardRoutes = (
         path={PATHS.account.root}
         element={
           <>
-            <SecondaryNavigation
-              title={ACCOUNT_SETTINGS.label}
-              items={ACCOUNT_SETTINGS.items}
-            >
-              <DarkModeSwitch />
-            </SecondaryNavigation>
-            <Outlet />
+            <div className={classes.wrapper}>
+              <SecondaryNavigation
+                title={ACCOUNT_SETTINGS.label}
+                items={ACCOUNT_SETTINGS.items}
+              >
+                <DarkModeSwitch />
+              </SecondaryNavigation>
+              <div className={classes.pageContent}>
+                <Outlet />
+              </div>
+            </div>
           </>
         }
       >

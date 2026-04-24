@@ -1,0 +1,65 @@
+import type { TextConfirmationModalProps } from "@/components/form/TextConfirmationModal";
+import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
+import { ConfirmationModal } from "@canonical/react-components";
+import type { FC } from "react";
+import type { Publication } from "../../types";
+import { useDeletePublication } from "../../api";
+
+interface RemovePublicationModalProps extends Pick<
+  TextConfirmationModalProps,
+  "close" | "isOpen"
+> {
+  readonly publication: Publication;
+}
+
+const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
+  close,
+  isOpen,
+  publication,
+}) => {
+  const debug = useDebug();
+  const { notify } = useNotify();
+  const { deletePublication, isRemovingPublication } = useDeletePublication();
+
+  const handleRemovePublication = async () => {
+    try {
+      await deletePublication({ publicationName: publication.name });
+
+      notify.success({
+        title: `You have successfully removed ${publication.label}`,
+        message: "The publication has been removed from Landscape.",
+      });
+    } catch (error) {
+      debug(error);
+    } finally {
+      close();
+    }
+  };
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <ConfirmationModal
+      renderInPortal
+      title={`Remove ${publication.label}`}
+      confirmButtonLabel="Remove publication"
+      confirmButtonAppearance="negative"
+      confirmButtonLoading={isRemovingPublication}
+      confirmButtonDisabled={isRemovingPublication}
+      onConfirm={handleRemovePublication}
+      close={close}
+    >
+      <p>
+        Removing this publication will prevent you from being able to publish
+        mirrors to it or manage it from Landscape. This WILL NOT remove the
+        publication from its publication target. This action is{" "}
+        <b>irreversible</b>.
+      </p>
+    </ConfirmationModal>
+  );
+};
+
+export default RemovePublicationModal;

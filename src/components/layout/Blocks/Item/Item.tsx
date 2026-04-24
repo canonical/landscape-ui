@@ -5,12 +5,23 @@ import classes from "./Item.module.scss";
 export interface ItemProps {
   readonly children: ReactNode;
   readonly title?: string;
+  readonly titleClassName?: string;
+  readonly containerClassName?: string;
 }
 
-const Item: FC<ItemProps> = ({ children, title }: ItemProps) => (
-  <section className={classes.item}>
+const Item: FC<ItemProps> = ({
+  children,
+  title,
+  titleClassName,
+  containerClassName,
+}: ItemProps) => (
+  <section className={classNames(classes.item, containerClassName)}>
     {title && (
-      <h4 className={classNames(classes.heading, "p-heading--5")}>{title}</h4>
+      <h4
+        className={classNames(classes.heading, "p-heading--5", titleClassName)}
+      >
+        {title}
+      </h4>
     )}
     {children}
   </section>
