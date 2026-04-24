@@ -3,7 +3,8 @@ import {
   scriptVersionsWithPagination,
 } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import ScriptsVersionHistory from "./ScriptsVersionHistory";
@@ -15,6 +16,8 @@ const props: ComponentProps<typeof ScriptsVersionHistory> = {
 };
 
 describe("Scripts Version History", () => {
+  const user = userEvent.setup();
+
   it("should render script version history", async () => {
     renderWithProviders(<ScriptsVersionHistory {...props} />);
 
@@ -48,5 +51,50 @@ describe("Scripts Version History", () => {
         name: /next/i,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("should open version details panel when clicking a version number", async () => {
+    renderWithProviders(<ScriptsVersionHistory {...props} />);
+
+    const versionButton = await screen.findByRole("button", {
+      name: `${scriptVersionsWithPagination[0]!.version_number}`,
+    });
+
+    await user.click(versionButton);
+
+    // The script is archived, so we see the author info and Back button
+    expect(
+      await screen.findByRole("button", { name: /back/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("should navigate to next page when clicking Next page button", async () => {
+    renderWithProviders(<ScriptsVersionHistory {...props} />);
+
+    await screen.findByRole("table");
+
+    const nextPageButton = screen.getByRole("button", {
+      name: /next page/i,
+    });
+    await user.click(nextPageButton);
+
+    await waitFor(() => {
+      expect(screen.getByRole("table")).toBeInTheDocument();
+    });
+  });
+
+  it("should change page size when selecting a new value", async () => {
+    renderWithProviders(<ScriptsVersionHistory {...props} />);
+
+    await screen.findByRole("table");
+
+    const pageSizeSelect = screen.getByRole("combobox", {
+      name: /instances per page/i,
+    });
+    await user.selectOptions(pageSizeSelect, "50");
+
+    await waitFor(() => {
+      expect(screen.getByRole("table")).toBeInTheDocument();
+    });
   });
 });

@@ -89,7 +89,7 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
           blocks={[
             {
               title: "Code",
-              code: code || "",
+              code: code,
               wrapLines: true,
               appearance: "numbered",
             },

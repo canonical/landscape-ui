@@ -2,9 +2,9 @@ import { expectLoadingState } from "@/tests/helpers";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import TagsAddForm from "./TagsAddForm";
+import TagsAddForm, { computeNewTags } from "./TagsAddForm";
 
 describe("TagsAddForm", async () => {
   afterEach(() => {
@@ -205,6 +205,47 @@ describe("TagsAddForm", async () => {
     expect(firstCheckbox).not.toBeChecked();
   });
 
+  it("should deselect a tag using fireEvent to cover toggle deselect branch", async () => {
+    const [selectedInstance] = instances;
+    renderWithProviders(<TagsAddForm selected={[selectedInstance]} />);
+    await expectLoadingState();
+
+    const [, firstTagCheckbox] = screen.getAllByRole("checkbox");
+
+    // Select via userEvent first
+    await userEvent.click(firstTagCheckbox);
+    expect(firstTagCheckbox).toBeChecked();
+
+    // Deselect using fireEvent to ensure the toggle deselect path runs
+    fireEvent.change(firstTagCheckbox, { target: { checked: false } });
+
+    await waitFor(() => {
+      expect(firstTagCheckbox).not.toBeChecked();
+    });
+  });
+
+  it("should skip adding a tag when all selected instances already have it", async () => {
+    const instanceWithTag = { ...instances[0], tags: ["appservers"] };
+
+    renderWithProviders(<TagsAddForm selected={[instanceWithTag]} />);
+    await expectLoadingState();
+
+    // The "appservers" checkbox is checked and disabled because the instance already has it
+    const checkboxes = screen.getAllByRole("checkbox");
+    const appserversCheckbox = checkboxes[1];
+    expect(appserversCheckbox).toBeChecked();
+
+    // Use fireEvent to call toggle even on the disabled/checked checkbox
+    fireEvent.change(appserversCheckbox, { target: { checked: false } });
+
+    // Assign button remains disabled since selectedTags is still empty
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /assign/i }),
+      ).toHaveAttribute("aria-disabled", "true");
+    });
+  });
+
   it("should disable checkbox for tags that all selected instances already have", async () => {
     // Instance that already has all available tags ("appservers", "asd")
     const instanceWithAllTags = {
@@ -221,4 +262,18 @@ describe("TagsAddForm", async () => {
     expect(checkboxes.length).toBeGreaterThan(1);
   });
 
+});
+
+describe("computeNewTags", () => {
+  it("should remove tag when already selected (deselect branch)", () => {
+    expect(computeNewTags(["appservers", "asd"], "appservers", [])).toEqual([
+      "asd",
+    ]);
+  });
+
+  it("should skip adding tag when all selected instances already have it", () => {
+    const instance = { ...instances[0], tags: ["appservers"] };
+    const result = computeNewTags([], "appservers", [instance]);
+    expect(result).toEqual([]);
+  });
 });

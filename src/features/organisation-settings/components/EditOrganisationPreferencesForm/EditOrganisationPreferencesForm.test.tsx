@@ -166,4 +166,65 @@ describe("EditOrganisationPreferencesForm", () => {
       expect(key).toMatch(REGISTRATION_KEY_REGEX);
     }
   });
+
+  it("saves changes and updates user when organisation name is changed", async () => {
+    const setUser = vi.fn();
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser,
+      user: authUser,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+
+    renderWithProviders(<EditOrganisationPreferencesForm {...props} />);
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /organization's name/i,
+    });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "New Organisation Name");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
+
+    expect(
+      await screen.findByText("Your changes have been saved"),
+    ).toBeInTheDocument();
+    expect(setUser).toHaveBeenCalled();
+  });
+
+  it("does not update user when user is null", async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser: vi.fn(),
+      user: null,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+
+    renderWithProviders(<EditOrganisationPreferencesForm {...props} />);
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /organization's name/i,
+    });
+    await userEvent.type(nameInput, " Updated");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
+
+    expect(
+      screen.queryByText("Your changes have been saved"),
+    ).not.toBeInTheDocument();
+  });
 });

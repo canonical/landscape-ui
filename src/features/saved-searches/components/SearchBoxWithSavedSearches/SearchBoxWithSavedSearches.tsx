@@ -23,7 +23,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   onChange,
 }) => {
   const { query, setPageParams } = usePageParams();
-  const [inputText, setInputText] = useState(query ?? "");
+  const [inputText, setInputText] = useState(query);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { savedSearches, isLoadingSavedSearches } = useGetSavedSearches();
@@ -42,7 +42,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
   useOnClickOutside(containerRef, handleDropdownClose);
 
   useEffect(() => {
-    setInputText(query ?? "");
+    setInputText(query);
   }, [query]);
 
   const filteredSearches = useMemo(

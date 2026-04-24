@@ -86,7 +86,7 @@ const WslInstanceInstallForm: FC = () => {
           : undefined;
 
         const { data: activity } = await createWslInstance({
-          parent_id: parseInt(instanceId ?? ""),
+          parent_id: parseInt(instanceId!),
           computer_name:
             values.instanceType === "custom"
               ? values.instanceName
@@ -120,7 +120,7 @@ const WslInstanceInstallForm: FC = () => {
     wslInstanceTypes.map(({ label, name }) => ({
       label,
       value: name,
-    })) || [];
+    }));
 
   const instanceOptions = [
     ...instanceQueryResultOptions,

@@ -43,4 +43,21 @@ export default [
 
     return HttpResponse.json(gpgKeys[0]);
   }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "RemoveGPGKey")) {
+      return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "removeGpgKey")
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
+  }),
 ];

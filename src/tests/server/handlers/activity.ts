@@ -5,6 +5,8 @@ import {
   activities,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
+  manyDeliveredActivities,
+  manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
@@ -85,6 +87,19 @@ export default [
       }
 
       const { status, type, searchQuery } = parseActivitiesQuery(query);
+
+      if (endpointStatus.path === "many-activities") {
+        const bulkData =
+          status === "unapproved" ? manyUnapprovedActivities : manyDeliveredActivities;
+        return HttpResponse.json(
+          generatePaginatedResponse<Activity>({
+            data: bulkData,
+            limit,
+            offset,
+          }),
+        );
+      }
+
       const filteredActivities = activities.filter((activity) => {
         if (status && activity.activity_status !== status) {
           return false;
@@ -166,6 +181,14 @@ export default [
   http.get<never, never, string[]>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "ApproveActivities")) {
       return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "ApproveActivities")
+    ) {
+      throw getEndpointStatusApiError();
     }
 
     return HttpResponse.json([

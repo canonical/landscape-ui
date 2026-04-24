@@ -88,6 +88,15 @@ export default [
   }),
 
   http.get(`${API_URL}scripts/:id/versions/:versionId`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "scripts/versions/detail"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
     return HttpResponse.json(scriptVersion);
   }),
 
@@ -209,5 +218,44 @@ export default [
     }
 
     return HttpResponse.json(activities[0]);
+  }),
+
+  http.post(`${API_URL}scripts/:id\\:archive`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "archive"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.post(`${API_URL}scripts/:id\\:redact`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "redact"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.post(`${API_URL}scripts/run`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "run"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json({});
   }),
 ];

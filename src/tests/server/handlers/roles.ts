@@ -31,6 +31,29 @@ export default [
     return HttpResponse.json(permissions);
   }),
 
+  http.get<never, never, Role>(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "CreateRole")) {
+      return;
+    }
+
+    const { searchParams } = new URL(request.url);
+    const roleName = searchParams.get("name") ?? "NewRole";
+    const [role] = roleMocks;
+    if (!role) {
+      throw new Error("Expected at least one role in mock role data");
+    }
+
+    return HttpResponse.json({ ...role, name: roleName });
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "RemoveRole")) {
+      return;
+    }
+
+    return new HttpResponse(null, { status: 200 });
+  }),
+
   http.get(API_URL_OLD, ({ request }) => {
     if (
       !isAction(request, [
@@ -50,9 +73,6 @@ export default [
     }
 
     const [role] = roleMocks;
-    if (!role) {
-      throw new Error("Expected at least one role in mock role data");
-    }
 
     const { searchParams } = new URL(request.url);
     const roleName = searchParams.get("name");

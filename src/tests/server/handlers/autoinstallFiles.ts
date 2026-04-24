@@ -60,12 +60,24 @@ export default [
     const withMetadata = url.searchParams.get("with_metadata") === "true";
 
     if (withMetadata) {
+      const endpointStatus = getEndpointStatus();
+      const maxVersionsReached =
+        endpointStatus.path === "autoinstall:max-versions-reached";
+      const withVersions =
+        endpointStatus.path === "autoinstall:with-versions";
+
       return HttpResponse.json({
         ...autoinstallFile,
         metadata: {
           current_version: autoinstallFile.version,
-          max_versions: 5,
-          versions: [],
+          max_versions: maxVersionsReached ? autoinstallFile.version : 5,
+          versions: withVersions
+            ? [
+                { version: 1, created_at: "2025-01-01T00:00:00Z" },
+                { version: 2, created_at: "2025-01-15T00:00:00Z" },
+                { version: 3, created_at: "2025-02-01T00:00:00Z" },
+              ]
+            : [],
         },
       });
     }

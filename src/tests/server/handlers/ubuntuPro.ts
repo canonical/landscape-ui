@@ -18,6 +18,13 @@ export default [
       if (endpointStatus.status === "error") {
         throw ENDPOINT_STATUS_API_ERROR;
       }
+
+      if (endpointStatus.path === "attach-token-with-invalid") {
+        return HttpResponse.json({
+          ...attachUbuntuProActivity,
+          invalid_computer_ids: [1],
+        });
+      }
     }
 
     return HttpResponse.json(attachUbuntuProActivity);

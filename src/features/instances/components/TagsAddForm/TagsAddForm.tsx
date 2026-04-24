@@ -12,7 +12,7 @@ import {
   SearchBox,
 } from "@canonical/react-components";
 import type { FC } from "react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
 import { useAddTagsToInstances } from "../../api";
@@ -25,6 +25,25 @@ interface TagsAddFormProps {
 interface TagObject extends Record<string, unknown> {
   value: string;
 }
+
+export const computeNewTags = (
+  prevTags: string[],
+  tag: string,
+  selected: Instance[],
+): string[] => {
+  if (prevTags.includes(tag)) {
+    return prevTags.toSpliced(
+      prevTags.findIndex((t) => t == tag),
+      1,
+    );
+  }
+
+  if (selected.every((instance) => instance.tags.includes(tag))) {
+    return prevTags;
+  }
+
+  return [...prevTags, tag];
+};
 
 const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   const debug = useDebug();
@@ -104,6 +123,13 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     }
   };
 
+  const toggleTag = useCallback(
+    (tag: string) => {
+      setSelectedTags(computeNewTags(selectedTags, tag, selected));
+    },
+    [selected, selectedTags],
+  );
+
   const columns = useMemo<Column<TagObject>[]>(
     () => [
       {
@@ -140,25 +166,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
             index,
           },
         }: CellProps<TagObject>) => {
-          const toggle = () => {
-            if (selectedTags.includes(tag)) {
-              setSelectedTags(
-                selectedTags.toSpliced(
-                  selectedTags.findIndex((t) => t == tag),
-                  1,
-                ),
-              );
-
-              return;
-            }
-
-            if (selected.every((instance) => instance.tags.includes(tag))) {
-              return;
-            }
-
-            setSelectedTags([...selectedTags, tag]);
-          };
-
           return (
             <CheckboxInput
               inline
@@ -176,13 +183,13 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
                 selected.some((instance) => instance.tags.includes(tag)) &&
                 selected.some((instance) => !instance.tags.includes(tag))
               }
-              onChange={toggle}
+              onChange={() => { toggleTag(tag); }}
             />
           );
         },
       },
     ],
-    [selectedTags, filteredTags],
+    [selectedTags, filteredTags, toggleTag],
   );
 
   if (isGettingTags) {

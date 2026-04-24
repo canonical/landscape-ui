@@ -15,11 +15,10 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
 }: AssociationBlockProps<T>) => {
   const { tags } = useGetTags();
 
-  const tagOptions: SelectOption[] =
-    tags.map((tag) => ({
-      label: tag,
-      value: tag,
-    })) ?? [];
+  const tagOptions: SelectOption[] = tags.map((tag) => ({
+    label: tag,
+    value: tag,
+  }));
 
   return (
     <>

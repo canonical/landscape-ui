@@ -14,9 +14,44 @@ export default [
         return;
       }
 
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "error" &&
+        endpointStatus.path === "GetAPTSources"
+      ) {
+        throw getEndpointStatusApiError();
+      }
+
       return HttpResponse.json(aptSources);
     },
   ),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "CreateAPTSource")) {
+      return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "CreateAPTSource"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    const url = new URL(request.url);
+    const name = url.searchParams.get("name") ?? "new-source";
+    return HttpResponse.json({
+      id: 99,
+      name,
+      line: url.searchParams.get("apt_line") ?? "",
+      gpg_key: url.searchParams.get("gpg_key") ?? "",
+      access_group: url.searchParams.get("access_group") ?? "global",
+      profiles: [],
+    });
+  }),
 
   http.delete(`${API_URL}repository/apt-source/:sourceId`, () => {
     const endpointStatus = getEndpointStatus();

@@ -290,6 +290,61 @@ export const activities = [
   RELEASE_UPGRADE_ACTIVITY,
 ] as const satisfies Activity[];
 
+export const MANY_UNAPPROVED_ACTIVITY_BASE_ID = 2000;
+export const MANY_DELIVERED_ACTIVITY_BASE_ID = 3000;
+
+export const manyUnapprovedActivities: Activity[] = Array.from(
+  { length: 15 },
+  (_, i) => ({
+    id: MANY_UNAPPROVED_ACTIVITY_BASE_ID + i,
+    actions: { approvable: true, cancelable: true, reappliable: true },
+    creation_time: "2024-03-22T08:47:22Z",
+    creator: { name: "John Smith", email: "john@example.com", id: 1 },
+    type: "StopChildComputerActivity",
+    summary: `Unapproved bulk activity ${i + 1}`,
+    result_text: null,
+    computer_id: 6,
+    approval_time: null,
+    delivery_time: null,
+    deliver_after_time: null,
+    deliver_before_time: null,
+    parent_id: null,
+    modification_time: "2024-03-22T08:47:22Z",
+    completion_time: null,
+    schedule_before_time: null,
+    schedule_after_time: null,
+    result_code: null,
+    activity_status: "unapproved" as const,
+    children: [],
+  }),
+);
+
+export const manyDeliveredActivities: Activity[] = Array.from(
+  { length: 15 },
+  (_, i) => ({
+    id: MANY_DELIVERED_ACTIVITY_BASE_ID + i,
+    actions: { approvable: true, cancelable: true, reappliable: true },
+    creation_time: "2024-04-15T15:47:07Z",
+    creator: { name: "John Smith", email: "john@example.com", id: 1 },
+    type: "StartChildComputerActivity",
+    summary: `Delivered bulk activity ${i + 1}`,
+    result_text: null,
+    computer_id: 6,
+    approval_time: null,
+    delivery_time: "2024-04-15T15:47:07Z",
+    deliver_after_time: null,
+    deliver_before_time: null,
+    parent_id: null,
+    modification_time: "2024-04-15T15:47:07Z",
+    completion_time: "2024-04-15T15:48:07Z",
+    schedule_before_time: null,
+    schedule_after_time: null,
+    result_code: null,
+    activity_status: "delivered" as const,
+    children: [],
+  }),
+);
+
 export const activityTypes = [
   "ActivityGroup",
   "AddGroupMemberRequest",

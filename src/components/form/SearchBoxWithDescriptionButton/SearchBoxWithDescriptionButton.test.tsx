@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { vi } from "vitest";
@@ -86,5 +86,21 @@ describe("SearchBoxWithDescriptionButton", () => {
     await userEvent.click(helpButton);
 
     expect(onDescriptionClick).toHaveBeenCalled();
+  });
+
+  it("calls onSearchClick via form submission with preventDefault", () => {
+    const onSearchClick = vi.fn();
+    const { container } = render(
+      <SearchBoxWithDescriptionButton
+        {...props}
+        onSearchClick={onSearchClick}
+      />,
+    );
+
+    const form = container.querySelector("form");
+    expect(form).not.toBeNull();
+    fireEvent.submit(form!);
+
+    expect(onSearchClick).toHaveBeenCalled();
   });
 });

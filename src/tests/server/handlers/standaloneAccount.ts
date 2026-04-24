@@ -7,22 +7,13 @@ interface CreateStandaloneAccountParams {
   password: string;
 }
 
-let standaloneAccountExists = true;
+export const standaloneAccountState = {
+  exists: true,
+};
 
 export default [
   http.get(`${API_URL}standalone-account`, () => {
-    if (standaloneAccountExists) {
-      return HttpResponse.json({ exists: true });
-    }
-    /**
-     * Existing standalone account flow
-     */
-    return HttpResponse.json({ exists: true });
-
-    /**
-     * First time standalone account creation flow
-     */
-    // return HttpResponse.json({ exists: false });
+    return HttpResponse.json({ exists: standaloneAccountState.exists });
   }),
 
   http.post<never, CreateStandaloneAccountParams>(
@@ -30,7 +21,7 @@ export default [
     async ({ request }) => {
       const { email, name } = await request.json();
 
-      if (standaloneAccountExists) {
+      if (standaloneAccountState.exists) {
         return HttpResponse.json(
           {
             error: "BadRequest",
@@ -40,7 +31,7 @@ export default [
         );
       }
 
-      standaloneAccountExists = true;
+      standaloneAccountState.exists = true;
 
       return HttpResponse.json(
         {
