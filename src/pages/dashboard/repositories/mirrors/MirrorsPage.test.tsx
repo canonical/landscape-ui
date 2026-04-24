@@ -9,9 +9,9 @@ import {
   setScreenSize,
 } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
-import DistributionsPage from "./DistributionsPage";
+import MirrorsPage from "./MirrorsPage";
 
-describe("DistributionsPage", () => {
+describe("MirrorsPage", () => {
   afterEach(() => {
     resetScreenSize();
   });
@@ -19,7 +19,7 @@ describe("DistributionsPage", () => {
   it("renders distributions and large-screen actions", async () => {
     setScreenSize("lg");
 
-    renderWithProviders(<DistributionsPage />);
+    renderWithProviders(<MirrorsPage />);
 
     expect(
       screen.getByRole("heading", { name: "Mirrors" }),
@@ -37,7 +37,7 @@ describe("DistributionsPage", () => {
     setScreenSize("lg");
     setEndpointStatus("empty");
 
-    renderWithProviders(<DistributionsPage />);
+    renderWithProviders(<MirrorsPage />);
 
     await expectLoadingState();
     expect(
@@ -52,7 +52,7 @@ describe("DistributionsPage", () => {
   it("shows actions menu on small screens", async () => {
     setScreenSize("xs");
 
-    renderWithProviders(<DistributionsPage />);
+    renderWithProviders(<MirrorsPage />);
 
     expect(screen.getByRole("button", { name: "Actions" })).toBeInTheDocument();
   });
@@ -62,7 +62,7 @@ describe("DistributionsPage", () => {
     setScreenSize("lg");
 
     renderWithProviders(
-      <DistributionsPage />,
+      <MirrorsPage />,
       undefined,
       ROUTES.repositories.mirrors(),
       `/${PATHS.repositories.root}/${PATHS.repositories.mirrors}`,
@@ -81,7 +81,7 @@ describe("DistributionsPage", () => {
     setScreenSize("lg");
 
     renderWithProviders(
-      <DistributionsPage />,
+      <MirrorsPage />,
       undefined,
       ROUTES.repositories.mirrors(),
       `/${PATHS.repositories.root}/${PATHS.repositories.mirrors}`,

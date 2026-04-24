@@ -7,11 +7,13 @@ import Item from "./Item";
 export interface InfoGridProps extends HTMLAttributes<HTMLDivElement> {
   readonly children: ReactNode;
   readonly spaced?: boolean;
+  readonly dense?: boolean;
 }
 
 const InfoGrid: FC<InfoGridProps> & { Item: FC<ItemProps> } = ({
   className,
   spaced,
+  dense,
   ...props
 }: InfoGridProps) => (
   <div
@@ -21,7 +23,10 @@ const InfoGrid: FC<InfoGridProps> & { Item: FC<ItemProps> } = ({
       className,
     )}
   >
-    <div className={classes.grid} {...props} />
+    <div
+      className={classNames(classes.grid, { [classes.denseGrid]: dense })}
+      {...props}
+    />
   </div>
 );
 

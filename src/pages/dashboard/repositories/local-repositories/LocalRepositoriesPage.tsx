@@ -8,7 +8,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { GPG_KEYS_DOCS_URL } from "./constants";
+// import { GPG_KEYS_DOCS_URL } from "./constants";
 
 const NewAPTSourceForm = lazy(async () =>
   import("@/features/apt-sources").then((module) => ({
@@ -57,7 +57,7 @@ const APTSourcesPage: FC = () => {
                   You haven’t added any APT sources yet.
                 </p>
                 <a
-                  href={GPG_KEYS_DOCS_URL}
+                  href="#" // TODO: discard
                   target="_blank"
                   rel="nofollow noopener noreferrer"
                 >
