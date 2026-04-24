@@ -55,7 +55,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     try {
       await removeRepository({ name: repository.name });
 
-      setPageParams({ sidePath: [], repository: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       notify.success({
         title: `You have successfully removed ${repository.display_name}`,

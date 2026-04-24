@@ -47,7 +47,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
-    repository: "",
+    name: "",
   });
 
   const initialValues: PublishRepositoryNewFormValues = {

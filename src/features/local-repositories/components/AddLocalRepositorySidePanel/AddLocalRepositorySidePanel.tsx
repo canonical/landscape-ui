@@ -23,7 +23,7 @@ const AddLocalRepositorySidePanel: FC = () => {
 
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
-    repository: "",
+    name: "",
   });
 
   const handleSubmit = async (values: AddLocalRepositoryFormValues) => {

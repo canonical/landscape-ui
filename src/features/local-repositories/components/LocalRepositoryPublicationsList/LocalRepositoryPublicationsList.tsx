@@ -36,13 +36,13 @@ const LocalRepositoryPublicationsList: FC<
         Header: "Publication",
         meta: {
           ariaLabel: ({ original: publication }) =>
-            `${publication.label} publication name`,
+            `${publication.displayName} publication name`,
         },
         Cell: ({ row: { original: publication } }: CellProps<Publication>) => (
           <StaticLink
             to={ROUTES.repositories.publications({
               sidePath: ["view"],
-              publication: publication.publicationId,
+              name: publication.publicationId,
             })}
             {...newTabProps}
           >
@@ -54,12 +54,12 @@ const LocalRepositoryPublicationsList: FC<
         Header: "Date published",
         meta: {
           ariaLabel: ({ original: publication }) =>
-            `Date when the ${publication.name} publication was published`,
+            `Date when the ${publication.displayName} publication was published`,
         },
         Cell: ({ row: { original: publication } }: CellProps<Publication>) =>
           publication.publishTime,
       },
-    ];
+    ] as Column<Publication>[];
   }, [openNewTab]);
 
   return (

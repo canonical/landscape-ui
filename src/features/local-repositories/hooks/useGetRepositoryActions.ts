@@ -20,7 +20,7 @@ export const useGetRepositoryActions = ({
     if (!sidePath.length) {
       return createPageParamsSetter({
         sidePath: [action],
-        repository: repository.local_id,
+        name: repository.local_id,
       });
     }
     return createSidePathPusher(action);

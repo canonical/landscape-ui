@@ -29,7 +29,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
-    repository: "",
+    name: "",
   });
 
   const handleSubmit = async (values: EditLocalRepositoryFormValues) => {

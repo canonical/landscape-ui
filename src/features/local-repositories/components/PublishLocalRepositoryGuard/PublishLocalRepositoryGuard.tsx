@@ -26,7 +26,7 @@ const PublishLocalRepositoryGuard: FC<PublishRepositoryGuardProps> = ({
     return <NoPublicationTargetsModal close={close} />;
   }
 
-  setPageParams({ sidePath: ["publish"], repository: repository.local_id });
+  setPageParams({ sidePath: ["publish"], name: repository.local_id });
 
   return null;
 };

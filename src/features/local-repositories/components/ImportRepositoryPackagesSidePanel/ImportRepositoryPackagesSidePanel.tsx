@@ -28,7 +28,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const {
     sidePath,
     popSidePath,
-    repository: repositoryId,
+    name,
     createPageParamsSetter,
   } = usePageParams();
   const { repository, isGettingRepository } = useGetPageLocalRepository();
@@ -37,10 +37,10 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     useImportRepositoryPackages();
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
-    repository: "",
+    name: "",
   });
 
-  const repositoryName = `locals/${repositoryId}`;
+  const repositoryName = `locals/${name}`;
   const [validateTask, setValidateTask] = useState<
     | {
         status: TaskStatus;

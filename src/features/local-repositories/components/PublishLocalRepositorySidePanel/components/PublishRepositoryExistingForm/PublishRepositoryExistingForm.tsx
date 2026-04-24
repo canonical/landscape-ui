@@ -44,7 +44,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   const closeSidePanel = createPageParamsSetter({
     sidePath: [],
-    repository: "",
+    name: "",
   });
 
   const handleSubmit = async (values: { name: string }) => {
