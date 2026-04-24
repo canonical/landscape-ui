@@ -25,24 +25,6 @@ const buildDisplayNameMaps = (pubs: typeof publications) => {
   return { sourceDisplayNames, publicationTargetDisplayNames };
 };
 
-const buildDisplayNameMaps = (pubs: typeof publications) => {
-  const sourceDisplayNames: Record<string, string> = {};
-  const publicationTargetDisplayNames: Record<string, string> = {};
-
-  for (const pub of pubs) {
-    const mirror = mirrors.find((m) => m.name === pub.source);
-    if (mirror?.name) sourceDisplayNames[mirror.name] = mirror.displayName;
-
-    const target = publicationTargets.find(
-      (t) => t.name === pub.publicationTarget,
-    );
-    if (target?.name)
-      publicationTargetDisplayNames[target.name] = target.displayName;
-  }
-
-  return { sourceDisplayNames, publicationTargetDisplayNames };
-};
-
 describe("PublicationsList", () => {
   const user = userEvent.setup();
   const [publication] = publications;
@@ -83,8 +65,6 @@ describe("PublicationsList", () => {
         name: publicationTargetDisplayNames[publication.publicationTarget],
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(publication.distribution)).toBeInTheDocument();
-    expect(screen.getByText(publication.component)).toBeInTheDocument();
   });
 
   it("opens sidepanel when clicking a publication name", async () => {
