@@ -300,7 +300,7 @@ export const configureSearchLanguage = (
           /^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]*)$/,
         );
         if (hwDotMatch) {
-          const hwRoot = hwDotMatch[1];
+          const [, hwRoot] = hwDotMatch;
           if (
             HARDWARE_ROOT_KEYS.includes(
               hwRoot as keyof typeof HARDWARE_ATTRIBUTES,

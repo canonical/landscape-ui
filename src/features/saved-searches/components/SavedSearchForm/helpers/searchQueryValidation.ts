@@ -246,7 +246,7 @@ const validateKeyToken = (
   const [key, val] = parts;
 
   // Handle hardware dot-notation keys (e.g., cpu.vendor, disk.size)
-  const hwRoot = key.split(".")[0];
+  const [hwRoot] = key.split(".");
   if (HARDWARE_ROOT_KEYS.includes(hwRoot as keyof typeof HARDWARE_ATTRIBUTES)) {
     return validateHardwareToken(key, val);
   }
