@@ -1,11 +1,21 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { AddPublicationButton } from "@/features/publications";
-import { PublicationsContainer } from "@/features/publications";
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import {
+  AddPublicationButton,
+  PublicationDetailsSidePanel,
+  PublicationsContainer,
+} from "@/features/publications";
 import type { FC } from "react";
 
 const PublicationsPage: FC = () => {
+  const { sidePath, createPageParamsSetter } = usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", ["view"]);
+
   return (
     <PageMain>
       <PageHeader
@@ -15,6 +25,17 @@ const PublicationsPage: FC = () => {
       <PageContent hasTable>
         <PublicationsContainer />
       </PageContent>
+
+      <SidePanel
+        isOpen={!!sidePath.length}
+        onClose={createPageParamsSetter({ sidePath: [], publication: "" })}
+      >
+        {sidePath.includes("view") && (
+          <SidePanel.Suspense key="view">
+            <PublicationDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

@@ -4,7 +4,7 @@ import {
   publications,
 } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
@@ -69,7 +69,7 @@ describe("PublicationsList", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens publication details side panel with resolved display names", async () => {
+  it("opens sidepanel when clicking a publication name", async () => {
     renderWithProviders(
       <PublicationsList
         publications={publications}
@@ -81,8 +81,11 @@ describe("PublicationsList", () => {
 
     await user.click(screen.getByRole("button", { name: publicationLabel }));
 
-    const heading = screen.getByRole("heading", { name: publicationLabel });
-    expect(heading).toBeInTheDocument();
+    const sidePanel = screen.getByRole("complementary");
+    expect(sidePanel).toBeInTheDocument();
+    expect(
+      within(sidePanel).getByRole("heading", { name: publicationLabel }),
+    ).toBeInTheDocument();
   });
 
   it("shows empty message with search query", () => {

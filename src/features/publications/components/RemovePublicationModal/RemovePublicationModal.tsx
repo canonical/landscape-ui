@@ -27,8 +27,8 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
       await deletePublication({ publicationName: publication.name });
 
       notify.success({
-        title: "Publication removed",
-        message: `Publication "${publication.label}" has been removed.`,
+        title: `You have successfully removed ${publication.label}`,
+        message: "The publication has been removed from Landscape.",
       });
     } catch (error) {
       debug(error);
@@ -44,8 +44,8 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
   return (
     <ConfirmationModal
       renderInPortal
-      title="Remove publication"
-      confirmButtonLabel="Remove"
+      title={`Remove ${publication.label}`}
+      confirmButtonLabel="Remove publication"
       confirmButtonAppearance="negative"
       confirmButtonLoading={isRemovingPublication}
       confirmButtonDisabled={isRemovingPublication}

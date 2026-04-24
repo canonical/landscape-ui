@@ -2,10 +2,9 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions/const
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { Publication } from "../../types";
 import PublicationsListActions from "../PublicationsListActions";
@@ -14,9 +13,6 @@ import {
   getSourceName,
   getSourceType,
 } from "../../helpers";
-import LoadingState from "@/components/layout/LoadingState";
-
-const PublicationDetails = lazy(() => import("../PublicationDetails"));
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -29,30 +25,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
   sourceDisplayNames = {},
   publicationTargetDisplayNames = {},
 }) => {
-  const { query } = usePageParams();
-  const { setSidePanelContent } = useSidePanel();
-
-  const openPublicationDetails = useCallback(
-    (publication: Publication) => {
-      setSidePanelContent(
-        publication.label,
-        <Suspense fallback={<LoadingState />}>
-          <PublicationDetails
-            publication={publication}
-            sourceDisplayName={
-              sourceDisplayNames[publication.source] ??
-              getSourceName(publication.source)
-            }
-            publicationTargetDisplayName={
-              publicationTargetDisplayNames[publication.publicationTarget] ??
-              getPublicationTargetName(publication.publicationTarget)
-            }
-          />
-        </Suspense>,
-      );
-    },
-    [setSidePanelContent, sourceDisplayNames, publicationTargetDisplayNames],
-  );
+  const { query, createPageParamsSetter } = usePageParams();
 
   const columns = useMemo<Column<Publication>[]>(
     () => [
@@ -64,9 +37,10 @@ const PublicationsList: FC<PublicationsListProps> = ({
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-            onClick={() => {
-              openPublicationDetails(row.original);
-            }}
+            onClick={createPageParamsSetter({
+              sidePath: ["view"],
+              publication: row.original.publicationId,
+            })}
           >
             {row.original.label}
           </Button>
@@ -107,7 +81,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
         ),
       },
     ],
-    [openPublicationDetails, sourceDisplayNames, publicationTargetDisplayNames],
+    [createPageParamsSetter, sourceDisplayNames, publicationTargetDisplayNames],
   );
 
   return (

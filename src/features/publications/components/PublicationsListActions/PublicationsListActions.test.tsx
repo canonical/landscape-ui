@@ -34,23 +34,6 @@ describe("PublicationsListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens details side panel from menu", async () => {
-    renderWithProviders(<PublicationsListActions publication={publication} />);
-
-    await user.click(
-      screen.getByRole("button", { name: `${publicationLabel} actions` }),
-    );
-    await user.click(
-      screen.getByRole("menuitem", {
-        name: `View details of "${publicationLabel}" publication`,
-      }),
-    );
-
-    expect(
-      screen.getByRole("heading", { name: publicationLabel }),
-    ).toBeInTheDocument();
-  });
-
   it("opens republish modal from menu", async () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);
 
@@ -81,7 +64,7 @@ describe("PublicationsListActions", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Remove publication" }),
+      screen.getByRole("heading", { name: `Remove ${publicationLabel}` }),
     ).toBeInTheDocument();
   });
 });

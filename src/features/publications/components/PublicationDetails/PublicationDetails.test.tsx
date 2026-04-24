@@ -83,7 +83,7 @@ describe("PublicationDetails", () => {
     );
 
     expect(
-      screen.getByRole("heading", { name: "Remove publication" }),
+      screen.getByRole("heading", { name: `Remove ${publicationLabel}` }),
     ).toBeInTheDocument();
   });
 });

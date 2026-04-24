@@ -65,14 +65,13 @@ const PublicationDetails = ({
 
       <Blocks>
         <Blocks.Item title="Details" titleClassName="p-text--small-caps">
-          <InfoGrid>
-            <InfoGrid.Item label="Name" value={publication.label} />
+          <InfoGrid dense>
+            <InfoGrid.Item label="Name" large value={publication.label} />
 
-            <InfoGrid.Item label="Source" large value={sourceDisplayName} />
+            <InfoGrid.Item label="Source" value={sourceDisplayName} />
 
             <InfoGrid.Item
               label="Publication target"
-              large
               value={publicationTargetDisplayName}
             />
 

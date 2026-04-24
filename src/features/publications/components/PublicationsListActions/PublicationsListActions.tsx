@@ -1,14 +1,11 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/SidePanel/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
-import { lazy, Suspense, type FC } from "react";
+import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { Publication } from "../../types";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
-
-const PublicationDetails = lazy(() => import("../PublicationDetails"));
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -17,7 +14,7 @@ interface PublicationsListActionsProps {
 const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
   const publicationLabel = publication.label;
 
   const {
@@ -32,21 +29,15 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     setFalse: closeRepublishModal,
   } = useBoolean();
 
-  const handlePublicationDetails = () => {
-    setSidePanelContent(
-      publication.label,
-      <Suspense fallback={<LoadingState />}>
-        <PublicationDetails publication={publication} />
-      </Suspense>,
-    );
-  };
-
   const actions: Action[] = [
     {
       icon: "show",
       label: "View details",
       "aria-label": `View details of "${publicationLabel}" publication`,
-      onClick: handlePublicationDetails,
+      onClick: createPageParamsSetter({
+        sidePath: ["view"],
+        publication: publication.publicationId,
+      }),
     },
     {
       icon: "upload",

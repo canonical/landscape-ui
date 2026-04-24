@@ -23,7 +23,7 @@ describe("RemovePublicationModal", () => {
     renderWithProviders(<RemovePublicationModal {...props} />);
 
     expect(
-      screen.queryByRole("heading", { name: "Remove publication" }),
+      screen.queryByRole("heading", { name: `Remove ${publicationLabel}` }),
     ).not.toBeInTheDocument();
   });
 
@@ -36,12 +36,14 @@ describe("RemovePublicationModal", () => {
 
     renderWithProviders(<RemovePublicationModal {...props} />);
 
-    await user.click(screen.getByRole("button", { name: "Remove" }));
+    await user.click(screen.getByRole("button", { name: "Remove publication" }));
 
     expect(props.close).toHaveBeenCalledTimes(1);
-    expect(await screen.findByText("Publication removed")).toBeInTheDocument();
     expect(
-      screen.getByText(`Publication "${publicationLabel}" has been removed.`),
+      await screen.findByText(`You have successfully removed ${publicationLabel}`),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("The publication has been removed from Landscape."),
     ).toBeInTheDocument();
   });
 
@@ -56,7 +58,7 @@ describe("RemovePublicationModal", () => {
 
     renderWithProviders(<RemovePublicationModal {...props} />);
 
-    await user.click(screen.getByRole("button", { name: "Remove" }));
+    await user.click(screen.getByRole("button", { name: "Remove publication" }));
 
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(

@@ -29,8 +29,9 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
       });
 
       notify.success({
-        title: "Publication republished",
-        message: `Publication "${publication.label}" has been queued for republishing.`,
+        title: `You have marked ${publication.label} to be republished`,
+        message:
+          "This publication has been queued for republishing to the designated target.",
       });
     } catch (error) {
       debug(error);
