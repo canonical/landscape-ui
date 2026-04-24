@@ -36,11 +36,15 @@ describe("RemovePublicationModal", () => {
 
     renderWithProviders(<RemovePublicationModal {...props} />);
 
-    await user.click(screen.getByRole("button", { name: "Remove publication" }));
+    await user.click(
+      screen.getByRole("button", { name: "Remove publication" }),
+    );
 
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(
-      await screen.findByText(`You have successfully removed ${publicationLabel}`),
+      await screen.findByText(
+        `You have successfully removed ${publicationLabel}`,
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByText("The publication has been removed from Landscape."),
@@ -58,7 +62,9 @@ describe("RemovePublicationModal", () => {
 
     renderWithProviders(<RemovePublicationModal {...props} />);
 
-    await user.click(screen.getByRole("button", { name: "Remove publication" }));
+    await user.click(
+      screen.getByRole("button", { name: "Remove publication" }),
+    );
 
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(

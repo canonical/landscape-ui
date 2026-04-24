@@ -40,7 +40,9 @@ describe("RepublishPublicationModal", () => {
 
     expect(props.close).toHaveBeenCalledTimes(1);
     expect(
-      await screen.findByText(`You have marked ${publicationLabel} to be republished`),
+      await screen.findByText(
+        `You have marked ${publicationLabel} to be republished`,
+      ),
     ).toBeInTheDocument();
     expect(
       screen.getByText(

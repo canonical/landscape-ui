@@ -16,10 +16,12 @@ vi.mock("usehooks-ts", async () => {
 
 describe("SecondaryNavigation", () => {
   it("renders correctly", () => {
-    renderWithProviders(<SecondaryNavigation
-                          title={ACCOUNT_SETTINGS.label}
-                          items={ACCOUNT_SETTINGS.items}
-                        />);
+    renderWithProviders(
+      <SecondaryNavigation
+        title={ACCOUNT_SETTINGS.label}
+        items={ACCOUNT_SETTINGS.items}
+      />,
+    );
 
     expect(
       screen.getByRole("heading", { name: ACCOUNT_SETTINGS.label }),
