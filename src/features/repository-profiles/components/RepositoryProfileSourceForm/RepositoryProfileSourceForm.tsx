@@ -64,8 +64,7 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
       />
       <SidePanelFormButtons
         submitButtonText="Save changes"
-        hasBackButton
-        onBackButtonPress={onBack}
+        onCancel={onBack}
       />
     </Form>
   );

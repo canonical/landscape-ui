@@ -59,21 +59,12 @@ const RepositoryProfileFormSourcesSection: FC<
             original.name
         ),
       },
-      // {
-      //   accessor: "type",
-      //   Header: "Type",
-      //   Cell: () => (
-      //     <span className="u-truncate" title="Deb line">
-      //       Deb line
-      //     </span>
-      //   ),
-      // },
       {
         accessor: "status",
         Header: "Status",
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
           <span className="u-truncate" title="Deb line">
-            {original.isPending && "Pending"}
+            {original.isPending ? "Pending" : "Saved"}
           </span>
         ),
       },

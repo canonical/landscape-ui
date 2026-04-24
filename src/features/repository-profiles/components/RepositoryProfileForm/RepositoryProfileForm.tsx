@@ -37,7 +37,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelTitle } = useSidePanel();
+  const { closeSidePanel, setSidePanelTitle, setOnCloseOverride } = useSidePanel();
 
   const panelTitle =
     props.action === "add"
@@ -92,8 +92,8 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         });
         closeSidePanel();
         notify.success({
-          title: "Repository profile updated",
-          message: `Repository profile "${values.title}" updated successfully`,
+          title: `You have successfully edited ${values.title}`,
+          message: `The repository profile details have been updated.`,
         });
       }
     } catch (error) {
@@ -127,6 +127,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     setShowSourceOverlay(false);
     setSourceToEdit(null);
     setSidePanelTitle(panelTitle);
+    setOnCloseOverride(undefined);
   };
 
   const handleAddSource = (source: APTSource) => {
@@ -149,6 +150,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const handleEditSource = (source: APTSource) => {
     setSourceToEdit(source);
     setShowSourceOverlay(true);
+    setOnCloseOverride(closeSourceOverlay);
     setSidePanelTitle(
       <>
         <Link
@@ -204,6 +206,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
                   appearance="base"
                   onClick={() => {
                     setShowSourceOverlay(true);
+                    setOnCloseOverride(closeSourceOverlay);
                     setSidePanelTitle(
                       <>
                         <Link
