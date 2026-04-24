@@ -22,7 +22,7 @@ const PublishLocalRepositoryGuard: FC<PublishRepositoryGuardProps> = ({
     return <LoadingState />;
   }
 
-  if (publicationTargets.length) {
+  if (!publicationTargets.length) {
     return <NoPublicationTargetsModal close={close} />;
   }
 

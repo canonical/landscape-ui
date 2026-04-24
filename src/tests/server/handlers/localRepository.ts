@@ -8,7 +8,11 @@ import {
   inProgressTask,
   emptyTask,
 } from "@/tests/mocks/localRepositories";
-import type { ImportLocalPackagesRequest, BatchGetLocalsRequest, CreateLocalRequest } from "@/features/local-repositories";
+import type {
+  ImportLocalPackagesRequest,
+  BatchGetLocalsRequest,
+  CreateLocalRequest,
+} from "@/features/local-repositories";
 
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
@@ -37,11 +41,16 @@ export default [
     },
   ),
 
-  http.post<never, BatchGetLocalsRequest>(`${API_URL_DEB_ARCHIVE}locals\\:batchGet`, async ({ request }) => {
-    const { names } = await request.json();
+  http.post<never, BatchGetLocalsRequest>(
+    `${API_URL_DEB_ARCHIVE}locals\\:batchGet`,
+    async ({ request }) => {
+      const { names } = await request.json();
 
-    return HttpResponse.json(repositories.filter(({ name }) => names.includes(name)));
-  }),
+      return HttpResponse.json(
+        repositories.filter(({ name }) => names.includes(name)),
+      );
+    },
+  ),
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository`, ({ params }) => {
     const { repository } = params;

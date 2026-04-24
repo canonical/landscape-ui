@@ -5,8 +5,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { Local } from "../types";
 
 interface UpdateLocalRepositoryParams {
-  readonly local: Partial<Local> &
-    Required<Pick<Local, "name">>;
+  readonly local: Partial<Local> & Required<Pick<Local, "name">>;
   readonly field_mask?: string[];
 }
 

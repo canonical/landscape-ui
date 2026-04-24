@@ -36,9 +36,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
           ariaLabel: ({ original: repository }) =>
             `${repository.display_name} local repository name`,
         },
-        Cell: ({
-          row: { original: repository },
-        }: CellProps<Local>) => (
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <Button
             type="button"
             appearance="link"
@@ -69,9 +67,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
           ariaLabel: ({ original: repository }) =>
             `${repository.display_name} local repository packages`,
         },
-        Cell: ({
-          row: { original: repository },
-        }: CellProps<Local>) => (
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoryPackagesCount repository={repository} />
         ),
       },
@@ -81,9 +77,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
           ariaLabel: ({ original: repository }) =>
             `${repository.display_name} local repository publications`,
         },
-        Cell: ({
-          row: { original: repository },
-        }: CellProps<Local>) => (
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoryPublicationsCount repository={repository} />
         ),
       },
@@ -93,9 +87,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
           ariaLabel: ({ original: repository }) =>
             `"${repository.display_name}" local repository actions`,
         },
-        Cell: ({
-          row: { original: repository },
-        }: CellProps<Local>) => (
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoriesListActions repository={repository} />
         ),
       },
