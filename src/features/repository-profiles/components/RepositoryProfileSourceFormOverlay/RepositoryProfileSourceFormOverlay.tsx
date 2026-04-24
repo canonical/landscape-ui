@@ -25,7 +25,7 @@ const RepositoryProfileSourceFormOverlay: FC<
       <div className={classes.content}>
         <RepositoryProfileSourceForm
           onSuccess={onSourceAdded}
-          onCancel={onClose}
+          onBack={onClose}
           initialValues={derivedInitialValues}
         />
       </div>

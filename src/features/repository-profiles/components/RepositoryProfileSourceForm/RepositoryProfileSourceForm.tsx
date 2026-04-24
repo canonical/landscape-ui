@@ -10,13 +10,13 @@ import { getValidationSchema } from "./helpers";
 
 interface RepositoryProfileSourceFormProps {
   readonly onSuccess: (source: APTSource) => void;
-  readonly onCancel: () => void;
+  readonly onBack: () => void;
   readonly initialValues?: RepositoryProfileSourceFormValues;
 }
 
 const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
   onSuccess,
-  onCancel,
+  onBack,
   initialValues,
 }) => {
   const formik = useFormik<RepositoryProfileSourceFormValues>({
@@ -40,7 +40,9 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
       <Input
         type="text"
         label="Source name"
-        help="Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +."
+        help={!formik.errors.name 
+          ? "Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +." 
+          : undefined}
         required
         autoComplete="off"
         error={getFormikError(formik, "name")}
@@ -62,7 +64,8 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
       />
       <SidePanelFormButtons
         submitButtonText="Save changes"
-        onCancel={onCancel}
+        hasBackButton
+        onBackButtonPress={onBack}
       />
     </Form>
   );

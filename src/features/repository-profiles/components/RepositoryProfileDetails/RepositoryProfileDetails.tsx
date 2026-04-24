@@ -9,7 +9,7 @@ import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { APTSource } from "@/features/apt-sources";
 import type { FC } from "react";
 import { Suspense, lazy, useMemo, useState } from "react";
-import type { Column, CellProps } from "react-table";
+import type { Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
 import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
@@ -29,12 +29,6 @@ const aptSourceColumns: Column<APTSource>[] = [
   {
     accessor: "name",
     Header: "Source",
-  },
-  {
-    id: "type",
-    Header: "Type",
-    Cell: ({ row: { original } }: CellProps<APTSource>) =>
-      original.line.startsWith("deb-src") ? "Source" : "Binary",
   },
 ];
 
@@ -65,7 +59,7 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
 
   const handleEditProfile = (): void => {
     setSidePanelContent(
-      `Edit "${profile.title}" profile`,
+      `Edit ${profile.title}`,
       <Suspense fallback={<LoadingState />}>
         <RepositoryProfileForm action="edit" profile={profile} />
       </Suspense>,
@@ -91,7 +85,7 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
 
   return (
     <>
-      <div className="p-segmented-control">
+      <div className="p-segmented-control u-sv2">
         <div className="p-segmented-control__list">
           <Button
             type="button"
@@ -115,41 +109,41 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
           </Button>
         </div>
       </div>
+      <Blocks dense>
+        <ViewProfileGeneralBlock profile={profile} type={ProfileTypes.repository} />
+        <Blocks.Item title="Sources">
+          <ModularTable
+            columns={aptSourceColumns}
+            data={pagedSources}
+            emptyMsg="No sources have been added yet."
+          />
+          <ModalTablePagination
+            current={safeSourcesPage}
+            max={totalSourcePages}
+            onPrev={() => { setSourcesPage(safeSourcesPage - 1); }}
+            onNext={() => { setSourcesPage(safeSourcesPage + 1); }}
+          />
+        </Blocks.Item>
+        </Blocks>
 
-      <ViewProfileGeneralBlock profile={profile} type={ProfileTypes.repository} />
+        <ViewProfileAssociationBlock profile={profile} type={ProfileTypes.repository} />
 
-      <Blocks.Item title="Sources">
-        <ModularTable
-          columns={aptSourceColumns}
-          data={pagedSources}
-          emptyMsg="No sources have been added yet."
-        />
-        <ModalTablePagination
-          current={safeSourcesPage}
-          max={totalSourcePages}
-          onPrev={() => { setSourcesPage(safeSourcesPage - 1); }}
-          onNext={() => { setSourcesPage(safeSourcesPage + 1); }}
-        />
-      </Blocks.Item>
-
-      <ViewProfileAssociationBlock profile={profile} type={ProfileTypes.repository} />
-
-      <TextConfirmationModal
-        isOpen={isModalOpen}
-        confirmationText={`remove ${profile.title}`}
-        title="Remove repository profile"
-        confirmButtonLabel="Remove"
-        confirmButtonAppearance="negative"
-        confirmButtonDisabled={isRemoving}
-        confirmButtonLoading={isRemoving}
-        onConfirm={handleRemoveProfile}
-        close={closeModal}
-      >
-        <p>
-          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-          <b>irreversible</b>.
-        </p>
-      </TextConfirmationModal>
+        <TextConfirmationModal
+          isOpen={isModalOpen}
+          confirmationText={`remove ${profile.title}`}
+          title="Remove repository profile"
+          confirmButtonLabel="Remove"
+          confirmButtonAppearance="negative"
+          confirmButtonDisabled={isRemoving}
+          confirmButtonLoading={isRemoving}
+          onConfirm={handleRemoveProfile}
+          close={closeModal}
+        >
+          <p>
+            This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+            <b>irreversible</b>.
+          </p>
+        </TextConfirmationModal>
     </>
   );
 };

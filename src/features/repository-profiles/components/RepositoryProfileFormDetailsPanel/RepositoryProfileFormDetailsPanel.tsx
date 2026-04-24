@@ -4,6 +4,7 @@ import { Input, Select } from "@canonical/react-components";
 import type { RepositoryProfileFormValues } from "../../types";
 import type { AccessGroup } from "@/features/access-groups";
 import { getFormikError } from "@/utils/formikErrors";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface RepositoryProfileFormDetailsPanelProps {
   readonly accessGroups: AccessGroup[];
@@ -41,14 +42,21 @@ const RepositoryProfileFormDetailsPanel: FC<
         error={getFormikError(formik, "description")}
         {...formik.getFieldProps("description")}
       />
-      <Select
-        label="Access group"
-        options={accessGroupOptions}
-        required
-        disabled={isAccessGroupDisabled}
-        error={getFormikError(formik, "access_group")}
-        {...formik.getFieldProps("access_group")}
-      />
+      {isAccessGroupDisabled ? (
+        <ReadOnlyField
+          label="Access group"
+          tooltipMessage={`You can't change the access group after the repository profile has been created`}
+          {...formik.getFieldProps("access_group")}
+        />
+      ) : (
+        <Select
+          label="Access group"
+          options={accessGroupOptions}
+          required
+          error={getFormikError(formik, "access_group")}
+          {...formik.getFieldProps("access_group")}
+        />
+      )}
     </>
   );
 };
