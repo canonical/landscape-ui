@@ -5,9 +5,12 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
   Form,
+  Icon,
+  ICONS,
   Input,
   Select,
   Textarea,
+  Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ComponentProps, FC } from "react";
@@ -25,6 +28,8 @@ import usePageParams from "@/hooks/usePageParams";
 import SelectableMirrorContentsBlock from "../SelectableMirrorContentsBlock";
 import { UBUNTU_SNAPSHOTS_HOST } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import { isArchiveInfoValid } from "../../helpers";
+import * as Yup from "yup";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
@@ -41,6 +46,34 @@ const AddMirrorForm: FC = () => {
       ubuntuArchiveInfo,
       ubuntuEsmInfo,
     }),
+
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("This field is required."),
+      sourceType: Yup.string().required("This field is required."),
+      sourceUrl: Yup.string().required("This field is required."),
+      distribution: Yup.string().required("This field is required."),
+      components: Yup.array()
+        .of(Yup.string())
+        .min(1, "At least one component must be specified."),
+      architectures: Yup.array()
+        .of(Yup.string())
+        .min(1, "At least one architecture must be specified."),
+      token: Yup.string().when("sourceType", {
+        is: "ubuntu-pro",
+        then: (schema) => schema.required("This field is required."),
+      }),
+      snapshotDate: Yup.string().when("sourceType", {
+        is: "ubuntu-snapshots",
+        then: (schema) => schema.required("This field is required."),
+      }),
+      proService: Yup.string().when("sourceType", {
+        is: "ubuntu-pro",
+        then: (schema) => schema.required("This field is required."),
+      }),
+    }),
+
+    validateOnBlur: true,
+
     onSubmit: async (values) => {
       try {
         const archiveRoot =
@@ -79,12 +112,11 @@ const AddMirrorForm: FC = () => {
     },
   });
 
-  const proServiceOptions: SelectOption[] = ubuntuEsmInfo.map(
-    ({ label, mirror_type }) => ({
-      label,
-      value: mirror_type,
-    }),
-  );
+  const proServiceOptions: SelectOption[] = ubuntuEsmInfo.map((proService) => ({
+    label: proService.label,
+    value: proService.mirror_type,
+    disabled: !isArchiveInfoValid(proService),
+  }));
 
   return (
     <>
@@ -107,17 +139,17 @@ const AddMirrorForm: FC = () => {
                   {
                     label: "Ubuntu archive",
                     value: "ubuntu-archive",
-                    disabled: !ubuntuArchiveInfo.distributions.length,
+                    disabled: !isArchiveInfoValid(ubuntuArchiveInfo),
                   },
                   {
                     label: "Ubuntu snapshots",
                     value: "ubuntu-snapshots",
-                    disabled: !ubuntuArchiveInfo.distributions.length,
+                    disabled: !isArchiveInfoValid(ubuntuArchiveInfo),
                   },
                   {
                     label: "Ubuntu Pro",
                     value: "ubuntu-pro",
-                    disabled: !ubuntuEsmInfo.length,
+                    disabled: !ubuntuEsmInfo.some(isArchiveInfoValid),
                   },
                   { label: "Third party", value: "third-party" },
                 ]}
@@ -211,9 +243,10 @@ const AddMirrorForm: FC = () => {
                     onChange={async (event) => {
                       await formik.setFieldValue(
                         "components",
-                        event.target.value.split(", "),
+                        event.target.value.split(", ").filter(Boolean),
                       );
                     }}
+                    required
                   />
                   <Input
                     type="text"
@@ -224,9 +257,10 @@ const AddMirrorForm: FC = () => {
                     onChange={async (event) => {
                       await formik.setFieldValue(
                         "architectures",
-                        event.target.value.split(", "),
+                        event.target.value.split(", ").filter(Boolean),
                       );
                     }}
+                    required
                   />
                 </>
               ) : (
@@ -242,10 +276,17 @@ const AddMirrorForm: FC = () => {
               )}
               <p>Download options:</p>
               <CheckboxInput
-                label="Download .udeb packages"
+                label="Download .udeb packages "
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
+                inline
               />
+              <Tooltip
+                position="right"
+                message="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
+              >
+                <Icon name={ICONS.help} />
+              </Tooltip>
               <CheckboxInput
                 label="Download sources"
                 {...formik.getFieldProps("downloadSources")}

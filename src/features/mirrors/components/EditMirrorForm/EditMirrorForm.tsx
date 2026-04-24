@@ -11,8 +11,11 @@ import Blocks from "@/components/layout/Blocks";
 import {
   CheckboxInput,
   Form,
+  Icon,
+  ICONS,
   Input,
   Textarea,
+  Tooltip,
 } from "@canonical/react-components";
 import { getFormikError } from "@/utils/formikErrors";
 import { getSourceType } from "../MirrorDetails/helpers";
@@ -22,6 +25,7 @@ import {
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import * as Yup from "yup";
 
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
@@ -42,6 +46,11 @@ const EditMirrorForm: FC = () => {
       downloadInstallerFiles: !!mirror.downloadInstaller,
       verificationGpgKey: mirror.gpgKey?.armor,
     },
+
+    validationSchema: Yup.object().shape({
+      name: Yup.string().required("This field is required."),
+    }),
+
     onSubmit: async (values) => {
       try {
         await updateMirror({
@@ -115,10 +124,17 @@ const EditMirrorForm: FC = () => {
               />
               <p>Download options:</p>
               <CheckboxInput
-                label="Download .udeb packages"
+                label="Download .udeb packages "
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
+                inline
               />
+              <Tooltip
+                position="right"
+                message="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
+              >
+                <Icon name={ICONS.help} />
+              </Tooltip>
               <CheckboxInput
                 label="Download sources"
                 {...formik.getFieldProps("downloadSources")}

@@ -2309,6 +2309,47 @@ export const ubuntuArchiveInfo = {
         },
       ],
     },
+    {
+      slug: "one-component-one-architecture",
+      label: "one-component-one-architecture",
+      preselected: false,
+      components: [
+        {
+          slug: "main",
+          preselected: true,
+        },
+      ],
+      architectures: [
+        {
+          slug: "i386",
+          preselected: false,
+        },
+      ],
+    },
+    {
+      slug: "no-components",
+      label: "no-components",
+      preselected: false,
+      components: [],
+      architectures: [
+        {
+          slug: "i386",
+          preselected: false,
+        },
+      ],
+    },
+    {
+      slug: "no-architectures",
+      label: "no-architectures",
+      preselected: false,
+      components: [
+        {
+          slug: "main",
+          preselected: true,
+        },
+      ],
+      architectures: [],
+    },
   ],
 } as const satisfies UbuntuArchiveInfo;
 
@@ -4173,6 +4214,25 @@ export const ubuntuESMInfo = [
             preselected: false,
           },
         ],
+      },
+    ],
+  },
+  {
+    label: "Pro service with no valid distributions",
+    mirror_type: "invalid",
+    mirror_url: "https://esm.ubuntu.com/invalid/ubuntu/",
+    distributions: [
+      {
+        slug: "jammy",
+        label: "jammy",
+        preselected: true,
+        components: [
+          {
+            slug: "main",
+            preselected: true,
+          },
+        ],
+        architectures: [],
       },
     ],
   },

@@ -6,6 +6,9 @@ import type { FC } from "react";
 import type { FormProps, ThirdPartyFormProps } from "../AddMirrorForm/types";
 import type { UbuntuArchiveInfo } from "../../types";
 import { getFormikError } from "@/utils/formikErrors";
+import { hasOneItem } from "@/utils/_helpers";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
+import { isDistributionValid } from "../../helpers";
 
 interface SelectableMirrorContentsBlockProps {
   readonly formik: FormikContextType<Exclude<FormProps, ThirdPartyFormProps>>;
@@ -21,21 +24,27 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
   const getDistributions = () => {
     switch (formik.values.sourceType) {
       case "ubuntu-archive":
-      case "ubuntu-snapshots":
+      case "ubuntu-snapshots": {
         return ubuntuArchiveInfo.distributions;
-      case "ubuntu-pro":
-        return ubuntuEsmInfo.find(
+      }
+
+      case "ubuntu-pro": {
+        const proService = ubuntuEsmInfo.find(
           ({ mirror_type }) => mirror_type === formik.values.proService,
-        )!.distributions;
+        );
+
+        return proService ? proService.distributions : [];
+      }
     }
   };
 
   const distributions = getDistributions();
 
   const distributionOptions: SelectOption[] = distributions.map(
-    ({ label, slug }) => ({
-      label,
-      value: slug,
+    (distribution) => ({
+      label: distribution.label,
+      value: distribution.slug,
+      disabled: !isDistributionValid(distribution),
     }),
   );
 
@@ -57,45 +66,71 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
 
   return (
     <>
-      <Select
-        label="Distribution"
-        required
-        options={distributionOptions}
-        {...formik.getFieldProps("distribution")}
-        error={getFormikError(formik, "distribution")}
-      />
-      <MultiSelectField
-        variant="condensed"
-        hasSelectedItemsFirst={false}
-        label="Components"
-        {...formik.getFieldProps("components")}
-        items={componentOptions}
-        selectedItems={componentOptions.filter(({ value }) =>
-          formik.values.components?.includes(value),
-        )}
-        onItemsUpdate={async (items) =>
-          formik.setFieldValue(
-            "components",
-            items.map(({ value }) => value),
-          )
-        }
-      />
-      <MultiSelectField
-        variant="condensed"
-        hasSelectedItemsFirst={false}
-        label="Architectures"
-        {...formik.getFieldProps("architectures")}
-        items={architectureOptions}
-        selectedItems={architectureOptions.filter(({ value }) =>
-          formik.values.architectures?.includes(value),
-        )}
-        onItemsUpdate={async (items) =>
-          formik.setFieldValue(
-            "architectures",
-            items.map(({ value }) => value),
-          )
-        }
-      />
+      {hasOneItem(distributionOptions) ? (
+        <ReadOnlyField
+          label="Distribution"
+          value={distributionOptions[0].label}
+          tooltipMessage="This source only has one distribution."
+        />
+      ) : (
+        <Select
+          label="Distribution"
+          required
+          options={distributionOptions}
+          {...formik.getFieldProps("distribution")}
+          error={getFormikError(formik, "distribution")}
+        />
+      )}
+      {hasOneItem(componentOptions) ? (
+        <ReadOnlyField
+          label="Components"
+          value={componentOptions[0].label}
+          tooltipMessage="This distribution only has one component."
+        />
+      ) : (
+        <MultiSelectField
+          variant="condensed"
+          hasSelectedItemsFirst={false}
+          label="Components"
+          {...formik.getFieldProps("components")}
+          items={componentOptions}
+          selectedItems={componentOptions.filter(({ value }) =>
+            formik.values.components?.includes(value),
+          )}
+          onItemsUpdate={async (items) =>
+            formik.setFieldValue(
+              "components",
+              items.map(({ value }) => value),
+            )
+          }
+          required
+        />
+      )}
+      {hasOneItem(architectureOptions) ? (
+        <ReadOnlyField
+          label="Architectures"
+          value={architectureOptions[0].label}
+          tooltipMessage="This distribution only has one architecture."
+        />
+      ) : (
+        <MultiSelectField
+          variant="condensed"
+          hasSelectedItemsFirst={false}
+          label="Architectures"
+          {...formik.getFieldProps("architectures")}
+          items={architectureOptions}
+          selectedItems={architectureOptions.filter(({ value }) =>
+            formik.values.architectures?.includes(value),
+          )}
+          onItemsUpdate={async (items) =>
+            formik.setFieldValue(
+              "architectures",
+              items.map(({ value }) => value),
+            )
+          }
+          required
+        />
+      )}
     </>
   );
 };

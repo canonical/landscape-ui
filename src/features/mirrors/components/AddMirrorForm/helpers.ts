@@ -15,6 +15,8 @@ import type {
   UbuntuArchiveInfo,
 } from "../../types";
 import { UBUNTU_ARCHIVE_HOST, UBUNTU_PRO_HOST } from "../../constants";
+import { hasOneItem } from "@/utils/_helpers";
+import { isArchiveInfoValid } from "../../helpers";
 
 export function getStrippedUrl(url: string): string {
   return url.replace(/\/[^\\/@]*@/, "/");
@@ -27,9 +29,9 @@ export function getInitialSourceType({
   ubuntuArchiveInfo: UbuntuArchiveInfo;
   ubuntuEsmInfo: UbuntuArchiveInfo[];
 }) {
-  if (ubuntuArchiveInfo.distributions.length) {
+  if (isArchiveInfoValid(ubuntuArchiveInfo)) {
     return "ubuntu-archive";
-  } else if (ubuntuEsmInfo.length) {
+  } else if (ubuntuEsmInfo.some(isArchiveInfoValid)) {
     return "ubuntu-pro";
   } else {
     return "third-party";
@@ -61,13 +63,21 @@ export function getInitialBaseValues(
 ): Omit<BaseFormProps, "sourceType" | "sourceUrl"> {
   const distribution: Distribution = getInitialDistribution(distributions);
 
-  const components: string[] = distribution.components
-    .filter(({ preselected }) => preselected)
-    .map((component) => component.slug);
+  const preselectedComponents = hasOneItem(distribution.components)
+    ? distribution.components
+    : distribution.components.filter(({ preselected }) => preselected);
 
-  const architectures: string[] = distribution.architectures
-    .filter(({ preselected }) => preselected)
-    .map((architecture) => architecture.slug);
+  const components: string[] = preselectedComponents.map(
+    (component) => component.slug,
+  );
+
+  const preselectedArchitectures = hasOneItem(distribution.architectures)
+    ? distribution.architectures
+    : distribution.architectures.filter(({ preselected }) => preselected);
+
+  const architectures: string[] = preselectedArchitectures.map(
+    (architecture) => architecture.slug,
+  );
 
   return {
     name: "",
@@ -104,12 +114,15 @@ export function getInitialUbuntuSnapshotsValues(
 export const getInitialUbuntuProValues = (
   ubuntuEsmInfo: UbuntuArchiveInfo[],
 ): UbuntuProFormProps => {
+  const [firstValidProService] = ubuntuEsmInfo.filter(isArchiveInfoValid);
   return {
-    ...getInitialBaseValues(ubuntuEsmInfo[0]!.distributions),
+    ...getInitialBaseValues(
+      firstValidProService ? firstValidProService.distributions : [],
+    ),
     sourceType: "ubuntu-pro",
     token: "",
     sourceUrl: `https://${UBUNTU_PRO_HOST}/`,
-    proService: ubuntuEsmInfo[0]!.mirror_type,
+    proService: firstValidProService ? firstValidProService.mirror_type : "",
   };
 };
 
