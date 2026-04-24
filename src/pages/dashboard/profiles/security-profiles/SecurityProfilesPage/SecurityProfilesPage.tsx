@@ -83,7 +83,7 @@ const SecurityProfilesPage: FC = () => {
 
   const openAddSidePanel = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   return (
@@ -147,7 +147,7 @@ const SecurityProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         isOpen={!!sidePath.length}
         size={lastSidePathSegment === "view" ? "medium" : undefined}
       >

@@ -12,8 +12,9 @@ import { getPublicationTargetName, getSourceName } from "../../helpers";
 import PublicationDetails from "../PublicationDetails";
 
 const PublicationDetailsSidePanel: FC = () => {
-  const { publication: publicationId } = usePageParams();
-  const { publication, isGettingPublication } = useGetPublication(publicationId);
+  const { name: publicationId } = usePageParams();
+  const { publication, isGettingPublication } =
+    useGetPublication(publicationId);
 
   const publicationTargetNames = useMemo(
     () => (publication ? [publication.publicationTarget] : []),
@@ -32,8 +33,9 @@ const PublicationDetailsSidePanel: FC = () => {
     [publication],
   );
 
-  const { publicationTargetDisplayNames } =
-    useBatchGetPublicationTargets(publicationTargetNames);
+  const { publicationTargetDisplayNames } = useBatchGetPublicationTargets(
+    publicationTargetNames,
+  );
   const { mirrorDisplayNames } = useBatchGetMirrors(mirrorNames);
   const { localDisplayNames } = useBatchGetLocals(localNames);
 

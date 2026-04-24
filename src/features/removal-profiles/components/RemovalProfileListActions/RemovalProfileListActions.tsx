@@ -23,7 +23,7 @@ const RemovalProfileListActions: FC<RemovalProfileListActionsProps> = ({
 
   const handleRemovalProfileEdit = createPageParamsSetter({
     sidePath: ["edit"],
-    profile: profile.id.toString(),
+    name: profile.id.toString(),
   });
 
   const actions: Action[] = [

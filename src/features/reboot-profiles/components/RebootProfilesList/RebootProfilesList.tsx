@@ -55,7 +55,7 @@ const RebootProfilesList: FC<RebootProfilesListProps> = ({ profiles }) => {
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              profile: original.id.toString(),
+              name: original.id.toString(),
             })}
           >
             {original.title}

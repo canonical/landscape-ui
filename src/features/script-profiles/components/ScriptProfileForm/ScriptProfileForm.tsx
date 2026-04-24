@@ -67,7 +67,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,

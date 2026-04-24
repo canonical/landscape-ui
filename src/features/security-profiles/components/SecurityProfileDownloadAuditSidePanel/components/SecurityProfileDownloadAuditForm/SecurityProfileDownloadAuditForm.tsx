@@ -307,7 +307,7 @@ const SecurityProfileDownloadAuditForm: FC<
         submitButtonText="Generate CSV"
         hasBackButton={sidePath.length > 1}
         onBackButtonPress={popSidePath}
-        onCancel={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
       />
     </>
   );

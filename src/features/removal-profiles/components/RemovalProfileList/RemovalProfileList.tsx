@@ -55,7 +55,7 @@ const RemovalProfileList: FC<RemovalProfileListProps> = ({ profiles }) => {
               appearance="link"
               onClick={createPageParamsSetter({
                 sidePath: ["view"],
-                profile: original.id.toString(),
+                name: original.id.toString(),
               })}
               className="u-no-margin--bottom u-no-padding--top u-align--left"
               aria-label={`Open "${original.title}" profile details`}

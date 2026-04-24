@@ -8,7 +8,7 @@ const useGetPageRebootProfile = ():
       isGettingRebootProfile: false;
     }
   | { rebootProfile: undefined; isGettingRebootProfile: true } => {
-  const { profile: rebootProfileId } = usePageParams();
+  const { name: rebootProfileId } = usePageParams();
 
   const { isGettingRebootProfile, rebootProfile, rebootProfileError } =
     useGetRebootProfile({ id: parseInt(rebootProfileId) });

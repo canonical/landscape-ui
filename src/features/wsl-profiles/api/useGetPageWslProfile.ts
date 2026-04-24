@@ -11,7 +11,7 @@ const useGetPageWslProfile = ():
       wslProfile: undefined;
       isGettingWslProfile: true;
     } => {
-  const { profile: wslProfileName } = usePageParams();
+  const { name: wslProfileName } = usePageParams();
 
   const { wslProfile, isGettingWslProfile, wslProfileError } = useGetWslProfile(
     { profile_name: wslProfileName },

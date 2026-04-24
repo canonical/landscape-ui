@@ -167,7 +167,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
             appearance="link"
             onClick={createPageParamsSetter({
               sidePath: ["edit"],
-              profile: overLimitSecurityProfiles[0].id.toString(),
+              name: overLimitSecurityProfiles[0].id.toString(),
             })}
           >
             Edit profile

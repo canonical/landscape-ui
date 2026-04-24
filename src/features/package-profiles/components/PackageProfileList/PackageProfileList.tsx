@@ -60,7 +60,7 @@ const PackageProfileList: FC<PackageProfileListProps> = ({
               className="u-no-margin--bottom u-no-padding--top u-align-text--left"
               onClick={createPageParamsSetter({
                 sidePath: ["view"],
-                profile: original.name,
+                name: original.name,
               })}
             >
               {original.title}

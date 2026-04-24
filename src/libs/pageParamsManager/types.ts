@@ -32,8 +32,7 @@ export interface PageParams {
   wsl: string[];
   code: string;
   sidePath: string[];
-  profile: string;
-  publication: string;
+  name: string;
 }
 
 /**

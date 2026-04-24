@@ -136,3 +136,34 @@ export const parseArray = (paramValue: string | null): string[] => {
     return ids.length > 0 ? ids : [];
   }
 };
+
+export const getDebArchivePaginationParams = (requestUrl: string) => {
+  const { searchParams } = new URL(requestUrl);
+  const pageSize = parseInt(searchParams.get("pageSize") ?? "20", 10);
+  const pageToken = parseInt(searchParams.get("pageToken") ?? "0", 10) || 0;
+
+  return {
+    pageSize,
+    pageToken,
+  };
+};
+
+export const getDebArchivePaginatedResponse = <
+  T extends Record<string, unknown>,
+>(
+  data: T[],
+  pageToken: number,
+  pageSize: number,
+) => {
+  const paginatedData = data.slice(pageToken, pageToken + pageSize);
+
+  const nextPageToken =
+    pageToken + pageSize < data.length
+      ? String(pageToken + pageSize)
+      : undefined;
+
+  return {
+    paginatedData,
+    nextPageToken,
+  };
+};

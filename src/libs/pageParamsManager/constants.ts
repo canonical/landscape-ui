@@ -136,12 +136,7 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_ARRAY,
   },
   {
-    urlParam: "profile",
-    shouldResetPage: false,
-    defaultValue: DEFAULT_EMPTY_STRING,
-  },
-  {
-    urlParam: "publication",
+    urlParam: "name",
     shouldResetPage: false,
     defaultValue: DEFAULT_EMPTY_STRING,
   },

@@ -2,19 +2,21 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type {
   PublishPublicationResponse,
   BatchGetPublicationTargetsResponse,
-  BatchGetMirrorsResponse,
   BatchGetLocalsResponse,
 } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   locals,
-  mirrors,
   publications,
   publicationTargets,
 } from "@/tests/mocks/publications";
 import type { StrictResponse } from "msw";
-import { http, HttpResponse } from "msw";
-import { generateFilteredResponse } from "./_helpers";
+import { delay, http, HttpResponse } from "msw";
+import {
+  generateFilteredResponse,
+  getDebArchivePaginatedResponse,
+  getDebArchivePaginationParams,
+} from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
@@ -38,52 +40,9 @@ const toObjectBody = (value: unknown): Record<string, unknown> => {
   return {};
 };
 
-const getPaginationParams = (requestUrl: string) => {
-  const { searchParams } = new URL(requestUrl);
-  const pageSize = parseInt(searchParams.get("pageSize") ?? "20", 10);
-  const pageToken = parseInt(searchParams.get("pageToken") ?? "0", 10) || 0;
-
-  return {
-    pageSize,
-    pageToken,
-  };
-};
-
-const getPaginatedResponse = <T extends Record<string, unknown>>(
-  data: T[],
-  pageToken: number,
-  pageSize: number,
-) => {
-  const paginatedData = data.slice(pageToken, pageToken + pageSize);
-
-  const nextPageToken =
-    pageToken + pageSize < data.length
-      ? String(pageToken + pageSize)
-      : undefined;
-
-  return {
-    paginatedData,
-    nextPageToken,
-  };
-};
-
-const getMirrorsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getPaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getPaginatedResponse(
-    mirrors,
-    pageToken,
-    pageSize,
-  );
-
-  return HttpResponse.json({
-    mirrors: paginatedData,
-    nextPageToken,
-  });
-};
-
 const getLocalsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getPaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getPaginatedResponse(
+  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     locals,
     pageToken,
     pageSize,
@@ -96,8 +55,8 @@ const getLocalsResponse = (requestUrl: string) => {
 };
 
 const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getPaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getPaginatedResponse(
+  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     publicationTargets,
     pageToken,
     pageSize,
@@ -112,7 +71,7 @@ const getPublicationTargetsResponse = (requestUrl: string) => {
 const getPublicationsResponse = (requestUrl: string) => {
   const { searchParams } = new URL(requestUrl);
   const search = searchParams.get("search") ?? undefined;
-  const { pageSize, pageToken } = getPaginationParams(requestUrl);
+  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
 
   const filteredPublications = search
     ? generateFilteredResponse(publications, search, [
@@ -122,7 +81,7 @@ const getPublicationsResponse = (requestUrl: string) => {
       ])
     : publications;
 
-  const { paginatedData, nextPageToken } = getPaginatedResponse(
+  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     filteredPublications,
     pageToken,
     pageSize,
@@ -212,17 +171,6 @@ const getBatchPublicationTargetsResponse = async (
   return HttpResponse.json({ publicationTargets: matched });
 };
 
-const getBatchMirrorsResponse = async (
-  request: Request,
-): Promise<StrictResponse<BatchGetMirrorsResponse>> => {
-  const body = (await request.json()) as { names?: string[] };
-  const requestedNames = body.names ?? [];
-  const matched = mirrors.filter(({ name }) =>
-    name ? requestedNames.includes(name) : false,
-  );
-  return HttpResponse.json({ mirrors: matched });
-};
-
 const getBatchLocalsResponse = async (
   request: Request,
 ): Promise<StrictResponse<BatchGetLocalsResponse>> => {
@@ -242,25 +190,8 @@ export default [
     },
   ),
 
-  http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, async ({ request }) => {
-    return getBatchMirrorsResponse(request);
-  }),
-
   http.post(`${API_URL_DEB_ARCHIVE}locals:batchGet`, async ({ request }) => {
     return getBatchLocalsResponse(request);
-  }),
-
-  http.get(`${API_URL_DEB_ARCHIVE}mirrors`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "mirrors"
-    ) {
-      return ENDPOINT_STATUS_API_ERROR;
-    }
-
-    return getMirrorsResponse(request.url);
   }),
 
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
@@ -296,7 +227,9 @@ export default [
     return getPublicationTargetsResponse(request.url);
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}publications`, ({ request }) => {
+  http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
+    await delay();
+
     const endpointStatus = getEndpointStatus();
 
     if (
