@@ -31,7 +31,7 @@ const PackageProfileRemoveModal: FC<PackageProfileRemoveModalProps> = ({
     try {
       await removePackageProfile({ name: packageProfile.name });
 
-      setPageParams({ sidePath: [], profile: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       notify.success({
         message: `Package profile "${packageProfile.name}" removed successfully.`,

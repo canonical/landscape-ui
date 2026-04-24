@@ -17,6 +17,7 @@ import gpgKey from "./gpgKey";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
+import mirrors from "./mirrors";
 import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
@@ -26,8 +27,8 @@ import process from "./process";
 import publications from "./publications";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
-import repo from "./repo";
 import reports from "./reports";
+import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
@@ -61,6 +62,7 @@ export default [
   ...instance,
   ...invitations,
   ...kernel,
+  ...mirrors,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,
@@ -69,8 +71,8 @@ export default [
   ...publications,
   ...rebootProfiles,
   ...removalProfiles,
-  ...repo,
   ...reports,
+  ...repository,
   ...repositoryProfiles,
   ...roles,
   ...savedSearches,

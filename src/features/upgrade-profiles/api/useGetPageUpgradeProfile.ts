@@ -11,7 +11,7 @@ const useGetPageUpgradeProfile = ():
       upgradeProfile: undefined;
       isGettingUpgradeProfile: true;
     } => {
-  const { profile: upgradeProfileId } = usePageParams();
+  const { name: upgradeProfileId } = usePageParams();
 
   const { isGettingUpgradeProfile, upgradeProfile, upgradeProfileError } =
     useGetUpgradeProfile(parseInt(upgradeProfileId));

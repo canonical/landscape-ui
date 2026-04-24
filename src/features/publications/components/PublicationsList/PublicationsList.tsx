@@ -39,7 +39,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              publication: row.original.publicationId,
+              name: row.original.publicationId,
             })}
           >
             {row.original.label}

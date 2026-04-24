@@ -31,7 +31,7 @@ const RemovalProfileRemoveModal: FC<RemovalProfileRemoveModalProps> = ({
     try {
       await removeRemovalProfile({ name: removalProfile.name });
 
-      setPageParams({ sidePath: [], profile: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       notify.success({
         title: "Removal profile removed",

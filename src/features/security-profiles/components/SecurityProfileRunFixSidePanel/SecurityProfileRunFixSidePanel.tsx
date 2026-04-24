@@ -28,7 +28,7 @@ const SecurityProfileRunFixSidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();

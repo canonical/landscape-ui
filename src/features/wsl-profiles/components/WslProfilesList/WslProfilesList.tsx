@@ -44,7 +44,7 @@ const WslProfilesList: FC = () => {
         Cell: ({ row: { original: wslProfile } }: CellProps<WslProfile>) => {
           const openWslProfileDetails = createPageParamsSetter({
             sidePath: ["view"],
-            profile: wslProfile.name,
+            name: wslProfile.name,
           });
 
           return (
@@ -177,7 +177,7 @@ const WslProfilesList: FC = () => {
             wslProfile={wslProfile}
             onClick={createPageParamsSetter({
               sidePath: ["noncompliant"],
-              profile: wslProfile.name,
+              name: wslProfile.name,
             })}
           />
         ),
