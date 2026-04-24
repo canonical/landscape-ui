@@ -24,6 +24,7 @@
     "tcm:watch": "pnpm tcm:run --watch"
   },
   "dependencies": {
+    "@canonical/landscape-openapi": "0.0.59",
     "@canonical/react-components": "4.5.0",
     "@monaco-editor/react": "4.7.0",
     "@sentry/react": "10.51.0",

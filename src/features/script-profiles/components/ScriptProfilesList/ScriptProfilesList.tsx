@@ -39,7 +39,7 @@ const ScriptProfilesList: FC<ScriptProfilesListProps> = ({ profiles }) => {
             className="u-no-margin u-no-padding--top u-align-text--left"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              profile: profile.id.toString(),
+              name: profile.id.toString(),
             })}
           >
             {profile.title}

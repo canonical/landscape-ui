@@ -34,7 +34,7 @@ const RemovalProfilesPage: FC = () => {
 
   const handleCreate = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   return (
@@ -58,7 +58,7 @@ const RemovalProfilesPage: FC = () => {
 
       <SidePanel
         isOpen={!!sidePath.length}
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">

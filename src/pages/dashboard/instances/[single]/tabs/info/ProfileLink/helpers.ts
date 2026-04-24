@@ -6,17 +6,17 @@ export const getTo = (profile: Profile) => {
     case "package":
       return ROUTES.profiles.package({
         sidePath: ["view"],
-        profile: profile.name || "",
+        name: profile.name || "",
       });
     case "reboot":
       return ROUTES.profiles.reboot({
         sidePath: ["view"],
-        profile: profile.id.toString() || "",
+        name: profile.id.toString() || "",
       });
     case "removal":
       return ROUTES.profiles.removal({
         sidePath: ["view"],
-        profile: profile.id.toString() || "",
+        name: profile.id.toString() || "",
       });
     case "repository":
       return ROUTES.repositories.repositoryProfiles({
@@ -26,22 +26,22 @@ export const getTo = (profile: Profile) => {
       return ROUTES.scripts.root({
         tab: "profiles",
         sidePath: ["view"],
-        profile: profile.id.toString() || "",
+        name: profile.id.toString() || "",
       });
     case "security":
       return ROUTES.profiles.security({
         sidePath: ["view"],
-        profile: profile.id.toString() || "",
+        name: profile.id.toString() || "",
       });
     case "upgrade":
       return ROUTES.profiles.upgrade({
         sidePath: ["view"],
-        profile: profile.id.toString() || "",
+        name: profile.id.toString() || "",
       });
     case "wsl":
       return ROUTES.profiles.wsl({
         sidePath: ["view"],
-        profile: profile.name || "",
+        name: profile.name || "",
       });
   }
 };

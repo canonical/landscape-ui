@@ -1,9 +1,10 @@
-import { mirrors, publicationTargets, publications } from "@/tests/mocks/publications";
+import { publicationTargets, publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationDetails from "./PublicationDetails";
+import { mirrors } from "@/tests/mocks/mirrors";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();

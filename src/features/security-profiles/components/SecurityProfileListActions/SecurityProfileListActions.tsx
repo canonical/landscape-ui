@@ -38,7 +38,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     try {
       const { data: activity } = await runSecurityProfile({ id: profile.id });
 
-      setPageParams({ sidePath: [], profile: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       const message = getNotificationMessage(profile.mode);
 
@@ -70,7 +70,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
       "aria-label": `View "${profile.title}" security profile details`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
-        profile: profile.id.toString(),
+        name: profile.id.toString(),
       }),
     },
     {
@@ -79,7 +79,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
       "aria-label": `Download "${profile.title}" security profile audit`,
       onClick: createPageParamsSetter({
         sidePath: ["download"],
-        profile: profile.id.toString(),
+        name: profile.id.toString(),
       }),
     },
   ];
@@ -92,7 +92,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
         "aria-label": `Edit "${profile.title}" security profile`,
         onClick: createPageParamsSetter({
           sidePath: ["edit"],
-          profile: profile.id.toString(),
+          name: profile.id.toString(),
         }),
       },
       {
@@ -105,7 +105,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
             return;
           }
 
-          setPageParams({ sidePath: ["run"], profile: profile.id.toString() });
+          setPageParams({ sidePath: ["run"], name: profile.id.toString() });
         },
         disabled: !profile.associated_instances,
       },
@@ -118,7 +118,7 @@ const SecurityProfileListActions: FC<SecurityProfileListActionsProps> = ({
     "aria-label": `Duplicate "${profile.title}" security profile`,
     onClick: createPageParamsSetter({
       sidePath: ["duplicate"],
-      profile: profile.id.toString(),
+      name: profile.id.toString(),
     }),
     disabled: profileLimitReached,
   });

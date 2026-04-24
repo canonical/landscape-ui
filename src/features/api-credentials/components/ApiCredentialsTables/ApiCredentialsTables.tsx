@@ -1,7 +1,7 @@
 import InfoItem from "@/components/layout/InfoItem";
 import { NOT_AVAILABLE } from "@/constants";
 import type { UserDetails } from "@/features/general-settings";
-import { distributionCardClasses, seriesCardClasses } from "@/features/mirrors";
+import { cardClasses } from "@/components/layout/Card";
 import useDebug from "@/hooks/useDebug";
 
 import {
@@ -98,10 +98,10 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
         : "Generate";
 
     return (
-      <div key={account.title} className={distributionCardClasses.item}>
-        <div className={seriesCardClasses.card}>
-          <div className={seriesCardClasses.header}>
-            <p className={seriesCardClasses.title}>{account.title}</p>
+      <div key={account.title} className={classes.container}>
+        <div className={cardClasses.card}>
+          <div className={cardClasses.header}>
+            <p className={cardClasses.title}>{account.title}</p>
             <ConfirmationButton
               className={classNames("u-no-margin--bottom", {
                 "is-small": isLargeScreen,
@@ -128,10 +128,7 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
             </ConfirmationButton>
           </div>
           <div
-            className={classNames(
-              seriesCardClasses.content,
-              classes.tableWrapper,
-            )}
+            className={classNames(cardClasses.content, classes.tableWrapper)}
           >
             {isLargeScreen ? (
               <ModularTable

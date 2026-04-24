@@ -1,6 +1,5 @@
 import type {
   Local,
-  Mirror,
   Publication,
   PublicationTarget,
 } from "@/features/publications";
@@ -42,27 +41,6 @@ export const publications = [
     },
   },
 ] as const satisfies Publication[];
-
-export const mirrors = [
-  {
-    name: "mirrors/ubuntu-archive-mirror",
-    mirrorId: "ubuntu-archive-mirror",
-    displayName: "Ubuntu archive mirror",
-    archiveRoot: "https://archive.ubuntu.com/ubuntu",
-    distribution: "jammy",
-    components: ["main", "restricted", "universe", "multiverse"],
-    architectures: ["amd64", "arm64"],
-  },
-  {
-    name: "mirrors/ubuntu-security-mirror",
-    mirrorId: "ubuntu-security-mirror",
-    displayName: "Security mirror",
-    archiveRoot: "https://security.ubuntu.com/ubuntu",
-    distribution: "noble",
-    components: ["main", "universe"],
-    architectures: ["amd64"],
-  },
-] as const satisfies Mirror[];
 
 export const locals = [
   {

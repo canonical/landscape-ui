@@ -24,7 +24,7 @@ const RemovalProfilesEmptyState: FC = () => {
         <Button
           key="table-add-new-mirror"
           appearance="positive"
-          onClick={createPageParamsSetter({ sidePath: ["add"], profile: "" })}
+          onClick={createPageParamsSetter({ sidePath: ["add"], name: "" })}
           type="button"
         >
           Add removal profile
