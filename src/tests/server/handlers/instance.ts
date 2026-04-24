@@ -64,6 +64,20 @@ export default [
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || 1;
 
+      if (
+        endpointStatus.status === "empty" &&
+        endpointStatus.path === "computers-pro-empty" &&
+        query.includes("has-pro-management:false")
+      ) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Instance>({
+            data: [],
+            limit,
+            offset,
+          }),
+        );
+      }
+
       if (query.includes("has-pro-management:false")) {
         return HttpResponse.json(
           generatePaginatedResponse<Instance>({
@@ -85,6 +99,21 @@ export default [
       }
 
       if (query.includes("access-group:empty-access-group")) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Instance>({
+            data: [],
+            limit,
+            offset,
+          }),
+        );
+      }
+
+      if (
+        endpointStatus.status === "empty" &&
+        endpointStatus.path === "empty-upgrades" &&
+        (query.includes("alert:security-upgrades") ||
+          query.includes("alert:package-upgrades"))
+      ) {
         return HttpResponse.json(
           generatePaginatedResponse<Instance>({
             data: [],
@@ -391,7 +420,49 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path ||
+        endpointStatus.path === "RebootComputers" ||
+        endpointStatus.path === "ShutdownComputers")
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
     return HttpResponse.json(activities[0]);
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "AcceptPendingComputers")) {
+      return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "AcceptPendingComputers"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json(pendingInstances);
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "RejectPendingComputers")) {
+      return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "RejectPendingComputers"
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json(pendingInstances);
   }),
 
   http.post<never, SanitizeInstanceParams, Activity>(
