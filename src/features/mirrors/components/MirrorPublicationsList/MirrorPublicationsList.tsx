@@ -30,6 +30,7 @@ const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
                 search: `?sidePath=view&name=${publication.publicationId}`,
               }}
               target={openInNewTab ? "_blank" : undefined}
+              rel={openInNewTab ? "noopener noreferrer" : undefined}
             >
               {publication.label}
             </Link>
