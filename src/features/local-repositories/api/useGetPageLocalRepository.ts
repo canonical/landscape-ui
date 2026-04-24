@@ -14,9 +14,9 @@ type GetPageLocalRepositoryReturnType =
 
 export const useGetPageLocalRepository =
   (): GetPageLocalRepositoryReturnType => {
-    const { repository: repositoryId } = usePageParams();
+    const { name } = usePageParams();
     const { repository, isGettingRepository, repositoryError } =
-      useGetLocalRepository(`locals/${repositoryId}`);
+      useGetLocalRepository(`locals/${name}`);
 
     if (repositoryError) {
       throw repositoryError;

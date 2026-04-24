@@ -75,7 +75,7 @@ const LocalRepositoriesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], repository: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (
