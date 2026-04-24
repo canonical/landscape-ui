@@ -20,6 +20,7 @@ import { getValidationSchema } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import Blocks from "@/components/layout/Blocks/Blocks";
+import classes from "./RepositoryProfileForm.module.scss";
 
 type RepositoryProfileFormProps =
   | {
@@ -182,54 +183,56 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     <div style={{ position: "relative" }}>
       <Form onSubmit={formik.handleSubmit} noValidate>
         <AppErrorBoundary>
-          <Blocks.Item title="Details">
-            <RepositoryProfileFormDetailsPanel
-              accessGroups={accessGroupsResult?.data ?? []}
-              isTitleRequired={props.action === "add"}
-              isAccessGroupDisabled={props.action === "edit"}
-              formik={formik}
-            />
-          </Blocks.Item>
+          <Blocks dense>
+            <Blocks.Item title="Details">
+              <RepositoryProfileFormDetailsPanel
+                accessGroups={accessGroupsResult?.data ?? []}
+                isTitleRequired={props.action === "add"}
+                isAccessGroupDisabled={props.action === "edit"}
+                formik={formik}
+              />
+            </Blocks.Item>
 
 
-          <Blocks.Item
-            title="Sources"
-            action={
-              <Button
-                type="button"
-                hasIcon
-                appearance="base"
-                onClick={() => {
-                  setShowSourceOverlay(true);
-                  setSidePanelTitle(
-                    <>
-                      <Link
-                        className="u-no-margin--bottom"
-                        onClick={closeSourceOverlay}
-                      >
-                        {panelTitle}
-                      </Link>
-                      {" / Add source"}
-                    </>,
-                  );
-                }}
-              >
-                <Icon name="plus" />
-                <span>Add source</span>
-              </Button>
-            }
-          >
-            <RepositoryProfileFormSourcesSection
-              sources={formik.values.apt_sources}
-              onRemoveSource={handleRemoveSource}
-              onEditSource={handleEditSource}
-              error={getFormikError(formik, "apt_sources")}
-            />
-          </Blocks.Item>
+            <Blocks.Item>
+              <div className={classes.sourcesHeader}>
+                <h4 className="p-heading--5 u-no-margin--bottom">Sources</h4>
+                <Button
+                  type="button"
+                  hasIcon
+                  dense
+                  appearance="base"
+                  onClick={() => {
+                    setShowSourceOverlay(true);
+                    setSidePanelTitle(
+                      <>
+                        <Link
+                          className="u-no-margin--bottom"
+                          onClick={closeSourceOverlay}
+                        >
+                          {panelTitle}
+                        </Link>
+                        {" / Add source"}
+                      </>,
+                    );
+                  }}
+                >
+                  <Icon name="plus" />
+                  <span>Add source</span>
+                </Button>
+              </div>
+              <RepositoryProfileFormSourcesSection
+                sources={formik.values.apt_sources}
+                onRemoveSource={handleRemoveSource}
+                onEditSource={handleEditSource}
+                error={getFormikError(formik, "apt_sources")}
+              />
+            </Blocks.Item>
 
-          <Blocks.Item>
-            <AssociationBlock formik={formik} />
-          </Blocks.Item>
+            <Blocks.Item>
+              <AssociationBlock formik={formik} />
+            </Blocks.Item>
+          </Blocks>
         </AppErrorBoundary>
 
         <SidePanelFormButtons

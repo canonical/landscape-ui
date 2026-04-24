@@ -46,9 +46,12 @@ describe("RepositoryProfileList", () => {
     ).toBeInTheDocument();
   });
 
-  it("filters with search param", () => {
+  it("renders only the profiles passed in (server-side filtering)", () => {
     renderWithProviders(
-      <RepositoryProfileList repositoryProfiles={repositoryProfiles} />,
+      <RepositoryProfileList
+        repositoryProfiles={[repositoryProfiles[0]]}
+        totalCount={1}
+      />,
       undefined,
       `/?search=${repositoryProfiles[0].title}`,
     );

@@ -17,7 +17,6 @@ const RepositoryProfileFormDetailsPanel: FC<
 > = ({
   accessGroups,
   formik,
-  isTitleRequired = false,
   isAccessGroupDisabled = false,
 }) => {
   const accessGroupOptions = accessGroups.map(({ name, title }) => ({
@@ -29,8 +28,8 @@ const RepositoryProfileFormDetailsPanel: FC<
     <>
       <Input
         type="text"
-        label="Title"
-        required={isTitleRequired}
+        label="Profile name"
+        required
         autoComplete="off"
         error={getFormikError(formik, "title")}
         {...formik.getFieldProps("title")}
@@ -45,6 +44,7 @@ const RepositoryProfileFormDetailsPanel: FC<
       <Select
         label="Access group"
         options={accessGroupOptions}
+        required
         disabled={isAccessGroupDisabled}
         error={getFormikError(formik, "access_group")}
         {...formik.getFieldProps("access_group")}

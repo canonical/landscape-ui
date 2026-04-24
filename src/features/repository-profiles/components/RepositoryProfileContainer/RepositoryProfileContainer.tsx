@@ -1,8 +1,11 @@
 import EmptyState from "@/components/layout/EmptyState";
+import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import type { FC } from "react";
+import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
 import RepositoryProfileHeader from "../RepositoryProfileHeader";
@@ -20,6 +23,18 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     error: unfilteredRepositoryProfilesError,
   },
 }) => {
+  const { currentPage, pageSize, search } = usePageParams();
+  const { getRepositoryProfilesQuery } = useRepositoryProfiles();
+
+  const {
+    data: repositoryProfilesResponse,
+    isPending: isPendingRepositoryProfiles,
+  } = getRepositoryProfilesQuery({
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+    search: search ? [search] : undefined,
+  });
+
   if (!unfilteredRepositoryProfilesResponse) {
     throw unfilteredRepositoryProfilesError;
   }
@@ -45,11 +60,16 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     );
   }
 
+  if (isPendingRepositoryProfiles) {
+    return <LoadingState />;
+  }
+
   return (
     <>
       <RepositoryProfileHeader />
       <RepositoryProfileList
-        repositoryProfiles={unfilteredRepositoryProfilesResponse.data.results}
+        repositoryProfiles={repositoryProfilesResponse?.data.results ?? []}
+        totalCount={repositoryProfilesResponse?.data.count ?? 0}
       />
     </>
   );

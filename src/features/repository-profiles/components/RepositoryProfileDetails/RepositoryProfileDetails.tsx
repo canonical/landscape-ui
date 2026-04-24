@@ -4,7 +4,7 @@ import ViewProfileGeneralBlock from "../../../profiles/components/ViewProfileSid
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, Icon, ModularTable } from "@canonical/react-components";
+import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { APTSource } from "@/features/apt-sources";
 import type { FC } from "react";
@@ -105,14 +105,13 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
 
           <Button
             type="button"
-            appearance="negative"
             className="p-segmented-control__button"
             onClick={openModal}
             hasIcon
             aria-label={`Remove ${profile.title}`}
           >
-            <Icon light name="delete" />
-            <span>Remove</span>
+            <Icon name={`${ICONS.delete}--negative`} />
+            <span className="u-text--negative">Remove</span>
           </Button>
         </div>
       </div>

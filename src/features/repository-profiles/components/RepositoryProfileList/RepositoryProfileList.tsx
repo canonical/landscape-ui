@@ -30,12 +30,14 @@ const AssociatedCountCell: FC<{ readonly profileId: number }> = ({ profileId }) 
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
+  readonly totalCount?: number;
 }
 
 const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   repositoryProfiles,
+  totalCount = 0,
 }) => {
-  const { search, currentPage, pageSize } = usePageParams();
+  const { search } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
@@ -46,21 +48,6 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     label: title,
     value: name,
   }));
-
-  const profiles = useMemo(() => {
-    if (!search) {
-      return repositoryProfiles;
-    }
-
-    return repositoryProfiles.filter((profile) => {
-      return profile.title.toLowerCase().includes(search.toLowerCase());
-    });
-  }, [repositoryProfiles, search]);
-
-  const pagedProfiles = useMemo(
-    () => profiles.slice((currentPage - 1) * pageSize, currentPage * pageSize),
-    [profiles, currentPage, pageSize],
-  );
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => {
@@ -150,14 +137,14 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     <>
       <ResponsiveTable
         columns={columns}
-        data={pagedProfiles}
+        data={repositoryProfiles}
         getCellProps={getCellProps()}
         getRowProps={getRowProps()}
         emptyMsg={`No repository profiles found with the search "${search}"`}
       />
       <TablePagination
-        totalItems={profiles.length}
-        currentItemCount={pagedProfiles.length}
+        totalItems={totalCount}
+        currentItemCount={repositoryProfiles.length}
       />
     </>
   );

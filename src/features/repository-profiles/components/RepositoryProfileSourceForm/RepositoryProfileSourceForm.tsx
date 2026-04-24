@@ -40,6 +40,7 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
       <Input
         type="text"
         label="Source name"
+        help="Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +."
         required
         autoComplete="off"
         error={getFormikError(formik, "name")}

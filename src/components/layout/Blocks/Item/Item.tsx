@@ -1,6 +1,7 @@
+import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Item.module.scss";
-import classNames from "classnames";
+import { useBlocksDense } from "../Blocks";
 
 export interface ItemProps {
   readonly children: ReactNode;

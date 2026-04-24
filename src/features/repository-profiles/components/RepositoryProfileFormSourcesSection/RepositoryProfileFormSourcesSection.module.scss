@@ -8,5 +8,10 @@
 
 .actionsCell {
   display: flex;
+  gap: 0;
   justify-content: flex-end;
+
+  button {
+    margin-right: 5px;
+  }
 }
