@@ -1,8 +1,10 @@
-import type { Series } from "./Series";
+import type { Architecture } from "./Architecture";
+import type { Component } from "./Component";
 
 export interface Distribution {
-  access_group: string;
-  creation_time: string;
-  name: string;
-  series: Series[];
+  slug: string;
+  label: string;
+  preselected: boolean;
+  components: Component[];
+  architectures: Architecture[];
 }

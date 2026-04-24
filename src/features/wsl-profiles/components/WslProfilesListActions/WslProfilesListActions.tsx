@@ -23,7 +23,7 @@ const WslProfilesListActions: FC<WslProfilesListActionsProps> = ({
 
   const handleWslProfileEdit = createPageParamsSetter({
     sidePath: ["edit"],
-    profile: profile.name,
+    name: profile.name,
   });
 
   const actions: Action[] = [

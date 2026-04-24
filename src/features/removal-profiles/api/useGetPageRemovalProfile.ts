@@ -8,7 +8,7 @@ const useGetPageRemovalProfile = ():
       isGettingRemovalProfile: false;
     }
   | { removalProfile: undefined; isGettingRemovalProfile: true } => {
-  const { profile: removalProfileId } = usePageParams();
+  const { name: removalProfileId } = usePageParams();
 
   const { isGettingRemovalProfile, removalProfile, removalProfileError } =
     useGetRemovalProfile(parseInt(removalProfileId));

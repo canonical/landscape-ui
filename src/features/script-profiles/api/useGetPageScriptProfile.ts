@@ -5,7 +5,7 @@ import type { ScriptProfile } from "../types";
 const useGetPageScriptProfile = ():
   | { scriptProfile: ScriptProfile; isGettingScriptProfile: false }
   | { scriptProfile: undefined; isGettingScriptProfile: true } => {
-  const { profile: scriptProfileId } = usePageParams();
+  const { name: scriptProfileId } = usePageParams();
 
   const { isGettingScriptProfile, scriptProfile, scriptProfileError } =
     useGetScriptProfile({ id: parseInt(scriptProfileId) });

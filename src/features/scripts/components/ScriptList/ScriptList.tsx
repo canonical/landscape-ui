@@ -114,7 +114,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
                   to={ROUTES.scripts.root({
                     tab: "profiles",
                     sidePath: ["view"],
-                    profile: id.toString(),
+                    name: id.toString(),
                   })}
                   key={id}
                   className="truncatedItem"

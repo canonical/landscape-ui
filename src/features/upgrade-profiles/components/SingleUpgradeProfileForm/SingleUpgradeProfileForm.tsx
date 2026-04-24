@@ -46,7 +46,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const { mutateAsync: createUpgradeProfile } = createUpgradeProfileQuery;
   const { mutateAsync: editUpgradeProfile } = editUpgradeProfileQuery;
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateUpgradeProfileParams = {

@@ -76,7 +76,7 @@ const ScriptDetailsInfo: FC<ScriptDetailsInfoProps> = ({ script }) => {
                   to={ROUTES.scripts.root({
                     tab: "profiles",
                     sidePath: ["view"],
-                    profile: profile.id.toString(),
+                    name: profile.id.toString(),
                   })}
                   key={profile.id}
                 >

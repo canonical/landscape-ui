@@ -1,118 +1,116 @@
-import LoadingState from "@/components/layout/LoadingState";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import EmptyState from "@/components/layout/EmptyState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { DistributionContainer } from "@/features/mirrors";
-import useSidePanel from "@/hooks/useSidePanel";
-import type { MenuLink } from "@canonical/react-components";
-import { Button, ContextualMenu } from "@canonical/react-components";
-import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
+import SidePanel from "@/components/layout/SidePanel";
+import { useListMirrors } from "@/features/mirrors";
+import { MirrorsList } from "@/features/mirrors";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import { Button, Icon, ICONS } from "@canonical/react-components";
+import { lazy, type FC } from "react";
 
-const NewDistributionForm = lazy(async () =>
+const EditMirrorForm = lazy(async () =>
   import("@/features/mirrors").then((module) => ({
-    default: module.NewDistributionForm,
-  })),
-);
-const NewSeriesForm = lazy(async () =>
-  import("@/features/mirrors").then((module) => ({
-    default: module.NewSeriesForm,
+    default: module.EditMirrorForm,
   })),
 );
 
-const DistributionsPage: FC = () => {
-  const [distributionsLength, setDistributionsLength] = useState(0);
+const AddMirrorForm = lazy(async () =>
+  import("@/features/mirrors").then((module) => ({
+    default: module.AddMirrorForm,
+  })),
+);
 
-  const isLargeScreen = useMediaQuery("(min-width: 620px)");
-  const { setSidePanelContent } = useSidePanel();
+const MirrorDetails = lazy(async () =>
+  import("@/features/mirrors").then((module) => ({
+    default: module.MirrorDetails,
+  })),
+);
 
-  const handleAddDistribution = () => {
-    setSidePanelContent(
-      "Add distribution",
-      <Suspense fallback={<LoadingState />}>
-        <NewDistributionForm />
-      </Suspense>,
-    );
-  };
+const PublishMirrorForm = lazy(async () =>
+  import("@/features/mirrors").then((module) => ({
+    default: module.PublishMirrorForm,
+  })),
+);
 
-  const handleCreateMirror = () => {
-    setSidePanelContent(
-      "Add new mirror",
-      <Suspense fallback={<LoadingState />}>
-        <NewSeriesForm />
-      </Suspense>,
-    );
-  };
+const MirrorsPage: FC = () => {
+  const { search, sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
+
+  const { data } = useListMirrors({ filter: search, pageSize: 20 });
+
+  const openAddMirrorForm = createPageParamsSetter({
+    sidePath: ["add"],
+    name: "",
+  });
 
   const buttons = [
-    {
-      label: "Add distribution",
-      ariaLabel: "Add distribution",
-      onClick: handleAddDistribution,
-      disabled: false,
-      appearance: undefined,
-    },
-    {
-      label: "Add mirror",
-      ariaLabel: "Add mirror",
-      onClick: handleCreateMirror,
-      disabled: distributionsLength === 0,
-      appearance: "positive",
-    },
+    <Button key="add" appearance="positive" onClick={openAddMirrorForm} hasIcon>
+      <Icon name={ICONS.plus} light />
+      <span>Add mirror</span>
+    </Button>,
   ];
 
-  const largeScreenButtons = buttons.map((item) => (
-    <Button
-      key={`${item.label}-button`}
-      type="button"
-      className="u-no-margin--right"
-      aria-label={item.ariaLabel}
-      onMouseDown={(event) => {
-        event.preventDefault();
-      }}
-      appearance={item.appearance}
-      disabled={item.disabled}
-      onClick={item.onClick}
-    >
-      {item.label}
-    </Button>
-  ));
-
-  const contextualMenuLinks: MenuLink[] = buttons.map((item) => ({
-    children: item.label,
-    "aria-label": item.ariaLabel,
-    onClick: item.onClick,
-    disabled: item.disabled,
-  }));
+  const { actions, children, hasTable } = data.data.mirrors?.length
+    ? {
+        actions: buttons,
+        children: (
+          <>
+            <HeaderWithSearch />
+            <MirrorsList mirrors={data.data.mirrors} />
+          </>
+        ),
+        hasTable: true,
+      }
+    : {
+        children: (
+          <EmptyState
+            title="You don't have any mirrors yet."
+            body={
+              <>
+                <p>This feature allows you to mirror Debian repositories.</p>
+              </>
+            }
+            cta={buttons}
+          />
+        ),
+      };
 
   return (
     <PageMain>
-      <PageHeader
-        title="Mirrors"
-        actions={
-          isLargeScreen
-            ? largeScreenButtons
-            : [
-                <ContextualMenu
-                  key="menu"
-                  hasToggleIcon
-                  toggleLabel="Actions"
-                  toggleClassName="u-no-margin--bottom"
-                  links={contextualMenuLinks}
-                />,
-              ]
-        }
-      />
-      <PageContent>
-        <DistributionContainer
-          onDistributionsLengthChange={(length) => {
-            setDistributionsLength(length);
-          }}
-        />
-      </PageContent>
+      <PageHeader title="Mirrors" actions={actions} />
+      <PageContent hasTable={hasTable}>{children}</PageContent>
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        isOpen={!!sidePath.length}
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <AddMirrorForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <EditMirrorForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "publish" && (
+          <SidePanel.Suspense key="publish">
+            <PublishMirrorForm />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "view" && (
+          <SidePanel.Suspense key="view">
+            <MirrorDetails />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };
 
-export default DistributionsPage;
+export default MirrorsPage;
