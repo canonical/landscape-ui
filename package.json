@@ -10,7 +10,7 @@
     "dev": "vite --host",
     "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
     "build:e2e": "pnpm run build --mode e2e",
-    "lint": "eslint --fix . --ext .ts,.tsx",
+    "lint": "eslint --fix src e2e",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
     "test:saas": "VITE_SELF_HOSTED_ENV=false pnpm exec playwright test --project=saas",
