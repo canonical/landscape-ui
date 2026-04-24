@@ -32,7 +32,7 @@ describe("UpdateMirrorModal", () => {
     renderWithProviders(<UpdateMirrorModal {...props} isOpen={false} />);
 
     expect(
-      screen.queryByText(`Remove ${props.mirrorDisplayName}`),
+      screen.queryByText(`Update ${props.mirrorDisplayName}`),
     ).not.toBeInTheDocument();
   });
 
