@@ -28,7 +28,7 @@ const PublicationsPage: FC = () => {
 
       <SidePanel
         isOpen={!!sidePath.length}
-        onClose={createPageParamsSetter({ sidePath: [], publication: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
       >
         {sidePath.includes("view") && (
           <SidePanel.Suspense key="view">

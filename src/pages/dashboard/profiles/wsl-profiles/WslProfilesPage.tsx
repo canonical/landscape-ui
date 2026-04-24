@@ -127,7 +127,7 @@ const WslProfilesPage: FC = () => {
       )}
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         isOpen={!!sidePath.length}
         size={lastSidePathSegment === "noncompliant" ? "large" : undefined}
       >

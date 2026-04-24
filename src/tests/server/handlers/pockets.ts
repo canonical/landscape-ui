@@ -1,97 +1,11 @@
 import { API_URL, API_URL_OLD } from "@/constants";
-import type {
-  DiffPullPocketParams,
-  ListPocketParams,
-} from "@/features/mirrors";
-import type { PackageDiff, PackageObject } from "@/features/packages";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse, isAction } from "./_helpers";
-import { diffPocket, listPockets } from "@/tests/mocks/pockets";
+import { isAction } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
 
 export default [
-  http.get<never, ListPocketParams, ApiPaginatedResponse<PackageObject>>(
-    API_URL_OLD,
-    ({ request }) => {
-      if (!isAction(request, "ListPocket")) {
-        return;
-      }
-
-      const DEFAULT_PAGE_SIZE = 20;
-
-      const endpointStatus = getEndpointStatus();
-      const url = new URL(request.url);
-      const search = url.searchParams.get("search") ?? "";
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
-      const shouldUseEmptyData =
-        endpointStatus.status === "empty" &&
-        (!endpointStatus.path || endpointStatus.path === "ListPocket");
-      const listPocketSource =
-        endpointStatus.path === "ListPocketMany"
-          ? Array.from({ length: 25 }, (_, index) => {
-              const basePocket = listPockets[index % listPockets.length];
-              if (!basePocket) {
-                throw new Error(
-                  "Expected at least one pocket in mock pocket data",
-                );
-              }
-              return {
-                ...basePocket,
-                name: `${basePocket.name}-${index + 1}`,
-              };
-            })
-          : listPockets;
-
-      return HttpResponse.json(
-        generatePaginatedResponse<PackageObject>({
-          data: shouldUseEmptyData ? [] : listPocketSource,
-          limit,
-          offset,
-          search,
-        }),
-      );
-    },
-  ),
-  http.get<never, DiffPullPocketParams, PackageDiff>(
-    API_URL_OLD,
-    ({ request }) => {
-      if (!isAction(request, "DiffPullPocket")) {
-        return;
-      }
-
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.path === "DiffPullPocketUpdate") {
-        return HttpResponse.json({
-          "main:amd64": {
-            add: [],
-            update: [["pocket1", "1.0.0", "2.0.0"]],
-            delete: [["pocket2", "1.0.0"]],
-          },
-        });
-      }
-
-      if (endpointStatus.path === "DiffPullPocketAddOnly") {
-        return HttpResponse.json({
-          "main:amd64": {
-            add: [["pocket1", "1.0.0"]],
-            update: [],
-            delete: [],
-          },
-        });
-      }
-
-      if (endpointStatus.path === "DiffPullPocketNoChanges") {
-        return HttpResponse.json({});
-      }
-
-      return HttpResponse.json(diffPocket);
-    },
-  ),
   http.get(API_URL_OLD, async ({ request }) => {
     if (
       !isAction(request, [

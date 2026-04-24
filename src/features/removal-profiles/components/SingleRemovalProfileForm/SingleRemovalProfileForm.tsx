@@ -47,7 +47,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const { mutateAsync: createRemovalProfile } = createRemovalProfileQuery;
   const { mutateAsync: editRemovalProfile } = editRemovalProfileQuery;
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateRemovalProfileParams = {

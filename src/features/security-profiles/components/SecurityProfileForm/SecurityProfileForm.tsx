@@ -84,7 +84,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
           submitButtonDisabled={!!step.isLoading || submitting}
           submitButtonLoading={step.isLoading || submitting}
           submitButtonText={submitButtonText}
-          onCancel={createPageParamsSetter({ sidePath: [], profile: "" })}
+          onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
         />
       </>
     );
@@ -109,7 +109,7 @@ const SecurityProfileForm: FC<SecurityProfileFormProps> = ({
         submitButtonText={submitButtonText}
         hasBackButton={hasBackButton}
         onBackButtonPress={onBackButtonPress}
-        onCancel={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
       />
     </>
   );

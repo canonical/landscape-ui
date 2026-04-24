@@ -31,7 +31,7 @@ const UpgradeProfileRemoveModal: FC<UpgradeProfileRemoveModalProps> = ({
     try {
       await removeUpgradeProfile({ name: upgradeProfile.name });
 
-      setPageParams({ sidePath: [], profile: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       notify.success({
         title: "Upgrade profile removed",

@@ -1,0 +1,21 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.container > span {
+  width: 100%;
+}
+
+.locked {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spv--small $sph--small;
+  margin-bottom: $spv--large;
+  background-color: $colors--theme--background-inputs;
+}

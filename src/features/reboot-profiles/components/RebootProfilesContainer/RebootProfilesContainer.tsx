@@ -13,7 +13,7 @@ const RebootProfilesContainer: FC = () => {
 
   const handleAddProfile = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   return (

@@ -17,7 +17,7 @@ const AddScriptProfileButton: FC<AddScriptProfileButtonProps> = ({
     useGetScriptProfiles({ listenToUrlParams: false }, { archived: "active" });
   const { scriptProfileLimits } = useGetScriptProfileLimits();
 
-  const addProfile = createPageParamsSetter({ sidePath: ["add"], profile: "" });
+  const addProfile = createPageParamsSetter({ sidePath: ["add"], name: "" });
 
   return (
     <Button

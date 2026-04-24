@@ -35,7 +35,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       value: name,
     })) ?? [];
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: EditFormProps) => {
     try {

@@ -30,7 +30,7 @@ const RebootProfileRemoveModal: FC<RebootProfileRemoveModalProps> = ({
         id: rebootProfile.id,
       });
 
-      setPageParams({ sidePath: [], profile: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       notify.success({
         title: "Reboot profile removed",
