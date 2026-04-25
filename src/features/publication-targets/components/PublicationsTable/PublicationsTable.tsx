@@ -6,6 +6,8 @@ import type { CellProps, Column } from "react-table";
 import type { Publication } from "@canonical/landscape-openapi";
 import PublicationLink from "./PublicationLink/PublicationLink";
 import MirrorLink from "./MirrorLink/MirrorLink";
+import LocalLink from "./LocalLink/LocalLink";
+import { getSourceType } from "@/features/publications";
 
 interface PublicationsTableProps {
   readonly publications: Publication[];
@@ -33,9 +35,18 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
       {
         accessor: "source",
         Header: "Source",
-        Cell: ({ row }: CellProps<Publication>): ReactNode => (
-          <MirrorLink mirrorName={row.original.source ?? row.original.mirror} openInNewTab={openInNewTab} />
-        ),
+        Cell: ({ row }: CellProps<Publication>): ReactNode => {
+          const source = row.original.source ?? row.original.mirror;
+          if (!source) return null;
+          const sourceType = getSourceType(source);
+          if (sourceType === "Mirror") {
+            return <MirrorLink mirrorName={source} openInNewTab={openInNewTab} />;
+          }
+          if (sourceType === "Local repository") {
+            return <LocalLink localName={source} openInNewTab={openInNewTab} />;
+          }
+          return <>{source}</>;
+        },
       }
     ],
     [openInNewTab],

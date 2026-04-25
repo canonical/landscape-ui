@@ -1,4 +1,4 @@
-import { publications } from "@/tests/mocks/publication-targets";
+import { publications } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

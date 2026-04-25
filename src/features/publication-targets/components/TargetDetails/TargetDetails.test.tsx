@@ -1,5 +1,5 @@
 import useSidePanel from "@/hooks/useSidePanel";
-import { publications, publicationTargets } from "@/tests/mocks/publication-targets";
+import { publications, publicationTargets } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

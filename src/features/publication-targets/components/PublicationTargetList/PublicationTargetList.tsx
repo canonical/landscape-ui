@@ -38,7 +38,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
     <StaticLink
       to={{
         pathname: ROUTES.repositories.publications(),
-        search: `?query=${encodeURIComponent(`publicationTargetId="${publicationTargetId}"`)}`,
+        search: `?query=${encodeURIComponent(`publicationTargetId:${publicationTargetId}`)}`,
       }}
     >
       {pluralizeNew(publications.length, "publication", {

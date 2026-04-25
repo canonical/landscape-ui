@@ -4,7 +4,8 @@ import type {
   BatchGetPublicationTargetsResponse,
 } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { publications, publicationTargets } from "@/tests/mocks/publications";
+import { publications } from "@/tests/mocks/publications";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import {

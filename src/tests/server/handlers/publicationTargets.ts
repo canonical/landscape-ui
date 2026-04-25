@@ -1,6 +1,6 @@
 import { API_URL_DEBARCHIVE } from "@/constants";
 import type { PublicationTarget } from "@/features/publication-targets";
-import { publicationTargets } from "@/tests/mocks/publication-targets";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { http, HttpResponse } from "msw";
 
 export default [

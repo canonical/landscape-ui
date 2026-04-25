@@ -15,6 +15,7 @@ import {
 const FETCH_PAGE_SIZE = 1000;
 
 const SEARCH_PREFIXES = [
+  "publicationTargetId:",
   "publicationTarget:",
   "source:",
   "sourceType:",
@@ -44,6 +45,10 @@ const matchesSearch = (
 ): boolean => {
   if (!value) return true;
   switch (prefix) {
+    case "publicationTargetId:":
+      return (
+        getPublicationTargetName(publication.publicationTarget) === value
+      );
     case "publicationTarget:":
       return (getPublicationTargetName(publication.publicationTarget) ?? "")
         .toLowerCase()
@@ -62,10 +67,6 @@ const matchesSearch = (
 export const useGetPublications = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const { currentPage, pageSize, query } = usePageParams();
-
-  const filter = publicationTargetId
-    ? `publication_target="PublicationTargets/${publicationTargetId}"`
-    : undefined;
 
   const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
     queryKey: ["publications", "all"],

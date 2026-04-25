@@ -1,5 +1,5 @@
 import { API_URL_DEBARCHIVE } from "@/constants";
-import { publicationTargets, publications } from "@/tests/mocks/publication-targets";
+import { publicationTargets, publications } from "@/tests/mocks/publicationTargets";
 import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";

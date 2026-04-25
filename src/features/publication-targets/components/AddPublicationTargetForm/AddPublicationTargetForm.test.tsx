@@ -1,24 +1,13 @@
-import useSidePanel from "@/hooks/useSidePanel";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Mock } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import AddPublicationTargetForm from "./AddPublicationTargetForm";
-
-vi.mock("@/hooks/useSidePanel");
 
 // TODO: Add tests for Swift target type when Swift form support is implemented.
 
 describe("AddPublicationTargetForm", () => {
   const user = userEvent.setup();
-
-  beforeEach(() => {
-    (useSidePanel as Mock).mockReturnValue({
-      setSidePanelContent: vi.fn(),
-      closeSidePanel: vi.fn(),
-    });
-  });
 
   it("renders all required S3 fields", () => {
     renderWithProviders(<AddPublicationTargetForm />);
@@ -58,9 +47,7 @@ describe("AddPublicationTargetForm", () => {
     ).not.toHaveLength(0);
   });
 
-  it("submits the form and calls closeSidePanel on success", async () => {
-    const { closeSidePanel } = useSidePanel();
-
+  it("submits the form and shows success notification", async () => {
     renderWithProviders(<AddPublicationTargetForm />);
 
     await user.type(screen.getByLabelText("Name"), "My New Target");
@@ -79,13 +66,11 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(closeSidePanel).toHaveBeenCalled();
+      expect(screen.getByText("Publication target created")).toBeInTheDocument();
     });
   });
 
   it("includes optional fields in submission when all fields are provided", async () => {
-    const { closeSidePanel } = useSidePanel();
-
     renderWithProviders(<AddPublicationTargetForm />);
 
     await user.type(screen.getByLabelText("Name"), "Full Target");
@@ -110,7 +95,7 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(closeSidePanel).toHaveBeenCalled();
+      expect(screen.getByText("Publication target created")).toBeInTheDocument();
     });
   });
 

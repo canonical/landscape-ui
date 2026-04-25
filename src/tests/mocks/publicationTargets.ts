@@ -2,8 +2,8 @@ import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 export const publicationTargets: PublicationTarget[] = [
   {
-    name: "publicationTargets/prod-us",
-    publicationTargetId: "prod-us",
+    name: "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+    publicationTargetId: "aaaaaaaa-0000-0000-0000-000000000001",
     displayName: "prod-s3-us-east",
     s3: {
       region: "us-east-1",
@@ -19,8 +19,8 @@ export const publicationTargets: PublicationTarget[] = [
     },
   },
   {
-    name: "publicationTargets/emea",
-    publicationTargetId: "emea",
+    name: "publicationTargets/bbbbbbbb-0000-0000-0000-000000000002",
+    publicationTargetId: "bbbbbbbb-0000-0000-0000-000000000002",
     displayName: "staging-s3-eu-west",
     s3: {
       region: "eu-west-1",
@@ -32,8 +32,8 @@ export const publicationTargets: PublicationTarget[] = [
     },
   },
   {
-    name: "publicationTargets/swift-internal",
-    publicationTargetId: "swift-internal",
+    name: "publicationTargets/cccccccc-0000-0000-0000-000000000003",
+    publicationTargetId: "cccccccc-0000-0000-0000-000000000003",
     displayName: "swift-internal",
     swift: {
       container: "landscape-packages",

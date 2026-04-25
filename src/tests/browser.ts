@@ -24,8 +24,8 @@ const handlers: RequestHandler[] = [
       return passthrough();
     }
 
-    if (request.url.match(/\.(ts|tsx|scss)/) &&
-      !request.url.includes(API_URL_DEB_ARCHIVE)
+    if (request.url.match(/\.(ts|tsx|scss)/) 
+        // && !request.url.includes(API_URL_DEB_ARCHIVE)
     ) {
       return passthrough();
     }

@@ -1,6 +1,6 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { PublicationTarget } from "@/features/publication-targets";
-import { publicationTargets, publications } from "@/tests/mocks/publication-targets";
+import { publicationTargets, publications } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { Mock } from "vitest";

@@ -14,7 +14,6 @@ const InfoGrid: FC<InfoGridProps> & { Item: FC<ItemProps> } = ({
   className,
   spaced,
   dense,
-  dense,
   ...props
 }: InfoGridProps) => (
   <div

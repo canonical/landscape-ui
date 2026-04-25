@@ -1,6 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import useCreatePublicationTarget from "../../api/useCreatePublicationTarget";
 import {
@@ -17,7 +17,8 @@ import useNotify from "@/hooks/useNotify";
 
 const AddPublicationTargetForm: FC = () => {
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
+  const closeForm = createPageParamsSetter({ sidePath: [], name: "" });
   const { notify } = useNotify();
   const { createPublicationTargetQuery } = useCreatePublicationTarget();
 
@@ -60,7 +61,7 @@ const AddPublicationTargetForm: FC = () => {
           },
         });
 
-        closeSidePanel();
+        closeForm();
 
         notify.success({
           title: "Publication target created",

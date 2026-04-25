@@ -16,8 +16,6 @@ const PublicationsPage: FC = () => {
   const { sidePath, lastSidePathSegment, createPageParamsSetter } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "view"]);
-
-const PublicationsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader
