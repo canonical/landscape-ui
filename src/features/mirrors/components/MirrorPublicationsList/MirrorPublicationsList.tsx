@@ -9,10 +9,12 @@ import { Link } from "react-router";
 
 interface MirrorPublicationsListProps {
   readonly publications: Publication[];
+  readonly openInNewTab?: boolean;
 }
 
 const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
   publications,
+  openInNewTab = false,
 }) => {
   const { count, increment, decrement } = useCounter(1);
 
@@ -27,6 +29,8 @@ const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
                 pathname: "/repositories/publications",
                 search: `?sidePath=view&name=${publication.publicationId}`,
               }}
+              target={openInNewTab ? "_blank" : undefined}
+              rel={openInNewTab ? "noopener noreferrer" : undefined}
             >
               {publication.label}
             </Link>
@@ -34,7 +38,7 @@ const MirrorPublicationsList: FC<MirrorPublicationsListProps> = ({
         },
       },
     ],
-    [],
+    [openInNewTab],
   );
 
   return (
