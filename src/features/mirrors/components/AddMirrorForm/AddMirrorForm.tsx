@@ -155,20 +155,9 @@ const AddMirrorForm: FC = () => {
                 ]}
                 {...formik.getFieldProps("sourceType")}
                 onChange={(event) => {
-                  if (
-                    !(
-                      event.target.value === "ubuntu-archive" ||
-                      event.target.value === "ubuntu-snapshots" ||
-                      event.target.value === "ubuntu-pro" ||
-                      event.target.value === "third-party"
-                    )
-                  ) {
-                    throw new Error();
-                  }
-
                   formik.setValues({
                     ...getInitialValues({
-                      sourceType: event.target.value,
+                      sourceType: event.target.value as FormProps["sourceType"],
                       ubuntuArchiveInfo,
                       ubuntuEsmInfo,
                     }),
@@ -237,10 +226,16 @@ const AddMirrorForm: FC = () => {
                   <Input
                     type="text"
                     label="Components"
-                    {...formik.getFieldProps("components")}
                     error={getFormikError(formik, "components")}
+                    {...formik.getFieldProps("components")}
                     value={formik.values.components.join(", ")}
                     onChange={async (event) => {
+                      await formik.setFieldValue(
+                        "components",
+                        event.target.value.split(", "),
+                      );
+                    }}
+                    onBlur={async (event) => {
                       await formik.setFieldValue(
                         "components",
                         event.target.value.split(", ").filter(Boolean),
@@ -251,10 +246,16 @@ const AddMirrorForm: FC = () => {
                   <Input
                     type="text"
                     label="Architectures"
-                    {...formik.getFieldProps("architectures")}
                     error={getFormikError(formik, "architectures")}
+                    {...formik.getFieldProps("architectures")}
                     value={formik.values.architectures.join(", ")}
                     onChange={async (event) => {
+                      await formik.setFieldValue(
+                        "architectures",
+                        event.target.value.split(", "),
+                      );
+                    }}
+                    onBlur={async (event) => {
                       await formik.setFieldValue(
                         "architectures",
                         event.target.value.split(", ").filter(Boolean),

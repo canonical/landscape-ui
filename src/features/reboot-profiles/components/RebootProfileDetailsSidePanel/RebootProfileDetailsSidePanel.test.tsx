@@ -23,7 +23,7 @@ describe("RebootProfileDetailsSidePanel", () => {
     const { container } = renderWithProviders(
       <RebootProfileDetailsSidePanel />,
       undefined,
-      `/?profile=${profile.id}`,
+      `/?name=${profile.id}`,
     );
 
     await expectLoadingState();

@@ -9,7 +9,7 @@ describe("SecurityProfileDetailsSidePanel", () => {
     renderWithProviders(
       <SecurityProfileDetailsSidePanel />,
       undefined,
-      "/?profile=7",
+      "/?name=7",
     );
 
     expect((await screen.findAllByText(NO_DATA_TEXT))[0]).toBeInTheDocument();
@@ -20,7 +20,7 @@ describe("SecurityProfileDetailsSidePanel", () => {
     renderWithProviders(
       <SecurityProfileDetailsSidePanel />,
       undefined,
-      "/?profile=8",
+      "/?name=8",
     );
 
     expect(

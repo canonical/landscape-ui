@@ -9,7 +9,7 @@ describe("SecurityProfileDownloadAuditForm", () => {
     renderWithProviders(
       <SecurityProfileDownloadAuditSidePanel />,
       undefined,
-      "/?profile=0",
+      "/?name=0",
     );
 
     await userEvent.click(
