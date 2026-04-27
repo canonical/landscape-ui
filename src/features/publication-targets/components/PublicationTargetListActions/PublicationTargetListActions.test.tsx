@@ -2,16 +2,30 @@ import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";
+import { useLocation } from "react-router";
 import PublicationTargetListActions from "./PublicationTargetListActions";
 
-vi.mock("../EditTargetForm/EditTargetForm", () => ({
-  default: () => <div>Edit target form</div>,
+vi.mock("../../api/useGetPublicationsByTarget", () => ({
+  default: vi.fn(),
 }));
 
-vi.mock("../RemoveTargetForm/RemoveTargetForm", () => ({
-  default: () => <div>Remove target form</div>,
+vi.mock("../../api/useRemovePublicationTarget", () => ({
+  default: vi.fn(() => ({
+    removePublicationTargetQuery: {
+      mutateAsync: vi.fn(),
+      isPending: false,
+    },
+  })),
 }));
+
+import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
 
 const targetWithDisplayName = publicationTargets[0]!;
 
@@ -19,8 +33,16 @@ describe("PublicationTargetListActions", () => {
   const user = userEvent.setup();
 
   it("renders the actions toggle button with display_name", () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
     renderWithProviders(
-      <PublicationTargetListActions target={targetWithDisplayName} />,
+      <>
+        <PublicationTargetListActions target={targetWithDisplayName} />
+        <LocationDisplay />
+      </>,
     );
 
     expect(
@@ -31,8 +53,16 @@ describe("PublicationTargetListActions", () => {
   });
 
   it("shows View details, Edit, and Remove actions in the dropdown", async () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
     renderWithProviders(
-      <PublicationTargetListActions target={targetWithDisplayName} />,
+      <>
+        <PublicationTargetListActions target={targetWithDisplayName} />
+        <LocationDisplay />
+      </>,
     );
 
     await user.click(
@@ -58,9 +88,17 @@ describe("PublicationTargetListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens side panel with target details on View details", async () => {
+  it("sets sidePath=view and name in URL when View details is clicked", async () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
     renderWithProviders(
-      <PublicationTargetListActions target={targetWithDisplayName} />,
+      <>
+        <PublicationTargetListActions target={targetWithDisplayName} />
+        <LocationDisplay />
+      </>,
     );
 
     await user.click(
@@ -74,15 +112,23 @@ describe("PublicationTargetListActions", () => {
       }),
     );
 
-    // Side panel header should show target displayName
-    expect(
-      screen.getByRole("heading", { name: targetWithDisplayName.displayName }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      `name=${targetWithDisplayName.publicationTargetId}`,
+    );
   });
 
-  it("opens side panel with edit form on Edit", async () => {
+  it("sets sidePath=edit and name in URL when Edit is clicked", async () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
     renderWithProviders(
-      <PublicationTargetListActions target={targetWithDisplayName} />,
+      <>
+        <PublicationTargetListActions target={targetWithDisplayName} />
+        <LocationDisplay />
+      </>,
     );
 
     await user.click(
@@ -96,17 +142,23 @@ describe("PublicationTargetListActions", () => {
       }),
     );
 
-    // Side panel header should show edit title
-    expect(
-      screen.getByRole("heading", {
-        name: `Edit ${targetWithDisplayName.displayName}`,
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=edit");
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      `name=${targetWithDisplayName.publicationTargetId}`,
+    );
   });
 
-  it("opens side panel with remove form on Remove", async () => {
+  it("opens remove confirmation dialog when Remove is clicked", async () => {
+    (useGetPublicationsByTarget as Mock).mockReturnValue({
+      publications: [],
+      isGettingPublications: false,
+    });
+
     renderWithProviders(
-      <PublicationTargetListActions target={targetWithDisplayName} />,
+      <>
+        <PublicationTargetListActions target={targetWithDisplayName} />
+        <LocationDisplay />
+      </>,
     );
 
     await user.click(
@@ -120,9 +172,8 @@ describe("PublicationTargetListActions", () => {
       }),
     );
 
-    // Side panel header should show remove title
     expect(
-      screen.getByRole("heading", {
+      screen.getByRole("dialog", {
         name: `Remove ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();

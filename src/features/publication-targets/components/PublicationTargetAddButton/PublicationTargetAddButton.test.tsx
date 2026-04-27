@@ -1,15 +1,14 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { useLocation } from "react-router";
+import { describe, expect, it } from "vitest";
 import PublicationTargetAddButton from "./PublicationTargetAddButton";
 
-vi.mock(
-  "@/features/publication-targets/components/AddPublicationTargetForm",
-  () => ({
-    AddPublicationTargetForm: () => <div>New publication target form</div>,
-  }),
-);
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
 
 describe("PublicationTargetAddButton", () => {
   const user = userEvent.setup();
@@ -22,27 +21,18 @@ describe("PublicationTargetAddButton", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens a side panel with the correct title when clicked", async () => {
-    renderWithProviders(<PublicationTargetAddButton />);
+  it("sets sidePath=add in the URL when clicked", async () => {
+    renderWithProviders(
+      <>
+        <PublicationTargetAddButton />
+        <LocationDisplay />
+      </>,
+    );
 
     await user.click(
       screen.getByRole("button", { name: /add publication target/i }),
     );
 
-    expect(
-      screen.getByRole("heading", { name: /add publication target/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders AddPublicationTargetForm inside the side panel", async () => {
-    renderWithProviders(<PublicationTargetAddButton />);
-
-    await user.click(
-      screen.getByRole("button", { name: /add publication target/i }),
-    );
-
-    expect(
-      await screen.findByText("New publication target form"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("sidePath=add");
   });
 });

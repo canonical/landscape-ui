@@ -1,7 +1,7 @@
 import type { Publication } from "../types";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
-import type { ListPublicationsResponse } from "@/api/generated/debArchive.schemas";
+import type { ListPublicationsResponse } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 

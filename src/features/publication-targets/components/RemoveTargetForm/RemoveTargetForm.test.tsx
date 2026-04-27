@@ -1,5 +1,6 @@
 import { API_URL_DEBARCHIVE } from "@/constants";
-import { publicationTargets, publications } from "@/tests/mocks/publicationTargets";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import { publications } from "@/tests/mocks/publications";
 import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -95,7 +96,7 @@ describe("RemoveTargetForm", () => {
     expect(screen.getByText("Publication")).toBeInTheDocument();
     // first publication's label
     expect(
-      screen.getByText(firstPublication.name ?? ""),
+      screen.getByText(firstPublication.displayName ?? ""),
     ).toBeInTheDocument();
   });
 
@@ -165,7 +166,7 @@ describe("RemoveTargetForm", () => {
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
     expect(
-      await screen.findByText(/publication target removed successfully/i),
+      await screen.findByText(/successfully removed/i),
     ).toBeInTheDocument();
   });
 

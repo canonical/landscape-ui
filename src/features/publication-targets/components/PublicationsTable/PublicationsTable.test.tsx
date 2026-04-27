@@ -1,4 +1,4 @@
-import { publications } from "@/tests/mocks/publicationTargets";
+import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -31,7 +31,7 @@ describe("PublicationsTable", () => {
       renderWithProviders(<PublicationsTable publications={publications} />);
 
       publications.forEach((pub) => {
-        const link = screen.getByRole("link", { name: pub.name });
+        const link = screen.getByRole("link", { name: pub.displayName });
         expect(link).toBeInTheDocument();
       });
     });
@@ -41,11 +41,11 @@ describe("PublicationsTable", () => {
 
       publications.forEach((pub) => {
         const link = screen.getByRole("link", {
-          name: pub.name,
+          name: pub.displayName,
         }) as HTMLAnchorElement;
         expect(link.href).toContain("/repositories/publications");
         expect(link.href).toContain("sidePath=view");
-        expect(link.href).toContain(`publication=${pub.publicationId}`);
+        expect(link.href).toContain(`name=${pub.publicationId}`);
       });
     });
 
@@ -53,9 +53,19 @@ describe("PublicationsTable", () => {
       const pubWithoutLabel: Publication = {
         name: "publications/no-label-id",
         publicationId: "no-label-id",
+        displayName: "",
+        label: "",
         publicationTarget: "publicationTargets/test",
         source: "mirrors/test",
         distribution: "jammy",
+        origin: "",
+        architectures: [],
+        acquireByHash: false,
+        butAutomaticUpgrades: false,
+        notAutomatic: false,
+        multiDist: false,
+        skipBz2: false,
+        skipContents: false,
       };
 
       renderWithProviders(
@@ -63,7 +73,7 @@ describe("PublicationsTable", () => {
       );
 
       expect(
-        screen.getByRole("link", { name: pubWithoutLabel.name }),
+        screen.getByRole("link", { name: pubWithoutLabel.displayName }),
       ).toBeInTheDocument();
     });
 
@@ -97,10 +107,8 @@ describe("PublicationsTable", () => {
         <PublicationsTable publications={publications} pageSize={pageSize} />,
       );
 
-      // Pagination should be visible (check for pagination UI elements)
-      // The SidePanelTablePagination component should render results text
       expect(
-        screen.getByText(/showing.*of.*results/i),
+        screen.getByText(/page 1/i),
       ).toBeInTheDocument();
     });
 
@@ -172,23 +180,6 @@ describe("PublicationsTable", () => {
 
       expect(screen.getByText(firstPub.source)).toBeInTheDocument();
     });
-
-    it("renders publications with all undefined optional fields (shows dashes)", () => {
-      const pubWithAllUndefined: Publication = {
-        name: "publications/test-00000000-0000-0000-0000-000000000000",
-        publicationId: "test-00000000-0000-0000-0000-000000000000",
-        label: "Test-Publication",
-        publicationTarget: "publicationTargets/test",
-        source: "mirror",
-        distribution: "distribution",
-      };
-
-      renderWithProviders(
-        <PublicationsTable publications={[pubWithAllUndefined]} />,
-      );
-
-      expect(screen.getByText(pubWithAllUndefined.name)).toBeInTheDocument();
-    });
   });
 
   describe("props handling", () => {
@@ -206,15 +197,16 @@ describe("PublicationsTable", () => {
       }
       const [firstPub, secondPub] = publications;
       const customPageSize = 1;
+      if (!firstPub || !secondPub) {
+        throw new Error("Test failed: 'publications' must be defined with at least 2 items.");
+      }
       renderWithProviders(
         <PublicationsTable publications={publications} pageSize={customPageSize} />,
       );
 
-      // First item should be visible
-      expect(screen.getByText(firstPub!.source)).toBeInTheDocument();
+      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
 
-      // Second item should not be visible (it's on next page)
-      expect(screen.queryByText(secondPub!.source)).not
+      expect(screen.queryByText(secondPub.source)).not
         .toBeInTheDocument();
     });
   });

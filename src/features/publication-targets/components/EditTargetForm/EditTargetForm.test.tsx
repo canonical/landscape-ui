@@ -1,14 +1,10 @@
-import useSidePanel from "@/hooks/useSidePanel";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Mock } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import EditTargetForm from "./EditTargetForm";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
-
-vi.mock("@/hooks/useSidePanel");
 
 // TODO: add coverage for other target types (swift and filesystem) once those are supported
 
@@ -20,15 +16,10 @@ if (!s3TargetFull?.s3 || !s3TargetMinimal?.s3) {
   throw new Error("Test targets must have S3 config");
 }
 
+const s3Full = s3TargetFull.s3;
+
 describe("EditTargetForm", () => {
   const user = userEvent.setup();
-
-  beforeEach(() => {
-    (useSidePanel as Mock).mockReturnValue({
-      setSidePanelContent: vi.fn(),
-      closeSidePanel: vi.fn(),
-    });
-  });
 
   it("pre-populates the display_name field from the target prop", () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
@@ -39,34 +30,29 @@ describe("EditTargetForm", () => {
   it("pre-populates S3 fields from the target prop", () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-    expect(screen.getByLabelText(/bucket name/i)).toHaveValue(
-      s3TargetFull.s3?.bucket,
-    );
+    expect(screen.getByText(s3Full.bucket)).toBeInTheDocument();
     expect(screen.getByLabelText(/aws access key id/i)).toHaveValue(
-      s3TargetFull.s3?.awsAccessKeyId,
+      s3Full.awsAccessKeyId,
     );
-    expect(screen.getByLabelText(/region/i)).toHaveValue(s3TargetFull.s3?.region);
+    expect(screen.getByText(s3Full.region)).toBeInTheDocument();
   });
 
   it("pre-populates optional S3 fields when present", () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-    expect(screen.getByLabelText(/prefix/i)).toHaveValue(
-      s3TargetFull.s3?.prefix,
-    );
-    expect(screen.getByLabelText(/^acl$/i)).toHaveValue(s3TargetFull.s3?.acl);
+    expect(screen.getByText(s3Full.prefix ?? "")).toBeInTheDocument();
+    expect(screen.getByLabelText(/^acl$/i)).toHaveValue(s3Full.acl);
     expect(screen.getByLabelText(/storage class/i)).toHaveValue(
-      s3TargetFull.s3?.storageClass,
+      s3Full.storageClass,
     );
     expect(screen.getByLabelText(/encryption method/i)).toHaveValue(
-      s3TargetFull.s3?.encryptionMethod,
+      s3Full.encryptionMethod,
     );
   });
 
   it("pre-populates with empty strings when optional S3 fields are missing", () => {
     renderWithProviders(<EditTargetForm target={s3TargetMinimal} />);
 
-    expect(screen.getByLabelText(/prefix/i)).toHaveValue("");
     expect(screen.getByLabelText(/^acl$/i)).toHaveValue("");
     expect(screen.getByLabelText(/storage class/i)).toHaveValue("");
     expect(screen.getByLabelText(/encryption method/i)).toHaveValue("");
@@ -82,12 +68,8 @@ describe("EditTargetForm", () => {
     renderWithProviders(<EditTargetForm target={targetWithoutS3} />);
 
     expect(screen.getByLabelText("Name")).toHaveValue("Target without S3");
-    expect(screen.getByLabelText(/region/i)).toHaveValue("");
-    expect(screen.getByLabelText(/bucket name/i)).toHaveValue("");
-    expect(screen.getByLabelText(/endpoint/i)).toHaveValue("");
     expect(screen.getByLabelText(/aws access key id/i)).toHaveValue("");
     expect(screen.getByLabelText(/aws secret access key/i)).toHaveValue("");
-    expect(screen.getByLabelText(/prefix/i)).toHaveValue("");
     expect(screen.getByLabelText(/^acl$/i)).toHaveValue("");
     expect(screen.getByLabelText(/storage class/i)).toHaveValue("");
     expect(screen.getByLabelText(/encryption method/i)).toHaveValue("");
@@ -113,8 +95,6 @@ describe("EditTargetForm", () => {
 
     renderWithProviders(<EditTargetForm target={s3TargetPartiallyNull} />);
 
-    expect(screen.getByLabelText(/endpoint/i)).toHaveValue("");
-    expect(screen.getByLabelText(/prefix/i)).toHaveValue("");
     expect(screen.getByLabelText(/^acl$/i)).toHaveValue("private");
     expect(screen.getByLabelText(/storage class/i)).toHaveValue("");
     expect(screen.getByLabelText(/encryption method/i)).toHaveValue("");
@@ -128,28 +108,24 @@ describe("EditTargetForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("submits the form with all optional fields and calls closeSidePanel on success", async () => {
-    const { closeSidePanel } = useSidePanel();
-
+  it("submits the form with all optional fields and shows success notification", async () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
     await user.click(screen.getByRole("button", { name: /save/i }));
 
-    await vi.waitFor(() => {
-      expect(closeSidePanel).toHaveBeenCalled();
-    });
+    expect(
+      await screen.findByText(/publication target edited/i),
+    ).toBeInTheDocument();
   });
 
-  it("submits the form with empty optional fields and calls closeSidePanel on success", async () => {
-    const { closeSidePanel } = useSidePanel();
-
+  it("submits the form with empty optional fields and shows success notification", async () => {
     renderWithProviders(<EditTargetForm target={s3TargetMinimal} />);
 
     await user.click(screen.getByRole("button", { name: /save/i }));
 
-    await vi.waitFor(() => {
-      expect(closeSidePanel).toHaveBeenCalled();
-    });
+    expect(
+      await screen.findByText(/publication target edited/i),
+    ).toBeInTheDocument();
   });
 
   it("toggles the disable_multi_del checkbox", async () => {

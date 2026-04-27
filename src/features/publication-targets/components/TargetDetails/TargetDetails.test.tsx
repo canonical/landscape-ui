@@ -1,13 +1,13 @@
-import useSidePanel from "@/hooks/useSidePanel";
-import { publications, publicationTargets } from "@/tests/mocks/publicationTargets";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useLocation } from "react-router";
 import type { Mock } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import TargetDetails from "./TargetDetails";
 
-vi.mock("@/hooks/useSidePanel");
 vi.mock("../../api/useGetPublicationsByTarget", () => ({
   default: vi.fn(),
 }));
@@ -25,20 +25,17 @@ if (
   throw new Error("Test data is missing required properties");
 }
 
-// Extract narrowed s3 references at module level so type guards propagate into callbacks
 const s3WithPubs = targetWithPublications.s3;
 const s3WithoutPubs = targetWithoutPublications.s3;
-const firstPubName = firstPublication.name;
+const firstPubName = firstPublication.displayName;
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
 
 describe("TargetDetails", () => {
   const user = userEvent.setup();
-
-  beforeEach(() => {
-    (useSidePanel as Mock).mockReturnValue({
-      setSidePanelContent: vi.fn(),
-      closeSidePanel: vi.fn(),
-    });
-  });
 
   describe("action buttons", () => {
     it("renders Edit and Remove buttons", () => {
@@ -55,22 +52,22 @@ describe("TargetDetails", () => {
       ).toBeInTheDocument();
     });
 
-    it("calls setSidePanelContent with edit title when Edit is clicked", async () => {
+    it("sets sidePath=edit in URL when Edit is clicked", async () => {
       (useGetPublicationsByTarget as Mock).mockReturnValue({
         publications: [],
         isGettingPublications: false,
       });
 
-      const { setSidePanelContent } = useSidePanel();
-
-      renderWithProviders(<TargetDetails target={targetWithPublications} />);
+      renderWithProviders(
+        <>
+          <TargetDetails target={targetWithPublications} />
+          <LocationDisplay />
+        </>,
+      );
 
       await user.click(screen.getByRole("button", { name: /edit/i }));
 
-      expect(setSidePanelContent).toHaveBeenCalledWith(
-        `Edit "${targetWithPublications.displayName}"`,
-        expect.anything(),
-      );
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=edit");
     });
 
     it("opens the remove confirmation modal when Remove is clicked", async () => {

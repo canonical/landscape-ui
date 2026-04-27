@@ -1,6 +1,7 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import type { PublicationTarget } from "@/features/publication-targets";
-import { publicationTargets, publications } from "@/tests/mocks/publicationTargets";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import type { Mock } from "vitest";
@@ -9,12 +10,6 @@ import PublicationTargetList from "./PublicationTargetList";
 
 vi.mock("../../api/useGetPublicationsByTarget", () => ({
   default: vi.fn(),
-}));
-vi.mock("@/hooks/useSidePanel", () => ({
-  default: vi.fn(() => ({
-    setSidePanelContent: vi.fn(),
-    closeSidePanel: vi.fn(),
-  })),
 }));
 
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
@@ -178,6 +173,18 @@ describe("PublicationTargetList", () => {
     // Verify the Name column in particular is NoData by checking the first cell in the row
     const cells = screen.getAllByRole("cell");
     expect(cells[0]).toHaveTextContent(NO_DATA_TEXT);
+  });
+
+  it("renders the publications count as a link filtered by publicationTargetId", () => {
+    renderWithProviders(
+      <PublicationTargetList targets={publicationTargets} />,
+    );
+
+    const link = screen.getByRole("link", { name: "3 publications" });
+    expect(link).toHaveAttribute(
+      "href",
+      `/repositories/publications?query=${encodeURIComponent("publicationTargetId:aaaaaaaa-0000-0000-0000-000000000001")}`,
+    );
   });
 
   it("renders spinner while publications count is loading", () => {

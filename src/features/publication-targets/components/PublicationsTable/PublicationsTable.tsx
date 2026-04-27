@@ -31,7 +31,7 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
   const columns = useMemo<Column<Publication>[]>(
     () => [
       {
-        accessor: "label",
+        accessor: "displayName",
         Header: "Publication",
         Cell: ({ row: { original } }: CellProps<Publication>): ReactNode => (
           <PublicationLink publication={original} openInNewTab={openInNewTab} />

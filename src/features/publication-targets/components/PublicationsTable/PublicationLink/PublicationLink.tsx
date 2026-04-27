@@ -16,7 +16,7 @@ const PublicationLink: FC<PublicationLinkProps> = ({ publication, openInNewTab=f
     })}
     target={openInNewTab ? "_blank" : undefined}
   >
-    {publication.label ?? publication.name}
+    {publication.displayName ?? publication.name}
   </StaticLink>
 );
 

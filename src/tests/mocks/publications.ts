@@ -18,7 +18,7 @@ export const publications = [
     multiDist: false,
     skipBz2: false,
     skipContents: false,
-    publishTime: "March 12, 2026",
+    publishTime: new Date("March 12, 2026"),
   },
   {
     name: "publications/c9f6355e-c8f3-4e73-ab4c-ef6a4c8af4c0",
@@ -39,14 +39,14 @@ export const publications = [
     gpgKey: {
       armor: "-----BEGIN PGP PRIVATE KEY BLOCK-----...",
     },
-    publishTime: "March 12, 2026",
+    publishTime: new Date("March 12, 2026"),
   },
   {
     name: "publications/g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
     publicationId: "g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
     displayName: "local publication",
     publicationTarget: "publicationTargets/cccccccc-0000-0000-0000-000000000003",
-    source: "locals/aaaa-bbbb-cccc",
+    source: "locals/bbbb-cccc-dddd",
     distribution: "noble",
     label: "Local publication",
     origin: "Canonical",
@@ -57,6 +57,6 @@ export const publications = [
     multiDist: false,
     skipBz2: true,
     skipContents: true,
-    publishTime: "April 20, 2026",
+    publishTime: new Date("April 20, 2026"),
   },
-] as const satisfies Publication[];
+] satisfies Publication[];
