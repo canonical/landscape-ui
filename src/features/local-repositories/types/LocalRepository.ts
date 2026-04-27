@@ -1,35 +1,12 @@
 export interface Local extends Record<string, unknown> {
   name: string;
-  local_id: string;
-  display_name: string;
+  localId: string;
+  displayName: string;
   comment?: string;
-  distribution: string;
-  component: string;
+  defaultDistribution: string;
+  defaultComponent: string;
 }
 
 export interface LocalPackage {
   name: string;
-}
-
-export interface CreateLocalRequest {
-  display_name: string;
-  comment?: string;
-  distribution: string;
-  component: string;
-}
-
-export interface BatchGetLocalsRequest {
-  names: string[];
-}
-
-export interface ImportLocalPackagesRequest {
-  name: string;
-  url: string;
-  validate_only?: boolean;
-}
-
-export interface ListLocalPackagesRequest {
-  repository: string;
-  page_size?: number;
-  page_token?: string;
 }

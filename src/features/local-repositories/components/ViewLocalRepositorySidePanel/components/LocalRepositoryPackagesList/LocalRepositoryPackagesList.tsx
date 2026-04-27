@@ -1,5 +1,5 @@
 import { useMemo, type FC } from "react";
-import type { Local } from "../../../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import { useGetRepositoryPackages } from "../../../../api";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { Column, CellProps } from "react-table";
@@ -17,7 +17,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
 }) => {
   const { currentPage, pageSize } = usePageParams();
   const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(
-    repository.name,
+    repository.name ?? "",
   );
 
   const pagedPackages = useMemo(

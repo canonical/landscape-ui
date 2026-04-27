@@ -31,32 +31,48 @@ export const repoPackages = ["package 1", "package 2", "package 3"] as const;
 
 export const succeededTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "succeeded",
-  output: "package-A, package-B",
+  done: true,
+  response: ["package-A", "package-B"],
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "succeeded",
+  },  
 };
 
 export const failedTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "failed",
-  output: "package-A, package-B",
+  done: true,
+  response: ["package-A"],
+  error: {
+    code: 408,
+    message: "Request timed out",
+  },
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "failed",
+  }
 };
 
 export const inProgressTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "in progress",
-  output: "",
+  done: true,
+  response: [],
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "in progress",
+  }
 };
 
 export const emptyTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "succeeded",
-  output: "",
+  done: true,
+  response: [],
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "succeeded",
+  }
 };

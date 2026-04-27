@@ -40,7 +40,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const [validateTask, setValidateTask] = useState<
     | {
         status: TaskStatus;
-        output: string[];
+        response: string[];
       }
     | undefined
   >(undefined);
@@ -55,7 +55,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       closeSidePanel();
 
       notify.success({
-        title: `You have marked ${repository?.display_name} to import packages`,
+        title: `You have marked ${repository?.displayName} to import packages`,
         message:
           "An activity has been queued to import the packages to the local repository.",
       });
@@ -83,27 +83,26 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       const { data } = await importRepositoryPackages({
         name: repositoryName,
         url: formik.values.source,
-        validate_only: true,
+        validateOnly: true,
       });
 
-      const output = data.output ? data.output.split(", ") : [];
-      setValidateTask({ status: data.status, output });
+      setValidateTask({ status: data.metadata?.status as TaskStatus, response: data.response as unknown as string[] });
     } catch (error) {
       debug(error);
     }
   };
 
   const hasPackages =
-    validateTask?.status === "succeeded" && !!validateTask.output.length;
+    validateTask?.status === "succeeded" && !!validateTask.response.length;
 
   const packagesCount = hasPackages
-    ? pluralizeWithCount(validateTask?.output.length, "package")
+    ? pluralizeWithCount(validateTask?.response.length, "package")
     : "packages";
 
   return (
     <>
       <SidePanel.Header>
-        Import packages to {repository.display_name}
+        Import packages to {repository.displayName}
       </SidePanel.Header>
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
@@ -151,7 +150,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
               {validateTask?.status === "succeeded" && (
                 <>
-                  {!validateTask?.output.length ? (
+                  {!validateTask?.response.length ? (
                     <Notification
                       severity="negative"
                       title="No packages available from the URL provided"
@@ -159,7 +158,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
                     />
                   ) : (
                     <List
-                      items={validateTask.output.map((file) => (
+                      items={validateTask.response.map((file) => (
                         <div className={classes.file} key={file}>
                           {file}
                         </div>
