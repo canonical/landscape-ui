@@ -28,27 +28,28 @@ describe("RepositoryProfileFormDetailsPanel", () => {
 
   it("renders input fields", () => {
     renderWithProviders(<Wrapper />);
-    expect(screen.getByLabelText("Title")).toBeInTheDocument();
+    expect(screen.getByLabelText("Profile name")).toBeInTheDocument();
     expect(screen.getByLabelText("Description")).toBeInTheDocument();
     expect(screen.getByLabelText("Access group")).toBeInTheDocument();
   });
 
   it("renders title as required when isTitleRequired is true", async () => {
     renderWithProviders(<Wrapper isTitleRequired />);
-    expect(screen.getByLabelText("Title")).toHaveAttribute("required");
+    expect(screen.getByLabelText("Profile name")).toHaveAttribute("required");
   });
 
   it("renders title as optional when isTitleRequired is false", () => {
     renderWithProviders(<Wrapper />);
-    expect(screen.getByLabelText("Title")).not.toHaveAttribute("required");
+    expect(screen.getByLabelText("Profile name")).toHaveAttribute("required");
   });
 
-  it("renders disabled access group when isAccessGroupDisabled is true", () => {
+  it("renders read-only access group when isAccessGroupDisabled is true", () => {
     renderWithProviders(<Wrapper isAccessGroupDisabled />);
-    expect(screen.getByLabelText("Access group")).toBeDisabled();
+    expect(screen.getByText("Access group")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
   });
 
-  it("renders enabled access group when isAccessGroupDisabled is false", () => {
+  it("renders enabled access group select when isAccessGroupDisabled is false", () => {
     renderWithProviders(<Wrapper />);
     expect(screen.getByLabelText("Access group")).toBeEnabled();
   });

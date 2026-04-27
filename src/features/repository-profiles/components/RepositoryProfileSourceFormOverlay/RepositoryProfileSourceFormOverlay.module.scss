@@ -1,0 +1,24 @@
+.overlay {
+  background: var(--vf-color-background-default, #fff);
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: -40px;
+  z-index: 400;
+}
+
+.content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+}
+
+.title {
+  flex-grow: 1;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0;
+}
