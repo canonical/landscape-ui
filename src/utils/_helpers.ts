@@ -96,7 +96,7 @@ export const pluralizeWithCount = (
 };
 
 export const pluralizeNew = (
-  count: number,
+  count = 0,
   singularForm: string,
   options: { pluralForm?: string; showCount?: "exact" | "limited" } = {},
 ) =>

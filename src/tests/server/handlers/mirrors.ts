@@ -68,12 +68,19 @@ export default [
     return HttpResponse.json<CreateMirrorResponse>();
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
     await delay();
-    return HttpResponse.json<GetMirrorResponse>(mirrors[0]);
+
+    const mirror = mirrors.find(({ mirrorId }) => mirrorId === params.mirrorId);
+
+    if (!mirror) {
+      return new HttpResponse(null, { status: 404 });
+    } else {
+      return HttpResponse.json<GetMirrorResponse>(mirror);
+    }
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName/packages`, async () => {
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`, async () => {
     await delay();
 
     return HttpResponse.json<ListMirrorPackagesResponse>({
@@ -81,17 +88,17 @@ export default [
     });
   }),
 
-  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {
+  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async () => {
     await delay();
     return HttpResponse.json<UpdateMirrorResponse>();
   }),
 
-  http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName`, async () => {
+  http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async () => {
     await delay();
     return HttpResponse.json<DeleteMirrorResponse>();
   }),
 
-  http.post(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorName\\:sync`, async () => {
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId\\:sync`, async () => {
     await delay();
     return HttpResponse.json<SyncMirrorResponse>();
   }),

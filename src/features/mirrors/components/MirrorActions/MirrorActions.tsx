@@ -1,16 +1,19 @@
 import ListActions from "@/components/layout/ListActions";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import type { Mirror } from "@canonical/landscape-openapi";
 import { useBoolean } from "usehooks-ts";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 
 interface MirrorActionsProps {
-  readonly mirror: Mirror;
+  readonly mirrorDisplayName: string;
+  readonly mirrorName: string;
 }
 
-const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
+const MirrorActions: FC<MirrorActionsProps> = ({
+  mirrorDisplayName,
+  mirrorName,
+}) => {
   const { createPageParamsSetter } = usePageParams();
 
   const {
@@ -24,12 +27,6 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const { name: mirrorName } = mirror;
-
-  if (mirrorName === undefined) {
-    return null;
-  }
-
   return (
     <>
       <ListActions
@@ -39,7 +36,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
             label: "View details",
             onClick: createPageParamsSetter({
               sidePath: ["view"],
-              name: mirror.name,
+              name: mirrorName,
             }),
           },
           {
@@ -47,7 +44,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
             label: "Edit",
             onClick: createPageParamsSetter({
               sidePath: ["edit"],
-              name: mirror.name,
+              name: mirrorName,
             }),
           },
           {
@@ -60,7 +57,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
             label: "Publish",
             onClick: createPageParamsSetter({
               sidePath: ["publish"],
-              name: mirror.name,
+              name: mirrorName,
             }),
           },
         ]}
@@ -75,13 +72,13 @@ const MirrorActions: FC<MirrorActionsProps> = ({ mirror }) => {
       <UpdateMirrorModal
         isOpen={isUpdateModalOpen}
         close={closeUpdateModal}
-        mirrorDisplayName={mirror.displayName}
+        mirrorDisplayName={mirrorDisplayName}
         mirrorName={mirrorName}
       />
       <RemoveMirrorModal
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
-        mirrorDisplayName={mirror.displayName}
+        mirrorDisplayName={mirrorDisplayName}
         mirrorName={mirrorName}
       />
     </>

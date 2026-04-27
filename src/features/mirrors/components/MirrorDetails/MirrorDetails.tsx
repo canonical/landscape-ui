@@ -13,6 +13,7 @@ import MirrorPublicationsList from "../MirrorPublicationsList";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
+import { boolToLabel } from "@/utils/output";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher } = usePageParams();
@@ -131,15 +132,15 @@ const MirrorDetails: FC = () => {
               />
               <InfoGrid.Item
                 label="Download .udeb"
-                value={mirror.downloadUdebs ? "Yes" : "No"}
+                value={boolToLabel(mirror.downloadUdebs)}
               />
               <InfoGrid.Item
                 label="Download sources"
-                value={mirror.downloadSources ? "Yes" : "No"}
+                value={boolToLabel(mirror.downloadSources)}
               />
               <InfoGrid.Item
                 label="Download installer files"
-                value={mirror.downloadInstaller ? "Yes" : "No"}
+                value={boolToLabel(mirror.downloadInstaller)}
               />
             </InfoGrid>
           </Blocks.Item>

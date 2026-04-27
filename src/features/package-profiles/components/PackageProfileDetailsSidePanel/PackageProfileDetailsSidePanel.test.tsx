@@ -13,7 +13,7 @@ const renderAndRemove = async () => {
   renderWithProviders(
     <PackageProfileDetailsSidePanel />,
     undefined,
-    `?profile=${packageProfiles[0].name}`,
+    `?name=${packageProfiles[0].name}`,
   );
 
   expect(

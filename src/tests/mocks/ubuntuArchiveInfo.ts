@@ -4236,4 +4236,28 @@ export const ubuntuESMInfo = [
       },
     ],
   },
+  {
+    label: "Pro service with one of each",
+    mirror_type: "one-of-each",
+    mirror_url: "https://esm.ubuntu.com/one-of-each/ubuntu/",
+    distributions: [
+      {
+        slug: "jammy",
+        label: "jammy",
+        preselected: true,
+        components: [
+          {
+            slug: "main",
+            preselected: true,
+          },
+        ],
+        architectures: [
+          {
+            slug: "amd64",
+            preselected: true,
+          },
+        ],
+      },
+    ],
+  },
 ] as const satisfies UbuntuArchiveInfo[];
