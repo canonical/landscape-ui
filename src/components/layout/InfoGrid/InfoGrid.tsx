@@ -19,12 +19,12 @@ const InfoGrid: FC<InfoGridProps> & { Item: FC<ItemProps> } = ({
   <div
     className={classNames(
       classes.infoGrid,
-      { [classes.spacedInfoGrid]: spaced },
+      { [classes.spacedInfoGrid as string]: spaced },
       className,
     )}
   >
     <div
-      className={classNames(classes.grid, { [classes.denseGrid]: dense })}
+      className={classNames(classes.grid, { [classes.denseGrid as string]: dense })}
       {...props}
     />
   </div>
