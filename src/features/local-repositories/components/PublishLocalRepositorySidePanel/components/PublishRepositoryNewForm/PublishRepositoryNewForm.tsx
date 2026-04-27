@@ -21,7 +21,7 @@ import {
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import useGetPublicationTargets from "@/features/publication-targets";
+import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "../../../../types";
 import {
   useAddPublication,

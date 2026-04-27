@@ -1,10 +1,29 @@
-import { publicationTargets, publications } from "@/tests/mocks/publications";
+import { publications } from "@/tests/mocks/publications";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
 import { mirrors } from "@/tests/mocks/mirrors";
+
+const buildDisplayNameMaps = (pubs: typeof publications) => {
+  const sourceDisplayNames: Record<string, string> = {};
+  const publicationTargetDisplayNames: Record<string, string> = {};
+
+  for (const pub of pubs) {
+    const mirror = mirrors.find((m) => m.name === pub.source);
+    if (mirror?.name) sourceDisplayNames[mirror.name] = mirror.displayName;
+
+    const target = publicationTargets.find(
+      (t) => t.name === pub.publicationTarget,
+    );
+    if (target?.name)
+      publicationTargetDisplayNames[target.name] = target.displayName;
+  }
+
+  return { sourceDisplayNames, publicationTargetDisplayNames };
+};
 
 const buildDisplayNameMaps = (pubs: typeof publications) => {
   const sourceDisplayNames: Record<string, string> = {};
@@ -64,6 +83,8 @@ describe("PublicationsList", () => {
         name: publicationTargetDisplayNames[publication.publicationTarget],
       }),
     ).toBeInTheDocument();
+    expect(screen.getByText(publication.distribution)).toBeInTheDocument();
+    expect(screen.getByText(publication.component)).toBeInTheDocument();
   });
 
   it("opens sidepanel when clicking a publication name", async () => {

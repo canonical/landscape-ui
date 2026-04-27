@@ -1,3 +1,4 @@
+export * from "./useAddPublication";
 export * from "./useBatchGetLocals";
 export * from "./useBatchGetMirrors";
 export * from "./useBatchGetPublicationTargets";

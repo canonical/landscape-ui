@@ -1,85 +1,76 @@
-import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { APTSourcesList, useGetAPTSources } from "@/features/apt-sources";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
-import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import {
+  PublicationTargetAddButton,
+  PublicationTargetContainer,
+  TargetDetails,
+  useGetPublicationTargets,
+} from "@/features/publication-targets";
+import { lazy, type FC } from "react";
 
-const NewAPTSourceForm = lazy(async () =>
-  import("@/features/apt-sources").then((module) => ({
-    default: module.NewAPTSourceForm,
+const AddPublicationTargetForm = lazy(async () =>
+  import("@/features/publication-targets").then((module) => ({
+    default: module.AddPublicationTargetForm,
   })),
 );
 
-const APTSourcesPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
-  const { aptSources: items, isGettingAPTSources: isLoading } =
-    useGetAPTSources();
+const EditTargetForm = lazy(async () =>
+  import("@/features/publication-targets").then((module) => ({
+    default: module.EditTargetForm,
+  })),
+);
 
-  const handleOpen = () => {
-    setSidePanelContent(
-      "Add APT source",
-      <Suspense fallback={<LoadingState />}>
-        <NewAPTSourceForm />
-      </Suspense>,
-    );
-  };
+const PublicationTargetsPage: FC = () => {
+  const { lastSidePathSegment, createPageParamsSetter, name } =
+    usePageParams();
+  const { publicationTargets } = useGetPublicationTargets();
+
+  useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
+
+  const viewTarget = publicationTargets.find((t) => t.publicationTargetId === name);
 
   return (
     <PageMain>
       <PageHeader
-        title="APT sources"
-        actions={[
-          <Button
-            key="new-key-button"
-            appearance="positive"
-            onClick={handleOpen}
-            type="button"
-          >
-            Add APT source
-          </Button>,
-        ]}
+        title="Publication targets"
+        actions={[<PublicationTargetAddButton key="add" />]}
       />
       <PageContent hasTable>
-        {isLoading && <LoadingState />}
-        {!isLoading && items.length === 0 && (
-          <EmptyState
-            title="No APT sources found"
-            icon="connected"
-            body={
-              <>
-                <p className="u-no-margin--bottom">
-                  You haven’t added any APT sources yet.
-                </p>
-                <a
-                  href="https://ubuntu.com/landscape/docs/repositories"
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  How to manage APT sources in Landscape
-                </a>
-              </>
-            }
-            cta={[
-              <Button
-                appearance="positive"
-                key="table-add-new-mirror"
-                onClick={handleOpen}
-                type="button"
-              >
-                Add APT source
-              </Button>,
-            ]}
-          />
-        )}
-        {!isLoading && items.length > 0 && <APTSourcesList items={items} />}
+        <PublicationTargetContainer />
       </PageContent>
+
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        isOpen={!!lastSidePathSegment}
+        size="small"
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <SidePanel.Header>Add publication target</SidePanel.Header>
+            <AddPublicationTargetForm />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && viewTarget && (
+          <SidePanel.Suspense key="view">
+            <SidePanel.Header>{viewTarget.displayName}</SidePanel.Header>
+            <TargetDetails target={viewTarget} />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && viewTarget && (
+          <SidePanel.Suspense key="edit">
+            <SidePanel.Header>Edit {viewTarget.displayName ?? viewTarget.name}</SidePanel.Header>
+            <EditTargetForm target={viewTarget} />
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };
 
-export default APTSourcesPage;
+export default PublicationTargetsPage;
