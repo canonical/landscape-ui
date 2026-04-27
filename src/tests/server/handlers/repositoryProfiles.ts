@@ -30,6 +30,15 @@ export default [
       );
     }
 
+    if (
+      endpointStatus.status === "empty" &&
+      (!endpointStatus.path || endpointStatus.path === "repositoryprofiles")
+    ) {
+      return HttpResponse.json(
+        generatePaginatedResponse({ data: [], limit: 20, offset: 0 }),
+      );
+    }
+
     const { searchParams } = new URL(request.url);
 
     const names =
@@ -122,3 +131,4 @@ export default [
     return HttpResponse.json({ id: 1 }, { status: 200 });
   }),
 ];
+

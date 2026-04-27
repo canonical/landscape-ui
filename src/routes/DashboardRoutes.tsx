@@ -128,15 +128,12 @@ export const DashboardRoutes = (
             </SelfHostedGuard>
           }
         />
-        <Route
-          path={PATHS.repositories.repositoryProfiles}
-          element={
-            <SelfHostedGuard>
-              <Pages.RepositoryProfilesPage />
-            </SelfHostedGuard>
-          }
-        />
       </Route>
+
+      <Route
+        path={`${PATHS.repositories.root}/${PATHS.repositories.repositoryProfiles}`}
+        element={<Pages.RepositoryProfilesPage />}
+      />
 
       {/* --- Settings --- */}
       <Route path={PATHS.settings.root}>

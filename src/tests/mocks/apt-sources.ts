@@ -18,7 +18,7 @@ export const aptSources = [
       "repo-profile-9",
       "repo-profile-10",
       "repo-profile-11",
-      "repo-profile-12",
+      "repo-profile-12"
     ] as string[],
   },
   {
