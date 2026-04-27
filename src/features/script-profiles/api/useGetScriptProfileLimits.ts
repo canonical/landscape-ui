@@ -12,7 +12,7 @@ export interface GetScriptProfileLimitsResponse {
 export const useGetScriptProfileLimits = () => {
   const authFetch = useFetch();
 
-  const { data: response, isLoading } = useQuery<
+  const { data: response, isPending } = useQuery<
     AxiosResponse<GetScriptProfileLimitsResponse>,
     AxiosError<ApiError>
   >({
@@ -22,6 +22,6 @@ export const useGetScriptProfileLimits = () => {
 
   return {
     scriptProfileLimits: response?.data ?? null,
-    isGettingScriptProfileLimits: isLoading,
+    isGettingScriptProfileLimits: isPending,
   };
 };

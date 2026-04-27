@@ -10,7 +10,7 @@ import { Form } from "@canonical/react-components";
 import type { FC, SyntheticEvent } from "react";
 import { useNavigate } from "react-router";
 import { useRunSecurityProfile } from "../../api";
-import useGetPageSecurityProfile from "../../api/useGetPageSecurityProfile";
+import { useGetPageSecurityProfile } from "../../api/useGetPageSecurityProfile";
 import { getNotificationMessage } from "../../helpers";
 import { ROUTES } from "@/libs/routes";
 

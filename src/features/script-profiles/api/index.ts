@@ -5,3 +5,4 @@ export * from "./useGetScriptProfileActivities";
 export * from "./useGetScriptProfileLimits";
 export * from "./useGetScriptProfiles";
 export * from "./useGetScriptProfile";
+export * from "./useGetPageScriptProfile";

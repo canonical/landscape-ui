@@ -5,7 +5,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 import classes from "./SidePanelProvider.module.scss";
 
@@ -22,6 +22,7 @@ interface SidePanelContextProps {
     titleLabel?: string,
   ) => void;
   setSidePanelTitle: (title: ReactNode) => void;
+  setOnCloseOverride: (handler: (() => void) | undefined) => void;
 }
 
 const initialState: SidePanelContextProps = {
@@ -30,6 +31,7 @@ const initialState: SidePanelContextProps = {
   closeSidePanel: () => undefined,
   setSidePanelContent: () => undefined,
   setSidePanelTitle: () => undefined,
+  setOnCloseOverride: () => undefined,
 };
 
 export const SidePanelContext =
@@ -43,6 +45,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [size, setSize] = useState<SidePanelSize>("small");
   const [title, setTitle] = useState<ReactNode>(undefined);
+  const onCloseOverrideRef = useRef<(() => void) | undefined>(undefined);
   const [titleLabel, setTitleLabel] = useState("");
   const [body, setBody] = useState<ReactNode | null>(null);
 
@@ -57,6 +60,7 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
     setBody(null);
     setSize("small");
     sidePanel.setOpen(false);
+    onCloseOverrideRef.current = undefined;
   };
 
   useEffect(() => {
@@ -97,6 +101,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
         closeSidePanel: handleSidePanelClose,
         setSidePanelContent: handleContentChange,
         setSidePanelTitle: handleTitleChange,
+        setOnCloseOverride: (handler) => {
+          onCloseOverrideRef.current = handler;
+        },
       }}
     >
       {children}
@@ -120,7 +127,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
               <div className="p-panel__controls">
                 <Button
                   type="button"
-                  onClick={handleSidePanelClose}
+                  onClick={() =>
+                    (onCloseOverrideRef.current ?? handleSidePanelClose)()
+                  }
                   className="p-button--base u-no-margin--bottom has-icon"
                   aria-label="Close side panel"
                 >
