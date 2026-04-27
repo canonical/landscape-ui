@@ -20,8 +20,12 @@ const handlers: RequestHandler[] = [
   http.all("*", async ({ request }) => {
     if (
       !request.url.includes(API_URL) &&
-      !request.url.includes(API_URL_OLD) &&
-      !request.url.includes(API_URL_DEB_ARCHIVE)
+      !request.url.includes(API_URL_OLD) &&  !request.url.includes('/v1/')) {
+      return passthrough();
+    }
+
+    if (request.url.match(/\.(ts|tsx|scss)/) 
+        // && !request.url.includes(API_URL_DEB_ARCHIVE)
     ) {
       return passthrough();
     }

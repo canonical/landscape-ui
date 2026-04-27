@@ -40,6 +40,10 @@ export const DashboardRoutes = (
       {/* --- Profiles --- */}
       <Route path={PATHS.profiles.root}>
         <Route
+          path={PATHS.repositories.repositoryProfiles}
+          element={<Pages.RepositoryProfilesPage />}
+        />
+        <Route
           path={PATHS.profiles.package}
           element={<Pages.PackageProfilesPage />}
         />
@@ -79,17 +83,15 @@ export const DashboardRoutes = (
       <Route
         path={PATHS.repositories.root}
         element={
-          <SelfHostedGuard>
-            <div className={classes.wrapper}>
-              <SecondaryNavigation
-                title="Repositories"
-                items={REPOSITORY_SUBMENU}
-              />
-              <div className={classes.pageContent}>
-                <Outlet />
-              </div>
+          <div className={classes.wrapper}>
+            <SecondaryNavigation
+              title="Repositories"
+              items={REPOSITORY_SUBMENU}
+            />
+            <div className={classes.pageContent}>
+              <Outlet />
             </div>
-          </SelfHostedGuard>
+          </div>
         }
       >
         <Route
@@ -126,11 +128,7 @@ export const DashboardRoutes = (
         />
         <Route
           path={PATHS.repositories.repositoryProfiles}
-          element={
-            <SelfHostedGuard>
-              <Pages.RepositoryProfilesPage />
-            </SelfHostedGuard>
-          }
+          element={<Pages.RepositoryProfilesPage />}
         />
       </Route>
 
