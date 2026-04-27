@@ -28,9 +28,7 @@ const FetchDebArchiveProvider: FC<FetchDebArchiveProviderProps> = ({
   const { user, logout } = useContext(AuthContext);
 
   const authFetchDebArchive = useMemo(() => {
-    const debArchiveBaseUrl = API_URL_DEB_ARCHIVE;
-
-    return axios.create({ baseURL: debArchiveBaseUrl });
+    return axios.create({ baseURL: API_URL_DEB_ARCHIVE });
   }, []);
 
   const getLatestToken = useEffectEvent(() => {
