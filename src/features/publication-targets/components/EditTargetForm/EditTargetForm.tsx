@@ -72,7 +72,7 @@ const getInitialValues = (target: PublicationTarget) => ({
 
 const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   const debug = useDebug();
-  const { createPageParamsSetter } = usePageParams();
+  const { createPageParamsSetter, popSidePath, sidePath } = usePageParams();
   const closeForm = createPageParamsSetter({ sidePath: [], name: "" });
   const { notify } = useNotify();
   const { editPublicationTargetQuery } = useEditPublicationTarget();
@@ -203,6 +203,8 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
         onCancel={closeForm}
+        hasBackButton={sidePath.length > 1}
+        onBackButtonPress={popSidePath}
       />
     </Form>
   );

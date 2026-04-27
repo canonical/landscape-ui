@@ -16,7 +16,7 @@ interface TargetDetailsProps {
 }
 
 const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
-  const { createPageParamsSetter } = usePageParams();
+  const { createPageParamsSetter, createSidePathPusher } = usePageParams();
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
     target.publicationTargetId,
   );
@@ -26,7 +26,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const handleEditTarget = createPageParamsSetter({ sidePath: ["edit"] });
+  const handleEditTarget = createSidePathPusher("edit");
 
   const handleRemoveTarget = (): void => {
     openRemoveModal();
