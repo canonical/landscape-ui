@@ -1,5 +1,8 @@
 import ModalTablePagination from "@/components/layout/TablePagination/components/ModalTablePagination/ModalTablePagination";
+import NoData from "@/components/layout/NoData";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ModularTable } from "@canonical/react-components";
+import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -28,16 +31,14 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
       {
         accessor: "label",
         Header: "Publication",
-        Cell: ({ row }: CellProps<Publication>): ReactNode => (
-          <PublicationLink publication={row.original} openInNewTab={openInNewTab} />
+        Cell: ({ row: { original } }: CellProps<Publication>): ReactNode => (
+          <PublicationLink publication={original} openInNewTab={openInNewTab} />
         ),
       },
       {
         accessor: "source",
         Header: "Source",
-        Cell: ({ row }: CellProps<Publication>): ReactNode => {
-          const source = row.original.source ?? row.original.mirror;
-          if (!source) return null;
+        Cell: ({ row: { original: { source } } }: CellProps<Publication>): ReactNode => {
           const sourceType = getSourceType(source);
           if (sourceType === "Mirror") {
             return <MirrorLink mirrorName={source} openInNewTab={openInNewTab} />;
@@ -47,6 +48,19 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
           }
           return <>{source}</>;
         },
+      },
+      {
+        accessor: "publishTime",
+        Header: "Date Published",
+        className: "date-cell",
+        Cell: ({ row: { original: { publishTime } } }: CellProps<Publication>): ReactNode =>
+          publishTime ? (
+            <span>
+              {moment(publishTime).format(DISPLAY_DATE_TIME_FORMAT) + " UTC"}
+            </span>
+          ) : (
+            <NoData />
+          ),
       }
     ],
     [openInNewTab],
