@@ -1,15 +1,12 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 import { usePackageProfiles } from "../../hooks";
 import type { PackageProfile } from "../../types";
 import PackageProfileDetailsConstraintsInfo from "../PackageProfileDetailsConstraintsInfo";
-import classes from "./PackageProfileDetailsConstraints.module.scss";
 
 interface PackageProfileDetailsConstraintsProps {
   readonly profile: PackageProfile;
@@ -22,7 +19,6 @@ const PackageProfileDetailsConstraints: FC<
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const [search, setSearch] = useState("");
 
-  const { createSidePathPusher } = usePageParams();
   const { getPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const {
@@ -34,9 +30,6 @@ const PackageProfileDetailsConstraints: FC<
     offset: (currentPage - 1) * pageSize,
     search,
   });
-
-  const handlePackageConstraintsChange =
-    createSidePathPusher("edit-constraints");
 
   return (
     <>
@@ -52,20 +45,7 @@ const PackageProfileDetailsConstraints: FC<
           getPackageProfileConstraintsQueryResult &&
           getPackageProfileConstraintsQueryResult.data.results.length > 0)) && (
         <>
-          <HeaderWithSearch
-            className={classes.actions}
-            onSearch={setSearch}
-            searchText={search}
-            actions={
-              <Button
-                className="u-no-margin--bottom"
-                type="button"
-                onClick={handlePackageConstraintsChange}
-              >
-                Change package constraints
-              </Button>
-            }
-          />
+          <HeaderWithSearch onSearch={setSearch} searchText={search} />
 
           <PackageProfileDetailsConstraintsInfo
             isConstraintsLoading={getPackageProfileConstraintsQueryLoading}
