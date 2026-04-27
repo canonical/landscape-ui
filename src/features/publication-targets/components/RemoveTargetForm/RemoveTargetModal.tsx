@@ -37,7 +37,6 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
     try {
       if (!target.name) return;
 
-      close();
       setPageParams({ sidePath: [], name: "" });
       await removeTarget({ name: target.name });
       
