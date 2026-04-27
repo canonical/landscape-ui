@@ -41,7 +41,6 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
 
       setPageParams({ sidePath: [], name: "" });
       await removeTarget({ name: target.name });
-
       notify.success({
         message: `You have successfully removed ${target.displayName}`,
         title: "Publication target removed",

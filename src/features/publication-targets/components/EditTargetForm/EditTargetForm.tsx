@@ -365,4 +365,3 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
 };
 
 export default EditTargetForm;
-
