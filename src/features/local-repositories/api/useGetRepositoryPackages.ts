@@ -1,20 +1,18 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-
-interface ListLocalPackagesResponse {
-  local_packages: string[];
-  next_page_token: string;
-}
+import type {
+  ListLocalPackagesError,
+  ListLocalPackagesResponse,
+} from "@canonical/landscape-openapi";
 
 export const useGetRepositoryPackages = (repository: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending } = useQuery<string[], AxiosError<ApiError>>({
+  const { data, isPending } = useQuery<string[], AxiosError<ListLocalPackagesError>>({
     queryKey: ["packages", repository],
     queryFn: async () => {
-      let page_token: string | undefined;
+      let pageToken: string | undefined;
       const packages: string[] = [];
 
       do {
@@ -23,15 +21,15 @@ export const useGetRepositoryPackages = (repository: string) => {
             `${repository}/packages`,
             {
               params: {
-                page_size: 1000,
-                page_token,
+                pageSize: 1000,
+                pageToken,
               },
             },
           );
 
-        packages.push(...(response.data.local_packages ?? []));
-        page_token = response.data.next_page_token;
-      } while (page_token);
+        packages.push(...(response.data.localPackages ?? []));
+        pageToken = response.data.nextPageToken;
+      } while (pageToken);
 
       return packages;
     },

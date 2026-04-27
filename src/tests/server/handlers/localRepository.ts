@@ -9,10 +9,10 @@ import {
   emptyTask,
 } from "@/tests/mocks/localRepositories";
 import type {
-  ImportLocalPackagesRequest,
+  LocalServiceImportLocalPackagesBody,
   BatchGetLocalsRequest,
-  CreateLocalRequest,
-} from "@/features/local-repositories";
+  LocalWritable,
+} from "@canonical/landscape-openapi";
 
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
@@ -24,19 +24,19 @@ export default [
     }
 
     return HttpResponse.json({
-      locals: repositories.filter(({ display_name }) =>
-        display_name.includes(search.substring(2, search.length - 2)),
+      locals: repositories.filter(({ displayName }) =>
+        displayName.includes(search.replaceAll(/"|\*/gm, "")),
       ),
     });
   }),
 
-  http.post<never, CreateLocalRequest>(
+  http.post<never, LocalWritable>(
     `${API_URL_DEB_ARCHIVE}locals`,
     async ({ request }) => {
-      const { display_name: namePosted } = await request.json();
+      const { displayName: namePosted } = await request.json();
 
       return HttpResponse.json(
-        repositories.find(({ display_name }) => namePosted === display_name),
+        repositories.find(({ displayName }) => namePosted === displayName),
       );
     },
   ),
@@ -56,7 +56,7 @@ export default [
     const { repository } = params;
 
     return HttpResponse.json(
-      repositories.find(({ local_id }) => local_id === repository),
+      repositories.find(({ localId }) => localId === repository),
     );
   }),
 
@@ -64,7 +64,7 @@ export default [
     const { repository } = params;
 
     return HttpResponse.json(
-      repositories.find(({ local_id }) => local_id === repository),
+      repositories.find(({ localId }) => localId === repository),
     );
   }),
 
@@ -74,11 +74,11 @@ export default [
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
     return HttpResponse.json({
-      local_packages: repoPackages,
+      localPackages: repoPackages,
     });
   }),
 
-  http.post<never, ImportLocalPackagesRequest>(
+  http.post<never, LocalServiceImportLocalPackagesBody>(
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();

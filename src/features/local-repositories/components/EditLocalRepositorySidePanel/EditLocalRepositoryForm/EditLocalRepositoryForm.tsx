@@ -12,7 +12,7 @@ import {
 } from "./constants";
 import Blocks from "@/components/layout/Blocks";
 import { useUpdateLocalRepository } from "../../../api/useUpdateLocalRepository";
-import type { Local } from "../../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface EditLocalRepositoryFormProps {
@@ -34,13 +34,15 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
   const handleSubmit = async (values: EditLocalRepositoryFormValues) => {
     const localToUpdate = {
-      name: repository.name,
-      display_name: values.displayName ?? repository.display_name,
+      name: repository.name ?? "",
+      displayName: values.displayName ?? repository.displayName,
       comment: values.description ?? repository.comment,
+      defaultDistribution: repository.defaultDistribution,
+      defaultComponent: repository.defaultComponent,
     };
 
     try {
-      await updateRepository({ local: localToUpdate });
+      await updateRepository(localToUpdate);
 
       closeSidePanel();
 
@@ -55,7 +57,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
   const formik = useFormik({
     initialValues: {
-      displayName: repository.display_name,
+      displayName: repository.displayName,
       description: repository.comment,
     },
     onSubmit: handleSubmit,
@@ -85,13 +87,13 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
           <ReadOnlyField
             label="Distribution"
-            value={repository.distribution}
+            value={repository.defaultDistribution}
             tooltipMessage={`You can't change the distribution after the local repository is created`}
           />
 
           <ReadOnlyField
             label="Component"
-            value={repository.component}
+            value={repository.defaultComponent}
             tooltipMessage={`You can't change the component after the local repository is created`}
           />
         </Blocks.Item>

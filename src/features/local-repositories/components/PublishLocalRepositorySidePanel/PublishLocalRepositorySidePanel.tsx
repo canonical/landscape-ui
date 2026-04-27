@@ -22,7 +22,7 @@ const PublishLocalRepositorySidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>Publish {repository.display_name}</SidePanel.Header>
+      <SidePanel.Header>Publish {repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
         {!!publications.length && (
           <>

@@ -28,10 +28,10 @@ const AddLocalRepositorySidePanel: FC = () => {
 
   const handleSubmit = async (values: AddLocalRepositoryFormValues) => {
     const valuesforCreation = {
-      display_name: values.name,
+      displayName: values.name,
       comment: values.description,
-      distribution: values.distribution,
-      component: values.component,
+      defaultDistribution: values.distribution,
+      defaultComponent: values.component,
     };
 
     try {
