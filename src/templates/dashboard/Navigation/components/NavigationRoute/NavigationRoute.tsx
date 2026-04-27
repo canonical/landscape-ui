@@ -20,7 +20,9 @@ const NavigationRoute: FC<NavigationRouteProps> = ({
 }) => {
   return (
     <Link
-      className={classNames("p-side-navigation__link", { [classes.link as string]: withLinkStyle }, className)}
+      className={classNames("p-side-navigation__link", 
+                              withLinkStyle && classes.link && { [classes.link]: withLinkStyle }, 
+                              className)}
       to={item.path}
       aria-current={current ? "page" : undefined}
     >
@@ -33,8 +35,8 @@ const NavigationRoute: FC<NavigationRouteProps> = ({
         />
       )}
       <span
-        className={classNames("p-side-navigation__label", classes.label, {
-          [classes.hasBadge as string]: item.badge !== undefined && item.badge.count > 0,
+        className={classNames("p-side-navigation__label", classes.label, classes.hasBadge && {
+          [classes.hasBadge]: item.badge !== undefined && item.badge.count > 0,
         })}
       >
         {item.label}
