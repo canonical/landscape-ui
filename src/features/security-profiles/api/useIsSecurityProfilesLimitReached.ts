@@ -4,7 +4,7 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { SecurityProfile } from "../types";
-import { ACTIVE_SECURITY_PROFILES_LIMIT } from "@/features/security-profiles";
+import { ACTIVE_SECURITY_PROFILES_LIMIT } from "../constants";
 
 export const useIsSecurityProfilesLimitReached = () => {
   const authFetch = useFetch();

@@ -94,6 +94,16 @@ export default [
       );
     }
 
+    if (query.includes("profile:repository:")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: instances.slice(0, 2),
+          limit,
+          offset,
+        }),
+      );
+    }
+
     return HttpResponse.json(
       generatePaginatedResponse<Instance>({
         data: instances,

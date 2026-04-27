@@ -1,10 +1,10 @@
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
 import { Input, Select } from "@canonical/react-components";
-import AssociationBlock from "@/components/form/AssociationBlock";
 import type { RepositoryProfileFormValues } from "../../types";
 import type { AccessGroup } from "@/features/access-groups";
 import { getFormikError } from "@/utils/formikErrors";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface RepositoryProfileFormDetailsPanelProps {
   readonly accessGroups: AccessGroup[];
@@ -18,7 +18,6 @@ const RepositoryProfileFormDetailsPanel: FC<
 > = ({
   accessGroups,
   formik,
-  isTitleRequired = false,
   isAccessGroupDisabled = false,
 }) => {
   const accessGroupOptions = accessGroups.map(({ name, title }) => ({
@@ -30,8 +29,8 @@ const RepositoryProfileFormDetailsPanel: FC<
     <>
       <Input
         type="text"
-        label="Title"
-        required={isTitleRequired}
+        label="Profile name"
+        required
         autoComplete="off"
         error={getFormikError(formik, "title")}
         {...formik.getFieldProps("title")}
@@ -43,14 +42,21 @@ const RepositoryProfileFormDetailsPanel: FC<
         error={getFormikError(formik, "description")}
         {...formik.getFieldProps("description")}
       />
-      <Select
-        label="Access group"
-        options={accessGroupOptions}
-        disabled={isAccessGroupDisabled}
-        error={getFormikError(formik, "access_group")}
-        {...formik.getFieldProps("access_group")}
-      />
-      <AssociationBlock formik={formik} />
+      {isAccessGroupDisabled ? (
+        <ReadOnlyField
+          label="Access group"
+          tooltipMessage={`You can't change the access group after the repository profile has been created`}
+          {...formik.getFieldProps("access_group")}
+        />
+      ) : (
+        <Select
+          label="Access group"
+          options={accessGroupOptions}
+          required
+          error={getFormikError(formik, "access_group")}
+          {...formik.getFieldProps("access_group")}
+        />
+      )}
     </>
   );
 };

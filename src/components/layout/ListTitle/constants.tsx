@@ -5,8 +5,7 @@ export const LIST_TITLE_COLUMN_PROPS = {
   id: "title",
   Header: (
     <div className={classes.header}>
-      Title
-      <span className="u-text--muted">Name</span>
+      Profile Name
     </div>
   ),
 };
