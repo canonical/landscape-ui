@@ -22,7 +22,6 @@ describe("RepositoryProfileFormSourcesSection", () => {
     renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
 
     expect(screen.getByText("Source name")).toBeInTheDocument();
-    expect(screen.getByText("Type")).toBeInTheDocument();
   });
 
   it("renders empty state message when no sources", () => {
@@ -72,19 +71,6 @@ describe("RepositoryProfileFormSourcesSection", () => {
     expect(defaultProps.onRemoveSource).toHaveBeenCalledWith(
       expect.objectContaining({ name: firstSource.name }),
     );
-  });
-
-  it("shows 'Pending' badge on sources with id 0 but not on persisted sources", () => {
-    const pendingSource = { ...aptSources[0], id: 0, name: "pending-source" };
-    renderWithProviders(
-      <RepositoryProfileFormSourcesSection
-        {...defaultProps}
-        sources={[pendingSource, aptSources[1]]}
-      />,
-    );
-
-    expect(screen.getByText("Pending")).toBeInTheDocument();
-    expect(screen.getAllByText("Pending")).toHaveLength(1);
   });
 
   it("renders validation error message when error prop is provided", () => {

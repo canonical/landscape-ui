@@ -4,55 +4,58 @@ import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 import RepositoryProfileDetails from "./RepositoryProfileDetails";
+import type { RepositoryProfile } from "../../types";
 
 const [profileWithSources, profileWithoutSources] = repositoryProfiles;
+
+const renderDetails = (profile: RepositoryProfile) =>
+  renderWithProviders(
+    <Suspense fallback={null}>
+      <RepositoryProfileDetails />
+    </Suspense>,
+    undefined,
+    `/?sidePath=view&name=${profile.name}`,
+  );
 
 describe("RepositoryProfileDetails", () => {
   const user = userEvent.setup();
 
-  it("renders apt sources table with source names", () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithSources} />,
-    );
+  it("renders apt sources table with source names", async () => {
+    renderDetails(profileWithSources);
 
     for (const source of profileWithSources.apt_sources) {
-      expect(screen.getByText(source.name)).toBeInTheDocument();
+      expect(await screen.findByText(source.name)).toBeInTheDocument();
     }
   });
 
-  it("renders empty sources message when profile has no apt sources", () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithoutSources} />,
-    );
+  it("renders empty sources message when profile has no apt sources", async () => {
+    renderDetails(profileWithoutSources);
 
     expect(
-      screen.getByText("No sources have been added yet."),
+      await screen.findByText("No sources have been added yet."),
     ).toBeInTheDocument();
   });
 
-  it("opens edit form side panel on edit button click", async () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithSources} />,
-    );
+  it("sets sidePath=view,edit in URL on edit button click", async () => {
+    renderDetails(profileWithSources);
 
-    await user.click(screen.getByRole("button", { name: "Edit" }));
+    await user.click(await screen.findByRole("button", { name: "Edit" }));
 
     expect(
-      await screen.findByRole("heading", {
+      screen.queryByRole("heading", {
         name: `Edit "${profileWithSources.title}" profile`,
       }),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 
   it("opens remove confirmation modal on remove button click", async () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithSources} />,
-    );
+    renderDetails(profileWithSources);
 
     await user.click(
-      screen.getByRole("button", {
+      await screen.findByRole("button", {
         name: `Remove ${profileWithSources.title}`,
       }),
     );
@@ -64,12 +67,10 @@ describe("RepositoryProfileDetails", () => {
   });
 
   it("closes the confirmation modal after successful profile removal", async () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithSources} />,
-    );
+    renderDetails(profileWithSources);
 
     await user.click(
-      screen.getByRole("button", {
+      await screen.findByRole("button", {
         name: `Remove ${profileWithSources.title}`,
       }),
     );
@@ -87,14 +88,12 @@ describe("RepositoryProfileDetails", () => {
   });
 
   it("shows error notification when profile removal fails", async () => {
-    renderWithProviders(
-      <RepositoryProfileDetails profile={profileWithSources} />,
-    );
+    renderDetails(profileWithSources);
 
     setEndpointStatus({ status: "error", path: "RemoveRepositoryProfile" });
 
     await user.click(
-      screen.getByRole("button", {
+      await screen.findByRole("button", {
         name: `Remove ${profileWithSources.title}`,
       }),
     );

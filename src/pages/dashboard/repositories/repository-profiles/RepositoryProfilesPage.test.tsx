@@ -1,7 +1,8 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { expectLoadingState } from "@/tests/helpers";
+import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import RepositoryProfilesPage from "./RepositoryProfilesPage";
 
@@ -42,6 +43,22 @@ describe("RepositoryProfilesPage", () => {
 
     expect(
       await screen.findByRole("button", { name: /Add repository profile/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens profile details panel when sidePath=view and name are set in URL", async () => {
+    const [profile] = repositoryProfiles;
+    renderWithProviders(
+      <RepositoryProfilesPage />,
+      undefined,
+      `/?sidePath=view&name=${profile.name}`,
+    );
+
+    await expectLoadingState();
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("heading", {
+        name: profile.title,
+      }),
     ).toBeInTheDocument();
   });
 });

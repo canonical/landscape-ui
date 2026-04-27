@@ -2,10 +2,18 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
-import { describe, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { useLocation } from "react-router";
+import { describe, expect, it } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
 
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
+
 describe("RepositoryProfileList", () => {
+  const user = userEvent.setup();
   it("renders table headers and rows", async () => {
     renderWithProviders(
       <RepositoryProfileList repositoryProfiles={repositoryProfiles} />,
@@ -44,6 +52,24 @@ describe("RepositoryProfileList", () => {
     expect(
       await within(row).findByText(String(firstProfile.applied_count)),
     ).toBeInTheDocument();
+  });
+
+  it("sets sidePath=view and name in URL when clicking a profile title", async () => {
+    const [firstProfile] = repositoryProfiles;
+    renderWithProviders(
+      <>
+        <RepositoryProfileList repositoryProfiles={repositoryProfiles} />
+        <LocationDisplay />
+      </>,
+    );
+
+    await user.click(
+      await screen.findByRole("button", { name: firstProfile.title }),
+    );
+
+    expect(
+      await screen.findByText(/sidePath=view/, { selector: "[data-testid='location']" }),
+    ).toHaveTextContent(`name=${firstProfile.name}`);
   });
 
   it("renders only the profiles passed in (server-side filtering)", () => {

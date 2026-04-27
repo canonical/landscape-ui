@@ -9,7 +9,7 @@ const user = userEvent.setup();
 
 const defaultProps = {
   onSuccess: vi.fn(),
-  onCancel: vi.fn(),
+  onBack: vi.fn(),
 };
 
 describe("RepositoryProfileSourceForm", () => {
@@ -94,12 +94,12 @@ describe("RepositoryProfileSourceForm", () => {
     expect(defaultProps.onSuccess).toHaveBeenCalledOnce();
   });
 
-  it("calls onCancel when cancel button is clicked", async () => {
+  it("calls onBack when cancel button is clicked", async () => {
     renderWithProviders(<RepositoryProfileSourceForm {...defaultProps} />);
 
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(defaultProps.onCancel).toHaveBeenCalledOnce();
+    expect(defaultProps.onBack).toHaveBeenCalledOnce();
   });
 
   it("shows name validation error for invalid characters", async () => {

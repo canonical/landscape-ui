@@ -31,7 +31,7 @@ describe("RepositoryProfileForm", () => {
   it("submits without errors on valid add form", async () => {
     renderWithProviders(<RepositoryProfileForm action="add" />);
 
-    await user.type(screen.getByLabelText(/Title/i), "repo-test");
+    await user.type(screen.getByLabelText(/Profile name/i), "repo-test");
     await fillAndAddSource();
 
     await user.click(
@@ -86,7 +86,7 @@ describe("RepositoryProfileForm", () => {
   it("shows apt_sources validation error when no sources are added", async () => {
     renderWithProviders(<RepositoryProfileForm action="add" />);
 
-    await user.type(screen.getByLabelText(/Title/i), "repo-test");
+    await user.type(screen.getByLabelText(/Profile name/i), "repo-test");
     await user.click(
       screen.getByRole("button", { name: /Add a new repository profile/i }),
     );
@@ -102,12 +102,12 @@ describe("RepositoryProfileForm", () => {
     expect(screen.getByLabelText(/access group/i)).toBeEnabled();
   });
 
-  it("shows disabled access group field in edit mode", async () => {
+  it("shows read-only access group field in edit mode", async () => {
     renderWithProviders(
       <RepositoryProfileForm action="edit" profile={repositoryProfiles[0]} />,
     );
 
-    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+    expect(screen.queryByRole("combobox", { name: /access group/i })).not.toBeInTheDocument();
   });
 
   it("clicking Add source opens the source form overlay", async () => {
@@ -126,7 +126,7 @@ describe("RepositoryProfileForm", () => {
 
     setEndpointStatus({ status: "error", path: "repositoryprofiles" });
 
-    await user.type(screen.getByLabelText(/Title/i), "repo-test");
+    await user.type(screen.getByLabelText(/Profile name/i), "repo-test");
     await fillAndAddSource();
 
     await user.click(
@@ -141,7 +141,7 @@ describe("RepositoryProfileForm", () => {
   it("clears error notification when a pending source is edited", async () => {
     renderWithProviders(<RepositoryProfileForm action="add" />);
 
-    await user.type(screen.getByLabelText(/Title/i), "repo-test");
+    await user.type(screen.getByLabelText(/Profile name/i), "repo-test");
     await fillAndAddSource();
 
     setEndpointStatus({ status: "error", path: "repositoryprofiles" });
