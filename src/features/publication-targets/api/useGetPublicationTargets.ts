@@ -1,37 +1,41 @@
-import type { PublicationTarget } from "../types/PublicationTarget";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError, AxiosResponse } from "axios";
+import type { AxiosError } from "axios";
+import type {
+  ListPublicationTargetsResponse,
+  PublicationTarget,
+} from "@canonical/landscape-openapi";
 
-interface UseGetPublicationTargetsReturnType {
-  publicationTargets: PublicationTarget[];
-  isGettingPublicationTargets: boolean;
-}
-
-export interface ListPublicationTargetsResponse {
-  publicationTargets?: PublicationTarget[];
-  nextPageToken?: string;
-}
-
-const useGetPublicationTargets = (): UseGetPublicationTargetsReturnType => {
+export default function useGetPublicationTargets() {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<
-    AxiosResponse<ListPublicationTargetsResponse>,
+    PublicationTarget[],
     AxiosError<ApiError>
   >({
-    queryKey: ["publicationTargets", "all"],
-    queryFn: async () =>
-      await authFetchDebArchive.get("publicationTargets", {
-        params: { pageSize: 100 },
-      }),
+    queryKey: ["publication-targets", "all"],
+    queryFn: async () => {
+      let pageToken: string | undefined;
+      const targets: PublicationTarget[] = [];
+
+      do {
+        const response =
+          await authFetchDebArchive.get<ListPublicationTargetsResponse>(
+            "publicationTargets",
+            { params: { pageSize: 1000, pageToken } },
+          );
+
+        targets.push(...(response.data.publicationTargets ?? []));
+        pageToken = response.data.nextPageToken || undefined;
+      } while (pageToken);
+
+      return targets;
+    },
   });
 
   return {
-    publicationTargets: data?.data?.publicationTargets ?? [],
+    publicationTargets: data ?? [],
     isGettingPublicationTargets: isLoading,
   };
-};
-
-export default useGetPublicationTargets;
+}

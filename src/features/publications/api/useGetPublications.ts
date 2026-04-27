@@ -15,6 +15,7 @@ import {
 const FETCH_PAGE_SIZE = 1000;
 
 const SEARCH_PREFIXES = [
+  "publicationTargetId:",
   "publicationTarget:",
   "source:",
   "sourceType:",
@@ -44,6 +45,10 @@ const matchesSearch = (
 ): boolean => {
   if (!value) return true;
   switch (prefix) {
+    case "publicationTargetId:":
+      return (
+        getPublicationTargetName(publication.publicationTarget) === value
+      );
     case "publicationTarget:":
       return (getPublicationTargetName(publication.publicationTarget) ?? "")
         .toLowerCase()

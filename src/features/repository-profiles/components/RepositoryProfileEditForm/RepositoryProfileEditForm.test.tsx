@@ -1,4 +1,3 @@
-import usePageParams from "@/hooks/usePageParams";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -9,20 +8,11 @@ import RepositoryProfileEditForm from "./RepositoryProfileEditForm";
 
 const [profile] = repositoryProfiles;
 
-// Mirrors real app behavior: only mount when name param is set
-const NameGuard = () => {
-  const { name } = usePageParams();
-  if (!name) return null;
-  return (
-    <Suspense fallback={null}>
-      <RepositoryProfileEditForm />
-    </Suspense>
-  );
-};
-
 const renderEditForm = (sidePath = "view,edit") =>
   renderWithProviders(
-    <NameGuard />,
+    <Suspense fallback={null}>
+      <RepositoryProfileEditForm />
+    </Suspense>,
     undefined,
     `/?sidePath=${sidePath}&name=${profile.name}`,
   );
@@ -48,7 +38,9 @@ describe("RepositoryProfileEditForm", () => {
 
   it("does not render back button when sidePath has only one segment", async () => {
     renderWithProviders(
-      <NameGuard />,
+      <Suspense fallback={null}>
+        <RepositoryProfileEditForm />
+      </Suspense>,
       undefined,
       `/?sidePath=edit&name=${profile.name}`,
     );
@@ -68,7 +60,7 @@ describe("RepositoryProfileEditForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("clears sidePath and name URL params on close button click", async () => {
+  it("closes the panel and clears URL params on close button click", async () => {
     renderEditForm();
 
     await screen.findByRole("heading", { name: `Edit ${profile.title}` });
