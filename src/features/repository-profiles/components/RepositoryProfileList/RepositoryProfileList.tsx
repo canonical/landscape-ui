@@ -7,18 +7,16 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RepositoryProfile } from "../../types";
 import { useGetProfileInstancesCount } from "../../api";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
-import RepositoryProfileDetails from "../RepositoryProfileDetails";
 
 const AssociatedCountCell: FC<{ readonly profileId: number }> = ({ profileId }) => {
   const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(profileId);
@@ -37,8 +35,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   repositoryProfiles,
   totalCount = 0,
 }) => {
-  const { search } = usePageParams();
-  const { setSidePanelContent } = useSidePanel();
+  const { search, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
 
@@ -51,14 +48,6 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
 
   const columns = useMemo<Column<RepositoryProfile>[]>(
     () => {
-      const handleViewRepository = (profile: RepositoryProfile): void => {
-        setSidePanelContent(
-          profile.title,
-          <Suspense fallback={<LoadingState />}>
-            <RepositoryProfileDetails profile={profile} />
-          </Suspense>,
-        );
-      };
       return [
       {
         ...LIST_TITLE_COLUMN_PROPS,
@@ -72,7 +61,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align--left"
-              onClick={() => { handleViewRepository(original); }}
+              onClick={createPageParamsSetter({ sidePath: ["view"], name: original.name })}
             >
               {original.title}
             </Button>
@@ -130,7 +119,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
       },
     ];
   },
-    [accessGroupOptions, setSidePanelContent],
+    [accessGroupOptions],
   );
 
   return (

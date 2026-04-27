@@ -1,27 +1,20 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import ViewProfileGeneralBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileGeneralBlock/ViewProfileGeneralBlock";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { APTSource } from "@/features/apt-sources";
 import type { FC } from "react";
-import { Suspense, lazy, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
-import { useRepositoryProfiles } from "../../api";
-import type { RepositoryProfile } from "../../types";
+import { useGetRepositoryProfile, useRepositoryProfiles } from "../../api";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileAssociationBlock/ViewProfileAssociationBlock";
 import { ProfileTypes } from "@/features/profiles";
-
-const RepositoryProfileForm = lazy(async () => import("../RepositoryProfileForm"));
-
-interface RepositoryProfileDetailsProps {
-  readonly profile: RepositoryProfile;
-}
 
 const SOURCES_PAGE_SIZE = 10;
 
@@ -32,10 +25,10 @@ const aptSourceColumns: Column<APTSource>[] = [
   },
 ];
 
-const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
-  profile,
-}) => {
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+const RepositoryProfileDetails: FC = () => {
+  const { name, createPageParamsSetter, createSidePathPusher } = usePageParams();
+  const profile = useGetRepositoryProfile(name).data;
+  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -57,14 +50,7 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
     setFalse: closeModal,
   } = useBoolean();
 
-  const handleEditProfile = (): void => {
-    setSidePanelContent(
-      `Edit ${profile.title}`,
-      <Suspense fallback={<LoadingState />}>
-        <RepositoryProfileForm action="edit" profile={profile} />
-      </Suspense>,
-    );
-  };
+  const handleEditProfile = createSidePathPusher("edit");
 
   const handleRemoveProfile = async (): Promise<void> => {
     try {
@@ -75,7 +61,7 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
         message: `Repository profile "${profile.title}" removed successfully`,
       });
 
-      closeSidePanel();
+      closePanel();
     } catch (error) {
       debug(error);
     } finally {
@@ -85,6 +71,8 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
 
   return (
     <>
+      <SidePanel.Header>{profile.title}</SidePanel.Header>
+      <SidePanel.Content>
       <div className="p-segmented-control u-sv2">
         <div className="p-segmented-control__list">
           <Button
@@ -127,6 +115,7 @@ const RepositoryProfileDetails: FC<RepositoryProfileDetailsProps> = ({
         </Blocks>
 
         <ViewProfileAssociationBlock profile={profile} type={ProfileTypes.repository} />
+      </SidePanel.Content>
 
         <TextConfirmationModal
           isOpen={isModalOpen}

@@ -29,6 +29,9 @@ type RepositoryProfileFormProps =
   | {
       action: "edit";
       profile: RepositoryProfile;
+      onClose?: () => void;
+      hasBackButton?: boolean;
+      onBackButtonPress?: () => void;
     };
 
 const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
@@ -90,7 +93,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             .filter((orig) => !values.apt_sources.some((cur) => cur.id === orig.id))
             .map((s) => s.id),
         });
-        closeSidePanel();
+        (props.onClose ?? closeSidePanel)();
         notify.success({
           title: `You have successfully edited ${values.title}`,
           message: `The repository profile details have been updated.`,
@@ -242,6 +245,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           submitButtonDisabled={formik.isSubmitting}
           submitButtonText={CTA_INFO[props.action].label}
           submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
+          onCancel={props.action === "edit" ? props.onClose : undefined}
+          hasBackButton={props.action === "edit" ? props.hasBackButton : undefined}
+          onBackButtonPress={props.action === "edit" ? props.onBackButtonPress : undefined}
         />
       </Form>
 
