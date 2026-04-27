@@ -44,7 +44,7 @@ describe("UpgradeProfileDetailsSidePanel", () => {
     const { container } = renderWithProviders(
       <UpgradeProfileDetailsSidePanel />,
       undefined,
-      `/?profile=${testProfile.id}`,
+      `/?name=${testProfile.id}`,
     );
 
     await expectLoadingState();

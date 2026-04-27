@@ -9,7 +9,7 @@ interface MirrorPackagesCount {
 const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
   const { data } = useListMirrorPackages(mirrorName, { pageSize: 1000 });
 
-  return pluralizeNew(data.data.mirrorPackages?.length ?? 0, "package", {
+  return pluralizeNew(data.data.mirrorPackages?.length, "package", {
     showCount: data.data.nextPageToken === undefined ? "exact" : "limited",
   });
 };
