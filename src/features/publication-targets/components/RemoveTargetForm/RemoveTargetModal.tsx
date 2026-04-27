@@ -2,6 +2,7 @@ import type { TextConfirmationModalProps } from "@/components/form/TextConfirmat
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import useRemovePublicationTarget from "../../api/useRemovePublicationTarget";
@@ -22,6 +23,8 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
+  const { createPageParamsSetter } = usePageParams();
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
   const { removePublicationTargetQuery } = useRemovePublicationTarget();
   const { mutateAsync: removeTarget, isPending: isRemoving } =
     removePublicationTargetQuery;
@@ -34,6 +37,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
   const handleRemoveTarget = async () => {
     try {
       if (!target.name) return;
+      closeSidePanel();
       await removeTarget({ name: target.name });
       notify.success({
         message: `You have successfully removed ${target.displayName}`,

@@ -1,4 +1,4 @@
-import { API_URL_DEBARCHIVE } from "@/constants";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { expectLoadingState } from "@/tests/helpers";
 import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
@@ -20,7 +20,7 @@ describe("PublicationTargetContainer", () => {
 
   it("renders the empty state when there are no targets", async () => {
     server.use(
-      http.get(`${API_URL_DEBARCHIVE}v1/publicationTargets`, () =>
+      http.get(`${API_URL_DEB_ARCHIVE}v1/publicationTargets`, () =>
         HttpResponse.json({ publicationTargets: [] }),
       ),
     );
@@ -35,7 +35,7 @@ describe("PublicationTargetContainer", () => {
 
   it("renders the Add publication target CTA button in the empty state", async () => {
     server.use(
-      http.get(`${API_URL_DEBARCHIVE}v1/publicationTargets`, () =>
+      http.get(`${API_URL_DEB_ARCHIVE}v1/publicationTargets`, () =>
         HttpResponse.json({ publicationTargets: [] }),
       ),
     );

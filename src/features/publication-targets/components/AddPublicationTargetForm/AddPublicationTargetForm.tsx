@@ -31,7 +31,7 @@ const AddPublicationTargetForm: FC = () => {
       bucket: Yup.string().required("This field is required"),
       awsAccessKeyId: Yup.string().required("This field is required"),
       awsSecretAccessKey: Yup.string().required("This field is required"),
-      region: Yup.string(),
+      region: Yup.string().required("This field is required"),
       endpoint: Yup.string(),
       prefix: Yup.string(),
       acl: Yup.string(),

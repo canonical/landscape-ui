@@ -1,10 +1,10 @@
-import { API_URL_DEBARCHIVE } from "@/constants";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type { PublicationTarget } from "@/features/publication-targets";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { http, HttpResponse } from "msw";
 
 export default [
-  http.post(`${API_URL_DEBARCHIVE}v1/publicationTargets`, async ({ request }) => {
+  http.post(`${API_URL_DEB_ARCHIVE}publicationTargets`, async ({ request }) => {
     const body = (await request.json()) as Omit<
       PublicationTarget,
       "name" | "publicationTargetId"
@@ -18,7 +18,7 @@ export default [
     return HttpResponse.json(newTarget, { status: 201 });
   }),
 
-  http.delete(`${API_URL_DEBARCHIVE}v1/publicationTargets/:id`, ({ params }) => {
+  http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, ({ params }) => {
     const idx = publicationTargets.findIndex(
       (t) => t.name === `publicationTargets/${params.id}`,
     );
@@ -27,7 +27,7 @@ export default [
   }),
 
   http.patch(
-    `${API_URL_DEBARCHIVE}v1/publicationTargets/:id`,
+    `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
     async ({ params, request }) => {
       const body = (await request.json()) as Partial<PublicationTarget>;
       const idx = publicationTargets.findIndex(
@@ -47,7 +47,7 @@ export default [
   ),
 
   // Fallback GET for integration tests that don't mock useGetPublicationTargets directly
-  http.get(`${API_URL_DEBARCHIVE}v1/publicationTargets`, () => {
+  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, () => {
     return HttpResponse.json({
       publicationTargets,
     });
