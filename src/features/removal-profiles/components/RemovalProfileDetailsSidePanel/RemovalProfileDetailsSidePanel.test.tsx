@@ -17,7 +17,7 @@ describe("RemovalProfileDetails", () => {
     const { container } = renderWithProviders(
       <RemovalProfileDetailsSidePanel />,
       undefined,
-      `/?profile=${profile.id}`,
+      `/?name=${profile.id}`,
     );
 
     await expectLoadingState();
@@ -44,7 +44,7 @@ describe("RemovalProfileDetails", () => {
     renderWithProviders(
       <RemovalProfileDetailsSidePanel />,
       undefined,
-      `/?profile=${profile.id}`,
+      `/?name=${profile.id}`,
     );
 
     await expectLoadingState();

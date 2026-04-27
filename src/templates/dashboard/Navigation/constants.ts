@@ -28,18 +28,22 @@ export const REPOSITORY_SUBMENU: MenuItem[] = [
   {
     label: "Local repositories",
     path: ROUTES.repositories.localRepositories(),
-    env: "selfHosted"
+    env: "selfHosted",
   },
-  { label: "Publications", path: ROUTES.repositories.publications(), env: "selfHosted" },
+  {
+    label: "Publications",
+    path: ROUTES.repositories.publications(),
+    env: "selfHosted",
+  },
   {
     label: "Publication targets",
     path: ROUTES.repositories.publicationTargets(),
-    env: "selfHosted"
+    env: "selfHosted",
   },
   {
     label: "Repository profiles",
     path: ROUTES.repositories.repositoryProfiles(),
-    env: "selfHosted"
+    env: "selfHosted",
   },
 ];
 
