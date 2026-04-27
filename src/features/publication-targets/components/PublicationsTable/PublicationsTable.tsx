@@ -16,12 +16,14 @@ interface PublicationsTableProps {
   readonly publications: Publication[];
   readonly pageSize?: number;
   readonly openInNewTab?: boolean;
+  readonly showSources?: boolean;
 }
 
 const PublicationsTable: FC<PublicationsTableProps> = ({
   publications,
   pageSize=10,
   openInNewTab=false,
+  showSources=true,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -35,8 +37,8 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
           <PublicationLink publication={original} openInNewTab={openInNewTab} />
         ),
       },
-      {
-        accessor: "source",
+      ...(showSources ? [{
+        accessor: "source" as const,
         Header: "Source",
         Cell: ({ row: { original: { source } } }: CellProps<Publication>): ReactNode => {
           const sourceType = getSourceType(source);
@@ -48,7 +50,7 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
           }
           return <>{source}</>;
         },
-      },
+      }] : []),
       {
         accessor: "publishTime",
         Header: "Date Published",
@@ -63,7 +65,7 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
           ),
       }
     ],
-    [openInNewTab],
+    [openInNewTab, showSources],
   );
 
   const pagedData =
