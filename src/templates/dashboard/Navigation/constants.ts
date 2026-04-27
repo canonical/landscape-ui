@@ -2,6 +2,11 @@ import { ROUTES } from "@/libs/routes";
 import type { MenuItem } from "./types";
 
 const PROFILES_SUBMENU: MenuItem[] = [
+  {
+    label: "Repository profiles",
+    path: ROUTES.repositories.repositoryProfiles(),
+    env: "saas",
+  },
   { label: "Package profiles", path: ROUTES.profiles.package() },
   { label: "Upgrade profiles", path: ROUTES.profiles.upgrade() },
   { label: "Reboot profiles", path: ROUTES.profiles.reboot() },
