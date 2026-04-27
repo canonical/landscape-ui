@@ -1,1 +1,1 @@
-export const boolToLabel = (value: boolean) => (value ? "Yes" : "No");
+export const boolToLabel = (value?: boolean) => (value ? "Yes" : "No");

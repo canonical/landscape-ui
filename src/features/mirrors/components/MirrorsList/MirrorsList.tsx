@@ -76,11 +76,17 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
-          <Suspense fallback={<Spinner />}>
-            <MirrorActions mirror={mirror} />
-          </Suspense>
-        ),
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
+          mirror.name !== undefined ? (
+            <Suspense fallback={<Spinner />}>
+              <MirrorActions
+                mirrorDisplayName={mirror.displayName}
+                mirrorName={mirror.name}
+              />
+            </Suspense>
+          ) : (
+            <NoData />
+          ),
       },
     ],
     [createPageParamsSetter],
