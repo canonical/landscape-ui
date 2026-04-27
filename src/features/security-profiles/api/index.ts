@@ -2,6 +2,7 @@ export * from "./useAddSecurityProfile";
 export * from "./useArchiveSecurityProfile";
 export * from "./useGetOverLimitSecurityProfiles";
 export * from "./useGetSecurityProfile";
+export * from "./useGetPageSecurityProfile";
 export * from "./useGetSecurityProfileAuditDownload";
 export * from "./useGetSecurityProfileReport";
 export * from "./useGetSecurityProfiles";

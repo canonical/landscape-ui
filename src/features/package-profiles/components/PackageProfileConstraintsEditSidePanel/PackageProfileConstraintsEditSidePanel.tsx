@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPagePackageProfile from "../../api/useGetPagePackageProfile";
+import { useGetPagePackageProfile } from "../../api/useGetPagePackageProfile";
 import PackageProfileConstraintsEditForm from "./components/PackageProfileConstraintsEditForm";
 
 const PackageProfileConstraintsEditSidePanel: FC = () => {
