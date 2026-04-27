@@ -23,8 +23,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { createPageParamsSetter } = usePageParams();
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
+  const { setPageParams } = usePageParams();
   const { removePublicationTargetQuery } = useRemovePublicationTarget();
   const { mutateAsync: removeTarget, isPending: isRemoving } =
     removePublicationTargetQuery;
@@ -37,8 +36,11 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
   const handleRemoveTarget = async () => {
     try {
       if (!target.name) return;
-      closeSidePanel();
+
+      close();
+      setPageParams({ sidePath: [], name: "" });
       await removeTarget({ name: target.name });
+      
       notify.success({
         message: `You have successfully removed ${target.displayName}`,
         title: "Publication target removed",
