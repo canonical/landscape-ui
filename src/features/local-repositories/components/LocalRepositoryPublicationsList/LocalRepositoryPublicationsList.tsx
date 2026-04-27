@@ -1,5 +1,5 @@
 import { ROUTES } from "@/libs/routes";
-import type { Publication } from "@/features/publications";
+import type { Publication } from "@canonical/landscape-openapi";
 import { useMemo, type FC } from "react";
 import StaticLink from "@/components/layout/StaticLink";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";

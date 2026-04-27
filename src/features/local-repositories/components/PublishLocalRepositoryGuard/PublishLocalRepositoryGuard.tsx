@@ -3,7 +3,7 @@ import NoPublicationTargetsModal from "../NoPublicationTargetsModal";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
-import type { Local } from "../../types";
+import type { Local } from "@canonical/landscape-openapi";
 
 interface PublishRepositoryGuardProps {
   readonly close: () => void;
@@ -26,7 +26,7 @@ const PublishLocalRepositoryGuard: FC<PublishRepositoryGuardProps> = ({
     return <NoPublicationTargetsModal close={close} />;
   }
 
-  setPageParams({ sidePath: ["publish"], name: repository.local_id });
+  setPageParams({ sidePath: ["publish"], name: repository.localId });
 
   return null;
 };

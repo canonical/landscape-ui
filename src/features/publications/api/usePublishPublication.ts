@@ -7,7 +7,7 @@ import type { PublicationServicePublishPublicationBody } from "../types/Publicat
 
 interface PublishPublicationParams {
   publicationName: string;
-  body: PublicationServicePublishPublicationBody;
+  body?: PublicationServicePublishPublicationBody;
 }
 
 export const usePublishPublication = () => {

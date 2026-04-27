@@ -19,11 +19,8 @@ import {
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import type { Local } from "../../../../types";
-import {
-  type Publication,
-  usePublishPublication,
-} from "@/features/publications";
+import type { Local, Publication } from "@canonical/landscape-openapi";
+import { usePublishPublication } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
@@ -49,12 +46,12 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   const handleSubmit = async (values: { name: string }) => {
     try {
-      await publishPublication({ name: values.name });
+      await publishPublication({ publicationName: values.name });
 
       closeSidePanel();
 
       notify.success({
-        title: `You have marked ${repository.display_name} to be published`,
+        title: `You have marked ${repository.displayName} to be published`,
         message:
           "An activity has been queued to publish the selected publication to the designated target.",
       });
@@ -75,7 +72,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
       { label: "Select publication", value: "" },
       ...publications.map((publication) => ({
         label: publication.displayName,
-        value: publication.name,
+        value: publication.name ?? "",
       })),
     ],
     [publications],
@@ -123,7 +120,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
                   Hash based indexing
                 </span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
+                  message={SETTINGS_HELP_TEXT.acquireByHash}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -144,7 +141,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
                   Automatic installation
                 </span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
+                  message={SETTINGS_HELP_TEXT.notAutomatic}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -163,7 +160,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
               <span>
                 <span className={classes.settingLabel}>Automatic upgrades</span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
+                  message={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
