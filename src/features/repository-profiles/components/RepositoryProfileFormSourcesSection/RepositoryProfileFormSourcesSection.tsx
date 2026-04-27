@@ -60,15 +60,6 @@ const RepositoryProfileFormSourcesSection: FC<
         ),
       },
       {
-        accessor: "status",
-        Header: "Status",
-        Cell: ({ row: { original } }: CellProps<SourceRow>) => (
-          <span className="u-truncate" title="Deb line">
-            {original.isPending ? "Pending" : "Saved"}
-          </span>
-        ),
-      },
-      {
         id: "actions",
         Header: "",
         className: classes.actionsColumn,
