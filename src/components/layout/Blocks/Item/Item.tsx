@@ -17,22 +17,30 @@ const Item: FC<ItemProps> = ({
   action,
   titleClassName,
   containerClassName,
-}: ItemProps) => (
-  <section className={classNames(classes.item, containerClassName)}>
+}: ItemProps) => {
+  const dense = useBlocksDense();
+  return (
+    <section className={classNames(classes.item, containerClassName)}>
     {(title || action) && (
       <div className={classes.heading}>
-        {title && (
-          <h4
-            className={classNames(classes.heading, "p-heading--5", titleClassName)}
-          >
-            {title}
-          </h4>
+          {title && (
+            <h4
+              className={classNames(
+            classes.heading,
+            { [classes.denseHeading as string]: dense },
+            "p-heading--5",
+            titleClassName,
+          )}
+            >
+              {title}
+            </h4>
         )}
         {action}
       </div>
-    )}
-    {children}
-  </section>
-);
+      )}
+      {children}
+    </section>
+  );
+};
 
 export default Item;

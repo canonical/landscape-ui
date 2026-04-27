@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@canonical/landscape-openapi':
-        specifier: 0.0.50
-        version: 0.0.50
+        specifier: ^0.0.56
+        version: 0.0.56
       '@canonical/react-components':
-        specifier: 4.2.0
-        version: 4.2.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(formik@2.4.9(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vanilla-framework@4.46.0(sass@1.99.0))
+        specifier: 4.0.0
+        version: 4.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(formik@2.4.9(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vanilla-framework@4.46.0(sass@1.99.0))
       '@monaco-editor/react':
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -279,11 +279,11 @@ packages:
   '@cacheable/utils@2.4.1':
     resolution: {integrity: sha512-eiFgzCbIneyMlLOmNG4g9xzF7Hv3Mga4LjxjcSC/ues6VYq2+gUbQI8JqNuw/ZM8tJIeIaBGpswAsqV2V7ApgA==}
 
-  '@canonical/landscape-openapi@0.0.50':
-    resolution: {integrity: sha512-D9quhDND6+EJKhqUl97xkXp/sjipDTxSMLi1Obdj9fKs09GxQrR0IicIJaxgljfGQYT/yAine7I1GeTQCxOpEw==}
+  '@canonical/landscape-openapi@0.0.56':
+    resolution: {integrity: sha512-WI3w1BYQnWvVIWtSSmq6wxKcz/GVd66Xvf2fY/kq6+bYkT2odPEUf6REXVURlMSIPS8S4E7i/MMCPzaVVoiHGA==}
 
-  '@canonical/react-components@4.2.0':
-    resolution: {integrity: sha512-e4rYL0fvJTHynQtd7bfDtzYf25NxYGQq+BXtSMbpTU6cYxsw47EgITxYouB8yNa18iuAxYxINP3tRZugQK6qOw==}
+  '@canonical/react-components@4.0.0':
+    resolution: {integrity: sha512-gcBSNW6M7dcKJhfGBn2Bw0jZj0BNYcKWNK12utmmWtzXmzkulgMHywTAd5ZXdI3TCYKxY1zyw5BZNQeYO+TsFA==}
     peerDependencies:
       '@types/react': ^18.0.0 || ^19.0.0
       '@types/react-dom': ^18.0.0 || ^19.0.0
@@ -4212,9 +4212,9 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@canonical/landscape-openapi@0.0.50': {}
+  '@canonical/landscape-openapi@0.0.56': {}
 
-  '@canonical/react-components@4.2.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(formik@2.4.9(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vanilla-framework@4.46.0(sass@1.99.0))':
+  '@canonical/react-components@4.0.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(formik@2.4.9(@types/react@19.2.14)(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vanilla-framework@4.46.0(sass@1.99.0))':
     dependencies:
       '@types/jest': 30.0.0
       '@types/node': 20.19.30
