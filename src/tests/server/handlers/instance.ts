@@ -32,6 +32,7 @@ import type { Instance, PendingInstance } from "@/types/Instance";
 import type { GroupsResponse } from "@/types/User";
 import { delay, http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, GetInstancesParams, ApiPaginatedResponse<Instance>>(
@@ -39,14 +40,29 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      const url = new URL(request.url);
+      const query = url.searchParams.get("query") || "";
+
+      if (
+        endpointStatus.status === "error" &&
+        endpointStatus.path === "computers-tagged-loading" &&
+        query.includes(" OR ")
+      ) {
+        return new Promise<never>(() => undefined);
       }
 
-      const url = new URL(request.url);
+      if (
+        endpointStatus.status === "error" &&
+        (!endpointStatus.path ||
+          endpointStatus.path === "computers" ||
+          (endpointStatus.path === "computers-tagged-error" &&
+            query.includes(" OR ")))
+      ) {
+        throw getEndpointStatusApiError();
+      }
+
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || 1;
-      const query = url.searchParams.get("query") || "";
 
       if (query.includes("has-pro-management:false")) {
         return HttpResponse.json(
@@ -248,12 +264,35 @@ export default [
     const endpointStatus = getEndpointStatus();
 
     if (endpointStatus.status === "error") {
-      throw new HttpResponse(null, { status: 500 });
+      throw getEndpointStatusApiError();
     }
 
     const releaseUpgradeActivity = RELEASE_UPGRADE_ACTIVITY;
     return HttpResponse.json(releaseUpgradeActivity);
   }),
+
+  http.post(`${API_URL}computers/upgrade-packages`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "error") {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json(activities[0]);
+  }),
+
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:computerId/restart`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw getEndpointStatusApiError();
+      }
+
+      return HttpResponse.json(activities[0]);
+    },
+  ),
 
   http.get<never, GetInstanceParams, Instance>(
     `${API_URL}computers/:computerId`,
@@ -261,7 +300,7 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+        throw getEndpointStatusApiError();
       }
 
       const url = new URL(request.url);
@@ -270,6 +309,33 @@ export default [
       return HttpResponse.json(
         instances.find((inst) => inst.id === Number(computerId)) || null,
       );
+    },
+  ),
+
+  http.put(`${API_URL}computers/:computerId`, async () => {
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "editInstance")
+    ) {
+      throw getEndpointStatusApiError();
+    }
+
+    return HttpResponse.json(instances[0]);
+  }),
+
+  http.post(
+    `${API_URL}computers/:computerId/usergroups/update_bulk`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+      if (
+        endpointStatus.status === "error" &&
+        (!endpointStatus.path || endpointStatus.path === "userGroups")
+      ) {
+        throw getEndpointStatusApiError();
+      }
+
+      return HttpResponse.json(activities[0]);
     },
   ),
 
@@ -285,6 +351,22 @@ export default [
     GetUserGroupsParams,
     GroupsResponse
   >(`${API_URL}computers/:computerId/users/:username/groups`, () => {
+    const endpointStatus = getEndpointStatus();
+    const daemonGroups = userGroups.filter((group) => group.name === "daemon");
+    const shouldReturnEmptyGroups =
+      endpointStatus.status === "empty" &&
+      (!endpointStatus.path || endpointStatus.path === "users/groups");
+    const shouldReturnDaemonGroupOnly =
+      endpointStatus.path === "users/groups:daemon";
+
+    if (shouldReturnEmptyGroups) {
+      return HttpResponse.json({ groups: [] });
+    }
+
+    if (shouldReturnDaemonGroupOnly) {
+      return HttpResponse.json({ groups: daemonGroups });
+    }
+
     return HttpResponse.json({ groups: userGroups });
   }),
 
@@ -450,6 +532,11 @@ export default [
       return HttpResponse.json(instances);
     },
   ),
+
+  http.post(`${API_URL}computers\\:delete`, async () => {
+    await delay();
+    return HttpResponse.json();
+  }),
 
   http.get(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, ["AddTagsToComputers"])) {

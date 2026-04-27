@@ -2,16 +2,17 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import SecurityProfileDetailsSidePanel from "./SecurityProfileDetailsSidePanel";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("SecurityProfileDetailsSidePanel", () => {
   it("should render without data", async () => {
     renderWithProviders(
       <SecurityProfileDetailsSidePanel />,
       undefined,
-      "/?profile=7",
+      "/?name=7",
     );
 
-    expect((await screen.findAllByText("---"))[0]).toBeInTheDocument();
+    expect((await screen.findAllByText(NO_DATA_TEXT))[0]).toBeInTheDocument();
     expect(screen.getByText("As soon as possible")).toBeInTheDocument();
   });
 
@@ -19,7 +20,7 @@ describe("SecurityProfileDetailsSidePanel", () => {
     renderWithProviders(
       <SecurityProfileDetailsSidePanel />,
       undefined,
-      "/?profile=8",
+      "/?name=8",
     );
 
     expect(

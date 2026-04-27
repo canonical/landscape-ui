@@ -77,6 +77,10 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
     validationSchema: VALIDATION_SCHEMA,
   });
 
+  const handleExcludedPackagesChange = async (
+    newExcludedPackages: UpgradesFormProps["excludedPackages"],
+  ) => formik.setFieldValue("excludedPackages", newExcludedPackages);
+
   return (
     <Form onSubmit={formik.handleSubmit}>
       <UpgradeInfo instances={selectedInstances} />
@@ -98,9 +102,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.instances
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
-                onExcludedPackagesChange={async (newExcludedPackages) =>
-                  formik.setFieldValue("excludedPackages", newExcludedPackages)
-                }
+                onExcludedPackagesChange={handleExcludedPackagesChange}
               />
             </Suspense>
           )}
@@ -109,9 +111,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.packages
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
-                onExcludedPackagesChange={async (newExcludedPackages) =>
-                  formik.setFieldValue("excludedPackages", newExcludedPackages)
-                }
+                onExcludedPackagesChange={handleExcludedPackagesChange}
               />
             </Suspense>
           )}

@@ -1,10 +1,13 @@
 import { API_URL } from "@/constants";
+import type { Activity } from "@/features/activities";
 import type {
   KernelManagementInfo,
   LivepatchInformation,
 } from "@/features/kernel";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
+import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, never, KernelManagementInfo>(
@@ -92,6 +95,18 @@ export default [
           },
         },
       });
+    },
+  ),
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:id/kernel/upgrade`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw getEndpointStatusApiError();
+      }
+
+      return HttpResponse.json(activities[0]);
     },
   ),
 ];

@@ -1,5 +1,6 @@
 import type {
   Instance,
+  InstanceWithoutRelation,
   PendingInstance,
   WindowsInstance,
 } from "@/types/Instance";
@@ -38,6 +39,11 @@ export const ubuntuInstance: Instance = {
       type: "PackageUpgradesAlert",
       summary: "",
       severity: "info",
+    },
+    {
+      type: "EsmDisabledAlert",
+      summary: "ESM disabled",
+      severity: "warning",
     },
   ],
   distribution_info: {
@@ -206,6 +212,7 @@ export const windowsInstance: WindowsInstance = {
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: true,
     },
     {
       id: 65,
@@ -335,8 +342,9 @@ export const windowsInstance: WindowsInstance = {
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: true,
     },
-  ],
+  ] as const satisfies InstanceWithoutRelation[],
   parent: null,
   distribution_info: {
     code_name: "windows",

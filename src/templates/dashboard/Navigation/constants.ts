@@ -19,19 +19,26 @@ const PROFILES_SUBMENU: MenuItem[] = [
 ];
 
 export const REPOSITORY_SUBMENU: MenuItem[] = [
-  { label: "Mirrors", path: ROUTES.repositories.mirrors() },
+  { label: "Mirrors", path: ROUTES.repositories.mirrors(), env: "selfHosted" },
   {
     label: "Local repositories",
     path: ROUTES.repositories.localRepositories(),
+    env: "selfHosted",
   },
-  { label: "Publications", path: ROUTES.repositories.publications() },
+  {
+    label: "Publications",
+    path: ROUTES.repositories.publications(),
+    env: "selfHosted",
+  },
   {
     label: "Publication targets",
     path: ROUTES.repositories.publicationTargets(),
+    env: "selfHosted",
   },
   {
     label: "Repository profiles",
     path: ROUTES.repositories.repositoryProfiles(),
+    env: "selfHosted",
   },
 ];
 
@@ -78,6 +85,7 @@ export const MENU_ITEMS: MenuItem[] = [
     icon: "fork",
     items: REPOSITORY_SUBMENU,
     secondary: true,
+    env: "selfHosted",
   },
   {
     label: "Org. settings",

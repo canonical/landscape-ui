@@ -14,7 +14,7 @@ import {
   useGetSecurityProfiles,
   useIsSecurityProfilesLimitReached,
 } from "../../api";
-import { useSecurityProfileDownloadAudit } from "../../hooks/useSecurityProfileDownloadAudit";
+import { useSecurityProfileDownload } from "../../hooks/useSecurityProfileDownload";
 import SecurityProfilesHeader from "../SecurityProfilesHeader";
 import SecurityProfilesList from "../SecurityProfilesList";
 
@@ -79,7 +79,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
     { enabled: !!pendingReports.length },
   );
 
-  const downloadAudit = useSecurityProfileDownloadAudit();
+  const downloadAudit = useSecurityProfileDownload("audit");
 
   const [
     isProfileLimitNotificationIgnored,
@@ -167,7 +167,7 @@ const SecurityProfilesContainer: FC<SecurityProfilesContainerProps> = ({
             appearance="link"
             onClick={createPageParamsSetter({
               sidePath: ["edit"],
-              profile: overLimitSecurityProfiles[0].id.toString(),
+              name: overLimitSecurityProfiles[0].id.toString(),
             })}
           >
             Edit profile

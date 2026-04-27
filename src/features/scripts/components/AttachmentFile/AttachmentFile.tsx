@@ -1,6 +1,7 @@
 import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
+import useDebug from "@/hooks/useDebug";
 import { useGetSingleScriptAttachment } from "../../api";
 import classes from "./AttachmentFile.module.scss";
 
@@ -19,26 +20,31 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
   scriptId,
   className,
 }) => {
+  const debug = useDebug();
+
   const { isScriptAttachmentsLoading, refetch } = useGetSingleScriptAttachment(
     { attachmentId, scriptId: scriptId || 0 },
     { enabled: false },
   );
 
   const handleDownload = async () => {
-    const { data } = await refetch();
-    if (!data) {
-      return;
-    }
+    try {
+      const { data } = await refetch();
+      if (!data || data.data === null || data.data === undefined) {
+        return;
+      }
 
-    const blob = new Blob([data.data], { type: "application/octet-stream" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+      const url = URL.createObjectURL(data.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      debug(error);
+    }
   };
 
   return (

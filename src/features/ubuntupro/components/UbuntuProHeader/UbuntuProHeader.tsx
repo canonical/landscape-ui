@@ -66,7 +66,7 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ instance }) => {
               icon: "delete",
               label: "Detach token",
               onClick: openDetachModal,
-              excluded: !isFeatureEnabled("ubuntu_pro_licensing"),
+              excluded: !isFeatureEnabled("ubuntu-pro-licensing"),
             },
           ],
         }}

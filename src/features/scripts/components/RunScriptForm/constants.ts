@@ -2,7 +2,10 @@ import * as Yup from "yup";
 import type { FormProps } from "./types";
 import { deliveryValidationSchema } from "@/components/form/DeliveryScheduling";
 
-export const INITIAL_VALUES: FormProps = {
+export const NO_TAGGED_FEATURED_INSTANCES_WARNING_MESSAGE =
+  "There are no instances with the selected tags that can run scripts.";
+
+export const INITIAL_VALUES: Omit<FormProps, "code"> = {
   deliver_after: "",
   deliver_immediately: true,
   instanceIds: [],
@@ -29,4 +32,5 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
       then: (schema) => schema.min(1, "At least one tag is required."),
     }),
   username: Yup.string().required("This field is required."),
+  code: Yup.string().required("This field is required."),
 });

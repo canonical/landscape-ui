@@ -11,7 +11,7 @@ const useGetPageSecurityProfile = ():
       securityProfile: undefined;
       isGettingSecurityProfile: true;
     } => {
-  const { profile: securityProfileId } = usePageParams();
+  const { name: securityProfileId } = usePageParams();
 
   const { isGettingSecurityProfile, securityProfile, securityProfileError } =
     useGetSecurityProfile(parseInt(securityProfileId));

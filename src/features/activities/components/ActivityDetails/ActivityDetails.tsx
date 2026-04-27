@@ -7,7 +7,7 @@ import { CodeSnippet, Icon } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
-import { useActivities } from "../../hooks";
+import { useGetSingleActivity } from "../../api";
 import classes from "./ActivityDetails.module.scss";
 import ActivityDetailsButtons from "./components/ActivityDetailsButtons";
 import { ROUTES } from "@/libs/routes/routes";
@@ -17,15 +17,11 @@ interface ActivityDetailsProps {
 }
 
 const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
-  const { getSingleActivityQuery } = useActivities();
+  const { activity, isGettingActivity, activityError } = useGetSingleActivity({
+    activityId,
+  });
 
-  const {
-    data: getSingleActivityQueryResult,
-    isPending: getSingleActivityQueryPending,
-    error: getSingleActivityQueryError,
-  } = getSingleActivityQuery({ activityId });
-
-  const instanceId = getSingleActivityQueryResult?.data.computer_id;
+  const instanceId = activity?.computer_id;
 
   const isInstanceIdDefined = instanceId !== undefined;
 
@@ -34,23 +30,21 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
     { enabled: isInstanceIdDefined },
   );
 
-  if (getSingleActivityQueryPending) {
+  if (isGettingActivity) {
     return <LoadingState />;
   }
 
-  if (getSingleActivityQueryError) {
-    throw getSingleActivityQueryError;
+  if (activityError) {
+    throw activityError;
   }
 
-  if (!getSingleActivityQueryResult?.data) {
+  if (!activity) {
     throw new Error();
   }
 
   if (isInstanceIdDefined && isGettingInstance) {
     return <LoadingState />;
   }
-
-  const activity = getSingleActivityQueryResult.data;
 
   return (
     <>

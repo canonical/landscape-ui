@@ -8,7 +8,7 @@ import {
 } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { getEndpointStatusApiError } from "./_constants";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 
 const STATUS_QUERY_REGEX = /(?:^|\s)status:([^\s]+)/;
@@ -54,7 +54,19 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+        throw getEndpointStatusApiError();
+      }
+
+      if (
+        endpointStatus.status === "empty" &&
+        (!endpointStatus.path || endpointStatus.path.includes("activities"))
+      ) {
+        return HttpResponse.json({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        });
       }
 
       const url = new URL(request.url);
@@ -114,7 +126,7 @@ export default [
           completion_time: null,
           computer_id: 0,
           creation_time: "",
-          creator: undefined,
+          creator: { email: "", id: 0, name: "" },
           deliver_after_time: null,
           deliver_before_time: null,
           delivery_time: null,
@@ -163,25 +175,12 @@ export default [
   }),
 
   http.post<never, { activity_ids: number[] }, number[]>(
-    `${API_URL}activities/revert`,
-    async () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
-      }
-
-      return HttpResponse.json([activities[0].id, activities[1].id]);
-    },
-  ),
-
-  http.post<never, { activity_ids: number[] }, number[]>(
     `${API_URL}activities/reapply`,
     async () => {
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+        throw getEndpointStatusApiError();
       }
 
       return HttpResponse.json([activities[0].id, activities[1].id]);

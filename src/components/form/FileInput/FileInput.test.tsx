@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
@@ -79,5 +79,86 @@ describe("FileInput", () => {
     );
 
     expect(screen.getByText("Script file")).toBeInTheDocument();
+  });
+
+  it("shows help text when a file is present", () => {
+    const file = new File(["content"], "helped.txt", { type: "text/plain" });
+
+    renderWithProviders(
+      <FileInput
+        help="Only text files are allowed"
+        value={file}
+        onFileUpload={vi.fn()}
+        onFileRemove={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Only text files are allowed")).toBeInTheDocument();
+  });
+
+  it("does not call onFileUpload when no files are selected", () => {
+    const onFileUpload = vi.fn();
+
+    renderWithProviders(
+      <FileInput
+        label="Upload script"
+        value={null}
+        onFileUpload={onFileUpload}
+        onFileRemove={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Upload script"), {
+      target: { files: null },
+    });
+
+    expect(onFileUpload).not.toHaveBeenCalled();
+  });
+
+  it("uploads selected file and triggers onBlur callback", async () => {
+    const user = userEvent.setup();
+    const onFileUpload = vi.fn().mockResolvedValue(undefined);
+    const onBlur = vi.fn();
+    const file = new File(["script"], "script.sh", {
+      type: "text/x-shellscript",
+    });
+
+    renderWithProviders(
+      <FileInput
+        label="Upload script"
+        value={null}
+        onFileUpload={onFileUpload}
+        onFileRemove={vi.fn()}
+        onBlur={onBlur}
+      />,
+    );
+
+    const input = screen.getByLabelText("Upload script");
+    await user.click(input);
+    await user.upload(input, file);
+
+    expect(onFileUpload).toHaveBeenCalledWith([file]);
+    expect(onBlur).toHaveBeenCalledTimes(1);
+  });
+
+  it("uploads selected file when onBlur is not provided", async () => {
+    const user = userEvent.setup();
+    const onFileUpload = vi.fn().mockResolvedValue(undefined);
+    const file = new File(["script"], "script.sh", {
+      type: "text/x-shellscript",
+    });
+
+    renderWithProviders(
+      <FileInput
+        label="Upload script"
+        value={null}
+        onFileUpload={onFileUpload}
+        onFileRemove={vi.fn()}
+      />,
+    );
+
+    await user.upload(screen.getByLabelText("Upload script"), file);
+
+    expect(onFileUpload).toHaveBeenCalledWith([file]);
   });
 });

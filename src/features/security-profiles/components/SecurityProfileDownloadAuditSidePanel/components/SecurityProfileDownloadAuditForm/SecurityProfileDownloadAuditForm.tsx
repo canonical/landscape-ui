@@ -2,7 +2,7 @@ import RadioGroup from "@/components/form/RadioGroup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import { useActivities } from "@/features/activities";
+import { useGetSingleActivity } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
@@ -12,7 +12,7 @@ import moment from "moment";
 import { useEffect, useState, type FC } from "react";
 import * as Yup from "yup";
 import { useGetSecurityProfileReport } from "../../../../api";
-import { useSecurityProfileDownloadAudit } from "../../../../hooks/useSecurityProfileDownloadAudit";
+import { useSecurityProfileDownload } from "../../../../hooks/useSecurityProfileDownload";
 import type { SecurityProfile } from "../../../../types";
 import classes from "./SecurityProfileDownloadAuditForm.module.scss";
 
@@ -39,11 +39,10 @@ const SecurityProfileDownloadAuditForm: FC<
   const debug = useDebug();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
 
-  const { getSingleActivityQuery } = useActivities();
   const { getSecurityProfileReport, isSecurityProfileReportLoading } =
     useGetSecurityProfileReport();
 
-  const downloadAudit = useSecurityProfileDownloadAudit();
+  const downloadAudit = useSecurityProfileDownload("audit");
 
   const [status, setStatus] = useState<Status>({ type: "okay" });
 
@@ -55,11 +54,7 @@ const SecurityProfileDownloadAuditForm: FC<
 
   const pendingReport = pendingReports.find((report) => report.profileId == id);
 
-  const {
-    data: getSingleActivityQueryResponse,
-    isLoading: isGettingActivity,
-    isError: isActivityError,
-  } = getSingleActivityQuery(
+  const { activity, isLoadingActivity, isActivityError } = useGetSingleActivity(
     {
       activityId: pendingReport?.activityId ?? 0,
     },
@@ -76,25 +71,25 @@ const SecurityProfileDownloadAuditForm: FC<
   }
 
   useEffect(() => {
-    if (!getSingleActivityQueryResponse) {
+    if (!activity) {
       return;
     }
 
-    if (getSingleActivityQueryResponse.data.activity_status == "succeeded") {
+    if (activity.activity_status == "succeeded") {
       setStatus({
         type: "ready",
-        report_uri: getSingleActivityQueryResponse.data.result_text as string,
+        report_uri: activity.result_text as string,
       });
     } else {
       setStatus({ type: "pending" });
     }
-  }, [getSingleActivityQueryResponse]);
+  }, [activity]);
 
   const formik = useFormik<SecurityProfileDownloadAuditFormValues>({
     initialValues: {
       audit_timeframe: "specific-date",
-      end_date: moment().format(INPUT_DATE_FORMAT),
-      start_date: moment().format(INPUT_DATE_FORMAT),
+      end_date: moment().utc().format(INPUT_DATE_FORMAT),
+      start_date: moment().utc().format(INPUT_DATE_FORMAT),
       level_of_detail: "summary-only",
     },
 
@@ -171,7 +166,7 @@ const SecurityProfileDownloadAuditForm: FC<
     },
   });
 
-  if (isGettingActivity) {
+  if (isLoadingActivity) {
     return <LoadingState />;
   }
 
@@ -312,7 +307,7 @@ const SecurityProfileDownloadAuditForm: FC<
         submitButtonText="Generate CSV"
         hasBackButton={sidePath.length > 1}
         onBackButtonPress={popSidePath}
-        onCancel={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
       />
     </>
   );

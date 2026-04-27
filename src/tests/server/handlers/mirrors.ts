@@ -1,0 +1,105 @@
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { BatchGetMirrorsResponse } from "@/features/publications";
+import { getEndpointStatus } from "@/tests/controllers/controller";
+import { mirrors } from "@/tests/mocks/mirrors";
+import type { StrictResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import type {
+  DeleteMirrorResponse,
+  ListMirrorPackagesResponse,
+  GetMirrorResponse,
+  UpdateMirrorResponse,
+  CreateMirrorResponse,
+  SyncMirrorResponse,
+} from "@canonical/landscape-openapi";
+import {
+  getDebArchivePaginatedResponse,
+  getDebArchivePaginationParams,
+} from "./_helpers";
+
+const getMirrorsResponse = (requestUrl: string) => {
+  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
+    mirrors,
+    pageToken,
+    pageSize,
+  );
+
+  return HttpResponse.json({
+    mirrors: paginatedData,
+    nextPageToken,
+  });
+};
+
+const getBatchMirrorsResponse = async (
+  request: Request,
+): Promise<StrictResponse<BatchGetMirrorsResponse>> => {
+  const body = (await request.json()) as { names?: string[] };
+  const requestedNames = body.names ?? [];
+  const matched = mirrors.filter(({ name }) =>
+    name ? requestedNames.includes(name) : false,
+  );
+  return HttpResponse.json({ mirrors: matched });
+};
+
+export default [
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, async ({ request }) => {
+    return getBatchMirrorsResponse(request);
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+    await delay();
+
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "mirrors"
+    ) {
+      return ENDPOINT_STATUS_API_ERROR;
+    }
+
+    return getMirrorsResponse(request.url);
+  }),
+
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async () => {
+    await delay();
+    return HttpResponse.json<CreateMirrorResponse>();
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
+    await delay();
+
+    const mirror = mirrors.find(({ mirrorId }) => mirrorId === params.mirrorId);
+
+    if (!mirror) {
+      return new HttpResponse(null, { status: 404 });
+    } else {
+      return HttpResponse.json<GetMirrorResponse>(mirror);
+    }
+  }),
+
+  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`, async () => {
+    await delay();
+
+    return HttpResponse.json<ListMirrorPackagesResponse>({
+      mirrorPackages: ["package-1", "package-2", "package-3"],
+    });
+  }),
+
+  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async () => {
+    await delay();
+    return HttpResponse.json<UpdateMirrorResponse>();
+  }),
+
+  http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async () => {
+    await delay();
+    return HttpResponse.json<DeleteMirrorResponse>();
+  }),
+
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId\\:sync`, async () => {
+    await delay();
+    return HttpResponse.json<SyncMirrorResponse>();
+  }),
+];

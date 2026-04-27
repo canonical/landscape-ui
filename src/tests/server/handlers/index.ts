@@ -17,15 +17,19 @@ import gpgKey from "./gpgKey";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
+import mirrors from "./mirrors";
+import localRepository from "./localRepository";
 import oidcIssuers from "./oidcIssuers";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
 import packages from "./packages";
 import pockets from "./pockets";
 import process from "./process";
+import publications from "./publications";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
-import repo from "./repo";
+import reports from "./reports";
+import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
@@ -59,14 +63,18 @@ export default [
   ...instance,
   ...invitations,
   ...kernel,
+  ...mirrors,
+  ...localRepository,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,
   ...pockets,
   ...process,
+  ...publications,
   ...rebootProfiles,
   ...removalProfiles,
-  ...repo,
+  ...reports,
+  ...repository,
   ...repositoryProfiles,
   ...roles,
   ...savedSearches,

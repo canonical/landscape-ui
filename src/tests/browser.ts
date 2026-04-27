@@ -1,4 +1,9 @@
-import { API_URL, API_URL_OLD, MSW_ENDPOINTS_TO_INTERCEPT } from "@/constants";
+import {
+  API_URL,
+  API_URL_DEB_ARCHIVE,
+  API_URL_OLD,
+  MSW_ENDPOINTS_TO_INTERCEPT,
+} from "@/constants";
 import type { RequestHandler } from "msw";
 import { http, HttpResponse, passthrough } from "msw";
 import { setupWorker } from "msw/browser";
@@ -13,15 +18,15 @@ const handlers: RequestHandler[] = [
     return;
   }),
   http.all("*", async ({ request }) => {
-    if (!request.url.includes(API_URL) && !request.url.includes(API_URL_OLD)) {
+    if (
+      !request.url.includes(API_URL) &&
+      !request.url.includes(API_URL_OLD) &&
+      !request.url.includes(API_URL_DEB_ARCHIVE)
+    ) {
       return passthrough();
     }
 
-    if (
-      MSW_ENDPOINTS_TO_INTERCEPT.some((url: string) =>
-        request.url.includes(url),
-      )
-    ) {
+    if (MSW_ENDPOINTS_TO_INTERCEPT.some((url) => request.url.includes(url))) {
       return;
     }
 

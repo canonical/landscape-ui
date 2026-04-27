@@ -95,6 +95,13 @@ export const pluralizeWithCount = (
   return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
 };
 
+export const pluralizeNew = (
+  count = 0,
+  singularForm: string,
+  options: { pluralForm?: string; showCount?: "exact" | "limited" } = {},
+) =>
+  `${options.showCount ? `${count}${options.showCount === "limited" ? "+" : ""} ` : ""}${count === 1 ? singularForm : (options.pluralForm ?? `${singularForm}s`)}`;
+
 export const pluralizeArray = <T>(
   items: readonly T[],
   getSingularForm: (item: T) => string,
