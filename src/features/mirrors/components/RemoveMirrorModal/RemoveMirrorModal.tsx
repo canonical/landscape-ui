@@ -1,10 +1,11 @@
 import useDebug from "@/hooks/useDebug";
-import { ConfirmationModal, Icon } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useDeleteMirror, useListPublications } from "../../api";
 import useNotify from "@/hooks/useNotify";
 import MirrorPublicationsList from "../MirrorPublicationsList";
 import usePageParams from "@/hooks/usePageParams";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;
@@ -31,10 +32,6 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
     useDeleteMirror();
 
-  if (!isOpen) {
-    return;
-  }
-
   const tryRemoveMirror = async () => {
     try {
       await deleteMirror({
@@ -54,7 +51,9 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   };
 
   return (
-    <ConfirmationModal
+    <TextConfirmationModal
+      isOpen={isOpen}
+      confirmationText={`remove ${mirrorDisplayName}`}
       confirmButtonLabel={
         <>
           <Icon name="delete" light />
@@ -71,7 +70,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       {publications.length ? (
         <>
           <p>This mirror is associated with the following publications:</p>
-          <MirrorPublicationsList publications={publications} />
+          <MirrorPublicationsList publications={publications} openInNewTab />
           <p>
             After removal you won’t be able to update any of these publications,
             but they will continue to be available.{" "}
@@ -85,7 +84,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
           <strong>This action is irreversible.</strong>
         </p>
       )}
-    </ConfirmationModal>
+    </TextConfirmationModal>
   );
 };
 
