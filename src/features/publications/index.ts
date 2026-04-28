@@ -1,4 +1,4 @@
-export { useCreatePublication, usePublishPublication } from "./api";
+export { useCreatePublication, usePublishPublication, useGetPublicationsBySource } from "./api";
 export { default as PublicationsContainer } from "./components/PublicationsContainer";
 export { default as AddPublicationButton } from "./components/AddPublicationButton";
 export { default as AddPublicationForm } from "./components/AddPublicationForm";

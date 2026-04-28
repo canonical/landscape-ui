@@ -23,7 +23,10 @@ import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "@canonical/landscape-openapi";
-import { useCreatePublication, usePublishPublication } from "@/features/publications";
+import {
+  useCreatePublication,
+  usePublishPublication,
+} from "@/features/publications";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
 interface PublishRepositoryNewFormProps {
@@ -72,7 +75,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     };
 
     try {
-      const { data: publication } = await createPublication({ body: valuesforCreation });
+      const { data: publication } = await createPublication({
+        body: valuesforCreation,
+      });
 
       await publishPublication({ publicationName: publication.name });
 
@@ -164,7 +169,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
             type="checkbox"
             label={
               <span>
-                <span className={classes.settingLabel}>Automatic installation</span>
+                <span className={classes.settingLabel}>
+                  Automatic installation
+                </span>
                 <Tooltip
                   message={SETTINGS_HELP_TEXT.notAutomatic}
                   position="top-center"
@@ -183,9 +190,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
             type="checkbox"
             label={
               <span>
-                <span className={classes.settingLabel}>
-                  Automatic upgrades
-                </span>
+                <span className={classes.settingLabel}>Automatic upgrades</span>
                 <Tooltip
                   message={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
                   position="top-center"
@@ -219,7 +224,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
       <SidePanelFormButtons
         submitButtonDisabled={!formik.isValid}
         submitButtonLoading={
-          formik.isSubmitting || isCreatingPublication || isPublishingPublication
+          formik.isSubmitting ||
+          isCreatingPublication ||
+          isPublishingPublication
         }
         submitButtonText="Publish repository"
         onCancel={closeSidePanel}

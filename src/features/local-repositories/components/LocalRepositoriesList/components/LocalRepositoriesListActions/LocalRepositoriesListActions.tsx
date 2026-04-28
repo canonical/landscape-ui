@@ -45,12 +45,11 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
         repository={repository}
       />
 
-      {isPublishGuardOpen && (
-        <PublishLocalRepositoryGuard
-          close={closePublishGuard}
-          repository={repository}
-        />
-      )}
+      <PublishLocalRepositoryGuard
+        close={closePublishGuard}
+        isOpen={isPublishGuardOpen}
+        repository={repository}
+      />
     </>
   );
 };

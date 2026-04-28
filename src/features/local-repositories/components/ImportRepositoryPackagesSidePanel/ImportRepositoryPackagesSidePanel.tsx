@@ -86,7 +86,10 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
         validateOnly: true,
       });
 
-      setValidateTask({ status: data.metadata?.status as TaskStatus, response: data.response as unknown as string[] });
+      setValidateTask({
+        status: data.metadata?.status as TaskStatus,
+        response: data.response as unknown as string[],
+      });
     } catch (error) {
       debug(error);
     }

@@ -7,10 +7,13 @@ import type {
   ListPublicationsResponse,
 } from "@canonical/landscape-openapi";
 
-const useGetPublicationsBySource = (source?: string) => {
+export const useGetPublicationsBySource = (source?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<Publication[], AxiosError<ListPublicationsError>>({
+  const { data, isLoading } = useQuery<
+    Publication[],
+    AxiosError<ListPublicationsError>
+  >({
     queryKey: ["publications", source],
     enabled: !!source,
     queryFn: async () => {
@@ -43,5 +46,3 @@ const useGetPublicationsBySource = (source?: string) => {
     isGettingPublications: isLoading,
   };
 };
-
-export default useGetPublicationsBySource;

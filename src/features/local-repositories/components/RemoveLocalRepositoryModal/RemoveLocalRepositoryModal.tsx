@@ -5,7 +5,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
 import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
-import useGetPublicationsBySource from "../../api/useGetPublicationsBySource";
+import useGetPublicationsBySource from "../../../publications/api/useGetPublicationsBySource";
 import LoadingState from "@/components/layout/LoadingState";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
@@ -36,7 +36,9 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     </p>
   );
 
-  const publicationsContent = (
+  const publicationsContent = isGettingPublications ? (
+    <LoadingState />
+  ) : (
     <>
       <p>This repository is associated with the following publications:</p>
       <LocalRepositoryPublicationsList publications={publications} openNewTab />
@@ -70,10 +72,6 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     }
   };
 
-  if (isGettingPublications) {
-    return <LoadingState />;
-  }
-
   return (
     <TextConfirmationModal
       title={`Remove ${repository.displayName}`}
@@ -83,7 +81,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
       confirmButtonLoading={isRemovingRepository}
       close={close}
       renderInPortal
-      confirmationText={`remove ${repository.displayName}`} 
+      confirmationText={`remove ${repository.displayName}`}
       isOpen={isOpen}
     >
       {content}

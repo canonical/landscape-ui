@@ -22,7 +22,7 @@ export const useGetLocalRepository = (name: string) => {
     repository: response?.data,
     repositoryError:
       response && !response.data
-        ? new Error(`The local repository "${name}" could not be found.`)
+        ? new Error("The local repository could not be found.")
         : error,
     isGettingRepository: isPending,
   };

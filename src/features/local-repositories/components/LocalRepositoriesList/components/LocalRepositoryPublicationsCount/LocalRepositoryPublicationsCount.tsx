@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import type { Local } from "../../../../types";
-import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
+import useGetPublicationsBySource from "../../../../../publications/api/useGetPublicationsBySource";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";

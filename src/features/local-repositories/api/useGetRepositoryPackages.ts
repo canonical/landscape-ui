@@ -9,7 +9,10 @@ import type {
 export const useGetRepositoryPackages = (repository: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending } = useQuery<string[], AxiosError<ListLocalPackagesError>>({
+  const { data, isPending } = useQuery<
+    string[],
+    AxiosError<ListLocalPackagesError>
+  >({
     queryKey: ["packages", repository],
     queryFn: async () => {
       let pageToken: string | undefined;
