@@ -14,7 +14,7 @@ const PublishRepositoryContentsBlock: FC<
     <Blocks.Item title="Contents">
       <ReadOnlyField
         label="Distribution"
-        value={repository.defaultDistribution}
+        value={repository.defaultDistribution ?? ""}
         tooltipMessage={"The distribution is defined by the repository."}
       />
 

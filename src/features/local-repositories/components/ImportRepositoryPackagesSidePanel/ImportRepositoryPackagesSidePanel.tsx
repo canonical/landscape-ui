@@ -13,7 +13,6 @@ import {
   Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import Blocks from "@/components/layout/Blocks";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
 import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
@@ -109,70 +108,66 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       </SidePanel.Header>
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
-          <Blocks>
-            <Blocks.Item title="Repository Contents">
-              <div className={classes.row}>
-                <Input
-                  type="text"
-                  label="Source URL"
-                  {...formik.getFieldProps("source")}
-                  error={getFormikError(formik, "source")}
-                  help={
-                    "In order to upload packages, provide a URL for Landscape to fetch the packages from."
-                  }
-                />
+          <div className={classes.row}>
+            <Input
+              type="text"
+              label="Source URL"
+              {...formik.getFieldProps("source")}
+              error={getFormikError(formik, "source")}
+              help={
+                "In order to upload packages, provide a URL for Landscape to fetch the packages from."
+              }
+            />
 
-                <Button
-                  disabled={!formik.values.source}
-                  onClick={handleValidate}
-                  type="button"
-                  className={classes.button}
-                >
-                  {isImportingRepositoryPackages ||
-                  validateTask?.status === "in progress" ? (
-                    <LoadingState inline />
-                  ) : (
-                    "Fetch packages"
-                  )}
-                </Button>
-              </div>
+            <Button
+              disabled={!formik.values.source}
+              onClick={handleValidate}
+              type="button"
+              className={classes.button}
+            >
+              {isImportingRepositoryPackages ||
+              validateTask?.status === "in progress" ? (
+                <LoadingState inline />
+              ) : (
+                "Fetch packages"
+              )}
+            </Button>
+          </div>
 
-              {validateTask?.status === "failed" && (
+          {validateTask?.status === "failed" && (
+            <Notification
+              severity="caution"
+              title="Fetching packages timed out"
+              borderless
+            >
+              <span>
+                You can still proceed to import packages, although this
+                process may fail if we can&apos;t fetch the packages from
+                the source provided.
+              </span>
+            </Notification>
+          )}
+
+          {validateTask?.status === "succeeded" && (
+            <>
+              {!validateTask?.response.length ? (
                 <Notification
-                  severity="caution"
-                  title="Fetching packages timed out"
+                  severity="negative"
+                  title="No packages available from the URL provided"
                   borderless
-                >
-                  <span>
-                    You can still proceed to import packages, although this
-                    process may fail if we can&apos;t fetch the packages from
-                    the source provided.
-                  </span>
-                </Notification>
+                />
+              ) : (
+                <List
+                  items={validateTask.response.map((file) => (
+                    <div className={classes.file} key={file}>
+                      {file}
+                    </div>
+                  ))}
+                  divided
+                />
               )}
-
-              {validateTask?.status === "succeeded" && (
-                <>
-                  {!validateTask?.response.length ? (
-                    <Notification
-                      severity="negative"
-                      title="No packages available from the URL provided"
-                      borderless
-                    />
-                  ) : (
-                    <List
-                      items={validateTask.response.map((file) => (
-                        <div className={classes.file} key={file}>
-                          {file}
-                        </div>
-                      ))}
-                      divided
-                    />
-                  )}
-                </>
-              )}
-            </Blocks.Item>
-          </Blocks>
+            </>
+          )}
 
           <SidePanelFormButtons
             submitButtonDisabled={!hasPackages}

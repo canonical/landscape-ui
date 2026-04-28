@@ -67,7 +67,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks>
+      <Blocks dense>
         <Blocks.Item title="Details">
           <Input
             type="text"
