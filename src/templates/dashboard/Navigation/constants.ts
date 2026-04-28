@@ -4,7 +4,7 @@ import type { MenuItem } from "./types";
 const PROFILES_SUBMENU: MenuItem[] = [
   {
     label: "Repository profiles",
-    path: ROUTES.repositories.repositoryProfiles(),
+    path: ROUTES.profiles.repositoryProfiles(),
     env: "saas",
   },
   { label: "Package profiles", path: ROUTES.profiles.package() },
