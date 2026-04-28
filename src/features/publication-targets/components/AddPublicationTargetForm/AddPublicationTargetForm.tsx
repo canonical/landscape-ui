@@ -3,17 +3,69 @@ import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import useCreatePublicationTarget from "../../api/useCreatePublicationTarget";
-import {
-  CheckboxInput,
-  Form,
-  Input,
-} from "@canonical/react-components";
+import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";
 import { INITIAL_VALUES } from "./constants";
 import type { AddPublicationTargetFormValues } from "./constants";
 import useNotify from "@/hooks/useNotify";
+import {
+  FilesystemFields,
+  S3Fields,
+  SwiftFields,
+} from "../TargetTypeFields";
+import type { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
+
+const TARGET_TYPE_OPTIONS = [
+  { value: "s3", label: "S3" },
+  { value: "swift", label: "Swift" },
+  { value: "filesystem", label: "Filesystem" },
+];
+
+const VALIDATION_SCHEMA = Yup.object().shape({
+  displayName: Yup.string().required("This field is required"),
+  targetType: Yup.string().oneOf(["s3", "swift", "filesystem"]).required(),
+  region: Yup.string().when("targetType", {
+    is: "s3",
+    then: (s) => s.required("This field is required"),
+  }),
+  bucket: Yup.string().when("targetType", {
+    is: "s3",
+    then: (s) => s.required("This field is required"),
+  }),
+  awsAccessKeyId: Yup.string().when("targetType", {
+    is: "s3",
+    then: (s) => s.required("This field is required"),
+  }),
+  awsSecretAccessKey: Yup.string().when("targetType", {
+    is: "s3",
+    then: (s) => s.required("This field is required"),
+  }),
+  container: Yup.string().when("targetType", {
+    is: "swift",
+    then: (s) => s.required("This field is required"),
+  }),
+  swiftUsername: Yup.string().when("targetType", {
+    is: "swift",
+    then: (s) => s.required("This field is required"),
+  }),
+  swiftPassword: Yup.string().when("targetType", {
+    is: "swift",
+    then: (s) => s.required("This field is required"),
+  }),
+  authUrl: Yup.string().when("targetType", {
+    is: "swift",
+    then: (s) => s.required("This field is required"),
+  }),
+  path: Yup.string().when("targetType", {
+    is: "filesystem",
+    then: (s) =>
+      s
+        .required("This field is required")
+        .matches(/^\//, "Path must start with /"),
+  }),
+});
 
 const AddPublicationTargetForm: FC = () => {
   const debug = useDebug();
@@ -26,40 +78,58 @@ const AddPublicationTargetForm: FC = () => {
 
   const formik = useFormik<AddPublicationTargetFormValues>({
     initialValues: INITIAL_VALUES,
-    validationSchema: Yup.object().shape({
-      displayName: Yup.string().required("This field is required"),
-      bucket: Yup.string().required("This field is required"),
-      awsAccessKeyId: Yup.string().required("This field is required"),
-      awsSecretAccessKey: Yup.string().required("This field is required"),
-      region: Yup.string().required("This field is required"),
-      endpoint: Yup.string(),
-      prefix: Yup.string(),
-      acl: Yup.string(),
-      storageClass: Yup.string(),
-      encryptionMethod: Yup.string(),
-      disableMultiDel: Yup.boolean(),
-      forceSigV2: Yup.boolean(),
-    }),
+    validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
-        await mutateAsync({
-          displayName: values.displayName,
-          s3: {
-            ...(values.region && { region: values.region }),
-            bucket: values.bucket,
-            awsAccessKeyId: values.awsAccessKeyId,
-            awsSecretAccessKey: values.awsSecretAccessKey,
-            ...(values.endpoint && { endpoint: values.endpoint }),
-            ...(values.prefix && { prefix: values.prefix }),
-            ...(values.acl && { acl: values.acl }),
-            ...(values.storageClass && { storageClass: values.storageClass }),
-            ...(values.encryptionMethod && {
-              encryptionMethod: values.encryptionMethod,
-            }),
-            disableMultiDel: values.disableMultiDel,
-            forceSigV2: values.forceSigV2,
-          },
-        });
+        if (values.targetType === "s3") {
+          await mutateAsync({
+            displayName: values.displayName,
+            s3: {
+              region: values.region,
+              bucket: values.bucket,
+              awsAccessKeyId: values.awsAccessKeyId,
+              awsSecretAccessKey: values.awsSecretAccessKey,
+              ...(values.endpoint && { endpoint: values.endpoint }),
+              ...(values.s3Prefix && { prefix: values.s3Prefix }),
+              ...(values.acl && { acl: values.acl }),
+              ...(values.storageClass && { storageClass: values.storageClass }),
+              ...(values.encryptionMethod && {
+                encryptionMethod: values.encryptionMethod,
+              }),
+              disableMultiDel: values.disableMultiDel,
+              forceSigV2: values.forceSigV2,
+            },
+          });
+        } else if (values.targetType === "swift") {
+          await mutateAsync({
+            displayName: values.displayName,
+            swift: {
+              container: values.container,
+              username: values.swiftUsername,
+              password: values.swiftPassword,
+              authUrl: values.authUrl,
+              ...(values.swiftPrefix && { prefix: values.swiftPrefix }),
+              ...(values.tenant && { tenant: values.tenant }),
+              ...(values.tenantId && { tenantId: values.tenantId }),
+              ...(values.domain && { domain: values.domain }),
+              ...(values.domainId && { domainId: values.domainId }),
+              ...(values.tenantDomain && { tenantDomain: values.tenantDomain }),
+              ...(values.tenantDomainId && {
+                tenantDomainId: values.tenantDomainId,
+              }),
+            },
+          });
+        } else {
+          await mutateAsync({
+            displayName: values.displayName,
+            filesystem: {
+              path: values.path,
+              ...(values.linkMethod && {
+                linkMethod: values.linkMethod as FilesystemTargetLinkMethod,
+              }),
+            },
+          });
+        }
 
         closeForm();
 
@@ -73,6 +143,14 @@ const AddPublicationTargetForm: FC = () => {
     },
   });
 
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    formik.setValues({
+      ...INITIAL_VALUES,
+      displayName: formik.values.displayName,
+      targetType: e.target.value as AddPublicationTargetFormValues["targetType"],
+    });
+  };
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Input
@@ -82,84 +160,19 @@ const AddPublicationTargetForm: FC = () => {
         error={getFormikError(formik, "displayName")}
         {...formik.getFieldProps("displayName")}
       />
-      <Input
-        type="text"
-        label="Region"
+      <Select
+        label="Type"
         required
-        error={getFormikError(formik, "region")}
-        {...formik.getFieldProps("region")}
+        options={TARGET_TYPE_OPTIONS}
+        value={formik.values.targetType}
+        onChange={handleTypeChange}
+        error={getFormikError(formik, "targetType")}
       />
-      <Input
-        type="text"
-        label="Bucket name"
-        required
-        error={getFormikError(formik, "bucket")}
-        {...formik.getFieldProps("bucket")}
-      />
-      <Input
-        type="text"
-        label="Endpoint"
-        error={getFormikError(formik, "endpoint")}
-        {...formik.getFieldProps("endpoint")}
-      />
-      <Input
-        type="text"
-        label="AWS access key ID"
-        required
-        error={getFormikError(formik, "awsAccessKeyId")}
-        {...formik.getFieldProps("awsAccessKeyId")}
-      />
-      <Input
-        type="text"
-        label="AWS secret access key"
-        required
-        error={getFormikError(formik, "awsSecretAccessKey")}
-        {...formik.getFieldProps("awsSecretAccessKey")}
-      />
-      <Input
-        type="text"
-        label="Prefix"
-        error={getFormikError(formik, "prefix")}
-        {...formik.getFieldProps("prefix")}
-      />
-      <Input
-        type="text"
-        label="ACL"
-        error={getFormikError(formik, "acl")}
-        {...formik.getFieldProps("acl")}
-      />
-      <Input
-        type="text"
-        label="Storage class"
-        error={getFormikError(formik, "storageClass")}
-        {...formik.getFieldProps("storageClass")}
-      />
-      <Input
-        type="text"
-        label="Encryption method"
-        error={getFormikError(formik, "encryptionMethod")}
-        {...formik.getFieldProps("encryptionMethod")}
-      />
-      <CheckboxInput
-        label="Disable MultiDel"
-        checked={formik.values.disableMultiDel}
-        onChange={(e) =>
-          formik.setFieldValue(
-            "disableMultiDel",
-            (e.target as HTMLInputElement).checked,
-          )
-        }
-      />
-      <CheckboxInput
-        label="Force AWS SIGv2 (disables SIGv4)"
-        checked={formik.values.forceSigV2}
-        onChange={(e) =>
-          formik.setFieldValue(
-            "forceSigV2",
-            (e.target as HTMLInputElement).checked,
-          )
-        }
-      />
+      {formik.values.targetType === "s3" && <S3Fields formik={formik} />}
+      {formik.values.targetType === "swift" && <SwiftFields formik={formik} />}
+      {formik.values.targetType === "filesystem" && (
+        <FilesystemFields formik={formik} />
+      )}
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add publication target"
