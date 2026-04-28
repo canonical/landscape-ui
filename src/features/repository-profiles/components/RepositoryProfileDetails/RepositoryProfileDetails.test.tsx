@@ -61,9 +61,7 @@ describe("RepositoryProfileDetails", () => {
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(
-      screen.getByText(/This will remove/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/This will remove/)).toBeInTheDocument();
   });
 
   it("closes the confirmation modal after successful profile removal", async () => {

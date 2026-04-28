@@ -17,10 +17,7 @@ interface GetAPTSourcesResult {
 export const useGetAPTSources = (
   params?: GetAPTSourcesParams,
   options?: Omit<
-    UseQueryOptions<
-      AxiosResponse<GetAPTSourcesResult>,
-      AxiosError<ApiError>
-    >,
+    UseQueryOptions<AxiosResponse<GetAPTSourcesResult>, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
   >,
 ) => {

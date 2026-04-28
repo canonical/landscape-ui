@@ -78,10 +78,7 @@ describe("RepositoryProfileListActions", () => {
     const removeButton = screen.getByRole("button", { name: "Remove" });
     expect(removeButton).toHaveAttribute("aria-disabled", "true");
 
-    await user.type(
-      screen.getByRole("textbox"),
-      `remove ${profile.title}`,
-    );
+    await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
     expect(removeButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
@@ -89,10 +86,7 @@ describe("RepositoryProfileListActions", () => {
     renderWithProviders(<RepositoryProfileListActions profile={profile} />);
     await openRemoveModal();
 
-    await user.type(
-      screen.getByRole("textbox"),
-      `remove ${profile.title}`,
-    );
+    await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
     await user.click(screen.getByRole("button", { name: "Remove" }));
 
     expect(
@@ -105,10 +99,7 @@ describe("RepositoryProfileListActions", () => {
     setEndpointStatus({ status: "error", path: "RemoveRepositoryProfile" });
 
     await openRemoveModal();
-    await user.type(
-      screen.getByRole("textbox"),
-      `remove ${profile.title}`,
-    );
+    await user.type(screen.getByRole("textbox"), `remove ${profile.title}`);
     await user.click(screen.getByRole("button", { name: "Remove" }));
 
     expect(

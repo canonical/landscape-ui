@@ -18,7 +18,7 @@ export const aptSources = [
       "repo-profile-9",
       "repo-profile-10",
       "repo-profile-11",
-      "repo-profile-12"
+      "repo-profile-12",
     ] as string[],
   },
   {
@@ -59,7 +59,7 @@ export const aptSources = [
     gpg_key: "key1",
     line: "deb http://example.com/ubuntu focal main",
     name: "source6",
-    profiles: ["repo-profile-1",] as string[],
+    profiles: ["repo-profile-1"] as string[],
   },
 
   {

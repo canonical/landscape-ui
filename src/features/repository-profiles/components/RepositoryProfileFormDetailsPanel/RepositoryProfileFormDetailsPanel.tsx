@@ -15,11 +15,7 @@ interface RepositoryProfileFormDetailsPanelProps {
 
 const RepositoryProfileFormDetailsPanel: FC<
   RepositoryProfileFormDetailsPanelProps
-> = ({
-  accessGroups,
-  formik,
-  isAccessGroupDisabled = false,
-}) => {
+> = ({ accessGroups, formik, isAccessGroupDisabled = false }) => {
   const accessGroupOptions = accessGroups.map(({ name, title }) => ({
     label: title,
     value: name,

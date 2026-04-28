@@ -15,13 +15,8 @@ describe("RepositoryProfileForm", () => {
   });
 
   const fillAndAddSource = async () => {
-    await user.click(
-      screen.getByRole("button", { name: /add source/i }),
-    );
-    await user.type(
-      await screen.findByLabelText(/source name/i),
-      "my-source",
-    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+    await user.type(await screen.findByLabelText(/source name/i), "my-source");
     await user.type(
       screen.getByLabelText(/deb line/i),
       "deb http://archive.ubuntu.com/ubuntu focal main",
@@ -65,10 +60,14 @@ describe("RepositoryProfileForm", () => {
 
     await screen.findByDisplayValue(repositoryProfiles[0].title);
     await user.click(
-      screen.getByRole("button", { name: /Save changes to repository profile/i }),
+      screen.getByRole("button", {
+        name: /Save changes to repository profile/i,
+      }),
     );
 
-    expect(screen.queryByText(/this field is required/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/this field is required/i),
+    ).not.toBeInTheDocument();
   });
 
   it("shows validation error for required title field in add mode", async () => {
@@ -107,7 +106,9 @@ describe("RepositoryProfileForm", () => {
       <RepositoryProfileForm action="edit" profile={repositoryProfiles[0]} />,
     );
 
-    expect(screen.queryByRole("combobox", { name: /access group/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("combobox", { name: /access group/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("clicking Add source opens the source form overlay", async () => {
@@ -115,9 +116,7 @@ describe("RepositoryProfileForm", () => {
 
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
-    expect(
-      await screen.findByLabelText(/source name/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByLabelText(/source name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/deb line/i)).toBeInTheDocument();
   });
 
@@ -154,9 +153,7 @@ describe("RepositoryProfileForm", () => {
 
     setEndpointStatus("default");
 
-    await user.click(
-      screen.getByRole("button", { name: /Edit my-source/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /Edit my-source/i }));
     await user.click(
       await screen.findByRole("button", { name: /save changes/i }),
     );

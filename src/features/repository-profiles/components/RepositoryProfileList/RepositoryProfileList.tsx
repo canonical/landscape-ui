@@ -18,8 +18,11 @@ import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 
-const AssociatedCountCell: FC<{ readonly profileId: number }> = ({ profileId }) => {
-  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(profileId);
+const AssociatedCountCell: FC<{ readonly profileId: number }> = ({
+  profileId,
+}) => {
+  const { associatedCount, isLoadingCount } =
+    useGetProfileInstancesCount(profileId);
   if (isLoadingCount) {
     return <LoadingState inline />;
   }
@@ -46,9 +49,8 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     value: name,
   }));
 
-  const columns = useMemo<Column<RepositoryProfile>[]>(
-    () => {
-      return [
+  const columns = useMemo<Column<RepositoryProfile>[]>(() => {
+    return [
       {
         ...LIST_TITLE_COLUMN_PROPS,
         meta: {
@@ -61,7 +63,10 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
               type="button"
               appearance="link"
               className="u-no-margin--bottom u-no-padding--top u-align--left"
-              onClick={createPageParamsSetter({ sidePath: ["view"], name: original.name })}
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                name: original.name,
+              })}
             >
               {original.title}
             </Button>
@@ -85,7 +90,8 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         Header: "Associated",
         className: classes.associated,
         meta: {
-          ariaLabel: ({ original }) => `${original.title} profile associated machines count`,
+          ariaLabel: ({ original }) =>
+            `${original.title} profile associated machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
           <AssociatedCountCell profileId={original.id} />
@@ -96,20 +102,24 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         Header: "Applied",
         className: classes.applied,
         meta: {
-          ariaLabel: ({ original }) => `${original.title} profile applied machines count`,
+          ariaLabel: ({ original }) =>
+            `${original.title} profile applied machines count`,
         },
-        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
-          <>{original.applied_count ?? 0}</>,
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
+          <>{original.applied_count ?? 0}</>
+        ),
       },
       {
         accessor: "pending_count",
         Header: "Pending",
         className: classes.pending,
         meta: {
-          ariaLabel: ({ original }) => `${original.title} profile pending machines count`,
+          ariaLabel: ({ original }) =>
+            `${original.title} profile pending machines count`,
         },
-        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
-          <>{original.pending_count ?? 0}</>,
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
+          <>{original.pending_count ?? 0}</>
+        ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
@@ -118,9 +128,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         ),
       },
     ];
-  },
-    [accessGroupOptions],
-  );
+  }, [accessGroupOptions]);
 
   return (
     <>

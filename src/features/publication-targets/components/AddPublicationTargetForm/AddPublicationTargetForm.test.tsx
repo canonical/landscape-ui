@@ -66,7 +66,9 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Publication target created")).toBeInTheDocument();
+      expect(
+        screen.getByText("Publication target created"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -76,7 +78,10 @@ describe("AddPublicationTargetForm", () => {
     await user.type(screen.getByLabelText("Name"), "Full Target");
     await user.type(screen.getByLabelText(/region/i), "us-east-1");
     await user.type(screen.getByLabelText(/bucket name/i), "my-bucket");
-    await user.type(screen.getByLabelText(/endpoint/i), "https://s3.example.com");
+    await user.type(
+      screen.getByLabelText(/endpoint/i),
+      "https://s3.example.com",
+    );
     await user.type(
       screen.getByLabelText(/aws access key id/i),
       "AKIAIOSFODNN7EXAMPLE",
@@ -95,14 +100,18 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Publication target created")).toBeInTheDocument();
+      expect(
+        screen.getByText("Publication target created"),
+      ).toBeInTheDocument();
     });
   });
 
   it("toggles the disable_multi_del checkbox", async () => {
     renderWithProviders(<AddPublicationTargetForm />);
 
-    const checkbox = screen.getByRole("checkbox", { name: /disable multidel/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /disable multidel/i,
+    });
     expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
