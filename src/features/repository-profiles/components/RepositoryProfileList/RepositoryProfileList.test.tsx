@@ -46,7 +46,8 @@ describe("RepositoryProfileList", () => {
 
     const table = screen.getByRole("table");
     const row = within(table).getByRole("row", {
-      name: (name) => name.toLowerCase().includes(firstProfile.title.toLowerCase()),
+      name: (name) =>
+        name.toLowerCase().includes(firstProfile.title.toLowerCase()),
     });
 
     expect(
@@ -68,7 +69,9 @@ describe("RepositoryProfileList", () => {
     );
 
     expect(
-      await screen.findByText(/sidePath=view/, { selector: "[data-testid='location']" }),
+      await screen.findByText(/sidePath=view/, {
+        selector: "[data-testid='location']",
+      }),
     ).toHaveTextContent(`name=${firstProfile.name}`);
   });
 

@@ -26,13 +26,14 @@ const EditTargetForm = lazy(async () =>
 );
 
 const PublicationTargetsPage: FC = () => {
-  const { lastSidePathSegment, createPageParamsSetter, name } =
-    usePageParams();
+  const { lastSidePathSegment, createPageParamsSetter, name } = usePageParams();
   const { publicationTargets } = useGetPublicationTargets();
 
   useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
 
-  const viewTarget = publicationTargets.find((t) => t.publicationTargetId === name);
+  const viewTarget = publicationTargets.find(
+    (t) => t.publicationTargetId === name,
+  );
 
   const addButton = <PublicationTargetAddButton key="add" />;
 
@@ -50,7 +51,8 @@ const PublicationTargetsPage: FC = () => {
             body={
               <>
                 <p className="u-no-margin--bottom">
-                  On this page you will find all publication targets that you create to publish mirrors to.
+                  On this page you will find all publication targets that you
+                  create to publish mirrors to.
                 </p>
                 <a
                   href="https://documentation.ubuntu.com/landscape/explanation/features/repository-mirroring"
@@ -70,9 +72,7 @@ const PublicationTargetsPage: FC = () => {
   return (
     <PageMain>
       <PageHeader title="Publication targets" actions={actions} />
-      <PageContent hasTable={hasTable}>
-        {children}
-      </PageContent>
+      <PageContent hasTable={hasTable}>{children}</PageContent>
 
       <SidePanel
         onClose={createPageParamsSetter({ sidePath: [], name: "" })}
@@ -98,7 +98,9 @@ const PublicationTargetsPage: FC = () => {
 
         {lastSidePathSegment === "edit" && viewTarget && (
           <SidePanel.Suspense key="edit">
-            <SidePanel.Header>Edit {viewTarget.displayName ?? viewTarget.name}</SidePanel.Header>
+            <SidePanel.Header>
+              Edit {viewTarget.displayName ?? viewTarget.name}
+            </SidePanel.Header>
             <EditTargetForm target={viewTarget} />
           </SidePanel.Suspense>
         )}

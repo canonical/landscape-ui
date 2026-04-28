@@ -57,9 +57,7 @@ describe("RepositoryProfileContainer", () => {
     await expectLoadingState();
 
     expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(
-      screen.getByText(repositoryProfiles[0].title),
-    ).toBeInTheDocument();
+    expect(screen.getByText(repositoryProfiles[0].title)).toBeInTheDocument();
   });
 
   it("renders loading state while filtered profiles are pending", async () => {

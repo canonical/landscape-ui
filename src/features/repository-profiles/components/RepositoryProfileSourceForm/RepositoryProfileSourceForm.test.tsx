@@ -30,9 +30,9 @@ describe("RepositoryProfileSourceForm", () => {
 
     await user.click(screen.getByRole("button", { name: /save changes/i }));
 
-    expect(
-      await screen.findAllByText("This field is required."),
-    ).toHaveLength(2);
+    expect(await screen.findAllByText("This field is required.")).toHaveLength(
+      2,
+    );
   });
 
   it("calls onSuccess with correct APTSource on valid submit (no GPG key)", async () => {
@@ -109,9 +109,7 @@ describe("RepositoryProfileSourceForm", () => {
     await user.tab();
 
     expect(
-      await screen.findByText(
-        /name must start with alphanumeric/i,
-      ),
+      await screen.findByText(/name must start with alphanumeric/i),
     ).toBeInTheDocument();
   });
 });

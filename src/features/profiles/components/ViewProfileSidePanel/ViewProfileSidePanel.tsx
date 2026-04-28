@@ -5,10 +5,7 @@ import { ScriptProfileActivityHistory } from "@/features/script-profiles";
 import { Tabs } from "@canonical/react-components";
 import ViewProfileInfoTab from "./components/ViewProfileInfoTab";
 import classes from "./ViewProfileSidePanel.module.scss";
-import {
-  isPackageProfile,
-  isScriptProfile,
-} from "../../helpers";
+import { isPackageProfile, isScriptProfile } from "../../helpers";
 import { PackageProfileDetailsConstraints } from "@/features/package-profiles";
 import { getTabs, type TabTypes } from "./helpers";
 import type { Profile } from "../../types";

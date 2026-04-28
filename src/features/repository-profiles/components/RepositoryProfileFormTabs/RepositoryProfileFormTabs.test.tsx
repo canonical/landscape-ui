@@ -14,7 +14,9 @@ describe("RepositoryProfileFormTabs", () => {
 
     expect(screen.getByRole("tab", { name: "Details" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Pockets" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "APT sources" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "APT sources" }),
+    ).toBeInTheDocument();
   });
 
   it("marks the active tab based on currentTab prop", () => {
@@ -22,9 +24,17 @@ describe("RepositoryProfileFormTabs", () => {
       <RepositoryProfileFormTabs currentTab={1} onCurrentTabChange={vi.fn()} />,
     );
 
-    expect(screen.getByRole("tab", { name: "Pockets" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Details" })).not.toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "APT sources" })).not.toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Pockets" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("tab", { name: "Details" })).not.toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(
+      screen.getByRole("tab", { name: "APT sources" }),
+    ).not.toHaveAttribute("aria-selected", "true");
   });
 
   it("calls onCurrentTabChange with 0 when Details tab is clicked", async () => {

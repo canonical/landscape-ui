@@ -40,9 +40,11 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
       <Input
         type="text"
         label="Source name"
-        help={!formik.errors.name 
-          ? "Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +." 
-          : undefined}
+        help={
+          !formik.errors.name
+            ? "Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +."
+            : undefined
+        }
         required
         autoComplete="off"
         error={getFormikError(formik, "name")}
@@ -62,10 +64,7 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
         error={getFormikError(formik, "gpg_key_name")}
         {...formik.getFieldProps("gpg_key_name")}
       />
-      <SidePanelFormButtons
-        submitButtonText="Add source"
-        onCancel={onBack}
-      />
+      <SidePanelFormButtons submitButtonText="Add source" onCancel={onBack} />
     </Form>
   );
 };

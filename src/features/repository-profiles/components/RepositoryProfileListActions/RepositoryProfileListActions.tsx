@@ -31,7 +31,10 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
   const { mutateAsync: removeRepositoryProfile, isPending: isRemoving } =
     removeRepositoryProfileQuery;
 
-  const handleEditProfile = createPageParamsSetter({ sidePath: ["edit"], name: profile.name });
+  const handleEditProfile = createPageParamsSetter({
+    sidePath: ["edit"],
+    name: profile.name,
+  });
 
   const handleRemoveProfile = async () => {
     try {

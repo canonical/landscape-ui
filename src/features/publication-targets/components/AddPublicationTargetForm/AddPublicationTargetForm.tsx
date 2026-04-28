@@ -3,11 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import useCreatePublicationTarget from "../../api/useCreatePublicationTarget";
-import {
-  CheckboxInput,
-  Form,
-  Input,
-} from "@canonical/react-components";
+import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import * as Yup from "yup";

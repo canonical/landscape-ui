@@ -11,7 +11,10 @@ export function useGetRepositoryProfile(name: string) {
   return useSuspenseQuery<RepositoryProfile, AxiosError<ApiError>>({
     queryKey: ["repositoryProfile", name],
     queryFn: async () => {
-      const response = await authFetch.get<ApiPaginatedResponse<RepositoryProfile>>("repositoryprofiles");
+      const response =
+        await authFetch.get<ApiPaginatedResponse<RepositoryProfile>>(
+          "repositoryprofiles",
+        );
       const profile = response.data.results.find((p) => p.name === name);
 
       if (!profile) throw new Error(`Repository profile "${name}" not found`);

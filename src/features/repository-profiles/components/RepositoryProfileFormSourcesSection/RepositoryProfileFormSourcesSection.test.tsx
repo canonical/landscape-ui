@@ -19,17 +19,16 @@ describe("RepositoryProfileFormSourcesSection", () => {
   });
 
   it("renders column headers", () => {
-    renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
 
     expect(screen.getByText("Source name")).toBeInTheDocument();
   });
 
   it("renders empty state message when no sources", () => {
     renderWithProviders(
-      <RepositoryProfileFormSourcesSection
-        {...defaultProps}
-        sources={[]}
-      />,
+      <RepositoryProfileFormSourcesSection {...defaultProps} sources={[]} />,
     );
 
     expect(
@@ -38,7 +37,9 @@ describe("RepositoryProfileFormSourcesSection", () => {
   });
 
   it("renders source names and types", () => {
-    renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
 
     for (const source of aptSources.slice(0, 10)) {
       expect(screen.getByText(source.name)).toBeInTheDocument();
@@ -47,7 +48,9 @@ describe("RepositoryProfileFormSourcesSection", () => {
 
   it("calls onEditSource with the correct APTSource on edit button click", async () => {
     const [firstSource] = aptSources;
-    renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
 
     await user.click(
       screen.getByRole("button", { name: `Edit ${firstSource.name}` }),
@@ -61,7 +64,9 @@ describe("RepositoryProfileFormSourcesSection", () => {
 
   it("calls onRemoveSource with the correct APTSource on remove button click", async () => {
     const [firstSource] = aptSources;
-    renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
 
     await user.click(
       screen.getByRole("button", { name: `Remove ${firstSource.name}` }),
@@ -87,7 +92,9 @@ describe("RepositoryProfileFormSourcesSection", () => {
   });
 
   it("does not render error message when error prop is absent", () => {
-    renderWithProviders(<RepositoryProfileFormSourcesSection {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
 
     expect(
       screen.queryByText("At least one source is required."),

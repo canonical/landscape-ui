@@ -103,9 +103,7 @@ describe("EditTargetForm", () => {
   it("renders the save button", () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-    expect(
-      screen.getByRole("button", { name: /save/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
   });
 
   it("submits the form with all optional fields and shows success notification", async () => {
@@ -131,7 +129,9 @@ describe("EditTargetForm", () => {
   it("toggles the disable_multi_del checkbox", async () => {
     renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-    const checkbox = screen.getByRole("checkbox", { name: /disable multidel/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /disable multidel/i,
+    });
     expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);
