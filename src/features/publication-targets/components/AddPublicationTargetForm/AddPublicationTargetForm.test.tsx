@@ -150,7 +150,9 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Publication target created")).toBeInTheDocument();
+      expect(
+        screen.getByText("Publication target created"),
+      ).toBeInTheDocument();
     });
   });
 

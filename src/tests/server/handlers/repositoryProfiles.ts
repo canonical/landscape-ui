@@ -131,4 +131,3 @@ export default [
     return HttpResponse.json({ id: 1 }, { status: 200 });
   }),
 ];
-

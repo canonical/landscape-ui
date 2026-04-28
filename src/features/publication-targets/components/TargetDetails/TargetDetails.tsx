@@ -1,4 +1,4 @@
-ops.action ==import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
+import InfoGrid from "@/components/layout/InfoGrid/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import usePageParams from "@/hooks/usePageParams";

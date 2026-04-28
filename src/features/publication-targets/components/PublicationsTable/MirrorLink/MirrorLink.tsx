@@ -7,7 +7,10 @@ interface MirrorLinkProps {
   readonly openInNewTab?: boolean;
 }
 
-const MirrorLink: FC<MirrorLinkProps> = ({ mirrorName, openInNewTab=false }) => (
+const MirrorLink: FC<MirrorLinkProps> = ({
+  mirrorName,
+  openInNewTab = false,
+}) => (
   <StaticLink
     to={ROUTES.repositories.mirrors({
       sidePath: ["view"],
