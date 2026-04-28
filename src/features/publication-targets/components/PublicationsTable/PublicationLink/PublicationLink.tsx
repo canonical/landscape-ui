@@ -8,7 +8,10 @@ interface PublicationLinkProps {
   readonly openInNewTab?: boolean;
 }
 
-const PublicationLink: FC<PublicationLinkProps> = ({ publication, openInNewTab=false }) => (
+const PublicationLink: FC<PublicationLinkProps> = ({
+  publication,
+  openInNewTab = false,
+}) => (
   <StaticLink
     to={ROUTES.repositories.publications({
       sidePath: ["view"],

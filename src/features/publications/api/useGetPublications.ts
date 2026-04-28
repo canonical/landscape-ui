@@ -46,9 +46,7 @@ const matchesSearch = (
   if (!value) return true;
   switch (prefix) {
     case "publicationTargetId:":
-      return (
-        getPublicationTargetName(publication.publicationTarget) === value
-      );
+      return getPublicationTargetName(publication.publicationTarget) === value;
     case "publicationTarget:":
       return (getPublicationTargetName(publication.publicationTarget) ?? "")
         .toLowerCase()

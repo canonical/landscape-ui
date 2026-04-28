@@ -54,10 +54,15 @@ describe("RepositoryProfileFormAptSourcesPanel", () => {
     expect(selectedCheckbox).toBeChecked();
 
     await user.click(sourceCheckbox);
-    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [aptSources[1], aptSources[0]]);
+    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [
+      aptSources[1],
+      aptSources[0],
+    ]);
 
     await user.click(selectedCheckbox);
-    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [aptSources[0]]);
+    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [
+      aptSources[0],
+    ]);
   });
 
   it("shows empty state when no APT sources match search", async () => {

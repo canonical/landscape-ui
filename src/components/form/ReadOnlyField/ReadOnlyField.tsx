@@ -16,8 +16,15 @@ const ReadOnlyField: FC<ReadOnlyFieldProps> = ({
   required,
 }) => (
   <div className={classes.field}>
-    <label>{required ? "* " : ""} {label}</label>
-    <Tooltip position="btm-left" className={classes.container} message={tooltipMessage} followMouse>
+    <label>
+      {required ? "* " : ""} {label}
+    </label>
+    <Tooltip
+      position="btm-left"
+      className={classes.container}
+      message={tooltipMessage}
+      followMouse
+    >
       <div className={classes.locked}>
         <span>{value}</span>
         <Icon name="lock-locked" />

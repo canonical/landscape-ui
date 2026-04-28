@@ -69,11 +69,13 @@ export default function useRepositoryProfiles() {
     mutationFn: async ({ apt_sources, ...params }) =>
       authFetch.post("repositoryprofiles", {
         ...params,
-        apt_sources: apt_sources?.map(({ name: sourceName, line, gpg_key }) => ({
-          name: sourceName,
-          line,
-          gpg_key: gpg_key ? { content: gpg_key } : null,
-        })),
+        apt_sources: apt_sources?.map(
+          ({ name: sourceName, line, gpg_key }) => ({
+            name: sourceName,
+            line,
+            gpg_key: gpg_key ? { content: gpg_key } : null,
+          }),
+        ),
       }),
     onSuccess: async () => {
       queryClient.invalidateQueries({
@@ -92,11 +94,13 @@ export default function useRepositoryProfiles() {
     mutationFn: async ({ name, add_apt_sources, ...params }) =>
       authFetch.put(`repositoryprofiles/${name}`, {
         ...params,
-        add_apt_sources: add_apt_sources?.map(({ name: sourceName, line, gpg_key }) => ({
-          name: sourceName,
-          line,
-          gpg_key: gpg_key ? { content: gpg_key } : null,
-        })),
+        add_apt_sources: add_apt_sources?.map(
+          ({ name: sourceName, line, gpg_key }) => ({
+            name: sourceName,
+            line,
+            gpg_key: gpg_key ? { content: gpg_key } : null,
+          }),
+        ),
       }),
     onSuccess: async () => {
       queryClient.invalidateQueries({

@@ -70,7 +70,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
       </div>
       <Blocks dense>
         <Blocks.Item title="Details">
-        <InfoGrid dense>
+          <InfoGrid dense>
             <InfoGrid.Item label="Name" large value={target.displayName} />
 
             {s3Fields && (
@@ -79,13 +79,24 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
                 <InfoGrid.Item label="Bucket Name" value={s3Fields.bucket} />
                 <InfoGrid.Item label="Prefix" value={s3Fields.prefix} />
                 <InfoGrid.Item label="ACL" value={s3Fields.acl} />
-                <InfoGrid.Item label="Storage class" value={s3Fields.storageClass} />
-                <InfoGrid.Item label="Encryption method" value={s3Fields.encryptionMethod} />
-                <InfoGrid.Item label="Disable MultiDel" value={s3Fields.disableMultiDel} />
-                <InfoGrid.Item label="Force AWS SIGv2" value={s3Fields.forceSigV2} />
+                <InfoGrid.Item
+                  label="Storage class"
+                  value={s3Fields.storageClass}
+                />
+                <InfoGrid.Item
+                  label="Encryption method"
+                  value={s3Fields.encryptionMethod}
+                />
+                <InfoGrid.Item
+                  label="Disable MultiDel"
+                  value={s3Fields.disableMultiDel}
+                />
+                <InfoGrid.Item
+                  label="Force AWS SIGv2"
+                  value={s3Fields.forceSigV2}
+                />
               </>
             )}
-
           </InfoGrid>
         </Blocks.Item>
 
@@ -111,4 +122,3 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 };
 
 export default TargetDetails;
-

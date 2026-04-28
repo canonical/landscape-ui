@@ -31,7 +31,10 @@ const NavigationExpandable: FC<NavigationExpandableProps> = ({ item }) => {
     return (
       <NavigationRoute
         item={item}
-        className={classNames(classes.accordionButton, classes.collapsedAccordionButton)}
+        className={classNames(
+          classes.accordionButton,
+          classes.collapsedAccordionButton,
+        )}
         withLinkStyle={false}
       />
     );

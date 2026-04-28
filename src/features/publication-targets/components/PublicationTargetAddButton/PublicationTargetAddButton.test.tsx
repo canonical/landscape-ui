@@ -33,6 +33,8 @@ describe("PublicationTargetAddButton", () => {
       screen.getByRole("button", { name: /add publication target/i }),
     );
 
-    expect(screen.getByTestId("location").textContent).toContain("sidePath=add");
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=add",
+    );
   });
 });

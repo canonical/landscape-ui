@@ -37,10 +37,9 @@ describe("AddMirrorForm", () => {
     // The form renders immediately; wait for the "pulling…" note in the
     // Mirror contents block to disappear so the data-dependent dropdowns are
     // populated before the test interacts with them.
-    await waitForElementToBeRemoved(
-      () => screen.queryByText(PULLING_NOTE),
-      { timeout: 2000 },
-    );
+    await waitForElementToBeRemoved(() => screen.queryByText(PULLING_NOTE), {
+      timeout: 2000,
+    });
     await user.type(screen.getByLabelText("Name"), "Name");
   });
 
