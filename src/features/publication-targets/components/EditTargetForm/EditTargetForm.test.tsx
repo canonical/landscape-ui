@@ -1,7 +1,10 @@
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import EditTargetForm from "./EditTargetForm";
 
@@ -143,6 +146,30 @@ describe("EditTargetForm", () => {
         await screen.findByText(/publication target edited/i),
       ).toBeInTheDocument();
     });
+
+    it("user can edit optional Swift fields and submit successfully", async () => {
+      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+
+      await user.clear(screen.getByLabelText(/^tenant$/i));
+      await user.type(screen.getByLabelText(/^tenant$/i), "updated-tenant");
+      await user.type(screen.getByLabelText(/^prefix$/i), "packages/");
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/publication target edited/i),
+      ).toBeInTheDocument();
+    });
+
+    it("shows 'This field is required' when display name is cleared", async () => {
+      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+
+      await user.clear(screen.getByLabelText("Name"));
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/this field is required/i),
+      ).toBeInTheDocument();
+    });
   });
 
   describe("Filesystem target", () => {
@@ -173,6 +200,153 @@ describe("EditTargetForm", () => {
 
       expect(
         await screen.findByText(/publication target edited/i),
+      ).toBeInTheDocument();
+    });
+
+    it("user can change linkMethod and submit successfully", async () => {
+      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+
+      await user.selectOptions(screen.getByLabelText(/link method/i), "SYMLINK");
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/publication target edited/i),
+      ).toBeInTheDocument();
+    });
+
+    it("shows 'This field is required' when display name is cleared", async () => {
+      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
+
+      await user.clear(screen.getByLabelText("Name"));
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/this field is required/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("display name validation", () => {
+    it("shows 'This field is required' when display name is cleared on S3 target", async () => {
+      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+
+      await user.clear(screen.getByLabelText("Name"));
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/this field is required/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("S3 checkbox fields", () => {
+    it("toggles the disableMultiDel checkbox", async () => {
+      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+
+      const checkbox = screen.getByRole("checkbox", {
+        name: /disable multidel/i,
+      });
+      const initialState = (checkbox as HTMLInputElement).checked;
+
+      await user.click(checkbox);
+      expect((checkbox as HTMLInputElement).checked).toBe(!initialState);
+    });
+
+    it("toggles the forceSigV2 checkbox", async () => {
+      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+
+      const checkbox = screen.getByRole("checkbox", {
+        name: /force aws sigv2/i,
+      });
+      const initialState = (checkbox as HTMLInputElement).checked;
+
+      await user.click(checkbox);
+      expect((checkbox as HTMLInputElement).checked).toBe(!initialState);
+    });
+
+    it("submits S3 form with optional fields populated and shows success", async () => {
+      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+
+      await user.type(screen.getByLabelText(/aws access key id/i), "NEWKEY");
+      await user.type(
+        screen.getByLabelText(/aws secret access key/i),
+        "NEWSECRET",
+      );
+      await user.clear(screen.getByLabelText(/^acl$/i));
+      await user.type(screen.getByLabelText(/^acl$/i), "public-read");
+      await user.clear(screen.getByLabelText(/storage class/i));
+      await user.type(screen.getByLabelText(/storage class/i), "STANDARD_IA");
+      await user.clear(screen.getByLabelText(/encryption method/i));
+      await user.type(screen.getByLabelText(/encryption method/i), "aws:kms");
+
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/publication target edited/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("Swift optional fields editing", () => {
+    it("submits Swift form with all optional fields populated and shows success", async () => {
+      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+
+      await user.type(screen.getByLabelText(/^prefix$/i), "packages/");
+      await user.clear(screen.getByLabelText(/^tenant$/i));
+      await user.type(screen.getByLabelText(/^tenant$/i), "updated-tenant");
+      await user.type(screen.getByLabelText(/^tenant id$/i), "tid-999");
+      await user.type(screen.getByLabelText(/^domain$/i), "Default");
+      await user.type(screen.getByLabelText(/^domain id$/i), "did-999");
+      await user.type(screen.getByLabelText(/^tenant domain$/i), "td-999");
+      await user.type(
+        screen.getByLabelText(/^tenant domain id$/i),
+        "tdid-999",
+      );
+
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText(/publication target edited/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("error handling", () => {
+    it("shows an error notification when S3 edit fails", async () => {
+      server.use(
+        http.patch(
+          `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
+          () =>
+            HttpResponse.json(
+              { message: "edit failed" },
+              { status: 500 },
+            ),
+        ),
+      );
+
+      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(await screen.findByText("edit failed")).toBeInTheDocument();
+    });
+
+    it("shows an error notification when Swift edit fails", async () => {
+      server.use(
+        http.patch(
+          `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
+          () =>
+            HttpResponse.json(
+              { message: "swift edit failed" },
+              { status: 500 },
+            ),
+        ),
+      );
+
+      renderWithProviders(<EditTargetForm target={swiftTarget} />);
+      await user.click(screen.getByRole("button", { name: /save/i }));
+
+      expect(
+        await screen.findByText("swift edit failed"),
       ).toBeInTheDocument();
     });
   });

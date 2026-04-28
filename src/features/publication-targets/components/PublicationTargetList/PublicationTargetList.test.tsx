@@ -70,6 +70,14 @@ describe("PublicationTargetList", () => {
     expect(screen.getByText("Swift")).toBeInTheDocument();
   });
 
+  it("renders Filesystem type label for Filesystem targets", () => {
+    renderWithProviders(
+      <PublicationTargetList targets={publicationTargets} />,
+    );
+
+    expect(screen.getByText("Filesystem")).toBeInTheDocument();
+  });
+
   it("renders the publication count for a target with publications", () => {
     renderWithProviders(
       <PublicationTargetList targets={publicationTargets} />,
@@ -84,8 +92,8 @@ describe("PublicationTargetList", () => {
       <PublicationTargetList targets={publicationTargets} />,
     );
 
-    // staging-s3-eu-west and swift-internal each have 0 publications → two NoData cells
-    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(2);
+    // staging-s3-eu-west, swift-internal, and local-fs-archive each have 0 publications → three NoData cells
+    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(3);
   });
 
   it("renders singular 'publication' when a target has exactly one publication", () => {
