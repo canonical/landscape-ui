@@ -1,6 +1,8 @@
 import { type FC } from "react";
-import NoPublicationTargetsModal from "../NoPublicationTargetsModal";
-import { useGetPublicationTargets } from "@/features/publication-targets";
+import {
+  NoPublicationTargetsModal,
+  useGetPublicationTargets,
+} from "@/features/publication-targets";
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import type { Local } from "../../types";

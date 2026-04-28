@@ -1,71 +1,66 @@
+import { RadioInput } from "@canonical/react-components";
 import type { FC } from "react";
-import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import usePageParams from "@/hooks/usePageParams";
-import { useGetMirror } from "../../api";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import Blocks from "@/components/layout/Blocks";
-import RadioGroup from "@/components/form/RadioGroup";
-import { useFormik } from "formik";
-import type { FormProps } from "./types";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
+import classes from "./PublishMirrorForm.module.scss";
+import SidePanel from "@/components/layout/SidePanel";
+import PublishMirrorNewForm from "./components/PublishMirrorNewForm";
+import PublishMirrorExistingForm from "./components/PublishMirrorExistingForm";
+import { useBoolean } from "usehooks-ts";
+import {
+  useGetMirror,
+  useListPublications,
+  useListPublicationTargets,
+} from "../../api";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
 
 const PublishMirrorForm: FC = () => {
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { name, sidePath, popSidePath, createPageParamsSetter } =
-    usePageParams();
+  const { name } = usePageParams();
 
   const mirror = useGetMirror(name).data.data;
 
-  const close = createPageParamsSetter({ sidePath: [], name: "" });
+  const { publicationTargets = [] } = useListPublicationTargets({
+    pageSize: 1000,
+  }).data.data;
 
-  const formik = useFormik<FormProps>({
-    initialValues: {
-      publishTo: "new-publication",
-    },
-    onSubmit: async (values) => {
-      try {
-        close();
+  const { publications = [] } = useListPublications({
+    filter: `source="${name}"`,
+    pageSize: 1000,
+  }).data.data;
 
-        switch (values.publishTo) {
-          case "new-publication":
-            notify.success({
-              title: `You have marked ${mirror.displayName} to be published.`,
-              message:
-                "A publication has been created and an activity has been queued to publish it to the designated target.",
-            });
-            break;
-
-          case "existing-publication":
-            notify.success({
-              title: `You have marked ${mirror.displayName} to be published.`,
-              message:
-                "The mirror will be added to the publication and an activity has been queued to publish it to the designated target.",
-            });
-            break;
-        }
-      } catch (error) {
-        debug(error);
-      }
-    },
-  });
+  const { value: useNewPublication, toggle } = useBoolean(
+    !!publicationTargets.length,
+  );
 
   return (
     <>
       <SidePanel.Header>Publish {mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <Blocks>
-          <Blocks.Item>
-            <RadioGroup field="publishTo" formik={formik} label="Publish to" />
-          </Blocks.Item>
-        </Blocks>
-        <SidePanelFormButtons
-          submitButtonText="Publish mirror"
-          onCancel={close}
-          hasBackButton={sidePath.length > 1}
-          onBackButtonPress={popSidePath}
-        />
+        <label>Publish to</label>
+        <div className={classes.radio}>
+          <RadioInput
+            label="New publication"
+            checked={useNewPublication}
+            onChange={toggle}
+            disabled={!publicationTargets.length}
+          />
+          <RadioInput
+            label="Existing publication"
+            checked={!useNewPublication}
+            onChange={toggle}
+            disabled={!publications.length}
+          />
+        </div>
+
+        {useNewPublication ? (
+          <PublishMirrorNewForm
+            mirror={mirror}
+            publicationTargets={publicationTargets}
+          />
+        ) : (
+          <PublishMirrorExistingForm
+            mirror={mirror}
+            publications={publications}
+          />
+        )}
       </SidePanel.Content>
     </>
   );
