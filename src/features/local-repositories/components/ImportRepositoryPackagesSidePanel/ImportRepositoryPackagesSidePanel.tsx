@@ -13,7 +13,6 @@ import {
   Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import Blocks from "@/components/layout/Blocks";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
 import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
@@ -40,7 +39,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const [validateTask, setValidateTask] = useState<
     | {
         status: TaskStatus;
-        output: string[];
+        response: string[];
       }
     | undefined
   >(undefined);
@@ -55,7 +54,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       closeSidePanel();
 
       notify.success({
-        title: `You have marked ${repository?.display_name} to import packages`,
+        title: `You have marked ${repository?.displayName} to import packages`,
         message:
           "An activity has been queued to import the packages to the local repository.",
       });
@@ -83,94 +82,92 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       const { data } = await importRepositoryPackages({
         name: repositoryName,
         url: formik.values.source,
-        validate_only: true,
+        validateOnly: true,
       });
 
-      const output = data.output ? data.output.split(", ") : [];
-      setValidateTask({ status: data.status, output });
+      setValidateTask({
+        status: data.metadata?.status as TaskStatus,
+        response: data.response as unknown as string[],
+      });
     } catch (error) {
       debug(error);
     }
   };
 
   const hasPackages =
-    validateTask?.status === "succeeded" && !!validateTask.output.length;
+    validateTask?.status === "succeeded" && !!validateTask.response.length;
 
   const packagesCount = hasPackages
-    ? pluralizeWithCount(validateTask?.output.length, "package")
+    ? pluralizeWithCount(validateTask?.response.length, "package")
     : "packages";
 
   return (
     <>
       <SidePanel.Header>
-        Import packages to {repository.display_name}
+        Import packages to {repository.displayName}
       </SidePanel.Header>
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
-          <Blocks>
-            <Blocks.Item title="Repository Contents">
-              <div className={classes.row}>
-                <Input
-                  type="text"
-                  label="Source URL"
-                  {...formik.getFieldProps("source")}
-                  error={getFormikError(formik, "source")}
-                  help={
-                    "In order to upload packages, provide a URL for Landscape to fetch the packages from."
-                  }
-                />
+          <div className={classes.row}>
+            <Input
+              type="text"
+              label="Source URL"
+              {...formik.getFieldProps("source")}
+              error={getFormikError(formik, "source")}
+              help={
+                "In order to upload packages, provide a URL for Landscape to fetch the packages from."
+              }
+            />
 
-                <Button
-                  disabled={!formik.values.source}
-                  onClick={handleValidate}
-                  type="button"
-                  className={classes.button}
-                >
-                  {isImportingRepositoryPackages ||
-                  validateTask?.status === "in progress" ? (
-                    <LoadingState inline />
-                  ) : (
-                    "Fetch packages"
-                  )}
-                </Button>
-              </div>
+            <Button
+              disabled={!formik.values.source}
+              onClick={handleValidate}
+              type="button"
+              className={classes.button}
+            >
+              {isImportingRepositoryPackages ||
+              validateTask?.status === "in progress" ? (
+                <LoadingState inline />
+              ) : (
+                "Fetch packages"
+              )}
+            </Button>
+          </div>
 
-              {validateTask?.status === "failed" && (
+          {validateTask?.status === "failed" && (
+            <Notification
+              severity="caution"
+              title="Fetching packages timed out"
+              borderless
+            >
+              <span>
+                You can still proceed to import packages, although this
+                process may fail if we can&apos;t fetch the packages from
+                the source provided.
+              </span>
+            </Notification>
+          )}
+
+          {validateTask?.status === "succeeded" && (
+            <>
+              {!validateTask?.response.length ? (
                 <Notification
-                  severity="caution"
-                  title="Fetching packages timed out"
+                  severity="negative"
+                  title="No packages available from the URL provided"
                   borderless
-                >
-                  <span>
-                    You can still proceed to import packages, although this
-                    process may fail if we can&apos;t fetch the packages from
-                    the source provided.
-                  </span>
-                </Notification>
+                />
+              ) : (
+                <List
+                  items={validateTask.response.map((file) => (
+                    <div className={classes.file} key={file}>
+                      {file}
+                    </div>
+                  ))}
+                  divided
+                />
               )}
-
-              {validateTask?.status === "succeeded" && (
-                <>
-                  {!validateTask?.output.length ? (
-                    <Notification
-                      severity="negative"
-                      title="No packages available from the URL provided"
-                      borderless
-                    />
-                  ) : (
-                    <List
-                      items={validateTask.output.map((file) => (
-                        <div className={classes.file} key={file}>
-                          {file}
-                        </div>
-                      ))}
-                      divided
-                    />
-                  )}
-                </>
-              )}
-            </Blocks.Item>
-          </Blocks>
+            </>
+          )}
 
           <SidePanelFormButtons
             submitButtonDisabled={!hasPackages}

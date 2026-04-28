@@ -1,7 +1,7 @@
 import { RadioInput } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./PublishLocalRepositorySidePanel.module.scss";
-import useGetPublicationsBySource from "../../api/useGetPublicationsBySource";
+import { useGetPublicationsBySource } from "@/features/publications";
 import SidePanel from "@/components/layout/SidePanel";
 import PublishRepositoryNewForm from "./components/PublishRepositoryNewForm";
 import PublishRepositoryExistingForm from "./components/PublishRepositoryExistingForm";
@@ -22,11 +22,11 @@ const PublishLocalRepositorySidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>Publish {repository.display_name}</SidePanel.Header>
+      <SidePanel.Header>Publish {repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
         {!!publications.length && (
           <>
-            <label>Publish to</label>
+            <div className={classes.publish}>Publish to</div>
             <div className={classes.radio}>
               <RadioInput
                 label="New publication"

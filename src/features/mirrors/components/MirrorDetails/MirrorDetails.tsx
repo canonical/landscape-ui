@@ -3,7 +3,7 @@ import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { useGetMirror, useListPublications } from "../../api";
+import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { getSourceType } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
@@ -14,6 +14,7 @@ import UpdateMirrorModal from "../UpdateMirrorModal";
 import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 import { boolToLabel } from "@/utils/output";
+import { useGetPublicationsBySource } from "@/features/publications";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher } = usePageParams();
@@ -30,10 +31,7 @@ const MirrorDetails: FC = () => {
 
   const mirror = useGetMirror(name).data.data;
 
-  const { publications = [] } = useListPublications({
-    filter: `source="${name}"`,
-    pageSize: 1000,
-  }).data.data;
+  const { publications } = useGetPublicationsBySource(name);
 
   return (
     <>

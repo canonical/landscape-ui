@@ -1,5 +1,5 @@
 import usePageParams from "@/hooks/usePageParams";
-import type { Local } from "../types";
+import type { Local } from "@canonical/landscape-openapi";
 import type { Action } from "@/types/Action";
 
 interface UseGetRepositoryActionsProps {
@@ -20,7 +20,7 @@ export const useGetRepositoryActions = ({
     if (!sidePath.length) {
       return createPageParamsSetter({
         sidePath: [action],
-        name: repository.local_id,
+        name: repository.localId,
       });
     }
     return createSidePathPusher(action);
@@ -29,7 +29,7 @@ export const useGetRepositoryActions = ({
   const viewAction: Action = {
     icon: "show",
     label: "View details",
-    "aria-label": `View details of "${repository.display_name}" repository`,
+    "aria-label": `View details of "${repository.displayName}" repository`,
     onClick: openSidePanel("view"),
   };
 
@@ -37,19 +37,19 @@ export const useGetRepositoryActions = ({
     {
       icon: "edit",
       label: "Edit",
-      "aria-label": `Edit "${repository.display_name}" repository`,
+      "aria-label": `Edit "${repository.displayName}" repository`,
       onClick: openSidePanel("edit"),
     },
     {
       icon: "import",
       label: "Import packages",
-      "aria-label": `Import packages to "${repository.display_name}" repository`,
+      "aria-label": `Import packages to "${repository.displayName}" repository`,
       onClick: openSidePanel("import-packages"),
     },
     {
       icon: "upload",
       label: "Publish",
-      "aria-label": `Publish "${repository.display_name}" repository`,
+      "aria-label": `Publish "${repository.displayName}" repository`,
       onClick: openPublishGuard,
     },
   ];
@@ -58,7 +58,7 @@ export const useGetRepositoryActions = ({
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${repository.display_name}" repository`,
+      "aria-label": `Remove "${repository.displayName}" repository`,
       onClick: openRemovalModal,
     },
   ];

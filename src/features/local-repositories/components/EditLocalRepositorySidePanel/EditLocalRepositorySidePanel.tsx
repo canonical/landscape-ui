@@ -12,7 +12,7 @@ const EditLocalRepositorySidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>Edit {repository.display_name}</SidePanel.Header>
+      <SidePanel.Header>Edit {repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
         <EditLocalRepositoryForm repository={repository} />
       </SidePanel.Content>

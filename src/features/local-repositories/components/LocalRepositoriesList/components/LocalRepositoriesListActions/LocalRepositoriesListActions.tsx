@@ -34,24 +34,22 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${repository.display_name} actions`}
+        toggleAriaLabel={`${repository.displayName} actions`}
         actions={[viewAction, ...actions]}
         destructiveActions={destructiveActions}
       />
 
-      {isRemovalModalOpen && (
-        <RemoveLocalRepositoryModal
-          close={closeRemovalModal}
-          repository={repository}
-        />
-      )}
+      <RemoveLocalRepositoryModal
+        close={closeRemovalModal}
+        isOpen={isRemovalModalOpen}
+        repository={repository}
+      />
 
-      {isPublishGuardOpen && (
-        <PublishLocalRepositoryGuard
-          close={closePublishGuard}
-          repository={repository}
-        />
-      )}
+      <PublishLocalRepositoryGuard
+        close={closePublishGuard}
+        isOpen={isPublishGuardOpen}
+        repository={repository}
+      />
     </>
   );
 };

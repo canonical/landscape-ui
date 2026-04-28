@@ -1,22 +1,23 @@
-import type { Publication } from "@/features/publications";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
+import type {
+  Publication,
+  ListPublicationsError,
+  ListPublicationsResponse,
+} from "@canonical/landscape-openapi";
 
-interface ListPublicationsResponse {
-  publications: Publication[];
-  next_page_token?: string;
-}
-
-const useGetPublicationsBySource = (source?: string) => {
+export const useGetPublicationsBySource = (source?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
+  const { data, isLoading } = useQuery<
+    Publication[],
+    AxiosError<ListPublicationsError>
+  >({
     queryKey: ["publications", source],
     enabled: !!source,
     queryFn: async () => {
-      let page_token: string | undefined;
+      let pageToken: string | undefined;
       const publications: Publication[] = [];
 
       do {
@@ -26,15 +27,15 @@ const useGetPublicationsBySource = (source?: string) => {
             {
               params: {
                 filter: `source="${source}"`,
-                page_size: 1000,
-                page_token,
+                pageSize: 1000,
+                pageToken,
               },
             },
           );
 
         publications.push(...(response.data.publications ?? []));
-        page_token = response.data.next_page_token;
-      } while (page_token);
+        pageToken = response.data.nextPageToken;
+      } while (pageToken);
 
       return publications;
     },
@@ -45,5 +46,3 @@ const useGetPublicationsBySource = (source?: string) => {
     isGettingPublications: isLoading,
   };
 };
-
-export default useGetPublicationsBySource;

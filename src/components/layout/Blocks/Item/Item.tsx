@@ -24,16 +24,17 @@ const Item: FC<ItemProps> = ({
   return (
     <section className={classNames(classes.item, containerClassName)}>
       {(title || description || action) && (
-        <div className={classes.heading}>
+        <div className={classNames(
+          classes.heading,
+          { [classes.denseHeading as string]: dense }
+        )}>
           {title && (
             <h4
               className={classNames(
-                classes.heading,
-                { [classes.denseHeading as string]: dense },
                 {
                   [classes.titleWithDescription as string]: !!description,
                 },
-                "p-heading--5",
+                "p-heading--5 p-text--small-caps u-no-padding",
                 titleClassName,
               )}
             >

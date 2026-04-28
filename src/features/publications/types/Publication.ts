@@ -95,6 +95,6 @@ export interface PublishPublicationResponse {
 }
 
 export interface PublicationServicePublishPublicationBody {
-  forceOverwrite: boolean;
-  forceCleanup: boolean;
+  forceOverwrite?: boolean;
+  forceCleanup?: boolean;
 }

@@ -6,6 +6,6 @@ export interface EditLocalRepositoryFormValues {
 }
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
-  displayName: Yup.string(),
+  displayName: Yup.string().required("This field is required."),
   description: Yup.string(),
 });

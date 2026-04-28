@@ -3,26 +3,26 @@ import type { Local } from "@/features/local-repositories";
 export const repositories: Local[] = [
   {
     name: "locals/aaaa-bbbb-cccc",
-    local_id: "aaaa-bbbb-cccc",
-    display_name: "repo 1",
-    distribution: "distribution 1",
-    component: "component 1",
+    localId: "aaaa-bbbb-cccc",
+    displayName: "repo 1",
+    defaultDistribution: "distribution 1",
+    defaultComponent: "component 1",
   },
   {
     name: "locals/bbbb-cccc-dddd",
-    local_id: "bbbb-cccc-dddd",
-    display_name: "repo 2",
+    localId: "bbbb-cccc-dddd",
+    displayName: "repo 2",
     comment: "repo 2 description",
-    distribution: "distribution 2",
-    component: "component 2",
+    defaultDistribution: "distribution 2",
+    defaultComponent: "component 2",
   },
   {
     name: "locals/cccc-dddd-eeee",
-    local_id: "cccc-dddd-eeee",
-    display_name: "repo 3",
+    localId: "cccc-dddd-eeee",
+    displayName: "repo 3",
     comment: "repo 3 description",
-    distribution: "distribution 3",
-    component: "component 3",
+    defaultDistribution: "distribution 3",
+    defaultComponent: "component 3",
   },
 ] as const;
 
@@ -30,32 +30,48 @@ export const repoPackages = ["package 1", "package 2", "package 3"] as const;
 
 export const succeededTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "succeeded",
-  output: "package-A, package-B",
+  done: true,
+  response: ["package-A", "package-B"],
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "succeeded",
+  },
 };
 
 export const failedTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "failed",
-  output: "package-A, package-B",
+  done: true,
+  response: ["package-A"],
+  error: {
+    code: 408,
+    message: "Request timed out",
+  },
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "failed",
+  },
 };
 
 export const inProgressTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "in progress",
-  output: "",
+  done: true,
+  response: [],
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "in progress",
+  },
 };
 
 export const emptyTask = {
   name: "task/vvvv-tttt-pppp",
-  display_name: "validate packages",
-  task_id: "vvvv-tttt-pppp",
-  status: "succeeded",
-  output: "",
+  done: true,
+  response: [],
+  metadata: {
+    description: "validate packages",
+    operation_id: "vvvv-tttt-pppp",
+    status: "succeeded",
+  },
 };

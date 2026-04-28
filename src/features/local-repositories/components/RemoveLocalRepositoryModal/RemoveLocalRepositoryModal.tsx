@@ -1,21 +1,23 @@
 import type { FC } from "react";
-import type { Local } from "../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
-import { ConfirmationModal } from "@canonical/react-components";
 import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
-import useGetPublicationsBySource from "../../api/useGetPublicationsBySource";
+import { useGetPublicationsBySource } from "@/features/publications";
 import LoadingState from "@/components/layout/LoadingState";
+import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
 interface RemoveLocalRepositoryModalProps {
   readonly close: () => void;
+  readonly isOpen: boolean;
   readonly repository: Local;
 }
 
 const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   close,
+  isOpen,
   repository,
 }) => {
   const { notify } = useNotify();
@@ -34,7 +36,9 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     </p>
   );
 
-  const publicationsContent = (
+  const publicationsContent = isGettingPublications ? (
+    <LoadingState />
+  ) : (
     <>
       <p>This repository is associated with the following publications:</p>
       <LocalRepositoryPublicationsList publications={publications} openNewTab />
@@ -53,12 +57,12 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
 
   const handleRemoveLocalRepository = async () => {
     try {
-      await removeRepository({ name: repository.name });
+      await removeRepository({ name: repository.name ?? "" });
 
       setPageParams({ sidePath: [], name: "" });
 
       notify.success({
-        title: `You have successfully removed ${repository.display_name}`,
+        title: `You have successfully removed ${repository.displayName}`,
         message: "The local repository has been removed from Landscape.",
       });
     } catch (error) {
@@ -68,22 +72,20 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     }
   };
 
-  if (isGettingPublications) {
-    return <LoadingState />;
-  }
-
   return (
-    <ConfirmationModal
-      title={`Remove ${repository.display_name}`}
+    <TextConfirmationModal
+      title={`Remove ${repository.displayName}`}
       confirmButtonLabel="Remove local repository"
       confirmButtonAppearance="negative"
       onConfirm={handleRemoveLocalRepository}
       confirmButtonLoading={isRemovingRepository}
       close={close}
       renderInPortal
+      confirmationText={`remove ${repository.displayName}`}
+      isOpen={isOpen}
     >
       {content}
-    </ConfirmationModal>
+    </TextConfirmationModal>
   );
 };
 

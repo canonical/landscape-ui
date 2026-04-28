@@ -1,21 +1,19 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import type { Local } from "../types";
-
-interface ListLocalsResponse {
-  locals: Local[];
-  next_page_token: string;
-}
+import type {
+  Local,
+  ListLocalsError,
+  ListLocalsResponse,
+} from "@canonical/landscape-openapi";
 
 export const useGetLocalRepositories = (search?: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending } = useQuery<Local[], AxiosError<ApiError>>({
+  const { data, isPending } = useQuery<Local[], AxiosError<ListLocalsError>>({
     queryKey: ["locals", search],
     queryFn: async () => {
-      let page_token: string | undefined;
+      let pageToken: string | undefined;
       const repositories: Local[] = [];
 
       do {
@@ -23,16 +21,16 @@ export const useGetLocalRepositories = (search?: string) => {
           "locals",
           {
             params: {
-              filter: search ? `display_name="*${search}*"` : undefined,
-              page_size: 1000,
-              page_token,
+              filter: search ? `display_name="${search}*"` : undefined,
+              pageSize: 1000,
+              pageToken,
             },
           },
         );
 
         repositories.push(...(response.data.locals ?? []));
-        page_token = response.data.next_page_token;
-      } while (page_token);
+        pageToken = response.data.nextPageToken;
+      } while (pageToken);
 
       return repositories;
     },
