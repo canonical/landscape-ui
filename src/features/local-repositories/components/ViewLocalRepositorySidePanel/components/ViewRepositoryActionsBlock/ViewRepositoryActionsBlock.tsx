@@ -69,12 +69,11 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
         repository={repository}
       />
 
-      {isPublishGuardOpen && (
-        <PublishLocalRepositoryGuard
-          close={closePublishGuard}
-          repository={repository}
-        />
-      )}
+      <PublishLocalRepositoryGuard
+        close={closePublishGuard}
+        isOpen={isPublishGuardOpen}
+        repository={repository}
+      />
     </>
   );
 };

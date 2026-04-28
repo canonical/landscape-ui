@@ -16,14 +16,22 @@ const PublishLocalRepositoryGuard: FC<PublishRepositoryGuardProps> = ({
   repository,
 }) => {
   const { publicationTargets } = useGetPublicationTargets();
-  const { setPageParams } = usePageParams();
+  const { sidePath, createPageParamsSetter, createSidePathPusher } =
+    usePageParams();
+
+  const openSidePanel = !sidePath.length
+    ? createPageParamsSetter({
+        sidePath: ["publish"],
+        name: repository.localId,
+      })
+    : createSidePathPusher("publish");
 
   if (isOpen) {
     if (!publicationTargets.length) {
       return <NoPublicationTargetsModal close={close} />;
     }
 
-    setPageParams({ sidePath: ["publish"], name: repository.localId });
+    openSidePanel();
   }
 
   return null;
