@@ -1,7 +1,7 @@
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./ReadOnlyField.module.scss";
-import NoData from "@/components/layout/NoData/NoData";
+import NoData from "@/components/layout/NoData";
 
 interface ReadOnlyFieldProps {
   readonly label?: string;
