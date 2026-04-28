@@ -1,7 +1,7 @@
 import { RadioInput } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./PublishLocalRepositorySidePanel.module.scss";
-import useGetPublicationsBySource from "../../api/useGetPublicationsBySource";
+import useGetPublicationsBySource from "../../../publications/api/useGetPublicationsBySource";
 import SidePanel from "@/components/layout/SidePanel";
 import PublishRepositoryNewForm from "./components/PublishRepositoryNewForm";
 import PublishRepositoryExistingForm from "./components/PublishRepositoryExistingForm";

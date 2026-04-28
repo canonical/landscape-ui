@@ -37,7 +37,7 @@ export const succeededTask = {
     description: "validate packages",
     operation_id: "vvvv-tttt-pppp",
     status: "succeeded",
-  },  
+  },
 };
 
 export const failedTask = {
@@ -52,7 +52,7 @@ export const failedTask = {
     description: "validate packages",
     operation_id: "vvvv-tttt-pppp",
     status: "failed",
-  }
+  },
 };
 
 export const inProgressTask = {
@@ -63,7 +63,7 @@ export const inProgressTask = {
     description: "validate packages",
     operation_id: "vvvv-tttt-pppp",
     status: "in progress",
-  }
+  },
 };
 
 export const emptyTask = {
@@ -74,5 +74,5 @@ export const emptyTask = {
     description: "validate packages",
     operation_id: "vvvv-tttt-pppp",
     status: "succeeded",
-  }
+  },
 };

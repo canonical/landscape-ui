@@ -4,3 +4,4 @@ export * from "./useGetPublications";
 export * from "./usePublishPublication";
 export * from "./useCreatePublication";
 export * from "./useDeletePublication";
+export * from "./useGetPublicationsBySource";
