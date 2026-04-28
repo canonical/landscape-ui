@@ -23,7 +23,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   }).data.data;
 
   const { publications = [] } = useListPublications({
-    filter: `source="${name}"`,
+    filter: `source="${mirrorName}"`,
     pageSize: 1000,
   }).data.data;
 

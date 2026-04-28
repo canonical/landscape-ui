@@ -152,7 +152,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
                 </Tooltip>
               </span>
             }
-            checked={publication?.notAutomatic ?? false}
+            checked={!publication?.notAutomatic}
             disabled
           />
 
