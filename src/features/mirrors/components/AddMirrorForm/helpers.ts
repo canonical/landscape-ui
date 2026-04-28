@@ -14,7 +14,11 @@ import type {
   Distribution,
   UbuntuArchiveInfo,
 } from "../../types";
-import { UBUNTU_ARCHIVE_HOST, UBUNTU_PRO_HOST } from "../../constants";
+import {
+  UBUNTU_ARCHIVE_HOST,
+  UBUNTU_PRO_HOST,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
 import { hasOneItem } from "@/utils/_helpers";
 import { isArchiveInfoValid } from "../../helpers";
 
@@ -99,7 +103,7 @@ export function getInitialUbuntuArchiveValues(
   return {
     ...getInitialBaseValues(ubuntuArchiveInfo?.distributions ?? []),
     sourceType: "ubuntu-archive",
-    sourceUrl: `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+    sourceUrl: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
   };
 }
 
@@ -109,7 +113,7 @@ export function getInitialUbuntuSnapshotsValues(
   return {
     ...getInitialBaseValues(ubuntuArchiveInfo?.distributions ?? []),
     sourceType: "ubuntu-snapshots",
-    sourceUrl: `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+    sourceUrl: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/`,
     snapshotDate: moment().format(INPUT_DATE_FORMAT),
   };
 }
