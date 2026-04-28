@@ -6,12 +6,13 @@ import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
 import RemoveTargetForm from "../RemoveTargetForm";
 
-
 interface PublicationTargetListActionsProps {
   readonly target: PublicationTarget;
 }
 
-const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ target }) => {
+const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({
+  target,
+}) => {
   const { createPageParamsSetter } = usePageParams();
   const {
     value: isRemoveModalOpen,
@@ -75,4 +76,3 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({ t
 };
 
 export default PublicationTargetListActions;
-
