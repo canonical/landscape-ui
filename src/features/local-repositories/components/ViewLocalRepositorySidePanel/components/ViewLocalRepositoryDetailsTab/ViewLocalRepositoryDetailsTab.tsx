@@ -3,7 +3,7 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LocalRepositoryPublicationsList from "../../../LocalRepositoryPublicationsList";
 import LoadingState from "@/components/layout/LoadingState";
-import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
+import useGetPublicationsBySource from "../../../../../publications/api/useGetPublicationsBySource";
 import type { Local } from "@canonical/landscape-openapi";
 
 interface ViewLocalRepositoryDetailsTabProps {

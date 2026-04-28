@@ -1,6 +1,6 @@
 import useDebug from "@/hooks/useDebug";
 import type { FC } from "react";
-import { useDeleteMirror, useListPublications } from "../../api";
+import { useDeleteMirror } from "../../api";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
@@ -23,10 +23,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
 
-  const { publications = [] } = useListPublications({
-    filter: `source="${mirrorName}"`,
-    pageSize: 1000,
-  }).data.data;
+  const { publications } = useGetPublicationsBySource(mirrorName);
 
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
     useDeleteMirror();

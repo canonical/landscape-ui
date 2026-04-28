@@ -2,7 +2,7 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type {
   PublishPublicationResponse,
   BatchGetPublicationTargetsResponse,
-} from "@/features/publications";
+} from "@canonical/landscape-openapi";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
@@ -14,6 +14,7 @@ import {
   getDebArchivePaginationParams,
 } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { succeededTask } from "@/tests/mocks/localRepositories";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("publications");
@@ -34,20 +35,6 @@ const toObjectBody = (value: unknown): Record<string, unknown> => {
   }
 
   return {};
-};
-
-const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
-    publicationTargets,
-    pageToken,
-    pageSize,
-  );
-
-  return HttpResponse.json({
-    publicationTargets: paginatedData,
-    nextPageToken,
-  });
 };
 
 const getPublicationsResponse = (requestUrl: string) => {
@@ -128,16 +115,7 @@ const getDeletePublicationResponse = () => {
 const getPublishPublicationResponse =
   (): StrictResponse<PublishPublicationResponse> => {
     return HttpResponse.json(
-      {
-        task: {
-          name: "tasks/2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-          displayName:
-            "publish publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
-          taskId: "2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-          status: "RUNNING",
-          output: "",
-        },
-      },
+      { ...succeededTask, response: undefined },
       { status: 200 },
     );
   };
@@ -160,29 +138,6 @@ export default [
       return getBatchPublicationTargetsResponse(request);
     },
   ),
-
-  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return ENDPOINT_STATUS_API_ERROR;
-    }
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return HttpResponse.json({
-        publicationTargets: [],
-        nextPageToken: "",
-      });
-    }
-
-    return getPublicationTargetsResponse(request.url);
-  }),
 
   http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
     await delay();

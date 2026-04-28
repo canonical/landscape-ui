@@ -1,4 +1,3 @@
-export * from "./useAddPublication";
 export * from "./useBatchGetLocals";
 export * from "./useBatchGetMirrors";
 export * from "./useBatchGetPublicationTargets";
@@ -10,3 +9,4 @@ export * from "./useCreatePublication";
 export * from "./useDeletePublication";
 export * from "./useGetMirrors";
 export * from "./useGetLocals";
+export * from "./useGetPublicationsBySource";
