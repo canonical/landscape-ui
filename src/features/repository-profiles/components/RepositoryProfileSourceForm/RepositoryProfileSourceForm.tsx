@@ -63,7 +63,7 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
         {...formik.getFieldProps("gpg_key_name")}
       />
       <SidePanelFormButtons
-        submitButtonText="Save changes"
+        submitButtonText="Add source"
         onCancel={onBack}
       />
     </Form>
