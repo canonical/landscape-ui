@@ -18,4 +18,18 @@ describe("Blocks/Item", () => {
     renderWithProviders(<Item>content</Item>);
     expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
+
+  it("renders description when provided", () => {
+    renderWithProviders(
+      <Item title="Section Title" description="Loading helper text">
+        content
+      </Item>,
+    );
+    expect(screen.getByText("Loading helper text")).toBeInTheDocument();
+  });
+
+  it("does not render description when not provided", () => {
+    renderWithProviders(<Item title="Section Title">content</Item>);
+    expect(screen.queryByText("Loading helper text")).not.toBeInTheDocument();
+  });
 });

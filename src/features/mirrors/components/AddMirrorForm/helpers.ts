@@ -26,10 +26,13 @@ export function getInitialSourceType({
   ubuntuArchiveInfo,
   ubuntuEsmInfo,
 }: {
-  ubuntuArchiveInfo: UbuntuArchiveInfo;
+  ubuntuArchiveInfo: UbuntuArchiveInfo | undefined;
   ubuntuEsmInfo: UbuntuArchiveInfo[];
 }) {
-  if (isArchiveInfoValid(ubuntuArchiveInfo)) {
+  // While archive info is still loading, default to "ubuntu-archive" — it's
+  // the most common case and the data-dependent fields stay disabled with a
+  // loading note until the response arrives.
+  if (!ubuntuArchiveInfo || isArchiveInfoValid(ubuntuArchiveInfo)) {
     return "ubuntu-archive";
   } else if (ubuntuEsmInfo.some(isArchiveInfoValid)) {
     return "ubuntu-pro";
@@ -91,20 +94,20 @@ export function getInitialBaseValues(
 }
 
 export function getInitialUbuntuArchiveValues(
-  ubuntuArchiveInfo: UbuntuArchiveInfo,
+  ubuntuArchiveInfo: UbuntuArchiveInfo | undefined,
 ): UbuntuArchiveFormProps {
   return {
-    ...getInitialBaseValues(ubuntuArchiveInfo.distributions),
+    ...getInitialBaseValues(ubuntuArchiveInfo?.distributions ?? []),
     sourceType: "ubuntu-archive",
     sourceUrl: `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
   };
 }
 
 export function getInitialUbuntuSnapshotsValues(
-  ubuntuArchiveInfo: UbuntuArchiveInfo,
+  ubuntuArchiveInfo: UbuntuArchiveInfo | undefined,
 ): UbuntuSnapshotsFormProps {
   return {
-    ...getInitialBaseValues(ubuntuArchiveInfo.distributions),
+    ...getInitialBaseValues(ubuntuArchiveInfo?.distributions ?? []),
     sourceType: "ubuntu-snapshots",
     sourceUrl: `http://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
     snapshotDate: moment().format(INPUT_DATE_FORMAT),
@@ -141,7 +144,7 @@ export const getInitialValues = ({
   ubuntuEsmInfo,
 }: {
   sourceType?: FormProps["sourceType"];
-  ubuntuArchiveInfo: UbuntuArchiveInfo;
+  ubuntuArchiveInfo: UbuntuArchiveInfo | undefined;
   ubuntuEsmInfo: UbuntuArchiveInfo[];
 }): FormProps => {
   sourceType ??= getInitialSourceType({
