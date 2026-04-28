@@ -9,11 +9,11 @@ import { getSourceType } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import MirrorPublicationsList from "../MirrorPublicationsList";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 import { boolToLabel } from "@/utils/output";
+import { AssociatedPublicationsList } from "@/features/publications";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher } = usePageParams();
@@ -145,7 +145,10 @@ const MirrorDetails: FC = () => {
             </InfoGrid>
           </Blocks.Item>
           <Blocks.Item title="Used in">
-            <MirrorPublicationsList publications={publications} />
+            <AssociatedPublicationsList
+              publications={publications}
+              showSources={false}
+            />
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
