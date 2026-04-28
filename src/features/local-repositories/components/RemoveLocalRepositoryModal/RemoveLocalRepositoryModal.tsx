@@ -5,7 +5,7 @@ import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
 import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
-import useGetPublicationsBySource from "../../../publications/api/useGetPublicationsBySource";
+import { useGetPublicationsBySource } from "@/features/publications";
 import LoadingState from "@/components/layout/LoadingState";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
