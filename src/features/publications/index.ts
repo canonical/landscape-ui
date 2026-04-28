@@ -6,3 +6,4 @@ export { default as PublicationDetails } from "./components/PublicationDetails";
 export { default as PublicationDetailsSidePanel } from "./components/PublicationDetailsSidePanel";
 export type { Publication, PublicationTarget, Local, Mirror } from "./types";
 export { getSourceName, getSourceType } from "./helpers";
+export { default as AssociatedPublicationsList } from "./components/AssociatedPublicationsList";

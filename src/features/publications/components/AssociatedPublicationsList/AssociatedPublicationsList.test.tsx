@@ -2,23 +2,27 @@ import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Publication } from "../../types";
+import type { Publication } from "../../../publication-targets/types";
 import { describe, expect, it } from "vitest";
-import PublicationsTable from "./PublicationsTable";
+import AssociatedPublicationsList from "./AssociatedPublicationsList";
 
-describe("PublicationsTable", () => {
+describe("AssociatedPublicationsList", () => {
   const user = userEvent.setup();
 
   describe("table structure and columns", () => {
     it("renders table with correct column headers: Publication, Source, Distribution", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       expect(screen.getByText("Publication")).toBeInTheDocument();
       expect(screen.getByText("Source")).toBeInTheDocument();
     });
 
     it("renders all publications in rows with display_name", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       publications.forEach((pub) => {
         expect(screen.getByText(pub.source)).toBeInTheDocument();
@@ -28,7 +32,9 @@ describe("PublicationsTable", () => {
 
   describe("column data rendering", () => {
     it("renders label as a link in Publication column", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       publications.forEach((pub) => {
         const link = screen.getByRole("link", { name: pub.displayName });
@@ -37,7 +43,9 @@ describe("PublicationsTable", () => {
     });
 
     it("Publication column links point to publications page with correct params", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       publications.forEach((pub) => {
         const link = screen.getByRole("link", {
@@ -69,7 +77,7 @@ describe("PublicationsTable", () => {
       };
 
       renderWithProviders(
-        <PublicationsTable publications={[pubWithoutLabel]} />,
+        <AssociatedPublicationsList publications={[pubWithoutLabel]} />,
       );
 
       expect(
@@ -78,7 +86,9 @@ describe("PublicationsTable", () => {
     });
 
     it("renders mirror value in Source column when available", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       publications.forEach((pub) => {
         expect(screen.getByText(pub.source)).toBeInTheDocument();
@@ -91,7 +101,7 @@ describe("PublicationsTable", () => {
 
     it("does not render pagination when publications.length <= pageSize", () => {
       renderWithProviders(
-        <PublicationsTable
+        <AssociatedPublicationsList
           publications={publications.slice(0, pageSize)}
           pageSize={pageSize}
         />,
@@ -105,7 +115,10 @@ describe("PublicationsTable", () => {
 
     it("renders pagination component when publications.length > pageSize", () => {
       renderWithProviders(
-        <PublicationsTable publications={publications} pageSize={pageSize} />,
+        <AssociatedPublicationsList
+          publications={publications}
+          pageSize={pageSize}
+        />,
       );
 
       expect(screen.getByText(/page 1/i)).toBeInTheDocument();
@@ -113,7 +126,10 @@ describe("PublicationsTable", () => {
 
     it("shows only pageSize items on first page", () => {
       renderWithProviders(
-        <PublicationsTable publications={publications} pageSize={pageSize} />,
+        <AssociatedPublicationsList
+          publications={publications}
+          pageSize={pageSize}
+        />,
       );
 
       // Count visible publication names on first page (should be pageSize)
@@ -136,7 +152,10 @@ describe("PublicationsTable", () => {
 
     it("updates page content when pagination page changes", async () => {
       renderWithProviders(
-        <PublicationsTable publications={publications} pageSize={pageSize} />,
+        <AssociatedPublicationsList
+          publications={publications}
+          pageSize={pageSize}
+        />,
       );
 
       // First page should show first pageSize items
@@ -164,7 +183,7 @@ describe("PublicationsTable", () => {
 
   describe("edge cases", () => {
     it("renders without error with empty publications array", () => {
-      renderWithProviders(<PublicationsTable publications={[]} />);
+      renderWithProviders(<AssociatedPublicationsList publications={[]} />);
 
       // Table should render but with no data rows
       expect(screen.getByText("Publication")).toBeInTheDocument();
@@ -176,7 +195,9 @@ describe("PublicationsTable", () => {
         return;
       }
       const [firstPub] = singlePublication;
-      renderWithProviders(<PublicationsTable publications={[firstPub]} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={[firstPub]} />,
+      );
 
       expect(screen.getByText(firstPub.source)).toBeInTheDocument();
     });
@@ -184,7 +205,9 @@ describe("PublicationsTable", () => {
 
   describe("props handling", () => {
     it("renders all publications without pageSize prop", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       publications.forEach((pub) => {
         expect(screen.getByText(pub.source)).toBeInTheDocument();
@@ -205,7 +228,7 @@ describe("PublicationsTable", () => {
         );
       }
       renderWithProviders(
-        <PublicationsTable
+        <AssociatedPublicationsList
           publications={publications}
           pageSize={customPageSize}
         />,
