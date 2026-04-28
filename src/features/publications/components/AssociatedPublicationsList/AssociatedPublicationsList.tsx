@@ -27,7 +27,6 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  // TODO: replace label with displayName once it's available in the API, link mirror to /mirrors with sidebar open
   const columns = useMemo<Column<Publication>[]>(
     () => [
       {
