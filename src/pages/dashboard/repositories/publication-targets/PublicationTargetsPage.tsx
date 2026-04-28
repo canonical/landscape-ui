@@ -76,7 +76,10 @@ const PublicationTargetsPage: FC = () => {
 
       <SidePanel
         onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!lastSidePathSegment}
+        isOpen={
+          lastSidePathSegment === "add" ||
+          (!!lastSidePathSegment && !!viewTarget)
+        }
         size="small"
       >
         {lastSidePathSegment === "add" && (
