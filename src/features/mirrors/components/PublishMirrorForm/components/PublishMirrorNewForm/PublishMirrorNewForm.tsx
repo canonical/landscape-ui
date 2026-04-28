@@ -20,7 +20,7 @@ import {
   useAddPublication,
   usePublishPublication,
 } from "@/features/publications";
-import PublishRepositoryContentsBlock from "../PublishMirrorContentsBlock";
+import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
 import * as Yup from "yup";
@@ -142,7 +142,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           />
         </Blocks.Item>
 
-        <PublishRepositoryContentsBlock mirror={mirror} />
+        <PublishMirrorContentsBlock mirror={mirror} />
 
         <Blocks.Item title="Settings">
           <Input

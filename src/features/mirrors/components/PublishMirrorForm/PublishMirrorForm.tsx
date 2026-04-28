@@ -10,7 +10,7 @@ import {
   useListPublications,
   useListPublicationTargets,
 } from "../../api";
-import usePageParams from "@/hooks/usePageParams/usePageParams";
+import usePageParams from "@/hooks/usePageParams";
 
 const PublishMirrorForm: FC = () => {
   const { name } = usePageParams();
