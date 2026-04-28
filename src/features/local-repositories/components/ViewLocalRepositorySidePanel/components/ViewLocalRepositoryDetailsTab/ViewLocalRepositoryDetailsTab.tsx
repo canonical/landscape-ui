@@ -18,9 +18,9 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   );
 
   return (
-    <Blocks>
+    <Blocks dense>
       <Blocks.Item title="Details">
-        <InfoGrid>
+        <InfoGrid dense>
           <InfoGrid.Item label="Name" value={repository.displayName} />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />

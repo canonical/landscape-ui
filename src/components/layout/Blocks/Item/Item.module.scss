@@ -1,18 +1,21 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.item:not(:first-child) {
-  border-top: 1px solid $colors--theme--border-low-contrast;
-  padding-top: $sp-unit * 5;
+.item {
+  padding-top: $spv--small;
+
+  &:not(:first-child) {
+    border-top: 1px solid $colors--theme--border-low-contrast;
+  }
 }
 
 .heading {
-  margin: -$sp-unit 0 $sp-unit * 4;
+  margin: 0 0 $sp-unit * 4;
   padding: 0;
 }
 
 .denseHeading {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 // When a description is provided alongside the title, sit them tight together

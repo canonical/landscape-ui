@@ -113,7 +113,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks>
+      <Blocks dense>
         <Blocks.Item title="Details">
           <Input
             type="text"
@@ -137,7 +137,6 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
             rows={4}
             error={getFormikError(formik, "gpgKey")}
             {...formik.getFieldProps("gpgKey")}
-            className="u-no-margin--bottom"
           />
         </Blocks.Item>
 
