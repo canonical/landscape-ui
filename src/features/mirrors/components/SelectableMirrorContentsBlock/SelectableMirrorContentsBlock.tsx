@@ -12,20 +12,22 @@ import { isDistributionValid } from "../../helpers";
 
 interface SelectableMirrorContentsBlockProps {
   readonly formik: FormikContextType<Exclude<FormProps, ThirdPartyFormProps>>;
-  readonly ubuntuArchiveInfo: UbuntuArchiveInfo;
+  readonly ubuntuArchiveInfo: UbuntuArchiveInfo | undefined;
   readonly ubuntuEsmInfo: UbuntuArchiveInfo[];
+  readonly isLoading?: boolean;
 }
 
 const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
   formik,
   ubuntuArchiveInfo,
   ubuntuEsmInfo,
+  isLoading,
 }) => {
   const getDistributions = () => {
     switch (formik.values.sourceType) {
       case "ubuntu-archive":
       case "ubuntu-snapshots": {
-        return ubuntuArchiveInfo.distributions;
+        return ubuntuArchiveInfo?.distributions ?? [];
       }
 
       case "ubuntu-pro": {
@@ -78,6 +80,7 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
           required
           options={distributionOptions}
           {...formik.getFieldProps("distribution")}
+          disabled={isLoading}
           error={getFormikError(formik, "distribution")}
         />
       )}
@@ -103,6 +106,7 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
               items.map(({ value }) => value),
             )
           }
+          disabled={isLoading}
           required
         />
       )}
@@ -128,6 +132,7 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
               items.map(({ value }) => value),
             )
           }
+          disabled={isLoading}
           required
         />
       )}
