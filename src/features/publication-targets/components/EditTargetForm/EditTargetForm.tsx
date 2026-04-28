@@ -36,7 +36,8 @@ export const getTargetType = (
 ): "s3" | "swift" | "filesystem" => {
   if (target.s3) return "s3";
   if (target.swift) return "swift";
-  return "filesystem";
+  if (target.filesystem) return "filesystem";
+  throw new Error("Unsupported publication target type");
 };
 
 const getS3InitialValues = (

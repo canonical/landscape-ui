@@ -93,7 +93,7 @@ Each `*Fields` component receives the Formik `form` instance (typed appropriatel
 - Detect the active type by checking `target.s3 ?? target.swift ?? target.filesystem`
 - Display the type as a `ReadOnlyField` (type cannot change on edit)
 - Render the matching `*Fields` sub-component pre-populated with existing values
-- **INPUT_ONLY fields** (`awsAccessKeyId`, `awsSecretAccessKey` for S3; `username`, `password` for Swift): include in the form but **do not pre-populate** — leave blank so the user must re-enter credentials explicitly. Add helper text (e.g. "Leave blank to keep current value") via the `Input` `help` prop. Handling this gracefully on submit (omitting blank INPUT_ONLY fields from the PATCH payload) is **deferred to a follow-up** if out of scope.
+- **INPUT_ONLY fields** (`awsAccessKeyId`, `awsSecretAccessKey` for S3; `username`, `password` for Swift): include in the form but **do not pre-populate** — leave blank so the user must re-enter credentials explicitly. Add helper text (e.g. "Leave blank to keep current value") via the `Input` `help` prop. On submit, omit blank INPUT_ONLY credential fields from the PATCH payload so existing stored values are preserved unless the user enters replacements.
 
 #### `TargetDetails/TargetDetails.tsx`
 
@@ -291,7 +291,7 @@ Key additions (existing S3 tests remain unchanged):
 
 ## 7. Open Questions / Deferred Items
 
-1. **INPUT_ONLY on Edit (credentials):** `awsSecretAccessKey`, `awsAccessKeyId` (S3) and `username`, `password` (Swift) are `INPUT_ONLY` — the server never returns them. The safest UX is to show the fields blank with helper text "Enter a new value to update". Omitting blank values from the PATCH payload (so the server keeps the existing secret) is **deferred** and requires a backend clarification on PATCH semantics for these fields.
+1. **INPUT_ONLY on Edit (credentials):** `awsSecretAccessKey`, `awsAccessKeyId` (S3) and `username`, `password` (Swift) are `INPUT_ONLY` — the server never returns them. The edit form should therefore show these fields blank with helper text such as "Enter a new value to update", and blank values are already omitted from the PATCH payload so the server keeps the existing secret. The remaining open question is backend PATCH semantics for any future explicit "clear/reset secret" behavior, since omission currently means "leave unchanged".
 
 2. **`plusWorkaround` and `debug` (S3):** These S3 boolean fields exist in the proto but are absent from the current Add form. They can be added alongside the other optional booleans with no architectural impact — include or defer per team preference.
 
