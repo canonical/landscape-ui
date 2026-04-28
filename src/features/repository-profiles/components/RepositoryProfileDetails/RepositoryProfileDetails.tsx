@@ -26,17 +26,25 @@ const aptSourceColumns: Column<APTSource>[] = [
 ];
 
 const RepositoryProfileDetails: FC = () => {
-  const { name, createPageParamsSetter, createSidePathPusher } = usePageParams();
+  const { name, createPageParamsSetter, createSidePathPusher } =
+    usePageParams();
   const profile = useGetRepositoryProfile(name).data;
   const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
   const debug = useDebug();
   const { notify } = useNotify();
 
   const [sourcesPage, setSourcesPage] = useState(1);
-  const totalSourcePages = Math.max(1, Math.ceil(profile.apt_sources.length / SOURCES_PAGE_SIZE));
+  const totalSourcePages = Math.max(
+    1,
+    Math.ceil(profile.apt_sources.length / SOURCES_PAGE_SIZE),
+  );
   const safeSourcesPage = Math.min(sourcesPage, totalSourcePages);
   const pagedSources = useMemo(
-    () => profile.apt_sources.slice((safeSourcesPage - 1) * SOURCES_PAGE_SIZE, safeSourcesPage * SOURCES_PAGE_SIZE),
+    () =>
+      profile.apt_sources.slice(
+        (safeSourcesPage - 1) * SOURCES_PAGE_SIZE,
+        safeSourcesPage * SOURCES_PAGE_SIZE,
+      ),
     [profile.apt_sources, safeSourcesPage],
   );
 
@@ -73,66 +81,76 @@ const RepositoryProfileDetails: FC = () => {
     <>
       <SidePanel.Header>{profile.title}</SidePanel.Header>
       <SidePanel.Content>
-      <div className="p-segmented-control u-sv2">
-        <div className="p-segmented-control__list">
-          <Button
-            type="button"
-            className="p-segmented-control__button"
-            onClick={handleEditProfile}
-            hasIcon
-          >
-            <Icon name="edit" />
-            <span>Edit</span>
-          </Button>
+        <div className="p-segmented-control u-sv2">
+          <div className="p-segmented-control__list">
+            <Button
+              type="button"
+              className="p-segmented-control__button"
+              onClick={handleEditProfile}
+              hasIcon
+            >
+              <Icon name="edit" />
+              <span>Edit</span>
+            </Button>
 
-          <Button
-            type="button"
-            className="p-segmented-control__button"
-            onClick={openModal}
-            hasIcon
-            aria-label={`Remove ${profile.title}`}
-          >
-            <Icon name={`${ICONS.delete}--negative`} />
-            <span className="u-text--negative">Remove</span>
-          </Button>
+            <Button
+              type="button"
+              className="p-segmented-control__button"
+              onClick={openModal}
+              hasIcon
+              aria-label={`Remove ${profile.title}`}
+            >
+              <Icon name={`${ICONS.delete}--negative`} />
+              <span className="u-text--negative">Remove</span>
+            </Button>
+          </div>
         </div>
-      </div>
-      <Blocks dense>
-        <ViewProfileGeneralBlock profile={profile} type={ProfileTypes.repository} />
-        <Blocks.Item title="Sources">
-          <ModularTable
-            columns={aptSourceColumns}
-            data={pagedSources}
-            emptyMsg="No sources have been added yet."
+        <Blocks dense>
+          <ViewProfileGeneralBlock
+            profile={profile}
+            type={ProfileTypes.repository}
           />
-          <ModalTablePagination
-            current={safeSourcesPage}
-            max={totalSourcePages}
-            onPrev={() => { setSourcesPage(safeSourcesPage - 1); }}
-            onNext={() => { setSourcesPage(safeSourcesPage + 1); }}
-          />
-        </Blocks.Item>
+          <Blocks.Item title="Sources">
+            <ModularTable
+              columns={aptSourceColumns}
+              data={pagedSources}
+              emptyMsg="No sources have been added yet."
+            />
+            <ModalTablePagination
+              current={safeSourcesPage}
+              max={totalSourcePages}
+              onPrev={() => {
+                setSourcesPage(safeSourcesPage - 1);
+              }}
+              onNext={() => {
+                setSourcesPage(safeSourcesPage + 1);
+              }}
+            />
+          </Blocks.Item>
         </Blocks>
 
-        <ViewProfileAssociationBlock profile={profile} type={ProfileTypes.repository} />
+        <ViewProfileAssociationBlock
+          profile={profile}
+          type={ProfileTypes.repository}
+        />
       </SidePanel.Content>
 
-        <TextConfirmationModal
-          isOpen={isModalOpen}
-          confirmationText={`remove ${profile.title}`}
-          title="Remove repository profile"
-          confirmButtonLabel="Remove"
-          confirmButtonAppearance="negative"
-          confirmButtonDisabled={isRemoving}
-          confirmButtonLoading={isRemoving}
-          onConfirm={handleRemoveProfile}
-          close={closeModal}
-        >
-          <p>
-            This will remove &quot;{profile.title}&quot; profile. This action is{" "}
-            <b>irreversible</b>.
-          </p>
-        </TextConfirmationModal>
+      <TextConfirmationModal
+        isOpen={isModalOpen}
+        confirmationText={`remove ${profile.title}`}
+        title="Remove repository profile"
+        confirmButtonLabel="Remove"
+        confirmButtonAppearance="negative"
+        confirmButtonDisabled={isRemoving}
+        confirmButtonLoading={isRemoving}
+        onConfirm={handleRemoveProfile}
+        close={closeModal}
+      >
+        <p>
+          This will remove &quot;{profile.title}&quot; profile. This action is{" "}
+          <b>irreversible</b>.
+        </p>
+      </TextConfirmationModal>
     </>
   );
 };

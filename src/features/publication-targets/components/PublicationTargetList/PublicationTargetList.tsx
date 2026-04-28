@@ -64,22 +64,25 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
 
   const columns = useMemo<Column<PublicationTarget>[]>(
     () => [
-        {
-          accessor: "displayName",
-          id: "displayName",
-          Header: "Name",
-          Cell: ({ row }: CellProps<PublicationTarget>) => (
-            <Button
-              type="button"
-              appearance="link"
-              className="u-no-margin--bottom u-no-padding--top u-align-text--left"
-              onClick={createPageParamsSetter({ sidePath: ["view"], name: row.original.publicationTargetId ?? "" })}
-              aria-label={`View details for ${row.original.displayName}`}
-            >
-              {row.original.displayName || NO_DATA_TEXT}
-            </Button>
-          ),
-        },
+      {
+        accessor: "displayName",
+        id: "displayName",
+        Header: "Name",
+        Cell: ({ row }: CellProps<PublicationTarget>) => (
+          <Button
+            type="button"
+            appearance="link"
+            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            onClick={createPageParamsSetter({
+              sidePath: ["view"],
+              name: row.original.publicationTargetId ?? "",
+            })}
+            aria-label={`View details for ${row.original.displayName}`}
+          >
+            {row.original.displayName || NO_DATA_TEXT}
+          </Button>
+        ),
+      },
       {
         accessor: (row) => getTargetType(row),
         id: "type",
@@ -103,7 +106,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
           <PublicationTargetListActions target={original} />
         ),
       } as Column<PublicationTarget>,
-      ],
+    ],
     [createPageParamsSetter],
   );
 

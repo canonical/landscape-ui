@@ -35,7 +35,9 @@ export default function useGetPublicationsByTarget(
             },
           );
 
-        publications.push(...((response.data.publications ?? []) as Publication[]));
+        publications.push(
+          ...((response.data.publications ?? []) as Publication[]),
+        );
         pageToken = response.data.nextPageToken || undefined;
       } while (pageToken);
 

@@ -18,7 +18,9 @@ describe("RepositoryProfileSourceFormOverlay", () => {
   });
 
   it("renders empty source name, deb line, and GPG key fields when no sourceToEdit", () => {
-    renderWithProviders(<RepositoryProfileSourceFormOverlay {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileSourceFormOverlay {...defaultProps} />,
+    );
 
     expect(screen.getByLabelText(/source name/i)).toHaveValue("");
     expect(screen.getByLabelText(/deb line/i)).toHaveValue("");
@@ -34,7 +36,9 @@ describe("RepositoryProfileSourceFormOverlay", () => {
       />,
     );
 
-    expect(screen.getByLabelText(/source name/i)).toHaveValue(sourceToEdit.name);
+    expect(screen.getByLabelText(/source name/i)).toHaveValue(
+      sourceToEdit.name,
+    );
     expect(screen.getByLabelText(/deb line/i)).toHaveValue(sourceToEdit.line);
     expect(screen.getByLabelText(/gpg key/i)).toHaveValue(
       sourceToEdit.gpg_key ?? "",
@@ -42,7 +46,9 @@ describe("RepositoryProfileSourceFormOverlay", () => {
   });
 
   it("calls onClose when cancel is clicked", async () => {
-    renderWithProviders(<RepositoryProfileSourceFormOverlay {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileSourceFormOverlay {...defaultProps} />,
+    );
 
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
@@ -50,7 +56,9 @@ describe("RepositoryProfileSourceFormOverlay", () => {
   });
 
   it("calls onSourceAdded with correct values on valid submit", async () => {
-    renderWithProviders(<RepositoryProfileSourceFormOverlay {...defaultProps} />);
+    renderWithProviders(
+      <RepositoryProfileSourceFormOverlay {...defaultProps} />,
+    );
 
     await user.type(screen.getByLabelText(/source name/i), "my-source");
     await user.type(

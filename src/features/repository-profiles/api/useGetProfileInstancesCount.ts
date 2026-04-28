@@ -18,7 +18,7 @@ export const useGetProfileInstancesCount = (profileId: number) => {
         params: {
           query: `profile:repository:${profileId}`,
           root_only: false,
-          limit: 1
+          limit: 1,
         },
       }),
   });

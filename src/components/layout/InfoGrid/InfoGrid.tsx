@@ -24,7 +24,9 @@ const InfoGrid: FC<InfoGridProps> & { Item: FC<ItemProps> } = ({
     )}
   >
     <div
-      className={classNames(classes.grid, { [classes.denseGrid as string]: dense })}
+      className={classNames(classes.grid, {
+        [classes.denseGrid as string]: dense,
+      })}
       {...props}
     />
   </div>

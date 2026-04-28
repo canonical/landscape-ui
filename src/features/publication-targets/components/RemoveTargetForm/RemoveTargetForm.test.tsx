@@ -50,7 +50,9 @@ describe("RemoveTargetForm", () => {
       />,
     );
 
-    expect(screen.getByText(/this action is irreversible/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/this action is irreversible/i),
+    ).toBeInTheDocument();
   });
 
   it("renders Cancel and Remove target buttons", () => {
@@ -67,9 +69,7 @@ describe("RemoveTargetForm", () => {
       />,
     );
 
-    expect(
-      screen.getByRole("button", { name: /cancel/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /remove target/i }),
     ).toBeInTheDocument();
@@ -141,8 +141,9 @@ describe("RemoveTargetForm", () => {
 
   it("submits the deletion after typing the confirmation text", async () => {
     server.use(
-      http.delete(`${API_URL_DEB_ARCHIVE}v1/publicationTargets/:id`, () =>
-        new HttpResponse(null, { status: 204 }),
+      http.delete(
+        `${API_URL_DEB_ARCHIVE}v1/publicationTargets/:id`,
+        () => new HttpResponse(null, { status: 204 }),
       ),
     );
 
@@ -160,7 +161,9 @@ describe("RemoveTargetForm", () => {
     );
 
     await user.type(
-      screen.getByPlaceholderText(`remove ${targetWithPublications.displayName}`),
+      screen.getByPlaceholderText(
+        `remove ${targetWithPublications.displayName}`,
+      ),
       `remove ${targetWithPublications.displayName}`,
     );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
@@ -191,7 +194,9 @@ describe("RemoveTargetForm", () => {
     );
 
     await user.type(
-      screen.getByPlaceholderText(`remove ${targetWithPublications.displayName}`),
+      screen.getByPlaceholderText(
+        `remove ${targetWithPublications.displayName}`,
+      ),
       `remove ${targetWithPublications.displayName}`,
     );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
@@ -221,8 +226,6 @@ describe("RemoveTargetForm", () => {
     );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
-    expect(
-      screen.queryByText(/removed successfully/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/removed successfully/i)).not.toBeInTheDocument();
   });
 });

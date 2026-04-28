@@ -13,7 +13,8 @@ import {
 import type { FC } from "react";
 
 const PublicationsPage: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } = usePageParams();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "view"]);
   return (
