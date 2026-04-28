@@ -6,6 +6,7 @@ import { useBlocksDense } from "../Blocks";
 export interface ItemProps {
   readonly children: ReactNode;
   readonly title?: string;
+  readonly description?: ReactNode;
   readonly action?: ReactNode;
   readonly titleClassName?: string;
   readonly containerClassName?: string;
@@ -14,6 +15,7 @@ export interface ItemProps {
 const Item: FC<ItemProps> = ({
   children,
   title,
+  description,
   action,
   titleClassName,
   containerClassName,
@@ -21,22 +23,35 @@ const Item: FC<ItemProps> = ({
   const dense = useBlocksDense();
   return (
     <section className={classNames(classes.item, containerClassName)}>
-    {(title || action) && (
-      <div className={classes.heading}>
+      {(title || description || action) && (
+        <div className={classes.heading}>
           {title && (
             <h4
               className={classNames(
-            classes.heading,
-            { [classes.denseHeading as string]: dense },
-            "p-heading--5",
-            titleClassName,
-          )}
+                classes.heading,
+                { [classes.denseHeading as string]: dense },
+                {
+                  [classes.titleWithDescription as string]: !!description,
+                },
+                "p-heading--5",
+                titleClassName,
+              )}
             >
               {title}
             </h4>
-        )}
-        {action}
-      </div>
+          )}
+          {description && (
+            <p
+              className={classNames(
+                "p-text--small u-text--muted",
+                classes.description,
+              )}
+            >
+              {description}
+            </p>
+          )}
+          {action}
+        </div>
       )}
       {children}
     </section>

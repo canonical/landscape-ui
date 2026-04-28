@@ -1,7 +1,7 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { UbuntuArchiveInfo } from "../types/UbuntuArchiveInfo";
 
@@ -17,7 +17,7 @@ export function useGetUbuntuEsmInfo(
 ) {
   const authFetch = useFetch();
 
-  return useSuspenseQuery<AxiosResponse<UbuntuESMInfo>, AxiosError<ApiError>>({
+  return useQuery<AxiosResponse<UbuntuESMInfo>, AxiosError<ApiError>>({
     queryKey: ["ubuntuArchiveInfo", "esm"],
     queryFn: async () =>
       authFetch.get("repository/ubuntu-archive-info", {
