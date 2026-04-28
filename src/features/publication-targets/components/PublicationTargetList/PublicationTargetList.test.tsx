@@ -19,10 +19,7 @@ describe("PublicationTargetList", () => {
     // Default: prod-s3-us-east has 3 publications, others have 0
     (useGetPublicationsByTarget as Mock).mockImplementation(
       (publicationTargetId: string | undefined) => {
-        if (
-          publicationTargetId ===
-          "aaaaaaaa-0000-0000-0000-000000000001"
-        ) {
+        if (publicationTargetId === "aaaaaaaa-0000-0000-0000-000000000001") {
           return { publications, isGettingPublications: false };
         }
 
@@ -32,9 +29,7 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders table headers", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     expect(screen.getByRole("table")).toHaveTexts([
       "Name",
@@ -44,9 +39,7 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders the displayName for each target", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     expect(screen.getByText("prod-s3-us-east")).toBeInTheDocument();
     expect(screen.getByText("staging-s3-eu-west")).toBeInTheDocument();
@@ -54,18 +47,14 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders S3 type label for S3 targets", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     // Two S3 targets: prod-s3-us-east and staging-s3-eu-west
     expect(screen.getAllByText("S3")).toHaveLength(2);
   });
 
   it("renders Swift type label for Swift targets", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     expect(screen.getByText("Swift")).toBeInTheDocument();
   });
@@ -79,18 +68,14 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders the publication count for a target with publications", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     // prod-s3-us-east has 3 publications
     expect(screen.getByText("3 publications")).toBeInTheDocument();
   });
 
   it("renders NoData placeholder when a target has no publications", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     // staging-s3-eu-west, swift-internal, and local-fs-archive each have 0 publications → three NoData cells
     expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(3);
@@ -124,9 +109,7 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders PublicationTargetListActions component in actions column", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     // Each target should have an actions button with aria-label like "{displayName} actions"
     publicationTargets.forEach((target) => {
@@ -184,9 +167,7 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders the publications count as a link filtered by publicationTargetId", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     const link = screen.getByRole("link", { name: "3 publications" });
     expect(link).toHaveAttribute(

@@ -6,10 +6,10 @@ import PublicationTargetList from "./PublicationTargetList";
 
 describe("PublicationTargetList (integration)", () => {
   it("fetches and displays the publications count via useGetPublicationsByTarget", async () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
-    expect(await screen.findByRole("link", { name: /publications/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("link", { name: /publications/i }),
+    ).toBeInTheDocument();
   });
 });

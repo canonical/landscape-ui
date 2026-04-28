@@ -21,9 +21,9 @@ interface PublicationsTableProps {
 
 const PublicationsTable: FC<PublicationsTableProps> = ({
   publications,
-  pageSize=10,
-  openInNewTab=false,
-  showSources=true,
+  pageSize = 10,
+  openInNewTab = false,
+  showSources = true,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -37,25 +37,44 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
           <PublicationLink publication={original} openInNewTab={openInNewTab} />
         ),
       },
-      ...(showSources ? [{
-        accessor: "source" as const,
-        Header: "Source",
-        Cell: ({ row: { original: { source } } }: CellProps<Publication>): ReactNode => {
-          const sourceType = getSourceType(source);
-          if (sourceType === "Mirror") {
-            return <MirrorLink mirrorName={source} openInNewTab={openInNewTab} />;
-          }
-          if (sourceType === "Local repository") {
-            return <LocalLink localName={source} openInNewTab={openInNewTab} />;
-          }
-          return <>{source}</>;
-        },
-      }] : []),
+      ...(showSources
+        ? [
+            {
+              accessor: "source" as const,
+              Header: "Source",
+              Cell: ({
+                row: {
+                  original: { source },
+                },
+              }: CellProps<Publication>): ReactNode => {
+                const sourceType = getSourceType(source);
+                if (sourceType === "Mirror") {
+                  return (
+                    <MirrorLink
+                      mirrorName={source}
+                      openInNewTab={openInNewTab}
+                    />
+                  );
+                }
+                if (sourceType === "Local repository") {
+                  return (
+                    <LocalLink localName={source} openInNewTab={openInNewTab} />
+                  );
+                }
+                return <>{source}</>;
+              },
+            },
+          ]
+        : []),
       {
         accessor: "publishTime",
         Header: "Date Published",
         className: "date-cell",
-        Cell: ({ row: { original: { publishTime } } }: CellProps<Publication>): ReactNode =>
+        Cell: ({
+          row: {
+            original: { publishTime },
+          },
+        }: CellProps<Publication>): ReactNode =>
           publishTime ? (
             <span>
               {moment(publishTime).format(DISPLAY_DATE_TIME_FORMAT) + " UTC"}
@@ -63,7 +82,7 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
           ) : (
             <NoData />
           ),
-      }
+      },
     ],
     [openInNewTab, showSources],
   );
@@ -73,7 +92,8 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
       ? publications.slice((currentPage - 1) * pageSize, currentPage * pageSize)
       : publications;
 
-  const maxPage = pageSize != null ? Math.ceil(publications.length / pageSize) : 1;
+  const maxPage =
+    pageSize != null ? Math.ceil(publications.length / pageSize) : 1;
 
   return (
     <>

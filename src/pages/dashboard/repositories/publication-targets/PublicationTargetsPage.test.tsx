@@ -40,7 +40,11 @@ describe("PublicationTargetsPage", () => {
   });
 
   it("renders the add form side panel when sidePath=add is in the URL", async () => {
-    renderWithProviders(<PublicationTargetsPage />, undefined, "/?sidePath=add");
+    renderWithProviders(
+      <PublicationTargetsPage />,
+      undefined,
+      "/?sidePath=add",
+    );
 
     await expectLoadingState();
 

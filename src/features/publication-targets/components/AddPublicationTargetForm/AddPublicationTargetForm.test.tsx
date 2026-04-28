@@ -123,7 +123,9 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Publication target created")).toBeInTheDocument();
+      expect(
+        screen.getByText("Publication target created"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -134,7 +136,10 @@ describe("AddPublicationTargetForm", () => {
     await user.type(screen.getByLabelText("Name"), "My Swift Target");
     await user.type(screen.getByLabelText(/container/i), "my-container");
     await user.type(screen.getByLabelText(/^username$/i), "admin");
-    await user.type(screen.getByLabelText(/^password$/i), "secret");
+    await user.type(
+      screen.getByLabelText(/^password$/i),
+      "secret",
+    );
     await user.type(
       screen.getByLabelText(/auth url/i),
       "https://keystone.example.com/v3",
@@ -171,7 +176,9 @@ describe("AddPublicationTargetForm", () => {
   it("toggles the disable MultiDel checkbox on S3 form", async () => {
     renderWithProviders(<AddPublicationTargetForm />);
 
-    const checkbox = screen.getByRole("checkbox", { name: /disable multidel/i });
+    const checkbox = screen.getByRole("checkbox", {
+      name: /disable multidel/i,
+    });
     expect(checkbox).not.toBeChecked();
 
     await user.click(checkbox);

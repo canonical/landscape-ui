@@ -34,7 +34,8 @@ export default [
         (t) => t.name === `publicationTargets/${params.id}`,
       );
       const existing = publicationTargets[idx];
-      if (idx === -1 || !existing) return new HttpResponse(null, { status: 404 });
+      if (idx === -1 || !existing)
+        return new HttpResponse(null, { status: 404 });
       const updated: PublicationTarget = {
         ...existing,
         ...body,

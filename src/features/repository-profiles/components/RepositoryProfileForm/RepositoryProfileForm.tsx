@@ -9,7 +9,10 @@ import RepositoryProfileFormSourcesSection from "../RepositoryProfileFormSources
 import RepositoryProfileSourceFormOverlay from "../RepositoryProfileSourceFormOverlay";
 import type { CreateRepositoryProfileParams } from "../../api";
 import { useRepositoryProfiles } from "../../api";
-import type { RepositoryProfile, RepositoryProfileFormValues } from "../../types";
+import type {
+  RepositoryProfile,
+  RepositoryProfileFormValues,
+} from "../../types";
 import type { APTSource } from "@/features/apt-sources";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -40,7 +43,8 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelTitle, setOnCloseOverride } = useSidePanel();
+  const { closeSidePanel, setSidePanelTitle, setOnCloseOverride } =
+    useSidePanel();
 
   const panelTitle =
     props.action === "add"
@@ -90,7 +94,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           ...valuesToSubmit,
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
           remove_apt_sources: originalSources
-            .filter((orig) => !values.apt_sources.some((cur) => cur.id === orig.id))
+            .filter(
+              (orig) => !values.apt_sources.some((cur) => cur.id === orig.id),
+            )
             .map((s) => s.id),
         });
         (props.onClose ?? closeSidePanel)();
@@ -156,10 +162,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     setOnCloseOverride(closeSourceOverlay);
     setSidePanelTitle(
       <>
-        <Link
-          className="u-no-margin--bottom"
-          onClick={closeSourceOverlay}
-        >
+        <Link className="u-no-margin--bottom" onClick={closeSourceOverlay}>
           {panelTitle}
         </Link>
         {" / Edit source"}
@@ -197,7 +200,6 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
                 formik={formik}
               />
             </Blocks.Item>
-
 
             <Blocks.Item>
               <div className={classes.sourcesHeader}>
@@ -246,8 +248,12 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           submitButtonText={CTA_INFO[props.action].label}
           submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
           onCancel={props.action === "edit" ? props.onClose : undefined}
-          hasBackButton={props.action === "edit" ? props.hasBackButton : undefined}
-          onBackButtonPress={props.action === "edit" ? props.onBackButtonPress : undefined}
+          hasBackButton={
+            props.action === "edit" ? props.hasBackButton : undefined
+          }
+          onBackButtonPress={
+            props.action === "edit" ? props.onBackButtonPress : undefined
+          }
         />
       </Form>
 

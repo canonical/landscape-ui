@@ -131,7 +131,10 @@ describe("TargetDetails", () => {
       expect(container).toHaveInfoItem("Bucket Name", s3WithPubs.bucket);
       expect(container).toHaveInfoItem("Prefix", s3WithPubs.prefix ?? "");
       expect(container).toHaveInfoItem("ACL", s3WithPubs.acl ?? "");
-      expect(container).toHaveInfoItem("Storage class", s3WithPubs.storageClass ?? "");
+      expect(container).toHaveInfoItem(
+        "Storage class",
+        s3WithPubs.storageClass ?? "",
+      );
       expect(container).toHaveInfoItem(
         "Encryption method",
         s3WithPubs.encryptionMethod ?? "",
@@ -296,4 +299,3 @@ describe("TargetDetails", () => {
     });
   });
 });
-

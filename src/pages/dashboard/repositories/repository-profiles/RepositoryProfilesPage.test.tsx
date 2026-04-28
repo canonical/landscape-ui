@@ -10,15 +10,11 @@ describe("RepositoryProfilesPage", () => {
   it("renders repository profile list with table and pagination", async () => {
     renderWithProviders(<RepositoryProfilesPage />);
 
-    expect(
-      await screen.findByRole("table"),
-    ).toBeInTheDocument();
+    expect(await screen.findByRole("table")).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: "Repository profiles" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(repositoryProfiles[0].title),
-    ).toBeInTheDocument();
+    expect(screen.getByText(repositoryProfiles[0].title)).toBeInTheDocument();
   });
 
   it("renders empty state when no profiles exist", async () => {

@@ -25,12 +25,8 @@ import type { TaskStatus } from "../../types/Task";
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const {
-    sidePath,
-    popSidePath,
-    name,
-    createPageParamsSetter,
-  } = usePageParams();
+  const { sidePath, popSidePath, name, createPageParamsSetter } =
+    usePageParams();
   const { repository, isGettingRepository } = useGetPageLocalRepository();
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =

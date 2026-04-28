@@ -22,12 +22,7 @@ interface RepositoryProfileFormSourcesSectionProps {
 
 const RepositoryProfileFormSourcesSection: FC<
   RepositoryProfileFormSourcesSectionProps
-> = ({
-  sources,
-  onRemoveSource,
-  onEditSource,
-  error,
-}) => {
+> = ({ sources, onRemoveSource, onEditSource, error }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -42,7 +37,10 @@ const RepositoryProfileFormSourcesSection: FC<
     [sources],
   );
 
-  const safePage = Math.min(currentPage, Math.max(1, Math.ceil(rows.length / pageSize)));
+  const safePage = Math.min(
+    currentPage,
+    Math.max(1, Math.ceil(rows.length / pageSize)),
+  );
 
   const pagedRows = useMemo(
     () => rows.slice((safePage - 1) * pageSize, safePage * pageSize),
@@ -55,9 +53,7 @@ const RepositoryProfileFormSourcesSection: FC<
         accessor: "name",
         Header: "Source name",
         className: classes.nameColumn,
-        Cell: ({ row: { original } }: CellProps<SourceRow>) => (
-            original.name
-        ),
+        Cell: ({ row: { original } }: CellProps<SourceRow>) => original.name,
       },
       {
         id: "actions",
@@ -76,7 +72,10 @@ const RepositoryProfileFormSourcesSection: FC<
                 onEditSource(original.source);
               }}
             >
-              <Icon name="edit" className="u-no-margin--left u-no-margin--right" />
+              <Icon
+                name="edit"
+                className="u-no-margin--left u-no-margin--right"
+              />
             </Button>
             <Button
               appearance="base"
@@ -89,7 +88,10 @@ const RepositoryProfileFormSourcesSection: FC<
                 onRemoveSource(original.source);
               }}
             >
-              <Icon name="delete" className="u-no-margin--left u-no-margin--right" />
+              <Icon
+                name="delete"
+                className="u-no-margin--left u-no-margin--right"
+              />
             </Button>
           </div>
         ),
@@ -108,8 +110,12 @@ const RepositoryProfileFormSourcesSection: FC<
       <ModalTablePagination
         current={safePage}
         max={Math.max(1, Math.ceil(rows.length / pageSize))}
-        onPrev={() => { setCurrentPage(safePage - 1); }}
-        onNext={() => { setCurrentPage(safePage + 1); }}
+        onPrev={() => {
+          setCurrentPage(safePage - 1);
+        }}
+        onNext={() => {
+          setCurrentPage(safePage + 1);
+        }}
       />
       {error && (
         <div className="p-form-validation is-error">

@@ -135,8 +135,9 @@ describe("PublicationsTable", () => {
       );
 
       // Should show all items and no pagination
-      expect(screen.queryByRole("button", { name: /prev|next/i })).not
-        .toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /prev|next/i }),
+      ).not.toBeInTheDocument();
     });
 
     it("renders pagination component when publications.length > pageSize", () => {
@@ -144,9 +145,7 @@ describe("PublicationsTable", () => {
         <PublicationsTable publications={publications} pageSize={pageSize} />,
       );
 
-      expect(
-        screen.getByText(/page 1/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/page 1/i)).toBeInTheDocument();
     });
 
     it("shows only pageSize items on first page", () => {
@@ -166,8 +165,9 @@ describe("PublicationsTable", () => {
       // Next page publication should not be visible
       const nextPagePublication = publications[pageSize];
       if (nextPagePublication) {
-        expect(screen.queryByText(nextPagePublication.source)).not
-          .toBeInTheDocument();
+        expect(
+          screen.queryByText(nextPagePublication.source),
+        ).not.toBeInTheDocument();
       }
     });
 
@@ -192,7 +192,9 @@ describe("PublicationsTable", () => {
       // Second page publication should be visible
       const secondPagePublication = publications[pageSize];
       if (secondPagePublication) {
-        expect(screen.getByText(secondPagePublication.source)).toBeInTheDocument();
+        expect(
+          screen.getByText(secondPagePublication.source),
+        ).toBeInTheDocument();
       }
     });
   });
@@ -211,9 +213,7 @@ describe("PublicationsTable", () => {
         return;
       }
       const [firstPub] = singlePublication;
-      renderWithProviders(
-        <PublicationsTable publications={[firstPub]} />,
-      );
+      renderWithProviders(<PublicationsTable publications={[firstPub]} />);
 
       expect(screen.getByText(firstPub.source)).toBeInTheDocument();
     });
@@ -230,21 +230,27 @@ describe("PublicationsTable", () => {
 
     it("applies custom pageSize when provided", () => {
       if (!publications || publications.length < 2) {
-        throw new Error("Test failed: 'publications' must be defined with at least 2 items.");
+        throw new Error(
+          "Test failed: 'publications' must be defined with at least 2 items.",
+        );
       }
       const [firstPub, secondPub] = publications;
       const customPageSize = 1;
       if (!firstPub || !secondPub) {
-        throw new Error("Test failed: 'publications' must be defined with at least 2 items.");
+        throw new Error(
+          "Test failed: 'publications' must be defined with at least 2 items.",
+        );
       }
       renderWithProviders(
-        <PublicationsTable publications={publications} pageSize={customPageSize} />,
+        <PublicationsTable
+          publications={publications}
+          pageSize={customPageSize}
+        />,
       );
 
       expect(screen.getByText(firstPub.source)).toBeInTheDocument();
 
-      expect(screen.queryByText(secondPub.source)).not
-        .toBeInTheDocument();
+      expect(screen.queryByText(secondPub.source)).not.toBeInTheDocument();
     });
   });
 

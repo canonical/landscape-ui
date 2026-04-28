@@ -9,8 +9,10 @@ import useRemovePublicationTarget from "../../api/useRemovePublicationTarget";
 import type { PublicationTarget } from "../../types";
 import PublicationsTable from "../PublicationsTable/PublicationsTable";
 
-interface RemoveTargetModalProps
-  extends Pick<TextConfirmationModalProps, "close" | "isOpen"> {
+interface RemoveTargetModalProps extends Pick<
+  TextConfirmationModalProps,
+  "close" | "isOpen"
+> {
   readonly target: PublicationTarget;
 }
 
@@ -39,7 +41,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
 
       setPageParams({ sidePath: [], name: "" });
       await removeTarget({ name: target.name });
-      
+
       notify.success({
         message: `You have successfully removed ${target.displayName}`,
         title: "Publication target removed",
@@ -70,7 +72,11 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
             This publication target is currently being used by the following
             publications:
           </p>
-          <PublicationsTable publications={publications} pageSize={PAGE_SIZE} openInNewTab />
+          <PublicationsTable
+            publications={publications}
+            pageSize={PAGE_SIZE}
+            openInNewTab
+          />
         </>
       )}
       <p>
@@ -82,4 +88,3 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
 };
 
 export default RemoveTargetModal;
-
