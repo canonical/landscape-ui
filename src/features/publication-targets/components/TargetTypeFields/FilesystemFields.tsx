@@ -4,13 +4,7 @@ import type { FormikProps } from "formik";
 import type { FC } from "react";
 import type { AddPublicationTargetFormValues } from "../AddPublicationTargetForm/constants";
 import styles from "./TargetTypeFields.module.scss";
-
-const LINK_METHOD_OPTIONS = [
-  { value: "", label: "Select a link method" },
-  { value: "HARDLINK", label: "Hardlink" },
-  { value: "SYMLINK", label: "Symlink" },
-  { value: "COPY", label: "Copy" },
-];
+import { LINK_METHOD_OPTIONS } from "../../constants";
 
 interface FilesystemFieldsProps {
   readonly formik: FormikProps<AddPublicationTargetFormValues>;

@@ -4,7 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { Button } from "@canonical/react-components";
 import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
-import type { Local } from "../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import usePageParams from "@/hooks/usePageParams";
 import { TablePagination } from "@/components/layout/TablePagination";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
@@ -43,10 +43,10 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              name: repository.local_id,
+              name: repository.localId,
             })}
           >
-            {repository.display_name}
+            {repository.displayName}
           </Button>
         ),
       },

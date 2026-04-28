@@ -22,10 +22,10 @@ import {
   LINK_METHOD_OPTIONS,
   TARGET_TYPE_LABELS,
   VALIDATION_SCHEMA,
-} from "./constants";
-import type { EditTargetFormValues } from "./constants";
+} from "../../constants";
+import type { EditTargetFormValues } from "../../constants";
 
-export { TARGET_TYPE_LABELS } from "./constants";
+export { TARGET_TYPE_LABELS } from "../../constants";
 
 interface EditTargetFormProps {
   readonly target: PublicationTarget;
