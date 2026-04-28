@@ -1,7 +1,7 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { UbuntuArchiveInfo } from "../types/UbuntuArchiveInfo";
 
@@ -13,10 +13,7 @@ export function useGetUbuntuArchiveInfo(
 ) {
   const authFetch = useFetch();
 
-  return useSuspenseQuery<
-    AxiosResponse<UbuntuArchiveInfo>,
-    AxiosError<ApiError>
-  >({
+  return useQuery<AxiosResponse<UbuntuArchiveInfo>, AxiosError<ApiError>>({
     queryKey: ["ubuntuArchiveInfo", "archive"],
     queryFn: async () =>
       authFetch.get("repository/ubuntu-archive-info", {

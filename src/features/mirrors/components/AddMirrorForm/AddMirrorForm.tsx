@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { ComponentProps, FC } from "react";
+import { type ComponentProps, type FC, useEffect, useRef } from "react";
 import type { FormProps } from "./types";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import Blocks from "@/components/layout/Blocks";
@@ -36,10 +36,19 @@ const AddMirrorForm: FC = () => {
   const { notify } = useNotify();
   const { createPageParamsSetter } = usePageParams();
 
-  const ubuntuArchiveInfo = useGetUbuntuArchiveInfo().data.data;
-  const ubuntuEsmInfo = useGetUbuntuEsmInfo().data.data.results;
+  const ubuntuArchiveQuery = useGetUbuntuArchiveInfo();
+  const ubuntuEsmQuery = useGetUbuntuEsmInfo();
   const createMirror = useCreateMirror().mutateAsync;
   const close = createPageParamsSetter({ sidePath: [] });
+
+  const ubuntuArchiveInfo = ubuntuArchiveQuery.data?.data;
+  const ubuntuEsmInfo = ubuntuEsmQuery.data?.data.results ?? [];
+  // The form renders immediately so users can start filling in the type-agnostic
+  // fields (Name, Source type) while we fetch the repository structure. The
+  // Mirror contents block stays disabled with a loading note until both
+  // archive and ESM info responses come back.
+  const isMirrorContentsLoading =
+    ubuntuArchiveQuery.isPending || ubuntuEsmQuery.isPending;
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues({
@@ -118,6 +127,42 @@ const AddMirrorForm: FC = () => {
     disabled: !isArchiveInfoValid(proService),
   }));
 
+  // Once the archive/ESM info finishes loading, hydrate the data-dependent
+  // fields (distribution, components, architectures, pro service) for the
+  // user's currently selected source type while preserving anything they have
+  // already typed (Name, Source type, download options, token).
+  const hasHydratedRef = useRef(false);
+  useEffect(() => {
+    if (isMirrorContentsLoading || hasHydratedRef.current) {
+      return;
+    }
+    hasHydratedRef.current = true;
+
+    if (formik.values.sourceType === "third-party") {
+      return;
+    }
+
+    void formik.setValues({
+      ...getInitialValues({
+        sourceType: formik.values.sourceType,
+        ubuntuArchiveInfo,
+        ubuntuEsmInfo,
+      }),
+      name: formik.values.name,
+      downloadUdebPackages: formik.values.downloadUdebPackages,
+      downloadInstallerFiles: formik.values.downloadInstallerFiles,
+      downloadSources: formik.values.downloadSources,
+      ...(formik.values.sourceType === "ubuntu-pro" && {
+        token: formik.values.token,
+      }),
+      ...(formik.values.sourceType === "ubuntu-snapshots" &&
+        formik.values.snapshotDate && {
+          snapshotDate: formik.values.snapshotDate,
+        }),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMirrorContentsLoading]);
+
   return (
     <>
       <SidePanel.Header>Add mirror</SidePanel.Header>
@@ -139,17 +184,23 @@ const AddMirrorForm: FC = () => {
                   {
                     label: "Ubuntu archive",
                     value: "ubuntu-archive",
-                    disabled: !isArchiveInfoValid(ubuntuArchiveInfo),
+                    disabled:
+                      !!ubuntuArchiveInfo &&
+                      !isArchiveInfoValid(ubuntuArchiveInfo),
                   },
                   {
                     label: "Ubuntu snapshots",
                     value: "ubuntu-snapshots",
-                    disabled: !isArchiveInfoValid(ubuntuArchiveInfo),
+                    disabled:
+                      !!ubuntuArchiveInfo &&
+                      !isArchiveInfoValid(ubuntuArchiveInfo),
                   },
                   {
                     label: "Ubuntu Pro",
                     value: "ubuntu-pro",
-                    disabled: !ubuntuEsmInfo.some(isArchiveInfoValid),
+                    disabled:
+                      !ubuntuEsmQuery.isPending &&
+                      !ubuntuEsmInfo.some(isArchiveInfoValid),
                   },
                   { label: "Third party", value: "third-party" },
                 ]}
@@ -195,7 +246,15 @@ const AddMirrorForm: FC = () => {
                 />
               )}
             </Blocks.Item>
-            <Blocks.Item title="Mirror contents">
+            <Blocks.Item
+              title="Mirror contents"
+              description={
+                isMirrorContentsLoading &&
+                formik.values.sourceType !== "third-party"
+                  ? "Pulling and parsing repository data…"
+                  : undefined
+              }
+            >
               {formik.values.sourceType === "ubuntu-snapshots" && (
                 <Input
                   type="date"
@@ -211,6 +270,7 @@ const AddMirrorForm: FC = () => {
                   required
                   options={proServiceOptions}
                   {...formik.getFieldProps("proService")}
+                  disabled={isMirrorContentsLoading}
                   error={getFormikError(formik, "proService")}
                 />
               )}
@@ -273,6 +333,7 @@ const AddMirrorForm: FC = () => {
                   }
                   ubuntuArchiveInfo={ubuntuArchiveInfo}
                   ubuntuEsmInfo={ubuntuEsmInfo}
+                  isLoading={isMirrorContentsLoading}
                 />
               )}
               <p>Download options:</p>
