@@ -11,3 +11,4 @@ export {
   useEditPublicationTarget,
   useRemovePublicationTarget,
 } from "./api";
+export { default as NoPublicationTargetsModal } from "./components/NoPublicationTargetsModal";

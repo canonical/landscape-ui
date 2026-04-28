@@ -4,6 +4,8 @@ import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import RemoveMirrorModal from "../RemoveMirrorModal";
+import { useListPublications, useListPublicationTargets } from "../..";
+import { NoPublicationTargetsModal } from "@/features/publication-targets";
 
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;
@@ -14,7 +16,16 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   mirrorDisplayName,
   mirrorName,
 }) => {
-  const { createPageParamsSetter } = usePageParams();
+  const { setPageParams, createPageParamsSetter } = usePageParams();
+
+  const { publicationTargets = [] } = useListPublicationTargets({
+    pageSize: 1000,
+  }).data.data;
+
+  const { publications = [] } = useListPublications({
+    filter: `source="${name}"`,
+    pageSize: 1000,
+  }).data.data;
 
   const {
     value: isUpdateModalOpen,
@@ -26,6 +37,22 @@ const MirrorActions: FC<MirrorActionsProps> = ({
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
+  const {
+    value: isNoPublicationTargetsModalOpen,
+    setTrue: openNoPublicationTargetsModal,
+    setFalse: closeNoPublicationTargetsModal,
+  } = useBoolean();
+
+  const tryPublish = () => {
+    if (publicationTargets.length || publications.length) {
+      setPageParams({
+        sidePath: ["publish"],
+        name: mirrorName,
+      });
+    } else {
+      openNoPublicationTargetsModal();
+    }
+  };
 
   return (
     <>
@@ -55,10 +82,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
           {
             icon: "upload",
             label: "Publish",
-            onClick: createPageParamsSetter({
-              sidePath: ["publish"],
-              name: mirrorName,
-            }),
+            onClick: tryPublish,
           },
         ]}
         destructiveActions={[
@@ -81,6 +105,9 @@ const MirrorActions: FC<MirrorActionsProps> = ({
         mirrorDisplayName={mirrorDisplayName}
         mirrorName={mirrorName}
       />
+      {isNoPublicationTargetsModalOpen && (
+        <NoPublicationTargetsModal close={closeNoPublicationTargetsModal} />
+      )}
     </>
   );
 };

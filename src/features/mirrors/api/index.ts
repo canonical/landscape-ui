@@ -9,3 +9,4 @@ export * from "./useGetUbuntuEsmInfo";
 export * from "./useCreateMirror";
 export * from "./useGetMirror";
 export * from "./useBatchGetMirrors";
+export * from "./useListPublicationTargets";
