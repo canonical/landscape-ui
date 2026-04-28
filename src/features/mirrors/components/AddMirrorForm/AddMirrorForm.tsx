@@ -59,7 +59,9 @@ const AddMirrorForm: FC = () => {
     validationSchema: Yup.object().shape({
       name: Yup.string().required("This field is required."),
       sourceType: Yup.string().required("This field is required."),
-      sourceUrl: Yup.string().required("This field is required."),
+      sourceUrl: Yup.string()
+        .required("This field is required.")
+        .matches(/^https:\/\/.+/, "Source URL must use HTTPS."),
       distribution: Yup.string().required("This field is required."),
       components: Yup.array()
         .of(Yup.string())
@@ -230,11 +232,17 @@ const AddMirrorForm: FC = () => {
                   error={getFormikError(formik, "token")}
                 />
               )}
-              {formik.values.sourceType === "third-party" ? (
+              {formik.values.sourceType === "third-party" ||
+              formik.values.sourceType === "ubuntu-archive" ? (
                 <Input
                   type="text"
                   label="Source URL"
                   required
+                  help={
+                    formik.values.sourceType === "ubuntu-archive"
+                      ? "Use the default URL or point to a CDN mirror closer to your network. Must use HTTPS."
+                      : undefined
+                  }
                   {...formik.getFieldProps("sourceUrl")}
                   error={getFormikError(formik, "sourceUrl")}
                 />

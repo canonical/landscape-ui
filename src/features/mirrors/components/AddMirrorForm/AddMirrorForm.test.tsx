@@ -8,7 +8,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UBUNTU_SNAPSHOTS_HOST } from "../../constants";
+import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
 import type { CreateMirrorData } from "@canonical/landscape-openapi";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
@@ -42,6 +42,54 @@ describe("AddMirrorForm", () => {
       { timeout: 2000 },
     );
     await user.type(screen.getByLabelText("Name"), "Name");
+  });
+
+  it("submits an ubuntu archive mirror with the default https URL", async () => {
+    // Default sourceType is "Ubuntu archive"; the Source URL field is
+    // editable and prefilled with the canonical archive URL over HTTPS.
+    expect(screen.getByLabelText("Source URL")).toHaveValue(
+      `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        archiveRoot: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+      }),
+    );
+  });
+
+  it("submits an ubuntu archive mirror pointed at a custom CDN", async () => {
+    const cdnUrl = "https://eu.archive.ubuntu.com/ubuntu/";
+
+    const sourceUrlField = screen.getByLabelText("Source URL");
+    await user.clear(sourceUrlField);
+    await user.type(sourceUrlField, cdnUrl);
+
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        archiveRoot: cdnUrl,
+      }),
+    );
+  });
+
+  it("rejects an http source URL with an HTTPS validation error", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Third party",
+    );
+
+    const sourceUrlField = screen.getByLabelText("Source URL");
+    await user.type(sourceUrlField, "http://insecure.example.com/");
+    // validateOnBlur is true on the form; tab out to trigger validation.
+    await user.tab();
+
+    expect(
+      await screen.findByText(/source url must use https/i),
+    ).toBeInTheDocument();
   });
 
   it("submits an ubuntu snapshot mirror", async () => {
