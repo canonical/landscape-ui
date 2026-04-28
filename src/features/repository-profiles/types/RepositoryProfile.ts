@@ -1,21 +1,8 @@
 import type { APTSource } from "@/features/apt-sources";
-import type { Distribution, Pocket, Series } from "@/features/mirrors";
+import type { Profile } from "@/features/profiles";
 
-type RepositoryProfilePocket = Pocket & {
-  distribution: Pick<Distribution, "access_group" | "creation_time" | "name">;
-  series: Pick<Series, "name" | "creation_time">;
-};
-
-export interface RepositoryProfile extends Record<string, unknown> {
-  access_group: string;
-  all_computers: boolean;
+export interface RepositoryProfile extends Profile, Record<string, unknown> {
   applied_count: number;
   apt_sources: APTSource[];
-  description: string;
-  id: number;
-  name: string;
   pending_count: number;
-  pockets: RepositoryProfilePocket[];
-  tags: string[];
-  title: string;
 }
