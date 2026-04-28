@@ -27,6 +27,16 @@ export const VALID_ROOT_KEYS = [
   "license-expires-within-days",
   "has-pro-management",
   "release-upgrade",
+  "access-group-recursive",
+  "vendor",
+  "product",
+  "uuid",
+  "serial",
+  "instance-id",
+  "instance-type",
+  "ami-id",
+  "availability-zone",
+  "last-ping",
 ] as const;
 export const PROFILE_TYPES = [
   "security",
@@ -41,6 +51,17 @@ export const PROFILE_TYPES = [
 export const DISTRIBUTION_UPGRADE_STATUSES = ["available"] as const;
 export const USG_STATUSES = ["pass", "fail", "in-progress"] as const;
 export const WSL_STATUSES = ["compliant", "noncompliant"] as const;
+export const HARDWARE_ATTRIBUTES = {
+  cpu: ["vendor", "product", "version", "size"],
+  disk: ["vendor", "product", "version", "size"],
+  display: ["vendor", "product", "version"],
+  firmware: ["vendor", "product", "version"],
+  memory: ["vendor", "product", "version", "size"],
+  network: ["vendor", "product", "version", "capacity", "serial"],
+} as const;
+export const HARDWARE_ROOT_KEYS = Object.keys(
+  HARDWARE_ATTRIBUTES,
+) as (keyof typeof HARDWARE_ATTRIBUTES)[];
 export const LICENSE_TYPES = [
   "unlicensed",
   "pro",
@@ -54,6 +75,7 @@ export const NUMERIC_KEYS: ValidRootKey[] = [
   "contract",
   "contract-expires-within-days",
   "license-expires-within-days",
+  "last-ping",
 ];
 
 export const INTEGER_REGEX = /^\d+$/;
