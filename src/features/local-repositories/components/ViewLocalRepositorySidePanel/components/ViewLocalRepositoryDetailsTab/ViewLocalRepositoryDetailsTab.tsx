@@ -18,9 +18,9 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   );
 
   return (
-    <Blocks>
-      <Blocks.Item title="Details" titleClassName="p-text--small-caps">
-        <InfoGrid>
+    <Blocks dense>
+      <Blocks.Item title="Details">
+        <InfoGrid dense>
           <InfoGrid.Item label="Name" value={repository.displayName} />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />

@@ -87,7 +87,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks>
+      <Blocks dense>
         <Blocks.Item title="Details">
           <Select
             label="Publication name"

@@ -26,7 +26,7 @@ const PublishLocalRepositorySidePanel: FC = () => {
       <SidePanel.Content>
         {!!publications.length && (
           <>
-            <label>Publish to</label>
+            <div className={classes.publish}>Publish to</div>
             <div className={classes.radio}>
               <RadioInput
                 label="New publication"
