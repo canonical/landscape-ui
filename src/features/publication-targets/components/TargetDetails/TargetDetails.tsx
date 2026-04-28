@@ -7,9 +7,9 @@ import type { FC } from "react";
 import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
-import PublicationsTable from "../PublicationsTable/PublicationsTable";
 import RemoveTargetForm from "../RemoveTargetForm";
 import Blocks from "@/components/layout/Blocks/Blocks";
+import { AssociatedPublicationsList } from "@/features/publications";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
@@ -102,7 +102,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
         {!isGettingPublications && publications.length > 0 && (
           <Blocks.Item title="Used In">
-            <PublicationsTable publications={publications} />
+            <AssociatedPublicationsList publications={publications} />
           </Blocks.Item>
         )}
       </Blocks>
