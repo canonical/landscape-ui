@@ -1,5 +1,5 @@
 import type { Activity } from "@/features/activities";
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../types";
 import useFetch from "@/hooks/useFetch";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CheckboxInput, Col, Row } from "@canonical/react-components";
 import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
 import type { RepositoryProfileFormValues } from "../../types";
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import { getFilteredAptSources } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
 

@@ -13,7 +13,7 @@ import type {
   RepositoryProfile,
   RepositoryProfileFormValues,
 } from "../../types";
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
