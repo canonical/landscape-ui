@@ -52,8 +52,8 @@ describe("RemoveMirrorModal", () => {
   it("renders a list of publications", async () => {
     renderWithProviders(<RemoveMirrorModal {...props} />);
 
-    for (const { label } of publications) {
-      expect(screen.getByText(label)).toBeInTheDocument();
+    for (const { displayName } of publications) {
+      expect(screen.getByText(displayName)).toBeInTheDocument();
     }
   });
 
