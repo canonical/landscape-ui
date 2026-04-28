@@ -57,7 +57,8 @@
     width: $sph--large;
   }
 
-  &[aria-expanded="false"] {
+  &[aria-expanded="false"],
+  &.collapsedAccordionButton {
     &::after {
       transform: rotate(-90deg);
     }
