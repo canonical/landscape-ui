@@ -63,7 +63,7 @@ export const SecondaryNavigation: FC<SecondaryNavigationProps> = ({
                     className={classNames(
                       "p-side-navigation__link",
                       classes.secondaryNavigation__link,
-                      isActive && classes.isActive,
+                      { [classes.isActive]: isActive },
                     )}
                     to={item.path}
                   >

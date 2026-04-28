@@ -7,8 +7,8 @@ import { getPathToExpand } from "@/templates/dashboard/Navigation/helpers";
 import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
 import NavigationExpandableParent from "@/templates/dashboard/Navigation/components/NavigationExpandableParent";
 import { useMediaQuery } from "usehooks-ts";
-import classes from "../../Navigation.module.scss";
 import classNames from "classnames";
+import classes from "../../Navigation.module.scss";
 
 interface NavigationExpandableProps {
   readonly item: MenuItem;
@@ -31,10 +31,8 @@ const NavigationExpandable: FC<NavigationExpandableProps> = ({ item }) => {
     return (
       <NavigationRoute
         item={item}
-        className={classNames(
-          classes.accordionButton,
-          "p-side-navigation__link",
-        )}
+        className={classNames(classes.accordionButton, classes.collapsedAccordionButton)}
+        withLinkStyle={false}
       />
     );
   }
