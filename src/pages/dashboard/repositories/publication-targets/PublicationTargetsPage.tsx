@@ -1,3 +1,4 @@
+import EmptyState from "@/components/layout/EmptyState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
@@ -33,14 +34,44 @@ const PublicationTargetsPage: FC = () => {
 
   const viewTarget = publicationTargets.find((t) => t.publicationTargetId === name);
 
+  const addButton = <PublicationTargetAddButton key="add" />;
+
+  const { actions, children, hasTable } = publicationTargets.length
+    ? {
+        actions: [addButton],
+        children: <PublicationTargetContainer />,
+        hasTable: true as const,
+      }
+    : {
+        actions: undefined,
+        children: (
+          <EmptyState
+            title="You don't have any publication targets yet"
+            body={
+              <>
+                <p className="u-no-margin--bottom">
+                  On this page you will find all publication targets that you create to publish mirrors to.
+                </p>
+                <a
+                  href="https://documentation.ubuntu.com/landscape/explanation/features/repository-mirroring"
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                >
+                  Learn more about repository mirroring
+                </a>
+              </>
+            }
+            cta={[addButton]}
+          />
+        ),
+        hasTable: undefined,
+      };
+
   return (
     <PageMain>
-      <PageHeader
-        title="Publication targets"
-        actions={[<PublicationTargetAddButton key="add" />]}
-      />
-      <PageContent hasTable>
-        <PublicationTargetContainer />
+      <PageHeader title="Publication targets" actions={actions} />
+      <PageContent hasTable={hasTable}>
+        {children}
       </PageContent>
 
       <SidePanel

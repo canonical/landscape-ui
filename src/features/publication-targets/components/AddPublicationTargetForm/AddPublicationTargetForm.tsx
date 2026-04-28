@@ -163,6 +163,7 @@ const AddPublicationTargetForm: FC = () => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add publication target"
+        onCancel={closeForm}
       />
     </Form>
   );
