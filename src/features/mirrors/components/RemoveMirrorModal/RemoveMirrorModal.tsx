@@ -3,9 +3,9 @@ import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useDeleteMirror, useListPublications } from "../../api";
 import useNotify from "@/hooks/useNotify";
-import MirrorPublicationsList from "../MirrorPublicationsList";
 import usePageParams from "@/hooks/usePageParams";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
+import { AssociatedPublicationsList } from "@/features/publications";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;
@@ -70,7 +70,11 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       {publications.length ? (
         <>
           <p>This mirror is associated with the following publications:</p>
-          <MirrorPublicationsList publications={publications} openInNewTab />
+          <AssociatedPublicationsList
+            publications={publications}
+            openInNewTab
+            showSources={false}
+          />
           <p>
             After removal you won’t be able to update any of these publications,
             but they will continue to be available.{" "}

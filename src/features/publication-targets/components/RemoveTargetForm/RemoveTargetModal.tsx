@@ -7,7 +7,7 @@ import type { FC } from "react";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import useRemovePublicationTarget from "../../api/useRemovePublicationTarget";
 import type { PublicationTarget } from "../../types";
-import PublicationsTable from "../PublicationsTable/PublicationsTable";
+import { AssociatedPublicationsList } from "@/features/publications";
 
 interface RemoveTargetModalProps extends Pick<
   TextConfirmationModalProps,
@@ -72,7 +72,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
             This publication target is currently being used by the following
             publications:
           </p>
-          <PublicationsTable
+          <AssociatedPublicationsList
             publications={publications}
             pageSize={PAGE_SIZE}
             openInNewTab
