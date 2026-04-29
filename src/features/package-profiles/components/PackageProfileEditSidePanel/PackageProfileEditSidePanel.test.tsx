@@ -10,7 +10,7 @@ describe("PackageProfileEditSidePanel", () => {
     renderWithProviders(
       <PackageProfileEditSidePanel />,
       undefined,
-      `/?name=${packageProfiles[0].name}`,
+      `/?profile=${packageProfiles[0].name}`,
     );
 
     await expectLoadingState();

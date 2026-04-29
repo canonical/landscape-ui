@@ -12,15 +12,15 @@ describe("RemovalProfileEditSidePanel", () => {
     renderWithProviders(
       <RemovalProfileEditSidePanel />,
       undefined,
-      `/?name=${removalProfile.id}`,
+      `/?profile=${removalProfile.id}`,
     );
 
     await expectLoadingState();
 
     expect(
-      screen.findByRole("heading", {
-        name: `Edit "${removalProfile.title}" profile`,
+      screen.getByRole("heading", {
+        name: `Edit ${removalProfile.title}`,
       }),
-    );
+    ).toBeInTheDocument();
   });
 });

@@ -1,5 +1,4 @@
-import type { ComplianceInstanceCounts } from "@/features/profiles";
-import type { Profile } from "@/types/Profile";
+import type { Profile, ComplianceInstanceCounts } from "@/features/profiles";
 
 export type PackageProfileConstraintType = "depends" | "conflicts" | "";
 

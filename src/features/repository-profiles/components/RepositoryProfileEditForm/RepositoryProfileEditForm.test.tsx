@@ -1,12 +1,14 @@
-import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Suspense } from "react";
 import { useLocation } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileEditForm from "./RepositoryProfileEditForm";
+
+vi.mock("../../api/useGetRepositoryProfile", () => ({
+  useGetRepositoryProfile: vi.fn(() => ({ data: repositoryProfiles[0] })),
+}));
 
 const [profile] = repositoryProfiles;
 
@@ -18,11 +20,7 @@ const LocationDisplay = () => {
 const renderEditForm = (sidePath = "view,edit") =>
   renderWithProviders(
     <>
-      <AppErrorBoundary>
-        <Suspense fallback={null}>
-          <RepositoryProfileEditForm />
-        </Suspense>
-      </AppErrorBoundary>
+      <RepositoryProfileEditForm />
       <LocationDisplay />
     </>,
     undefined,
@@ -50,9 +48,7 @@ describe("RepositoryProfileEditForm", () => {
 
   it("does not render back button when sidePath has only one segment", async () => {
     renderWithProviders(
-      <Suspense fallback={null}>
-        <RepositoryProfileEditForm />
-      </Suspense>,
+      <RepositoryProfileEditForm />,
       undefined,
       `/?sidePath=edit&name=${profile.name}`,
     );

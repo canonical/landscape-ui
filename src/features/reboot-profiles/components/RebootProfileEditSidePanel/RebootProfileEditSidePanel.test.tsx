@@ -12,7 +12,7 @@ describe("PackageProfileAddSidePanel", () => {
     renderWithProviders(
       <RebootProfileEditSidePanel />,
       undefined,
-      `/?name=${rebootProfile.id}`,
+      `/?profile=${rebootProfile.id}`,
     );
 
     await expectLoadingState();
