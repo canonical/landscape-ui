@@ -43,4 +43,13 @@ export const publicationTargets: PublicationTarget[] = [
       tenant: "landscape",
     },
   },
+  {
+    name: "publicationTargets/dddddddd-0000-0000-0000-000000000004",
+    publicationTargetId: "dddddddd-0000-0000-0000-000000000004",
+    displayName: "local-fs-archive",
+    filesystem: {
+      path: "/srv/landscape/archives",
+      linkMethod: "HARDLINK",
+    },
+  },
 ];

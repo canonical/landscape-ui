@@ -1,11 +1,8 @@
 import type { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
+import * as Yup from "yup";
 
-export type TargetType = "s3" | "swift" | "filesystem";
-
-export interface AddPublicationTargetFormValues {
+export interface EditTargetFormValues {
   displayName: string;
-  targetType: TargetType;
-
   // S3
   region: string;
   bucket: string;
@@ -18,7 +15,6 @@ export interface AddPublicationTargetFormValues {
   encryptionMethod: string;
   disableMultiDel: boolean;
   forceSigV2: boolean;
-
   // Swift
   container: string;
   swiftUsername: string;
@@ -31,17 +27,13 @@ export interface AddPublicationTargetFormValues {
   domainId: string;
   tenantDomain: string;
   tenantDomainId: string;
-
   // Filesystem
   path: string;
   linkMethod: FilesystemTargetLinkMethod | "";
 }
 
-export const INITIAL_VALUES: AddPublicationTargetFormValues = {
+export const EMPTY_VALUES: EditTargetFormValues = {
   displayName: "",
-  targetType: "s3",
-
-  // S3
   region: "",
   bucket: "",
   endpoint: "",
@@ -53,8 +45,6 @@ export const INITIAL_VALUES: AddPublicationTargetFormValues = {
   encryptionMethod: "",
   disableMultiDel: false,
   forceSigV2: false,
-
-  // Swift
   container: "",
   swiftUsername: "",
   swiftPassword: "",
@@ -66,8 +56,24 @@ export const INITIAL_VALUES: AddPublicationTargetFormValues = {
   domainId: "",
   tenantDomain: "",
   tenantDomainId: "",
-
-  // Filesystem
   path: "",
   linkMethod: "",
 };
+
+export const VALIDATION_SCHEMA = Yup.object().shape({
+  displayName: Yup.string().required("This field is required"),
+});
+
+export const LINK_METHOD_OPTIONS = [
+  { value: "", label: "Select a link method" },
+  { value: "HARDLINK", label: "Hardlink" },
+  { value: "SYMLINK", label: "Symlink" },
+  { value: "COPY", label: "Copy" },
+];
+
+export const TARGET_TYPE_LABELS: Record<"s3" | "swift" | "filesystem", string> =
+  {
+    s3: "S3",
+    swift: "Swift",
+    filesystem: "Filesystem",
+  };
