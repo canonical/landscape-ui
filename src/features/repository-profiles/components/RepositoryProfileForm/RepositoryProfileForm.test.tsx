@@ -171,6 +171,8 @@ describe("RepositoryProfileForm", () => {
     expect(onAddSourceClick).toHaveBeenCalledOnce();
   });
   it("shows error notification when create API call fails", async () => {
+    setEndpointStatus({ status: "error", path: "repositoryprofiles" });
+
     renderWithProviders(
       <RepositoryProfileForm
         action="add"
@@ -180,8 +182,6 @@ describe("RepositoryProfileForm", () => {
         onEditSourceClick={vi.fn()}
       />,
     );
-
-    setEndpointStatus({ status: "error", path: "repositoryprofiles" });
 
     await user.type(screen.getByLabelText(/Profile name/i), "repo-test");
     await user.click(

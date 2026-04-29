@@ -114,6 +114,8 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     validationSchema: getValidationSchema(props.action),
   });
 
+  const profileName = props.action === "edit" ? props.profile.name : undefined;
+
   useEffect(() => {
     if (props.action !== "edit") {
       return;
@@ -127,7 +129,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       tags: props.profile.tags,
       title: props.profile.title,
     });
-  }, [props]);
+    // Only re-initialize when the profile identity changes, not on every aptSources update.
+    // The separate effect below keeps apt_sources in sync with source list changes.
+  }, [profileName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     formik.setFieldValue("apt_sources", props.aptSources);

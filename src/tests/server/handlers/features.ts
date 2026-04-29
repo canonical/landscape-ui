@@ -9,9 +9,6 @@ import { createEndpointStatusNetworkError } from "./_constants";
 const matchesFeaturesPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("features");
 
-const matchesFeaturesPath = (endpointPath?: string) =>
-  !endpointPath || endpointPath.includes("features");
-
 export default [
   http.get(`${API_URL}features`, () => {
     const endpointStatus = getEndpointStatus();
