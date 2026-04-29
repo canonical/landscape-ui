@@ -18,9 +18,9 @@ describe("PublicationTargetContainer", () => {
     await expectLoadingState();
   });
 
-  it("renders the empty state when there are no targets", async () => {
+  it("renders an empty table when there are no targets", async () => {
     server.use(
-      http.get(`${API_URL_DEB_ARCHIVE}v1/publicationTargets`, () =>
+      http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, () =>
         HttpResponse.json({ publicationTargets: [] }),
       ),
     );
@@ -28,24 +28,8 @@ describe("PublicationTargetContainer", () => {
     renderWithProviders(<PublicationTargetContainer />);
     await expectLoadingState();
 
-    expect(
-      screen.getByText(/you don't have any publication targets yet/i),
-    ).toBeInTheDocument();
-  });
-
-  it("renders the Add publication target CTA button in the empty state", async () => {
-    server.use(
-      http.get(`${API_URL_DEB_ARCHIVE}v1/publicationTargets`, () =>
-        HttpResponse.json({ publicationTargets: [] }),
-      ),
-    );
-
-    renderWithProviders(<PublicationTargetContainer />);
-    await expectLoadingState();
-
-    expect(
-      screen.getByRole("button", { name: /add publication target/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.queryAllByRole("row")).toHaveLength(1); // header row only
   });
 
   it("renders the publication targets list when targets are present", async () => {

@@ -3,6 +3,7 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
+  FilesystemTarget,
   PublicationTarget,
   S3Target,
   SwiftTarget,
@@ -12,6 +13,7 @@ interface CreatePublicationTargetParams {
   displayName: string;
   s3?: Partial<S3Target>;
   swift?: Partial<SwiftTarget>;
+  filesystem?: Partial<FilesystemTarget>;
 }
 
 export default function useCreatePublicationTarget() {
