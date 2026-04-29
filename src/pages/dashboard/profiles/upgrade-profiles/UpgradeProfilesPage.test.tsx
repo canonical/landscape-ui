@@ -1,8 +1,8 @@
-import { wslProfiles } from "@/tests/mocks/wsl-profiles";
+import { upgradeProfiles } from "@/tests/mocks/upgrade-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import WslProfilesPage from "./WslProfilesPage";
+import UpgradeProfilesPage from "./UpgradeProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
 import type * as actualModule from "@/features/profiles";
@@ -14,60 +14,58 @@ vi.mock("@/features/profiles", async () => {
 
   return {
     ...actual,
-    ProfilesContainer: () => <div>WSL profiles table</div>,
+    ProfilesContainer: () => <div>Package profiles table</div>,
   };
 });
 
-describe("WslProfilesPage", () => {
+describe("UpgradeProfilesPage", () => {
+  const [selectedUpgradeProfile] = upgradeProfiles;
+
   it("has a button to add a profile", async () => {
-    renderWithProviders(<WslProfilesPage />, undefined, "/profiles/wsl");
+    renderWithProviders(<UpgradeProfilesPage />);
     const user = userEvent.setup();
 
     await user.click(
       await screen.findByRole("button", { name: "Add profile" }),
     );
-
-    await user.click(
-      await screen.findByRole("button", { name: "Add WSL profile" }),
-    );
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: "Add WSL profile" }),
+      await screen.findByRole("heading", { name: "Add upgrade profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
 
     expect(
-      screen.queryByRole("heading", { name: "Add WSL profile" }),
+      screen.queryByRole("heading", { name: "Add upgrade profile" }),
     ).not.toBeInTheDocument();
   });
 
   it("renders a side panel to edit", async () => {
     renderWithProviders(
-      <WslProfilesPage />,
+      <UpgradeProfilesPage />,
       undefined,
-      `/?sidePath=edit&name=${wslProfiles[0].name}`,
+      `/?sidePath=edit&name=${selectedUpgradeProfile.id}`,
     );
 
     await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Edit ${wslProfiles[0].title}`,
+        name: `Edit ${selectedUpgradeProfile.title}`,
       }),
     ).toBeInTheDocument();
   });
 
   it("renders a side panel to view", async () => {
     renderWithProviders(
-      <WslProfilesPage />,
+      <UpgradeProfilesPage />,
       undefined,
-      `/?sidePath=view&name=${wslProfiles[0].name}`,
+      `/?sidePath=view&name=${selectedUpgradeProfile.id}`,
     );
 
     await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: wslProfiles[0].title,
+        name: selectedUpgradeProfile.title,
       }),
     ).toBeInTheDocument();
   });

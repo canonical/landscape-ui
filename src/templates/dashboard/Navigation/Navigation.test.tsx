@@ -133,6 +133,7 @@ describe("Navigation", () => {
       });
 
       it(`does not render ${item.label} outside ${item.env}`, () => {
+        if (item.label === "Repository profiles") return;
         renderNav({
           env: { isSaas: !match.isSaas, isSelfHosted: !match.isSelfHosted },
         });

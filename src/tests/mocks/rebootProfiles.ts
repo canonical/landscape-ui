@@ -2,6 +2,7 @@ import type { RebootProfile } from "@/features/reboot-profiles";
 
 export const rebootProfiles = [
   {
+    name: "",
     id: 1,
     title: "Reboot profile test edited 5",
     next_run: "2025-04-22T20:15:12Z",
@@ -14,6 +15,7 @@ export const rebootProfiles = [
     schedule: "FREQ=WEEKLY;BYDAY=mo,tu;BYHOUR=15;BYMINUTE=30",
   },
   {
+    name: "",
     id: 2,
     title: "test 2",
     next_run: "2025-04-21T15:30:12Z",
@@ -26,6 +28,7 @@ export const rebootProfiles = [
     schedule: "FREQ=WEEKLY;BYDAY=mo,tu;BYHOUR=18;BYMINUTE=35",
   },
   {
+    name: "",
     id: 3,
     title: "test 3",
     next_run: "2025-04-21T15:30:12Z",
@@ -38,6 +41,7 @@ export const rebootProfiles = [
     schedule: "FREQ=WEEKLY;BYDAY=mo,fr;BYHOUR=14;BYMINUTE=40",
   },
   {
+    name: "",
     id: 4,
     title: "test 4",
     next_run: "2025-04-21T15:30:12Z",

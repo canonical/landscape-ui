@@ -10,6 +10,7 @@ import type { PublicationTarget } from "../../types";
 import RemoveTargetForm from "../RemoveTargetForm";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import { getTargetType, TARGET_TYPE_LABELS } from "../EditTargetForm/EditTargetForm";
+import { AssociatedPublicationsList } from "@/features/publications";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;

@@ -1,8 +1,0 @@
-import { createTablePropGetters } from "@/utils/table";
-import type { RebootProfile } from "../../types";
-
-export const { getCellProps, getRowProps } =
-  createTablePropGetters<RebootProfile>({
-    headerColumnId: "title",
-    itemTypeName: "reboot profile",
-  });

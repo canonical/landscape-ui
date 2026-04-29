@@ -16,8 +16,7 @@ export const useGetSecurityProfileAuditDownload = () => {
     GetSecurityProfileAuditDownloadParams
   >({
     mutationFn: async ({ path }) =>
-      authFetch.get("security-profiles/blob", {
-        params: { path },
+      authFetch.get(`security-profiles/blob?path=${path}`, {
         responseType: "blob",
       }),
   });
