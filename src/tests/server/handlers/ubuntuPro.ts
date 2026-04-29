@@ -11,20 +11,12 @@ export default [
   http.post(`${API_URL}attach-token`, () => {
     const endpointStatus = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("attach-token"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
-      }
+    if (endpointStatus.status === "error") {
+      throw ENDPOINT_STATUS_API_ERROR;
+    }
 
-      if (endpointStatus.path === "attach-token-with-invalid") {
-        return HttpResponse.json({
-          ...attachUbuntuProActivity,
-          invalid_computer_ids: [1],
-        });
-      }
+    if (endpointStatus.status === "variant" && endpointStatus.path === "attach-token") {
+      return HttpResponse.json(endpointStatus.response);
     }
 
     return HttpResponse.json(attachUbuntuProActivity);
@@ -33,13 +25,8 @@ export default [
   http.post(`${API_URL}detach-token`, () => {
     const endpointStatus = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("detach-token"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
-      }
+    if (endpointStatus.status === "error") {
+      throw ENDPOINT_STATUS_API_ERROR;
     }
 
     return HttpResponse.json(detachUbuntuProActivity);

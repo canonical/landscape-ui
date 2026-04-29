@@ -1,6 +1,6 @@
 import { expectLoadingState } from "@/tests/helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { listPockets, pockets } from "@/tests/mocks/pockets";
+import { listPockets, pockets, diffPocketUpdate, diffPocketAddOnly, manyListPockets } from "@/tests/mocks/pockets";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -174,7 +174,7 @@ describe("PackageList", () => {
   });
 
   it("renders pull package diffs with updates and deletions", async () => {
-    setEndpointStatus({ status: "default", path: "DiffPullPocketUpdate" });
+    setEndpointStatus({ status: "variant", path: "DiffPullPocket", response: diffPocketUpdate });
     renderWithProviders(<PackageList {...pullPocketProps} />);
 
     await expectLoadingState();
@@ -186,7 +186,7 @@ describe("PackageList", () => {
   });
 
   it("renders pull package list when diffs contain only additions", async () => {
-    setEndpointStatus({ status: "default", path: "DiffPullPocketAddOnly" });
+    setEndpointStatus({ status: "variant", path: "DiffPullPocket", response: diffPocketAddOnly });
 
     renderWithProviders(<PackageList {...pullPocketProps} />);
     await expectLoadingState();
@@ -234,7 +234,7 @@ describe("PackageList", () => {
 
   it("resets selected packages when paginating upload list", async () => {
     const user = userEvent.setup();
-    setEndpointStatus({ status: "default", path: "ListPocketMany" });
+    setEndpointStatus({ status: "variant", path: "ListPocket", response: manyListPockets });
     renderWithProviders(<PackageList {...uploadPocketProps} />);
 
     await screen.findByRole("checkbox", { name: "Toggle all" });
@@ -253,7 +253,7 @@ describe("PackageList", () => {
 
   it("changes page size via pagination select", async () => {
     const user = userEvent.setup();
-    setEndpointStatus({ status: "default", path: "ListPocketMany" });
+    setEndpointStatus({ status: "variant", path: "ListPocket", response: manyListPockets });
     renderWithProviders(<PackageList {...uploadPocketProps} />);
 
     await screen.findByRole("combobox", { name: "Instances per page" });

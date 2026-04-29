@@ -120,23 +120,22 @@ export default [
   http.get(`${API_URL}wsl-feature-limits`, async () => {
     const endpointStatus = getEndpointStatus();
 
-    if (endpointStatus.path === "wsl-feature-limits-loading") {
+    if (endpointStatus.status === "loading" && (!endpointStatus.path || endpointStatus.path === "wsl-feature-limits")) {
       await delay("infinite");
     }
 
-    const limit =
-      endpointStatus.path === "wsl-feature-limits-low"
-        ? 1
-        : 10;
+    if (endpointStatus.status === "variant" && endpointStatus.path === "wsl-feature-limits") {
+      return HttpResponse.json(endpointStatus.response);
+    }
 
     return HttpResponse.json<{
       max_windows_host_machines: number;
-      max_wsl_child_instances_per_host: number;
       max_wsl_child_instance_profiles: number;
+      max_wsl_child_instances_per_host: number;
     }>({
       max_windows_host_machines: 100,
       max_wsl_child_instance_profiles: 10,
-      max_wsl_child_instances_per_host: limit,
+      max_wsl_child_instances_per_host: 10,
     });
   }),
 ];

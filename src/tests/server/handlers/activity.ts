@@ -5,8 +5,6 @@ import {
   activities,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
-  manyDeliveredActivities,
-  manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
@@ -88,15 +86,14 @@ export default [
 
       const { status, type, searchQuery } = parseActivitiesQuery(query);
 
-      if (endpointStatus.path === "many-activities") {
-        const bulkData =
-          status === "unapproved" ? manyUnapprovedActivities : manyDeliveredActivities;
+      if (endpointStatus.status === "variant" && endpointStatus.path === "activities") {
+        const { unapproved, delivered } = endpointStatus.response as {
+          unapproved: Activity[];
+          delivered: Activity[];
+        };
+        const bulkData = status === "unapproved" ? unapproved : delivered;
         return HttpResponse.json(
-          generatePaginatedResponse<Activity>({
-            data: bulkData,
-            limit,
-            offset,
-          }),
+          generatePaginatedResponse<Activity>({ data: bulkData, limit, offset }),
         );
       }
 

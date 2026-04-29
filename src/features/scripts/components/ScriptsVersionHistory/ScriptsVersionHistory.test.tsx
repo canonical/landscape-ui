@@ -2,11 +2,13 @@ import {
   scriptDetails,
   scriptVersionsWithPagination,
 } from "@/tests/mocks/script";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import ScriptsVersionHistory from "./ScriptsVersionHistory";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
@@ -18,8 +20,14 @@ const props: ComponentProps<typeof ScriptsVersionHistory> = {
 describe("Scripts Version History", () => {
   const user = userEvent.setup();
 
+  afterEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("should render script version history", async () => {
     renderWithProviders(<ScriptsVersionHistory {...props} />);
+
+    await expectLoadingState();
 
     const table = await screen.findByRole("table");
     expect(table).toBeInTheDocument();
@@ -96,5 +104,13 @@ describe("Scripts Version History", () => {
     await waitFor(() => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
+  });
+
+  it("should render loading state while fetching versions", () => {
+    setEndpointStatus({ status: "loading", path: "scripts/versions" });
+    renderWithProviders(<ScriptsVersionHistory {...props} />);
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
   });
 });

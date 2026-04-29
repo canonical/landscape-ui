@@ -61,24 +61,18 @@ export default [
 
     if (withMetadata) {
       const endpointStatus = getEndpointStatus();
-      const maxVersionsReached =
-        endpointStatus.path === "autoinstall:max-versions-reached";
-      const withVersions =
-        endpointStatus.path === "autoinstall:with-versions";
+      const metadata =
+        endpointStatus.status === "variant" && endpointStatus.path === "autoinstall"
+          ? endpointStatus.response
+          : {
+              current_version: autoinstallFile.version,
+              max_versions: 5,
+              versions: [],
+            };
 
       return HttpResponse.json({
         ...autoinstallFile,
-        metadata: {
-          current_version: autoinstallFile.version,
-          max_versions: maxVersionsReached ? autoinstallFile.version : 5,
-          versions: withVersions
-            ? [
-                { version: 1, created_at: "2025-01-01T00:00:00Z" },
-                { version: 2, created_at: "2025-01-15T00:00:00Z" },
-                { version: 3, created_at: "2025-02-01T00:00:00Z" },
-              ]
-            : [],
-        },
+        metadata,
       });
     }
 
@@ -104,22 +98,15 @@ export default [
     const endpointStatus = getEndpointStatus();
 
     if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "autoinstall:validate-override"
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "autoinstall-validate"
     ) {
-      return HttpResponse.json(
-        {
-          error: "AutoinstallOverrideWarning",
-          message:
-            "The autoinstall file you submitted overrides fields users, identity",
-        },
-        { status: 400 },
-      );
+      return HttpResponse.json(endpointStatus.response, { status: 400 });
     }
 
     if (
       endpointStatus.status === "error" &&
-      endpointStatus.path === "autoinstall:validate"
+      (!endpointStatus.path || endpointStatus.path === "autoinstall:validate")
     ) {
       throw getEndpointStatusApiError();
     }

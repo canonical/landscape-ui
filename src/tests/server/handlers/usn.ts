@@ -20,13 +20,9 @@ export default [
       const offset = Number(url.searchParams.get("offset")) || 0;
       const search = url.searchParams.get("search") ?? "";
 
-      if (endpointStatus.status === "empty" && endpointStatus.path === "empty-usns") {
+      if (endpointStatus.status === "empty" && endpointStatus.path === "usns") {
         return HttpResponse.json(
-          generatePaginatedResponse<Usn>({
-            data: [],
-            limit,
-            offset,
-          }),
+          generatePaginatedResponse<Usn>({ data: [], limit, offset }),
         );
       }
 

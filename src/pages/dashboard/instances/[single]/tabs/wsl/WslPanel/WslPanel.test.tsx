@@ -39,7 +39,15 @@ describe("WslPanel", () => {
   });
 
   it("shows limit reached notification when at capacity", async () => {
-    setEndpointStatus({ status: "default", path: "wsl-feature-limits-low" });
+    setEndpointStatus({
+      status: "variant",
+      path: "wsl-feature-limits",
+      response: {
+        max_windows_host_machines: 100,
+        max_wsl_child_instance_profiles: 10,
+        max_wsl_child_instances_per_host: 1,
+      },
+    });
 
     renderWithProviders(<WslPanel instance={windowsInstance} />);
 
@@ -64,7 +72,7 @@ describe("WslPanel", () => {
   });
 
   it("shows loading state while wsl limits are being fetched", async () => {
-    setEndpointStatus({ status: "default", path: "wsl-feature-limits-loading" });
+    setEndpointStatus({ status: "loading", path: "wsl-feature-limits" });
 
     renderWithProviders(<WslPanel instance={windowsInstance} />);
 

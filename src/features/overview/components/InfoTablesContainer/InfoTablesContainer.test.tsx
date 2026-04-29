@@ -1,4 +1,4 @@
-import { activities } from "@/tests/mocks/activity";
+import { activities, manyUnapprovedActivities, manyDeliveredActivities } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
 import { packages } from "@/tests/mocks/packages";
 import { usns } from "@/tests/mocks/usn";
@@ -297,7 +297,11 @@ describe("InfoTablesContainer", () => {
 
 describe("InfoTablesContainer activities footer", () => {
   it("shows footer and navigates when activities count exceeds limit on unapproved tab", async () => {
-    setEndpointStatus({ status: "default", path: "many-activities" });
+    setEndpointStatus({
+      status: "variant",
+      path: "activities",
+      response: { unapproved: manyUnapprovedActivities, delivered: manyDeliveredActivities },
+    });
     renderWithProviders(<InfoTablesContainer />);
 
     await waitFor(() => {
@@ -316,7 +320,11 @@ describe("InfoTablesContainer activities footer", () => {
   });
 
   it("shows footer and navigates when activities count exceeds limit on in-progress tab", async () => {
-    setEndpointStatus({ status: "default", path: "many-activities" });
+    setEndpointStatus({
+      status: "variant",
+      path: "activities",
+      response: { unapproved: manyUnapprovedActivities, delivered: manyDeliveredActivities },
+    });
     renderWithProviders(<InfoTablesContainer />);
 
     const inProgressTab = await screen.findByTestId(
@@ -341,7 +349,7 @@ describe("InfoTablesContainer activities footer", () => {
 
 describe("InfoTablesContainer empty-state refresh handlers", () => {
   it("calls refresh for upgrades instances when clicking Refresh in empty state", async () => {
-    setEndpointStatus({ status: "empty", path: "empty-upgrades" });
+    setEndpointStatus({ status: "empty", path: "computers-alert-empty" });
     renderWithProviders(<InfoTablesContainer />);
 
     const refreshButton = await screen.findByRole("button", {
@@ -352,7 +360,7 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
   });
 
   it("calls refresh for upgrades packages with instances present", async () => {
-    setEndpointStatus({ status: "empty", path: "empty-packages" });
+    setEndpointStatus({ status: "empty", path: "packages" });
     renderWithProviders(<InfoTablesContainer />);
 
     // Wait for instances to load, then switch to packages tab
@@ -368,7 +376,7 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
   });
 
   it("calls refresh for upgrades usns with instances present", async () => {
-    setEndpointStatus({ status: "empty", path: "empty-usns" });
+    setEndpointStatus({ status: "empty", path: "usns" });
     renderWithProviders(<InfoTablesContainer />);
 
     await screen.findByRole("tab", { name: /instances/i });

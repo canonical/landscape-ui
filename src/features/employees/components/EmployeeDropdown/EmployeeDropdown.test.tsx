@@ -132,10 +132,7 @@ describe("EmployeeDropdown", () => {
 
     it("shows next-page loading indicator while fetching additional results", async () => {
       const user = userEvent.setup();
-      setEndpointStatus({
-        status: "default",
-        path: "employees:next-page-loading",
-      });
+      setEndpointStatus({ status: "loading", path: "employees" });
       renderDropdown();
 
       await user.type(screen.getByRole("searchbox"), "a");

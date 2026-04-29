@@ -29,7 +29,7 @@ import {
 import { userGroups } from "@/tests/mocks/userGroup";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance, PendingInstance } from "@/types/Instance";
-import type { GroupsResponse } from "@/types/User";
+import type { GroupsResponse, Group } from "@/types/User";
 import { delay, http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { getEndpointStatusApiError } from "./_constants";
@@ -45,18 +45,7 @@ export default [
 
       if (
         endpointStatus.status === "error" &&
-        endpointStatus.path === "computers-tagged-loading" &&
-        query.includes(" OR ")
-      ) {
-        return new Promise<never>(() => undefined);
-      }
-
-      if (
-        endpointStatus.status === "error" &&
-        (!endpointStatus.path ||
-          endpointStatus.path === "computers" ||
-          (endpointStatus.path === "computers-tagged-error" &&
-            query.includes(" OR ")))
+        (!endpointStatus.path || endpointStatus.path === "computers")
       ) {
         throw getEndpointStatusApiError();
       }
@@ -110,7 +99,7 @@ export default [
 
       if (
         endpointStatus.status === "empty" &&
-        endpointStatus.path === "empty-upgrades" &&
+        endpointStatus.path === "computers-alert-empty" &&
         (query.includes("alert:security-upgrades") ||
           query.includes("alert:package-upgrades"))
       ) {
@@ -381,19 +370,18 @@ export default [
     GroupsResponse
   >(`${API_URL}computers/:computerId/users/:username/groups`, () => {
     const endpointStatus = getEndpointStatus();
-    const daemonGroups = userGroups.filter((group) => group.name === "daemon");
     const shouldReturnEmptyGroups =
       endpointStatus.status === "empty" &&
       (!endpointStatus.path || endpointStatus.path === "users/groups");
-    const shouldReturnDaemonGroupOnly =
-      endpointStatus.path === "users/groups:daemon";
+    const shouldReturnCustomGroups =
+      endpointStatus.status === "variant" && endpointStatus.path === "user-groups";
 
     if (shouldReturnEmptyGroups) {
       return HttpResponse.json({ groups: [] });
     }
 
-    if (shouldReturnDaemonGroupOnly) {
-      return HttpResponse.json({ groups: daemonGroups });
+    if (shouldReturnCustomGroups) {
+      return HttpResponse.json({ groups: endpointStatus.response as Group[] });
     }
 
     return HttpResponse.json({ groups: userGroups });

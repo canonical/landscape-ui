@@ -14,7 +14,7 @@ import {
   generatePaginatedResponse,
   isAction,
 } from "@/tests/server/handlers/_helpers";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { getEndpointStatusApiError } from "./_constants";
 
 export default [
@@ -129,6 +129,12 @@ export default [
   ),
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (endpointStatus.status === "loading" && (!endpointStatus.path || endpointStatus.path === "scripts/versions")) {
+      await delay("infinite");
+    }
+
     const DEFAULT_PAGE_SIZE = 20;
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;

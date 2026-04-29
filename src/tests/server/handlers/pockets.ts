@@ -31,19 +31,8 @@ export default [
         endpointStatus.status === "empty" &&
         (!endpointStatus.path || endpointStatus.path === "ListPocket");
       const listPocketSource =
-        endpointStatus.path === "ListPocketMany"
-          ? Array.from({ length: 25 }, (_, index) => {
-              const basePocket = listPockets[index % listPockets.length];
-              if (!basePocket) {
-                throw new Error(
-                  "Expected at least one pocket in mock pocket data",
-                );
-              }
-              return {
-                ...basePocket,
-                name: `${basePocket.name}-${index + 1}`,
-              };
-            })
+        endpointStatus.status === "variant" && endpointStatus.path === "ListPocket"
+          ? (endpointStatus.response as PackageObject[])
           : listPockets;
 
       return HttpResponse.json(
@@ -64,29 +53,8 @@ export default [
       }
 
       const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.path === "DiffPullPocketUpdate") {
-        return HttpResponse.json({
-          "main:amd64": {
-            add: [],
-            update: [["pocket1", "1.0.0", "2.0.0"]],
-            delete: [["pocket2", "1.0.0"]],
-          },
-        });
-      }
-
-      if (endpointStatus.path === "DiffPullPocketAddOnly") {
-        return HttpResponse.json({
-          "main:amd64": {
-            add: [["pocket1", "1.0.0"]],
-            update: [],
-            delete: [],
-          },
-        });
-      }
-
-      if (endpointStatus.path === "DiffPullPocketNoChanges") {
-        return HttpResponse.json({});
+      if (endpointStatus.status === "variant" && endpointStatus.path === "DiffPullPocket") {
+        return HttpResponse.json(endpointStatus.response as PackageDiff);
       }
 
       return HttpResponse.json(diffPocket);
@@ -106,7 +74,8 @@ export default [
     const endpointStatus = getEndpointStatus();
     const action = new URL(request.url).searchParams.get("action");
     if (
-      endpointStatus.path === "SyncMirrorPocketLoading" &&
+      endpointStatus.status === "loading" &&
+      endpointStatus.path === "SyncMirrorPocket" &&
       isAction(request, "SyncMirrorPocket")
     ) {
       return new Promise<never>(() => undefined);

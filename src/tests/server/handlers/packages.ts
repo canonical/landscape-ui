@@ -39,13 +39,9 @@ export default [
       const limit = Number(url.searchParams.get("limit"));
       const offset = Number(url.searchParams.get("offset")) || 0;
 
-      if (endpointStatus.status === "empty" && endpointStatus.path === "empty-packages") {
+      if (endpointStatus.status === "empty" && endpointStatus.path === "packages") {
         return HttpResponse.json(
-          generatePaginatedResponse<Package>({
-            data: [],
-            limit,
-            offset,
-          }),
+          generatePaginatedResponse<Package>({ data: [], limit, offset }),
         );
       }
 
@@ -61,7 +57,6 @@ export default [
 
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
     const endpointStatus = getEndpointStatus();
-
     if (
       endpointStatus.status === "error" &&
       endpointStatus.path === "computers-packages"

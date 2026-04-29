@@ -1,6 +1,6 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
-import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
+import { autoinstallFiles, autoinstallFileVersions } from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -93,7 +93,15 @@ describe("AutoinstallFileDetails", () => {
 
   it("calls viewVersionHistory when navigating back from a version detail", async () => {
     const user = userEvent.setup();
-    setEndpointStatus({ path: "autoinstall:with-versions", status: "default" });
+    setEndpointStatus({
+      status: "variant",
+      path: "autoinstall",
+      response: {
+        current_version: 3,
+        max_versions: 5,
+        versions: autoinstallFileVersions,
+      },
+    });
 
     renderWithProviders(
       <AutoinstallFileDetails {...defaultProps} initialTabId="version-history" />,

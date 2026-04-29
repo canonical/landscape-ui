@@ -1,5 +1,6 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ADD_AUTOINSTALL_FILE_NOTIFICATION } from "@/pages/dashboard/settings/employees/tabs/autoinstall-files";
+import { autoinstallValidateOverrideError } from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -194,8 +195,9 @@ describe("AutoinstallFileForm", () => {
     const user = userEvent.setup();
     const props = createAutoinstallFileProps();
     setEndpointStatus({
-      status: "error",
-      path: "autoinstall:validate-override",
+      status: "variant",
+      path: "autoinstall-validate",
+      response: autoinstallValidateOverrideError,
     });
     renderWithProviders(<AutoinstallFileForm {...props} />);
 
@@ -225,8 +227,9 @@ describe("AutoinstallFileForm", () => {
     const user = userEvent.setup();
     const props = createAutoinstallFileProps();
     setEndpointStatus({
-      status: "error",
-      path: "autoinstall:validate-override",
+      status: "variant",
+      path: "autoinstall-validate",
+      response: autoinstallValidateOverrideError,
     });
     renderWithProviders(<AutoinstallFileForm {...props} />);
 

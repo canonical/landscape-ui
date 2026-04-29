@@ -296,3 +296,33 @@ export const pocketsWithoutSnapshot: Pocket[] = pockets.filter(
     (pocket.mode === "mirror" &&
       !pocket.mirror_uri.startsWith("https://snapshot.ubuntu.com/ubuntu")),
 );
+
+export const diffPocketUpdate: PackageDiff = {
+  "main:amd64": {
+    add: [],
+    update: [["pocket1", "1.0.0", "2.0.0"]],
+    delete: [["pocket2", "1.0.0"]],
+  },
+};
+
+export const diffPocketAddOnly: PackageDiff = {
+  "main:amd64": {
+    add: [["pocket1", "1.0.0"]],
+    update: [],
+    delete: [],
+  },
+};
+
+export const manyListPockets: PackageObject[] = Array.from(
+  { length: 25 },
+  (_, index) => {
+    const basePocket = listPockets[index % listPockets.length];
+    if (!basePocket) {
+      throw new Error("Expected at least one pocket in mock pocket data");
+    }
+    return {
+      ...basePocket,
+      name: `${basePocket.name}-${index + 1}`,
+    };
+  },
+);

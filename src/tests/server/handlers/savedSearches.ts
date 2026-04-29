@@ -2,27 +2,13 @@ import { http, HttpResponse } from "msw";
 import { API_URL_OLD } from "@/constants";
 import { isAction } from "./_helpers";
 import { savedSearches } from "@/tests/mocks/savedSearches";
-import {
-  getEndpointStatus,
-  getManySavedSearches,
-} from "@/tests/controllers/controller";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { getEndpointStatusApiError } from "./_constants";
-
-const generateManySavedSearches = () =>
-  Array.from({ length: 25 }, (_, i) => ({
-    name: `saved-search-${i}`,
-    title: `Saved Search ${i}`,
-    search: `tag:group-${i}`,
-  }));
 
 export default [
   http.get(API_URL_OLD, ({ request }) => {
     if (!isAction(request, "GetSavedSearches")) {
       return;
-    }
-
-    if (getManySavedSearches()) {
-      return HttpResponse.json(generateManySavedSearches());
     }
 
     return HttpResponse.json(savedSearches);
