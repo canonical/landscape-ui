@@ -41,6 +41,7 @@ export default [
         ...body,
         ...(body.s3 ? { s3: { ...existing.s3, ...body.s3 } } : {}),
         ...(body.swift ? { swift: { ...existing.swift, ...body.swift } } : {}),
+        ...(body.filesystem ? { filesystem: { ...existing.filesystem, ...body.filesystem } } : {}),
       } as PublicationTarget;
       publicationTargets[idx] = updated;
       return HttpResponse.json(updated);

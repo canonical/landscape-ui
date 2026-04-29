@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import type { Local } from "../../../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import { useGetRepositoryPackages } from "../../../../api";
 import { pluralizeWithCount } from "@/utils/_helpers";
 

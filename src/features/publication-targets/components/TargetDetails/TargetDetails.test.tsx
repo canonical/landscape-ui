@@ -15,6 +15,8 @@ vi.mock("../../api/useGetPublicationsByTarget", () => ({
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 
 const [targetWithPublications, targetWithoutPublications] = publicationTargets;
+const swiftMock = publicationTargets[2];
+const filesystemMock = publicationTargets[3];
 const [firstPublication] = publications;
 
 if (
@@ -24,6 +26,8 @@ if (
 ) {
   throw new Error("Test data is missing required properties");
 }
+if (!swiftMock?.swift) throw new Error("Missing swift mock target");
+if (!filesystemMock?.filesystem) throw new Error("Missing filesystem mock target");
 
 const s3WithPubs = targetWithPublications.s3;
 const s3WithoutPubs = targetWithoutPublications.s3;
@@ -220,21 +224,76 @@ describe("TargetDetails", () => {
   });
 
   describe("Swift target", () => {
-    it("renders DETAILS without S3 fields for a Swift target", () => {
+    it("renders container and authUrl info items", () => {
       (useGetPublicationsByTarget as Mock).mockReturnValue({
         publications: [],
         isGettingPublications: false,
       });
 
-      const swiftTarget = publicationTargets[2];
-      if (!swiftTarget) throw new Error("Missing swift mock target");
-
       const { container } = renderWithProviders(
-        <TargetDetails target={swiftTarget} />,
+        <TargetDetails target={swiftMock} />,
       );
 
-      expect(screen.getByText("Details")).toBeInTheDocument();
-      // S3-specific InfoGrid items should not be present
+      expect(container).toHaveInfoItem("Container", swiftMock.swift!.container);
+      expect(container).toHaveInfoItem("Auth URL", swiftMock.swift!.authUrl);
+    });
+
+    it("renders optional tenant field when present", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
+      const { container } = renderWithProviders(
+        <TargetDetails target={swiftMock} />,
+      );
+
+      expect(container).toHaveInfoItem("Tenant", swiftMock.swift!.tenant ?? "");
+    });
+
+    it("does not render S3-specific fields", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
+      const { container } = renderWithProviders(
+        <TargetDetails target={swiftMock} />,
+      );
+
+      expect(container.textContent).not.toContain("Region");
+      expect(container.textContent).not.toContain("Bucket Name");
+    });
+  });
+
+  describe("Filesystem target", () => {
+    it("renders path and link method info items", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
+      const { container } = renderWithProviders(
+        <TargetDetails target={filesystemMock} />,
+      );
+
+      expect(container).toHaveInfoItem("Path", filesystemMock.filesystem!.path);
+      expect(container).toHaveInfoItem(
+        "Link method",
+        filesystemMock.filesystem!.linkMethod ?? "",
+      );
+    });
+
+    it("does not render S3-specific fields", () => {
+      (useGetPublicationsByTarget as Mock).mockReturnValue({
+        publications: [],
+        isGettingPublications: false,
+      });
+
+      const { container } = renderWithProviders(
+        <TargetDetails target={filesystemMock} />,
+      );
+
       expect(container.textContent).not.toContain("Region");
       expect(container.textContent).not.toContain("Bucket Name");
     });

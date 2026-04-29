@@ -9,14 +9,14 @@ import { useBoolean } from "usehooks-ts";
 import type { PublicationTarget } from "../../types";
 import RemoveTargetForm from "../RemoveTargetForm";
 import Blocks from "@/components/layout/Blocks/Blocks";
-import { AssociatedPublicationsList } from "@/features/publications";
+import { getTargetType, TARGET_TYPE_LABELS } from "../EditTargetForm/EditTargetForm";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
 }
 
 const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
-  const { createPageParamsSetter, createSidePathPusher } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
     target.publicationTargetId,
   );
@@ -46,6 +46,27 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
       }
     : null;
 
+  const swiftFields = target.swift
+    ? {
+        container: target.swift.container,
+        authUrl: target.swift.authUrl,
+        prefix: target.swift.prefix,
+        tenant: target.swift.tenant,
+        tenantId: target.swift.tenantId,
+        domain: target.swift.domain,
+        domainId: target.swift.domainId,
+        tenantDomain: target.swift.tenantDomain,
+        tenantDomainId: target.swift.tenantDomainId,
+      }
+    : null;
+
+  const filesystemFields = target.filesystem
+    ? {
+        path: target.filesystem.path,
+        linkMethod: target.filesystem.linkMethod,
+      }
+    : null;
+
   return (
     <>
       <div className="p-segmented-control u-sv2">
@@ -69,9 +90,14 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         </Button>
       </div>
       <Blocks dense>
-        <Blocks.Item title="Details">
+        <Blocks.Item title="General">
           <InfoGrid dense>
-            <InfoGrid.Item label="Name" large value={target.displayName} />
+            <InfoGrid.Item label="Name" value={target.displayName} />
+            <InfoGrid.Item label="Type" value={TARGET_TYPE_LABELS[getTargetType(target)]} />
+          </InfoGrid>
+        </Blocks.Item>
+        <Blocks.Item title="Details">
+        <InfoGrid dense>
 
             {s3Fields && (
               <>
@@ -97,6 +123,28 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
                 />
               </>
             )}
+
+            {swiftFields && (
+              <>
+                <InfoGrid.Item label="Auth URL" large value={swiftFields.authUrl} />
+                <InfoGrid.Item label="Container" value={swiftFields.container} />
+                <InfoGrid.Item label="Prefix" value={swiftFields.prefix} />
+                <InfoGrid.Item label="Tenant" value={swiftFields.tenant} />
+                <InfoGrid.Item label="Tenant ID" value={swiftFields.tenantId} />
+                <InfoGrid.Item label="Domain" value={swiftFields.domain} />
+                <InfoGrid.Item label="Domain ID" value={swiftFields.domainId} />
+                <InfoGrid.Item label="Tenant domain" value={swiftFields.tenantDomain} />
+                <InfoGrid.Item label="Tenant domain ID" value={swiftFields.tenantDomainId} />
+              </>
+            )}
+
+            {filesystemFields && (
+              <>
+                <InfoGrid.Item label="Path" large value={filesystemFields.path} />
+                <InfoGrid.Item label="Link method" value={filesystemFields.linkMethod} />
+              </>
+            )}
+
           </InfoGrid>
         </Blocks.Item>
 
