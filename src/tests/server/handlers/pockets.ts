@@ -10,7 +10,7 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { generatePaginatedResponse, isAction } from "./_helpers";
 import { diffPocket, listPockets } from "@/tests/mocks/pockets";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, ListPocketParams, ApiPaginatedResponse<PackageObject>>(
@@ -116,7 +116,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === action)
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(activities[0]);
@@ -141,7 +141,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === action)
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(null);
@@ -152,7 +152,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "pockets/sync")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
     return HttpResponse.json(activities[0]);
   }),
@@ -162,7 +162,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "pockets/pull")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
     return HttpResponse.json(activities[0]);
   }),
@@ -172,7 +172,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "pockets/delete")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
     return new HttpResponse(null, { status: 204 });
   }),

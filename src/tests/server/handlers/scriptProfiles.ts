@@ -3,13 +3,12 @@ import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
-import { generatePaginatedResponse } from "./_helpers";
+import { createEndpointStatusError, createEndpointStatusNetworkError } from "./_constants";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
-    const endpointStatus = getEndpointStatus();
 
     const search = searchParams.get("search") || "";
     const limit = parseInt(searchParams.get("limit") || "20");
@@ -24,15 +23,14 @@ export default [
       );
     });
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("script-profiles"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("script-profiles")) {
+      const { status: endpointStatusValue } = getEndpointStatus();
+
+      if (endpointStatusValue === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
-      if (endpointStatus.status === "empty") {
+      if (endpointStatusValue === "empty") {
         return HttpResponse.json({
           results: [],
           count: 0,
@@ -54,18 +52,14 @@ export default [
   http.get<{ profileId: string }>(
     `${API_URL}script-profiles/:profileId`,
     ({ params }) => {
-      const endpointStatus = getEndpointStatus();
+      if (shouldApplyEndpointStatus("script-profiles/:profileId")) {
+        const { status } = getEndpointStatus();
 
-      if (
-        !endpointStatus.path ||
-        (endpointStatus.path &&
-          endpointStatus.path.includes("script-profiles/:profileId"))
-      ) {
-        if (endpointStatus.status === "error") {
-          throw ENDPOINT_STATUS_API_ERROR;
+        if (status === "error") {
+          throw createEndpointStatusError();
         }
 
-        if (endpointStatus.status === "empty") {
+        if (status === "empty") {
           return HttpResponse.json(undefined);
         }
       }
@@ -80,21 +74,18 @@ export default [
 
   http.get(`${API_URL}script-profiles/:profileId/activities`, ({ request }) => {
     const { searchParams } = new URL(request.url);
-    const endpointStatus = getEndpointStatus();
 
     const limit = parseInt(searchParams.get("limit") || "20");
     const offset = parseInt(searchParams.get("offset") || "0");
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes("script-profiles/:profileId/activities"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("script-profiles/:profileId/activities")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json({
           results: [],
           count: 0,

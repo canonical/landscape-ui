@@ -2,9 +2,15 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import type { APTSource, GetAPTSourcesParams } from "@/features/apt-sources";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { aptSources } from "@/tests/mocks/apt-sources";
-import { isAction } from "@/tests/server/handlers/_helpers";
+import {
+  isAction,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 
 export default [
   http.get<never, GetAPTSourcesParams, APTSource[]>(
@@ -19,15 +25,10 @@ export default [
   ),
 
   http.delete(`${API_URL}repository/apt-source/:sourceId`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path === "repository/apt-source/:sourceId")
-    ) {
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus("repository/apt-source/:sourceId")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
     }
 
@@ -35,17 +36,14 @@ export default [
   }),
 
   http.get(`${API_URL}repository/apt-source`, () => {
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("repository/apt-source")) {
+      const { status } = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path === "repository/apt-source")
-    ) {
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
 
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json({ results: [] });
       }
     }

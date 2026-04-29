@@ -2,16 +2,16 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse } from "./_helpers";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [
   http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "repositoryprofiles")
-    ) {
-      throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("repositoryprofiles")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
     }
 
     const { searchParams } = new URL(request.url);

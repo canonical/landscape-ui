@@ -7,7 +7,7 @@ import { instanceChildren, wslInstanceNames } from "@/tests/mocks/wsl";
 import type { InstanceChild } from "@/types/Instance";
 import { http, HttpResponse } from "msw";
 import { isAction } from "./_helpers";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<{ id: string }, never, { children: InstanceChild[] }>(
@@ -36,7 +36,7 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "child-instance-profiles/:name:reapply"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json();

@@ -16,7 +16,7 @@ import {
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { invitationState } from "./invitations";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -169,7 +169,7 @@ export default [
         (!endpointStatus.path ||
           endpointStatus.path.includes("ubuntu-installer-attach-sessions/code"))
       ) {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
 
       if (params.attach_code === "EXPIRE") {

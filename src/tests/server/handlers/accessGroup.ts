@@ -4,7 +4,7 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import type { AccessGroup } from "@/features/access-groups";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, AccessGroup[]>(API_URL_OLD, ({ request }) => {
@@ -18,7 +18,7 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "GetAccessGroups"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     if (endpointStatus.status === "empty") {
@@ -28,13 +28,6 @@ export default [
     return HttpResponse.json(accessGroups);
   }),
 
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "ChangeComputersAccessGroup")) {
-      return;
-    }
-
-    return HttpResponse.json({ success: true });
-  }),
 
   http.get(API_URL_OLD, ({ request }) => {
     if (

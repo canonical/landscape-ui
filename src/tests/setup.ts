@@ -54,6 +54,31 @@ if (typeof globalThis.ProgressEvent === "undefined") {
   globalThis.ProgressEvent = TestProgressEvent;
 }
 
+// jsdom (29.0.2) does not implement Blob.prototype.stream(). When a test uses
+// XHR with `responseType: "blob"`, @mswjs/interceptors wraps the load event in
+// `new Response(jsdomBlob, ...)`, and undici's `extractBody` then calls
+// `.stream()` on the Blob and throws "object.stream is not a function". The
+// rejection is unhandled and (because it propagates out of MSW's `load`
+// listener on the same XHR that axios is listening to) can also cause axios
+// to receive an error instead of the Blob — making downstream tests flake or
+// fail. Polyfill it so the post-load wrapping completes cleanly.
+if (typeof Blob.prototype.stream !== "function") {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (Blob.prototype as any).stream = function stream(this: Blob) {
+    return new ReadableStream<Uint8Array>({
+      start: async (controller) => {
+        try {
+          const buffer = await this.arrayBuffer();
+          controller.enqueue(new Uint8Array(buffer));
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+  };
+}
+
 beforeAll(() => {
   server.listen({ onUnhandledRequest: "error" });
   mockRangeBoundingClientRect();

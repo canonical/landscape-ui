@@ -2,12 +2,12 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse } from "./_helpers";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [
   http.get(`${API_URL}child-instance-profiles`, ({ request }) => {
     const { searchParams } = new URL(request.url);
-    const endpointStatus = getEndpointStatus();
 
     const search = searchParams.get("search") || "";
     const limit = parseInt(searchParams.get("limit") || "20");
@@ -17,16 +17,14 @@ export default [
       return wslProfile.title.includes(search);
     });
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes("child-instance-profiles"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("child-instance-profiles")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json({
           results: [],
           count: 0,
@@ -46,18 +44,14 @@ export default [
   }),
 
   http.get(`${API_URL}child-instance-profiles/:name`, ({ params }) => {
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("child-instance-profiles/:name")) {
+      const { status } = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes("child-instance-profiles/:name"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json(undefined);
       }
     }
