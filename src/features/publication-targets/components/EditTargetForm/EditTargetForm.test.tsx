@@ -22,8 +22,8 @@ if (!filesystemTarget?.filesystem) {
 }
 
 const s3Full = s3TargetFull.s3;
-const swift = swiftTarget.swift;
-const filesystem = filesystemTarget.filesystem;
+const { swift } = swiftTarget;
+const { filesystem } = filesystemTarget;
 
 describe("EditTargetForm", () => {
   const user = userEvent.setup();
