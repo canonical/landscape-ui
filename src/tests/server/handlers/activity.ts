@@ -92,6 +92,20 @@ export default [
 
     const { status, type, searchQuery } = parseActivitiesQuery(query);
 
+    if (
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "activities"
+    ) {
+      const { unapproved, delivered } = endpointStatus.response as {
+        unapproved: Activity[];
+        delivered: Activity[];
+      };
+      const bulkData = status === "unapproved" ? unapproved : delivered;
+      return HttpResponse.json(
+        generatePaginatedResponse<Activity>({ data: bulkData, limit, offset }),
+      );
+    }
+
     if (endpointStatus.path === "many-activities") {
       const bulkData =
         status === "unapproved"

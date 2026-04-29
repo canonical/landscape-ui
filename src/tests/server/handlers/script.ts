@@ -131,6 +131,15 @@ export default [
   ),
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "loading" &&
+      (!endpointStatus.path || endpointStatus.path === "scripts/versions")
+    ) {
+      await delay("infinite");
+    }
+
     const DEFAULT_PAGE_SIZE = 20;
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
@@ -243,10 +252,7 @@ export default [
   http.post(`${API_URL}scripts/:id\\:redact`, async () => {
     const endpointStatus = getEndpointStatus();
 
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "redact"
-    ) {
+    if (endpointStatus.status === "error" && endpointStatus.path === "redact") {
       throw getEndpointStatusApiError();
     }
 
@@ -256,10 +262,7 @@ export default [
   http.post(`${API_URL}scripts/run`, async () => {
     const endpointStatus = getEndpointStatus();
 
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "run"
-    ) {
+    if (endpointStatus.status === "error" && endpointStatus.path === "run") {
       throw getEndpointStatusApiError();
     }
 

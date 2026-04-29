@@ -37,7 +37,15 @@ describe("AutoinstallFileEditForm", () => {
   });
 
   it("shows caution notification when edit history limit is reached", async () => {
-    setEndpointStatus({ path: "autoinstall:max-versions-reached", status: "default" });
+    setEndpointStatus({
+      status: "variant",
+      path: "autoinstall",
+      response: {
+        current_version: 3,
+        max_versions: 3,
+        versions: [],
+      },
+    });
     renderWithProviders(
       <AutoinstallFileEditForm autoinstallFile={autoinstallFile} />,
     );

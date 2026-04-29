@@ -144,7 +144,11 @@ describe("EditUserForm", () => {
     assert(daemonGroup);
     assert(binGroup);
 
-    setEndpointStatus({ status: "default", path: "users/groups:daemon" });
+    setEndpointStatus({
+      status: "variant",
+      path: "user-groups",
+      response: userGroups.filter((g) => g.name === "daemon"),
+    });
     renderEditUserForm();
 
     await user.click(

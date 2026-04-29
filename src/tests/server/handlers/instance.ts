@@ -26,7 +26,7 @@ import {
 } from "@/tests/mocks/instance";
 import { userGroups } from "@/tests/mocks/userGroup";
 import type { Instance, PendingInstance } from "@/types/Instance";
-import type { GroupsResponse } from "@/types/User";
+import type { GroupsResponse, Group } from "@/types/User";
 import { delay, http, HttpResponse } from "msw";
 import {
   generatePaginatedResponse,
@@ -42,21 +42,9 @@ export default [
     const endpointStatus = getEndpointStatus();
 
     if (shouldApplyEndpointStatus("computers")) {
-      const { status, path } = getEndpointStatus();
-
       if (
-        status === "error" &&
-        path === "computers-tagged-loading" &&
-        query.includes(" OR ")
-      ) {
-        return new Promise<never>(() => undefined);
-      }
-
-      if (
-        status === "error" &&
-        (!path ||
-          path === "computers" ||
-          (path === "computers-tagged-error" && query.includes(" OR ")))
+        endpointStatus.status === "error" &&
+        (!endpointStatus.path || endpointStatus.path === "computers")
       ) {
         throw createEndpointStatusError();
       }
@@ -64,6 +52,65 @@ export default [
 
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || 1;
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "computers-pro-empty" &&
+      query.includes("has-pro-management:false")
+    ) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (query.includes("has-pro-management:false")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [instances[1], instances[2]],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (query.includes("access-group:singular-access-group")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [instances[0]],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (query.includes("access-group:empty-access-group")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "computers-alert-empty" &&
+      (query.includes("alert:security-upgrades") ||
+        query.includes("alert:package-upgrades"))
+    ) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [],
+          limit,
+          offset,
+        }),
+      );
+    }
 
     if (
       endpointStatus.status === "empty" &&
@@ -439,19 +486,19 @@ export default [
     GroupsResponse
   >(`${API_URL}computers/:computerId/users/:username/groups`, () => {
     const endpointStatus = getEndpointStatus();
-    const daemonGroups = userGroups.filter((group) => group.name === "daemon");
     const shouldReturnEmptyGroups =
       endpointStatus.status === "empty" &&
       (!endpointStatus.path || endpointStatus.path === "users/groups");
-    const shouldReturnDaemonGroupOnly =
-      endpointStatus.path === "users/groups:daemon";
+    const shouldReturnCustomGroups =
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "user-groups";
 
     if (shouldReturnEmptyGroups) {
       return HttpResponse.json({ groups: [] });
     }
 
-    if (shouldReturnDaemonGroupOnly) {
-      return HttpResponse.json({ groups: daemonGroups });
+    if (shouldReturnCustomGroups) {
+      return HttpResponse.json({ groups: endpointStatus.response as Group[] });
     }
 
     return HttpResponse.json({ groups: userGroups });

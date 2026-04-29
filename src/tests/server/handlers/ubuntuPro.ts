@@ -10,18 +10,19 @@ import {
 
 export default [
   http.post(`${API_URL}attach-token`, () => {
+    const endpointStatus = getEndpointStatus();
+
     if (shouldApplyEndpointStatus("attach-token")) {
       const { status } = getEndpointStatus();
       if (status === "error") {
         throw createEndpointStatusError();
       }
-
-      if (endpointStatus.path === "attach-token-with-invalid") {
-        return HttpResponse.json({
-          ...attachUbuntuProActivity,
-          invalid_computer_ids: [1],
-        });
-      }
+    }
+    if (
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "attach-token"
+    ) {
+      return HttpResponse.json(endpointStatus.response);
     }
 
     return HttpResponse.json(attachUbuntuProActivity);

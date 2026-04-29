@@ -12,7 +12,6 @@ export default [
     `${API_URL}employees`,
     async ({ request }) => {
       const DEFAULT_PAGE_SIZE = 20;
-      const NEXT_PAGE_LOADING_DELAY_MS = 150;
 
       const endpointStatus = getEndpointStatus();
 
@@ -27,12 +26,6 @@ export default [
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
       const search = url.searchParams.get("search") ?? "";
-
-      if (endpointStatus.path === "employees:next-page-loading" && offset > 0) {
-        await new Promise((resolve) => {
-          setTimeout(resolve, NEXT_PAGE_LOADING_DELAY_MS);
-        });
-      }
 
       return HttpResponse.json(
         generatePaginatedResponse<Employee>({

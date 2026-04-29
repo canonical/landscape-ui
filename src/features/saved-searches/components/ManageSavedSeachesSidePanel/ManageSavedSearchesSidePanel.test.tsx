@@ -1,4 +1,3 @@
-import { setManySavedSearches } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -55,7 +54,6 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should show pagination controls and support page navigation when many saved searches exist", async () => {
-    setManySavedSearches(true);
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     await screen.findByRole("table");
@@ -70,7 +68,6 @@ describe("ManageSavedSearchesSidePanel", () => {
   });
 
   it("should update page size when page size selector is changed", async () => {
-    setManySavedSearches(true);
     renderWithProviders(<ManageSavedSearchesSidePanel />);
 
     await screen.findByRole("table");

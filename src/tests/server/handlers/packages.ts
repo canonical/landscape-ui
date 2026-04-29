@@ -50,14 +50,10 @@ export default [
 
       if (
         endpointStatus.status === "empty" &&
-        endpointStatus.path === "empty-packages"
+        endpointStatus.path === "packages"
       ) {
         return HttpResponse.json(
-          generatePaginatedResponse<Package>({
-            data: [],
-            limit,
-            offset,
-          }),
+          generatePaginatedResponse<Package>({ data: [], limit, offset }),
         );
       }
 
@@ -73,7 +69,6 @@ export default [
 
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
     const endpointStatus = getEndpointStatus();
-
     if (
       endpointStatus.status === "error" &&
       endpointStatus.path === "computers-packages"
