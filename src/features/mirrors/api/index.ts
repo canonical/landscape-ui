@@ -8,3 +8,4 @@ export * from "./useGetUbuntuArchiveInfo";
 export * from "./useGetUbuntuEsmInfo";
 export * from "./useCreateMirror";
 export * from "./useGetMirror";
+export * from "./useListPublicationTargets";
