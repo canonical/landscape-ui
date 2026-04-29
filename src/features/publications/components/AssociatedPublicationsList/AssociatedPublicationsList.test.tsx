@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import type { Publication } from "../../../publication-targets/types";
 import { describe, expect, it } from "vitest";
 import AssociatedPublicationsList from "./AssociatedPublicationsList";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const pubWithoutPublishTime: Publication = {
   name: "publications/no-date-id",
@@ -292,7 +293,7 @@ describe("AssociatedPublicationsList", () => {
         <AssociatedPublicationsList publications={[pubWithoutPublishTime]} />,
       );
 
-      expect(screen.getByText("---")).toBeInTheDocument();
+      expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
     });
   });
 
