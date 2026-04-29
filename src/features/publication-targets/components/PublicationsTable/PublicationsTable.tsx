@@ -104,8 +104,8 @@ const PublicationsTable: FC<PublicationsTableProps> = ({
       <ModalTablePagination
         current={currentPage}
         max={maxPage}
-        onPrev={() => setCurrentPage((p) => Math.max(1, p - 1))}
-        onNext={() => setCurrentPage((p) => Math.min(maxPage, p + 1))}
+        onPrev={() => { setCurrentPage((p) => Math.max(1, p - 1)); }}
+        onNext={() => { setCurrentPage((p) => Math.min(maxPage, p + 1)); }}
       />
     </>
   );
