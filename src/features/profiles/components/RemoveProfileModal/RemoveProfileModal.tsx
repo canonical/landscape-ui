@@ -39,7 +39,7 @@ const RemoveProfileModal: FC<RemoveProfileModalProps> = ({
         name: profile.name,
       });
 
-      setPageParams({ sidePath: [], profile: "" });
+      setPageParams({ sidePath: [], name: "" });
 
       notify.success({
         title: `${capitalize(type)} profile ${removalType}d`,

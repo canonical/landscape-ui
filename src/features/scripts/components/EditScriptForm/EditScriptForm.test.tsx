@@ -218,24 +218,30 @@ describe("EditScriptForm", () => {
       (profile) => profile.id === ASSOCIATED_PROFILE_ID,
     );
     assert(associatedProfile);
-    const originalAssociatedCount =
-      associatedProfile.computers.num_associated_computers;
-    associatedProfile.computers.num_associated_computers = 1;
+    
+    const modifiedScript = {
+      ...script,
+      script_profiles: script.script_profiles.map((profile) =>
+        profile.id === ASSOCIATED_PROFILE_ID
+          ? {
+              ...profile,
+              computers: {
+                num_associated_computers: 1,
+              },
+            }
+          : profile,
+      ),
+    };
 
-    try {
-      renderWithProviders(<EditScriptForm script={script} />);
+    renderWithProviders(<EditScriptForm script={modifiedScript} />);
 
-      await user.click(
-        screen.getByRole("button", { name: "Submit new version" }),
-      );
+    await user.click(
+      screen.getByRole("button", { name: "Submit new version" }),
+    );
 
-      expect(
-        await screen.findByRole("link", { name: "1 instance" }),
-      ).toHaveAttribute("href", ROUTES.instances.root());
-    } finally {
-      associatedProfile.computers.num_associated_computers =
-        originalAssociatedCount;
-    }
+    expect(
+      await screen.findByRole("link", { name: "1 instance" }),
+    ).toHaveAttribute("href", ROUTES.instances.root());
   });
 
   it("shows no data for associated profiles without instances", async () => {

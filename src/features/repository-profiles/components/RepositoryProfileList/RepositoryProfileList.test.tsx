@@ -4,8 +4,14 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
+
+vi.mock("@/hooks/useRoles", () => ({
+  default: vi.fn(() => ({
+    getAccessGroupQuery: vi.fn(() => ({ data: { data: accessGroups } })),
+  })),
+}));
 
 const LocationDisplay = () => {
   const { search } = useLocation();
@@ -68,11 +74,10 @@ describe("RepositoryProfileList", () => {
       await screen.findByRole("button", { name: firstProfile.title }),
     );
 
-    expect(
-      await screen.findByText(/sidePath=view/, {
-        selector: "[data-testid='location']",
-      }),
-    ).toHaveTextContent(`name=${firstProfile.name}`);
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      `name=${firstProfile.name}`,
+    );
   });
 
   it("renders only the profiles passed in (server-side filtering)", () => {
