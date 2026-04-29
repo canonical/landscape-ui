@@ -15,71 +15,73 @@ const SwiftFields: FC<SwiftFieldsProps> = ({ formik }) => (
       type="text"
       label="Container"
       required
-      error={getFormikError(formik, "container")}
-      {...formik.getFieldProps("container")}
+      error={getFormikError(formik, ["swift", "container"])}
+      {...formik.getFieldProps("swift.container")}
     />
     <Input
       type="text"
       label="Username"
       required
-      error={getFormikError(formik, "swiftUsername")}
-      {...formik.getFieldProps("swiftUsername")}
+      autoComplete="off"
+      error={getFormikError(formik, ["swift", "username"])}
+      {...formik.getFieldProps("swift.username")}
     />
     <Input
       type="password"
       label="Password"
+      autoComplete="new-password"
       required
-      error={getFormikError(formik, "swiftPassword")}
-      {...formik.getFieldProps("swiftPassword")}
+      error={getFormikError(formik, ["swift", "password"])}
+      {...formik.getFieldProps("swift.password")}
     />
     <Input
       type="text"
       label="Auth URL"
       required
-      error={getFormikError(formik, "authUrl")}
-      {...formik.getFieldProps("authUrl")}
+      error={getFormikError(formik, ["swift", "authUrl"])}
+      {...formik.getFieldProps("swift.authUrl")}
     />
     <Input
       type="text"
       label="Prefix"
-      error={getFormikError(formik, "swiftPrefix")}
-      {...formik.getFieldProps("swiftPrefix")}
+      error={getFormikError(formik, ["swift", "prefix"])}
+      {...formik.getFieldProps("swift.prefix")}
     />
     <Input
       type="text"
       label="Tenant"
-      error={getFormikError(formik, "tenant")}
-      {...formik.getFieldProps("tenant")}
+      error={getFormikError(formik, ["swift", "tenant"])}
+      {...formik.getFieldProps("swift.tenant")}
     />
     <Input
       type="text"
       label="Tenant ID"
-      error={getFormikError(formik, "tenantId")}
-      {...formik.getFieldProps("tenantId")}
+      error={getFormikError(formik, ["swift", "tenantId"])}
+      {...formik.getFieldProps("swift.tenantId")}
     />
     <Input
       type="text"
       label="OpenStack domain name"
-      error={getFormikError(formik, "domain")}
-      {...formik.getFieldProps("domain")}
+      error={getFormikError(formik, ["swift", "domain"])}
+      {...formik.getFieldProps("swift.domain")}
     />
     <Input
       type="text"
       label="OpenStack domain ID"
-      error={getFormikError(formik, "domainId")}
-      {...formik.getFieldProps("domainId")}
+      error={getFormikError(formik, ["swift", "domainId"])}
+      {...formik.getFieldProps("swift.domainId")}
     />
     <Input
       type="text"
       label="OpenStack tenant domain"
-      error={getFormikError(formik, "tenantDomain")}
-      {...formik.getFieldProps("tenantDomain")}
+      error={getFormikError(formik, ["swift", "tenantDomain"])}
+      {...formik.getFieldProps("swift.tenantDomain")}
     />
     <Input
       type="text"
       label="OpenStack tenant domain ID"
-      error={getFormikError(formik, "tenantDomainId")}
-      {...formik.getFieldProps("tenantDomainId")}
+      error={getFormikError(formik, ["swift", "tenantDomainId"])}
+      {...formik.getFieldProps("swift.tenantDomainId")}
     />
   </div>
 );
