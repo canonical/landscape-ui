@@ -141,9 +141,8 @@ describe("RemoveTargetForm", () => {
 
   it("submits the deletion after typing the confirmation text", async () => {
     server.use(
-      http.delete(
-        `${API_URL_DEB_ARCHIVE}v1/publicationTargets/:id`,
-        () => new HttpResponse(null, { status: 204 }),
+      http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
+        new HttpResponse(null, { status: 204 }),
       ),
     );
 
@@ -175,7 +174,7 @@ describe("RemoveTargetForm", () => {
 
   it("shows an error notification when deletion fails", async () => {
     server.use(
-      http.delete(`${API_URL_DEB_ARCHIVE}v1/publicationTargets/:id`, () =>
+      http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
         HttpResponse.json({ message: "deletion failed" }, { status: 500 }),
       ),
     );
