@@ -1,4 +1,4 @@
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "./APTSource";
 import type { CreateRepositoryProfileParams } from "../api";
 
 export type RepositoryProfileFormValues = Omit<

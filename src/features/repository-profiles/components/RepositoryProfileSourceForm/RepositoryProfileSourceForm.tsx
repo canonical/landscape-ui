@@ -1,4 +1,4 @@
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import type { RepositoryProfileSourceFormValues } from "../../types";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Textarea } from "@canonical/react-components";
