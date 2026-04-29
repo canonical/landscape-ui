@@ -15,76 +15,76 @@ const S3Fields: FC<S3FieldsProps> = ({ formik }) => (
       type="text"
       label="Region"
       required
-      error={getFormikError(formik, "region")}
-      {...formik.getFieldProps("region")}
+      error={getFormikError(formik, ["s3", "region"])}
+      {...formik.getFieldProps("s3.region")}
     />
     <Input
       type="text"
       label="Bucket name"
       required
-      error={getFormikError(formik, "bucket")}
-      {...formik.getFieldProps("bucket")}
+      error={getFormikError(formik, ["s3", "bucket"])}
+      {...formik.getFieldProps("s3.bucket")}
     />
     <Input
       type="text"
       label="Endpoint"
-      error={getFormikError(formik, "endpoint")}
-      {...formik.getFieldProps("endpoint")}
+      error={getFormikError(formik, ["s3", "endpoint"])}
+      {...formik.getFieldProps("s3.endpoint")}
     />
     <Input
       type="text"
       label="AWS access key ID"
       required
-      error={getFormikError(formik, "awsAccessKeyId")}
-      {...formik.getFieldProps("awsAccessKeyId")}
+      error={getFormikError(formik, ["s3", "awsAccessKeyId"])}
+      {...formik.getFieldProps("s3.awsAccessKeyId")}
     />
     <Input
       type="text"
       label="AWS secret access key"
       required
-      error={getFormikError(formik, "awsSecretAccessKey")}
-      {...formik.getFieldProps("awsSecretAccessKey")}
+      error={getFormikError(formik, ["s3", "awsSecretAccessKey"])}
+      {...formik.getFieldProps("s3.awsSecretAccessKey")}
     />
     <Input
       type="text"
       label="Prefix"
-      error={getFormikError(formik, "s3Prefix")}
-      {...formik.getFieldProps("s3Prefix")}
+      error={getFormikError(formik, ["s3", "prefix"])}
+      {...formik.getFieldProps("s3.prefix")}
     />
     <Input
       type="text"
       label="ACL"
-      error={getFormikError(formik, "acl")}
-      {...formik.getFieldProps("acl")}
+      error={getFormikError(formik, ["s3", "acl"])}
+      {...formik.getFieldProps("s3.acl")}
     />
     <Input
       type="text"
       label="Storage class"
-      error={getFormikError(formik, "storageClass")}
-      {...formik.getFieldProps("storageClass")}
+      error={getFormikError(formik, ["s3", "storageClass"])}
+      {...formik.getFieldProps("s3.storageClass")}
     />
     <Input
       type="text"
       label="Encryption method"
-      error={getFormikError(formik, "encryptionMethod")}
-      {...formik.getFieldProps("encryptionMethod")}
+      error={getFormikError(formik, ["s3", "encryptionMethod"])}
+      {...formik.getFieldProps("s3.encryptionMethod")}
     />
     <CheckboxInput
       label="Disable MultiDel"
-      checked={formik.values.disableMultiDel}
+      checked={formik.values.s3.disableMultiDel}
       onChange={(e) =>
         formik.setFieldValue(
-          "disableMultiDel",
+          "s3.disableMultiDel",
           (e.target as HTMLInputElement).checked,
         )
       }
     />
     <CheckboxInput
       label="Force AWS SIGv2 (disables SIGv4)"
-      checked={formik.values.forceSigV2}
+      checked={formik.values.s3.forceSigV2}
       onChange={(e) =>
         formik.setFieldValue(
-          "forceSigV2",
+          "s3.forceSigV2",
           (e.target as HTMLInputElement).checked,
         )
       }
