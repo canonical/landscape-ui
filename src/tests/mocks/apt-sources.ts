@@ -1,4 +1,4 @@
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "@/features/repository-profiles";
 
 export const aptSources = [
   {

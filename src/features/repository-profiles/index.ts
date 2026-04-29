@@ -10,4 +10,4 @@ export {
   useGetProfileInstancesCount,
   useGetRepositoryProfile,
 } from "./api";
-export type { RepositoryProfile } from "./types";
+export type { APTSource, GPGKey, RepositoryProfile } from "./types";
