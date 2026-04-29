@@ -1,4 +1,4 @@
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

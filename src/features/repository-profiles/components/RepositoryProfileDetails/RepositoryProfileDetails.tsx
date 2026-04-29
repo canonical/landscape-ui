@@ -6,7 +6,7 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS, ModularTable } from "@canonical/react-components";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { Column } from "react-table";

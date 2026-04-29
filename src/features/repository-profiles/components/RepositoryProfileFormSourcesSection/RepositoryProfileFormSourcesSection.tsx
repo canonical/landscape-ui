@@ -1,4 +1,4 @@
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { Button, Icon, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";

@@ -1,4 +1,4 @@
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import type { FC } from "react";
 import RepositoryProfileSourceForm from "../RepositoryProfileSourceForm";
 import classes from "./RepositoryProfileSourceFormOverlay.module.scss";
