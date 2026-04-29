@@ -4,7 +4,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AddPublicationTargetForm from "./AddPublicationTargetForm";
 
 describe("AddPublicationTargetForm", () => {
@@ -437,6 +437,205 @@ describe("AddPublicationTargetForm", () => {
     );
 
     expect(await screen.findByText("server error")).toBeInTheDocument();
+  });
+
+  describe("payload shape", () => {
+    interface CapturedBody {
+      displayName?: string;
+      s3?: Record<string, unknown>;
+      swift?: Record<string, unknown>;
+      filesystem?: Record<string, unknown>;
+    }
+
+    let capturedBody: CapturedBody | undefined;
+
+    beforeEach(() => {
+      capturedBody = undefined;
+      server.use(
+        http.post(
+          `${API_URL_DEB_ARCHIVE}publicationTargets`,
+          async ({ request }) => {
+            capturedBody = (await request.json()) as CapturedBody;
+            return HttpResponse.json({
+              name: "publicationTargets/test",
+              publicationTargetId: "test",
+              displayName: capturedBody.displayName,
+            });
+          },
+        ),
+      );
+    });
+
+    it("sends a nested S3 payload with no swift/filesystem keys and renamed prefix", async () => {
+      renderWithProviders(<AddPublicationTargetForm />);
+
+      await user.type(screen.getByLabelText("Name"), "My S3 Target");
+      await user.type(screen.getByLabelText(/region/i), "us-east-1");
+      await user.type(screen.getByLabelText(/bucket name/i), "my-bucket");
+      await user.type(
+        screen.getByLabelText(/aws access key id/i),
+        "AKIAIOSFODNN7EXAMPLE",
+      );
+      await user.type(
+        screen.getByLabelText(/aws secret access key/i),
+        "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+      );
+      await user.type(screen.getByLabelText(/^prefix$/i), "ubuntu/");
+
+      await user.click(
+        screen.getByRole("button", { name: /add publication target/i }),
+      );
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByText("Publication target created"),
+        ).toBeInTheDocument();
+      });
+
+      expect(capturedBody).toMatchObject({
+        displayName: "My S3 Target",
+        s3: {
+          region: "us-east-1",
+          bucket: "my-bucket",
+          awsAccessKeyId: "AKIAIOSFODNN7EXAMPLE",
+          awsSecretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+          prefix: "ubuntu/",
+          disableMultiDel: false,
+          forceSigV2: false,
+        },
+      });
+      expect(capturedBody).not.toHaveProperty("swift");
+      expect(capturedBody).not.toHaveProperty("filesystem");
+      // Optional empty-string fields should be omitted, not sent as ""
+      expect(capturedBody?.s3).not.toHaveProperty("endpoint");
+      expect(capturedBody?.s3).not.toHaveProperty("acl");
+      expect(capturedBody?.s3).not.toHaveProperty("storageClass");
+      expect(capturedBody?.s3).not.toHaveProperty("encryptionMethod");
+    });
+
+    it("sends a nested Swift payload using API field names (username/password/prefix)", async () => {
+      renderWithProviders(<AddPublicationTargetForm />);
+
+      await user.selectOptions(screen.getByLabelText(/^type$/i), "swift");
+      await user.type(screen.getByLabelText("Name"), "My Swift Target");
+      await user.type(screen.getByLabelText(/container/i), "my-container");
+      await user.type(screen.getByLabelText(/^username$/i), "admin");
+      await user.type(screen.getByLabelText(/^password$/i), "secret");
+      await user.type(
+        screen.getByLabelText(/auth url/i),
+        "https://keystone.example.com/v3",
+      );
+      await user.type(screen.getByLabelText(/^prefix$/i), "packages/");
+
+      await user.click(
+        screen.getByRole("button", { name: /add publication target/i }),
+      );
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByText("Publication target created"),
+        ).toBeInTheDocument();
+      });
+
+      expect(capturedBody).toMatchObject({
+        displayName: "My Swift Target",
+        swift: {
+          container: "my-container",
+          username: "admin",
+          password: "secret",
+          authUrl: "https://keystone.example.com/v3",
+          prefix: "packages/",
+        },
+      });
+      expect(capturedBody).not.toHaveProperty("s3");
+      expect(capturedBody).not.toHaveProperty("filesystem");
+      // The form-internal name `swiftUsername` should not leak into the payload
+      expect(capturedBody?.swift).not.toHaveProperty("swiftUsername");
+      expect(capturedBody?.swift).not.toHaveProperty("swiftPassword");
+      expect(capturedBody?.swift).not.toHaveProperty("swiftPrefix");
+    });
+
+    it("sends a nested Filesystem payload with linkMethod when selected", async () => {
+      renderWithProviders(<AddPublicationTargetForm />);
+
+      await user.selectOptions(screen.getByLabelText(/^type$/i), "filesystem");
+      await user.type(screen.getByLabelText("Name"), "FS target");
+      await user.type(screen.getByLabelText(/^path$/i), "/srv/archives");
+      await user.selectOptions(screen.getByLabelText(/link method/i), "SYMLINK");
+
+      await user.click(
+        screen.getByRole("button", { name: /add publication target/i }),
+      );
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByText("Publication target created"),
+        ).toBeInTheDocument();
+      });
+
+      expect(capturedBody).toMatchObject({
+        displayName: "FS target",
+        filesystem: {
+          path: "/srv/archives",
+          linkMethod: "SYMLINK",
+        },
+      });
+      expect(capturedBody).not.toHaveProperty("s3");
+      expect(capturedBody).not.toHaveProperty("swift");
+    });
+
+    it("omits filesystem.linkMethod when no link method is selected", async () => {
+      renderWithProviders(<AddPublicationTargetForm />);
+
+      await user.selectOptions(screen.getByLabelText(/^type$/i), "filesystem");
+      await user.type(screen.getByLabelText("Name"), "FS no link");
+      await user.type(screen.getByLabelText(/^path$/i), "/srv/no-link");
+
+      await user.click(
+        screen.getByRole("button", { name: /add publication target/i }),
+      );
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByText("Publication target created"),
+        ).toBeInTheDocument();
+      });
+
+      expect(capturedBody?.filesystem).toEqual({ path: "/srv/no-link" });
+      expect(capturedBody?.filesystem).not.toHaveProperty("linkMethod");
+    });
+
+    it("does not leak fields from a previously-selected target type into the payload", async () => {
+      renderWithProviders(<AddPublicationTargetForm />);
+
+      // Start filling S3, then change mind and switch to Swift.
+      await user.type(screen.getByLabelText(/region/i), "us-east-1");
+      await user.type(screen.getByLabelText(/bucket name/i), "abandoned-bucket");
+
+      await user.selectOptions(screen.getByLabelText(/^type$/i), "swift");
+      await user.type(screen.getByLabelText("Name"), "Switched to Swift");
+      await user.type(screen.getByLabelText(/container/i), "my-container");
+      await user.type(screen.getByLabelText(/^username$/i), "admin");
+      await user.type(screen.getByLabelText(/^password$/i), "secret");
+      await user.type(
+        screen.getByLabelText(/auth url/i),
+        "https://keystone.example.com/v3",
+      );
+
+      await user.click(
+        screen.getByRole("button", { name: /add publication target/i }),
+      );
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByText("Publication target created"),
+        ).toBeInTheDocument();
+      });
+
+      expect(capturedBody).toHaveProperty("swift");
+      expect(capturedBody).not.toHaveProperty("s3");
+      expect(capturedBody).not.toHaveProperty("filesystem");
+    });
   });
 });
 
