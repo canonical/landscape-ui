@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-zsgVPwQN.js";import{n as t}from"./jsx-runtime-DXhYoj5F.js";import{t as n}from"./fetchOld-Byz5F8yx.js";var r=e(t(),1);function i(){let e=(0,r.useContext)(n);if(!e)throw Error(`useFetchOld must be used within FetchOldProvider`);return e}export{i as t};

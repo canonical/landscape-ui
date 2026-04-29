@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DXhYoj5F.js";import{n as t}from"./chunk-QFMPRPBF-DEa21KXw.js";var n=e(),r=({className:e,...r})=>(0,n.jsx)(t,{className:e,...r});export{r as t};

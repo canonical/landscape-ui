@@ -1,0 +1,1 @@
+import{p as e}from"./auth-zdmfoLGO.js";import{t}from"./api-Dwj9U3MN.js";var n=()=>{let{profile:n}=e(),{isGettingScriptProfile:r,scriptProfile:i,scriptProfileError:a}=t({id:parseInt(n)});if(a)throw a;return r?{scriptProfile:void 0,isGettingScriptProfile:!0}:{scriptProfile:i,isGettingScriptProfile:!1}};export{n as t};

@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DXhYoj5F.js";var t=e(),n=({children:e,profile:n})=>n.all_computers?(0,t.jsx)(`p`,{children:`This profile has been associated with all instances.`}):n.tags.length?e:(0,t.jsx)(`p`,{children:`This profile has not yet been associated with any instances.`});export{n as t};

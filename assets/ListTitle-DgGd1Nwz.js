@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-DXhYoj5F.js";var t={header:`_header_4ocjm_1`,cell:`_cell_4ocjm_6`},n=e(),r={accessor:`title`,id:`title`,Header:(0,n.jsxs)(`div`,{className:t.header,children:[`Title`,(0,n.jsx)(`span`,{className:`u-text--muted`,children:`Name`})]})},i=({...e})=>(0,n.jsx)(`div`,{className:t.cell,...e});export{r as n,i as t};
