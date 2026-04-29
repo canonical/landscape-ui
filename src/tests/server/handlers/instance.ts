@@ -367,33 +367,6 @@ export default [
     },
   ),
 
-  http.put(`${API_URL}computers/:computerId`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "editInstance")
-    ) {
-      throw getEndpointStatusApiError();
-    }
-
-    return HttpResponse.json(instances[0]);
-  }),
-
-  http.post(
-    `${API_URL}computers/:computerId/usergroups/update_bulk`,
-    async () => {
-      const endpointStatus = getEndpointStatus();
-      if (
-        endpointStatus.status === "error" &&
-        (!endpointStatus.path || endpointStatus.path === "userGroups")
-      ) {
-        throw getEndpointStatusApiError();
-      }
-
-      return HttpResponse.json(activities[0]);
-    },
-  ),
-
   http.get<Record<"computerId", string>, GetGroupsParams, GroupsResponse>(
     `${API_URL}computers/:computerId/groups`,
     () => {
