@@ -5,15 +5,12 @@ import accessGroup from "./accessGroup";
 import activity from "./activity";
 import administrators from "./administrators";
 import alerts from "./alerts";
-import aptSource from "./aptSource";
 import auth from "./auth";
 import autoinstallFiles from "./autoinstallFiles";
 import availabilityZones from "./availabilityZones";
-import distributions from "./distributions";
 import employees from "./employees";
 import eventsLog from "./eventsLog";
 import features from "./features";
-import gpgKey from "./gpgKey";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
@@ -53,14 +50,11 @@ export default [
   ...autoinstallFiles,
   ...activity,
   ...alerts,
-  ...aptSource,
   ...auth,
   ...oidcIssuers,
   ...availabilityZones,
-  ...distributions,
   ...employees,
   ...eventsLog,
-  ...gpgKey,
   ...instance,
   ...invitations,
   ...kernel,
