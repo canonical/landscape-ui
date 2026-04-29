@@ -15,6 +15,7 @@ export const useGetUpgradeProfile = (id: number) => {
     queryKey: ["upgradeProfile", id],
     queryFn: async ({ signal }) =>
       authFetchOld.get("GetUpgradeProfiles", { signal }),
+    enabled: !isNaN(id),
   });
 
   const upgradeProfile = response?.data.find(

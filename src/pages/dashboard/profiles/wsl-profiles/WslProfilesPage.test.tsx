@@ -46,7 +46,7 @@ describe("WslProfilesPage", () => {
     renderWithProviders(
       <WslProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${wslProfiles[0].name}`,
+      `/?sidePath=edit&name=${wslProfiles[0].name}`,
     );
 
     await expectLoadingState();
@@ -61,7 +61,7 @@ describe("WslProfilesPage", () => {
     renderWithProviders(
       <WslProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${wslProfiles[0].name}`,
+      `/?sidePath=view&name=${wslProfiles[0].name}`,
     );
 
     await expectLoadingState();

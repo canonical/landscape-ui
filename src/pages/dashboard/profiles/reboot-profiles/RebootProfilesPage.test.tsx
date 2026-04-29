@@ -43,7 +43,7 @@ describe("RebootProfilesPage", () => {
     renderWithProviders(
       <RebootProfilesPage />,
       undefined,
-      `/?sidePath=duplicate&profile=${rebootProfiles[0].id}`,
+      `/?sidePath=duplicate&name=${rebootProfiles[0].id}`,
     );
 
     await expectLoadingState();
@@ -58,7 +58,7 @@ describe("RebootProfilesPage", () => {
     renderWithProviders(
       <RebootProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${rebootProfiles[0].id}`,
+      `/?sidePath=edit&name=${rebootProfiles[0].id}`,
     );
 
     await expectLoadingState();
@@ -73,7 +73,7 @@ describe("RebootProfilesPage", () => {
     renderWithProviders(
       <RebootProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${rebootProfiles[0].id}`,
+      `/?sidePath=view&name=${rebootProfiles[0].id}`,
     );
 
     await expectLoadingState();

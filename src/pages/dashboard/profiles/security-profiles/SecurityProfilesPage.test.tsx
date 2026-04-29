@@ -44,7 +44,7 @@ describe("SecurityProfilesPage", () => {
     renderWithProviders(
       <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=download&profile=${securityProfiles[1].id}`,
+      `/?sidePath=download&name=${securityProfiles[1].id}`,
     );
 
     await expectLoadingState();
@@ -59,7 +59,7 @@ describe("SecurityProfilesPage", () => {
     renderWithProviders(
       <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=duplicate&profile=${securityProfiles[1].id}`,
+      `/?sidePath=duplicate&name=${securityProfiles[1].id}`,
     );
 
     await expectLoadingState();
@@ -74,7 +74,7 @@ describe("SecurityProfilesPage", () => {
     renderWithProviders(
       <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${securityProfiles[1].id}`,
+      `/?sidePath=edit&name=${securityProfiles[1].id}`,
     );
 
     await expectLoadingState();
@@ -89,7 +89,7 @@ describe("SecurityProfilesPage", () => {
     renderWithProviders(
       <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=run&profile=${securityProfiles[1].id}`,
+      `/?sidePath=run&name=${securityProfiles[1].id}`,
     );
 
     await expectLoadingState();
@@ -104,7 +104,7 @@ describe("SecurityProfilesPage", () => {
     renderWithProviders(
       <SecurityProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${securityProfiles[1].id}`,
+      `/?sidePath=view&name=${securityProfiles[1].id}`,
     );
 
     await expectLoadingState();
