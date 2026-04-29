@@ -2,7 +2,7 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import type { RepositoryProfile } from "@/features/repository-profiles";
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "@/features/repository-profiles";
 import { http, HttpResponse } from "msw";
 import { getEndpointStatusApiError } from "./_constants";
 import {
