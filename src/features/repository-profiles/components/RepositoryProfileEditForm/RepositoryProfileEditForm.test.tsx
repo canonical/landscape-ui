@@ -1,6 +1,7 @@
+import { aptSources } from "@/tests/mocks/apt-sources";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
@@ -78,5 +79,61 @@ describe("RepositoryProfileEditForm", () => {
     expect(screen.getByTestId("location")).not.toHaveTextContent(
       `name=${profile.name}`,
     );
+  });
+
+  it("shows add-source breadcrumb header in add-source step", async () => {
+    renderEditForm("view,edit,add-source");
+
+    expect(
+      await screen.findByRole("link", { name: `Edit ${profile.title}` }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/\/ Add source/)).toBeInTheDocument();
+  });
+
+  it("shows edit-source breadcrumb header in edit-source step", async () => {
+    renderEditForm("view,edit,edit-source");
+
+    expect(
+      await screen.findByRole("link", { name: `Edit ${profile.title}` }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/\/ Edit source/)).toBeInTheDocument();
+  });
+
+  it("breadcrumb link navigates back from source step", async () => {
+    renderEditForm("view,edit,add-source");
+
+    await user.click(
+      await screen.findByRole("link", { name: `Edit ${profile.title}` }),
+    );
+
+    expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+  });
+
+  it("clicking Add source navigates to add-source step", async () => {
+    renderEditForm("view,edit");
+
+    await screen.findByRole("button", { name: /save changes/i });
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    expect(screen.getByTestId("location")).toHaveTextContent("add-source");
+  });
+
+  it("submitting source form in add-source step appends source to the list", async () => {
+    renderEditForm("view,edit,add-source");
+
+    await user.type(
+      await screen.findByRole("textbox", { name: /source name/i }),
+      "my-new-source",
+    );
+    await user.type(
+      screen.getByRole("textbox", { name: /deb line/i }),
+      "deb http://example.com focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    expect(
+      await screen.findByRole("button", { name: /save changes/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("my-new-source")).toBeInTheDocument();
   });
 });

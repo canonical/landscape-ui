@@ -1,0 +1,128 @@
+import { renderWithProviders } from "@/tests/render";
+import { screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { useLocation } from "react-router";
+import { describe, expect, it } from "vitest";
+import RepositoryProfileAddSidePanel from "./RepositoryProfileAddSidePanel";
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
+
+const renderPanel = (sidePath = "add") =>
+  renderWithProviders(
+    <>
+      <RepositoryProfileAddSidePanel />
+      <LocationDisplay />
+    </>,
+    undefined,
+    `/?sidePath=${sidePath}`,
+  );
+
+describe("RepositoryProfileAddSidePanel", () => {
+  const user = userEvent.setup();
+
+  it("renders the panel title on main step", () => {
+    renderPanel();
+
+    expect(screen.getByText("Add repository profile")).toBeInTheDocument();
+  });
+
+  it("renders the repository profile form on main step", () => {
+    renderPanel();
+
+    expect(
+      screen.getByRole("button", { name: /Add a new repository profile/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders add source breadcrumb header when on add-source step", () => {
+    renderPanel("add,add-source");
+
+    const heading = screen.getByRole("heading");
+    expect(heading).toHaveTextContent("Add repository profile");
+    expect(heading).toHaveTextContent("/ Add source");
+  });
+
+  it("renders edit source breadcrumb header when on edit-source step", () => {
+    renderPanel("add,edit-source");
+
+    expect(screen.getByText(/Edit source/i)).toBeInTheDocument();
+    expect(screen.getByText("Add repository profile")).toBeInTheDocument();
+  });
+
+  it("renders the source form when on add-source step", () => {
+    renderPanel("add,add-source");
+
+    expect(screen.getByLabelText(/source name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/deb line/i)).toBeInTheDocument();
+  });
+
+  it("renders the source form when on edit-source step", () => {
+    renderPanel("add,edit-source");
+
+    expect(screen.getByLabelText(/source name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/deb line/i)).toBeInTheDocument();
+  });
+
+  it("navigates to add-source step when clicking add source button", async () => {
+    renderPanel();
+
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    expect(screen.getByTestId("location")).toHaveTextContent("add-source");
+  });
+
+  it("navigates back to main step when clicking breadcrumb link on add-source step", async () => {
+    renderPanel("add,add-source");
+
+    const breadcrumbLink = screen.getByRole("link", {
+      name: "Add repository profile",
+    });
+    await user.click(breadcrumbLink);
+
+    expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+  });
+
+  it("navigates back to main step after submitting add-source form", async () => {
+    renderPanel("add,add-source");
+
+    await user.type(screen.getByLabelText(/source name/i), "my-source");
+    await user.type(
+      screen.getByLabelText(/deb line/i),
+      "deb http://example.com/ubuntu focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+  });
+
+  it("clicking cancel on source form navigates back to main step", async () => {
+    renderPanel("add,add-source");
+
+    await user.click(screen.getByRole("button", { name: /cancel/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+  });
+
+  it("added source appears in sources table after returning to main step", async () => {
+    renderPanel("add,add-source");
+
+    await user.type(screen.getByLabelText(/source name/i), "my-source");
+    await user.type(
+      screen.getByLabelText(/deb line/i),
+      "deb http://example.com/ubuntu focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+    expect(screen.getByText("my-source")).toBeInTheDocument();
+  });
+});

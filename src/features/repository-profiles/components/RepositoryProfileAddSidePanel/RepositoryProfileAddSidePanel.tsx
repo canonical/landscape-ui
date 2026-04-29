@@ -3,32 +3,29 @@ import usePageParams from "@/hooks/usePageParams";
 import { Link } from "@canonical/react-components";
 import { useState, type FC } from "react";
 import type { APTSource } from "../../types";
-import { useGetRepositoryProfile } from "../../api";
 import RepositoryProfileForm from "../RepositoryProfileForm";
 import RepositoryProfileSourceForm from "../RepositoryProfileSourceForm";
 
-const RepositoryProfileEditForm: FC = () => {
+const RepositoryProfileAddSidePanel: FC = () => {
   const {
-    name,
     sidePath,
     lastSidePathSegment,
     popSidePath,
     createSidePathPusher,
     createPageParamsSetter,
   } = usePageParams();
-  const { data: profile } = useGetRepositoryProfile(name);
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
-  const [aptSources, setAptSources] = useState<APTSource[]>(
-    profile.apt_sources ?? [],
-  );
+  const [aptSources, setAptSources] = useState<APTSource[]>([]);
   const [sourceToEdit, setSourceToEdit] = useState<APTSource | null>(null);
 
   const isSourceStep =
     lastSidePathSegment === "add-source" ||
     lastSidePathSegment === "edit-source";
 
-  const panelTitle = `Edit ${profile.title}`;
+  const panelTitle =
+    sidePath[0] === "add" ? "Add repository profile" : "Edit repository profile";
+  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
+
 
   const handleSourceSuccess = (source: APTSource) => {
     if (lastSidePathSegment === "add-source") {
@@ -66,13 +63,10 @@ const RepositoryProfileEditForm: FC = () => {
       <SidePanel.Content>
         <div style={{ display: isSourceStep ? "none" : undefined }}>
           <RepositoryProfileForm
-            action="edit"
-            profile={profile}
+            action="add"
             aptSources={aptSources}
             onAptSourcesChange={setAptSources}
             onClose={closePanel}
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
             onAddSourceClick={createSidePathPusher("add-source")}
             onEditSourceClick={(source) => {
               setSourceToEdit(source);
@@ -93,6 +87,7 @@ const RepositoryProfileEditForm: FC = () => {
             }
             onSuccess={handleSourceSuccess}
             onBack={popSidePath}
+            onClose={popSidePath}
           />
         )}
       </SidePanel.Content>
@@ -100,4 +95,4 @@ const RepositoryProfileEditForm: FC = () => {
   );
 };
 
-export default RepositoryProfileEditForm;
+export default RepositoryProfileAddSidePanel;

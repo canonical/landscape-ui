@@ -2,7 +2,15 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import { useLocation } from "react-router-dom";
 import RepositoryProfileAddButton from "./RepositoryProfileAddButton";
+
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
+
 
 describe("RepositoryProfileAddButton", () => {
   const user = userEvent.setup();
@@ -16,14 +24,18 @@ describe("RepositoryProfileAddButton", () => {
   });
 
   it("opens add repository profile form in side panel on click", async () => {
-    renderWithProviders(<RepositoryProfileAddButton />);
+    renderWithProviders(
+      <>
+        <RepositoryProfileAddButton />
+        <LocationDisplay />
+      </>);
 
     await user.click(
       screen.getByRole("button", { name: /Add repository profile/i }),
     );
-
-    expect(
-      await screen.findByRole("heading", { name: "Add repository profile" }),
-    ).toBeInTheDocument();
+    
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=add",
+    );
   });
 });

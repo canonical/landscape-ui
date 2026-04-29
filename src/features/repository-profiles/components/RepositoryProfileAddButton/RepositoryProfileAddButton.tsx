@@ -1,30 +1,15 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
-
-const RepositoryProfileForm = lazy(
-  () =>
-    import("@/features/repository-profiles/components/RepositoryProfileForm"),
-);
+import type { FC } from "react";
 
 const RepositoryProfileAddButton: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
-
-  const handleAddProfile = () => {
-    setSidePanelContent(
-      "Add repository profile",
-      <Suspense fallback={<LoadingState />}>
-        <RepositoryProfileForm action="add" />
-      </Suspense>,
-    );
-  };
+  const { createPageParamsSetter } = usePageParams();
 
   return (
     <Button
       appearance="positive"
       key="add"
-      onClick={handleAddProfile}
+      onClick={createPageParamsSetter({ sidePath: ["add"] })}
       type="button"
       hasIcon
     >
