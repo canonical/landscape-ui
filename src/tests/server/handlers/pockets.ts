@@ -3,7 +3,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
 import { isAction } from "./_helpers";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get(API_URL_OLD, async ({ request }) => {
@@ -30,7 +30,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === action)
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(activities[0]);
@@ -55,7 +55,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === action)
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(null);
@@ -66,7 +66,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "pockets/sync")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
     return HttpResponse.json(activities[0]);
   }),
@@ -76,7 +76,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "pockets/pull")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
     return HttpResponse.json(activities[0]);
   }),
@@ -86,7 +86,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "pockets/delete")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
     return new HttpResponse(null, { status: 204 });
   }),

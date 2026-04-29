@@ -5,7 +5,7 @@ import { employees } from "@/tests/mocks/employees";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, GetEmployeesParams, ApiPaginatedResponse<Employee>>(
@@ -20,7 +20,7 @@ export default [
         endpointStatus.status === "error" &&
         (!endpointStatus.path || endpointStatus.path === "employees")
       ) {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
 
       const url = new URL(request.url);
@@ -57,7 +57,7 @@ export default [
       (!endpointStatus.path ||
         endpointStatus.path === "associateEmployeeWithInstance")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json();
@@ -70,7 +70,7 @@ export default [
       (!endpointStatus.path ||
         endpointStatus.path === "disassociateEmployeeFromInstance")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json();

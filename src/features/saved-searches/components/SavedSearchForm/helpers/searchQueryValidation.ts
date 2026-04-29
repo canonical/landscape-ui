@@ -2,6 +2,8 @@ import {
   ALERT_TYPES,
   BOOLEANS,
   DOUBLE_QUOTE_REGEX,
+  HARDWARE_ATTRIBUTES,
+  HARDWARE_ROOT_KEYS,
   INTEGER_REGEX,
   LICENSE_TYPES,
   LOGICAL_OPERATORS,
@@ -182,6 +184,45 @@ const validateNumericKeyToken = (
   return keyError(key, "requires a number.");
 };
 
+const validateHardwareToken = (key: string, val: string): ValidationResult => {
+  const dotIndex = key.indexOf(".");
+
+  if (dotIndex === -1) {
+    const hwRoot = key as keyof typeof HARDWARE_ATTRIBUTES;
+    const validAttrs = HARDWARE_ATTRIBUTES[hwRoot].join(", ");
+    return keyError(
+      key,
+      `requires a dot-separated attribute. Valid attributes: ${validAttrs}.`,
+    );
+  }
+
+  const hwRoot = key.slice(0, dotIndex) as keyof typeof HARDWARE_ATTRIBUTES;
+  const attribute = key.slice(dotIndex + 1);
+
+  if (!attribute || !attribute.trim()) {
+    const validAttrs = HARDWARE_ATTRIBUTES[hwRoot].join(", ");
+    return keyError(
+      key,
+      `requires an attribute. Valid attributes: ${validAttrs}.`,
+    );
+  }
+
+  const validAttributes: readonly string[] = HARDWARE_ATTRIBUTES[hwRoot];
+  if (!validAttributes.includes(attribute)) {
+    const validAttrs = HARDWARE_ATTRIBUTES[hwRoot].join(", ");
+    return keyError(
+      key,
+      `has invalid attribute "${attribute}". Valid attributes: ${validAttrs}.`,
+    );
+  }
+
+  if (!val || !val.trim()) {
+    return keyError(key, "requires a value.");
+  }
+
+  return undefined;
+};
+
 const validateAnnotationToken = (val: string): ValidationResult => {
   if (val.trim()) {
     return undefined;
@@ -203,6 +244,12 @@ const validateKeyToken = (
   config: ValidationConfig,
 ): ValidationResult => {
   const [key, val] = parts;
+
+  // Handle hardware dot-notation keys (e.g., cpu.vendor, disk.size)
+  const [hwRoot] = key.split(".");
+  if (HARDWARE_ROOT_KEYS.includes(hwRoot as keyof typeof HARDWARE_ATTRIBUTES)) {
+    return validateHardwareToken(key, val);
+  }
 
   if (!isValidRootKey(key)) {
     return keyError(key, "is not a valid query key.");
@@ -238,6 +285,7 @@ const validateKeyToken = (
     case "contract":
     case "contract-expires-within-days":
     case "license-expires-within-days":
+    case "last-ping":
       return validateNumericKeyToken(key, val);
 
     default:

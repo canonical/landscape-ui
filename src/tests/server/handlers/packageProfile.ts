@@ -2,8 +2,8 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
-import { isAction } from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
+import { isAction, shouldApplyEndpointStatus } from "./_helpers";
 
 export default [
   http.get(`${API_URL}packageprofiles`, ({ request }) => {
@@ -42,15 +42,10 @@ export default [
   ),
 
   http.put(`${API_URL}packageprofiles/:profileName`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes("packageprofiles/:profileName"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("packageprofiles/:profileName")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 
@@ -58,14 +53,10 @@ export default [
   }),
 
   http.post(`${API_URL}packageprofiles`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("packageprofiles"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("packageprofiles")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 
@@ -73,17 +64,10 @@ export default [
   }),
 
   http.post(`${API_URL}packageprofiles/:profileName/constraints`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes(
-          "packageprofiles/:profileName/constraints",
-        ))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("packageprofiles/:profileName/constraints")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 
@@ -91,17 +75,10 @@ export default [
   }),
 
   http.delete(`${API_URL}packageprofiles/:profileName/constraints`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path &&
-        endpointStatus.path.includes(
-          "packageprofiles/:profileName/constraints",
-        ))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("packageprofiles/:profileName/constraints")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 
@@ -111,17 +88,10 @@ export default [
   http.put(
     `${API_URL}packageprofiles/:profileName/constraints/:constraintId`,
     () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (
-        !endpointStatus.path ||
-        (endpointStatus.path &&
-          endpointStatus.path.includes(
-            "packageprofiles/:profileName/constraints/:constraintId",
-          ))
-      ) {
-        if (endpointStatus.status === "error") {
-          throw ENDPOINT_STATUS_API_ERROR;
+      if (shouldApplyEndpointStatus("packageprofiles/:profileName/constraints/:constraintId")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusError();
         }
       }
 
@@ -130,10 +100,11 @@ export default [
   ),
 
   http.get(API_URL_OLD, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-
-    if (!endpointStatus.path && endpointStatus.status === "error") {
-      throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus()) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     if (!isAction(request, "RemovePackageProfile")) {

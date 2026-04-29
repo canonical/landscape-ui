@@ -12,7 +12,9 @@ import { http, HttpResponse } from "msw";
 import {
   generateFilteredResponse,
   generatePaginatedResponse,
+  shouldApplyEndpointStatus,
 } from "./_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [
   http.get(
@@ -87,8 +89,8 @@ export default [
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
 
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (shouldApplyEndpointStatus("computers/:computerId/snaps/installed") && endpointStatus.status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
       return HttpResponse.json(

@@ -4,7 +4,14 @@ import type { GetProcessesParams, Process } from "@/features/processes";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import { processes } from "@/tests/mocks/process";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import { getEndpointStatusApiError } from "./_constants";
@@ -15,8 +22,11 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+      if (
+        shouldApplyEndpointStatus("computers/:instanceId/processes") &&
+        endpointStatus.status === "error"
+      ) {
+        throw createEndpointStatusNetworkError();
       }
 
       const url = new URL(request.url);
@@ -38,20 +48,22 @@ export default [
   http.post<never, never, Activity>(
     `${API_URL}processes/terminate`,
     async () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+      if (shouldApplyEndpointStatus("processes/terminate")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
       }
 
       return HttpResponse.json(activities[0]);
     },
   ),
   http.post<never, never, Activity>(`${API_URL}processes/kill`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus("processes/kill")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(activities[0]);

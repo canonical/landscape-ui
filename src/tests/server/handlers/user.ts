@@ -6,7 +6,7 @@ import { userDetails, users } from "@/tests/mocks/user";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { MAX_USERS_LIMIT } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanel/constants";
 import type { UserCredentials } from "@/features/api-credentials";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 const [defaultAccount] = userDetails.accounts;
 
@@ -47,7 +47,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "users")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(userDetails);
@@ -59,7 +59,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "users")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(userDetails);
@@ -71,7 +71,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "users")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(userDetails);
@@ -83,7 +83,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "lockUser")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(userDetails);
@@ -95,7 +95,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "unlockUser")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(userDetails);

@@ -4,19 +4,12 @@ import {
   MSW_ENDPOINTS_TO_INTERCEPT,
 } from "@/constants";
 import type { RequestHandler } from "msw";
-import { http, HttpResponse, passthrough } from "msw";
+import { http, passthrough } from "msw";
 import { setupWorker } from "msw/browser";
 import fallbackHandlers from "./server/handlers";
 
 const handlers: RequestHandler[] = [
   http.all("*", ({ request }) => {
-    if (request.url.includes("sentry.is.canonical.com")) {
-      return passthrough();
-    }
-
-    return;
-  }),
-  http.all("*", async ({ request }) => {
     if (
       !request.url.includes(API_URL) &&
       !request.url.includes(API_URL_OLD) &&
@@ -25,13 +18,18 @@ const handlers: RequestHandler[] = [
       return passthrough();
     }
 
-    if (
-      request.url.match(/\.(ts|tsx|scss)/)
-    ) {
+    return;
+  }),
+  http.all("*", async ({ request }) => {
+    if (!request.url.includes(API_URL) && !request.url.includes(API_URL_OLD)) {
       return passthrough();
     }
 
-    if (MSW_ENDPOINTS_TO_INTERCEPT.some((url) => request.url.includes(url))) {
+    if (
+      MSW_ENDPOINTS_TO_INTERCEPT.some((url: string) =>
+        request.url.includes(url),
+      )
+    ) {
       return;
     }
 
@@ -40,9 +38,9 @@ const handlers: RequestHandler[] = [
 
   ...fallbackHandlers,
 
-  http.all("*", async ({ request }) => {
-    console.log("Request not handled:", request.url);
-    return new HttpResponse(null, { status: 404 });
+  http.all("*", ({ request }) => {
+    console.warn("MSW: No handler matched, passing through:", request.url);
+    return passthrough();
   }),
 ];
 

@@ -13,28 +13,30 @@ import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import {
   generatePaginatedResponse,
   isAction,
+  shouldApplyEndpointStatus,
 } from "@/tests/server/handlers/_helpers";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 
 export default [
   http.get(`${API_URL}scripts`, async ({ request }) => {
     const DEFAULT_PAGE_SIZE = 20;
-    const endpointStatus = getEndpointStatus();
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
     const offset = Number(url.searchParams.get("offset")) || 0;
     const search = url.searchParams.get("search") || "";
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("scripts"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("scripts")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
       }
 
-      if (endpointStatus.status === "empty") {
+      if (status === "empty") {
         return HttpResponse.json({
           results: [],
           count: 0,
@@ -141,11 +143,12 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
     if (
-      getEndpointStatus().status === "error" &&
-      getEndpointStatus().path === "CreateScript"
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "CreateScript"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({ id: 99 });
@@ -156,11 +159,12 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
     if (
-      getEndpointStatus().status === "error" &&
-      getEndpointStatus().path === "CreateScriptAttachment"
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "CreateScriptAttachment"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({});
@@ -171,11 +175,12 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
     if (
-      getEndpointStatus().status === "error" &&
-      getEndpointStatus().path === "EditScript"
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "EditScript"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({});
@@ -186,11 +191,12 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
     if (
-      getEndpointStatus().status === "error" &&
-      getEndpointStatus().path === "RemoveScriptAttachment"
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "RemoveScriptAttachment"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({});
@@ -201,11 +207,12 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
     if (
-      getEndpointStatus().status === "error" &&
-      getEndpointStatus().path === "ExecuteScript"
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "ExecuteScript"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(activities[0]);

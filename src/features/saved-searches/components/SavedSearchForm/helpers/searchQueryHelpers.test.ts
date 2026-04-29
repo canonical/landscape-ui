@@ -328,3 +328,67 @@ describe("validateSearchField with ValidationConfig", () => {
     );
   });
 });
+
+describe("validateSearchQuery hardware dot-notation", () => {
+  it("accepts valid hardware key:attribute:value tokens", () => {
+    expect(validateSearchQuery("cpu.vendor:Intel ")).toBeUndefined();
+    expect(validateSearchQuery("cpu.size:3Ghz ")).toBeUndefined();
+    expect(validateSearchQuery("disk.vendor:Samsung ")).toBeUndefined();
+    expect(validateSearchQuery("disk.size:500Gb ")).toBeUndefined();
+    expect(validateSearchQuery("display.product:HD ")).toBeUndefined();
+    expect(validateSearchQuery("firmware.version:1.0 ")).toBeUndefined();
+    expect(validateSearchQuery("memory.size:8Gb ")).toBeUndefined();
+    expect(validateSearchQuery("network.capacity:1Gb ")).toBeUndefined();
+    expect(
+      validateSearchQuery("network.serial:aa:bb:cc:dd:ee:ff "),
+    ).toBeUndefined();
+  });
+
+  it("rejects hardware key without a dot", () => {
+    expect(validateSearchQuery("cpu:Intel ")).toBe(
+      '"cpu" requires a dot-separated attribute. Valid attributes: vendor, product, version, size.',
+    );
+    expect(validateSearchQuery("disk:Samsung ")).toBe(
+      '"disk" requires a dot-separated attribute. Valid attributes: vendor, product, version, size.',
+    );
+  });
+
+  it("rejects hardware key with invalid attribute", () => {
+    expect(validateSearchQuery("cpu.colour:red ")).toBe(
+      '"cpu.colour" has invalid attribute "colour". Valid attributes: vendor, product, version, size.',
+    );
+    expect(validateSearchQuery("network.colour:blue ")).toBe(
+      '"network.colour" has invalid attribute "colour". Valid attributes: vendor, product, version, capacity, serial.',
+    );
+  });
+
+  it("rejects hardware key with missing value", () => {
+    expect(validateSearchQuery("cpu.vendor: ")).toBe(
+      '"cpu.vendor" requires a value.',
+    );
+  });
+
+  it("allows hardware terms while typing incomplete last token", () => {
+    expect(validateSearchQuery("cpu.vendor:Int")).toBeUndefined();
+    expect(validateSearchQuery("disk.size:")).toBeUndefined();
+  });
+});
+
+describe("validateSearchQuery new keys added alongside hardware", () => {
+  it("validates last-ping as numeric", () => {
+    expect(validateSearchQuery("last-ping:24 ")).toBeUndefined();
+    expect(validateSearchQuery("last-ping:8760 ")).toBeUndefined();
+    expect(validateSearchQuery("last-ping:two-hours ")).toBe(
+      '"last-ping" requires a number.',
+    );
+  });
+
+  it("validates contract-expires-within-days as numeric", () => {
+    expect(
+      validateSearchQuery("contract-expires-within-days:30 "),
+    ).toBeUndefined();
+    expect(validateSearchQuery("contract-expires-within-days:soon ")).toBe(
+      '"contract-expires-within-days" requires a number.',
+    );
+  });
+});

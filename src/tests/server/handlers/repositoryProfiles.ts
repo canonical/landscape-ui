@@ -4,17 +4,24 @@ import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import type { RepositoryProfile } from "@/features/repository-profiles";
 import type { APTSource } from "@/features/repository-profiles";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
-import { generatePaginatedResponse, isAction } from "./_helpers";
+import { generatePaginatedResponse } from "./_helpers";
 
 export default [
   http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("repositoryprofiles")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
+    }
+
     if (
-      endpointStatus.status === "error" &&
+      endpointStatus.status === "empty" &&
       (!endpointStatus.path || endpointStatus.path === "repositoryprofiles")
     ) {
-      throw new HttpResponse(null, { status: 500 });
+      return HttpResponse.json(
+        generatePaginatedResponse({ data: [], limit: 20, offset: 0 }),
+      );
     }
 
     if (

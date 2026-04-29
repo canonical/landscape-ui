@@ -2,8 +2,6 @@ import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
   DistributionUpgradeTarget,
-  GetInstanceParams,
-  GetInstancesParams,
   RemoveInstancesParams,
   SanitizeInstanceParams,
 } from "@/features/instances";
@@ -27,92 +25,93 @@ import {
   pendingInstances,
 } from "@/tests/mocks/instance";
 import { userGroups } from "@/tests/mocks/userGroup";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance, PendingInstance } from "@/types/Instance";
 import type { GroupsResponse } from "@/types/User";
 import { delay, http, HttpResponse } from "msw";
-import { generatePaginatedResponse, isAction } from "./_helpers";
-import { getEndpointStatusApiError } from "./_constants";
+import {
+  generatePaginatedResponse,
+  isAction,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
-  http.get<never, GetInstancesParams, ApiPaginatedResponse<Instance>>(
-    `${API_URL}computers`,
-    async ({ request }) => {
-      const endpointStatus = getEndpointStatus();
+  http.get(`${API_URL}computers`, async ({ request }) => {
+    const url = new URL(request.url);
+    const query = url.searchParams.get("query") || "";
 
-      const url = new URL(request.url);
-      const query = url.searchParams.get("query") || "";
+    if (shouldApplyEndpointStatus("computers")) {
+      const { status, path } = getEndpointStatus();
 
       if (
-        endpointStatus.status === "error" &&
-        endpointStatus.path === "computers-tagged-loading" &&
+        status === "error" &&
+        path === "computers-tagged-loading" &&
         query.includes(" OR ")
       ) {
         return new Promise<never>(() => undefined);
       }
 
       if (
-        endpointStatus.status === "error" &&
-        (!endpointStatus.path ||
-          endpointStatus.path === "computers" ||
-          (endpointStatus.path === "computers-tagged-error" &&
-            query.includes(" OR ")))
+        status === "error" &&
+        (!path ||
+          path === "computers" ||
+          (path === "computers-tagged-error" && query.includes(" OR ")))
       ) {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
+    }
 
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 1;
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || 1;
 
-      if (query.includes("has-pro-management:false")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: [instances[1], instances[2]],
-            limit,
-            offset,
-          }),
-        );
-      }
-
-      if (query.includes("access-group:singular-access-group")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: [instances[0]],
-            limit,
-            offset,
-          }),
-        );
-      }
-
-      if (query.includes("access-group:empty-access-group")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: [],
-            limit,
-            offset,
-          }),
-        );
-      }
-
-      if (query.includes("profile:repository:")) {
-        return HttpResponse.json(
-          generatePaginatedResponse<Instance>({
-            data: instances.slice(0, 2),
-            limit,
-            offset,
-          }),
-        );
-      }
-
+    if (query.includes("has-pro-management:false")) {
       return HttpResponse.json(
         generatePaginatedResponse<Instance>({
-          data: instances,
+          data: [instances[1], instances[2]],
           limit,
           offset,
         }),
       );
-    },
-  ),
+    }
+
+    if (query.includes("access-group:singular-access-group")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [instances[0]],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (query.includes("access-group:empty-access-group")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: [],
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    if (query.includes("profile:repository:")) {
+      return HttpResponse.json(
+        generatePaginatedResponse<Instance>({
+          data: instances.slice(0, 2),
+          limit,
+          offset,
+        }),
+      );
+    }
+
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: instances,
+        limit,
+        offset,
+      }),
+    );
+  }),
 
   http.get(`${API_URL}computers/release-upgrade-targets`, ({ request }) => {
     const url = new URL(request.url);
@@ -271,10 +270,11 @@ export default [
   }),
 
   http.post(`${API_URL}computers/release-upgrades`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus("computers/release-upgrades")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     const releaseUpgradeActivity = RELEASE_UPGRADE_ACTIVITY;
@@ -304,21 +304,66 @@ export default [
     },
   ),
 
-  http.get<never, GetInstanceParams, Instance>(
-    `${API_URL}computers/:computerId`,
-    async ({ request }) => {
-      const endpointStatus = getEndpointStatus();
+  http.post(`${API_URL}computers/upgrade-packages`, async () => {
+    if (shouldApplyEndpointStatus("computers/upgrade-packages")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
 
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+    return HttpResponse.json(activities[0]);
+  }),
+
+  http.post(`${API_URL}computers/:computerId/restart`, async () => {
+    if (shouldApplyEndpointStatus("computers/:computerId/restart")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json(activities[0]);
+  }),
+
+  http.get(`${API_URL}computers/:computerId`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("computers/:computerId")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    const url = new URL(request.url);
+    const computerId = url.pathname.split("/").pop();
+
+    return HttpResponse.json(
+      instances.find((inst) => inst.id === Number(computerId)) || null,
+    );
+  }),
+
+  http.put(`${API_URL}computers/:computerId`, async () => {
+    if (shouldApplyEndpointStatus("editInstance")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json(instances[0]);
+  }),
+
+  http.post(
+    `${API_URL}computers/:computerId/usergroups/update_bulk`,
+    async () => {
+      if (shouldApplyEndpointStatus("userGroups")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
       }
 
-      const url = new URL(request.url);
-      const computerId = url.pathname.split("/").pop();
-
-      return HttpResponse.json(
-        instances.find((inst) => inst.id === Number(computerId)) || null,
-      );
+      return HttpResponse.json(activities[0]);
     },
   ),
 

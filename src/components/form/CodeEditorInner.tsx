@@ -12,6 +12,7 @@ interface CodeEditorProps {
   readonly value: string | undefined;
   readonly className?: string;
   readonly error?: string | false;
+  readonly warning?: string | false;
   readonly labelClassName?: string;
   readonly onChange?: (value: string | undefined) => void;
   readonly onBlur?: () => void;
@@ -39,6 +40,7 @@ const CodeEditorInner: FC<CodeEditorProps> = ({
   monacoBeforeMount,
   onMount,
   onBlur,
+  warning,
 }) => {
   const { isDarkMode } = useTheme();
 
@@ -55,7 +57,7 @@ const CodeEditorInner: FC<CodeEditorProps> = ({
     <div
       className={classNames(
         "p-form__group p-form-validation",
-        { "is-error": error },
+        { "is-error": error, "is-caution": warning },
         classes.container,
       )}
     >
@@ -89,7 +91,7 @@ const CodeEditorInner: FC<CodeEditorProps> = ({
           theme={isDarkMode ? "vs-dark" : "vs-light"}
           className={classNames(
             classes.highlighter,
-            { [classes.error]: error },
+            { [classes.error]: error, [classes.warning]: warning },
             className,
           )}
           value={value}
@@ -108,6 +110,13 @@ const CodeEditorInner: FC<CodeEditorProps> = ({
           <p className="p-form-validation__message" id="code-error-message">
             <strong>Error: </strong>
             <span>{error}</span>
+          </p>
+        )}
+
+        {warning && (
+          <p className="p-form-validation__message" id="code-warning-message">
+            <strong>Warning: </strong>
+            <span>{warning}</span>
           </p>
         )}
       </div>
