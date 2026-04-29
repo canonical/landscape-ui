@@ -12,6 +12,7 @@ import {
   instanceFailedActivityWithKey,
   instanceNoActivityNoKey,
   instanceNoActivityWithKey,
+  windowsInstance,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import type { FeatureKey } from "@/types/FeatureKey";
@@ -177,6 +178,33 @@ describe("InfoPanel", () => {
   });
 
   describe("Recovery key buttons", () => {
+    it("should not render recovery key buttons for Windows instances", async () => {
+      renderWithProviders(<InfoPanel instance={windowsInstance} />);
+
+      await expectLoadingState();
+
+      expect(
+        screen.queryByRole("button", {
+          name: "More actions",
+        }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("menuitem", {
+          name: "View recovery key",
+        }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("menuitem", {
+          name: "Generate recovery key",
+        }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("menuitem", {
+          name: "Regenerate recovery key",
+        }),
+      ).not.toBeInTheDocument();
+    });
+
     describe("View recovery key button", () => {
       it("should render 'View recovery key' button if instance has recovery key", async () => {
         renderWithProviders(<InfoPanel instance={instanceActivityWithKey} />);

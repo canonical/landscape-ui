@@ -3,6 +3,7 @@ import ListActions from "@/components/layout/ListActions";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import {
   GenerateRecoveryKeyModal,
+  getFeatures,
   isRecoveryKeyActivityInProgress,
   InstanceRemoveFromLandscapeModal,
   RegenerateRecoveryKeyModal,
@@ -35,10 +36,12 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
   const { recoveryKey, recoveryKeyActivityStatus, isRecoveryKeyFetched } =
     useGetRecoveryKey(instance.id);
+  const instanceFeatures = getFeatures(instance);
   const isRecoveryKeyGenerationActivityInProgress =
     isRecoveryKeyActivityInProgress(recoveryKeyActivityStatus);
   const hasRecoveryKey = Boolean(recoveryKey);
-  const shouldShowRecoveryKeyActions = isRecoveryKeyFetched;
+  const shouldShowRecoveryKeyActions =
+    isRecoveryKeyFetched && instanceFeatures.recoveryKey;
 
   const handleCloseModal = () => {
     setSelectedAction("");

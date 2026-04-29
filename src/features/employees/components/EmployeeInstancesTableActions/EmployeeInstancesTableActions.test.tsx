@@ -10,6 +10,7 @@ import {
   instanceFailedActivityWithKey,
   instanceNoActivityNoKey,
   instanceNoActivityWithKey,
+  windowsInstance,
 } from "@/tests/mocks/instance";
 
 describe("EmployeeInstancesTableContextualMenu", () => {
@@ -256,6 +257,28 @@ describe("EmployeeInstancesTableContextualMenu", () => {
         name: `Regenerate recovery key for "${instanceActivityNoKey.title}"`,
       }),
     ).toBeVisible();
+  });
+
+  it("does not show recovery key actions for Windows instances", async () => {
+    renderWithProviders(
+      <EmployeeInstancesTableActions instance={windowsInstance} />,
+    );
+
+    await user.click(
+      screen.getByLabelText(`${windowsInstance.title} profile actions`),
+    );
+
+    expect(
+      screen.queryByLabelText(`View ${windowsInstance.title} recovery key`),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(`Generate ${windowsInstance.title} recovery key`),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(
+        `Regenerate ${windowsInstance.title} recovery key`,
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("opens and confirms the sanitize modal", async () => {

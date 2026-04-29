@@ -435,10 +435,17 @@ export default [
     `${API_URL}computers/:computerId/recovery-key`,
     async ({ params }) => {
       const computerId = Number(params.computerId);
-      const hasInstance = instances.some((inst) => inst.id === computerId);
+      const instance = instances.find((inst) => inst.id === computerId);
 
-      if (!hasInstance) {
+      if (!instance) {
         return new HttpResponse(null, { status: 404 });
+      }
+
+      if (instance.distribution_info?.distributor === "Microsoft") {
+        return HttpResponse.json({
+          activity: null,
+          fde_recovery_key: null,
+        });
       }
 
       const activity = getMockRecoveryKeyActivity(computerId);
