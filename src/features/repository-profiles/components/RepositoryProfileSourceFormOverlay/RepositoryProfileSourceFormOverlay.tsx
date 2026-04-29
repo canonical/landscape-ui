@@ -21,7 +21,7 @@ const RepositoryProfileSourceFormOverlay: FC<
     : undefined;
 
   return (
-    <div className={classes.overlay}>
+    <div className={classes.overlay} data-testid="source-form-overlay">
       <div className={classes.content}>
         <RepositoryProfileSourceForm
           onSuccess={onSourceAdded}

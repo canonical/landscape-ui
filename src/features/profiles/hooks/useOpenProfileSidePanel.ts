@@ -13,7 +13,7 @@ export const useOpenProfileSidePanel = () => {
     if (!sidePath.length || action === "view") {
       setPageParams({
         sidePath: [action],
-        profile: profileIdentifier,
+        name: profileIdentifier,
       });
     } else {
       createSidePathPusher(action)();

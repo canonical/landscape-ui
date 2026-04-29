@@ -2,17 +2,27 @@ import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Suspense } from "react";
-import { describe, expect, it } from "vitest";
+import { useLocation } from "react-router";
+import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileEditForm from "./RepositoryProfileEditForm";
+
+vi.mock("../../api/useGetRepositoryProfile", () => ({
+  useGetRepositoryProfile: vi.fn(() => ({ data: repositoryProfiles[0] })),
+}));
 
 const [profile] = repositoryProfiles;
 
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
+
 const renderEditForm = (sidePath = "view,edit") =>
   renderWithProviders(
-    <Suspense fallback={null}>
+    <>
       <RepositoryProfileEditForm />
-    </Suspense>,
+      <LocationDisplay />
+    </>,
     undefined,
     `/?sidePath=${sidePath}&name=${profile.name}`,
   );
@@ -38,9 +48,7 @@ describe("RepositoryProfileEditForm", () => {
 
   it("does not render back button when sidePath has only one segment", async () => {
     renderWithProviders(
-      <Suspense fallback={null}>
-        <RepositoryProfileEditForm />
-      </Suspense>,
+      <RepositoryProfileEditForm />,
       undefined,
       `/?sidePath=edit&name=${profile.name}`,
     );
@@ -67,8 +75,8 @@ describe("RepositoryProfileEditForm", () => {
 
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
-    expect(
-      screen.queryByRole("heading", { name: `Edit ${profile.title}` }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByTestId("location")).not.toHaveTextContent(
+      `name=${profile.name}`,
+    );
   });
 });

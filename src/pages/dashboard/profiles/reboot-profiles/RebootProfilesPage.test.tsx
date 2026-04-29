@@ -1,10 +1,10 @@
-import { wslProfiles } from "@/tests/mocks/wsl-profiles";
+import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import WslProfilesPage from "./WslProfilesPage";
-import userEvent from "@testing-library/user-event";
+import RebootProfilesPage from "./RebootProfilesPage";
 import { expectLoadingState } from "@/tests/helpers";
+import userEvent from "@testing-library/user-event";
 import type * as actualModule from "@/features/profiles";
 
 vi.mock("@/features/profiles", async () => {
@@ -14,60 +14,72 @@ vi.mock("@/features/profiles", async () => {
 
   return {
     ...actual,
-    ProfilesContainer: () => <div>WSL profiles table</div>,
+    ProfilesContainer: () => <div>Reboot profiles table</div>,
   };
 });
 
-describe("WslProfilesPage", () => {
+describe("RebootProfilesPage", () => {
   it("has a button to add a profile", async () => {
-    renderWithProviders(<WslProfilesPage />, undefined, "/profiles/wsl");
+    renderWithProviders(<RebootProfilesPage />);
+
     const user = userEvent.setup();
 
     await user.click(
       await screen.findByRole("button", { name: "Add profile" }),
     );
-
-    await user.click(
-      await screen.findByRole("button", { name: "Add WSL profile" }),
-    );
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: "Add WSL profile" }),
+      await screen.findByRole("heading", { name: "Add reboot profile" }),
     ).toBeInTheDocument();
     await user.click(screen.getByLabelText("Close"));
 
     expect(
-      screen.queryByRole("heading", { name: "Add WSL profile" }),
+      screen.queryByRole("heading", { name: "Add reboot profile" }),
     ).not.toBeInTheDocument();
   });
 
-  it("renders a side panel to edit", async () => {
+  it("renders a side panel to duplicate", async () => {
     renderWithProviders(
-      <WslProfilesPage />,
+      <RebootProfilesPage />,
       undefined,
-      `/?sidePath=edit&name=${wslProfiles[0].name}`,
+      `/?sidePath=duplicate&name=${rebootProfiles[0].id}`,
     );
 
     await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: `Edit ${wslProfiles[0].title}`,
+        name: `Duplicate ${rebootProfiles[0].title}`,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders a side panel to edit", async () => {
+    renderWithProviders(
+      <RebootProfilesPage />,
+      undefined,
+      `/?sidePath=edit&name=${rebootProfiles[0].id}`,
+    );
+
+    await expectLoadingState();
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("heading", {
+        name: `Edit ${rebootProfiles[0].title}`,
       }),
     ).toBeInTheDocument();
   });
 
   it("renders a side panel to view", async () => {
     renderWithProviders(
-      <WslProfilesPage />,
+      <RebootProfilesPage />,
       undefined,
-      `/?sidePath=view&name=${wslProfiles[0].name}`,
+      `/?sidePath=view&name=${rebootProfiles[0].id}`,
     );
 
     await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
-        name: wslProfiles[0].title,
+        name: rebootProfiles[0].title,
       }),
     ).toBeInTheDocument();
   });
