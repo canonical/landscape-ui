@@ -51,6 +51,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
 const getTargetType = (target: PublicationTarget): string => {
   if (target.s3) return "S3";
   if (target.swift) return "Swift";
+  if (target.filesystem) return "Filesystem";
   return "Unknown";
 };
 
