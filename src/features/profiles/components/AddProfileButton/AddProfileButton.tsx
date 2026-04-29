@@ -36,7 +36,7 @@ const AddProfileButton: FC<AddProfileButtonProps> = ({
 
   const openAddSidePanel = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   const handleClick = () => {

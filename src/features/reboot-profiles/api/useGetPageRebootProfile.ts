@@ -11,7 +11,10 @@ const useGetPageRebootProfile = ():
   const { name: rebootProfileId } = usePageParams();
 
   const { isGettingRebootProfile, rebootProfile, rebootProfileError } =
-    useGetRebootProfile({ id: parseInt(rebootProfileId) });
+    useGetRebootProfile(
+      { id: parseInt(rebootProfileId) },
+      { enabled: !!rebootProfileId },
+    );
 
   if (rebootProfileError) {
     throw rebootProfileError;

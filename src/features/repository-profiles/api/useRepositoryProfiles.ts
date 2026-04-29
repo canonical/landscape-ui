@@ -21,7 +21,6 @@ export interface CreateRepositoryProfileParams {
   all_computers?: boolean;
   apt_sources?: APTSource[];
   description?: string;
-  pockets?: number[];
   tags?: string[];
 }
 
@@ -31,7 +30,6 @@ interface EditRepositoryProfileParams {
   add_apt_sources?: APTSource[];
   remove_apt_sources?: number[];
   description?: string;
-  pockets?: number[];
   tags?: string[];
   title?: string;
 }

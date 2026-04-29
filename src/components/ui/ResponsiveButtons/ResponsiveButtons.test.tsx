@@ -55,6 +55,36 @@ describe("ResponsiveButtons", () => {
     ).toBeInTheDocument();
   });
 
+  it("renders collapsed buttons on all screens", async () => {
+    setScreenSize("xxl");
+
+    render(
+      <ResponsiveButtons buttons={buttons} collapseFrom="md" alwaysCollapse />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Simple button" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Button with icon" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Disabled button" }),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+
+    expect(
+      screen.getByRole("button", { name: "Simple button" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Button with icon" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Disabled button" }),
+    ).toBeInTheDocument();
+  });
+
   it("keeps the first button visible and collapses the rest on small screens", async () => {
     setScreenSize("xs");
 

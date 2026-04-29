@@ -1,12 +1,9 @@
-export interface RebootProfile extends Record<string, unknown> {
-  id: number;
-  title: string;
+import type { Profile } from "@/features/profiles";
+
+export interface RebootProfile extends Profile {
   next_run: string;
   schedule: string;
   deliver_within: number;
   deliver_delay_window: number;
-  access_group: string;
-  tags: string[];
-  all_computers: boolean;
   num_computers: number;
 }

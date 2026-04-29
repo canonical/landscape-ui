@@ -2,7 +2,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { UpgradeProfile } from "../types";
 import { useGetUpgradeProfile } from "./useGetUpgradeProfile";
 
-const useGetPageUpgradeProfile = ():
+export const useGetPageUpgradeProfile = ():
   | {
       upgradeProfile: UpgradeProfile;
       isGettingUpgradeProfile: false;
