@@ -14,9 +14,9 @@ import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [
   http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
     if (shouldApplyEndpointStatus("repositoryprofiles")) {
-      const { status } = getEndpointStatus();
-      if (status === "error") {
+      if (endpointStatus.status === "error") {
         throw createEndpointStatusNetworkError();
       }
     }
