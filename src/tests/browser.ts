@@ -1,5 +1,6 @@
 import {
   API_URL,
+  API_URL_DEB_ARCHIVE,
   API_URL_OLD,
   MSW_ENDPOINTS_TO_INTERCEPT,
 } from "@/constants";
@@ -13,7 +14,7 @@ const handlers: RequestHandler[] = [
     if (
       !request.url.includes(API_URL) &&
       !request.url.includes(API_URL_OLD) &&
-      !request.url.includes("/v1/")
+      !request.url.includes(API_URL_DEB_ARCHIVE)
     ) {
       return passthrough();
     }
