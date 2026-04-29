@@ -1,3 +1,6 @@
+import type { ComplianceInstanceCounts } from "@/features/profiles";
+import type { Profile } from "@/types/Profile";
+
 export type PackageProfileConstraintType = "depends" | "conflicts" | "";
 
 export interface PackageProfileConstraint extends Record<string, unknown> {
