@@ -1,6 +1,6 @@
 import SidePanel from "@/components/layout/SidePanel";
 import type { FC } from "react";
-import useGetPageRemovalProfile from "../../api/useGetPageRemovalProfile";
+import { useGetPageRemovalProfile } from "../../api/useGetPageRemovalProfile";
 import SingleRemovalProfileForm from "../SingleRemovalProfileForm";
 
 const RemovalProfileEditSidePanel: FC = () => {
@@ -13,11 +13,9 @@ const RemovalProfileEditSidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>
-        Edit &quot;{removalProfile.title}&quot; profile
-      </SidePanel.Header>
+      <SidePanel.Header>Edit {removalProfile.title}</SidePanel.Header>
       <SidePanel.Content>
-        <SingleRemovalProfileForm action="edit" profile={removalProfile} />;
+        <SingleRemovalProfileForm action="edit" profile={removalProfile} />
       </SidePanel.Content>
     </>
   );

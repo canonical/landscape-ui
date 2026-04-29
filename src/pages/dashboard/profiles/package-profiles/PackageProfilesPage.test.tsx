@@ -43,7 +43,7 @@ describe("PackageProfilesPage", () => {
     renderWithProviders(
       <PackageProfilesPage />,
       undefined,
-      `/?sidePath=add-constraints&profile=${packageProfiles[0].name}`,
+      `/?sidePath=add-constraints&name=${packageProfiles[0].name}`,
     );
 
     await expectLoadingState();
@@ -58,7 +58,7 @@ describe("PackageProfilesPage", () => {
     renderWithProviders(
       <PackageProfilesPage />,
       undefined,
-      `/?sidePath=duplicate&profile=${packageProfiles[0].name}`,
+      `/?sidePath=duplicate&name=${packageProfiles[0].name}`,
     );
 
     await expectLoadingState();
@@ -73,7 +73,7 @@ describe("PackageProfilesPage", () => {
     renderWithProviders(
       <PackageProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${packageProfiles[0].name}`,
+      `/?sidePath=edit&name=${packageProfiles[0].name}`,
     );
 
     await expectLoadingState();
@@ -88,7 +88,7 @@ describe("PackageProfilesPage", () => {
     renderWithProviders(
       <PackageProfilesPage />,
       undefined,
-      `/?sidePath=edit-constraints&profile=${packageProfiles[0].name}`,
+      `/?sidePath=edit-constraints&name=${packageProfiles[0].name}`,
     );
 
     await expectLoadingState();
@@ -103,7 +103,7 @@ describe("PackageProfilesPage", () => {
     renderWithProviders(
       <PackageProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${packageProfiles[0].name}`,
+      `/?sidePath=view&name=${packageProfiles[0].name}`,
     );
 
     await expectLoadingState();

@@ -42,31 +42,20 @@ export const getTags = (profile: SecurityProfile) =>
     ? "All instances"
     : profile.tags.join(", ") || <NoData />;
 
-export const getTailoringFile = (
-  profile: SecurityProfile,
-  downloadFile: (path: string | null, filename?: string) => Promise<void>,
-) => {
+export const getTailoringFile = (profile: SecurityProfile) => {
   if (!profile.tailoring_file_uri) {
     return <NoData />;
   }
 
-  const pathWithoutQuery = profile.tailoring_file_uri.split(/[?#]/)[0] ?? "";
-  const match = pathWithoutQuery.match(/[^/]+$/);
-  const filename = match ? match[0] : "tailoring-file.xml";
+  const match = profile.tailoring_file_uri.match(/[^/]+$/);
 
   return (
     <div className={classes.container}>
-      <div className={classes.truncated}>{filename}</div>
+      <div className={classes.truncated}>
+        {match ? match[0] : "tailoring-file.xml"}
+      </div>
 
-      <a
-        href={profile.tailoring_file_uri}
-        download={filename}
-        onClick={(event) => {
-          event.preventDefault();
-          void downloadFile(profile.tailoring_file_uri, filename);
-        }}
-        aria-label={`Download ${filename}`}
-      >
+      <a href={profile.tailoring_file_uri} download>
         <Icon name="begin-downloading" />
       </a>
     </div>

@@ -8,7 +8,7 @@ import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import useGetPageRemovalProfile from "../../api/useGetPageRemovalProfile";
+import { useGetPageRemovalProfile } from "../../api/useGetPageRemovalProfile";
 import RemovalProfileRemoveModal from "../RemovalProfileRemoveModal";
 
 const RemovalProfileDetails: FC = () => {

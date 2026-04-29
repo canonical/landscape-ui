@@ -65,7 +65,7 @@ describe("RepositoryProfileSourceFormOverlay", () => {
       screen.getByLabelText(/deb line/i),
       "deb http://archive.ubuntu.com/ubuntu focal main",
     );
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    await user.click(screen.getByRole("button", { name: /add source/i }));
 
     expect(defaultProps.onSourceAdded).toHaveBeenCalledOnce();
     expect(defaultProps.onSourceAdded).toHaveBeenCalledWith(

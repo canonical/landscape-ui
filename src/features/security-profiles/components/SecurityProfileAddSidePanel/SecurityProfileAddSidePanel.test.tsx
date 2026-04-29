@@ -7,7 +7,7 @@ import SecurityProfileAddSidePanel from "./SecurityProfileAddSidePanel";
 describe("SecurityProfileAddSidePanel", () => {
   it("should have a back button after the first page", async () => {
     renderWithProviders(
-      <SecurityProfileAddSidePanel onSuccess={() => undefined} />,
+      <SecurityProfileAddSidePanel showRetentionNotification={() => undefined} />,
     );
 
     await userEvent.type(

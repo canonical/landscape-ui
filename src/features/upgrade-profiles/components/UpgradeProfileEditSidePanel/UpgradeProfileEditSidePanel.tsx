@@ -13,9 +13,7 @@ const UpgradeProfileEditSidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>
-        Edit &quot;{upgradeProfile.title}&quot; profile
-      </SidePanel.Header>
+      <SidePanel.Header>Edit {upgradeProfile.title}</SidePanel.Header>
       <SidePanel.Content>
         <SingleUpgradeProfileForm action="edit" profile={upgradeProfile} />;
       </SidePanel.Content>

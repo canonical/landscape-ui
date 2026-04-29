@@ -2,7 +2,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, it } from "vitest";
 import RepositoryProfileForm from "./RepositoryProfileForm";
@@ -21,7 +21,8 @@ describe("RepositoryProfileForm", () => {
       screen.getByLabelText(/deb line/i),
       "deb http://archive.ubuntu.com/ubuntu focal main",
     );
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+    const overlay = screen.getByTestId("source-form-overlay");
+    await user.click(within(overlay).getByRole("button", { name: /add source/i }));
   };
   it("submits without errors on valid add form", async () => {
     renderWithProviders(<RepositoryProfileForm action="add" />);

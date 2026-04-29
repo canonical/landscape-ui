@@ -1,7 +1,6 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import type { QueryFnType } from "@/types/api/QueryFnType";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -17,35 +16,19 @@ export default function useGetRebootProfiles(
 ) {
   const authFetch = useFetch();
 
-  const getRebootProfilesQuery: QueryFnType<
+  const { data, isPending, error } = useQuery<
     AxiosResponse<ApiPaginatedResponse<RebootProfile>>,
-    Omit<
-      UseQueryOptions<
-        AxiosResponse<ApiPaginatedResponse<RebootProfile>>,
-        AxiosError<ApiError>
-      >,
-      "queryKey" | "queryFn"
-    >
-  > = () =>
-    useQuery<
-      AxiosResponse<ApiPaginatedResponse<RebootProfile>>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["rebootprofiles"],
-      queryFn: async ({ signal }) =>
-        authFetch.get("rebootprofiles", { signal }),
-      ...config,
-    });
-
-  const {
-    data,
-    isPending,
-    error: rebootProfilesError,
-  } = getRebootProfilesQuery();
+    AxiosError<ApiError>
+  >({
+    queryKey: ["rebootprofiles"],
+    queryFn: async ({ signal }) => authFetch.get("rebootprofiles", { signal }),
+    ...config,
+  });
 
   return {
-    rebootProfiles: data?.data.results || [],
-    isPending,
-    rebootProfilesError,
+    rebootProfiles: data?.data.results ?? [],
+    rebootProfilesCount: data?.data.count,
+    rebootProfilesError: error,
+    isGettingRebootProfiles: isPending,
   };
 }

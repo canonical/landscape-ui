@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import type { Publication } from "../../../publication-targets/types";
 import { describe, expect, it } from "vitest";
 import AssociatedPublicationsList from "./AssociatedPublicationsList";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const pubWithoutPublishTime: Publication = {
   name: "publications/no-date-id",
@@ -282,38 +283,38 @@ describe("AssociatedPublicationsList", () => {
       const [firstPub] = publications;
       if (!firstPub) throw new Error("Missing mock publication");
 
-      renderWithProviders(<PublicationsTable publications={[firstPub]} />);
+      renderWithProviders(<AssociatedPublicationsList publications={[firstPub]} />);
 
       expect(screen.getByText(/Mar 12, 2026/)).toBeInTheDocument();
     });
 
     it("renders NoData when publishTime is absent", () => {
       renderWithProviders(
-        <PublicationsTable publications={[pubWithoutPublishTime]} />,
+        <AssociatedPublicationsList publications={[pubWithoutPublishTime]} />,
       );
 
-      expect(screen.getByText("---")).toBeInTheDocument();
+      expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
     });
   });
 
   describe("showSources prop", () => {
     it("hides Source column when showSources is false", () => {
       renderWithProviders(
-        <PublicationsTable publications={publications} showSources={false} />,
+        <AssociatedPublicationsList publications={publications} showSources={false} />,
       );
 
       expect(screen.queryByText("Source")).not.toBeInTheDocument();
     });
 
     it("shows Source column by default", () => {
-      renderWithProviders(<PublicationsTable publications={publications} />);
+      renderWithProviders(<AssociatedPublicationsList publications={publications} />);
 
       expect(screen.getByText("Source")).toBeInTheDocument();
     });
 
     it("renders raw source text when source type is unknown", () => {
       renderWithProviders(
-        <PublicationsTable publications={[pubWithUnknownSource]} />,
+        <AssociatedPublicationsList publications={[pubWithUnknownSource]} />,
       );
 
       expect(screen.getByText("ppa/some-ppa")).toBeInTheDocument();
@@ -325,7 +326,7 @@ describe("AssociatedPublicationsList", () => {
       const pageSize = 1;
 
       renderWithProviders(
-        <PublicationsTable publications={publications} pageSize={pageSize} />,
+        <AssociatedPublicationsList publications={publications} pageSize={pageSize} />,
       );
 
       const [firstPub, secondPub] = publications;
