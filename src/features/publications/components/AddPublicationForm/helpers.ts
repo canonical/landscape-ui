@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import type { FormProps } from "./types";
-import type { PublicationWritable } from "../../types";
+import type { PublicationWritable } from "@canonical/landscape-openapi";
 import { SOURCE_TYPE_LOCAL_REPOSITORY } from "./constants";
 
 export interface CreatePublicationPayload {
@@ -86,6 +86,7 @@ export const getPublicationPayload = (values: FormProps) => {
   return {
     publicationId,
     body: {
+      displayName: values.name.trim(),
       publicationTarget: prependResourcePrefix(
         values.publication_target,
         "publicationTargets/",

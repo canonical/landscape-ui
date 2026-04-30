@@ -4,7 +4,7 @@ import type { FC } from "react";
 import LocalRepositoriesList from "../LocalRepositoriesList";
 import AddLocalRepositoryButton from "../AddLocalRepositoryButton";
 import EmptyState from "@/components/layout/EmptyState";
-import type { Local } from "../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import usePageParams from "@/hooks/usePageParams";
 
 interface LocalRepositoriesContainerProps {

@@ -1,19 +1,19 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import type {
-  PublishPublicationResponse,
-  BatchGetPublicationTargetsResponse,
-} from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import {
-  generateFilteredResponse,
   getDebArchivePaginatedResponse,
   getDebArchivePaginationParams,
 } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import type {
+  BatchGetPublicationTargetsResponse,
+  Publication,
+  PublishPublicationResponse,
+} from "@canonical/landscape-openapi";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("publications");
@@ -36,32 +36,48 @@ const toObjectBody = (value: unknown): Record<string, unknown> => {
   return {};
 };
 
-const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
-    publicationTargets,
-    pageToken,
-    pageSize,
-  );
+const parseApiFilter = (filter: string): ((pub: Publication) => boolean) => {
+  const targetMatch = filter.match(/^publication_target="([^"]+)"$/);
+  if (targetMatch) {
+    const [, targetValue] = targetMatch;
+    return (pub) => pub.publicationTarget === targetValue;
+  }
 
-  return HttpResponse.json({
-    publicationTargets: paginatedData,
-    nextPageToken,
-  });
+  const sourceMatch = filter.match(/^source="([^"]+)"$/);
+  if (sourceMatch) {
+    const [, sourceValue] = sourceMatch;
+    return (pub) => pub.source === sourceValue;
+  }
+
+  const displayNameMatch = filter.match(/^display_name="([^"]*)\*"$/);
+  if (displayNameMatch) {
+    const [, rawPrefix = ""] = displayNameMatch;
+    const prefix = rawPrefix.toLowerCase();
+    return (pub) =>
+      pub.displayName.toLowerCase().startsWith(prefix) ||
+      (pub.label?.toLowerCase().startsWith(prefix) ?? false);
+  }
+
+  return () => true;
 };
 
 const getPublicationsResponse = (requestUrl: string) => {
   const { searchParams } = new URL(requestUrl);
-  const search = searchParams.get("search") ?? undefined;
+  const filter = searchParams.get("filter") ?? undefined;
+  const publicationTargetId =
+    searchParams.get("publicationTargetId") ?? undefined;
   const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
 
-  const filteredPublications = search
-    ? generateFilteredResponse(publications, search, [
-        "name",
-        "source",
-        "publicationTarget",
-      ])
+  let filteredPublications = filter
+    ? publications.filter(parseApiFilter(filter))
     : publications;
+
+  if (publicationTargetId) {
+    filteredPublications = filteredPublications.filter(
+      (pub) =>
+        pub.publicationTarget === `publicationTargets/${publicationTargetId}`,
+    );
+  }
 
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     filteredPublications,
@@ -100,46 +116,13 @@ const getPublicationDetailsResponse = (publicationName: string) => {
   return HttpResponse.json(publication);
 };
 
-const getUpdatePublicationResponse = async (
-  publicationName: string,
-  request: Request,
-) => {
-  const publication = getPublicationParam(publicationName);
-
-  if (!publication) {
-    return HttpResponse.json(
-      { message: "Publication not found" },
-      { status: 404 },
-    );
-  }
-
-  const body = toObjectBody(await request.json());
-
-  return HttpResponse.json({
-    ...publication,
-    ...body,
-  });
-};
-
 const getDeletePublicationResponse = () => {
   return HttpResponse.json({}, { status: 200 });
 };
 
 const getPublishPublicationResponse =
   (): StrictResponse<PublishPublicationResponse> => {
-    return HttpResponse.json(
-      {
-        task: {
-          name: "tasks/2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-          displayName:
-            "publish publications/7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
-          taskId: "2b3f9f18-2f74-4b6f-95f0-57c4e12fd8d3",
-          status: "RUNNING",
-          output: "",
-        },
-      },
-      { status: 200 },
-    );
+    return HttpResponse.json({ response: {} }, { status: 200 });
   };
 
 const getBatchPublicationTargetsResponse = async (
@@ -160,29 +143,6 @@ export default [
       return getBatchPublicationTargetsResponse(request);
     },
   ),
-
-  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return ENDPOINT_STATUS_API_ERROR;
-    }
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return HttpResponse.json({
-        publicationTargets: [],
-        nextPageToken: "",
-      });
-    }
-
-    return getPublicationTargetsResponse(request.url);
-  }),
 
   http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
     await delay();
@@ -235,25 +195,6 @@ export default [
       }
 
       return getPublicationDetailsResponse(params.publicationName as string);
-    },
-  ),
-
-  http.patch(
-    `${API_URL_DEB_ARCHIVE}publications/:publicationName`,
-    async ({ params, request }) => {
-      const endpointStatus = getEndpointStatus();
-
-      if (
-        endpointStatus.status === "error" &&
-        matchesPublicationsPath(endpointStatus.path)
-      ) {
-        return ENDPOINT_STATUS_API_ERROR;
-      }
-
-      return getUpdatePublicationResponse(
-        params.publicationName as string,
-        request,
-      );
     },
   ),
 

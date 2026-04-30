@@ -1,8 +1,19 @@
 import EmptyState from "@/components/layout/EmptyState";
 import { Button, Icon } from "@canonical/react-components";
 import { DOCUMENTATION_URL } from "./constants";
+import { useNavigate } from "react-router";
+import { ROUTES } from "@/libs/routes";
 
 const NoPublicationTargetEmptyState = () => {
+  const navigate = useNavigate();
+  const handleAdd = () => {
+    navigate(
+      ROUTES.repositories.publicationTargets({
+        sidePath: ["add"],
+      }),
+    );
+  };
+
   return (
     <EmptyState
       title="You must first add a publication target in order to add a publication"
@@ -26,6 +37,7 @@ const NoPublicationTargetEmptyState = () => {
           appearance="positive"
           hasIcon
           key="add-publication-target-button"
+          onClick={handleAdd}
           type="button"
         >
           <Icon name="plus" light />

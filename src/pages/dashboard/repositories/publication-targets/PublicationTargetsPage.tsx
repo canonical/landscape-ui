@@ -27,7 +27,7 @@ const EditTargetForm = lazy(async () =>
 
 const PublicationTargetsPage: FC = () => {
   const { lastSidePathSegment, createPageParamsSetter, name } = usePageParams();
-  const { publicationTargets } = useGetPublicationTargets();
+  const { publicationTargets, count } = useGetPublicationTargets();
 
   useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
 
@@ -37,7 +37,7 @@ const PublicationTargetsPage: FC = () => {
 
   const addButton = <PublicationTargetAddButton key="add" />;
 
-  const { actions, children, hasTable } = publicationTargets.length
+  const { actions, children, hasTable } = count
     ? {
         actions: [addButton],
         children: <PublicationTargetContainer />,

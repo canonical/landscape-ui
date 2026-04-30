@@ -1,5 +1,4 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import type { BatchGetMirrorsResponse } from "@/features/publications";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { mirrors } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
@@ -12,6 +11,7 @@ import type {
   UpdateMirrorResponse,
   CreateMirrorResponse,
   SyncMirrorResponse,
+  BatchGetMirrorsResponse,
 } from "@canonical/landscape-openapi";
 import {
   getDebArchivePaginatedResponse,
@@ -58,6 +58,13 @@ export default [
       endpointStatus.path === "mirrors"
     ) {
       return ENDPOINT_STATUS_API_ERROR;
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "mirrors"
+    ) {
+      return HttpResponse.json({ mirrors: [], nextPageToken: undefined });
     }
 
     return getMirrorsResponse(request.url);

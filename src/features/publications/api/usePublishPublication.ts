@@ -1,13 +1,15 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
+import type {
+  PublishPublicationData,
+  PublishPublicationError,
+  PublishPublicationResponse,
+} from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { PublishPublicationResponse } from "../types";
-import type { PublicationServicePublishPublicationBody } from "../types/Publication";
 
 interface PublishPublicationParams {
-  publicationName: string;
-  body: PublicationServicePublishPublicationBody;
+  publicationName: PublishPublicationData["path"]["name"];
+  body: PublishPublicationData["body"];
 }
 
 export const usePublishPublication = () => {
@@ -16,7 +18,7 @@ export const usePublishPublication = () => {
 
   const { mutateAsync, isPending } = useMutation<
     AxiosResponse<PublishPublicationResponse>,
-    AxiosError<ApiError>,
+    AxiosError<PublishPublicationError>,
     PublishPublicationParams
   >({
     mutationKey: ["publications", "publish"],
