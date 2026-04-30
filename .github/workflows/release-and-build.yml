@@ -2,11 +2,17 @@ name: Release and PPA Build
 
 on:
   push:
-    branches: [main, dev, stable, "release/**", "point/**"]
+    branches: [main, dev, "release/**", "point/**"]
 
 permissions:
   contents: write
   pull-requests: write
+
+# Serialize builds per-branch so concurrent pushes to the same branch can't
+# race each other when force-publishing to a ppa-build target.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   process-release:
@@ -14,6 +20,7 @@ jobs:
     outputs:
       version: ${{ steps.calver.outputs.version }}
       dest_branch: ${{ steps.calver.outputs.dest_branch }}
+      publish_stable: ${{ steps.calver.outputs.publish_stable }}
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
@@ -28,15 +35,51 @@ jobs:
 
       - name: Calculate Version
         id: calver
+        env:
+          # Optional override. Leave unset for fully automatic stable
+          # promotion (the highest release/YY.MM on origin wins). Set to a
+          # specific release/YY.MM to pin stable to that branch — useful for
+          # demoting a bad promotion or delaying a fresh cut from going
+          # stable immediately.
+          STABLE_RELEASE_BRANCH: ${{ vars.STABLE_RELEASE_BRANCH }}
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          if [[ $GITHUB_REF == 'refs/heads/main' || $GITHUB_REF == refs/heads/point/* ]]; then DEST="ppa-build";
-          elif [[ $GITHUB_REF == 'refs/heads/dev' ]]; then DEST="ppa-build-dev";
-          elif [[ $GITHUB_REF == 'refs/heads/stable' ]]; then DEST="ppa-build-stable";
-          else DEST="ppa-build-${GITHUB_REF##*/}"; fi
+          # Per-branch destination: every branch publishes to its own ppa-build-*,
+          # so main and point/* no longer collide on a shared target.
+          case "$GITHUB_REF" in
+            refs/heads/main)        DEST="ppa-build" ;;
+            refs/heads/dev)         DEST="ppa-build-dev" ;;
+            refs/heads/point/*)     DEST="ppa-build-point" ;;
+            refs/heads/release/*)   DEST="ppa-build-${GITHUB_REF##*/}" ;;
+            *)                      DEST="ppa-build-draft" ;;
+          esac
           echo "dest_branch=$DEST" >> $GITHUB_OUTPUT
+
+          # Stable promotion. By default the highest release/YY.MM branch on
+          # origin is "latest stable" and gets mirrored to ppa-build-stable.
+          # When STABLE_RELEASE_BRANCH is set, it bypasses auto-derivation
+          # and pins stable to whatever it names.
+          PUBLISH_STABLE="false"
+          if [[ -n "$STABLE_RELEASE_BRANCH" ]]; then
+            if [[ "$GITHUB_REF" == "refs/heads/${STABLE_RELEASE_BRANCH}" ]]; then
+              PUBLISH_STABLE="true"
+            fi
+            echo "Stable promotion pinned via STABLE_RELEASE_BRANCH=${STABLE_RELEASE_BRANCH}"
+          else
+            HIGHEST_RELEASE=$(git branch -r --list 'origin/release/*' \
+              | sed 's|^[ *]*origin/||' \
+              | grep -E '^release/[0-9]{2}\.(04|10)$' \
+              | sort -V \
+              | tail -n1)
+            if [[ -n "$HIGHEST_RELEASE" \
+                && "$GITHUB_REF" == "refs/heads/${HIGHEST_RELEASE}" ]]; then
+              PUBLISH_STABLE="true"
+            fi
+            echo "Auto-derived stable branch: ${HIGHEST_RELEASE:-<none>}"
+          fi
+          echo "publish_stable=$PUBLISH_STABLE" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -90,6 +133,19 @@ jobs:
           push_options: "--force"
           commit_message: "Build v${{ steps.calver.outputs.version }} from ${{ github.ref_name }} [${{ github.sha }}]"
 
+      # When this build represents the current "latest stable" cycle (the
+      # highest release/YY.MM on origin, or whatever STABLE_RELEASE_BRANCH
+      # overrides it to), also publish to ppa-build-stable so consumers
+      # tracking the stable channel pick it up automatically.
+      - name: Promote to ppa-build-stable
+        if: steps.calver.outputs.publish_stable == 'true'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: ppa-build-stable
+          create_branch: true
+          push_options: "--force"
+          commit_message: "Build v${{ steps.calver.outputs.version }} from ${{ github.ref_name }} [${{ github.sha }}] (promoted to stable)"
+
   build-deb:
     needs: process-release
     runs-on: ubuntu-latest
@@ -140,4 +196,3 @@ jobs:
           name: landscape-dashboard-deb
           path: landscape-dashboard_*.deb
           retention-days: 30
-
