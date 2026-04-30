@@ -6,7 +6,6 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
-import NoData from "@/components/layout/NoData";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -92,7 +91,7 @@ const PublicationDetails = ({
             <InfoGrid.Item
               label="Architectures"
               large
-              value={publication.architectures?.join(", ") || <NoData />}
+              value={publication.architectures?.join(", ")}
             />
           </InfoGrid>
         </Blocks.Item>
