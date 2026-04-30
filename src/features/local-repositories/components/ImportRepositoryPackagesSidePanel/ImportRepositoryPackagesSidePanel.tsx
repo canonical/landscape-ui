@@ -141,9 +141,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               borderless
             >
               <span>
-                You can still proceed to import packages, although this
-                process may fail if we can&apos;t fetch the packages from
-                the source provided.
+                You can still proceed to import packages, although this process
+                may fail if we can&apos;t fetch the packages from the source
+                provided.
               </span>
             </Notification>
           )}

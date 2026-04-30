@@ -6,7 +6,6 @@ import { screen } from "@testing-library/react";
 
 describe("LocalRepositoryPublicationsCount", () => {
   it("renders loading state while fetching publications", () => {
-
     renderWithProviders(
       <LocalRepositoryPublicationsCount repository={repositories[0]} />,
     );

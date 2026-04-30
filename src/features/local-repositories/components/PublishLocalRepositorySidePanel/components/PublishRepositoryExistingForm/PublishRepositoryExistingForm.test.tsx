@@ -63,9 +63,7 @@ describe("PublishRepositoryExistingForm", () => {
       />,
     );
 
-    expect(
-      screen.getByText("noble publication"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("noble publication")).toBeInTheDocument();
   });
 
   it("renders contents block", () => {

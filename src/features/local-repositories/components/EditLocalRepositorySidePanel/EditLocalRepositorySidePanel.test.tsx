@@ -9,7 +9,7 @@ describe("EditLocalRepositorySidePanel", () => {
     renderWithProviders(
       <EditLocalRepositorySidePanel />,
       undefined,
-      "?sidePath=edit&name=aaaa-bbbb-cccc"
+      "?sidePath=edit&name=aaaa-bbbb-cccc",
     );
 
     expect(await screen.findByText(/edit repo 1/i)).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe("EditLocalRepositorySidePanel", () => {
     renderWithProviders(
       <EditLocalRepositorySidePanel />,
       undefined,
-      "?sidePath=edit&name=aaaa-bbbb-cccc"
+      "?sidePath=edit&name=aaaa-bbbb-cccc",
     );
 
     await expectLoadingState();
@@ -31,7 +31,7 @@ describe("EditLocalRepositorySidePanel", () => {
     renderWithProviders(
       <EditLocalRepositorySidePanel />,
       undefined,
-      "?sidePath=edit&name=aaaa-bbbb-cccc"
+      "?sidePath=edit&name=aaaa-bbbb-cccc",
     );
 
     await expectLoadingState();

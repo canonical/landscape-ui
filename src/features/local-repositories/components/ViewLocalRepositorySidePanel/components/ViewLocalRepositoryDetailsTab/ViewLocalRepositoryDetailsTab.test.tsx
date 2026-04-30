@@ -33,7 +33,6 @@ describe("ViewLocalRepositoryDetailsTab", () => {
   });
 
   it("renders loading state while fetching publications", () => {
-
     renderWithProviders(
       <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
     );

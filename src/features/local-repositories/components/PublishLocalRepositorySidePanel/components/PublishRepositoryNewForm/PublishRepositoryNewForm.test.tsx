@@ -66,9 +66,7 @@ describe("PublishRepositoryNewForm", () => {
       <PublishRepositoryNewForm repository={repositories[0]} />,
     );
 
-    expect(
-      await screen.findByText("prod-s3-us-east"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("prod-s3-us-east")).toBeInTheDocument();
   });
 
   it("submits form with valid data", async () => {
@@ -81,9 +79,7 @@ describe("PublishRepositoryNewForm", () => {
     await user.type(nameInput, "Test Publication");
 
     const targetSelect = screen.getByLabelText(/^publication target$/i);
-    expect(
-      await screen.findByText("prod-s3-us-east"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("prod-s3-us-east")).toBeInTheDocument();
     await user.selectOptions(
       targetSelect,
       "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",

@@ -8,9 +8,10 @@ const localRepositoriesPublications = publications
   .filter(({ source }) => source.startsWith("locals/"))
   .map((pub) => ({
     ...pub,
-    publishTime: pub.publishTime instanceof Date
-      ? pub.publishTime.toISOString()
-      : pub.publishTime,
+    publishTime:
+      pub.publishTime instanceof Date
+        ? pub.publishTime.toISOString()
+        : pub.publishTime,
   }));
 
 describe("LocalRepositoryPublicationsList", () => {
@@ -48,7 +49,9 @@ describe("LocalRepositoryPublicationsList", () => {
       />,
     );
 
-    const dateElement = screen.getByText(new Date("March 12, 2026").toISOString());
+    const dateElement = screen.getByText(
+      new Date("March 12, 2026").toISOString(),
+    );
     expect(dateElement).toBeInTheDocument();
   });
 

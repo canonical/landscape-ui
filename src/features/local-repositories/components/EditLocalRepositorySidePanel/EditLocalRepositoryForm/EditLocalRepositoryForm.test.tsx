@@ -72,7 +72,9 @@ describe("EditLocalRepositoryForm", () => {
     const submitButton = screen.getByRole("button", { name: /save changes/i });
     await user.click(submitButton);
 
-    expect(screen.queryByText(/this field is required/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/this field is required/i),
+    ).not.toBeInTheDocument();
   });
 
   it("validates required name field", async () => {
