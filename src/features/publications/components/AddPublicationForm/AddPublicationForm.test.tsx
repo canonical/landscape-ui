@@ -142,7 +142,7 @@ describe("AddPublicationForm", () => {
     );
     await selectLocalSource(user);
 
-    expect(screen.getByText("distribution 1")).toBeInTheDocument();
+    expect(screen.getByText("repo 1")).toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Architectures" }),
     ).not.toBeInTheDocument();

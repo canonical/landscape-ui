@@ -6,6 +6,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PublicationDetails from "./PublicationDetails";
 import { mirrors } from "@/tests/mocks/mirrors";
+import { getSourceType } from "../..";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
@@ -29,11 +32,13 @@ describe("PublicationDetails", () => {
 
     const infoItems = [
       { label: "Name", value: publication.displayName },
+      { label: "Source type", value: getSourceType(publication.source) },
       { label: "Source", value: sourceDisplayName },
       { label: "Publication target", value: publicationTargetDisplayName },
-      { label: "Distribution", value: publication.distribution },
-      { label: "Label", value: publication.label },
-      { label: "Origin", value: publication.origin },
+      {
+        label: "Date published",
+        value: moment(publication.publishTime).format(DISPLAY_DATE_TIME_FORMAT),
+      },
       {
         label: "Architectures",
         value: publication.architectures.join(", "),

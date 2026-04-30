@@ -86,10 +86,10 @@ const AddPublicationForm: FC = () => {
   const localSources = useMemo<SelectableSource[]>(
     () =>
       locals.map((localSource) => ({
-        label: localSource.display_name,
+        label: localSource.displayName,
         value: stripResourcePrefix(localSource.name, "locals/"),
         sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
-        distribution: localSource.distribution,
+        distribution: localSource.defaultDistribution,
         architectures: [],
       })),
     [locals],

@@ -1,15 +1,9 @@
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
-import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { http, HttpResponse } from "msw";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import PublicationTargetContainer from "./PublicationTargetContainer";
-
-vi.mock("../../api/useGetPublicationsByTarget", () => ({
-  default: vi.fn(() => ({ publications: [], isGettingPublications: false })),
-}));
 
 describe("PublicationTargetContainer", () => {
   it("renders the loading state while fetching", async () => {
@@ -19,17 +13,15 @@ describe("PublicationTargetContainer", () => {
   });
 
   it("renders an empty table when there are no targets", async () => {
-    server.use(
-      http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, () =>
-        HttpResponse.json({ publicationTargets: [] }),
-      ),
-    );
+    setEndpointStatus({ status: "empty", path: "publicationTargets" });
 
     renderWithProviders(<PublicationTargetContainer />);
     await expectLoadingState();
 
     expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(screen.queryAllByRole("row")).toHaveLength(1); // header row only
+    expect(
+      screen.getByText(/no publication targets found with the search/i),
+    ).toBeInTheDocument();
   });
 
   it("renders the publication targets list when targets are present", async () => {
