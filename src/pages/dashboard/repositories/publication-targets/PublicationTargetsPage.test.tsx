@@ -13,11 +13,11 @@ describe("PublicationTargetsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders the Add publication target button", () => {
+  it("renders the Add publication target button", async () => {
     renderWithProviders(<PublicationTargetsPage />);
 
     expect(
-      screen.getByRole("button", { name: /add publication target/i }),
+      await screen.findByRole("button", { name: /add publication target/i }),
     ).toBeInTheDocument();
   });
 

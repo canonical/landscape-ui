@@ -5,10 +5,8 @@ import { useGetRepositoryProfile } from "../../api";
 import RepositoryProfileForm from "../RepositoryProfileForm";
 
 const RepositoryProfileEditForm: FC = () => {
-  const { name, sidePath, popSidePath, createPageParamsSetter } =
-    usePageParams();
+  const { name, popSidePath } = usePageParams();
   const { data: profile } = useGetRepositoryProfile(name);
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   return (
     <>
@@ -17,9 +15,7 @@ const RepositoryProfileEditForm: FC = () => {
         <RepositoryProfileForm
           action="edit"
           profile={profile}
-          onClose={closePanel}
-          hasBackButton={sidePath.length > 1}
-          onBackButtonPress={popSidePath}
+          onClose={popSidePath}
         />
       </SidePanel.Content>
     </>

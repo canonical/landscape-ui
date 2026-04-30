@@ -104,7 +104,7 @@ const MirrorDetails: FC = () => {
           </Button>
         </div>
         <Blocks>
-          <Blocks.Item title="Details">
+          <Blocks.Item title="Details" titleClassName="p-text--small-caps">
             <InfoGrid dense>
               <InfoGrid.Item label="Name" value={mirror.displayName} />
               <InfoGrid.Item
@@ -143,7 +143,7 @@ const MirrorDetails: FC = () => {
               />
             </InfoGrid>
           </Blocks.Item>
-          <Blocks.Item title="Contents">
+          <Blocks.Item title="Contents" titleClassName="p-text--small-caps">
             <InfoGrid dense>
               <InfoGrid.Item label="Distribution" value={mirror.distribution} />
               <InfoGrid.Item
@@ -170,7 +170,7 @@ const MirrorDetails: FC = () => {
               />
             </InfoGrid>
           </Blocks.Item>
-          <Blocks.Item title="Used in">
+          <Blocks.Item title="Used in" titleClassName="p-text--small-caps">
             <AssociatedPublicationsList
               publications={publications}
               showSources={false}
