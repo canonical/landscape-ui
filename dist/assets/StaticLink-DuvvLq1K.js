@@ -1,0 +1,1 @@
+import{Gt as e,kt as t}from"./index-CT0S2F7F.js";var n=e(),r=({className:e,...r})=>(0,n.jsx)(t,{className:e,...r});export{r as t};

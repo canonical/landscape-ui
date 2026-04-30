@@ -1,0 +1,6 @@
+import{Gt as e,Rt as t}from"./index-CT0S2F7F.js";var n=`http://archive.ubuntu.com/ubuntu`,r=`https://snapshot.ubuntu.com/ubuntu`,i={ubuntu:[`main`,`universe`,`restricted`,`multiverse`],thirdParty:[`main`]},a={ubuntu:[`amd64`],thirdParty:[`amd64`]},o={ubuntu:[`release`,`security`,`updates`],thirdParty:[`release`]},s=[{label:`Main`,value:`main`},{label:`Universe`,value:`universe`},{label:`Restricted`,value:`restricted`},{label:`Multiverse`,value:`multiverse`}],c=[{label:`amd64`,value:`amd64`},{label:`i386`,value:`i386`}],l=t(),u=`A '.udeb' file is a special type of Debian
+package designed for the Debian Installer.
+Experienced users can use the Debian Installer
+for additional fine-tuning options. If you
+choose to include '.udeb' files, they will be
+downloaded in addition to the '.deb' packages.`,d={tooltipPositionElement:`_tooltipPositionElement_15o8v_1`},f=e(),p=({formik:e})=>(0,f.jsx)(l.CheckboxInput,{label:(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(`span`,{children:`Include .udeb packages `}),(0,f.jsxs)(l.Tooltip,{message:u,positionElementClassName:d.tooltipPositionElement,children:[(0,f.jsx)(l.Icon,{name:`help`,"aria-hidden":!0}),(0,f.jsx)(`span`,{className:`u-off-screen`,children:`Help`})]})]}),...e.getFieldProps(`include_udeb`),checked:e.values.include_udeb});export{r as a,o as c,n as i,c as n,a as o,s as r,i as s,p as t};

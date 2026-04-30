@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-jRWAZmH_.js";import{Jt as t,n}from"./index-CT0S2F7F.js";var r=e(t(),1);function i(){return(0,r.useContext)(n)}export{i as t};

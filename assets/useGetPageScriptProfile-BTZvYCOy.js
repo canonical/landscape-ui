@@ -1,0 +1,1 @@
+import{h as e}from"./index-CT0S2F7F.js";import{t}from"./api-Bqn0pEv3.js";var n=()=>{let{profile:n}=e(),{isGettingScriptProfile:r,scriptProfile:i,scriptProfileError:a}=t({id:parseInt(n)});if(a)throw a;return r?{scriptProfile:void 0,isGettingScriptProfile:!0}:{scriptProfile:i,isGettingScriptProfile:!1}};export{n as t};

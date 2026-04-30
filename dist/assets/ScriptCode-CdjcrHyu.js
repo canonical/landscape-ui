@@ -1,0 +1,1 @@
+import{Gt as e,Rt as t}from"./index-CT0S2F7F.js";var n=t(),r=e(),i=({code:e})=>(0,r.jsx)(n.CodeSnippet,{blocks:[{title:`Code preview`,code:e,wrapLines:!0,appearance:`numbered`}]});export{i as default};

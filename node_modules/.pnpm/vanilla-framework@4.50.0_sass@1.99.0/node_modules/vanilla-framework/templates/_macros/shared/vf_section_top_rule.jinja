@@ -1,0 +1,52 @@
+{#-
+
+Helper macro to render a horizontal rule at the top of a section.
+This macro is used by various section patterns to add visual separation.
+
+Note: This file should be renamed to `vf_section-top-rule.jinja` for consistency with other patterns.
+
+Parameters:
+- top_rule_variant (String, Optional): Variant of horizontal rule to use. One of:
+    - "default" - Standard horizontal rule
+    - "muted" - Muted/lighter horizontal rule
+    - "highlighted" - Highlighted/emphasized horizontal rule (internally uses p-rule--highlight)
+    - "none" - No rule rendered
+    Default: "default"
+
+- is_fixed_width (Boolean, Optional): Whether to constrain the rule to fixed content width.
+    When false (default), the rule should be wrapped in a .grid-row element.
+    Default: False
+-#}
+{%- macro vf_section_top_rule(
+  top_rule_variant="default",
+  is_fixed_width=False
+) -%}
+  {%- set top_rule_variant = top_rule_variant | trim | lower -%}
+  {%- if top_rule_variant not in ["default", "muted", "highlighted", "none"] -%}
+    {%- set top_rule_variant = "default" -%}
+  {%- endif -%}
+
+  {%- if top_rule_variant != "none" -%}
+    {%- set top_rule_classes = "p-rule" -%}
+    {%- if top_rule_variant != "default" -%}
+      {#-
+        p-rule--highlighted doesn't exist (use p-rule--highlight instead), but p-rule--muted does.
+        We keep the external API here consistent ("-ed" suffix) for simplicity but need to handle this internally.
+      -#}
+      {%- if top_rule_variant == "highlighted" -%}
+        {%- set top_rule_classes = "p-rule--highlight" -%}
+      {%- else -%}
+        {#- Other cases: just append the top_rule_variant to the p-rule class. -#}
+        {%- set top_rule_classes = top_rule_classes + "--" + top_rule_variant -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if is_fixed_width -%}
+    {%- set top_rule_classes = top_rule_classes + " " + "is-fixed-width" -%}
+  {%- endif -%}
+
+  {%- if top_rule_variant != "none" -%}
+    <hr class="{{- top_rule_classes -}}"/>
+  {%- endif -%}
+{%- endmacro -%}

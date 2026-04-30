@@ -1,0 +1,1 @@
+import"./AuthTemplate-DRVdZp-1.js";

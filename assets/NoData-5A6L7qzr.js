@@ -1,0 +1,1 @@
+import{Gt as e}from"./index-CT0S2F7F.js";var t=e(),n=()=>(0,t.jsx)(t.Fragment,{children:`---`});export{n as t};

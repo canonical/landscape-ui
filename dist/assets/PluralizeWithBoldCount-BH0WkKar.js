@@ -1,0 +1,1 @@
+import{Gt as e,_t as t}from"./index-CT0S2F7F.js";var n=e(),r=({count:e,singular:r,plural:i})=>(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(`strong`,{children:e.toLocaleString()}),` `,t(e,r,i)]});export{r as t};
