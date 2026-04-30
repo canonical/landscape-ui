@@ -94,7 +94,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         </Button>
       </div>
       <Blocks dense>
-        <Blocks.Item title="General">
+        <Blocks.Item title="General" titleClassName="p-text--small-caps">
           <InfoGrid dense>
             <InfoGrid.Item label="Name" value={target.displayName} />
             <InfoGrid.Item
@@ -103,7 +103,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
             />
           </InfoGrid>
         </Blocks.Item>
-        <Blocks.Item title="Details">
+        <Blocks.Item title="Details" titleClassName="p-text--small-caps">
           <InfoGrid dense>
             {s3Fields && (
               <>
@@ -174,7 +174,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         </Blocks.Item>
 
         {!isGettingPublications && publications.length > 0 && (
-          <Blocks.Item title="Used In">
+          <Blocks.Item title="Used In" titleClassName="p-text--small-caps">
             <AssociatedPublicationsList publications={publications} />
           </Blocks.Item>
         )}

@@ -3,6 +3,7 @@ import type { Local } from "@canonical/landscape-openapi";
 export const repositories: Local[] = [
   {
     name: "locals/aaaa-bbbb-cccc",
+    localId: "aaaa-bbbb-cccc",
     defaultComponent: "component 1",
     displayName: "repo 1",
     comment: "repo 1 description",

@@ -8,10 +8,12 @@ import type { AssociationBlockFormProps } from "./types";
 
 interface AssociationBlockProps<T extends AssociationBlockFormProps> {
   readonly formik: FormikContextType<T>;
+  readonly titleClass?: string;
 }
 
 const AssociationBlock = <T extends AssociationBlockFormProps>({
   formik,
+  titleClass,
 }: AssociationBlockProps<T>) => {
   const { tags } = useGetTags();
 
@@ -23,7 +25,7 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
 
   return (
     <>
-      <p className="u-no-margin--bottom">Association</p>
+      <p className={`u-no-margin--bottom ${titleClass ?? ""}`}>Association</p>
       <CheckboxInput
         label="Associate to all instances"
         {...formik.getFieldProps("all_computers")}

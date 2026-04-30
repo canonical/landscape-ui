@@ -14,17 +14,19 @@ import { useGetProfileAssociatedCount } from "../../../../hooks/useGetProfileAss
 interface ViewProfileAssociationBlockProps {
   readonly profile: Profile;
   readonly type: ProfileTypes;
+  readonly titleClassName?: string;
 }
 
 const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   profile,
   type,
+  titleClassName,
 }) => {
   const { associatedCount, isGettingInstances } =
     useGetProfileAssociatedCount(profile);
 
   return (
-    <Blocks.Item title="Association">
+    <Blocks.Item title="Association" titleClassName={titleClassName}>
       <InfoGrid dense>
         <InfoGrid.Item
           label="Associated Instances"

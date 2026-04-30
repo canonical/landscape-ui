@@ -129,7 +129,7 @@ const buildFilesystemPayload = (values: EditTargetFormValues) => ({
 
 const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   const debug = useDebug();
-  const { createPageParamsSetter, popSidePath, sidePath } = usePageParams();
+  const { createPageParamsSetter, popSidePath } = usePageParams();
   const closeForm = createPageParamsSetter({ sidePath: [], name: "" });
   const { notify } = useNotify();
   const { editPublicationTargetQuery } = useEditPublicationTarget();
@@ -356,9 +356,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
-        onCancel={closeForm}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );
