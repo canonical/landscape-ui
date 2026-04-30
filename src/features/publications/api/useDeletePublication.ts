@@ -1,5 +1,8 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
+import type {
+  DeletePublicationError,
+  DeletePublicationResponse,
+} from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
@@ -12,8 +15,8 @@ export const useDeletePublication = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<Record<string, unknown>>,
-    AxiosError<ApiError>,
+    AxiosResponse<DeletePublicationResponse>,
+    AxiosError<DeletePublicationError>,
     DeletePublicationParams
   >({
     mutationKey: ["publications", "delete"],

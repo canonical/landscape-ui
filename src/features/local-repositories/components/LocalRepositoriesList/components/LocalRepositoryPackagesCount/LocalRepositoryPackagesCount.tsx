@@ -12,7 +12,7 @@ const LocalRepositoryPackagesCount: FC<LocalRepositoryPackagesCountProps> = ({
   repository,
 }) => {
   const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(
-    repository.name,
+    repository.name ?? "", // TODO: handle case where repository name is undefined,
   );
 
   if (isGettingRepositoryPackages) {

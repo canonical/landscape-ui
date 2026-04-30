@@ -14,7 +14,6 @@ import {
 } from "./_constants";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { getEndpointStatusApiError } from "./_constants";
 
 export default [
   http.get<never, GetProcessesParams, ApiPaginatedResponse<Process>>(

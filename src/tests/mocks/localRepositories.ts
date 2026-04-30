@@ -1,28 +1,28 @@
-import type { Local } from "@/features/local-repositories";
+import type { Local } from "@canonical/landscape-openapi";
 
 export const repositories: Local[] = [
   {
     name: "locals/aaaa-bbbb-cccc",
-    local_id: "aaaa-bbbb-cccc",
-    display_name: "repo 1",
-    distribution: "distribution 1",
-    component: "component 1",
+    defaultComponent: "component 1",
+    displayName: "repo 1",
+    comment: "repo 1 description",
+    defaultDistribution: "distribution 1",
   },
   {
     name: "locals/bbbb-cccc-dddd",
-    local_id: "bbbb-cccc-dddd",
-    display_name: "repo 2",
+    localId: "bbbb-cccc-dddd",
+    displayName: "repo 2",
     comment: "repo 2 description",
-    distribution: "distribution 2",
-    component: "component 2",
+    defaultComponent: "component 2",
+    defaultDistribution: "distribution 2",
   },
   {
     name: "locals/cccc-dddd-eeee",
-    local_id: "cccc-dddd-eeee",
-    display_name: "repo 3",
+    localId: "cccc-dddd-eeee",
+    displayName: "repo 3",
     comment: "repo 3 description",
-    distribution: "distribution 3",
-    component: "component 3",
+    defaultDistribution: "distribution 3",
+    defaultComponent: "component 3",
   },
 ] as const;
 

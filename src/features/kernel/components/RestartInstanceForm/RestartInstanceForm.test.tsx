@@ -129,7 +129,10 @@ describe("RestartInstanceForm", () => {
 
   it("shows an error notification when restart fails", async () => {
     const user = userEvent.setup();
-    setEndpointStatus("error");
+    setEndpointStatus({
+      status: "error",
+      path: "computers/:computerId/restart",
+    });
 
     renderWithProviders(
       <RestartInstanceForm {...props} showNotification={false} />,

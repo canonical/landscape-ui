@@ -3,95 +3,70 @@ import { afterEach, describe, expect, it } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import {
-  expectLoadingState,
-  resetScreenSize,
-  setScreenSize,
-} from "@/tests/helpers";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import MirrorsPage from "./MirrorsPage";
+import { Suspense } from "react";
+import LoadingState from "@/components/layout/LoadingState";
 
 describe("MirrorsPage", () => {
   afterEach(() => {
     resetScreenSize();
+    setEndpointStatus("default");
   });
 
-  it("renders distributions and large-screen actions", async () => {
+  it("renders the page heading and mirrors list", async () => {
     setScreenSize("lg");
 
-    renderWithProviders(<MirrorsPage />);
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+    );
 
     expect(
-      screen.getByRole("heading", { name: "Mirrors" }),
+      await screen.findByRole("heading", { name: "Mirrors" }),
     ).toBeInTheDocument();
-    await expectLoadingState();
 
-    expect(await screen.findByText("Distribution 1")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Add distribution" }),
+      await screen.findByText("Ubuntu archive mirror"),
     ).toBeInTheDocument();
+
     expect(screen.getByRole("button", { name: "Add mirror" })).toBeEnabled();
   });
 
-  it("disables add mirror when there are no distributions", async () => {
-    setScreenSize("lg");
-    setEndpointStatus("empty");
+  it("shows empty state when there are no mirrors", async () => {
+    setEndpointStatus({ status: "empty", path: "mirrors" });
 
-    renderWithProviders(<MirrorsPage />);
-
-    await expectLoadingState();
-    expect(
-      screen.getByText("No mirrors have been added yet."),
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add mirror" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
     );
+
+    expect(
+      await screen.findByText("You don't have any mirrors yet."),
+    ).toBeInTheDocument();
   });
 
-  it("shows actions menu on small screens", async () => {
-    setScreenSize("xs");
-
-    renderWithProviders(<MirrorsPage />);
-
-    expect(screen.getByRole("button", { name: "Actions" })).toBeInTheDocument();
-  });
-
-  it("opens add distribution side panel", async () => {
+  it("opens add mirror side panel when Add mirror is clicked", async () => {
     const user = userEvent.setup();
     setScreenSize("lg");
 
     renderWithProviders(
-      <MirrorsPage />,
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
       undefined,
       ROUTES.repositories.mirrors(),
       `/${PATHS.repositories.root}/${PATHS.repositories.mirrors}`,
     );
 
-    await expectLoadingState();
-    await user.click(screen.getByRole("button", { name: "Add distribution" }));
-
-    expect(
-      await screen.findByRole("heading", { name: "Add distribution" }),
-    ).toBeInTheDocument();
-  });
-
-  it("opens add mirror side panel when distributions exist", async () => {
-    const user = userEvent.setup();
-    setScreenSize("lg");
-
-    renderWithProviders(
-      <MirrorsPage />,
-      undefined,
-      ROUTES.repositories.mirrors(),
-      `/${PATHS.repositories.root}/${PATHS.repositories.mirrors}`,
-    );
-
-    await expectLoadingState();
+    await screen.findByRole("heading", { name: "Mirrors" });
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(
-      await screen.findByRole("heading", { name: "Add new mirror" }),
+      await screen.findByRole("heading", { name: "Add mirror" }),
     ).toBeInTheDocument();
   });
 });

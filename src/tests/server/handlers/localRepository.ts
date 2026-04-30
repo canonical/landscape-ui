@@ -14,6 +14,17 @@ import type {
   CreateLocalRequest,
 } from "@/features/local-repositories";
 
+const getBatchLocalsResponse = async (
+  request: Request,
+): Promise<HttpResponse> => {
+  const body = (await request.json()) as { names: string[] };
+  const requestedNames = body.names ?? [];
+  const matched = repositories.filter(({ name }) =>
+    name ? requestedNames.includes(name) : false,
+  );
+  return HttpResponse.json({ locals: matched });
+};
+
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
     const url = new URL(request.url);
@@ -24,10 +35,14 @@ export default [
     }
 
     return HttpResponse.json({
-      locals: repositories.filter(({ display_name }) =>
-        display_name.includes(search.substring(2, search.length - 2)),
+      locals: repositories.filter(({ displayName }) =>
+        displayName.includes(search.substring(2, search.length - 2)),
       ),
     });
+  }),
+
+  http.post(`${API_URL_DEB_ARCHIVE}locals:batchGet`, async ({ request }) => {
+    return getBatchLocalsResponse(request);
   }),
 
   http.post<never, CreateLocalRequest>(
@@ -36,7 +51,7 @@ export default [
       const { display_name: namePosted } = await request.json();
 
       return HttpResponse.json(
-        repositories.find(({ display_name }) => namePosted === display_name),
+        repositories.find(({ displayName }) => namePosted === displayName),
       );
     },
   ),
@@ -47,7 +62,7 @@ export default [
       const { names } = await request.json();
 
       return HttpResponse.json(
-        repositories.filter(({ name }) => names.includes(name)),
+        repositories.filter(({ name }) => names.includes(name ?? "")),
       );
     },
   ),
@@ -56,7 +71,7 @@ export default [
     const { repository } = params;
 
     return HttpResponse.json(
-      repositories.find(({ local_id }) => local_id === repository),
+      repositories.find(({ localId }) => localId === repository),
     );
   }),
 
@@ -64,7 +79,7 @@ export default [
     const { repository } = params;
 
     return HttpResponse.json(
-      repositories.find(({ local_id }) => local_id === repository),
+      repositories.find(({ localId }) => localId === repository),
     );
   }),
 

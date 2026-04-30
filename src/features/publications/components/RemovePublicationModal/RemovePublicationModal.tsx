@@ -3,8 +3,8 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import type { Publication } from "../../types";
 import { useDeletePublication } from "../../api";
+import type { Publication } from "@canonical/landscape-openapi";
 
 interface RemovePublicationModalProps extends Pick<
   TextConfirmationModalProps,
@@ -24,10 +24,10 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
 
   const handleRemovePublication = async () => {
     try {
-      await deletePublication({ publicationName: publication.name });
+      await deletePublication({ publicationName: publication.name ?? "" }); // TODO: change when the api is updated
 
       notify.success({
-        title: `You have successfully removed ${publication.label}`,
+        title: `You have successfully removed ${publication.displayName}`,
         message: "The publication has been removed from Landscape.",
       });
     } catch (error) {
@@ -44,7 +44,7 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
   return (
     <ConfirmationModal
       renderInPortal
-      title={`Remove ${publication.label}`}
+      title={`Remove ${publication.displayName}`}
       confirmButtonLabel="Remove publication"
       confirmButtonAppearance="negative"
       confirmButtonLoading={isRemovingPublication}
