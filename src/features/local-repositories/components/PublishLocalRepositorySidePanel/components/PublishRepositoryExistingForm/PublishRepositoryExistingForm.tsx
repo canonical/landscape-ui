@@ -35,7 +35,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
@@ -63,16 +63,8 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     }
   };
 
-  const formik = useFormik({
-    initialValues: { name: "" },
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA_EXISTING,
-    validateOnMount: true,
-  });
-
   const publicationOptions = useMemo<SelectOption[]>(
     () => [
-      { label: "Select publication", value: "" },
       ...publications.map((publication) => ({
         label: publication.displayName,
         value: publication.name || "", // TODO change after fixing the API to return the publication name not undefined
@@ -80,6 +72,13 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     ],
     [publications],
   );
+
+  const formik = useFormik({
+    initialValues: { name: publicationOptions[0]?.value || "" },
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA_EXISTING,
+    validateOnMount: true,
+  });
 
   const publication = publications.find(
     ({ name }) => name === formik.values.name,
@@ -193,12 +192,9 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={formik.isSubmitting || isPublishingPublication}
         submitButtonText="Publish repository"
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );

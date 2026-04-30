@@ -60,6 +60,7 @@ export const useGetRepositoryActions = ({
       label: "Remove",
       "aria-label": `Remove "${repository.displayName}" repository`,
       onClick: openRemovalModal,
+      appearance: "negative",
     },
   ];
 

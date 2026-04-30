@@ -19,7 +19,7 @@ describe("PublishRepositoryExistingForm", () => {
     vi.spyOn(publicationsApi, "usePublishPublication").mockReturnValue({
       publishPublication: mockPublishPublication,
       isPublishingPublication: false,
-    } as any);
+    });
   });
 
   it("renders form with publication selector", () => {
@@ -104,24 +104,6 @@ describe("PublishRepositoryExistingForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("validates required publication selection", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
-    );
-
-    const publicationSelect = screen.getByLabelText(/^publication name$/i);
-    await user.click(publicationSelect);
-    await user.tab();
-
-    expect(
-      await screen.findByText(/this field is required/i),
-    ).toBeInTheDocument();
-  });
-
   it("submits form with selected publication", async () => {
     const user = userEvent.setup();
     renderWithProviders(
@@ -134,7 +116,7 @@ describe("PublishRepositoryExistingForm", () => {
     const publicationSelect = screen.getByLabelText(/^publication name$/i);
     await user.selectOptions(
       publicationSelect,
-      localRepositoriesPublications[0].name ?? "",
+      localRepositoriesPublications[0]?.name ?? "",
     );
 
     const submitButton = screen.getByRole("button", { name: /publish/i });
@@ -155,7 +137,7 @@ describe("PublishRepositoryExistingForm", () => {
     const publicationSelect = screen.getByLabelText(/^publication name$/i);
     await user.selectOptions(
       publicationSelect,
-      localRepositoriesPublications[0].name ?? "",
+      localRepositoriesPublications[0]?.name ?? "",
     );
 
     expect(

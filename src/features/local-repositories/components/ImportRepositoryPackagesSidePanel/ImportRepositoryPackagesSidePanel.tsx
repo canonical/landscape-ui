@@ -24,7 +24,7 @@ import type { TaskStatus } from "../../types/Task";
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, name, createPageParamsSetter } =
+  const { popSidePath, name, createPageParamsSetter } =
     usePageParams();
   const { repository, isGettingRepository } = useGetPageLocalRepository();
 
@@ -173,9 +173,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             submitButtonDisabled={!hasPackages}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
-            onCancel={closeSidePanel}
+            onCancel={popSidePath}
           />
         </Form>
       </SidePanel.Content>

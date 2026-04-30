@@ -38,7 +38,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
@@ -49,17 +49,6 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     sidePath: [],
     name: "",
   });
-
-  const initialValues: PublishRepositoryNewFormValues = {
-    name: "",
-    publicationTarget: "",
-    gpgKey: "",
-    acquireByHash: false,
-    butAutomaticUpgrades: false,
-    notAutomatic: false,
-    skipBz2: false,
-    skipContents: false,
-  };
 
   const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
     const valuesforCreation = {
@@ -97,16 +86,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     }
   };
 
-  const formik = useFormik({
-    initialValues: initialValues,
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA_NEW,
-    validateOnMount: true,
-  });
 
   const publicationTargetOptions = useMemo<SelectOption[]>(
     () => [
-      { label: "Select publication target", value: "" },
       ...publicationTargets.map((publicationTarget) => ({
         label: publicationTarget.displayName,
         value: publicationTarget.name ?? "", // TODO change when API is fixed to return the name as non undefined
@@ -114,6 +96,24 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     ],
     [publicationTargets],
   );
+
+  const initialValues: PublishRepositoryNewFormValues = {
+    name: "",
+    publicationTarget: publicationTargetOptions[0]?.value || "",
+    gpgKey: "",
+    acquireByHash: false,
+    butAutomaticUpgrades: false,
+    notAutomatic: false,
+    skipBz2: false,
+    skipContents: false,
+  };
+
+  const formik = useFormik({
+    initialValues: initialValues,
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA_NEW,
+    validateOnMount: true,
+  });
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -225,16 +225,13 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={
           formik.isSubmitting ||
           isCreatingPublication ||
           isPublishingPublication
         }
         submitButtonText="Publish repository"
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );

@@ -45,7 +45,6 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
         ) : (
           <AssociatedPublicationsList
             publications={publications}
-            openInNewTab
             showSources={false}
           />
         )}

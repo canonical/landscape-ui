@@ -15,7 +15,7 @@ const REQUIRED_FIELD_MESSAGE = "This field is required";
 
 export const VALIDATION_SCHEMA_NEW = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  publication_target: Yup.string().required(REQUIRED_FIELD_MESSAGE),
+  publicationTarget: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   gpgKey: Yup.string(),
   acquireByHash: Yup.boolean(),
   butAutomaticUpgrades: Yup.boolean(),
