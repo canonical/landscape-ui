@@ -1,7 +1,7 @@
 {
   "name": "landscape-ui",
   "private": true,
-  "version": "26.04.0.70",
+  "version": "26.04.0.86",
   "type": "module",
   "engines": {
     "node": ">=24"
