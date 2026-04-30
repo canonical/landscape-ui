@@ -6,6 +6,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { instanceChildren, wslInstanceNames } from "@/tests/mocks/wsl";
 import type { InstanceChild } from "@/types/Instance";
 import { http, HttpResponse } from "msw";
+import { createEndpointStatusError } from "./_constants";
 import { isAction } from "./_helpers";
 
 export default [
@@ -31,10 +32,7 @@ export default [
   http.post(`${API_URL}child-instance-profiles/:name\\:reapply`, () => {
     const { status } = getEndpointStatus();
     if (status === "error") {
-      return HttpResponse.json(
-        { message: "endpoint-status error" },
-        { status: 500 },
-      );
+      return createEndpointStatusError();
     }
     return HttpResponse.json();
   }),

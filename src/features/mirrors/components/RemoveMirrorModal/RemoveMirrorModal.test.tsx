@@ -9,13 +9,10 @@ import type { Publication } from "@canonical/landscape-openapi";
 
 const mockDeleteMirror = vi.fn();
 
-const useListPublications = vi.hoisted(() =>
+const useGetPublicationsBySource = vi.hoisted(() =>
   vi.fn(() => ({
-    data: {
-      data: {
-        publications: publications as Publication[],
-      },
-    },
+    publications: publications as Publication[],
+    isGettingPublications: false,
   })),
 );
 
@@ -27,7 +24,15 @@ vi.mock("../../api", async () => {
     useDeleteMirror: () => ({
       mutateAsync: mockDeleteMirror,
     }),
-    useListPublications,
+  };
+});
+
+vi.mock("@/features/publications", async () => {
+  const actual = await vi.importActual("@/features/publications");
+
+  return {
+    ...actual,
+    useGetPublicationsBySource,
   };
 });
 
@@ -58,12 +63,9 @@ describe("RemoveMirrorModal", () => {
   });
 
   it("renders a message when there are no publications", async () => {
-    useListPublications.mockReturnValueOnce({
-      data: {
-        data: {
-          publications: [],
-        },
-      },
+    useGetPublicationsBySource.mockReturnValueOnce({
+      publications: [],
+      isGettingPublications: false,
     });
 
     renderWithProviders(<RemoveMirrorModal {...props} />);
