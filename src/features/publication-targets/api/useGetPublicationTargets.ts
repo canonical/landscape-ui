@@ -6,6 +6,7 @@ import type {
   ListPublicationTargetsResponse,
   PublicationTarget,
 } from "@canonical/landscape-openapi";
+import usePageParams from "@/hooks/usePageParams";
 
 interface UseGetPublicationTargetsOptions {
   pageSize?: number;
@@ -14,6 +15,8 @@ interface UseGetPublicationTargetsOptions {
 export default function useGetPublicationTargets(
   options?: UseGetPublicationTargetsOptions,
 ) {
+  const { search } = usePageParams();
+
   const { pageSize } = options ?? {};
   const authFetchDebArchive = useFetchDebArchive();
 
@@ -50,8 +53,13 @@ export default function useGetPublicationTargets(
     },
   });
 
+  const filteredData = data?.filter((target) =>
+    target.displayName.includes(search),
+  );
+
   return {
-    publicationTargets: data ?? [],
+    publicationTargets: filteredData ?? [],
     isGettingPublicationTargets: isLoading,
+    count: data?.length ?? 0,
   };
 }

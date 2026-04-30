@@ -1,6 +1,5 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  DeletePublicationData,
   DeletePublicationError,
   DeletePublicationResponse,
 } from "@canonical/landscape-openapi";
@@ -8,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 interface DeletePublicationParams {
-  publicationName: DeletePublicationData["path"]["name_2"];
+  publicationName: string;
 }
 
 export const useDeletePublication = () => {

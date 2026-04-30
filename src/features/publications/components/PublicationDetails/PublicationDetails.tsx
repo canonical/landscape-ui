@@ -6,6 +6,9 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
+import { getSourceType } from "../../helpers";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -68,6 +71,11 @@ const PublicationDetails = ({
           <InfoGrid dense>
             <InfoGrid.Item label="Name" large value={publication.displayName} />
 
+            <InfoGrid.Item
+              label="Source type"
+              value={getSourceType(publication.source)}
+            />
+
             <InfoGrid.Item label="Source" value={sourceDisplayName} />
 
             <InfoGrid.Item
@@ -76,17 +84,15 @@ const PublicationDetails = ({
             />
 
             <InfoGrid.Item
-              label="Distribution"
-              value={publication.distribution}
+              label="Date published"
+              value={moment(publication.publishTime).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              )}
             />
-
-            <InfoGrid.Item label="Label" value={publication.label} />
-
-            <InfoGrid.Item label="Origin" value={publication.origin} />
           </InfoGrid>
         </Blocks.Item>
 
-        <Blocks.Item title="Uploaders" titleClassName="p-text--small-caps">
+        <Blocks.Item title="contents" titleClassName="p-text--small-caps">
           <InfoGrid>
             <InfoGrid.Item
               label="Architectures"

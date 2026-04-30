@@ -95,7 +95,10 @@ const PublicationsContainer = () => {
               sourceDisplayNames={sourceDisplayNames}
               publicationTargetDisplayNames={publicationTargetDisplayNames}
             />
-            <TablePagination totalItems={publicationsCount} />
+            <TablePagination
+              totalItems={publicationsCount}
+              currentItemCount={publications.length}
+            />
           </>
         )}
       </>

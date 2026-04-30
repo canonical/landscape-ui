@@ -57,7 +57,8 @@ const getTargetType = (target: PublicationTarget): string => {
 };
 
 const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
-  const { currentPage, pageSize, createPageParamsSetter } = usePageParams();
+  const { search, currentPage, pageSize, createPageParamsSetter } =
+    usePageParams();
 
   const pagedTargets = useMemo(
     () => targets.slice((currentPage - 1) * pageSize, currentPage * pageSize),
@@ -118,6 +119,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
         columns={columns as Column<Record<string, unknown>>[]}
         data={pagedTargets as unknown as Record<string, unknown>[]}
         minWidth={800}
+        emptyMsg={`No publication targets found with the search: "${search}"`}
       />
       <TablePagination
         totalItems={targets.length}
