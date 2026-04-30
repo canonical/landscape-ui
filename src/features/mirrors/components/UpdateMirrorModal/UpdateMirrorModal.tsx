@@ -1,9 +1,5 @@
 import useDebug from "@/hooks/useDebug";
-import {
-  CheckboxInput,
-  ConfirmationModal,
-  Icon,
-} from "@canonical/react-components";
+import { CheckboxInput, ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useSyncMirror } from "../../api";
 import { useBoolean } from "usehooks-ts";
@@ -65,12 +61,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
 
   return (
     <ConfirmationModal
-      confirmButtonLabel={
-        <>
-          <Icon name="restart" light />
-          <span>Update mirror</span>
-        </>
-      }
+      confirmButtonLabel="Update mirror"
       onConfirm={tryUpdateMirror}
       confirmButtonAppearance="positive"
       title={`Update ${mirrorDisplayName}`}

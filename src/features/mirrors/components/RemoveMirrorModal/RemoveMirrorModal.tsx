@@ -1,5 +1,4 @@
 import useDebug from "@/hooks/useDebug";
-import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useDeleteMirror, useListPublications } from "../../api";
 import useNotify from "@/hooks/useNotify";
@@ -54,12 +53,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
     <TextConfirmationModal
       isOpen={isOpen}
       confirmationText={`remove ${mirrorDisplayName}`}
-      confirmButtonLabel={
-        <>
-          <Icon name="delete" light />
-          <span>Remove mirror</span>
-        </>
-      }
+      confirmButtonLabel="Remove mirror"
       onConfirm={tryRemoveMirror}
       confirmButtonAppearance="negative"
       title={`Remove ${mirrorDisplayName}`}
