@@ -33,6 +33,7 @@ export interface PageParams {
   code: string;
   sidePath: string[];
   name: string;
+  profile: string;
   mirror: string;
 }
 

@@ -141,6 +141,11 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
+    urlParam: "profile",
+    shouldResetPage: false,
+    defaultValue: DEFAULT_EMPTY_STRING,
+  },
+  {
     urlParam: "sidePath",
     shouldResetPage: false,
     defaultValue: DEFAULT_EMPTY_ARRAY,

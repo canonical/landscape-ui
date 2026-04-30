@@ -4,7 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC, ReactElement } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -13,6 +13,7 @@ import PublicationTargetListActions from "../PublicationTargetListActions";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 import { pluralizeNew } from "@/utils/_helpers";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface PublicationTargetListProps {
   readonly targets: PublicationTarget[];
@@ -29,7 +30,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
     useGetPublicationsByTarget(publicationTargetId);
 
   if (isGettingPublications) {
-    return <Icon name="spinner" className="u-animation--spin" aria-hidden />;
+    return <LoadingState inline />;
   }
 
   const { length } = publications;

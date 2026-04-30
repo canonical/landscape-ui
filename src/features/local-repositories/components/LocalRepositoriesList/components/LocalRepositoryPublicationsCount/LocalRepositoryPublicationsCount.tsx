@@ -28,7 +28,7 @@ const LocalRepositoryPublicationsCount: FC<
   return (
     <StaticLink
       to={ROUTES.repositories.publications({
-        query: `source="${repository.name}"`,
+        query: `source:${repository.name}`,
       })}
     >
       {pluralizeWithCount(publications.length, "publication")}

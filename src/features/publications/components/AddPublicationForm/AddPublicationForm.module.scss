@@ -9,18 +9,6 @@
   display: inline !important;
 }
 
-.derivedDistribution {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-  padding: $spv--small $sph--small;
-  background-color: $colors--theme--background-inputs;
-}
-
-.derivedDistributionValue {
-  font-weight: 500;
-}
-
 .sectionTitle {
   margin-bottom: $spv--small;
 }

@@ -28,7 +28,7 @@ describe("PublicationDetails", () => {
     );
 
     const infoItems = [
-      { label: "Name", value: publication.label },
+      { label: "Name", value: publication.displayName },
       { label: "Source", value: sourceDisplayName },
       { label: "Publication target", value: publicationTargetDisplayName },
       { label: "Distribution", value: publication.distribution },
@@ -59,14 +59,18 @@ describe("PublicationDetails", () => {
         publicationTargetDisplayName={publicationTargetDisplayName}
       />,
     );
-    const publicationLabel = publication.label;
+    const publicationDisplayName = publication.displayName;
 
     await user.click(
-      screen.getByRole("button", { name: `Republish ${publicationLabel}` }),
+      screen.getByRole("button", {
+        name: `Republish ${publicationDisplayName}`,
+      }),
     );
 
     expect(
-      screen.getByRole("heading", { name: `Republish ${publicationLabel}` }),
+      screen.getByRole("heading", {
+        name: `Republish ${publicationDisplayName}`,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -78,14 +82,14 @@ describe("PublicationDetails", () => {
         publicationTargetDisplayName={publicationTargetDisplayName}
       />,
     );
-    const publicationLabel = publication.label;
+    const publicationDisplayName = publication.displayName;
 
     await user.click(
-      screen.getByRole("button", { name: `Remove ${publicationLabel}` }),
+      screen.getByRole("button", { name: `Remove ${publicationDisplayName}` }),
     );
 
     expect(
-      screen.getByRole("heading", { name: `Remove ${publicationLabel}` }),
+      screen.getByRole("heading", { name: `Remove ${publicationDisplayName}` }),
     ).toBeInTheDocument();
   });
 });

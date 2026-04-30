@@ -5,14 +5,14 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import PublicationsHeader from "../PublicationsHeader";
+import { useGetPublicationTargets } from "@/features/publication-targets";
 import { useMemo } from "react";
-import {
-  useBatchGetLocals,
-  useBatchGetMirrors,
-  useBatchGetPublicationTargets,
-  useGetPublications,
-  useGetPublicationTargets,
-} from "../../api";
+import { useBatchGetPublicationTargets, useGetPublications } from "../../api";
+import PageContent from "@/components/layout/PageContent";
+import PageHeader from "@/components/layout/PageHeader";
+import AddPublicationButton from "../AddPublicationButton";
+import { useBatchGetLocals } from "@/features/local-repositories";
+import { useBatchGetMirrors } from "@/features/mirrors";
 
 const PublicationsContainer = () => {
   const { query } = usePageParams();
@@ -67,31 +67,50 @@ const PublicationsContainer = () => {
     isLoadingMirrorDisplayNames ||
     isLoadingLocalDisplayNames;
 
-  if (
-    isGettingPublicationTargets ||
-    isGettingPublications ||
-    isLoadingDisplayNames
-  ) {
-    return <LoadingState />;
-  }
+  const isMissingTargets = !publicationTargets?.length;
+  const isMissingPublications = !publicationsCount && !query;
 
-  if (publicationTargets.length === 0) {
-    return <NoPublicationTargetEmptyState />;
-  }
+  const getContent = () => {
+    if (isGettingPublicationTargets) {
+      return <LoadingState />;
+    }
 
-  if (publicationsCount === 0 && !query) {
-    return <NoPublicationsEmptyState />;
-  }
+    if (isMissingTargets) {
+      return <NoPublicationTargetEmptyState />;
+    }
+
+    if (isMissingPublications && !isGettingPublications) {
+      return <NoPublicationsEmptyState />;
+    }
+
+    return (
+      <>
+        <PublicationsHeader />
+        {isGettingPublications || isLoadingDisplayNames ? (
+          <LoadingState />
+        ) : (
+          <>
+            <PublicationsList
+              publications={publications}
+              sourceDisplayNames={sourceDisplayNames}
+              publicationTargetDisplayNames={publicationTargetDisplayNames}
+            />
+            <TablePagination totalItems={publicationsCount} />
+          </>
+        )}
+      </>
+    );
+  };
+
+  const actions =
+    isGettingPublicationTargets || isMissingTargets
+      ? []
+      : [<AddPublicationButton key="add-publication-button" />];
 
   return (
     <>
-      <PublicationsHeader />
-      <PublicationsList
-        publications={publications}
-        sourceDisplayNames={sourceDisplayNames}
-        publicationTargetDisplayNames={publicationTargetDisplayNames}
-      />
-      <TablePagination totalItems={publicationsCount} />
+      <PageHeader title="Publications" actions={actions} />
+      <PageContent hasTable>{getContent()}</PageContent>
     </>
   );
 };

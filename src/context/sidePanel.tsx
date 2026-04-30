@@ -127,9 +127,9 @@ const SidePanelProvider: FC<SidePanelProviderProps> = ({ children }) => {
               <div className="p-panel__controls">
                 <Button
                   type="button"
-                  onClick={() =>
-                    { (onCloseOverrideRef.current ?? handleSidePanelClose)(); }
-                  }
+                  onClick={() => {
+                    (onCloseOverrideRef.current ?? handleSidePanelClose)();
+                  }}
                   className="p-button--base u-no-margin--bottom has-icon"
                   aria-label="Close side panel"
                 >

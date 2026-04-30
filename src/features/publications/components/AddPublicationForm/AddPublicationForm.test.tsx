@@ -1,14 +1,23 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 import AddPublicationForm from "./AddPublicationForm";
+
+const renderForm = () =>
+  renderWithProviders(
+    <Suspense fallback={<LoadingState />}>
+      <AddPublicationForm />
+    </Suspense>,
+  );
 
 describe("AddPublicationForm", () => {
   const selectMirrorSource = async (
     user: ReturnType<typeof userEvent.setup>,
   ) => {
-    const sourceTypeSelect = screen.getByRole("combobox", {
+    const sourceTypeSelect = await screen.findByRole("combobox", {
       name: "Source type",
     });
     const sourceSelect = screen.getByRole("combobox", { name: "Source" });
@@ -25,7 +34,7 @@ describe("AddPublicationForm", () => {
   const selectLocalSource = async (
     user: ReturnType<typeof userEvent.setup>,
   ) => {
-    const sourceTypeSelect = screen.getByRole("combobox", {
+    const sourceTypeSelect = await screen.findByRole("combobox", {
       name: "Source type",
     });
     const sourceSelect = screen.getByRole("combobox", { name: "Source" });
@@ -36,13 +45,13 @@ describe("AddPublicationForm", () => {
       expect(sourceSelect).toBeEnabled();
     });
 
-    await user.selectOptions(sourceSelect, "internal-packages");
+    await user.selectOptions(sourceSelect, "aaaa-bbbb-cccc");
   };
 
   it("updates uploader fields when a mirror source is selected", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AddPublicationForm />);
+    renderForm();
 
     await selectMirrorSource(user);
 
@@ -57,10 +66,10 @@ describe("AddPublicationForm", () => {
   it("updates mirror publication fields based on the selected source", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AddPublicationForm />);
+    renderForm();
 
     await user.type(
-      screen.getByRole("textbox", { name: "Publication name" }),
+      await screen.findByRole("textbox", { name: "Publication name" }),
       "new-mirror-publication",
     );
     await selectMirrorSource(user);
@@ -73,7 +82,10 @@ describe("AddPublicationForm", () => {
       expect(publicationTargetSelect).toBeEnabled();
     });
 
-    await user.selectOptions(publicationTargetSelect, "primary-us-mirror");
+    await user.selectOptions(
+      publicationTargetSelect,
+      "aaaaaaaa-0000-0000-0000-000000000001",
+    );
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Architectures" }),
       "amd64",
@@ -105,7 +117,9 @@ describe("AddPublicationForm", () => {
       screen.getByRole("checkbox", { name: /Skip content indexing/i }),
     );
 
-    expect(publicationTargetSelect).toHaveValue("primary-us-mirror");
+    expect(publicationTargetSelect).toHaveValue(
+      "aaaaaaaa-0000-0000-0000-000000000001",
+    );
     expect(screen.getByRole("combobox", { name: "Architectures" })).toHaveValue(
       "amd64",
     );
@@ -120,15 +134,15 @@ describe("AddPublicationForm", () => {
   it("uses static local-source fields without uploader architectures", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AddPublicationForm />);
+    renderForm();
 
     await user.type(
-      screen.getByRole("textbox", { name: "Publication name" }),
+      await screen.findByRole("textbox", { name: "Publication name" }),
       "new-local-publication",
     );
     await selectLocalSource(user);
 
-    expect(screen.getByText("focal")).toBeInTheDocument();
+    expect(screen.getByText("distribution 1")).toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Architectures" }),
     ).not.toBeInTheDocument();
@@ -141,15 +155,20 @@ describe("AddPublicationForm", () => {
       expect(publicationTargetSelect).toBeEnabled();
     });
 
-    await user.selectOptions(publicationTargetSelect, "internal-datacenter");
+    await user.selectOptions(
+      publicationTargetSelect,
+      "bbbbbbbb-0000-0000-0000-000000000002",
+    );
 
-    expect(publicationTargetSelect).toHaveValue("internal-datacenter");
+    expect(publicationTargetSelect).toHaveValue(
+      "bbbbbbbb-0000-0000-0000-000000000002",
+    );
   });
 
   it("hides preserve mirror signing key when local source is selected", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AddPublicationForm />);
+    renderForm();
 
     await selectMirrorSource(user);
 
@@ -171,7 +190,7 @@ describe("AddPublicationForm", () => {
   it("resets preserve_mirror_signing_key to default when switching source type", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AddPublicationForm />);
+    renderForm();
 
     await selectMirrorSource(user);
 
@@ -199,7 +218,7 @@ describe("AddPublicationForm", () => {
   it("resets mirror_signing_key when switching source type", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(<AddPublicationForm />);
+    renderForm();
 
     await selectMirrorSource(user);
 

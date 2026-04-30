@@ -1,5 +1,4 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import type { PublicationTarget } from "@/features/publication-targets";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
@@ -13,6 +12,7 @@ vi.mock("../../api/useGetPublicationsByTarget", () => ({
 }));
 
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 describe("PublicationTargetList", () => {
   beforeEach(() => {

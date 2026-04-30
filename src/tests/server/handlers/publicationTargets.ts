@@ -1,6 +1,6 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import type { PublicationTarget } from "@/features/publication-targets";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 import { http, HttpResponse } from "msw";
 
 export default [
