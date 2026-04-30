@@ -312,4 +312,27 @@ export const scriptProfiles = [
     username: "root",
     last_edited_at: "",
   },
+  {
+    name: "script-profile-14",
+    access_group: "global",
+    activities: {
+      last_activity: null,
+    },
+    all_computers: false,
+    archived: false,
+    computers: {
+      num_associated_computers: 1,
+    },
+    created_at: "",
+    created_by: null,
+    id: 14,
+    modified_at: "",
+    script_id: 30,
+    tags: [],
+    time_limit: 300,
+    title: "Script profile 14",
+    trigger: { trigger_type: "event", event_type: "post_enrollment" },
+    username: "root",
+    last_edited_at: "",
+  },
 ] as const satisfies ScriptProfile[];

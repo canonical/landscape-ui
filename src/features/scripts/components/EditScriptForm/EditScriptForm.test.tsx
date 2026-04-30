@@ -1,6 +1,5 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -11,7 +10,6 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { ROUTES } from "@/libs/routes";
 
 const [script] = scripts;
-const ASSOCIATED_PROFILE_ID = 12;
 
 const props: ComponentProps<typeof EditScriptForm> = {
   script,
@@ -214,26 +212,8 @@ describe("EditScriptForm", () => {
 
   it("renders singular associated instance link text", async () => {
     const user = userEvent.setup();
-    const associatedProfile = scriptProfiles.find(
-      (profile) => profile.id === ASSOCIATED_PROFILE_ID,
-    );
-    assert(associatedProfile);
-    
-    const modifiedScript = {
-      ...script,
-      script_profiles: script.script_profiles.map((profile) =>
-        profile.id === ASSOCIATED_PROFILE_ID
-          ? {
-              ...profile,
-              computers: {
-                num_associated_computers: 1,
-              },
-            }
-          : profile,
-      ),
-    };
 
-    renderWithProviders(<EditScriptForm script={modifiedScript} />);
+    renderWithProviders(<EditScriptForm script={script} />);
 
     await user.click(
       screen.getByRole("button", { name: "Submit new version" }),

@@ -1,14 +1,18 @@
 import EmptyState from "@/components/layout/EmptyState";
-import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import { DOCUMENTATION_URL } from "./constants";
+import { useNavigate } from "react-router";
+import { ROUTES } from "@/libs/routes";
 
 const NoPublicationTargetEmptyState = () => {
-  const { createPageParamsSetter } = usePageParams();
-  const handleAdd = createPageParamsSetter({
-    sidePath: ["add-target"],
-    name: "",
-  });
+  const navigate = useNavigate();
+  const handleAdd = () => {
+    navigate(
+      ROUTES.repositories.publicationTargets({
+        sidePath: ["add"],
+      }),
+    );
+  };
 
   return (
     <EmptyState

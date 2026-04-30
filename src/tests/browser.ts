@@ -1,4 +1,9 @@
-import { API_URL, API_URL_OLD, MSW_ENDPOINTS_TO_INTERCEPT } from "@/constants";
+import {
+  API_URL,
+  API_URL_DEB_ARCHIVE,
+  API_URL_OLD,
+  MSW_ENDPOINTS_TO_INTERCEPT,
+} from "@/constants";
 import type { RequestHandler } from "msw";
 import { http, passthrough } from "msw";
 import { setupWorker } from "msw/browser";
@@ -14,9 +19,7 @@ const handlers: RequestHandler[] = [
       return passthrough();
     }
 
-    if (
-      request.url.match(/\.(ts|tsx|scss)/)
-    ) {
+    if (request.url.match(/\.(ts|tsx|scss)/)) {
       return passthrough();
     }
 

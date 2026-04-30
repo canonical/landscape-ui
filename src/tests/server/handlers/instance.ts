@@ -282,29 +282,6 @@ export default [
   }),
 
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw getEndpointStatusApiError();
-    }
-
-    return HttpResponse.json(activities[0]);
-  }),
-
-  http.post<never, never, Activity>(
-    `${API_URL}computers/:computerId/restart`,
-    async () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
-      }
-
-      return HttpResponse.json(activities[0]);
-    },
-  ),
-
-  http.post(`${API_URL}computers/upgrade-packages`, async () => {
     if (shouldApplyEndpointStatus("computers/upgrade-packages")) {
       const { status } = getEndpointStatus();
       if (status === "error") {

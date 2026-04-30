@@ -1,7 +1,27 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
 import { http, HttpResponse } from "msw";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import {
+  getDebArchivePaginatedResponse,
+  getDebArchivePaginationParams,
+} from "./_helpers";
+
+const getPublicationTargetsResponse = (requestUrl: string) => {
+  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
+    publicationTargets,
+    pageToken,
+    pageSize,
+  );
+
+  return HttpResponse.json({
+    publicationTargets: paginatedData,
+    nextPageToken,
+  });
+};
 
 export default [
   http.post(`${API_URL_DEB_ARCHIVE}publicationTargets`, async ({ request }) => {
@@ -41,7 +61,9 @@ export default [
         ...body,
         ...(body.s3 ? { s3: { ...existing.s3, ...body.s3 } } : {}),
         ...(body.swift ? { swift: { ...existing.swift, ...body.swift } } : {}),
-        ...(body.filesystem ? { filesystem: { ...existing.filesystem, ...body.filesystem } } : {}),
+        ...(body.filesystem
+          ? { filesystem: { ...existing.filesystem, ...body.filesystem } }
+          : {}),
       } as PublicationTarget;
       publicationTargets[idx] = updated;
       return HttpResponse.json(updated);
@@ -49,9 +71,26 @@ export default [
   ),
 
   // Fallback GET for integration tests that don't mock useGetPublicationTargets directly
-  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, () => {
-    return HttpResponse.json({
-      publicationTargets,
-    });
+  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "publicationTargets"
+    ) {
+      return ENDPOINT_STATUS_API_ERROR;
+    }
+
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "publicationTargets"
+    ) {
+      return HttpResponse.json({
+        publicationTargets: [],
+        nextPageToken: "",
+      });
+    }
+
+    return getPublicationTargetsResponse(request.url);
   }),
 ];

@@ -60,6 +60,13 @@ export default [
       return ENDPOINT_STATUS_API_ERROR;
     }
 
+    if (
+      endpointStatus.status === "empty" &&
+      endpointStatus.path === "mirrors"
+    ) {
+      return HttpResponse.json({ mirrors: [], nextPageToken: undefined });
+    }
+
     return getMirrorsResponse(request.url);
   }),
 

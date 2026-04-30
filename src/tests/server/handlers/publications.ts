@@ -36,20 +36,6 @@ const toObjectBody = (value: unknown): Record<string, unknown> => {
   return {};
 };
 
-const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
-  const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
-    publicationTargets,
-    pageToken,
-    pageSize,
-  );
-
-  return HttpResponse.json({
-    publicationTargets: paginatedData,
-    nextPageToken,
-  });
-};
-
 const parseApiFilter = (filter: string): ((pub: Publication) => boolean) => {
   const targetMatch = filter.match(/^publication_target="([^"]+)"$/);
   if (targetMatch) {
@@ -78,11 +64,20 @@ const parseApiFilter = (filter: string): ((pub: Publication) => boolean) => {
 const getPublicationsResponse = (requestUrl: string) => {
   const { searchParams } = new URL(requestUrl);
   const filter = searchParams.get("filter") ?? undefined;
+  const publicationTargetId =
+    searchParams.get("publicationTargetId") ?? undefined;
   const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
 
-  const filteredPublications = filter
+  let filteredPublications = filter
     ? publications.filter(parseApiFilter(filter))
     : publications;
+
+  if (publicationTargetId) {
+    filteredPublications = filteredPublications.filter(
+      (pub) =>
+        pub.publicationTarget === `publicationTargets/${publicationTargetId}`,
+    );
+  }
 
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     filteredPublications,
@@ -148,29 +143,6 @@ export default [
       return getBatchPublicationTargetsResponse(request);
     },
   ),
-
-  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return ENDPOINT_STATUS_API_ERROR;
-    }
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return HttpResponse.json({
-        publicationTargets: [],
-        nextPageToken: "",
-      });
-    }
-
-    return getPublicationTargetsResponse(request.url);
-  }),
 
   http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
     await delay();
