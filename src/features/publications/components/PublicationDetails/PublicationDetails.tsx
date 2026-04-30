@@ -9,6 +9,7 @@ import RepublishPublicationModal from "../RepublishPublicationModal";
 import { getSourceType } from "../../helpers";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -21,6 +22,9 @@ const PublicationDetails = ({
   sourceDisplayName,
   publicationTargetDisplayName,
 }: PublicationDetailsProps) => {
+  const { createPageParamsSetter } = usePageParams();
+  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
+
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
@@ -139,13 +143,19 @@ const PublicationDetails = ({
 
       <RepublishPublicationModal
         isOpen={isRepublishModalOpen}
-        close={closeRepublishModal}
+        close={() => {
+          closeRepublishModal();
+          closePanel();
+        }}
         publication={publication}
       />
 
       <RemovePublicationModal
         isOpen={isRemoveModalOpen}
-        close={closeRemoveModal}
+        close={() => {
+          closeRemoveModal();
+          closePanel();
+        }}
         publication={publication}
       />
     </>
