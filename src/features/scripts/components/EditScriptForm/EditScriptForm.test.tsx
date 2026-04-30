@@ -1,9 +1,12 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { describe, it } from "vitest";
 import EditScriptForm from "./EditScriptForm";
@@ -214,26 +217,23 @@ describe("EditScriptForm", () => {
 
   it("renders singular associated instance link text", async () => {
     const user = userEvent.setup();
-    const associatedProfile = scriptProfiles.find(
-      (profile) => profile.id === ASSOCIATED_PROFILE_ID,
+    const modifiedProfiles = scriptProfiles.map((profile) =>
+      profile.id === ASSOCIATED_PROFILE_ID
+        ? { ...profile, computers: { num_associated_computers: 1 } }
+        : profile,
     );
-    assert(associatedProfile);
-    
-    const modifiedScript = {
-      ...script,
-      script_profiles: script.script_profiles.map((profile) =>
-        profile.id === ASSOCIATED_PROFILE_ID
-          ? {
-              ...profile,
-              computers: {
-                num_associated_computers: 1,
-              },
-            }
-          : profile,
+    server.use(
+      http.get(`${API_URL}scripts/:id/script-profiles`, () =>
+        HttpResponse.json({
+          results: modifiedProfiles,
+          count: modifiedProfiles.length,
+          next: null,
+          previous: null,
+        }),
       ),
-    };
+    );
 
-    renderWithProviders(<EditScriptForm script={modifiedScript} />);
+    renderWithProviders(<EditScriptForm script={script} />);
 
     await user.click(
       screen.getByRole("button", { name: "Submit new version" }),

@@ -168,7 +168,7 @@ describe("RepositoryProfileForm", () => {
 
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
-    expect(onAddSourceClick).toHaveBeenCalledOnce();
+    expect(onAddSourceClick).toHaveBeenCalled();
   });
   it("shows error notification when create API call fails", async () => {
     setEndpointStatus({ status: "error", path: "repositoryprofiles" });

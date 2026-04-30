@@ -1,7 +1,6 @@
-import { aptSources } from "@/tests/mocks/apt-sources";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
