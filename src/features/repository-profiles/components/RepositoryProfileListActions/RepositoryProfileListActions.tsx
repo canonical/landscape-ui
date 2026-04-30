@@ -61,7 +61,7 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
   const actions: Action[] = [
     {
       icon: "show",
-      label: "View",
+      label: "View details",
       "aria-label": `View "${profile.title}" profile`,
       onClick: handleViewProfile,
     },

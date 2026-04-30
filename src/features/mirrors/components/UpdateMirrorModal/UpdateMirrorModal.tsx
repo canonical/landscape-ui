@@ -4,6 +4,7 @@ import type { FC } from "react";
 import { useSyncMirror } from "../../api";
 import { useBoolean } from "usehooks-ts";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 
 interface UpdateMirrorModalProps {
   readonly close: () => void;
@@ -20,6 +21,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
+  const { setPageParams } = usePageParams();
 
   const { mutateAsync: syncMirror, isPending: isSyncingMirror } =
     useSyncMirror();
@@ -48,6 +50,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
         },
       });
 
+      setPageParams({ sidePath: [], name: "" });
       close();
 
       notify.success({
