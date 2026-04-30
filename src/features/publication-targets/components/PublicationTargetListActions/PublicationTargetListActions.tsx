@@ -3,8 +3,8 @@ import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import type { PublicationTarget } from "../../types";
 import RemoveTargetForm from "../RemoveTargetForm";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 interface PublicationTargetListActionsProps {
   readonly target: PublicationTarget;

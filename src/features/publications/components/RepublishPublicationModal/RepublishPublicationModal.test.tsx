@@ -11,7 +11,7 @@ import RepublishPublicationModal from "./RepublishPublicationModal";
 describe("RepublishPublicationModal", () => {
   const user = userEvent.setup();
   const [publication] = publications;
-  const publicationLabel = publication.label;
+  const publicationLabel = publication.displayName;
 
   it("does not render when closed", () => {
     const props: ComponentProps<typeof RepublishPublicationModal> = {

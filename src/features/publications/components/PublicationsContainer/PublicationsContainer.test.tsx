@@ -11,7 +11,7 @@ describe("PublicationsContainer", () => {
 
     expect(
       await screen.findByRole("button", {
-        name: publications[0].label,
+        name: publications[0].displayName,
       }),
     ).toBeInTheDocument();
   });

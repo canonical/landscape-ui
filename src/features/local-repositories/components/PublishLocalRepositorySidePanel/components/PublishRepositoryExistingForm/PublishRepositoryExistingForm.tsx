@@ -20,12 +20,10 @@ import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Local } from "../../../../types";
-import {
-  type Publication,
-  usePublishPublication,
-} from "@/features/publications";
+import { usePublishPublication } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
+import type { Publication } from "@canonical/landscape-openapi";
 
 interface PublishRepositoryExistingFormProps {
   readonly repository: Local;
@@ -49,7 +47,10 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   const handleSubmit = async (values: { name: string }) => {
     try {
-      await publishPublication({ name: values.name });
+      await publishPublication({
+        publicationName: values.name,
+        body: { forceOverwrite: true, forceCleanup: true },
+      });
 
       closeSidePanel();
 
@@ -75,7 +76,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
       { label: "Select publication", value: "" },
       ...publications.map((publication) => ({
         label: publication.displayName,
-        value: publication.name,
+        value: publication.name || "", // TODO change after fixing the API to return the publication name not undefined
       })),
     ],
     [publications],

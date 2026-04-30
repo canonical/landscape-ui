@@ -26,6 +26,7 @@ import {
 } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import * as Yup from "yup";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
@@ -109,7 +110,7 @@ const EditMirrorForm: FC = () => {
             <Blocks.Item title="Mirror contents">
               <ReadOnlyField
                 label="Distribution"
-                value={mirror.distribution}
+                value={mirror.distribution || NO_DATA_TEXT}
                 tooltipMessage="You can’t change the distribution after the mirror is created."
               />
               <ReadOnlyField
@@ -119,7 +120,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Architectures"
-                value={mirror.architectures?.join(", ")}
+                value={mirror.architectures?.join(", ") || NO_DATA_TEXT}
                 tooltipMessage="You can’t change the architectures after the mirror is created."
               />
               <p>Download options:</p>

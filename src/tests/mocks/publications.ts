@@ -1,4 +1,5 @@
-import type { Publication } from "@/features/publications";
+import type { Publication } from "@canonical/landscape-openapi";
+
 export { publicationTargets } from "@/tests/mocks/publicationTargets";
 
 export const publications = [
@@ -62,4 +63,4 @@ export const publications = [
     skipContents: true,
     publishTime: new Date("April 20, 2026"),
   },
-] satisfies Publication[];
+] as const satisfies Publication[];

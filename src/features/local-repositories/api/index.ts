@@ -1,3 +1,4 @@
-export { useGetLocalRepositories } from "./useGetLocalRepositories";
-export { useGetRepositoryPackages } from "./useGetRepositoryPackages";
-export { useRemoveLocalRepository } from "./useRemoveLocalRepository";
+export * from "./useGetLocalRepositories";
+export * from "./useGetRepositoryPackages";
+export * from "./useRemoveLocalRepository";
+export * from "./useBatchGetLocals";
