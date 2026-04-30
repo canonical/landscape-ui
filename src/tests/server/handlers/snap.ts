@@ -89,7 +89,10 @@ export default [
       const offset = Number(url.searchParams.get("offset")) || 0;
       const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
 
-      if (shouldApplyEndpointStatus("computers/:computerId/snaps/installed") && endpointStatus.status === "error") {
+      if (
+        shouldApplyEndpointStatus("computers/:computerId/snaps/installed") &&
+        endpointStatus.status === "error"
+      ) {
         throw createEndpointStatusNetworkError();
       }
 

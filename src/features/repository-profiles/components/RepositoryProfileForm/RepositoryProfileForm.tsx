@@ -146,21 +146,23 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   };
 
   return (
-      <Form onSubmit={formik.handleSubmit} noValidate>
-        <AppErrorBoundary>
-          <Blocks dense>
-            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
-              <RepositoryProfileFormDetailsPanel
-                accessGroups={accessGroupsResult?.data ?? []}
-                isTitleRequired={props.action === "add"}
-                isAccessGroupDisabled={props.action === "edit"}
-                formik={formik}
-              />
-            </Blocks.Item>
+    <Form onSubmit={formik.handleSubmit} noValidate>
+      <AppErrorBoundary>
+        <Blocks dense>
+          <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+            <RepositoryProfileFormDetailsPanel
+              accessGroups={accessGroupsResult?.data ?? []}
+              isTitleRequired={props.action === "add"}
+              isAccessGroupDisabled={props.action === "edit"}
+              formik={formik}
+            />
+          </Blocks.Item>
 
           <Blocks.Item>
             <div className={classes.sourcesHeader}>
-              <h4 className="p-heading--5 u-no-margin--bottom p-text--small-caps">Sources</h4>
+              <h4 className="p-heading--5 u-no-margin--bottom p-text--small-caps">
+                Sources
+              </h4>
               <Button
                 type="button"
                 hasIcon
@@ -180,11 +182,11 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             />
           </Blocks.Item>
 
-            <Blocks.Item>
-              <AssociationBlock formik={formik} titleClass="p-text--small-caps" />
-            </Blocks.Item>
-          </Blocks>
-        </AppErrorBoundary>
+          <Blocks.Item>
+            <AssociationBlock formik={formik} titleClass="p-text--small-caps" />
+          </Blocks.Item>
+        </Blocks>
+      </AppErrorBoundary>
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}

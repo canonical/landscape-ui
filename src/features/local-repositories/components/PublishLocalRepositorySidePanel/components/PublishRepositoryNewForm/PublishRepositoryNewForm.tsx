@@ -86,7 +86,6 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     }
   };
 
-
   const publicationTargetOptions = useMemo<SelectOption[]>(
     () => [
       ...publicationTargets.map((publicationTarget) => ({

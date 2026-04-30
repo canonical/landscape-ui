@@ -95,7 +95,9 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
     <ResponsiveTable
       columns={columns}
       data={mirrors}
-      emptyMsg={emptyMsg ?? "No mirrors found according to your search parameters."}
+      emptyMsg={
+        emptyMsg ?? "No mirrors found according to your search parameters."
+      }
     />
   );
 };

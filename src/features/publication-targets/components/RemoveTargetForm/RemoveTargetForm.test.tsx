@@ -141,8 +141,9 @@ describe("RemoveTargetForm", () => {
 
   it("submits the deletion after typing the confirmation text", async () => {
     server.use(
-      http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
-        new HttpResponse(null, { status: 204 }),
+      http.delete(
+        `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
+        () => new HttpResponse(null, { status: 204 }),
       ),
     );
 

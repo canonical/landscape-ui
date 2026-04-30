@@ -35,12 +35,17 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
         Header: "Publication",
         Cell: ({ row: { original } }: CellProps<Publication>): ReactNode => {
           const link = (
-            <PublicationLink publication={original} openInNewTab={openInNewTab} />
+            <PublicationLink
+              publication={original}
+              openInNewTab={openInNewTab}
+            />
           );
           return openInNewTab ? (
             link
           ) : (
-            <TooltipCell message={original.displayName ?? ""}>{link}</TooltipCell>
+            <TooltipCell message={original.displayName ?? ""}>
+              {link}
+            </TooltipCell>
           );
         },
       },
@@ -58,7 +63,10 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 let content: ReactNode;
                 if (sourceType === "Mirror") {
                   content = (
-                    <MirrorLink mirrorName={source} openInNewTab={openInNewTab} />
+                    <MirrorLink
+                      mirrorName={source}
+                      openInNewTab={openInNewTab}
+                    />
                   );
                 } else if (sourceType === "Local repository") {
                   content = (

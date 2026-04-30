@@ -27,8 +27,7 @@ const EditTargetForm = lazy(async () =>
 );
 
 const PublicationTargetsPage: FC = () => {
-  const { lastSidePathSegment, name, popSidePath } =
-    usePageParams();
+  const { lastSidePathSegment, name, popSidePath } = usePageParams();
   const { publicationTargets, count, isGettingPublicationTargets } =
     useGetPublicationTargets();
 

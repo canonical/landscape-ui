@@ -23,9 +23,10 @@ const RepositoryProfileAddSidePanel: FC = () => {
     lastSidePathSegment === "edit-source";
 
   const panelTitle =
-    sidePath[0] === "add" ? "Add repository profile" : "Edit repository profile";
+    sidePath[0] === "add"
+      ? "Add repository profile"
+      : "Edit repository profile";
   const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
-
 
   const handleSourceSuccess = (source: APTSource) => {
     if (lastSidePathSegment === "add-source") {

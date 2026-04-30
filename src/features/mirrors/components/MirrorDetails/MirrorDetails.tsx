@@ -14,7 +14,10 @@ import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 import { boolToLabel } from "@/utils/output";
 import { NoPublicationTargetsModal } from "@/features/publication-targets";
-import { AssociatedPublicationsList, useGetPublicationsBySource } from "@/features/publications";
+import {
+  AssociatedPublicationsList,
+  useGetPublicationsBySource,
+} from "@/features/publications";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher, sidePath, setPageParams } =

@@ -60,9 +60,7 @@ describe("PublicationTargetList", () => {
   });
 
   it("renders Filesystem type label for Filesystem targets", () => {
-    renderWithProviders(
-      <PublicationTargetList targets={publicationTargets} />,
-    );
+    renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     expect(screen.getByText("Filesystem")).toBeInTheDocument();
   });

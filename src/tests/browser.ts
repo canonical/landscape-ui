@@ -19,9 +19,7 @@ const handlers: RequestHandler[] = [
       return passthrough();
     }
 
-    if (
-      request.url.match(/\.(ts|tsx|scss)/)
-    ) {
+    if (request.url.match(/\.(ts|tsx|scss)/)) {
       return passthrough();
     }
 

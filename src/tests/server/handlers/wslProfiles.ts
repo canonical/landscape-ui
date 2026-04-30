@@ -2,7 +2,10 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
 import { createEndpointStatusNetworkError } from "./_constants";
 
 export default [

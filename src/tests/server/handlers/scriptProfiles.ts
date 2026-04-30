@@ -3,8 +3,14 @@ import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { http, HttpResponse } from "msw";
-import { createEndpointStatusError, createEndpointStatusNetworkError } from "./_constants";
-import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
 
 export default [
   http.get(`${API_URL}script-profiles`, ({ request }) => {

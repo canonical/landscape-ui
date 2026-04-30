@@ -106,9 +106,7 @@ describe("RepositoryProfileEditForm", () => {
   it("existing apt_sources from the profile appear in the sources table", async () => {
     renderEditForm("view,edit");
 
-    expect(
-      await screen.findByText(aptSources[0].name),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(aptSources[0].name)).toBeInTheDocument();
   });
 
   it("cancel on source form navigates back to the edit step", async () => {
@@ -118,7 +116,9 @@ describe("RepositoryProfileEditForm", () => {
     await user.click(screen.getByRole("button", { name: /cancel/i }));
 
     await waitFor(() => {
-      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+      expect(screen.getByTestId("location")).not.toHaveTextContent(
+        "add-source",
+      );
     });
   });
 
@@ -128,17 +128,15 @@ describe("RepositoryProfileEditForm", () => {
     await screen.findByRole("textbox", { name: /source name/i });
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
-    expect(
-      await screen.findAllByText("This field is required."),
-    ).toHaveLength(2);
+    expect(await screen.findAllByText("This field is required.")).toHaveLength(
+      2,
+    );
   });
 
   it("back button navigates back when sidePath has more than one segment", async () => {
     renderEditForm("view,edit");
 
-    await user.click(
-      await screen.findByRole("button", { name: /back/i }),
-    );
+    await user.click(await screen.findByRole("button", { name: /back/i }));
 
     expect(screen.getByTestId("location")).not.toHaveTextContent(",edit");
   });

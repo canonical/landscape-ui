@@ -26,7 +26,9 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
 
   return (
     <>
-      <p className={classNames("u-no-margin--bottom", titleClass)}>Association</p>
+      <p className={classNames("u-no-margin--bottom", titleClass)}>
+        Association
+      </p>
       <CheckboxInput
         label="Associate to all instances"
         {...formik.getFieldProps("all_computers")}

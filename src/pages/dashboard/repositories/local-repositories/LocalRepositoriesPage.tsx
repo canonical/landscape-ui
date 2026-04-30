@@ -74,10 +74,7 @@ const LocalRepositoriesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel
-        onClose={popSidePath}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePath} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <AddLocalRepositorySidePanel />

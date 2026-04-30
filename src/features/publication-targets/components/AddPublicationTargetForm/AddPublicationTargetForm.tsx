@@ -16,11 +16,7 @@ import type {
   TargetType,
 } from "./constants";
 import useNotify from "@/hooks/useNotify";
-import {
-  FilesystemFields,
-  S3Fields,
-  SwiftFields,
-} from "../TargetTypeFields";
+import { FilesystemFields, S3Fields, SwiftFields } from "../TargetTypeFields";
 import type { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
 
 const TARGET_TYPE_OPTIONS = [

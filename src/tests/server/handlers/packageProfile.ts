@@ -88,7 +88,11 @@ export default [
   http.put(
     `${API_URL}packageprofiles/:profileName/constraints/:constraintId`,
     () => {
-      if (shouldApplyEndpointStatus("packageprofiles/:profileName/constraints/:constraintId")) {
+      if (
+        shouldApplyEndpointStatus(
+          "packageprofiles/:profileName/constraints/:constraintId",
+        )
+      ) {
         const { status } = getEndpointStatus();
         if (status === "error") {
           throw createEndpointStatusError();

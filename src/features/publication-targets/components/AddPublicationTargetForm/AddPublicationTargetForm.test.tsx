@@ -136,10 +136,7 @@ describe("AddPublicationTargetForm", () => {
     await user.type(screen.getByLabelText("Name"), "My Swift Target");
     await user.type(screen.getByLabelText(/container/i), "my-container");
     await user.type(screen.getByLabelText(/^username$/i), "admin");
-    await user.type(
-      screen.getByLabelText(/^password$/i),
-      "secret",
-    );
+    await user.type(screen.getByLabelText(/^password$/i), "secret");
     await user.type(
       screen.getByLabelText(/auth url/i),
       "https://keystone.example.com/v3",
@@ -150,7 +147,9 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Publication target created")).toBeInTheDocument();
+      expect(
+        screen.getByText("Publication target created"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -169,7 +168,9 @@ describe("AddPublicationTargetForm", () => {
     );
 
     await vi.waitFor(() => {
-      expect(screen.getByText("Publication target created")).toBeInTheDocument();
+      expect(
+        screen.getByText("Publication target created"),
+      ).toBeInTheDocument();
     });
   });
 
@@ -286,7 +287,9 @@ describe("AddPublicationTargetForm", () => {
     expect(screen.getByLabelText("Tenant ID")).toBeInTheDocument();
     expect(screen.getByLabelText("OpenStack domain name")).toBeInTheDocument();
     expect(screen.getByLabelText("OpenStack domain ID")).toBeInTheDocument();
-    expect(screen.getByLabelText("OpenStack tenant domain")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("OpenStack tenant domain"),
+    ).toBeInTheDocument();
     expect(
       screen.getByLabelText("OpenStack tenant domain ID"),
     ).toBeInTheDocument();
@@ -367,10 +370,7 @@ describe("AddPublicationTargetForm", () => {
     await user.type(screen.getByLabelText(/^prefix$/i), "packages/");
     await user.type(screen.getByLabelText("Tenant"), "my-tenant");
     await user.type(screen.getByLabelText("Tenant ID"), "tid-123");
-    await user.type(
-      screen.getByLabelText("OpenStack domain name"),
-      "Default",
-    );
+    await user.type(screen.getByLabelText("OpenStack domain name"), "Default");
     await user.type(screen.getByLabelText("OpenStack domain ID"), "did-123");
     await user.type(
       screen.getByLabelText("OpenStack tenant domain"),
@@ -561,7 +561,10 @@ describe("AddPublicationTargetForm", () => {
       await user.selectOptions(screen.getByLabelText(/^type$/i), "filesystem");
       await user.type(screen.getByLabelText("Name"), "FS target");
       await user.type(screen.getByLabelText(/^path$/i), "/srv/archives");
-      await user.selectOptions(screen.getByLabelText(/link method/i), "SYMLINK");
+      await user.selectOptions(
+        screen.getByLabelText(/link method/i),
+        "SYMLINK",
+      );
 
       await user.click(
         screen.getByRole("button", { name: /add publication target/i }),
@@ -610,7 +613,10 @@ describe("AddPublicationTargetForm", () => {
 
       // Start filling S3, then change mind and switch to Swift.
       await user.type(screen.getByLabelText(/region/i), "us-east-1");
-      await user.type(screen.getByLabelText(/bucket name/i), "abandoned-bucket");
+      await user.type(
+        screen.getByLabelText(/bucket name/i),
+        "abandoned-bucket",
+      );
 
       await user.selectOptions(screen.getByLabelText(/^type$/i), "swift");
       await user.type(screen.getByLabelText("Name"), "Switched to Swift");
@@ -638,4 +644,3 @@ describe("AddPublicationTargetForm", () => {
     });
   });
 });
-

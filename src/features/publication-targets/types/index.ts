@@ -2,5 +2,5 @@ export type {
   PublicationTarget,
   S3Target,
   SwiftTarget,
-  Publication
+  Publication,
 } from "@canonical/landscape-openapi";

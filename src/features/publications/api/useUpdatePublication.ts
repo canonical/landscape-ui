@@ -1,4 +1,7 @@
-import type { Publication, PublicationWritable } from "@canonical/landscape-openapi";
+import type {
+  Publication,
+  PublicationWritable,
+} from "@canonical/landscape-openapi";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";

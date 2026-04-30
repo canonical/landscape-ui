@@ -32,7 +32,9 @@ describe("EditTargetForm", () => {
     it("pre-populates the display_name field", () => {
       renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-      expect(screen.getByLabelText("Name")).toHaveValue(s3TargetFull.displayName);
+      expect(screen.getByLabelText("Name")).toHaveValue(
+        s3TargetFull.displayName,
+      );
     });
 
     it("shows Type as read-only S3", () => {
@@ -86,9 +88,7 @@ describe("EditTargetForm", () => {
     it("renders the save button", () => {
       renderWithProviders(<EditTargetForm target={s3TargetFull} />);
 
-      expect(
-        screen.getByRole("button", { name: /save/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
     });
 
     it("submits and shows success notification", async () => {
@@ -134,7 +134,9 @@ describe("EditTargetForm", () => {
     it("pre-populates optional Swift fields when present", () => {
       renderWithProviders(<EditTargetForm target={swiftTarget} />);
 
-      expect(screen.getByLabelText(/^tenant$/i)).toHaveValue(swift.tenant ?? "");
+      expect(screen.getByLabelText(/^tenant$/i)).toHaveValue(
+        swift.tenant ?? "",
+      );
     });
 
     it("submits and shows success notification", async () => {
@@ -206,7 +208,10 @@ describe("EditTargetForm", () => {
     it("user can change linkMethod and submit successfully", async () => {
       renderWithProviders(<EditTargetForm target={filesystemTarget} />);
 
-      await user.selectOptions(screen.getByLabelText(/link method/i), "SYMLINK");
+      await user.selectOptions(
+        screen.getByLabelText(/link method/i),
+        "SYMLINK",
+      );
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
@@ -298,10 +303,7 @@ describe("EditTargetForm", () => {
       await user.type(screen.getByLabelText(/^domain$/i), "Default");
       await user.type(screen.getByLabelText(/^domain id$/i), "did-999");
       await user.type(screen.getByLabelText(/^tenant domain$/i), "td-999");
-      await user.type(
-        screen.getByLabelText(/^tenant domain id$/i),
-        "tdid-999",
-      );
+      await user.type(screen.getByLabelText(/^tenant domain id$/i), "tdid-999");
 
       await user.click(screen.getByRole("button", { name: /save/i }));
 
@@ -314,13 +316,8 @@ describe("EditTargetForm", () => {
   describe("error handling", () => {
     it("shows an error notification when S3 edit fails", async () => {
       server.use(
-        http.patch(
-          `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
-          () =>
-            HttpResponse.json(
-              { message: "edit failed" },
-              { status: 500 },
-            ),
+        http.patch(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
+          HttpResponse.json({ message: "edit failed" }, { status: 500 }),
         ),
       );
 
@@ -332,23 +329,15 @@ describe("EditTargetForm", () => {
 
     it("shows an error notification when Swift edit fails", async () => {
       server.use(
-        http.patch(
-          `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
-          () =>
-            HttpResponse.json(
-              { message: "swift edit failed" },
-              { status: 500 },
-            ),
+        http.patch(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
+          HttpResponse.json({ message: "swift edit failed" }, { status: 500 }),
         ),
       );
 
       renderWithProviders(<EditTargetForm target={swiftTarget} />);
       await user.click(screen.getByRole("button", { name: /save/i }));
 
-      expect(
-        await screen.findByText("swift edit failed"),
-      ).toBeInTheDocument();
+      expect(await screen.findByText("swift edit failed")).toBeInTheDocument();
     });
   });
 });
-

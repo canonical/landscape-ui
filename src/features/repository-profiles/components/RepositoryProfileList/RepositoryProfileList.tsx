@@ -22,14 +22,18 @@ import { pluralizeWithCount } from "@/utils/_helpers";
 const AssociatedCountCell: FC<{ readonly profile: RepositoryProfile }> = ({
   profile,
 }) => {
-  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(profile.id);
-  return <ProfileAssociatedInstancesLink
-            profile={profile}
-            count={associatedCount}
-            query={`repository:${profile.id}`}
-            isPending={isLoadingCount}
-            isGeneralAssociation
-          />;
+  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(
+    profile.id,
+  );
+  return (
+    <ProfileAssociatedInstancesLink
+      profile={profile}
+      count={associatedCount}
+      query={`repository:${profile.id}`}
+      isPending={isLoadingCount}
+      isGeneralAssociation
+    />
+  );
 };
 
 interface RepositoryProfileListProps {

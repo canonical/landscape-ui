@@ -9,7 +9,10 @@ interface TooltipCellProps {
 
 const TooltipCell: FC<TooltipCellProps> = ({ message, children }) => (
   <span className={classes.truncated}>
-    <Tooltip message={message} positionElementClassName={classes.tooltipWrapper}>
+    <Tooltip
+      message={message}
+      positionElementClassName={classes.tooltipWrapper}
+    >
       {children}
     </Tooltip>
   </span>

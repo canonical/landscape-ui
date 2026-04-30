@@ -2,8 +2,14 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { rebootProfiles } from "@/tests/mocks/rebootProfiles";
 import { http, HttpResponse } from "msw";
-import { createEndpointStatusError, createEndpointStatusNetworkError } from "./_constants";
-import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
 
 export default [
   http.get(`${API_URL}rebootprofiles`, ({ request }) => {

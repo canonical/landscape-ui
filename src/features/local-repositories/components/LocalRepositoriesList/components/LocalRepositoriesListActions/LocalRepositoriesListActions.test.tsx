@@ -31,7 +31,7 @@ describe("LocalRepositoriesListActions", () => {
       viewAction: mockViewAction,
       actions: [mockAction],
       destructiveActions: [mockDestructiveAction],
-    } as any);
+    });
   });
 
   it("renders actions menu button", () => {

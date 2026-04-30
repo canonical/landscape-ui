@@ -15,7 +15,7 @@ export const getEndpointStatusApiError = () =>
       message: ENDPOINT_STATUS_API_ERROR_MESSAGE,
     },
     { status: DEFAULT_ERROR_STATUS },
-);
+  );
 
 /**
  * Creates a fresh JSON-body error response for endpoint-status-driven error
@@ -31,7 +31,7 @@ export const createEndpointStatusError = (status = DEFAULT_ERROR_STATUS) =>
       error: "EndpointStatusError",
       message: ENDPOINT_STATUS_API_ERROR_MESSAGE,
     },
-    { status: 500 },
+    { status },
   );
 
 /**
@@ -41,6 +41,6 @@ export const createEndpointStatusError = (status = DEFAULT_ERROR_STATUS) =>
  */
 export const createEndpointStatusNetworkError = (
   status = DEFAULT_ERROR_STATUS,
-) => new HttpResponse(null, { status }  );
+) => new HttpResponse(null, { status });
 
 export const ENDPOINT_STATUS_API_ERROR = getEndpointStatusApiError();

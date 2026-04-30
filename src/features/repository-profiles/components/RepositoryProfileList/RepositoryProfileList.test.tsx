@@ -58,7 +58,9 @@ describe("RepositoryProfileList", () => {
     });
 
     expect(
-      await within(row).findByText(pluralizeWithCount(firstProfile.applied_count ?? 0, "instance")),
+      await within(row).findByText(
+        pluralizeWithCount(firstProfile.applied_count ?? 0, "instance"),
+      ),
     ).toBeInTheDocument();
   });
 

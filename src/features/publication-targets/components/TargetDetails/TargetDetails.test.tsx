@@ -27,7 +27,8 @@ if (
   throw new Error("Test data is missing required properties");
 }
 if (!swiftMock?.swift) throw new Error("Missing swift mock target");
-if (!filesystemMock?.filesystem) throw new Error("Missing filesystem mock target");
+if (!filesystemMock?.filesystem)
+  throw new Error("Missing filesystem mock target");
 
 const s3WithPubs = targetWithPublications.s3;
 const s3WithoutPubs = targetWithoutPublications.s3;
