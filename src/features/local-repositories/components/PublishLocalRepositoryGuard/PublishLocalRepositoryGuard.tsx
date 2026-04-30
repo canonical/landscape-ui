@@ -33,7 +33,9 @@ const PublishLocalRepositoryGuard: FC<PublishRepositoryGuardProps> = ({
       return <NoPublicationTargetsModal close={close} />;
     }
 
-    openSidePanel();
+    if (!sidePath.includes("publish")) {
+      openSidePanel();
+    }
   }
 
   return null;
