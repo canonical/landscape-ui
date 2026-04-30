@@ -8,13 +8,8 @@ import RepositoryProfileForm from "../RepositoryProfileForm";
 import RepositoryProfileSourceForm from "../RepositoryProfileSourceForm";
 
 const RepositoryProfileEditForm: FC = () => {
-  const {
-    name,
-    sidePath,
-    lastSidePathSegment,
-    popSidePath,
-    createSidePathPusher,
-  } = usePageParams();
+  const { name, lastSidePathSegment, popSidePath, createSidePathPusher } =
+    usePageParams();
   const { data: profile } = useGetRepositoryProfile(name);
 
   const [aptSources, setAptSources] = useState<APTSource[]>(
@@ -69,8 +64,6 @@ const RepositoryProfileEditForm: FC = () => {
             aptSources={aptSources}
             onAptSourcesChange={setAptSources}
             onClose={popSidePath}
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
             onAddSourceClick={createSidePathPusher("add-source")}
             onEditSourceClick={(source) => {
               setSourceToEdit(source);

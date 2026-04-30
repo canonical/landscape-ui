@@ -65,7 +65,6 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
 });
 
 export const LINK_METHOD_OPTIONS = [
-  { value: "", label: "Select a link method" },
   { value: "HARDLINK", label: "Hardlink" },
   { value: "SYMLINK", label: "Symlink" },
   { value: "COPY", label: "Copy" },

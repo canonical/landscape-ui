@@ -132,12 +132,4 @@ describe("RepositoryProfileEditForm", () => {
       2,
     );
   });
-
-  it("back button navigates back when sidePath has more than one segment", async () => {
-    renderEditForm("view,edit");
-
-    await user.click(await screen.findByRole("button", { name: /back/i }));
-
-    expect(screen.getByTestId("location")).not.toHaveTextContent(",edit");
-  });
 });

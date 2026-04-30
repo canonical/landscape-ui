@@ -36,7 +36,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
 
   const { createPublication, isCreatingPublication } = useCreatePublication();
   const { publishPublication, isPublishingPublication } =
@@ -233,9 +233,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           isPublishingPublication
         }
         submitButtonText="Publish mirror"
-        onCancel={close}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );

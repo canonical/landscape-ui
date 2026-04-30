@@ -33,7 +33,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
 
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
@@ -193,9 +193,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
         submitButtonDisabled={!formik.isValid}
         submitButtonLoading={formik.isSubmitting || isPublishingPublication}
         submitButtonText="Publish mirror"
-        onCancel={close}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );
