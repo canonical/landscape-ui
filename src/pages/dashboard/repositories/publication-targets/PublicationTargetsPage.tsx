@@ -1,3 +1,4 @@
+import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import EmptyState from "@/components/layout/EmptyState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
@@ -7,7 +8,7 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import {
   PublicationTargetAddButton,
-  PublicationTargetContainer,
+  PublicationTargetList,
   TargetDetails,
   useGetPublicationTargets,
 } from "@/features/publication-targets";
@@ -26,10 +27,19 @@ const EditTargetForm = lazy(async () =>
 );
 
 const PublicationTargetsPage: FC = () => {
-  const { lastSidePathSegment, createPageParamsSetter, name } = usePageParams();
+  const { lastSidePathSegment, createPageParamsSetter, name, search } =
+    usePageParams();
   const { publicationTargets, count } = useGetPublicationTargets();
 
   useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
+
+  const filteredTargets = search
+    ? publicationTargets.filter((t) =>
+        (t.displayName ?? t.name)
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      )
+    : publicationTargets;
 
   const viewTarget = publicationTargets.find(
     (t) => t.publicationTargetId === name,
@@ -40,7 +50,12 @@ const PublicationTargetsPage: FC = () => {
   const { actions, children, hasTable } = count
     ? {
         actions: [addButton],
-        children: <PublicationTargetContainer />,
+        children: (
+          <>
+            <HeaderWithSearch />
+            <PublicationTargetList targets={filteredTargets} />
+          </>
+        ),
         hasTable: true as const,
       }
     : {
