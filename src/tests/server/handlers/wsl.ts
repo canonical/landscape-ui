@@ -29,7 +29,8 @@ export default [
   ),
 
   http.post(`${API_URL}child-instance-profiles/:name\\:reapply`, () => {
-    if (getEndpointStatus() === "error") {
+    const { status } = getEndpointStatus();
+    if (status === "error") {
       return HttpResponse.json(
         { message: "endpoint-status error" },
         { status: 500 },

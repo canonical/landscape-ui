@@ -28,7 +28,7 @@ const aptSourceColumns: Column<APTSource>[] = [
     accessor: "line",
     Header: "Deb line",
     Cell: ({ row: { original } }: CellProps<APTSource>) => (
-      <TooltipCell content={original.line} />
+      <TooltipCell message={original.line}>{original.line}</TooltipCell>
     ),
   },
 ];
