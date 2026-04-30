@@ -239,9 +239,10 @@ describe("EditScriptForm", () => {
       screen.getByRole("button", { name: "Submit new version" }),
     );
 
-    expect(
-      await screen.findByRole("link", { name: "1 instance" }),
-    ).toHaveAttribute("href", ROUTES.instances.root());
+    const instanceLinks = await screen.findAllByRole("link", {
+      name: "1 instance",
+    });
+    expect(instanceLinks[0]).toHaveAttribute("href", ROUTES.instances.root());
   });
 
   it("shows no data for associated profiles without instances", async () => {

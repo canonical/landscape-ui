@@ -9,4 +9,4 @@ export type {
   PublicationTarget,
   PublicationWritable,
   PublishPublicationResponse,
-} from "./Publication";
+} from "@canonical/landscape-openapi";
