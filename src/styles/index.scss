@@ -3,10 +3,7 @@
 
 // Vanilla
 @import "vanilla-framework";
-
-@layer vanilla {
-  @include vanilla;
-}
+@include vanilla;
 
 // Custom styles
 @import "partials/base";
