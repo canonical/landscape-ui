@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import { useGetTags } from "@/features/tags";
 import type { SelectOption } from "@/types/SelectOption";
@@ -25,7 +26,7 @@ const AssociationBlock = <T extends AssociationBlockFormProps>({
 
   return (
     <>
-      <p className={classNames("u-no-margin--bottom", titleClass)`}>Association</p>
+      <p className={classNames("u-no-margin--bottom", titleClass)}>Association</p>
       <CheckboxInput
         label="Associate to all instances"
         {...formik.getFieldProps("all_computers")}
