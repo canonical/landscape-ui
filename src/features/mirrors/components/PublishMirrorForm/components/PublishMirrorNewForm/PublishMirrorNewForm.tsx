@@ -17,7 +17,7 @@ import { SETTINGS_HELP_TEXT } from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishMirrorForm.module.scss";
 import {
-  useAddPublication,
+  useCreatePublication,
   usePublishPublication,
 } from "@/features/publications";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
@@ -38,7 +38,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
   const { notify } = useNotify();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
 
-  const { addPublication, isAddingPublication } = useAddPublication();
+  const { createPublication, isCreatingPublication } = useCreatePublication();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
@@ -61,21 +61,27 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 
     onSubmit: async (values) => {
       try {
-        const { data: publication } = await addPublication({
-          label: values.publicationName,
-          publication_target: values.publicationTarget,
-          source: mirror.name ?? "",
-          distribution: mirror.distribution,
-          hash_indexing: values.hashIndexing,
-          automatic_installation: values.automaticInstallation,
-          automatic_upgrades: values.automaticUpgrades,
-          skip_bz2: values.skipBz2,
-          skip_content_indexing: values.skipContentIndexing,
-          gpg_key: values.signingKey,
+        const { data: publication } = await createPublication({
+          body: {
+            displayName: values.publicationName,
+            publicationTarget: values.publicationTarget,
+            source: mirror.name ?? "",
+            distribution: mirror.distribution,
+            acquireByHash: values.hashIndexing,
+            notAutomatic: !values.automaticInstallation,
+            butAutomaticUpgrades: values.automaticUpgrades,
+            skipBz2: values.skipBz2,
+            skipContents: values.skipContentIndexing,
+            gpgKey: values.signingKey
+              ? {
+                  armor: values.signingKey,
+                }
+              : undefined,
+          },
         });
 
         await publishPublication({
-          publicationName: publication.name,
+          publicationName: publication.name ?? "",
           body: { forceCleanup: true, forceOverwrite: true },
         });
 
@@ -224,7 +230,9 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 
       <SidePanelFormButtons
         submitButtonLoading={
-          formik.isSubmitting || isAddingPublication || isPublishingPublication
+          formik.isSubmitting ||
+          isCreatingPublication ||
+          isPublishingPublication
         }
         submitButtonText="Publish mirror"
         onCancel={close}

@@ -11,7 +11,7 @@ import { publications } from "@/tests/mocks/publications";
 
 const mockPublicationName = "publications/publication";
 
-const mockAddPublication = vi.fn(() => ({
+const mockCreatePublication = vi.fn(() => ({
   data: {
     name: mockPublicationName,
   },
@@ -24,9 +24,9 @@ vi.mock("@/features/publications", async () => {
 
   return {
     ...actual,
-    useAddPublication: () => ({
-      addPublication: mockAddPublication,
-      isAddingPublication: false,
+    useCreatePublication: () => ({
+      createPublication: mockCreatePublication,
+      isCreatingPublication: false,
     }),
     usePublishPublication: () => ({
       publishPublication: mockPublishPublication,
@@ -61,7 +61,7 @@ describe("PublishMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Publish mirror" }));
 
     await waitFor(() => {
-      expect(mockAddPublication).toHaveBeenCalledOnce();
+      expect(mockCreatePublication).toHaveBeenCalledOnce();
     });
 
     await waitFor(() => {
@@ -103,6 +103,6 @@ describe("PublishMirrorForm", () => {
       );
     });
 
-    expect(mockAddPublication).not.toHaveBeenCalled();
+    expect(mockCreatePublication).not.toHaveBeenCalled();
   });
 });
