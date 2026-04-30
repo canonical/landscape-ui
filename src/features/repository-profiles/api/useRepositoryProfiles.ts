@@ -12,7 +12,7 @@ import type { RepositoryProfile } from "../types";
 interface GetRepositoryProfilesParams {
   limit?: number;
   offset?: number;
-  search?: string[];
+  search?: string;
 }
 
 export interface CreateRepositoryProfileParams {

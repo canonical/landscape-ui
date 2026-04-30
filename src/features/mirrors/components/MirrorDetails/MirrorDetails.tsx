@@ -3,7 +3,11 @@ import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { useGetMirror, useListPublications } from "../../api";
+import {
+  useGetMirror,
+  useListPublications,
+  useListPublicationTargets,
+} from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { getSourceType } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
@@ -13,10 +17,13 @@ import UpdateMirrorModal from "../UpdateMirrorModal";
 import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 import { boolToLabel } from "@/utils/output";
+import { NoPublicationTargetsModal } from "@/features/publication-targets";
 import { AssociatedPublicationsList } from "@/features/publications";
 
 const MirrorDetails: FC = () => {
-  const { name, createSidePathPusher } = usePageParams();
+  const { name, createSidePathPusher, sidePath, setPageParams } =
+    usePageParams();
+
   const {
     value: isUpdateModalOpen,
     setTrue: openUpdateModal,
@@ -27,6 +34,11 @@ const MirrorDetails: FC = () => {
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
+  const {
+    value: isNoPublicationTargetsModalOpen,
+    setTrue: openNoPublicationTargetsModal,
+    setFalse: closeNoPublicationTargetsModal,
+  } = useBoolean();
 
   const mirror = useGetMirror(name).data.data;
 
@@ -34,6 +46,20 @@ const MirrorDetails: FC = () => {
     filter: `source="${name}"`,
     pageSize: 1000,
   }).data.data;
+
+  const { publicationTargets = [] } = useListPublicationTargets({
+    pageSize: 1000,
+  }).data.data;
+
+  const tryPublish = () => {
+    if (publicationTargets.length || publications.length) {
+      setPageParams({
+        sidePath: [...sidePath, "publish"],
+      });
+    } else {
+      openNoPublicationTargetsModal();
+    }
+  };
 
   return (
     <>
@@ -62,7 +88,7 @@ const MirrorDetails: FC = () => {
             type="button"
             hasIcon
             className="p-segmented-control__button"
-            onClick={createSidePathPusher("publish")}
+            onClick={tryPublish}
           >
             <Icon name="upload" />
             <span>Publish</span>
@@ -78,7 +104,7 @@ const MirrorDetails: FC = () => {
           </Button>
         </div>
         <Blocks>
-          <Blocks.Item title="Details">
+          <Blocks.Item title="Details" titleClassName="p-text--small-caps">
             <InfoGrid dense>
               <InfoGrid.Item label="Name" value={mirror.displayName} />
               <InfoGrid.Item
@@ -117,7 +143,7 @@ const MirrorDetails: FC = () => {
               />
             </InfoGrid>
           </Blocks.Item>
-          <Blocks.Item title="Contents">
+          <Blocks.Item title="Contents" titleClassName="p-text--small-caps">
             <InfoGrid dense>
               <InfoGrid.Item label="Distribution" value={mirror.distribution} />
               <InfoGrid.Item
@@ -144,7 +170,7 @@ const MirrorDetails: FC = () => {
               />
             </InfoGrid>
           </Blocks.Item>
-          <Blocks.Item title="Used in">
+          <Blocks.Item title="Used in" titleClassName="p-text--small-caps">
             <AssociatedPublicationsList
               publications={publications}
               showSources={false}
@@ -164,6 +190,9 @@ const MirrorDetails: FC = () => {
         mirrorDisplayName={mirror.displayName}
         mirrorName={name}
       />
+      {isNoPublicationTargetsModalOpen && (
+        <NoPublicationTargetsModal close={closeNoPublicationTargetsModal} />
+      )}
     </>
   );
 };

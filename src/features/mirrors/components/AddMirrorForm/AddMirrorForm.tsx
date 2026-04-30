@@ -171,7 +171,7 @@ const AddMirrorForm: FC = () => {
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Blocks>
-            <Blocks.Item title="Details">
+            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
               <Input
                 type="text"
                 label="Name"
@@ -256,6 +256,7 @@ const AddMirrorForm: FC = () => {
             </Blocks.Item>
             <Blocks.Item
               title="Mirror contents"
+              titleClassName="p-text--small-caps"
               description={
                 isMirrorContentsLoading &&
                 formik.values.sourceType !== "third-party"

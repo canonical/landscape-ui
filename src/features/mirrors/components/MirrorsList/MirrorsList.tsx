@@ -14,9 +14,10 @@ import MirrorActions from "../MirrorActions";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
+  readonly emptyMsg?: string;
 }
 
-const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
+const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
   const { createPageParamsSetter } = usePageParams();
 
   const columns = useMemo<Column<Mirror>[]>(
@@ -55,9 +56,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
         Header: "Packages",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name !== undefined ? (
-            <Suspense fallback={<Spinner />}>
-              <MirrorPackagesCount mirrorName={mirror.name} />
-            </Suspense>
+            <MirrorPackagesCount mirrorName={mirror.name} />
           ) : (
             <NoData />
           ),
@@ -96,7 +95,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors }) => {
     <ResponsiveTable
       columns={columns}
       data={mirrors}
-      emptyMsg="No mirrors found according to your search parameters."
+      emptyMsg={emptyMsg ?? "No mirrors found according to your search parameters."}
     />
   );
 };

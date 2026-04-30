@@ -8,8 +8,8 @@ import type { FC } from "react";
 import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
-import RepositoryProfileHeader from "../RepositoryProfileHeader";
 import RepositoryProfileList from "../RepositoryProfileList";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch/HeaderWithSearch";
 
 interface RepositoryProfileContainerProps {
   readonly unfilteredRepositoryProfilesResult: UseQueryResult<
@@ -32,7 +32,7 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
   } = getRepositoryProfilesQuery({
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    search: search ? [search] : undefined,
+    search: search || undefined,
   });
 
   if (!unfilteredRepositoryProfilesResponse) {
@@ -66,7 +66,7 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
 
   return (
     <>
-      <RepositoryProfileHeader />
+      <HeaderWithSearch />
       <RepositoryProfileList
         repositoryProfiles={repositoryProfilesResponse?.data.results ?? []}
         totalCount={repositoryProfilesResponse?.data.count ?? 0}

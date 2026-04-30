@@ -14,10 +14,8 @@ const RepositoryProfileEditForm: FC = () => {
     lastSidePathSegment,
     popSidePath,
     createSidePathPusher,
-    createPageParamsSetter,
   } = usePageParams();
   const { data: profile } = useGetRepositoryProfile(name);
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const [aptSources, setAptSources] = useState<APTSource[]>(
     profile.apt_sources ?? [],
@@ -70,7 +68,7 @@ const RepositoryProfileEditForm: FC = () => {
             profile={profile}
             aptSources={aptSources}
             onAptSourcesChange={setAptSources}
-            onClose={closePanel}
+            onClose={popSidePath}
             hasBackButton={sidePath.length > 1}
             onBackButtonPress={popSidePath}
             onAddSourceClick={createSidePathPusher("add-source")}

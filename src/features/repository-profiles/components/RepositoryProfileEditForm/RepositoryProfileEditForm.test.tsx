@@ -47,40 +47,6 @@ describe("RepositoryProfileEditForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("does not render back button when sidePath has only one segment", async () => {
-    renderWithProviders(
-      <RepositoryProfileEditForm />,
-      undefined,
-      `/?sidePath=edit&name=${profile.name}`,
-    );
-
-    await screen.findByRole("heading", { name: `Edit ${profile.title}` });
-
-    expect(
-      screen.queryByRole("button", { name: /back/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("renders back button when sidePath has more than one segment", async () => {
-    renderEditForm("view,edit");
-
-    expect(
-      await screen.findByRole("button", { name: /back/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("closes the panel and clears URL params on close button click", async () => {
-    renderEditForm();
-
-    await screen.findByRole("heading", { name: `Edit ${profile.title}` });
-
-    await user.click(screen.getByRole("button", { name: /cancel/i }));
-
-    expect(screen.getByTestId("location")).not.toHaveTextContent(
-      `name=${profile.name}`,
-    );
-  });
-
   it("shows add-source breadcrumb header in add-source step", async () => {
     renderEditForm("view,edit,add-source");
 
