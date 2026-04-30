@@ -68,8 +68,6 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
     validationSchema: Yup.object().shape({
       publicationName: Yup.string().required("This field is required."),
     }),
-
-    validateOnMount: true,
   });
 
   const publicationOptions: SelectOption[] = publications.map(

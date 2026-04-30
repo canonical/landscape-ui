@@ -107,8 +107,6 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       skipBz2: Yup.boolean(),
       skipContentIndexing: Yup.boolean(),
     }),
-
-    validateOnMount: true,
   });
 
   const publicationTargetOptions: SelectOption[] = publicationTargets.map(
