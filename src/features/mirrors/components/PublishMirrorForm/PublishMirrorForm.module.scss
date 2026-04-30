@@ -11,15 +11,15 @@
 
 .distribution {
   align-items: center;
+  background-color: $colors--theme--background-inputs;
   display: flex;
   justify-content: space-between;
   padding: $spv--small $sph--small;
-  background-color: $colors--theme--background-inputs;
 }
 
 .radio {
-  display: flex;
   align-items: end;
+  display: flex;
   margin-bottom: $spv--large;
 
   > label {

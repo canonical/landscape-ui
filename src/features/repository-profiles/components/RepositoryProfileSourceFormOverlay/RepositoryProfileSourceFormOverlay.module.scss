@@ -1,12 +1,9 @@
 .overlay {
   background: var(--vf-color-background-default, #fff);
-  bottom: 0;
   display: flex;
   flex-direction: column;
-  left: 0;
+  inset: -40px 0 0;
   position: absolute;
-  right: 0;
-  top: -40px;
   z-index: 400;
 }
 

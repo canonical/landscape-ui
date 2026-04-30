@@ -63,6 +63,7 @@ Note: `pnpm test` runs Playwright, not Vitest. Use `pnpm vitest` for unit and co
 Copy `.env.local.example` to `.env.local` and fill in values for your local Landscape instance. Required variables include `VITE_API_URL`, `VITE_API_URL_OLD`, and `VITE_ROOT_PATH`. Set `VITE_MSW_ENABLED=true` to use Mock Service Worker for offline development. See `.env.local.example` for the full list.
 
 Node.js ≥24 is required (`engines` in `package.json`).
+
 ## Agent Failure Protocol
 
 **Stop and ask the user instead of retrying** when:

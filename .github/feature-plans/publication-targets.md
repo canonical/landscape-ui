@@ -17,13 +17,13 @@ The backend is a Connect-RPC (gRPC-JSON transcoding) service. All calls go throu
 
 Proto HTTP transcoding (`body: "publication_target"`) means POST and PATCH bodies are the `PublicationTarget` message directly — **not** nested under a wrapper key.
 
-| Method | Path | Body | Purpose |
-|---|---|---|---|
-| `GET` | `publicationTargets` | — | List all publication targets (response includes embedded publications via `PublicationTargetWithPublications`) |
-| `POST` | `publicationTargets` | `PublicationTarget` fields (flat) | Create a new publication target |
-| `GET` | `publicationTargets/{id}` | — | Get a single publication target |
-| `PATCH` | `publicationTargets/{id}` | `PublicationTarget` fields + `name` (flat) | Update a publication target |
-| `DELETE` | `publicationTargets/{id}` | — | Delete a publication target |
+| Method   | Path                      | Body                                       | Purpose                                                                                                        |
+| -------- | ------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `GET`    | `publicationTargets`      | —                                          | List all publication targets (response includes embedded publications via `PublicationTargetWithPublications`) |
+| `POST`   | `publicationTargets`      | `PublicationTarget` fields (flat)          | Create a new publication target                                                                                |
+| `GET`    | `publicationTargets/{id}` | —                                          | Get a single publication target                                                                                |
+| `PATCH`  | `publicationTargets/{id}` | `PublicationTarget` fields + `name` (flat) | Update a publication target                                                                                    |
+| `DELETE` | `publicationTargets/{id}` | —                                          | Delete a publication target                                                                                    |
 
 `{id}` is the UUID segment of the resource `name` (e.g. `name = "publicationTargets/uuid"` → path `publicationTargets/uuid`).
 
@@ -32,6 +32,7 @@ Proto HTTP transcoding (`body: "publication_target"`) means POST and PATCH bodie
 ### TypeScript Interfaces (`src/features/publication-targets/types/`)
 
 **`PublicationTarget.d.ts`**
+
 ```ts
 export interface S3Target {
   region: string;
@@ -64,8 +65,8 @@ export interface SwiftTarget {
 }
 
 export interface PublicationTarget extends Record<string, unknown> {
-  name: string;                      // e.g. "publicationTargets/{uuid}"
-  publication_target_id: string;     // UUID
+  name: string; // e.g. "publicationTargets/{uuid}"
+  publication_target_id: string; // UUID
   display_name: string;
   s3?: S3Target;
   swift?: SwiftTarget;
@@ -73,6 +74,7 @@ export interface PublicationTarget extends Record<string, unknown> {
 ```
 
 **`Publication.d.ts`**
+
 ```ts
 import type { PublicationTarget } from "./PublicationTarget";
 
@@ -80,8 +82,8 @@ export interface Publication extends Record<string, unknown> {
   name: string;
   publication_id: string;
   display_name: string;
-  publication_target: string;  // resource name, e.g. "publicationTargets/{uuid}"
-  mirror?: string;             // resource name of the source mirror
+  publication_target: string; // resource name, e.g. "publicationTargets/{uuid}"
+  mirror?: string; // resource name of the source mirror
   distribution?: string;
 }
 
@@ -148,22 +150,22 @@ src/features/publication-targets/
 
 ### Table Columns (`PublicationTargetList`)
 
-| Column | Source | Notes |
-|---|---|---|
-| Name | `display_name` | Plain text |
-| Type | derived from presence of `s3` / `swift` key | `"S3"`, `"Swift"`, or `"—"` |
-| Publications | `target.publications.length` | e.g. `"2"` from embedded array |
-| Actions | `PublicationTargetListActions` | 3-dot menu via `ListActions` component |
+| Column       | Source                                      | Notes                                  |
+| ------------ | ------------------------------------------- | -------------------------------------- |
+| Name         | `display_name`                              | Plain text                             |
+| Type         | derived from presence of `s3` / `swift` key | `"S3"`, `"Swift"`, or `"—"`            |
+| Publications | `target.publications.length`                | e.g. `"2"` from embedded array         |
+| Actions      | `PublicationTargetListActions`              | 3-dot menu via `ListActions` component |
 
 ### Actions (`PublicationTargetListActions`)
 
 All three actions open the **right-side side panel** via `setSidePanelContent` — no modals are used.
 
-| Action | Opens |
-|---|---|
-| **View details** | `TargetDetails` side panel |
-| **Edit** | `EditTargetForm` side panel |
-| **Remove** | `RemoveTargetForm` side panel |
+| Action           | Opens                         |
+| ---------------- | ----------------------------- |
+| **View details** | `TargetDetails` side panel    |
+| **Edit**         | `EditTargetForm` side panel   |
+| **Remove**       | `RemoveTargetForm` side panel |
 
 > **Design decision:** Original plan specified modals for details and removal. Implementation uses side panels exclusively for consistency with the rest of the application. `TargetDetails` also exposes Edit and Remove buttons that open the same sub-panels.
 
@@ -208,6 +210,7 @@ Pre-populated from the target passed as prop. Currently **S3-only** — Swift ed
 Publications are **not fetched separately**. They arrive embedded in `GET publicationTargets` as `publications: Publication[]` on each target. `PublicationTargetWithPublications` (from `types/Publication.d.ts`) is the runtime type used throughout components.
 
 The `PublicationsPage.tsx` maps the raw response:
+
 ```ts
 const targets = (
   publicationTargetsResult.data?.data.publication_targets ?? []
@@ -224,26 +227,27 @@ No new context. Uses `useSidePanel()`, `useNotify()`, `useDebug()` from shared h
 
 ### MSW Handlers (`src/tests/server/handlers/publicationTargets.ts`)
 
-| Endpoint | Status |
-|---|---|
-| `GET publicationTargets` | ✅ Returns `publicationTargetsWithPublications` (3 targets; prod-s3-us-east has 3 publications) |
-| `POST publicationTargets` | ✅ Returns 201 with generated name/id |
-| `DELETE publicationTargets/:id` | ✅ Returns 204 |
-| `PATCH publicationTargets/:id` | ✅ Returns updated target body |
+| Endpoint                        | Status                                                                                          |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `GET publicationTargets`        | ✅ Returns `publicationTargetsWithPublications` (3 targets; prod-s3-us-east has 3 publications) |
+| `POST publicationTargets`       | ✅ Returns 201 with generated name/id                                                           |
+| `DELETE publicationTargets/:id` | ✅ Returns 204                                                                                  |
+| `PATCH publicationTargets/:id`  | ✅ Returns updated target body                                                                  |
 
 ### Mock Data (`src/tests/mocks/publication-targets.ts`)
 
 Exports:
+
 - `publications` — 3 `Publication` objects (Jammy, Noble, Focal), all linked to `prod-s3-us-east`
 - `publicationTargets` — 3 `PublicationTarget` objects (2 S3, 1 Swift)
 - `publicationTargetsWithPublications` — same 3 targets with embedded publications
 
 ### Unit Tests
 
-| File | Status |
-|---|---|
-| `PublicationTargetListActions.test.tsx` | ✅ Exists |
-| All other component/hook tests | ❌ Not yet written |
+| File                                    | Status             |
+| --------------------------------------- | ------------------ |
+| `PublicationTargetListActions.test.tsx` | ✅ Exists          |
+| All other component/hook tests          | ❌ Not yet written |
 
 > **Pending work:** Unit tests for hooks, `PublicationTargetList`, `TargetDetails`, `NewPublicationTargetForm`, `EditTargetForm`, `RemoveTargetForm`, and `PublicationsTable`.
 
@@ -263,25 +267,24 @@ The following are already in place and **must not be changed**:
 
 ## 7. Pending Work
 
-| Item | Priority | Notes |
-|---|---|---|
-| Swift edit support in `EditTargetForm` | High | Currently S3-only; add Swift field block matching `NewPublicationTargetForm` |
-| Unit tests (all components and hooks) | High | See testing plan in original spec; `PublicationTargetListActions.test.tsx` exists |
-| Delete `useDeleteTargetModal.tsx` | Low | Dead code; replaced by `RemoveTargetForm` |
-| Consolidate/remove `useGetPublicationTargets` and `useCreatePublicationTarget` | Low | Redundant with `usePublicationTargets`; remove after confirming no references |
+| Item                                                                           | Priority | Notes                                                                             |
+| ------------------------------------------------------------------------------ | -------- | --------------------------------------------------------------------------------- |
+| Swift edit support in `EditTargetForm`                                         | High     | Currently S3-only; add Swift field block matching `NewPublicationTargetForm`      |
+| Unit tests (all components and hooks)                                          | High     | See testing plan in original spec; `PublicationTargetListActions.test.tsx` exists |
+| Delete `useDeleteTargetModal.tsx`                                              | Low      | Dead code; replaced by `RemoveTargetForm`                                         |
+| Consolidate/remove `useGetPublicationTargets` and `useCreatePublicationTarget` | Low      | Redundant with `usePublicationTargets`; remove after confirming no references     |
 
 ---
 
 ## 8. Implementation Notes / Decisions
 
-| Decision | Rationale |
-|---|---|
-| Side panels instead of modals for details/removal | Consistent with application-wide pattern in other features (scripts, mirrors, etc.) |
-| Publications embedded in target response | Avoids a secondary `GET publications` request; backend already returns associated publications with each target |
-| Single `usePublicationTargets` hook for all CRUD | Follows `useRepositoryProfiles` pattern; `QueryFnType` enables param passing while keeping the hook composable |
-| `PublicationsTable` shared component | Both `TargetDetails` and `RemoveTargetForm` render the same 3-column publications table; extracted to avoid duplication |
-| `PublicationTargetContainer` added | Separates data-fetching concerns from the page; mirrors pattern in other feature areas |
-
+| Decision                                          | Rationale                                                                                                               |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Side panels instead of modals for details/removal | Consistent with application-wide pattern in other features (scripts, mirrors, etc.)                                     |
+| Publications embedded in target response          | Avoids a secondary `GET publications` request; backend already returns associated publications with each target         |
+| Single `usePublicationTargets` hook for all CRUD  | Follows `useRepositoryProfiles` pattern; `QueryFnType` enables param passing while keeping the hook composable          |
+| `PublicationsTable` shared component              | Both `TargetDetails` and `RemoveTargetForm` render the same 3-column publications table; extracted to avoid duplication |
+| `PublicationTargetContainer` added                | Separates data-fetching concerns from the page; mirrors pattern in other feature areas                                  |
 
 ---
 
@@ -293,13 +296,13 @@ The backend is a Connect-RPC (gRPC-JSON transcoding) service. All calls go throu
 
 Proto HTTP transcoding (`body: "publication_target"`) means POST and PATCH bodies are the `PublicationTarget` message directly — **not** nested under a wrapper key.
 
-| Method | Path | Body | Purpose |
-|---|---|---|---|
-| `GET` | `publicationTargets` | — | List all publication targets |
-| `POST` | `publicationTargets` | `PublicationTarget` fields (flat) | Create a new publication target |
-| `GET` | `publicationTargets/{id}` | — | Get a single publication target |
-| `PATCH` | `publicationTargets/{id}` | `PublicationTarget` fields + `name` (flat) | Update a publication target |
-| `DELETE` | `publicationTargets/{id}` | — | Delete a publication target |
+| Method   | Path                      | Body                                       | Purpose                         |
+| -------- | ------------------------- | ------------------------------------------ | ------------------------------- |
+| `GET`    | `publicationTargets`      | —                                          | List all publication targets    |
+| `POST`   | `publicationTargets`      | `PublicationTarget` fields (flat)          | Create a new publication target |
+| `GET`    | `publicationTargets/{id}` | —                                          | Get a single publication target |
+| `PATCH`  | `publicationTargets/{id}` | `PublicationTarget` fields + `name` (flat) | Update a publication target     |
+| `DELETE` | `publicationTargets/{id}` | —                                          | Delete a publication target     |
 
 `{id}` is the UUID segment of the resource `name` (e.g. `name = "publicationTargets/uuid"` → path `publicationTargets/uuid`).
 
@@ -329,7 +332,7 @@ export interface SwiftTarget {
   username: string;
   password: string;
   prefix?: string;
-  auth_url?: string;        // not server-validated as required (proto buf validate only checks container/username/password)
+  auth_url?: string; // not server-validated as required (proto buf validate only checks container/username/password)
   tenant?: string;
   tenant_id?: string;
   domain?: string;
@@ -339,8 +342,8 @@ export interface SwiftTarget {
 }
 
 export interface PublicationTarget {
-  name: string;                      // e.g. "publicationTargets/{uuid}"
-  publication_target_id: string;     // UUID
+  name: string; // e.g. "publicationTargets/{uuid}"
+  publication_target_id: string; // UUID
   display_name: string;
   s3?: S3Target;
   swift?: SwiftTarget;
@@ -349,7 +352,11 @@ export interface PublicationTarget {
 
 ```ts
 // index.d.ts
-export type { PublicationTarget, S3Target, SwiftTarget } from "./PublicationTarget";
+export type {
+  PublicationTarget,
+  S3Target,
+  SwiftTarget,
+} from "./PublicationTarget";
 ```
 
 ### Hooks to Create (`src/features/publication-targets/hooks/`)
@@ -400,7 +407,9 @@ export type { PublicationTarget, S3Target, SwiftTarget } from "./PublicationTarg
 
 ```ts
 // Mutation params:
-{ name: string }  // full resource name: "publicationTargets/{uuid}"
+{
+  name: string;
+} // full resource name: "publicationTargets/{uuid}"
 // DELETE publicationTargets/{uuid}  (Axios: authFetch.delete(name))
 // On success: invalidate ["publicationTargets"]
 ```
@@ -468,12 +477,12 @@ src/features/publication-targets/
 
 ### Table Columns
 
-| Column | Source | Notes |
-|---|---|---|
-| Name | `display_name` | Plain text |
-| Type | derived from presence of `s3` / `swift` key | Rendered via `TARGET_TYPE_LABELS` — `"S3"`, `"Swift"`, or `"File system"` |
-| Publications | count of `publications` whose `publication_target === target.name` | e.g. `"2 publications"`; data from `useGetPublications` |
-| Actions | `PublicationTargetListActions` | `ContextualMenu` from `@canonical/react-components` — 3-dot trigger |
+| Column       | Source                                                             | Notes                                                                     |
+| ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| Name         | `display_name`                                                     | Plain text                                                                |
+| Type         | derived from presence of `s3` / `swift` key                        | Rendered via `TARGET_TYPE_LABELS` — `"S3"`, `"Swift"`, or `"File system"` |
+| Publications | count of `publications` whose `publication_target === target.name` | e.g. `"2 publications"`; data from `useGetPublications`                   |
+| Actions      | `PublicationTargetListActions`                                     | `ContextualMenu` from `@canonical/react-components` — 3-dot trigger       |
 
 > **Note:** `"File system"` is a future type. The current proto only defines `s3` and `swift` in the `target` oneof. Add a `filesystem` placeholder to `TARGET_TYPE_OPTIONS` but do not render `FileSystemFields` until the proto is extended.
 
@@ -576,20 +585,20 @@ Use `useSidePanel()` to open `NewPublicationTargetForm` and `EditPublicationTarg
 
 ### Unit Tests (`*.test.tsx` alongside source)
 
-| File | What to test |
-|---|---|
-| `hooks/useGetPublicationTargets.test.ts` | Returns `publicationTargets` array and `isPublicationTargetsLoading`; handles empty list |
-| `hooks/useGetPublications.test.ts` | Returns `publications` array; client-side filter by `publication_target` name works |
-| `hooks/useCreatePublicationTarget.test.ts` | Calls `POST publicationTargets`; invalidates query key on success |
-| `hooks/useUpdatePublicationTarget.test.ts` | Calls `PATCH publicationTargets/{name}`; invalidates query key on success |
-| `hooks/useDeletePublicationTarget.test.ts` | Calls `DELETE publicationTargets/{name}`; invalidates query key on success |
-| `components/PublicationTargetList/PublicationTargetList.test.tsx` | Renders correct columns (name, type label, publications count); opens 3-dot menu |
-| `components/PublicationTargetListActions/PublicationTargetListActions.test.tsx` | View details / Edit / Remove items each fire the correct callback |
-| `components/PublicationTargetDetailsModal/PublicationTargetDetailsModal.test.tsx` | Renders all fields for an S3 target; renders all fields for a Swift target |
-| `components/RemovePublicationTargetModal/RemovePublicationTargetModal.test.tsx` | Shows publication list when target is in use; shows plain confirm when unused; calls delete on confirm |
-| `components/NewPublicationTargetForm/NewPublicationTargetForm.test.tsx` | Shows S3 fields by default; switches to Swift fields; validates required proto fields; submits correctly |
-| `components/EditPublicationTargetForm/EditPublicationTargetForm.test.tsx` | Pre-populates from existing target; target type selector is disabled; submits PATCH on save |
-| `PublicationTargetsPage.test.tsx` | Loading state; empty state; list rendered; add button opens side panel; details modal opens; remove modal opens |
+| File                                                                              | What to test                                                                                                    |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `hooks/useGetPublicationTargets.test.ts`                                          | Returns `publicationTargets` array and `isPublicationTargetsLoading`; handles empty list                        |
+| `hooks/useGetPublications.test.ts`                                                | Returns `publications` array; client-side filter by `publication_target` name works                             |
+| `hooks/useCreatePublicationTarget.test.ts`                                        | Calls `POST publicationTargets`; invalidates query key on success                                               |
+| `hooks/useUpdatePublicationTarget.test.ts`                                        | Calls `PATCH publicationTargets/{name}`; invalidates query key on success                                       |
+| `hooks/useDeletePublicationTarget.test.ts`                                        | Calls `DELETE publicationTargets/{name}`; invalidates query key on success                                      |
+| `components/PublicationTargetList/PublicationTargetList.test.tsx`                 | Renders correct columns (name, type label, publications count); opens 3-dot menu                                |
+| `components/PublicationTargetListActions/PublicationTargetListActions.test.tsx`   | View details / Edit / Remove items each fire the correct callback                                               |
+| `components/PublicationTargetDetailsModal/PublicationTargetDetailsModal.test.tsx` | Renders all fields for an S3 target; renders all fields for a Swift target                                      |
+| `components/RemovePublicationTargetModal/RemovePublicationTargetModal.test.tsx`   | Shows publication list when target is in use; shows plain confirm when unused; calls delete on confirm          |
+| `components/NewPublicationTargetForm/NewPublicationTargetForm.test.tsx`           | Shows S3 fields by default; switches to Swift fields; validates required proto fields; submits correctly        |
+| `components/EditPublicationTargetForm/EditPublicationTargetForm.test.tsx`         | Pre-populates from existing target; target type selector is disabled; submits PATCH on save                     |
+| `PublicationTargetsPage.test.tsx`                                                 | Loading state; empty state; list rendered; add button opens side panel; details modal opens; remove modal opens |
 
 ### MSW Handlers (`src/tests/mocks/`)
 
@@ -617,17 +626,29 @@ http.get(`${API_URL}publicationTargets`, () =>
 
 // POST /api/v2/publicationTargets
 http.post(`${API_URL}publicationTargets`, () =>
-  HttpResponse.json({ name: "publicationTargets/new-uuid", publication_target_id: "new-uuid", display_name: "New Target" }, { status: 201 }),
+  HttpResponse.json(
+    {
+      name: "publicationTargets/new-uuid",
+      publication_target_id: "new-uuid",
+      display_name: "New Target",
+    },
+    { status: 201 },
+  ),
 );
 
 // PATCH /api/v2/publicationTargets/:id  (body is flat PublicationTarget fields)
 http.patch(`${API_URL}publicationTargets/:id`, () =>
-  HttpResponse.json({ name: "publicationTargets/some-uuid", publication_target_id: "some-uuid", display_name: "Updated Target" }),
+  HttpResponse.json({
+    name: "publicationTargets/some-uuid",
+    publication_target_id: "some-uuid",
+    display_name: "Updated Target",
+  }),
 );
 
 // DELETE /api/v2/publicationTargets/:id  (:id is the UUID, matching resource name "publicationTargets/{id}")
-http.delete(`${API_URL}publicationTargets/:id`, () =>
-  new HttpResponse(null, { status: 200 }),
+http.delete(
+  `${API_URL}publicationTargets/:id`,
+  () => new HttpResponse(null, { status: 200 }),
 );
 
 // GET /api/v2/publications  (used by RemovePublicationTargetModal)
@@ -638,7 +659,8 @@ http.get(`${API_URL}publications`, () =>
         name: "publications/00000000-0000-0000-0000-000000000010",
         publication_id: "00000000-0000-0000-0000-000000000010",
         display_name: "My Publication",
-        publication_target: "publicationTargets/00000000-0000-0000-0000-000000000001",
+        publication_target:
+          "publicationTargets/00000000-0000-0000-0000-000000000001",
         mirror: "mirrors/some-mirror",
       },
     ],

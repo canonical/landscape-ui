@@ -32,7 +32,9 @@ it("clicking a profile title opens the profile details side panel", async () => 
     <RepositoryProfileList repositoryProfiles={repositoryProfiles} />,
   );
 
-  await user.click(screen.getByRole("button", { name: repositoryProfiles[0].title }));
+  await user.click(
+    screen.getByRole("button", { name: repositoryProfiles[0].title }),
+  );
 
   expect(
     await screen.findByRole("heading", { name: repositoryProfiles[0].title }),
@@ -64,13 +66,12 @@ Assert that after the `useGetProfileInstancesCount` query resolves, each row sho
 
 ```tsx
 it("closes the remove modal after successful confirmation", async () => {
-  renderWithProviders(<RepositoryProfileListActions profile={repositoryProfiles[0]} />);
+  renderWithProviders(
+    <RepositoryProfileListActions profile={repositoryProfiles[0]} />,
+  );
   await openRemoveModal(user);
 
-  await user.type(
-    screen.getByRole("textbox"),
-    repositoryProfiles[0].name,
-  );
+  await user.type(screen.getByRole("textbox"), repositoryProfiles[0].name);
   await user.click(screen.getByRole("button", { name: /Remove/i }));
 
   await waitFor(() =>
@@ -149,9 +150,9 @@ Pass a formik context with `errors.title = "Required"` and `touched.title = true
 
 These components have no known production imports. Investigate before adding tests; if they are still in use, add tests; if not, open a separate cleanup PR to delete them.
 
-| Component | File |
-|---|---|
+| Component                              | File                                                                                |
+| -------------------------------------- | ----------------------------------------------------------------------------------- |
 | `RepositoryProfileFormAptSourcesPanel` | `src/features/repository-profiles/components/RepositoryProfileFormAptSourcesPanel/` |
-| `RepositoryProfileFormTabs` | `src/features/repository-profiles/components/RepositoryProfileFormTabs/` |
+| `RepositoryProfileFormTabs`            | `src/features/repository-profiles/components/RepositoryProfileFormTabs/`            |
 
 Note: `RepositoryProfileFormAptSourcesPanel` has a `apt_sources: [2]` type mismatch (`number[]` vs `APTSource[]`) that must be resolved before meaningful tests can be written.

@@ -12,17 +12,18 @@
 
 `postgres-init/` runs exactly once (on first volume creation) and before any service is healthy. It works for DDL (creating the database — see `02-debarchive.sql`). For DML seeding it has critical drawbacks here:
 
-| Problem | Detail |
-|---|---|
+| Problem              | Detail                                                                                                                                                                                              |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Aptly-managed tables | `mirror_aptly`, `local_repository_aptly`, `published_repo_aptly` contain aptly's internal binary/JSON serialisation. Raw SQL cannot produce correct values without reimplementing aptly's encoding. |
-| Foreign-key ordering | Publications reference mirrors/locals by aptly-internal UUID linkage, not just a simple FK. The API enforces this; SQL does not. |
-| No idempotency | Re-running after a DB wipe requires manual intervention; a service can check before inserting. |
+| Foreign-key ordering | Publications reference mirrors/locals by aptly-internal UUID linkage, not just a simple FK. The API enforces this; SQL does not.                                                                    |
+| No idempotency       | Re-running after a DB wipe requires manual intervention; a service can check before inserting.                                                                                                      |
 
 The `publication_target` table is simple (UUID + JSONB blob), so it _could_ be seeded via SQL. But seeding it in one place while other entities go through the API creates split ownership with no gain.
 
 ### Why the seeder service pattern?
 
 The `builder` service in `compose.yaml` is the established precedent for one-shot initialisation containers. It:
+
 - Declares `depends_on` with `condition: service_completed_successfully`
 - Exits 0 on success, which downstream `depends_on` respect
 - Is cheap (no long-running process)
@@ -40,6 +41,7 @@ A `debarchive-seeder` service follows the same pattern and calls the debarchive 
 The script must be idempotent. Check `ListPublicationTargets`; if the response already contains items, exit 0 immediately (avoids duplicate data after a restart without a full volume wipe).
 
 **Logical flow:**
+
 ```
 1. Wait-for-debarchive (already handled by depends_on: service_healthy)
 2. GET ListPublicationTargets → if count > 0 → exit 0 (already seeded)
@@ -50,6 +52,7 @@ The script must be idempotent. Check `ListPublicationTargets`; if the response a
 ```
 
 **Connect RPC JSON wire format** (unary):
+
 ```bash
 curl -s -X POST "http://landscape-debarchive:8000/${SERVICE_PATH}/${METHOD}" \
   -H "Content-Type: application/connect+json" \
@@ -60,27 +63,27 @@ Service paths follow the proto package: `canonical.landscape.debarchive.v1.Publi
 
 **Sample entities to create:**
 
-*Publication Targets:*
+_Publication Targets:_
 | displayName | type | region/container |
 |---|---|---|
 | `Dev S3 Bucket` | S3 | `us-east-1` / `landscape-dev-packages` |
 | `Staging S3 Bucket` | S3 | `eu-west-1` / `landscape-staging-packages` |
 | `Swift Store` | Swift | container: `landscape-archive` |
 
-*Mirrors:*
+_Mirrors:_
 | displayName | archiveRoot | distribution | components | architectures |
 |---|---|---|---|---|
 | `Ubuntu Noble Main` | `http://archive.ubuntu.com/ubuntu` | `noble` | `["main","restricted"]` | `["amd64","arm64"]` |
 | `Ubuntu Jammy Main` | `http://archive.ubuntu.com/ubuntu` | `jammy` | `["main","universe"]` | `["amd64"]` |
 | `Landscape PPA` | `https://ppa.launchpadcontent.net/landscape/landscape-client/ubuntu` | `noble` | `["main"]` | `["amd64","arm64"]` |
 
-*Locals:*
+_Locals:_
 | displayName | defaultDistribution | defaultComponent |
 |---|---|---|
 | `Noble Internal` | `noble` | `main` |
 | `Jammy Internal` | `jammy` | `main` |
 
-*Publications (mirror each source to a target):*
+_Publications (mirror each source to a target):_
 | publicationTarget | source | distribution | component |
 |---|---|---|---|
 | `Dev S3 Bucket` | noble mirror | `noble` | `main` |
@@ -115,17 +118,17 @@ Using `ubuntu:24.04` with `curl` + `jq` is sufficient. No Go toolchain required.
 Add after the `debarchive` service:
 
 ```yaml
-  debarchive-seeder:
-    build:
-      context: .
-      dockerfile: Dockerfile.debarchive-seed
-    container_name: landscape-debarchive-seeder
-    restart: "no"
-    depends_on:
-      debarchive:
-        condition: service_healthy
-    networks:
-      - landscape-net
+debarchive-seeder:
+  build:
+    context: .
+    dockerfile: Dockerfile.debarchive-seed
+  container_name: landscape-debarchive-seeder
+  restart: "no"
+  depends_on:
+    debarchive:
+      condition: service_healthy
+  networks:
+    - landscape-net
 ```
 
 No env_file needed — the script targets the internal Docker hostname `landscape-debarchive:8000` directly.
@@ -137,13 +140,14 @@ No env_file needed — the script targets the internal Docker hostname `landscap
 The `debarchive` service in `compose.yaml` currently has no `healthcheck`. The seeder's `depends_on: condition: service_healthy` requires one.
 
 Add to the `debarchive` service:
+
 ```yaml
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf -I http://localhost:8000/ || exit 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 15s
+healthcheck:
+  test: ["CMD-SHELL", "curl -sf -I http://localhost:8000/ || exit 1"]
+  interval: 5s
+  timeout: 3s
+  retries: 10
+  start_period: 15s
 ```
 
 The health endpoint is `HEAD /` (root) — `mux.HandleFunc("HEAD /{$}", handlers.HealthCheck)` in `routes/routes.go`. Use `-I` to send HEAD.
@@ -163,12 +167,12 @@ seed-debarchive: ## Re-run the debarchive seeder (useful after a data wipe)
 
 ## File Checklist
 
-| File | Action |
-|---|---|
-| `docker/ui-dev/debarchive-seed.sh` | Create — idempotent seeder script |
-| `docker/ui-dev/Dockerfile.debarchive-seed` | Create — ubuntu:24.04 + curl + jq |
-| `docker/ui-dev/compose.yaml` | Modify — add `debarchive-seeder` service + healthcheck on `debarchive` |
-| `docker/ui-dev/Makefile` | Modify — add `seed-debarchive` target (optional) |
+| File                                       | Action                                                                 |
+| ------------------------------------------ | ---------------------------------------------------------------------- |
+| `docker/ui-dev/debarchive-seed.sh`         | Create — idempotent seeder script                                      |
+| `docker/ui-dev/Dockerfile.debarchive-seed` | Create — ubuntu:24.04 + curl + jq                                      |
+| `docker/ui-dev/compose.yaml`               | Modify — add `debarchive-seeder` service + healthcheck on `debarchive` |
+| `docker/ui-dev/Makefile`                   | Modify — add `seed-debarchive` target (optional)                       |
 
 ---
 

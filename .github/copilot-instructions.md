@@ -367,6 +367,7 @@ Usage in Forms:
   - Verifying success/error states and side effects
 
 **Example:** Instead of `usePublicationTargets.test.tsx`, test the hook's methods through:
+
 - `NewPublicationTargetForm.test.tsx` → exercises `createPublicationTargetQuery`
 - `EditTargetForm.test.tsx` → exercises `editPublicationTargetQuery`
 - `RemoveTargetForm.test.tsx` → exercises `removePublicationTargetQuery` (including error paths)

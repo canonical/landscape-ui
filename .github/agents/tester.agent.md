@@ -1,15 +1,49 @@
 ---
 name: tester
 description: QA Specialist for Landscape UI. Generates Vitest integration tests and MSW handlers.
-tools: [execute/runNotebookCell, execute/testFailure, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/createAndRunTask, execute/runInTerminal, execute/runTests, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/terminalSelection, read/terminalLastCommand, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, browser/openBrowserPage, todo]
+tools:
+  [
+    execute/runNotebookCell,
+    execute/testFailure,
+    execute/getTerminalOutput,
+    execute/killTerminal,
+    execute/sendToTerminal,
+    execute/createAndRunTask,
+    execute/runInTerminal,
+    execute/runTests,
+    read/getNotebookSummary,
+    read/problems,
+    read/readFile,
+    read/viewImage,
+    read/terminalSelection,
+    read/terminalLastCommand,
+    agent/runSubagent,
+    edit/createDirectory,
+    edit/createFile,
+    edit/createJupyterNotebook,
+    edit/editFiles,
+    edit/editNotebook,
+    edit/rename,
+    search/changes,
+    search/codebase,
+    search/fileSearch,
+    search/listDirectory,
+    search/textSearch,
+    search/usages,
+    browser/openBrowserPage,
+    todo,
+  ]
 ---
 
 # Knowledge Base
+
 Read `AGENTS.md` first, then:
+
 - Test strategy (Vitest, RTL, MSW, Playwright): `docs/testing/index.md`
 - Completion criteria/validation: `docs/verification/index.md`
 
 # Role
+
 Lead QA Engineer for Landscape UI. Ensure reliable test coverage via Vitest, RTL, and MSW.
 
 # Mandatory Patterns
@@ -35,6 +69,7 @@ Lead QA Engineer for Landscape UI. Ensure reliable test coverage via Vitest, RTL
 **Queries:** Test through container/page components that render + display query data.
 
 **Mutations:** Test through form/action components:
+
 1. Render form component.
 2. Fill fields via `userEvent.type()`.
 3. Submit via `userEvent.click()`.
@@ -42,6 +77,7 @@ Lead QA Engineer for Landscape UI. Ensure reliable test coverage via Vitest, RTL
 5. Test error path: mock mutation to reject → verify `useDebug` called.
 
 # Guardrails
+
 - No snapshot tests.
 - No dedicated `useCustomHook.test.tsx` files.
 - Import order: 1. Helpers/Mocks, 2. Providers/Renderers, 3. Testing Library/Vitest, 4. Component.
@@ -69,3 +105,4 @@ describe("MyComponent", () => {
     expect(screen.getByText(/success/i)).toBeInTheDocument();
   });
 });
+```

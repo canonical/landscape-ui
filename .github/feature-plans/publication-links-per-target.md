@@ -43,7 +43,7 @@ Replace `handlePublicationDetails` with `createPageParamsSetter({ sidePath: ["vi
 
 Add `<SidePanel isOpen={!!sidePath.length} onClose={createPageParamsSetter({ sidePath: [], profile: "" })}>` with `lastSidePathSegment === "view"` rendering `<PublicationDetailsSidePanel />` (lazy). Add `useSetDynamicFilterValidation("sidePath", ["view"])`.
 
-### 3e. `PublicationDetailsSidePanel` — URL-aware wrapper *(new)*
+### 3e. `PublicationDetailsSidePanel` — URL-aware wrapper _(new)_
 
 **File:** `src/features/publications/components/PublicationDetailsSidePanel/PublicationDetailsSidePanel.tsx`
 
@@ -61,7 +61,7 @@ Export from `src/features/publications/index.ts`.
 export default function useGetPagePublication(): {
   publication: Publication | undefined;
   isGettingPublication: boolean;
-}
+};
 // const { profile: publicationName } = usePageParams();
 // return useGetPublication({ publicationName });
 ```
@@ -71,20 +71,25 @@ export default function useGetPagePublication(): {
 ## 5. Testing
 
 ### `PublicationsTable.test.tsx`
+
 - Assert each label cell renders an `<a>` whose `href` contains `sidePath=view&profile=<name>`.
 
 ### `PublicationsList.test.tsx`
+
 - Replace assertions on `setSidePanelContent`. Assert clicking a name sets URL to `?sidePath=view&profile=<name>`.
 
 ### `PublicationsListActions.test.tsx`
+
 - Update `"opens details side panel from menu"` — assert clicking "View details" sets URL to `?sidePath=view&profile=<name>` instead of asserting a panel heading appears.
 
 ### `PublicationsPage.test.tsx`
+
 - Panel renders when URL has `?sidePath=view&profile=<name>`.
 - Panel is closed by default (no `sidePath`).
 - Closing calls `createPageParamsSetter` clearing both params.
 
 ### `PublicationDetailsSidePanel.test.tsx`
+
 - Renders `PublicationDetails` when publication is loaded.
 - Renders loading state while `isGettingPublication` is true.
 
@@ -94,12 +99,12 @@ No new MSW handlers needed.
 
 ## 6. Files Summary
 
-| File | Change |
-|------|--------|
-| `src/features/publication-targets/components/PublicationsTable/PublicationsTable.tsx` | Label column → `<Link>` Cell renderer |
-| `src/features/publications/components/PublicationsList/PublicationsList.tsx` | `setSidePanelContent` → `createPageParamsSetter` |
-| `src/features/publications/components/PublicationsListActions/PublicationsListActions.tsx` | `setSidePanelContent` → `createPageParamsSetter` |
-| `src/features/publications/api/useGetPagePublication.ts` | **New** |
-| `src/features/publications/components/PublicationDetailsSidePanel/PublicationDetailsSidePanel.tsx` | **New** |
-| `src/features/publications/index.ts` | Export `PublicationDetailsSidePanel` |
-| `src/pages/dashboard/repositories/publications/PublicationsPage.tsx` | Add `<SidePanel>` with `sidePath` routing |
+| File                                                                                               | Change                                           |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `src/features/publication-targets/components/PublicationsTable/PublicationsTable.tsx`              | Label column → `<Link>` Cell renderer            |
+| `src/features/publications/components/PublicationsList/PublicationsList.tsx`                       | `setSidePanelContent` → `createPageParamsSetter` |
+| `src/features/publications/components/PublicationsListActions/PublicationsListActions.tsx`         | `setSidePanelContent` → `createPageParamsSetter` |
+| `src/features/publications/api/useGetPagePublication.ts`                                           | **New**                                          |
+| `src/features/publications/components/PublicationDetailsSidePanel/PublicationDetailsSidePanel.tsx` | **New**                                          |
+| `src/features/publications/index.ts`                                                               | Export `PublicationDetailsSidePanel`             |
+| `src/pages/dashboard/repositories/publications/PublicationsPage.tsx`                               | Add `<SidePanel>` with `sidePath` routing        |

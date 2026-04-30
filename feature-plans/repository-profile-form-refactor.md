@@ -14,11 +14,11 @@
 
 ### Endpoints Used
 
-| Method   | Endpoint                     | Purpose                                              | API Version |
-|----------|------------------------------|------------------------------------------------------|-------------|
-| `GET`    | `/repository/apt-source`     | List APT sources (optionally by `ids[]`)             | v2          |
-| `PUT`    | `/repositoryprofiles/{name}` | Edit profile; creates/associates sources inline      | v2          |
-| `DELETE` | `/repository/apt-source/{id}`| Delete an APT source record (used during edit flow)  | v2          |
+| Method   | Endpoint                      | Purpose                                             | API Version |
+| -------- | ----------------------------- | --------------------------------------------------- | ----------- |
+| `GET`    | `/repository/apt-source`      | List APT sources (optionally by `ids[]`)            | v2          |
+| `PUT`    | `/repositoryprofiles/{name}`  | Edit profile; creates/associates sources inline     | v2          |
+| `DELETE` | `/repository/apt-source/{id}` | Delete an APT source record (used during edit flow) | v2          |
 
 ### Key Backend Types
 
@@ -54,9 +54,9 @@ interface EditRepositoryProfileParams {
   description?: string;
   all_computers?: boolean;
   tags?: string[];
-  add_apt_sources?: AptSourceBody[];   // new sources to create + associate inline
-  remove_apt_sources?: number[];       // IDs of sources to disassociate
-  pockets?: number[];                  // kept for backward compat; backend ignores via Pydantic
+  add_apt_sources?: AptSourceBody[]; // new sources to create + associate inline
+  remove_apt_sources?: number[]; // IDs of sources to disassociate
+  pockets?: number[]; // kept for backward compat; backend ignores via Pydantic
 }
 ```
 
@@ -74,29 +74,30 @@ Where `AptSourceBody` is a new shared type (see section 3).
 ### New Types
 
 **`src/features/apt-sources/types/AptSourceBody.d.ts`** (shared type mirroring backend)
+
 ```typescript
 export interface GpgKeyBody {
-  content: string;   // raw GPG key material
+  content: string; // raw GPG key material
 }
 
 export interface AptSourceBody {
   name: string;
-  line: string;                // the deb line (apt_line maps to this)
+  line: string; // the deb line (apt_line maps to this)
   gpg_key?: GpgKeyBody | null;
 }
 ```
+
 Export from `src/features/apt-sources/types/index.d.ts`.
 
 **`src/features/repository-profiles/types/RepositoryProfileSourceFormValues.d.ts`**
+
 ```typescript
 export interface RepositoryProfileSourceFormValues {
   name: string;
-  deb_line: string;   // required; maps to AptSourceBody.line on save
-  gpg_key: string;    // optional; maps to AptSourceBody.gpg_key.content if non-empty
+  deb_line: string; // required; maps to AptSourceBody.line on save
+  gpg_key: string; // optional; maps to AptSourceBody.gpg_key.content if non-empty
 }
 ```
-
-
 
 ### Modified Types
 
@@ -108,10 +109,10 @@ export interface RepositoryProfileSourceFormValues {
 
 ### Deleted / Deprecated
 
-| Component | Reason |
-|---|---|
-| `RepositoryProfileFormTabs` | Tabs layout removed |
-| `RepositoryProfileFormPocketsPanel` | Pockets out of scope |
+| Component                              | Reason                                            |
+| -------------------------------------- | ------------------------------------------------- |
+| `RepositoryProfileFormTabs`            | Tabs layout removed                               |
+| `RepositoryProfileFormPocketsPanel`    | Pockets out of scope                              |
 | `RepositoryProfileFormAptSourcesPanel` | Replaced by `RepositoryProfileFormSourcesSection` |
 
 > These components should remain in the codebase but stop being rendered by `RepositoryProfileForm`. A follow-up cleanup PR can delete them once this refactor is stable.
@@ -151,6 +152,7 @@ src/features/repository-profiles/components/
 ### 5.1 `RepositoryProfileForm` (Modified)
 
 **Layout (vertical sections, no tabs):**
+
 ```
 <Form>
   <h4>Details</h4>
@@ -183,6 +185,7 @@ src/features/repository-profiles/components/
 ```
 
 **Local state:**
+
 ```typescript
 // tracks sources queued for creation when the profile is saved
 const [pendingNewSources, setPendingNewSources] = useState<AptSourceBody[]>([]);
@@ -193,12 +196,14 @@ const [showSourceOverlay, setShowSourceOverlay] = useState(false);
 ```
 
 **Removed from this component:**
+
 - `getDistributionsQuery` and `getAPTSourcesQuery` calls
 - `currentTab` / `setCurrentTab` state
 - `RepositoryProfileFormTabs` render
 - Tab-based conditional rendering
 
 **Updated in `handleSubmit`:**
+
 ```typescript
 // Replace apt_sources: values.apt_sources with:
 add_apt_sources: pendingNewSources,
@@ -206,6 +211,7 @@ remove_apt_sources: removedSourceIds,
 ```
 
 **Unchanged in this component:**
+
 - `action: "add" | "edit"` props
 - `createRepositoryProfileQuery` / `editRepositoryProfileQuery` mutations
 - `getAccessGroupQuery` call (still needed for Details panel)
@@ -216,6 +222,7 @@ remove_apt_sources: removedSourceIds,
 ### 5.2 `RepositoryProfileFormSourcesSection`
 
 **Props:**
+
 ```typescript
 interface RepositoryProfileFormSourcesSectionProps {
   readonly formik: FormikContextType<RepositoryProfileFormValues>;
@@ -227,10 +234,11 @@ interface RepositoryProfileFormSourcesSectionProps {
 ```
 
 **Props:**
+
 ```typescript
 interface RepositoryProfileFormSourcesSectionProps {
-  readonly profileAptSourceIds: number[];           // from formik.values.apt_sources (edit mode)
-  readonly pendingNewSources: AptSourceBody[];       // queued sources not yet persisted
+  readonly profileAptSourceIds: number[]; // from formik.values.apt_sources (edit mode)
+  readonly pendingNewSources: AptSourceBody[]; // queued sources not yet persisted
   readonly onAddSource: (source: AptSourceBody) => void;
   readonly onRemoveExistingSource: (id: number) => void;
   readonly onRemovePendingSource: (name: string) => void;
@@ -239,6 +247,7 @@ interface RepositoryProfileFormSourcesSectionProps {
 ```
 
 **Behaviour:**
+
 - Calls `useGetAPTSources({ ids: profileAptSourceIds })` (skips when empty)
 - Renders a table with two groups of rows: **existing** sources (fetched by ID) and **pending** sources (`pendingNewSources` shown with a visual indicator like a "pending" badge)
 - Columns: **Source Name**, **Deb line** (truncated), **Actions**
@@ -251,6 +260,7 @@ interface RepositoryProfileFormSourcesSectionProps {
 - Empty state: "No sources added yet." with "Add source" CTA
 
 **Handlers in `RepositoryProfileForm`:**
+
 ```typescript
 const handleAddSource = (source: AptSourceBody) => {
   setPendingNewSources((prev) => [...prev, source]);
@@ -277,10 +287,20 @@ const handleRemovePendingSource = (name: string) => {
 ### 5.3 `RepositoryProfileSourceForm`
 
 **Props:**
+
 ```typescript
 type RepositoryProfileSourceFormProps =
-  | { action: "add"; onSuccess: (source: AptSourceBody) => void; onCancel: () => void }
-  | { action: "edit"; source: APTSource; onSuccess: (replacement: AptSourceBody) => void; onCancel: () => void };
+  | {
+      action: "add";
+      onSuccess: (source: AptSourceBody) => void;
+      onCancel: () => void;
+    }
+  | {
+      action: "edit";
+      source: APTSource;
+      onSuccess: (replacement: AptSourceBody) => void;
+      onCancel: () => void;
+    };
 ```
 
 In edit mode the `source` prop pre-fills the form fields. The source name field is disabled (names are immutable). On submit, `useRemoveAPTSource` is called immediately to delete the old record, then `onSuccess(replacement)` is called to queue the new body.
@@ -289,17 +309,18 @@ In edit mode the `source` prop pre-fills the form fields. The source name field 
 
 **Fields:**
 
-| Field | Component | Required |
-|---|---|---|
-| Source name | `<Input type="text">` | Yes |
-| Deb line | `<Input type="text">` | Yes |
-| GPG key | `<Input type="text">` | No |
+| Field       | Component             | Required |
+| ----------- | --------------------- | -------- |
+| Source name | `<Input type="text">` | Yes      |
+| Deb line    | `<Input type="text">` | Yes      |
+| GPG key     | `<Input type="text">` | No       |
 
 > No `type` selector or edit mode in this iteration. The form always produces an `AptSourceBody` (`{ name, line, gpg_key? }`).
 
 > No `access_group` field. On submit, calls `onSuccess({ name, line, gpg_key })` — no API call. The `AptSourceBody` object is accumulated in local state and sent to the backend only when the parent profile form is saved. No `try/catch` needed in this form.
 
 **`constants.ts`:**
+
 ```typescript
 export const INITIAL_VALUES: RepositoryProfileSourceFormValues = {
   name: "",
@@ -309,11 +330,15 @@ export const INITIAL_VALUES: RepositoryProfileSourceFormValues = {
 ```
 
 **`helpers.ts` — `getValidationSchema()`:**
+
 ```typescript
 Yup.object().shape({
   name: Yup.string()
     .required("This field is required.")
-    .matches(/^[a-z0-9][a-z0-9+.-]*$/, "Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +."),
+    .matches(
+      /^[a-z0-9][a-z0-9+.-]*$/,
+      "Name must start with alphanumeric and contain only lowercase letters, numbers, -, or +.",
+    ),
   deb_line: Yup.string().required("This field is required."),
   gpg_key: Yup.string(),
 });
@@ -356,6 +381,7 @@ Yup.object().shape({
 ### 6.2 MSW Handlers
 
 **Existing handlers to confirm present:**
+
 - `GET /repository/apt-source` — should already exist in apt-sources handlers
 - `PUT /repositoryprofiles/:name` — should already exist in repository-profiles handlers; verify it handles `add_apt_sources`/`remove_apt_sources` in the mock response
 
@@ -364,6 +390,7 @@ No new handlers required for this iteration (PATCH endpoint does not exist yet).
 ### 6.3 Mock Data
 
 **`src/tests/mocks/aptSources.ts`** (verify or extend):
+
 - At least 2-3 mock `APTSource` objects with `id`, `name`, `line`, `access_group`, `gpg_key`, `profiles[]`
 - Ensure IDs match the `apt_sources` arrays in `src/tests/mocks/repositoryProfiles.ts`
 
@@ -385,14 +412,14 @@ No new handlers required for this iteration (PATCH endpoint does not exist yet).
 
 ## 8. Resolved Decisions
 
-| # | Question | Resolution |
-|---|---|---|
-| 1 | Pockets removal | Confirmed. Remove pockets from form; keep components in codebase for future cleanup PR. |
-| 2 | Access group per source | No per-source access group. Field omitted from source form entirely. |
-| 3 | Delete behaviour | Disassociation only — matches previous behaviour. APT source record is not deleted via API. |
-| 4 | Edit source flow | No PATCH endpoint. Edit = DELETE old APT source record immediately + queue replacement `AptSourceBody` in `pendingNewSources`; created inline on profile save. |
-| 5 | HTTPS / S3 source types | **Out of scope and not documented.** Only deb-line sources are supported. |
-| 6 | AssociationBlock location | Move out of `RepositoryProfileFormDetailsPanel`; render as a separate `<h4>Association</h4>` section directly in `RepositoryProfileForm`. Modify DetailsPanel to remove `<AssociationBlock>`. |
-| 7 | GPG key field | Free-text `<Input type="text">` (not a `<Select>`). No API call needed. |
-| 8 | Type selector | Removed. Only deb-line sources are supported. No `<Select>` type field is needed. |
-| 9 | Pockets in submit payload | Keep `pockets: []` in the submitted payload for backward compatibility. Remove only from the form UI and `INITIAL_VALUES`. |
+| #   | Question                  | Resolution                                                                                                                                                                                    |
+| --- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Pockets removal           | Confirmed. Remove pockets from form; keep components in codebase for future cleanup PR.                                                                                                       |
+| 2   | Access group per source   | No per-source access group. Field omitted from source form entirely.                                                                                                                          |
+| 3   | Delete behaviour          | Disassociation only — matches previous behaviour. APT source record is not deleted via API.                                                                                                   |
+| 4   | Edit source flow          | No PATCH endpoint. Edit = DELETE old APT source record immediately + queue replacement `AptSourceBody` in `pendingNewSources`; created inline on profile save.                                |
+| 5   | HTTPS / S3 source types   | **Out of scope and not documented.** Only deb-line sources are supported.                                                                                                                     |
+| 6   | AssociationBlock location | Move out of `RepositoryProfileFormDetailsPanel`; render as a separate `<h4>Association</h4>` section directly in `RepositoryProfileForm`. Modify DetailsPanel to remove `<AssociationBlock>`. |
+| 7   | GPG key field             | Free-text `<Input type="text">` (not a `<Select>`). No API call needed.                                                                                                                       |
+| 8   | Type selector             | Removed. Only deb-line sources are supported. No `<Select>` type field is needed.                                                                                                             |
+| 9   | Pockets in submit payload | Keep `pockets: []` in the submitted payload for backward compatibility. Remove only from the form UI and `INITIAL_VALUES`.                                                                    |

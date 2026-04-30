@@ -11,11 +11,11 @@
 }
 
 .locked {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
   align-items: center;
-  padding: $spv--small $sph--small;
-  margin-bottom: $spv--large;
   background-color: $colors--theme--background-inputs;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $spv--large;
+  padding: $spv--small $sph--small;
+  width: 100%;
 }

@@ -13,12 +13,12 @@ All endpoints are already defined in the proto and reflected in `@canonical/land
 
 ### Endpoints (no change)
 
-| Method | URL | Usage |
-|--------|-----|-------|
-| `POST` | `/v1/publicationTargets` | Create any target type |
-| `PATCH` | `/v1/publicationTargets/:id` | Edit any target type |
-| `GET` | `/v1/publicationTargets` | List all targets |
-| `DELETE` | `/v1/publicationTargets/:id` | Remove a target |
+| Method   | URL                          | Usage                  |
+| -------- | ---------------------------- | ---------------------- |
+| `POST`   | `/v1/publicationTargets`     | Create any target type |
+| `PATCH`  | `/v1/publicationTargets/:id` | Edit any target type   |
+| `GET`    | `/v1/publicationTargets`     | List all targets       |
+| `DELETE` | `/v1/publicationTargets/:id` | Remove a target        |
 
 ### Hook Signature Changes
 
@@ -57,7 +57,10 @@ Create `src/features/publication-targets/types/index.ts` additions (or update th
 
 ```typescript
 // Add to the re-export block in src/features/publication-targets/index.ts
-export type { FilesystemTarget, FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
+export type {
+  FilesystemTarget,
+  FilesystemTargetLinkMethod,
+} from "@canonical/landscape-openapi";
 export { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
 ```
 
@@ -270,22 +273,22 @@ Key additions (existing S3 tests remain unchanged):
 
 ## 6. File Change Summary
 
-| File | Action |
-|------|--------|
-| `src/features/publication-targets/api/useCreatePublicationTarget.ts` | Add `filesystem` to params interface |
-| `src/features/publication-targets/api/useEditPublicationTarget.ts` | Add `filesystem` to params interface |
-| `src/features/publication-targets/index.ts` | Re-export `FilesystemTarget`, `FilesystemTargetLinkMethod` |
-| `src/features/publication-targets/components/AddPublicationTargetForm/constants.ts` | Expand `AddPublicationTargetFormValues` + `INITIAL_VALUES`; add `TargetType` |
-| `src/features/publication-targets/components/AddPublicationTargetForm/AddPublicationTargetForm.tsx` | Add type selector + conditional field sections |
-| `src/features/publication-targets/components/EditTargetForm/EditTargetForm.tsx` | Detect type, render per-type fields section |
-| `src/features/publication-targets/components/TargetDetails/TargetDetails.tsx` | Add Swift and Filesystem info blocks |
-| `src/features/publication-targets/components/TargetTypeFields/S3Fields.tsx` | **New** — extracted S3 field group |
-| `src/features/publication-targets/components/TargetTypeFields/SwiftFields.tsx` | **New** — Swift field group |
-| `src/features/publication-targets/components/TargetTypeFields/FilesystemFields.tsx` | **New** — Filesystem field group |
-| `src/features/publication-targets/components/TargetTypeFields/TargetTypeFields.module.scss` | **New** — indent border style |
-| `src/features/publication-targets/components/TargetTypeFields/index.ts` | **New** — barrel export |
-| `src/tests/mocks/publicationTargets.ts` | Add Filesystem mock entry |
-| `src/tests/server/handlers/publicationTargets.ts` | Extend PATCH merge for `filesystem` |
+| File                                                                                                | Action                                                                       |
+| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `src/features/publication-targets/api/useCreatePublicationTarget.ts`                                | Add `filesystem` to params interface                                         |
+| `src/features/publication-targets/api/useEditPublicationTarget.ts`                                  | Add `filesystem` to params interface                                         |
+| `src/features/publication-targets/index.ts`                                                         | Re-export `FilesystemTarget`, `FilesystemTargetLinkMethod`                   |
+| `src/features/publication-targets/components/AddPublicationTargetForm/constants.ts`                 | Expand `AddPublicationTargetFormValues` + `INITIAL_VALUES`; add `TargetType` |
+| `src/features/publication-targets/components/AddPublicationTargetForm/AddPublicationTargetForm.tsx` | Add type selector + conditional field sections                               |
+| `src/features/publication-targets/components/EditTargetForm/EditTargetForm.tsx`                     | Detect type, render per-type fields section                                  |
+| `src/features/publication-targets/components/TargetDetails/TargetDetails.tsx`                       | Add Swift and Filesystem info blocks                                         |
+| `src/features/publication-targets/components/TargetTypeFields/S3Fields.tsx`                         | **New** — extracted S3 field group                                           |
+| `src/features/publication-targets/components/TargetTypeFields/SwiftFields.tsx`                      | **New** — Swift field group                                                  |
+| `src/features/publication-targets/components/TargetTypeFields/FilesystemFields.tsx`                 | **New** — Filesystem field group                                             |
+| `src/features/publication-targets/components/TargetTypeFields/TargetTypeFields.module.scss`         | **New** — indent border style                                                |
+| `src/features/publication-targets/components/TargetTypeFields/index.ts`                             | **New** — barrel export                                                      |
+| `src/tests/mocks/publicationTargets.ts`                                                             | Add Filesystem mock entry                                                    |
+| `src/tests/server/handlers/publicationTargets.ts`                                                   | Extend PATCH merge for `filesystem`                                          |
 
 ---
 
