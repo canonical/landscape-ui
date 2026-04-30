@@ -2,7 +2,11 @@ import { ROUTES } from "@/libs/routes";
 import type { MenuItem } from "./types";
 
 const PROFILES_SUBMENU: MenuItem[] = [
-  { label: "Repository profiles", path: ROUTES.profiles.repository() },
+  {
+    label: "Repository profiles",
+    path: ROUTES.profiles.repositoryProfiles(),
+    env: "saas",
+  },
   { label: "Package profiles", path: ROUTES.profiles.package() },
   { label: "Upgrade profiles", path: ROUTES.profiles.upgrade() },
   { label: "Reboot profiles", path: ROUTES.profiles.reboot() },
@@ -19,10 +23,28 @@ const PROFILES_SUBMENU: MenuItem[] = [
   },
 ];
 
-const REPOSITORY_SUBMENU: MenuItem[] = [
+export const REPOSITORY_SUBMENU: MenuItem[] = [
   { label: "Mirrors", path: ROUTES.repositories.mirrors(), env: "selfHosted" },
-  { label: "GPG Keys", path: ROUTES.repositories.gpgKeys() },
-  { label: "APT Sources", path: ROUTES.repositories.aptSources() },
+  {
+    label: "Local repositories",
+    path: ROUTES.repositories.localRepositories(),
+    env: "selfHosted",
+  },
+  {
+    label: "Publications",
+    path: ROUTES.repositories.publications(),
+    env: "selfHosted",
+  },
+  {
+    label: "Publication targets",
+    path: ROUTES.repositories.publicationTargets(),
+    env: "selfHosted",
+  },
+  {
+    label: "Repository profiles",
+    path: ROUTES.repositories.repositoryProfiles(),
+    env: "selfHosted",
+  },
 ];
 
 const SETTINGS_SUBMENU: MenuItem[] = [
@@ -64,9 +86,11 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     label: "Repositories",
-    path: ROUTES.repositories.root(),
+    path: ROUTES.repositories.mirrors(),
     icon: "fork",
     items: REPOSITORY_SUBMENU,
+    secondary: true,
+    env: "selfHosted",
   },
   {
     label: "Org. settings",

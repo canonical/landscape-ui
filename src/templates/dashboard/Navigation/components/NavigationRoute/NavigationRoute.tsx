@@ -8,12 +8,23 @@ import { Badge } from "@canonical/react-components";
 interface NavigationRouteProps {
   readonly item: MenuItem;
   readonly current?: boolean;
+  readonly className?: string;
+  readonly withLinkStyle?: boolean;
 }
 
-const NavigationRoute: FC<NavigationRouteProps> = ({ item, current }) => {
+const NavigationRoute: FC<NavigationRouteProps> = ({
+  item,
+  current,
+  className,
+  withLinkStyle = true,
+}) => {
   return (
     <Link
-      className={classNames("p-side-navigation__link", classes.link)}
+      className={classNames(
+        "p-side-navigation__link",
+        { [classes.link]: withLinkStyle },
+        className,
+      )}
       to={item.path}
       aria-current={current ? "page" : undefined}
     >

@@ -1,31 +1,29 @@
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import SidePanel from "@/components/layout/SidePanel";
+import {
+  AddProfileButton,
+  ProfilesContainer,
+  ViewProfileSidePanel,
+} from "@/features/profiles";
 import { useGetWslLimits } from "@/features/wsl";
 import {
+  useGetPageWslProfile,
   useGetWslProfiles,
-  WslProfileAddButton,
-  WslProfilesEmptyState,
-  WslProfilesHeader,
-  WslProfilesList,
+  useRemoveWslProfile,
 } from "@/features/wsl-profiles";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
-import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import { Notification } from "@canonical/react-components";
-import { lazy, type FC } from "react";
+import { lazy, useEffect, type FC } from "react";
+import useProfiles from "@/hooks/useProfiles";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
+import SidePanel from "@/components/layout/SidePanel";
+import { ProfileTypes } from "@/features/profiles";
 
 const WslProfileAddSidePanel = lazy(() =>
   import("@/features/wsl-profiles").then((module) => ({
     default: module.WslProfileAddSidePanel,
-  })),
-);
-
-const WslProfileDetailsSidePanel = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileDetailsSidePanel,
   })),
 );
 
@@ -35,101 +33,86 @@ const WslProfileEditSidePanel = lazy(() =>
   })),
 );
 
-const WslProfileNonCompliantInstancesSidePanel = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileNonCompliantInstancesSidePanel,
-  })),
-);
-
 const WslProfilesPage: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
-    usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", [
-    "add",
-    "edit",
-    "noncompliant",
-    "view",
-  ]);
-
-  const {
-    isGettingWslProfiles: isGettingUnfilteredWslProfiles,
-    wslProfilesCount: unfilteredWslProfilesCount,
-  } = useGetWslProfiles(
-    {
-      limit: DEFAULT_PAGE_SIZE,
-      offset: 0,
-    },
+  const { wslProfilesCount: allWslProfilesCount } = useGetWslProfiles(
+    { limit: 1 },
     { listenToUrlParams: false },
   );
 
-  const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
+  const { isGettingWslProfiles, wslProfiles, wslProfilesCount } =
+    useGetWslProfiles({
+      limit: DEFAULT_PAGE_SIZE,
+      offset: 0,
+    });
+  const {
+    setIsProfileLimitReached,
+    setProfileLimit,
+    setRemoveProfile,
+    setIsRemovingProfile,
+  } = useProfiles();
+  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+    usePageParams();
 
-  const isWslProfileLimitReached =
-    unfilteredWslProfilesCount >= wslProfileLimit;
+  const { wslProfile } = useGetPageWslProfile();
+
+  const { removeWslProfile, isRemovingWslProfile } = useRemoveWslProfile();
+
+  useEffect(() => {
+    setRemoveProfile(({ name }) => removeWslProfile({ name }));
+    setIsRemovingProfile(isRemovingWslProfile);
+  }, [
+    setRemoveProfile,
+    setIsRemovingProfile,
+    removeWslProfile,
+    isRemovingWslProfile,
+  ]);
+
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
+
+  const { isGettingWslLimits, wslProfileLimit } = useGetWslLimits();
+  const isWslProfileLimitReached = allWslProfilesCount >= wslProfileLimit;
+
+  useEffect(() => {
+    setIsProfileLimitReached(isWslProfileLimitReached);
+    setProfileLimit(wslProfileLimit);
+  }, [
+    isWslProfileLimitReached,
+    setIsProfileLimitReached,
+    setProfileLimit,
+    wslProfileLimit,
+  ]);
 
   return (
     <PageMain>
-      {isGettingUnfilteredWslProfiles ? (
-        <LoadingState />
-      ) : (
-        <>
-          <PageHeader
-            title="WSL profiles"
-            actions={[
-              <WslProfileAddButton
-                key="add-wsl-profile"
-                disabled={isWslProfileLimitReached}
-              />,
-            ]}
-          />
-
-          <PageContent hasTable>
-            {!unfilteredWslProfilesCount ? (
-              <WslProfilesEmptyState />
-            ) : isGettingWslLimits ? (
-              <LoadingState />
-            ) : (
-              <>
-                <Notification
-                  severity="caution"
-                  title="WSL profiles is a beta feature"
-                >
-                  We are gathering feedback to improve this feature.{" "}
-                  <a
-                    target="_blank"
-                    rel="noreferrer noopener nofollow"
-                    href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
-                  >
-                    Share your feedback
-                  </a>
-                </Notification>
-
-                <WslProfilesHeader />
-
-                {isWslProfileLimitReached && (
-                  <Notification
-                    severity="caution"
-                    inline
-                    title="Profile limit reached:"
-                  >
-                    You&apos;ve reached the limit of {wslProfileLimit} active
-                    WSL profiles. You must remove a profile to be able to add a
-                    new one.
-                  </Notification>
-                )}
-
-                <WslProfilesList />
-              </>
-            )}
-          </PageContent>
-        </>
-      )}
-
+      <PageHeader
+        title="WSL profiles"
+        actions={
+          wslProfilesCount
+            ? [<AddProfileButton key="add-wsl-profile" />]
+            : undefined
+        }
+      />
+      <PageContent hasTable>
+        <Notification severity="caution" title="WSL profiles is a beta feature">
+          We are gathering feedback to improve this feature.{" "}
+          <a
+            target="_blank"
+            rel="noreferrer noopener nofollow"
+            href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
+          >
+            Share your feedback
+          </a>
+        </Notification>
+        <ProfilesContainer
+          type={ProfileTypes.wsl}
+          profiles={wslProfiles}
+          profilesCount={wslProfilesCount}
+          isPending={isGettingWslLimits || isGettingWslProfiles}
+        />
+      </PageContent>
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], profile: "" })}
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         isOpen={!!sidePath.length}
-        size={lastSidePathSegment === "noncompliant" ? "large" : undefined}
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
@@ -143,15 +126,12 @@ const WslProfilesPage: FC = () => {
           </SidePanel.Suspense>
         )}
 
-        {lastSidePathSegment === "noncompliant" && (
-          <SidePanel.Suspense key="noncompliant">
-            <WslProfileNonCompliantInstancesSidePanel />
-          </SidePanel.Suspense>
-        )}
-
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
-            <WslProfileDetailsSidePanel />
+            <ViewProfileSidePanel
+              type={ProfileTypes.wsl}
+              profile={wslProfile}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

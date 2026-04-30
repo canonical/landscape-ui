@@ -1,14 +1,14 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetPackageProfile } from ".";
+import { useGetPackageProfile } from "./useGetPackageProfile";
 import type { PackageProfile } from "../types";
 
-const useGetPagePackageProfile = ():
+export const useGetPagePackageProfile = ():
   | { packageProfile: PackageProfile; isGettingPackageProfile: false }
   | { packageProfile: undefined; isGettingPackageProfile: true } => {
-  const { profile: packageProfileName } = usePageParams();
+  const { name: packageProfileName } = usePageParams();
 
   const { packageProfile, isGettingPackageProfile, packageProfileError } =
-    useGetPackageProfile(packageProfileName);
+    useGetPackageProfile(packageProfileName, { enabled: !!packageProfileName });
 
   if (packageProfileError) {
     throw packageProfileError;
@@ -26,5 +26,3 @@ const useGetPagePackageProfile = ():
     isGettingPackageProfile: false,
   };
 };
-
-export default useGetPagePackageProfile;

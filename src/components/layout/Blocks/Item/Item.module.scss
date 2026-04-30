@@ -10,3 +10,17 @@
   margin: -$sp-unit 0 $sp-unit * 4;
   padding: 0;
 }
+
+.denseHeading {
+  margin-bottom: 0.5rem;
+}
+
+// When a description is provided alongside the title, sit them tight together
+// and let the heading wrapper handle the gap to the children.
+.titleWithDescription {
+  margin-bottom: 0;
+}
+
+.description {
+  margin: 0;
+}

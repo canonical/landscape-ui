@@ -1,17 +1,19 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetRemovalProfile } from ".";
+import { useGetRemovalProfile } from "./useGetRemovalProfile";
 import type { RemovalProfile } from "../types";
 
-const useGetPageRemovalProfile = ():
+export const useGetPageRemovalProfile = ():
   | {
       removalProfile: RemovalProfile;
       isGettingRemovalProfile: false;
     }
   | { removalProfile: undefined; isGettingRemovalProfile: true } => {
-  const { profile: removalProfileId } = usePageParams();
+  const { name: removalProfileId } = usePageParams();
 
   const { isGettingRemovalProfile, removalProfile, removalProfileError } =
-    useGetRemovalProfile(parseInt(removalProfileId));
+    useGetRemovalProfile(parseInt(removalProfileId), {
+      enabled: !!removalProfileId,
+    });
 
   if (removalProfileError) {
     throw removalProfileError;
@@ -29,5 +31,3 @@ const useGetPageRemovalProfile = ():
     isGettingRemovalProfile: false,
   };
 };
-
-export default useGetPageRemovalProfile;

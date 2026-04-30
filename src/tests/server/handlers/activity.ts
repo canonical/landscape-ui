@@ -54,98 +54,92 @@ const parseActivitiesQuery = (
 };
 
 export default [
-  http.get(
-    `${API_URL}activities`,
-    async ({ request }) => {
-      if (shouldApplyEndpointStatus("activities")) {
-        const { status } = getEndpointStatus();
+  http.get(`${API_URL}activities`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("activities")) {
+      const { status } = getEndpointStatus();
 
-        if (status === "error") {
-          throw createEndpointStatusError();
-        }
-
-        if (status === "empty") {
-          return HttpResponse.json({
-            results: [],
-            count: 0,
-            next: null,
-            previous: null,
-          });
-        }
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
 
-      const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || 1;
-      const query = url.searchParams.get("query") ?? "";
-
-      if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
-        throw HttpResponse.json(
-          {
-            error: "InvalidQueryError",
-            message: "The search query provided is invalid.",
-          },
-          { status: 400 },
-        );
+      if (status === "empty") {
+        return HttpResponse.json({
+          results: [],
+          count: 0,
+          next: null,
+          previous: null,
+        });
       }
+    }
 
-      const { status, type, searchQuery } = parseActivitiesQuery(query);
-      const filteredActivities = activities.filter((activity) => {
-        if (status && activity.activity_status !== status) {
-          return false;
-        }
+    const url = new URL(request.url);
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || 1;
+    const query = url.searchParams.get("query") ?? "";
 
-        if (type && activity.type !== type) {
-          return false;
-        }
-
-        return true;
-      });
-
-      return HttpResponse.json(
-        generatePaginatedResponse<Activity>({
-          data: filteredActivities,
-          limit,
-          offset,
-          search: searchQuery,
-          searchFields: ["summary"],
-        }),
-      );
-    },
-  ),
-
-  http.get(
-    `${API_URL}activities/:id`,
-    async ({ params: { id } }) => {
-      if (shouldApplyEndpointStatus("activities/:id")) {
-        throw createEndpointStatusNetworkError();
-      }
-
-      return HttpResponse.json<Activity>(
-        activities.find((activity) => activity.id === parseInt(id as string)) ?? {
-          activity_status: "succeeded",
-          approval_time: null,
-          children: [],
-          completion_time: null,
-          computer_id: 0,
-          creation_time: "",
-          creator: { email: "", id: 0, name: "" },
-          deliver_after_time: null,
-          deliver_before_time: null,
-          delivery_time: null,
-          id: 0,
-          modification_time: "",
-          parent_id: null,
-          result_code: null,
-          result_text: null,
-          schedule_after_time: null,
-          schedule_before_time: null,
-          summary: "",
-          type: "",
+    if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
+      throw HttpResponse.json(
+        {
+          error: "InvalidQueryError",
+          message: "The search query provided is invalid.",
         },
+        { status: 400 },
       );
-    },
-  ),
+    }
+
+    const { status, type, searchQuery } = parseActivitiesQuery(query);
+    const filteredActivities = activities.filter((activity) => {
+      if (status && activity.activity_status !== status) {
+        return false;
+      }
+
+      if (type && activity.type !== type) {
+        return false;
+      }
+
+      return true;
+    });
+
+    return HttpResponse.json(
+      generatePaginatedResponse<Activity>({
+        data: filteredActivities,
+        limit,
+        offset,
+        search: searchQuery,
+        searchFields: ["summary"],
+      }),
+    );
+  }),
+
+  http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {
+    if (shouldApplyEndpointStatus("activities/:id")) {
+      throw createEndpointStatusNetworkError();
+    }
+
+    return HttpResponse.json<Activity>(
+      activities.find((activity) => activity.id === parseInt(id as string)) ?? {
+        activity_status: "succeeded",
+        approval_time: null,
+        children: [],
+        completion_time: null,
+        computer_id: 0,
+        creation_time: "",
+        creator: { email: "", id: 0, name: "" },
+        deliver_after_time: null,
+        deliver_before_time: null,
+        delivery_time: null,
+        id: 0,
+        modification_time: "",
+        parent_id: null,
+        result_code: null,
+        result_text: null,
+        schedule_after_time: null,
+        schedule_before_time: null,
+        summary: "",
+        type: "",
+      },
+    );
+  }),
 
   http.get<never, never, readonly string[]>(
     API_URL_OLD,
@@ -177,14 +171,11 @@ export default [
     ]);
   }),
 
-  http.post(
-    `${API_URL}activities/reapply`,
-    async () => {
-      if (shouldApplyEndpointStatus("activities/reapply")) {
-        throw createEndpointStatusError();
-      }
+  http.post(`${API_URL}activities/reapply`, async () => {
+    if (shouldApplyEndpointStatus("activities/reapply")) {
+      throw createEndpointStatusError();
+    }
 
-      return HttpResponse.json([activities[0].id, activities[1].id]);
-    },
-  ),
+    return HttpResponse.json([activities[0].id, activities[1].id]);
+  }),
 ];

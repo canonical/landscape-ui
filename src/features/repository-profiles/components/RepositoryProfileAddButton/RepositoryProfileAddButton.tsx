@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 
 const RepositoryProfileForm = lazy(
@@ -26,8 +26,10 @@ const RepositoryProfileAddButton: FC = () => {
       key="add"
       onClick={handleAddProfile}
       type="button"
+      hasIcon
     >
-      Add repository profile
+      <Icon name="plus" light={true} />
+      <span>Add repository profile</span>
     </Button>
   );
 };

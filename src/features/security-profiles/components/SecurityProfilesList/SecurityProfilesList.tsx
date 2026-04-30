@@ -15,7 +15,7 @@ import { useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { SECURITY_PROFILE_MODE_LABELS } from "../../constants";
-import { getSchedule, getStatus, getTags } from "../../helpers";
+import { getSecuritySchedule, getStatus, getTags } from "../../helpers";
 import type { SecurityProfile } from "../../types";
 import SecurityProfileListActions from "../SecurityProfileListActions";
 import classes from "./SecurityProfilesList.module.scss";
@@ -61,7 +61,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 className="u-no-margin--bottom u-no-padding--top u-align--left"
                 onClick={createPageParamsSetter({
                   sidePath: ["view"],
-                  profile: profile.id.toString(),
+                  name: profile.id.toString(),
                 })}
               >
                 {profile.title}
@@ -272,7 +272,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                 {!nextRun ? " GMT" : ""}
               </div>
               <div>
-                <strong>Schedule:</strong> {getSchedule(row.original)}
+                <strong>Schedule:</strong> {getSecuritySchedule(row.original)}
               </div>
             </>
           );
@@ -295,7 +295,7 @@ const SecurityProfilesList: FC<SecurityProfilesListProps> = ({
                   className={classes.ellipsis}
                   aria-label={`Schedule for ${row.original.title} profile`}
                 >
-                  {getSchedule(row.original)}
+                  {getSecuritySchedule(row.original)}
                 </span>
               </div>
             </Tooltip>

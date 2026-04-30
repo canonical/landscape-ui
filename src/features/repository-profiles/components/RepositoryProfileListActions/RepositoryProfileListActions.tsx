@@ -1,19 +1,13 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { useRepositoryProfiles } from "../../hooks";
+import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
-
-const RepositoryProfileForm = lazy(
-  async () => import("../RepositoryProfileForm"),
-);
 
 interface RepositoryProfileListActionsProps {
   readonly profile: RepositoryProfile;
@@ -24,7 +18,7 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
 
   const { removeRepositoryProfileQuery } = useRepositoryProfiles();
 
@@ -37,14 +31,10 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
   const { mutateAsync: removeRepositoryProfile, isPending: isRemoving } =
     removeRepositoryProfileQuery;
 
-  const handleEditProfile = () => {
-    setSidePanelContent(
-      `Edit ${profile.title}`,
-      <Suspense fallback={<LoadingState />}>
-        <RepositoryProfileForm action="edit" profile={profile} />
-      </Suspense>,
-    );
-  };
+  const handleEditProfile = createPageParamsSetter({
+    sidePath: ["edit"],
+    name: profile.name,
+  });
 
   const handleRemoveProfile = async () => {
     try {

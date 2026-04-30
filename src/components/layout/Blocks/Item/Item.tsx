@@ -1,19 +1,61 @@
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Item.module.scss";
+import { useBlocksDense } from "../Blocks";
 
 export interface ItemProps {
   readonly children: ReactNode;
   readonly title?: string;
+  readonly description?: ReactNode;
+  readonly action?: ReactNode;
+  readonly titleClassName?: string;
+  readonly containerClassName?: string;
 }
 
-const Item: FC<ItemProps> = ({ children, title }: ItemProps) => (
-  <section className={classes.item}>
-    {title && (
-      <h4 className={classNames(classes.heading, "p-heading--5")}>{title}</h4>
-    )}
-    {children}
-  </section>
-);
+const Item: FC<ItemProps> = ({
+  children,
+  title,
+  description,
+  action,
+  titleClassName,
+  containerClassName,
+}: ItemProps) => {
+  const dense = useBlocksDense();
+  return (
+    <section className={classNames(classes.item, containerClassName)}>
+      {(title || description || action) && (
+        <div className={classes.heading}>
+          {title && (
+            <h4
+              className={classNames(
+                classes.heading,
+                { [classes.denseHeading as string]: dense },
+                {
+                  [classes.titleWithDescription as string]: !!description,
+                },
+                "p-heading--5",
+                titleClassName,
+              )}
+            >
+              {title}
+            </h4>
+          )}
+          {description && (
+            <p
+              className={classNames(
+                "p-text--small u-text--muted",
+                classes.description,
+              )}
+            >
+              {description}
+            </p>
+          )}
+          {action}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+};
 
 export default Item;

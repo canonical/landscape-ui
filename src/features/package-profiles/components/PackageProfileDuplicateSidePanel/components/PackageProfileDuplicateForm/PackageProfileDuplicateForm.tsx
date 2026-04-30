@@ -39,7 +39,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       value: name,
     })) ?? [];
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: DuplicateFormProps) => {
     const valuesToSubmit: CopyPackageProfileParams = {
@@ -72,7 +72,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
     initialValues: {
       access_group: profile.access_group,
       all_computers: profile.all_computers,
-      description: profile.description,
+      description: profile.description ?? "",
       tags: profile.tags,
       title: `${profile.title} (copy)`,
     },

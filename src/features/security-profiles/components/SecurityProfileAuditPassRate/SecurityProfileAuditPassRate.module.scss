@@ -1,0 +1,68 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.textContainer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $spv--small;
+  width: 85%;
+}
+
+.lineContainer {
+  background-color: $colors--theme--background-alt;
+  border: 1px solid $colors--theme--border-default;
+  border-radius: 5px;
+  display: flex;
+  margin-bottom: $spv--small;
+  overflow: hidden;
+  width: 85%;
+}
+
+.linePassed,
+.lineFailed,
+.lineInProgress,
+.lineNotRun {
+  display: inline-block;
+  height: $spv--small;
+}
+
+.linePassed {
+  background-color: $color-positive;
+}
+
+.lineFailed {
+  background-color: $color-negative;
+  border-left: 1px solid $colors--theme--border-default;
+}
+
+.lineInProgress {
+  background-color: rgb(0 0 0 / 60%);
+  border-left: 1px solid $colors--theme--border-default;
+}
+
+.lineNotRun {
+  background-color: $colors--theme--border-default;
+}
+
+.lineContainer *:last-child {
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.lineContainer *:not(:last-child) {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.tooltip {
+  display: flex !important;
+}
+
+.lineFailed + .lineInProgress {
+  border-left: 1px solid $colors--theme--border-default;
+}
+
+.linePassed + .lineInProgress {
+  border-left: 1px solid $colors--theme--border-default;
+}

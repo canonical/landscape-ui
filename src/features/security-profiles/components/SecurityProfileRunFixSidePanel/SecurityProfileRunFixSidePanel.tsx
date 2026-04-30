@@ -10,7 +10,7 @@ import { Form } from "@canonical/react-components";
 import type { FC, SyntheticEvent } from "react";
 import { useNavigate } from "react-router";
 import { useRunSecurityProfile } from "../../api";
-import useGetPageSecurityProfile from "../../api/useGetPageSecurityProfile";
+import { useGetPageSecurityProfile } from "../../api/useGetPageSecurityProfile";
 import { getNotificationMessage } from "../../helpers";
 import { ROUTES } from "@/libs/routes";
 
@@ -28,7 +28,7 @@ const SecurityProfileRunFixSidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();

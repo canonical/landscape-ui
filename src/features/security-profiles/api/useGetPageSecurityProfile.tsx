@@ -1,8 +1,8 @@
 import usePageParams from "@/hooks/usePageParams";
-import { useGetSecurityProfile } from ".";
+import { useGetSecurityProfile } from "./useGetSecurityProfile";
 import type { SecurityProfile } from "../types";
 
-const useGetPageSecurityProfile = ():
+export const useGetPageSecurityProfile = ():
   | {
       securityProfile: SecurityProfile;
       isGettingSecurityProfile: false;
@@ -11,10 +11,12 @@ const useGetPageSecurityProfile = ():
       securityProfile: undefined;
       isGettingSecurityProfile: true;
     } => {
-  const { profile: securityProfileId } = usePageParams();
+  const { name: securityProfileId } = usePageParams();
 
   const { isGettingSecurityProfile, securityProfile, securityProfileError } =
-    useGetSecurityProfile(parseInt(securityProfileId));
+    useGetSecurityProfile(parseInt(securityProfileId), {
+      enabled: !!securityProfileId,
+    });
 
   if (securityProfileError) {
     throw securityProfileError;
@@ -32,5 +34,3 @@ const useGetPageSecurityProfile = ():
     isGettingSecurityProfile: false,
   };
 };
-
-export default useGetPageSecurityProfile;

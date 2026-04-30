@@ -58,7 +58,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       value: name,
     })) ?? [];
 
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -84,7 +84,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const formik = useFormik({
     initialValues: {
       title: profile.title,
-      description: profile.description,
+      description: profile.description ?? "",
       instanceType: profile.image_source ? "custom" : profile.image_name,
       customImageName: profile.image_source ? profile.image_name : "",
       rootfsImage: profile.image_source || "",
