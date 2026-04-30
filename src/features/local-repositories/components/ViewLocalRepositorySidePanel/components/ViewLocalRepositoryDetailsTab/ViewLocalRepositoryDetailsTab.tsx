@@ -1,9 +1,8 @@
 import type { FC } from "react";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LocalRepositoryPublicationsList from "../../../LocalRepositoryPublicationsList";
 import LoadingState from "@/components/layout/LoadingState";
-import { useGetPublicationsBySource } from "@/features/publications";
+import { AssociatedPublicationsList, useGetPublicationsBySource } from "@/features/publications";
 import type { Local } from "@canonical/landscape-openapi";
 
 interface ViewLocalRepositoryDetailsTabProps {
@@ -41,7 +40,11 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
         {isGettingPublications ? (
           <LoadingState />
         ) : (
-          <LocalRepositoryPublicationsList publications={publications} />
+          <AssociatedPublicationsList
+            publications={publications}
+            openInNewTab
+            showSources={false}
+          />
         )}
       </Blocks.Item>
     </Blocks>

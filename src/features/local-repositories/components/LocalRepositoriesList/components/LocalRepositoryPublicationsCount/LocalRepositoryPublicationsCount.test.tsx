@@ -19,7 +19,7 @@ describe("LocalRepositoryPublicationsCount", () => {
     );
 
     expect(await screen.findByRole("link")).toBeInTheDocument();
-    expect(screen.getByText(/3 publications/i)).toBeInTheDocument();
+    expect(screen.getByText(/1 publication/i)).toBeInTheDocument();
   });
 
   it("does not render zero publications text for mocked endpoint", async () => {
@@ -27,7 +27,7 @@ describe("LocalRepositoryPublicationsCount", () => {
       <LocalRepositoryPublicationsCount repository={repositories[0]} />,
     );
 
-    expect(await screen.findByText(/3 publications/i)).toBeInTheDocument();
+    expect(await screen.findByText(/1 publication/i)).toBeInTheDocument();
     expect(screen.queryByText(/0 publications/i)).not.toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@ export {
   usePublishPublication,
   useCreatePublication,
   useGetPublications,
+  useGetPublicationsBySource,
 } from "./api";
 export { default as PublicationsContainer } from "./components/PublicationsContainer";
 export { default as AddPublicationButton } from "./components/AddPublicationButton";

@@ -4,8 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
-import LocalRepositoryPublicationsList from "../LocalRepositoryPublicationsList";
-import { useGetPublicationsBySource } from "@/features/publications";
+import { AssociatedPublicationsList, useGetPublicationsBySource } from "@/features/publications";
 import LoadingState from "@/components/layout/LoadingState";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 
@@ -41,7 +40,11 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
   ) : (
     <>
       <p>This repository is associated with the following publications:</p>
-      <LocalRepositoryPublicationsList publications={publications} openNewTab />
+      <AssociatedPublicationsList
+        publications={publications}
+        openInNewTab
+        showSources={false}
+      />
       <br />
       <p>
         After removal you won&apos;t be able to update any of these
