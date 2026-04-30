@@ -15,8 +15,6 @@ const RepositoryProfileAddButton: FC = () => {
     >
       <Icon name="plus" light={true} />
       <span>Add repository profile</span>
-      <Icon name="plus" light={true} />
-      <span>Add repository profile</span>
     </Button>
   );
 };

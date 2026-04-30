@@ -87,7 +87,6 @@ const RepositoryProfileAddSidePanel: FC = () => {
             }
             onSuccess={handleSourceSuccess}
             onBack={popSidePath}
-            onClose={popSidePath}
           />
         )}
       </SidePanel.Content>

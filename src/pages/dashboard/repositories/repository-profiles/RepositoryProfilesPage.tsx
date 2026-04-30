@@ -72,17 +72,17 @@ const RepositoryProfilesPage: FC = () => {
         onClose={createPageParamsSetter({ sidePath: [], name: "" })}
         isOpen={!!sidePath.length}
       >
-        {(lastSidePathSegment === "add" || lastSidePathSegment === "add-source") && (
+        {sidePath.includes("add") && (
           <SidePanel.Suspense key="add">
             <RepositoryProfileAddSidePanel />
           </SidePanel.Suspense>
         )}
-        {lastSidePathSegment === "view" && (
+        {!sidePath.includes("edit") && lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <RepositoryProfileDetails />
           </SidePanel.Suspense>
         )}
-        {(lastSidePathSegment === "edit" || lastSidePathSegment === "edit-source") && (
+        {sidePath.includes("edit") && (
           <SidePanel.Suspense key="edit">
             <RepositoryProfileEditForm />
           </SidePanel.Suspense>

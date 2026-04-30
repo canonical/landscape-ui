@@ -190,7 +190,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
-        onCancel={props.action === "edit" ? props.onClose : undefined}
+        onCancel={props.onClose}
         hasBackButton={
           props.action === "edit" ? props.hasBackButton : undefined
         }
