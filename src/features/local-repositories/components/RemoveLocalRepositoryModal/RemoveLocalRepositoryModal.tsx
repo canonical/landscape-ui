@@ -4,7 +4,10 @@ import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import useNotify from "@/hooks/useNotify";
 import { useRemoveLocalRepository } from "../../api";
-import { AssociatedPublicationsList, useGetPublicationsBySource } from "@/features/publications";
+import {
+  AssociatedPublicationsList,
+  useGetPublicationsBySource,
+} from "@/features/publications";
 import LoadingState from "@/components/layout/LoadingState";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 

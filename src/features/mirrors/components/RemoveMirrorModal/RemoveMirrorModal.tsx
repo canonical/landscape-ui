@@ -4,7 +4,10 @@ import { useDeleteMirror } from "../../api";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
-import { AssociatedPublicationsList, useGetPublicationsBySource } from "@/features/publications";
+import {
+  AssociatedPublicationsList,
+  useGetPublicationsBySource,
+} from "@/features/publications";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;

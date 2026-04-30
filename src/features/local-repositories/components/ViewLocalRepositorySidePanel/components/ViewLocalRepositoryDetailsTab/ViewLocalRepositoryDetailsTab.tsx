@@ -2,7 +2,10 @@ import type { FC } from "react";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
-import { AssociatedPublicationsList, useGetPublicationsBySource } from "@/features/publications";
+import {
+  AssociatedPublicationsList,
+  useGetPublicationsBySource,
+} from "@/features/publications";
 import type { Local } from "@canonical/landscape-openapi";
 
 interface ViewLocalRepositoryDetailsTabProps {
