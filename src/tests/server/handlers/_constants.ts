@@ -31,7 +31,7 @@ export const createEndpointStatusError = (status = DEFAULT_ERROR_STATUS) =>
       error: "EndpointStatusError",
       message: ENDPOINT_STATUS_API_ERROR_MESSAGE,
     },
-    { status },
+    { status: 500 },
   );
 
 /**

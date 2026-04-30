@@ -1,8 +1,12 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
+import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { fireEvent, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { describe, it } from "vitest";
 import EditScriptForm from "./EditScriptForm";
@@ -10,6 +14,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { ROUTES } from "@/libs/routes";
 
 const [script] = scripts;
+const ASSOCIATED_PROFILE_ID = 12;
 
 const props: ComponentProps<typeof EditScriptForm> = {
   script,
@@ -212,6 +217,21 @@ describe("EditScriptForm", () => {
 
   it("renders singular associated instance link text", async () => {
     const user = userEvent.setup();
+    const modifiedProfiles = scriptProfiles.map((profile) =>
+      profile.id === ASSOCIATED_PROFILE_ID
+        ? { ...profile, computers: { num_associated_computers: 1 } }
+        : profile,
+    );
+    server.use(
+      http.get(`${API_URL}scripts/:id/script-profiles`, () =>
+        HttpResponse.json({
+          results: modifiedProfiles,
+          count: modifiedProfiles.length,
+          next: null,
+          previous: null,
+        }),
+      ),
+    );
 
     renderWithProviders(<EditScriptForm script={script} />);
 
@@ -219,9 +239,10 @@ describe("EditScriptForm", () => {
       screen.getByRole("button", { name: "Submit new version" }),
     );
 
-    expect(
-      await screen.findByRole("link", { name: "1 instance" }),
-    ).toHaveAttribute("href", ROUTES.instances.root());
+    const instanceLinks = await screen.findAllByRole("link", {
+      name: "1 instance",
+    });
+    expect(instanceLinks[0]).toHaveAttribute("href", ROUTES.instances.root());
   });
 
   it("shows no data for associated profiles without instances", async () => {
