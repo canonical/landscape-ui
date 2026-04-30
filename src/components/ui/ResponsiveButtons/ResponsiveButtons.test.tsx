@@ -113,4 +113,18 @@ describe("ResponsiveButtons", () => {
       screen.getByRole("button", { name: "Disabled button" }),
     ).toHaveAttribute("aria-disabled");
   });
+
+  it("preserves icon children in collapsed menu items", async () => {
+    setScreenSize("xs");
+
+    render(<ResponsiveButtons buttons={buttons} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+
+    const buttonWithIcon = screen.getByRole("button", {
+      name: "Button with icon",
+    });
+
+    expect(buttonWithIcon.querySelector(".p-icon--code")).toBeInTheDocument();
+  });
 });

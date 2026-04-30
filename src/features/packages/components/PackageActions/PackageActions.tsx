@@ -81,6 +81,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
               onClick={() => {
                 handleExistingPackages(packageAction);
               }}
+              hasIcon
             >
               <Icon name={INSTALLED_PACKAGE_ACTIONS[packageAction].icon} />
               <span>{INSTALLED_PACKAGE_ACTIONS[packageAction].label}</span>
