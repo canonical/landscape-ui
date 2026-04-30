@@ -62,7 +62,7 @@ const AddLocalRepositorySidePanel: FC = () => {
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Blocks>
-            <Blocks.Item title="Details">
+            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
               <Input
                 type="text"
                 label="Name"

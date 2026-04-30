@@ -36,12 +36,15 @@ const PublishMirrorForm = lazy(async () =>
 );
 
 const MirrorsPage: FC = () => {
-  const { search, sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { search, sidePath, lastSidePathSegment, popSidePath, createPageParamsSetter } =
     usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
 
-  const { data } = useListMirrors({ filter: search, pageSize: 20 });
+  const { data } = useListMirrors({
+    filter: search ? `display_name=${JSON.stringify(`${search}*`)}` : undefined,
+    pageSize: 20,
+  });
 
   const openAddMirrorForm = createPageParamsSetter({
     sidePath: ["add"],
@@ -55,37 +58,44 @@ const MirrorsPage: FC = () => {
     </Button>,
   ];
 
-  const { actions, children, hasTable } = data.data.mirrors?.length
-    ? {
-        actions: buttons,
-        children: (
-          <>
-            <HeaderWithSearch />
-            <MirrorsList mirrors={data.data.mirrors} />
-          </>
-        ),
-        hasTable: true,
-      }
-    : {
-        children: (
-          <EmptyState
-            title="You don't have any mirrors yet."
-            body={
-              <>
-                <p>This feature allows you to mirror Debian repositories.</p>
-              </>
-            }
-            cta={buttons}
-          />
-        ),
-      };
+  const hasMirrors = !!data.data.mirrors?.length;
+  const isSearchActive = !!search;
+
+  const { actions, children, hasTable } =
+    hasMirrors || isSearchActive
+      ? {
+          actions: buttons,
+          children: (
+            <>
+              <HeaderWithSearch />
+              <MirrorsList
+                mirrors={data.data.mirrors ?? []}
+                emptyMsg={`No mirrors found with the search: "${search}"`}
+              />
+            </>
+          ),
+          hasTable: true,
+        }
+      : {
+          children: (
+            <EmptyState
+              title="You don't have any mirrors yet."
+              body={
+                <>
+                  <p>This feature allows you to mirror Debian repositories.</p>
+                </>
+              }
+              cta={buttons}
+            />
+          ),
+        };
 
   return (
     <PageMain>
       <PageHeader title="Mirrors" actions={actions} />
       <PageContent hasTable={hasTable}>{children}</PageContent>
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePath}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

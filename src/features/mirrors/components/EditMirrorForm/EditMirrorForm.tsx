@@ -31,7 +31,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { name, sidePath, popSidePath, createPageParamsSetter } =
+  const { name, popSidePath, createPageParamsSetter } =
     usePageParams();
 
   const mirror = useGetMirror(name).data.data;
@@ -88,7 +88,7 @@ const EditMirrorForm: FC = () => {
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Blocks>
-            <Blocks.Item title="Details">
+            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
               <Input
                 type="text"
                 label="Name"
@@ -107,7 +107,7 @@ const EditMirrorForm: FC = () => {
                 tooltipMessage="You can’t change the source URL after the mirror is created."
               />
             </Blocks.Item>
-            <Blocks.Item title="Mirror contents">
+            <Blocks.Item title="Mirror contents" titleClassName="p-text--small-caps">
               <ReadOnlyField
                 label="Distribution"
                 value={mirror.distribution || NO_DATA_TEXT}
@@ -151,7 +151,7 @@ const EditMirrorForm: FC = () => {
                 UBUNTU_SNAPSHOTS_HOST,
                 UBUNTU_PRO_HOST,
               ].includes(new URL(mirror.archiveRoot).host) && (
-                <Blocks.Item title="Authentication">
+                <Blocks.Item title="Authentication" titleClassName="p-text--small-caps">
                   <Textarea
                     label="Verification GPG key"
                     {...formik.getFieldProps("verificationGpgKey")}
@@ -164,9 +164,7 @@ const EditMirrorForm: FC = () => {
           <SidePanelFormButtons
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Save changes"
-            onCancel={close}
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
+            onCancel={popSidePath}
           />
         </Form>
       </SidePanel.Content>

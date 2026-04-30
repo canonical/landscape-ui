@@ -67,7 +67,6 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     const valuesToSubmit: CreateRepositoryProfileParams = {
       all_computers: values.all_computers,
       description: values.description,
-      pockets: values.pockets,
       title: values.title,
     };
 
@@ -125,8 +124,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       access_group: props.profile.access_group,
       all_computers: props.profile.all_computers,
       apt_sources: props.profile.apt_sources ?? [],
-      description: props.profile.description,
-      pockets: (props.profile.pockets ?? []).map(({ id }) => id),
+      description: props.profile.description || "",
       tags: props.profile.tags,
       title: props.profile.title,
     });
@@ -192,7 +190,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       <Form onSubmit={formik.handleSubmit} noValidate>
         <AppErrorBoundary>
           <Blocks dense>
-            <Blocks.Item title="Details">
+            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
               <RepositoryProfileFormDetailsPanel
                 accessGroups={accessGroupsResult?.data ?? []}
                 isTitleRequired={props.action === "add"}
@@ -203,7 +201,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
             <Blocks.Item>
               <div className={classes.sourcesHeader}>
-                <h4 className="p-heading--5 u-no-margin--bottom">Sources</h4>
+                <h4 className="p-heading--5 u-no-margin--bottom p-text--small-caps">Sources</h4>
                 <Button
                   type="button"
                   hasIcon
@@ -238,7 +236,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             </Blocks.Item>
 
             <Blocks.Item>
-              <AssociationBlock formik={formik} />
+              <AssociationBlock formik={formik} titleClass="p-text--small-caps" />
             </Blocks.Item>
           </Blocks>
         </AppErrorBoundary>

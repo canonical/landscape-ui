@@ -5,7 +5,7 @@ import type {
   ListMirrorPackagesResponse,
 } from "@canonical/landscape-openapi";
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 export function useListMirrorPackages(
@@ -21,13 +21,14 @@ export function useListMirrorPackages(
 ) {
   const authFetchDebArchive = useFetchDebArchive();
 
-  return useSuspenseQuery<
+  return useQuery<
     AxiosResponse<ListMirrorPackagesResponse>,
     AxiosError<ListMirrorPackagesError>
   >({
     queryKey: ["mirrorPackages", mirrorName, params],
     queryFn: async () =>
       authFetchDebArchive.get(`${mirrorName}/packages`, { params }),
+    retry: false,
     ...options,
   });
 }

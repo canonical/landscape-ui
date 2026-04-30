@@ -24,7 +24,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
   const { updateRepository, isUpdatingRepository } = useUpdateLocalRepository();
 
   const closeSidePanel = createPageParamsSetter({
@@ -66,7 +66,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Blocks>
-        <Blocks.Item title="Details">
+        <Blocks.Item title="Details" titleClassName="p-text--small-caps">
           <Input
             type="text"
             label="Name"
@@ -100,9 +100,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting || isUpdatingRepository}
         submitButtonText="Save changes"
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
-        onCancel={closeSidePanel}
+        onCancel={popSidePath}
       />
     </Form>
   );
