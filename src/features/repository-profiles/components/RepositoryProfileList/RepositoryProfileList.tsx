@@ -2,7 +2,6 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
 } from "@/components/layout/ListTitle";
-import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
@@ -17,16 +16,20 @@ import { useGetProfileInstancesCount } from "../../api";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
+import { ProfileAssociatedInstancesLink } from "@/features/profiles";
+import { pluralizeWithCount } from "@/utils/_helpers";
 
-const AssociatedCountCell: FC<{ readonly profileId: number }> = ({
-  profileId,
+const AssociatedCountCell: FC<{ readonly profile: RepositoryProfile }> = ({
+  profile,
 }) => {
-  const { associatedCount, isLoadingCount } =
-    useGetProfileInstancesCount(profileId);
-  if (isLoadingCount) {
-    return <LoadingState inline />;
-  }
-  return <>{associatedCount}</>;
+  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(profile.id);
+  return <ProfileAssociatedInstancesLink
+            profile={profile}
+            count={associatedCount}
+            query={`repository:${profile.id}`}
+            isPending={isLoadingCount}
+            isGeneralAssociation
+          />;
 };
 
 interface RepositoryProfileListProps {
@@ -94,7 +97,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile associated machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <AssociatedCountCell profileId={original.id} />
+          <AssociatedCountCell profile={original} />
         ),
       },
       {
@@ -106,7 +109,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile applied machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>{original.applied_count ?? 0}</>
+          <>{pluralizeWithCount(original.applied_count ?? 0, "instance")}</>
         ),
       },
       {
@@ -118,7 +121,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile pending machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>{original.pending_count ?? 0}</>
+          <>{pluralizeWithCount(original.pending_count ?? 0, "instance")}</>
         ),
       },
       {
@@ -128,7 +131,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         ),
       },
     ];
-  }, [accessGroupOptions]);
+  }, [accessGroupOptions, createPageParamsSetter]);
 
   return (
     <>

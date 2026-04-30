@@ -6,7 +6,6 @@ export const INITIAL_VALUES: RepositoryProfileFormValues = {
   all_computers: false,
   apt_sources: [],
   description: "",
-  pockets: [],
   tags: [],
   title: "",
 };

@@ -36,6 +36,11 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
     name: profile.name,
   });
 
+  const handleViewProfile = createPageParamsSetter({
+    sidePath: ["view"],
+    name: profile.name,
+  });
+
   const handleRemoveProfile = async () => {
     try {
       await removeRepositoryProfile({
@@ -54,6 +59,12 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
   };
 
   const actions: Action[] = [
+    {
+      icon: "show",
+      label: "View",
+      "aria-label": `View "${profile.title}" profile`,
+      onClick: handleViewProfile,
+    },
     {
       icon: "edit",
       label: "Edit",

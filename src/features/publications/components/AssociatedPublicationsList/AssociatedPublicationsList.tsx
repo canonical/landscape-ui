@@ -7,6 +7,7 @@ import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import type { Publication } from "@canonical/landscape-openapi";
+import TooltipCell from "@/components/layout/TooltipCell";
 import PublicationLink from "./PublicationLink/PublicationLink";
 import MirrorLink from "./MirrorLink/MirrorLink";
 import LocalLink from "./LocalLink/LocalLink";
@@ -32,9 +33,16 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
       {
         accessor: "displayName",
         Header: "Publication",
-        Cell: ({ row: { original } }: CellProps<Publication>): ReactNode => (
-          <PublicationLink publication={original} openInNewTab={openInNewTab} />
-        ),
+        Cell: ({ row: { original } }: CellProps<Publication>): ReactNode => {
+          const link = (
+            <PublicationLink publication={original} openInNewTab={openInNewTab} />
+          );
+          return openInNewTab ? (
+            link
+          ) : (
+            <TooltipCell message={original.displayName ?? ""}>{link}</TooltipCell>
+          );
+        },
       },
       ...(showSources
         ? [
@@ -47,20 +55,23 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 },
               }: CellProps<Publication>): ReactNode => {
                 const sourceType = getSourceType(source);
+                let content: ReactNode;
                 if (sourceType === "Mirror") {
-                  return (
-                    <MirrorLink
-                      mirrorName={source}
-                      openInNewTab={openInNewTab}
-                    />
+                  content = (
+                    <MirrorLink mirrorName={source} openInNewTab={openInNewTab} />
                   );
-                }
-                if (sourceType === "Local repository") {
-                  return (
+                } else if (sourceType === "Local repository") {
+                  content = (
                     <LocalLink localName={source} openInNewTab={openInNewTab} />
                   );
+                } else {
+                  content = source;
                 }
-                return <>{source}</>;
+                return openInNewTab ? (
+                  content
+                ) : (
+                  <TooltipCell message={source ?? ""}>{content}</TooltipCell>
+                );
               },
             },
           ]
