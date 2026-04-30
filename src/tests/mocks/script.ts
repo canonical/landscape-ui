@@ -24,6 +24,10 @@ export const scripts = [
         title: "abc",
         id: 12,
       },
+      {
+        title: "Script profile 14",
+        id: 14,
+      },
     ],
     status: "ACTIVE",
     attachments: [],

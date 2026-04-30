@@ -1,12 +1,15 @@
-import type { Publication, PublicationWritable } from "../types";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
+import type {
+  CreatePublicationData,
+  CreatePublicationError,
+  CreatePublicationResponse,
+} from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 interface CreatePublicationParams {
-  body: PublicationWritable;
-  publicationId?: string;
+  body: CreatePublicationData["body"];
+  publicationId?: NonNullable<CreatePublicationData["query"]>["publicationId"];
 }
 
 export const useCreatePublication = () => {
@@ -14,8 +17,8 @@ export const useCreatePublication = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<Publication>,
-    AxiosError<ApiError>,
+    AxiosResponse<CreatePublicationResponse>,
+    AxiosError<CreatePublicationError>,
     CreatePublicationParams
   >({
     mutationKey: ["publications", "create"],

@@ -1,4 +1,4 @@
-export { useGetLocalRepositories } from "./api";
+export { useGetLocalRepositories, useBatchGetLocals } from "./api";
 
 export { default as LocalRepositoriesContainer } from "./components/LocalRepositoriesContainer";
 export { default as AddLocalRepositoryButton } from "./components/AddLocalRepositoryButton";

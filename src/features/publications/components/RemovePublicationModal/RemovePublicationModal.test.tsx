@@ -11,7 +11,7 @@ import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_cons
 describe("RemovePublicationModal", () => {
   const user = userEvent.setup();
   const [publication] = publications;
-  const publicationLabel = publication.label;
+  const publicationLabel = publication.displayName;
 
   it("does not render when closed", () => {
     const props: ComponentProps<typeof RemovePublicationModal> = {

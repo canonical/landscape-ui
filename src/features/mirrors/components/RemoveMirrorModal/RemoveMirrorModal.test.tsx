@@ -78,6 +78,10 @@ describe("RemoveMirrorModal", () => {
   it("removes a mirror", async () => {
     renderWithProviders(<RemoveMirrorModal {...props} />);
 
+    await user.type(
+      screen.getByPlaceholderText(`remove ${props.mirrorDisplayName}`),
+      `remove ${props.mirrorDisplayName}`,
+    );
     await user.click(screen.getByRole("button", { name: /remove mirror/i }));
 
     expect(mockDeleteMirror).toHaveBeenCalledWith(
