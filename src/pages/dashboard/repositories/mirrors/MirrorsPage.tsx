@@ -42,7 +42,7 @@ const MirrorsPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
 
   const { data } = useListMirrors({
-    filter: search ? `display_name="${search}*"` : undefined,
+    filter: search ? `display_name=${JSON.stringify(`${search}*`)}` : undefined,
     pageSize: 20,
   });
 

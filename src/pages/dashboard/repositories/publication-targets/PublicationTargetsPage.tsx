@@ -29,10 +29,21 @@ const EditTargetForm = lazy(async () =>
 const PublicationTargetsPage: FC = () => {
   const { lastSidePathSegment, createPageParamsSetter, name, search } =
     usePageParams();
-  const { publicationTargets, count } = useGetPublicationTargets();
+  const { publicationTargets, count, isGettingPublicationTargets } =
+    useGetPublicationTargets();
 
   useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
 
+  if (isGettingPublicationTargets) {
+    return (
+      <PageMain>
+        <PageHeader title="Publication targets" />
+        <PageContent>
+          <div>Loading publication targets...</div>
+        </PageContent>
+      </PageMain>
+    );
+  }
   const filteredTargets = search
     ? publicationTargets.filter((t) =>
         (t.displayName ?? t.name)
