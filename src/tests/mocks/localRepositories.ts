@@ -1,6 +1,6 @@
 import type { Local } from "@/features/local-repositories";
 
-export const repositories: Local[] = [
+export const repositories = [
   {
     name: "locals/aaaa-bbbb-cccc",
     localId: "aaaa-bbbb-cccc",
@@ -24,7 +24,7 @@ export const repositories: Local[] = [
     defaultDistribution: "distribution 3",
     defaultComponent: "component 3",
   },
-] as const;
+] as const satisfies Local[];
 
 export const repoPackages = ["package 1", "package 2", "package 3"] as const;
 
