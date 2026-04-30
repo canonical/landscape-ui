@@ -27,7 +27,7 @@ const EditTargetForm = lazy(async () =>
 );
 
 const PublicationTargetsPage: FC = () => {
-  const { lastSidePathSegment, createPageParamsSetter, name, search } =
+  const { lastSidePathSegment, name, popSidePath } =
     usePageParams();
   const { publicationTargets, count, isGettingPublicationTargets } =
     useGetPublicationTargets();
@@ -44,13 +44,6 @@ const PublicationTargetsPage: FC = () => {
       </PageMain>
     );
   }
-  const filteredTargets = search
-    ? publicationTargets.filter((t) =>
-        (t.displayName ?? t.name)
-          .toLowerCase()
-          .includes(search.toLowerCase()),
-      )
-    : publicationTargets;
 
   const viewTarget = publicationTargets.find(
     (t) => t.publicationTargetId === name,
@@ -64,7 +57,7 @@ const PublicationTargetsPage: FC = () => {
         children: (
           <>
             <HeaderWithSearch />
-            <PublicationTargetList targets={filteredTargets} />
+            <PublicationTargetList targets={publicationTargets} />
           </>
         ),
         hasTable: true as const,
@@ -101,7 +94,8 @@ const PublicationTargetsPage: FC = () => {
       <PageContent hasTable={hasTable}>{children}</PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        // onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePath}
         isOpen={
           lastSidePathSegment === "add" ||
           (!!lastSidePathSegment && !!viewTarget)
