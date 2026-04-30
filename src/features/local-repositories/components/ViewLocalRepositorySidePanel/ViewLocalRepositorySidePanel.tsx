@@ -37,7 +37,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>{repository.display_name}</SidePanel.Header>
+      <SidePanel.Header>{repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
         <ViewRepositoryActionsBlock repository={repository} />
         <Tabs listClassName={classes.marginBottom} links={links} />

@@ -9,10 +9,10 @@ import {
   emptyTask,
 } from "@/tests/mocks/localRepositories";
 import type {
-  ImportLocalPackagesRequest,
+  LocalServiceImportLocalPackagesBody,
   BatchGetLocalsRequest,
-  CreateLocalRequest,
-} from "@/features/local-repositories";
+  LocalWritable,
+} from "@canonical/landscape-openapi";
 
 const getBatchLocalsResponse = async (
   request: Request,
@@ -36,7 +36,7 @@ export default [
 
     return HttpResponse.json({
       locals: repositories.filter(({ displayName }) =>
-        displayName.includes(search.substring(2, search.length - 2)),
+        displayName.includes(search.replaceAll(/"|\*/gm, "")),
       ),
     });
   }),
@@ -45,10 +45,10 @@ export default [
     return getBatchLocalsResponse(request);
   }),
 
-  http.post<never, CreateLocalRequest>(
+  http.post<never, LocalWritable>(
     `${API_URL_DEB_ARCHIVE}locals`,
     async ({ request }) => {
-      const { display_name: namePosted } = await request.json();
+      const { displayName: namePosted } = await request.json();
 
       return HttpResponse.json(
         repositories.find(({ displayName }) => namePosted === displayName),
@@ -89,11 +89,11 @@ export default [
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
     return HttpResponse.json({
-      local_packages: repoPackages,
+      localPackages: repoPackages,
     });
   }),
 
-  http.post<never, ImportLocalPackagesRequest>(
+  http.post<never, LocalServiceImportLocalPackagesBody>(
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();

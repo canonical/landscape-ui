@@ -22,7 +22,7 @@ import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
-import type { Local } from "../../../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import {
   useCreatePublication,
   usePublishPublication,
@@ -38,7 +38,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
@@ -50,34 +50,23 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     name: "",
   });
 
-  const initialValues: PublishRepositoryNewFormValues = {
-    name: "",
-    publication_target: "",
-    signing_key: "",
-    hash_indexing: false,
-    automatic_installation: false,
-    automatic_upgrades: false,
-    skip_bz2: false,
-    skip_content_indexing: false,
-  };
-
   const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
+    const valuesforCreation = {
+      displayName: values.name,
+      publicationTarget: values.publicationTarget,
+      source: repository.name ?? "",
+      distribution: repository.defaultDistribution,
+      acquireByHash: values.acquireByHash,
+      butAutomaticUpgrades: values.butAutomaticUpgrades,
+      notAutomatic: values.notAutomatic,
+      skipBz2: values.skipBz2,
+      skipContents: values.skipContents,
+      gpgKey: { armor: values.gpgKey },
+    };
+
     try {
       const { data: publication } = await createPublication({
-        body: {
-          displayName: values.name,
-          publicationTarget: values.publication_target,
-          source: repository.name,
-          distribution: repository.distribution,
-          acquireByHash: values.hash_indexing,
-          notAutomatic: !values.automatic_installation,
-          butAutomaticUpgrades: values.automatic_upgrades,
-          skipBz2: values.skip_bz2,
-          skipContents: values.skip_content_indexing,
-          gpgKey: values.signing_key
-            ? { armor: values.signing_key }
-            : undefined,
-        },
+        body: valuesforCreation,
       });
 
       await publishPublication({
@@ -88,13 +77,35 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You have marked ${repository.display_name} to be published`,
+        title: `You have marked ${repository.displayName} to be published`,
         message:
           "A publication has been created and an activity has been queued to publish it to the designated target.",
       });
     } catch (error) {
       debug(error);
     }
+  };
+
+
+  const publicationTargetOptions = useMemo<SelectOption[]>(
+    () => [
+      ...publicationTargets.map((publicationTarget) => ({
+        label: publicationTarget.displayName,
+        value: publicationTarget.name ?? "", // TODO change when API is fixed to return the name as non undefined
+      })),
+    ],
+    [publicationTargets],
+  );
+
+  const initialValues: PublishRepositoryNewFormValues = {
+    name: "",
+    publicationTarget: publicationTargetOptions[0]?.value || "",
+    gpgKey: "",
+    acquireByHash: false,
+    butAutomaticUpgrades: false,
+    notAutomatic: false,
+    skipBz2: false,
+    skipContents: false,
   };
 
   const formik = useFormik({
@@ -104,20 +115,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     validateOnMount: true,
   });
 
-  const publicationTargetOptions = useMemo<SelectOption[]>(
-    () => [
-      { label: "Select publication target", value: "" },
-      ...publicationTargets.map((publicationTarget) => ({
-        label: publicationTarget.displayName,
-        value: publicationTarget.name ?? "", // TODO change when API is fixed to return the name as non undefined
-      })),
-    ],
-    [publicationTargets],
-  );
-
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks>
+      <Blocks dense>
         <Blocks.Item title="Details">
           <Input
             type="text"
@@ -132,16 +132,15 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
             required
             disabled={isGettingPublicationTargets}
             options={publicationTargetOptions}
-            error={getFormikError(formik, "publication_target")}
-            {...formik.getFieldProps("publication_target")}
+            error={getFormikError(formik, "publicationTarget")}
+            {...formik.getFieldProps("publicationTarget")}
           />
 
           <Textarea
             label="Signing GPG key"
             rows={4}
-            error={getFormikError(formik, "signing_key")}
-            {...formik.getFieldProps("signing_key")}
-            className="u-no-margin--bottom"
+            error={getFormikError(formik, "gpgKey")}
+            {...formik.getFieldProps("gpgKey")}
           />
         </Blocks.Item>
 
@@ -156,7 +155,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
                   Hash based indexing
                 </span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
+                  message={SETTINGS_HELP_TEXT.acquireByHash}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -165,8 +164,8 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
                 </Tooltip>
               </span>
             }
-            checked={formik.values.hash_indexing}
-            {...formik.getFieldProps("hash_indexing")}
+            checked={formik.values.acquireByHash}
+            {...formik.getFieldProps("acquireByHash")}
           />
 
           <Input
@@ -177,7 +176,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
                   Automatic installation
                 </span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
+                  message={SETTINGS_HELP_TEXT.notAutomatic}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -186,8 +185,8 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
                 </Tooltip>
               </span>
             }
-            checked={formik.values.automatic_installation}
-            {...formik.getFieldProps("automatic_installation")}
+            checked={formik.values.notAutomatic}
+            {...formik.getFieldProps("notAutomatic")}
           />
 
           <Input
@@ -196,7 +195,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
               <span>
                 <span className={classes.settingLabel}>Automatic upgrades</span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
+                  message={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -205,37 +204,34 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
                 </Tooltip>
               </span>
             }
-            checked={formik.values.automatic_upgrades}
-            {...formik.getFieldProps("automatic_upgrades")}
+            checked={formik.values.butAutomaticUpgrades}
+            {...formik.getFieldProps("butAutomaticUpgrades")}
           />
 
           <Input
             type="checkbox"
             label="Skip bz2"
-            checked={formik.values.skip_bz2}
-            {...formik.getFieldProps("skip_bz2")}
+            checked={formik.values.skipBz2}
+            {...formik.getFieldProps("skipBz2")}
           />
 
           <Input
             type="checkbox"
             label="Skip content indexing"
-            checked={formik.values.skip_content_indexing}
-            {...formik.getFieldProps("skip_content_indexing")}
+            checked={formik.values.skipContents}
+            {...formik.getFieldProps("skipContents")}
           />
         </Blocks.Item>
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={
           formik.isSubmitting ||
           isCreatingPublication ||
           isPublishingPublication
         }
         submitButtonText="Publish repository"
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );

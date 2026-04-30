@@ -1,6 +1,6 @@
-import type { Local } from "../types";
 import { useGetLocalRepository } from "./useGetLocalRepository";
 import usePageParams from "@/hooks/usePageParams";
+import type { Local } from "@canonical/landscape-openapi";
 
 type GetPageLocalRepositoryReturnType =
   | {

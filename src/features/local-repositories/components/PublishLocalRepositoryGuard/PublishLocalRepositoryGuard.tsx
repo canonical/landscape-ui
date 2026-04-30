@@ -3,32 +3,40 @@ import {
   NoPublicationTargetsModal,
   useGetPublicationTargets,
 } from "@/features/publication-targets";
-import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
-import type { Local } from "../../types";
+import type { Local } from "@canonical/landscape-openapi";
 
 interface PublishRepositoryGuardProps {
   readonly close: () => void;
+  readonly isOpen: boolean;
   readonly repository: Local;
 }
 
 const PublishLocalRepositoryGuard: FC<PublishRepositoryGuardProps> = ({
   close,
+  isOpen,
   repository,
 }) => {
-  const { publicationTargets, isGettingPublicationTargets } =
-    useGetPublicationTargets();
-  const { setPageParams } = usePageParams();
+  const { publicationTargets } = useGetPublicationTargets();
+  const { sidePath, createPageParamsSetter, createSidePathPusher } =
+    usePageParams();
 
-  if (isGettingPublicationTargets) {
-    return <LoadingState />;
+  const openSidePanel = !sidePath.length
+    ? createPageParamsSetter({
+        sidePath: ["publish"],
+        name: repository.localId,
+      })
+    : createSidePathPusher("publish");
+
+  if (isOpen) {
+    if (!publicationTargets.length) {
+      return <NoPublicationTargetsModal close={close} />;
+    }
+
+    if (!sidePath.includes("publish")) {
+      openSidePanel();
+    }
   }
-
-  if (!publicationTargets.length) {
-    return <NoPublicationTargetsModal close={close} />;
-  }
-
-  setPageParams({ sidePath: ["publish"], name: repository.local_id });
 
   return null;
 };

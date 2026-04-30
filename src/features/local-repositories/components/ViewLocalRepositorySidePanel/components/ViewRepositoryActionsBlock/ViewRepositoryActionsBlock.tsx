@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { Local } from "../../../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import { ResponsiveButtons } from "@/components/ui";
 import { useGetRepositoryActions } from "../../../../hooks/useGetRepositoryActions";
 import { useBoolean } from "usehooks-ts";
@@ -46,7 +46,7 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
             hasIcon
             type="button"
             onClick={button.onClick}
-            aria-label={`${button.label} ${repository.display_name} local repository`}
+            aria-label={`${button.label} ${repository.displayName} local repository`}
             disabled={button.disabled}
           >
             <Icon
@@ -63,19 +63,17 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
         menuPosition="left"
       />
 
-      {isRemovalModalOpen && (
-        <RemoveLocalRepositoryModal
-          close={closeRemovalModal}
-          repository={repository}
-        />
-      )}
+      <RemoveLocalRepositoryModal
+        close={closeRemovalModal}
+        isOpen={isRemovalModalOpen}
+        repository={repository}
+      />
 
-      {isPublishGuardOpen && (
-        <PublishLocalRepositoryGuard
-          close={closePublishGuard}
-          repository={repository}
-        />
-      )}
+      <PublishLocalRepositoryGuard
+        close={closePublishGuard}
+        isOpen={isPublishGuardOpen}
+        repository={repository}
+      />
     </>
   );
 };

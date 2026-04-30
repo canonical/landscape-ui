@@ -1,8 +1,10 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type { Local } from "../types";
+import type {
+  GetLocalError,
+  GetLocalResponse,
+} from "@canonical/landscape-openapi";
 
 export const useGetLocalRepository = (name: string) => {
   const authFetchDebArchive = useFetchDebArchive();
@@ -11,7 +13,7 @@ export const useGetLocalRepository = (name: string) => {
     data: response,
     isPending,
     error,
-  } = useQuery<AxiosResponse<Local>, AxiosError<ApiError>>({
+  } = useQuery<AxiosResponse<GetLocalResponse>, AxiosError<GetLocalError>>({
     queryKey: ["local", name],
     queryFn: async () => authFetchDebArchive.get(name),
   });
@@ -20,7 +22,7 @@ export const useGetLocalRepository = (name: string) => {
     repository: response?.data,
     repositoryError:
       response && !response.data
-        ? new Error(`The local repository "${name}" could not be found.`)
+        ? new Error("The local repository could not be found.")
         : error,
     isGettingRepository: isPending,
   };

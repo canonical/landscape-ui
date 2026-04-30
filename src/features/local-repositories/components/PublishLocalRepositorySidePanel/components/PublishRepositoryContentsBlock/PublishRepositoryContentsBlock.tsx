@@ -1,6 +1,6 @@
 import Blocks from "@/components/layout/Blocks";
 import type { FC } from "react";
-import type { Local } from "../../../../types";
+import type { Local } from "@canonical/landscape-openapi";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface PublishRepositoryContentsBlockProps {
@@ -14,13 +14,13 @@ const PublishRepositoryContentsBlock: FC<
     <Blocks.Item title="Contents">
       <ReadOnlyField
         label="Distribution"
-        value={repository.distribution}
+        value={repository.defaultDistribution ?? ""}
         tooltipMessage={"The distribution is defined by the repository."}
       />
 
       <ReadOnlyField
         label="Component"
-        value={repository.component}
+        value={repository.defaultComponent}
         tooltipMessage={"The component is defined by the repository."}
       />
     </Blocks.Item>

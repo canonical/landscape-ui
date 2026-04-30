@@ -19,11 +19,10 @@ import {
 import useNotify from "@/hooks/useNotify";
 import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import type { Local } from "../../../../types";
+import type { Local, Publication } from "@canonical/landscape-openapi";
 import { usePublishPublication } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
-import type { Publication } from "@canonical/landscape-openapi";
 
 interface PublishRepositoryExistingFormProps {
   readonly repository: Local;
@@ -36,7 +35,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePath, createPageParamsSetter } = usePageParams();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
@@ -55,7 +54,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You have marked ${repository.display_name} to be published`,
+        title: `You have marked ${repository.displayName} to be published`,
         message:
           "An activity has been queued to publish the selected publication to the designated target.",
       });
@@ -64,16 +63,8 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     }
   };
 
-  const formik = useFormik({
-    initialValues: { name: "" },
-    onSubmit: handleSubmit,
-    validationSchema: VALIDATION_SCHEMA_EXISTING,
-    validateOnMount: true,
-  });
-
   const publicationOptions = useMemo<SelectOption[]>(
     () => [
-      { label: "Select publication", value: "" },
       ...publications.map((publication) => ({
         label: publication.displayName,
         value: publication.name || "", // TODO change after fixing the API to return the publication name not undefined
@@ -82,13 +73,20 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     [publications],
   );
 
+  const formik = useFormik({
+    initialValues: { name: publicationOptions[0]?.value || "" },
+    onSubmit: handleSubmit,
+    validationSchema: VALIDATION_SCHEMA_EXISTING,
+    validateOnMount: true,
+  });
+
   const publication = publications.find(
     ({ name }) => name === formik.values.name,
   );
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks>
+      <Blocks dense>
         <Blocks.Item title="Details">
           <Select
             label="Publication name"
@@ -124,7 +122,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
                   Hash based indexing
                 </span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
+                  message={SETTINGS_HELP_TEXT.acquireByHash}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -145,7 +143,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
                   Automatic installation
                 </span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
+                  message={SETTINGS_HELP_TEXT.notAutomatic}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -164,7 +162,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
               <span>
                 <span className={classes.settingLabel}>Automatic upgrades</span>
                 <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
+                  message={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
                   position="top-center"
                   positionElementClassName={classes.tooltipPositionElement}
                 >
@@ -194,12 +192,9 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={formik.isSubmitting || isPublishingPublication}
         submitButtonText="Publish repository"
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePath}
       />
     </Form>
   );

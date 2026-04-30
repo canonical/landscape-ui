@@ -1,10 +1,12 @@
 import type { FC } from "react";
-import type { Local } from "../../../../types";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import LocalRepositoryPublicationsList from "../../../LocalRepositoryPublicationsList";
 import LoadingState from "@/components/layout/LoadingState";
-import useGetPublicationsBySource from "../../../../api/useGetPublicationsBySource";
+import {
+  AssociatedPublicationsList,
+  useGetPublicationsBySource,
+} from "@/features/publications";
+import type { Local } from "@canonical/landscape-openapi";
 
 interface ViewLocalRepositoryDetailsTabProps {
   readonly repository: Local;
@@ -18,21 +20,21 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   );
 
   return (
-    <Blocks>
-      <Blocks.Item title="Details" titleClassName="p-text--small-caps">
-        <InfoGrid>
-          <InfoGrid.Item label="Name" value={repository.display_name} />
+    <Blocks dense>
+      <Blocks.Item title="Details">
+        <InfoGrid dense>
+          <InfoGrid.Item label="Name" value={repository.displayName} />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />
 
           <InfoGrid.Item
             label="Default distribution"
-            value={repository.distribution}
+            value={repository.defaultDistribution}
           />
 
           <InfoGrid.Item
             label="Default component"
-            value={repository.component}
+            value={repository.defaultComponent}
           />
         </InfoGrid>
       </Blocks.Item>
@@ -41,7 +43,10 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
         {isGettingPublications ? (
           <LoadingState />
         ) : (
-          <LocalRepositoryPublicationsList publications={publications} />
+          <AssociatedPublicationsList
+            publications={publications}
+            showSources={false}
+          />
         )}
       </Blocks.Item>
     </Blocks>
