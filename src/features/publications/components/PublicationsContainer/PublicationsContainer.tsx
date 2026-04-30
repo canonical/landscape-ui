@@ -103,7 +103,10 @@ const PublicationsContainer = () => {
   };
 
   const actions =
-    isGettingPublicationTargets || isMissingTargets
+    isGettingPublicationTargets ||
+    isMissingTargets ||
+    isGettingPublications ||
+    isMissingPublications
       ? []
       : [<AddPublicationButton key="add-publication-button" />];
 
