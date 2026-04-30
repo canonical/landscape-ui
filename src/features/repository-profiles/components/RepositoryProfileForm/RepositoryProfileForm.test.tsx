@@ -1,5 +1,4 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
@@ -58,7 +57,6 @@ describe("RepositoryProfileForm", () => {
 
     const saveButton = await screen.findByRole("button", {
       name: /save changes/i,
-      name: /save changes/i,
     });
     expect(saveButton).toBeInTheDocument();
     expect(saveButton).toHaveAttribute("type", "submit");
@@ -102,7 +100,7 @@ describe("RepositoryProfileForm", () => {
 
     await user.click(
       screen.getByRole("button", {
-        name: /Save changes to repository profile/i,
+        name: /Add a new repository profile/i,
       }),
     );
 

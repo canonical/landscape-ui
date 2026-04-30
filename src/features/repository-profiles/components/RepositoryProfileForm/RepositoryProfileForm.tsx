@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { Button, Form, Icon } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import AssociationBlock from "@/components/form/AssociationBlock";
-import AssociationBlock from "@/components/form/AssociationBlock";
 import RepositoryProfileFormDetailsPanel from "../RepositoryProfileFormDetailsPanel";
 import RepositoryProfileFormSourcesSection from "../RepositoryProfileFormSourcesSection";
 import type { CreateRepositoryProfileParams } from "../../api";
@@ -14,19 +13,14 @@ import type {
   RepositoryProfileFormValues,
 } from "../../types";
 import type { APTSource } from "../../types";
-import type { APTSource } from "../../types";
 import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
-import { getFormikError } from "@/utils/formikErrors";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
-import Blocks from "@/components/layout/Blocks/Blocks";
-import classes from "./RepositoryProfileForm.module.scss";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import classes from "./RepositoryProfileForm.module.scss";
 
@@ -93,23 +87,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         });
       } else {
         const originalSources = props.profile.apt_sources ?? [];
-        const originalSources = props.profile.apt_sources ?? [];
         await editRepositoryProfile({
           name: props.profile.name,
           ...valuesToSubmit,
-          add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
-          remove_apt_sources: originalSources
-            .filter(
-              (orig) => !values.apt_sources.some((cur) => cur.id === orig.id),
-            )
-            .map((s) => s.id),
-        });
-        (props.onClose ?? closeSidePanel)();
-        notify.success({
-          title: `You have successfully edited ${values.title}`,
-          message: `The repository profile details have been updated.`,
-        });
-      }
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
           remove_apt_sources: originalSources
             .filter(
@@ -210,7 +190,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
-        onCancel={props.onClose}
+        onCancel={props.action === "edit" ? props.onClose : undefined}
         hasBackButton={
           props.action === "edit" ? props.hasBackButton : undefined
         }

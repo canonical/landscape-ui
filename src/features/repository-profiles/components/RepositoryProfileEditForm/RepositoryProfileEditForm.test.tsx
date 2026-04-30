@@ -1,6 +1,7 @@
+import { aptSources } from "@/tests/mocks/apt-sources";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
@@ -134,5 +135,45 @@ describe("RepositoryProfileEditForm", () => {
       await screen.findByRole("button", { name: /save changes/i }),
     ).toBeInTheDocument();
     expect(screen.getByText("my-new-source")).toBeInTheDocument();
+  });
+
+  it("existing apt_sources from the profile appear in the sources table", async () => {
+    renderEditForm("view,edit");
+
+    expect(
+      await screen.findByText(aptSources[0].name),
+    ).toBeInTheDocument();
+  });
+
+  it("cancel on source form navigates back to the edit step", async () => {
+    renderEditForm("view,edit,add-source");
+
+    await screen.findByRole("textbox", { name: /source name/i });
+    await user.click(screen.getByRole("button", { name: /cancel/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+  });
+
+  it("shows validation errors when submitting an empty source form", async () => {
+    renderEditForm("view,edit,add-source");
+
+    await screen.findByRole("textbox", { name: /source name/i });
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    expect(
+      await screen.findAllByText("This field is required."),
+    ).toHaveLength(2);
+  });
+
+  it("back button navigates back when sidePath has more than one segment", async () => {
+    renderEditForm("view,edit");
+
+    await user.click(
+      await screen.findByRole("button", { name: /back/i }),
+    );
+
+    expect(screen.getByTestId("location")).not.toHaveTextContent(",edit");
   });
 });

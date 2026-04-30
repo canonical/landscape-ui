@@ -9,12 +9,13 @@ import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { APTSource } from "../../types";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
-import type { Column } from "react-table";
+import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
 import { useGetRepositoryProfile, useRepositoryProfiles } from "../../api";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileAssociationBlock/ViewProfileAssociationBlock";
 import { ProfileTypes } from "@/features/profiles";
+import TooltipCell from "@/components/layout/TooltipCell/TooltipCell";
 
 const SOURCES_PAGE_SIZE = 10;
 
@@ -22,6 +23,13 @@ const aptSourceColumns: Column<APTSource>[] = [
   {
     accessor: "name",
     Header: "Source",
+  },
+  {
+    accessor: "line",
+    Header: "Deb line",
+    Cell: ({ row: { original } }: CellProps<APTSource>) => (
+      <TooltipCell content={original.line} />
+    ),
   },
 ];
 

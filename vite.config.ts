@@ -46,6 +46,29 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           secure: false,
         },
+        ...(env.VITE_MSW_ENABLED !== "true" &&
+          (() => {
+            const debArchivePath = (env.VITE_API_URL_DEB_ARCHIVE ?? "").replace(
+              /\/$/,
+              "",
+            );
+            return {
+              "/debarchive": {
+                target:
+                  env.VITE_DEBARCHIVE_PROXY_TARGET || "http://localhost:8000",
+                changeOrigin: true,
+                secure: false,
+                rewrite: (path) => path.replace(/^\/debarchive/, ""),
+              },
+              [debArchivePath]: {
+                target:
+                  env.VITE_API_DEBARCHIVE_PROXY_TARGET ||
+                  "http://localhost:8000",
+                changeOrigin: true,
+                secure: false,
+              },
+            };
+          })()),
       },
     },
   };

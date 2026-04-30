@@ -125,4 +125,103 @@ describe("RepositoryProfileAddSidePanel", () => {
     });
     expect(screen.getByText("my-source")).toBeInTheDocument();
   });
+
+  it("renders 'Edit repository profile' title when sidePath starts with 'edit'", () => {
+    renderPanel("edit");
+
+    expect(screen.getByText("Edit repository profile")).toBeInTheDocument();
+  });
+
+  it("renders 'Edit repository profile' as breadcrumb prefix on edit-source step", () => {
+    renderPanel("edit,edit-source");
+
+    expect(screen.getByText("Edit repository profile")).toBeInTheDocument();
+    expect(screen.getByText(/Edit source/i)).toBeInTheDocument();
+  });
+
+  it("edit source pre-populates form fields with existing source values", async () => {
+    renderPanel("add,add-source");
+
+    await user.type(screen.getByLabelText(/source name/i), "my-source");
+    await user.type(
+      screen.getByLabelText(/deb line/i),
+      "deb http://example.com/ubuntu focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+
+    await user.click(screen.getByRole("button", { name: /edit my-source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).toHaveTextContent("edit-source");
+    });
+
+    expect(screen.getByLabelText(/source name/i)).toHaveValue("my-source");
+    expect(screen.getByLabelText(/deb line/i)).toHaveValue(
+      "deb http://example.com/ubuntu focal main",
+    );
+  });
+
+  it("editing a source updates the existing entry instead of adding a new one", async () => {
+    renderPanel("add,add-source");
+
+    await user.type(screen.getByLabelText(/source name/i), "my-source");
+    await user.type(
+      screen.getByLabelText(/deb line/i),
+      "deb http://example.com/ubuntu focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+
+    await user.click(screen.getByRole("button", { name: /edit my-source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).toHaveTextContent("edit-source");
+    });
+
+    await user.clear(screen.getByLabelText(/source name/i));
+    await user.type(screen.getByLabelText(/source name/i), "updated-source");
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("edit-source");
+    });
+
+    expect(screen.getByText("updated-source")).toBeInTheDocument();
+    expect(screen.queryByText("my-source")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("row")).toHaveLength(2); // header + 1 data row
+  });
+
+  it("removes a source from the table when the remove button is clicked", async () => {
+    renderPanel("add,add-source");
+
+    await user.type(screen.getByLabelText(/source name/i), "to-remove");
+    await user.type(
+      screen.getByLabelText(/deb line/i),
+      "deb http://example.com/ubuntu focal main",
+    );
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).not.toHaveTextContent("add-source");
+    });
+
+    await user.click(screen.getByRole("button", { name: /remove to-remove/i }));
+
+    expect(screen.queryByText("to-remove")).not.toBeInTheDocument();
+  });
+
+  it("shows validation error when submitting source form with empty required fields", async () => {
+    renderPanel("add,add-source");
+
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+
+    expect(await screen.findAllByText("This field is required.")).toHaveLength(2);
+  });
 });

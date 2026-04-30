@@ -1,5 +1,6 @@
 import type { APTSource } from "../../types";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
+import TooltipCell from "@/components/layout/TooltipCell";
 import { Button, Icon, ModularTable } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo, useState } from "react";
@@ -54,6 +55,14 @@ const RepositoryProfileFormSourcesSection: FC<
         Header: "Source name",
         className: classes.nameColumn,
         Cell: ({ row: { original } }: CellProps<SourceRow>) => original.name,
+      },
+      {
+        accessor: "line",
+        Header: "Deb line",
+        className: classes.debLine,
+        Cell: ({ row: { original } }: CellProps<SourceRow>) => (
+          <TooltipCell message={original.line}>{original.line}</TooltipCell>
+        ),
       },
       {
         id: "actions",
