@@ -6,13 +6,16 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import type { Publication } from "../../types";
 import PublicationsListActions from "../PublicationsListActions";
 import {
   getPublicationTargetName,
   getSourceName,
   getSourceType,
 } from "../../helpers";
+import type { Publication } from "@canonical/landscape-openapi";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
+import { ROUTES } from "@/libs/routes";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -26,7 +29,6 @@ const PublicationsList: FC<PublicationsListProps> = ({
   publicationTargetDisplayNames = {},
 }) => {
   const { query, createPageParamsSetter } = usePageParams();
-
   const columns = useMemo<Column<Publication>[]>(
     () => [
       {
@@ -42,7 +44,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
               name: row.original.publicationId,
             })}
           >
-            {row.original.label}
+            {row.original.displayName}
           </Button>
         ),
       },
@@ -58,7 +60,17 @@ const PublicationsList: FC<PublicationsListProps> = ({
         accessor: "source",
         Header: "source",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">
+          <StaticLink
+            to={
+              getSourceType(original.source) === "Mirror"
+                ? ROUTES.repositories.mirrors({
+                    search: sourceDisplayNames[original.source],
+                  })
+                : ROUTES.repositories.localRepositories({
+                    search: sourceDisplayNames[original.source],
+                  })
+            }
+          >
             {sourceDisplayNames[original.source] ??
               getSourceName(original.source)}
           </StaticLink>
@@ -68,11 +80,23 @@ const PublicationsList: FC<PublicationsListProps> = ({
         accessor: "publicationTarget",
         Header: "publication target",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <StaticLink to="/">
+          <StaticLink
+            to={ROUTES.repositories.publicationTargets({
+              search: publicationTargetDisplayNames[original.publicationTarget],
+            })}
+          >
             {publicationTargetDisplayNames[original.publicationTarget] ??
               getPublicationTargetName(original.publicationTarget)}
           </StaticLink>
         ),
+      },
+      {
+        accessor: "publishTime",
+        Header: "Publish date",
+        Cell: ({ row: { original } }: CellProps<Publication>) =>
+          original.publishTime
+            ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
+            : "unknown",
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,

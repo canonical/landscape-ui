@@ -1,25 +1,27 @@
-import type { Publication } from "../types";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
+import type {
+  GetPublicationError,
+  GetPublicationResponse,
+} from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 
-export const useGetPublication = (id: string) => {
+export const useGetPublication = (publicationId: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<Publication, AxiosError<ApiError>>({
-    queryKey: ["publications", id],
-    queryFn: async () => {
-      const response = await authFetchDebArchive.get<Publication>(
-        `publications/${id}`,
-      );
-      return response.data;
-    },
-    enabled: !!id,
+  const { data, isLoading, error } = useQuery<
+    AxiosResponse<GetPublicationResponse>,
+    AxiosError<GetPublicationError>
+  >({
+    queryKey: ["publications", publicationId],
+    queryFn: async () =>
+      authFetchDebArchive.get(`publications/${publicationId}`),
+    enabled: !!publicationId,
   });
 
   return {
-    publication: data,
+    publication: data?.data,
+    publicationError: error,
     isGettingPublication: isLoading,
   };
 };

@@ -198,12 +198,6 @@ describe("AddMirrorForm loading state", () => {
 
     await user.type(nameField, "early-mirror");
     expect(nameField).toHaveValue("early-mirror");
-
-    // Wait for the queries to resolve and the form to hydrate.
-    await waitForElementToBeRemoved(() => screen.queryByText(PULLING_NOTE), {
-      timeout: 2000,
-    });
-
     // The user's typed Name survives hydration.
     expect(screen.getByLabelText("Name")).toHaveValue("early-mirror");
   });

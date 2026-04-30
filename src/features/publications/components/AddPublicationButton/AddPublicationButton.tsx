@@ -9,7 +9,7 @@ const AddPublicationButton = () => {
       appearance="positive"
       hasIcon
       type="button"
-      onClick={createPageParamsSetter({ sidePath: ["add"] })}
+      onClick={createPageParamsSetter({ sidePath: ["add"], name: "" })}
     >
       <Icon name="plus" light />
       <span>Add publication</span>

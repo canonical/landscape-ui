@@ -6,8 +6,8 @@ import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import useRemovePublicationTarget from "../../api/useRemovePublicationTarget";
-import type { PublicationTarget } from "../../types";
 import { AssociatedPublicationsList } from "@/features/publications";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 interface RemoveTargetModalProps extends Pick<
   TextConfirmationModalProps,

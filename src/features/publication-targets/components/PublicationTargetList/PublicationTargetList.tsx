@@ -4,7 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-import { Button, Icon } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import type { FC, ReactElement } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -13,6 +13,7 @@ import PublicationTargetListActions from "../PublicationTargetListActions";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 import { pluralizeNew } from "@/utils/_helpers";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface PublicationTargetListProps {
   readonly targets: PublicationTarget[];
@@ -29,7 +30,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
     useGetPublicationsByTarget(publicationTargetId);
 
   if (isGettingPublications) {
-    return <Icon name="spinner" className="u-animation--spin" aria-hidden />;
+    return <LoadingState inline />;
   }
 
   const { length } = publications;
@@ -56,7 +57,8 @@ const getTargetType = (target: PublicationTarget): string => {
 };
 
 const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
-  const { currentPage, pageSize, createPageParamsSetter } = usePageParams();
+  const { search, currentPage, pageSize, createPageParamsSetter } =
+    usePageParams();
 
   const pagedTargets = useMemo(
     () => targets.slice((currentPage - 1) * pageSize, currentPage * pageSize),
@@ -117,6 +119,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
         columns={columns as Column<Record<string, unknown>>[]}
         data={pagedTargets as unknown as Record<string, unknown>[]}
         minWidth={800}
+        emptyMsg={`No publication targets found with the search: "${search}"`}
       />
       <TablePagination
         totalItems={targets.length}

@@ -1,7 +1,6 @@
 import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
-import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { fireEvent, screen, within } from "@testing-library/react";
@@ -14,7 +13,6 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { ROUTES } from "@/libs/routes";
 
 const [script] = scripts;
-const ASSOCIATED_PROFILE_ID = 12;
 
 const props: ComponentProps<typeof EditScriptForm> = {
   script,
@@ -217,23 +215,16 @@ describe("EditScriptForm", () => {
 
   it("renders singular associated instance link text", async () => {
     const user = userEvent.setup();
-    const modifiedProfiles = scriptProfiles.map((profile) =>
-      profile.id === ASSOCIATED_PROFILE_ID
-        ? { ...profile, computers: { num_associated_computers: 1 } }
-        : profile,
+    const associatedProfile = scriptProfiles.find(
+      (profile) => profile.id === ASSOCIATED_PROFILE_ID,
     );
-    server.use(
-      http.get(`${API_URL}scripts/:id/script-profiles`, () =>
-        HttpResponse.json({
-          results: modifiedProfiles,
-          count: modifiedProfiles.length,
-          next: null,
-          previous: null,
-        }),
-      ),
-    );
+    assert(associatedProfile);
+    const originalAssociatedCount =
+      associatedProfile.computers.num_associated_computers;
+    associatedProfile.computers.num_associated_computers = 1;
 
-    renderWithProviders(<EditScriptForm script={script} />);
+    try {
+      renderWithProviders(<EditScriptForm script={script} />);
 
     await user.click(
       screen.getByRole("button", { name: "Submit new version" }),

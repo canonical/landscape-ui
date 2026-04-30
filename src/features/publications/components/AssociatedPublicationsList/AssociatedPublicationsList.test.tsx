@@ -2,10 +2,10 @@ import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Publication } from "../../../publication-targets/types";
 import { describe, expect, it } from "vitest";
 import AssociatedPublicationsList from "./AssociatedPublicationsList";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import type { Publication } from "@canonical/landscape-openapi";
 
 const pubWithoutPublishTime: Publication = {
   name: "publications/no-date-id",
@@ -283,7 +283,9 @@ describe("AssociatedPublicationsList", () => {
       const [firstPub] = publications;
       if (!firstPub) throw new Error("Missing mock publication");
 
-      renderWithProviders(<AssociatedPublicationsList publications={[firstPub]} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={[firstPub]} />,
+      );
 
       expect(screen.getByText(/Mar 12, 2026/)).toBeInTheDocument();
     });
@@ -300,14 +302,19 @@ describe("AssociatedPublicationsList", () => {
   describe("showSources prop", () => {
     it("hides Source column when showSources is false", () => {
       renderWithProviders(
-        <AssociatedPublicationsList publications={publications} showSources={false} />,
+        <AssociatedPublicationsList
+          publications={publications}
+          showSources={false}
+        />,
       );
 
       expect(screen.queryByText("Source")).not.toBeInTheDocument();
     });
 
     it("shows Source column by default", () => {
-      renderWithProviders(<AssociatedPublicationsList publications={publications} />);
+      renderWithProviders(
+        <AssociatedPublicationsList publications={publications} />,
+      );
 
       expect(screen.getByText("Source")).toBeInTheDocument();
     });
@@ -326,7 +333,10 @@ describe("AssociatedPublicationsList", () => {
       const pageSize = 1;
 
       renderWithProviders(
-        <AssociatedPublicationsList publications={publications} pageSize={pageSize} />,
+        <AssociatedPublicationsList
+          publications={publications}
+          pageSize={pageSize}
+        />,
       );
 
       const [firstPub, secondPub] = publications;

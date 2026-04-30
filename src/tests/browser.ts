@@ -11,17 +11,7 @@ import fallbackHandlers from "./server/handlers";
 
 const handlers: RequestHandler[] = [
   http.all("*", ({ request }) => {
-    if (
-      !request.url.includes(API_URL) &&
-      !request.url.includes(API_URL_OLD) &&
-      !request.url.includes(API_URL_DEB_ARCHIVE)
-    ) {
-      return passthrough();
-    }
-
-    if (
-      request.url.match(/\.(ts|tsx|scss)/)
-    ) {
+    if (!request.url.includes(API_URL) && !request.url.includes(API_URL_OLD)) {
       return passthrough();
     }
 

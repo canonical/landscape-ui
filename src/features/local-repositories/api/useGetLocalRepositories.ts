@@ -1,8 +1,8 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
+import type { Local } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-import type { Local } from "../types";
 
 interface ListLocalsResponse {
   locals: Local[];
