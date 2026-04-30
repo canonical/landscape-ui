@@ -4,14 +4,6 @@ export { default as PublicationTargetAddButton } from "./components/PublicationT
 export { default as PublicationTargetContainer } from "./components/PublicationTargetContainer";
 export { default as PublicationTargetList } from "./components/PublicationTargetList";
 export { default as TargetDetails } from "./components/TargetDetails/TargetDetails";
-export type {
-  FilesystemTarget,
-  FilesystemTargetLinkMethod,
-  Publication,
-  PublicationTarget,
-  S3Target,
-  SwiftTarget,
-} from "@canonical/landscape-openapi";
 export {
   useGetPublicationTargets,
   useGetPublicationsByTarget,

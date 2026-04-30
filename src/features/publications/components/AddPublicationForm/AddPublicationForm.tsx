@@ -1,5 +1,9 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import Blocks from "@/components/layout/Blocks";
+import { useGetLocalRepositories } from "@/features/local-repositories";
+import { useListMirrors } from "@/features/mirrors";
+import { useGetPublicationTargets } from "@/features/publication-targets";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -17,6 +21,7 @@ import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
+import { useCreatePublication } from "../../api";
 import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
@@ -31,38 +36,15 @@ import {
   VALIDATION_SCHEMA,
 } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
-import {
-  useCreatePublication,
-  useGetLocals,
-  useGetMirrors,
-  useGetPublicationTargets,
-} from "../../api";
-
-interface SelectableSource {
-  label: string;
-  value: string;
-  sourceType: string;
-  distribution?: string;
-  component?: string;
-  components: string[];
-  architectures: string[];
-}
-
-const stripResourcePrefix = (value?: string, prefix?: string) => {
-  if (!value || !prefix) {
-    return value ?? "";
-  }
-
-  return value.startsWith(prefix) ? value.slice(prefix.length) : value;
-};
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { createPageParamsSetter } = usePageParams();
   const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
-  const { mirrors, isGettingMirrors } = useGetMirrors();
-  const { locals, isGettingLocals } = useGetLocals();
+  const { data: mirrorsData } = useListMirrors();
+  const { repositories: locals, isGettingRepositories: isGettingLocals } =
+    useGetLocalRepositories();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
@@ -87,31 +69,29 @@ const AddPublicationForm: FC = () => {
     },
   });
 
+  const mirrors = useMemo(() => mirrorsData?.data.mirrors ?? [], [mirrorsData]);
+
   const mirrorSources = useMemo<SelectableSource[]>(
     () =>
-      mirrors
-        .filter((mirror) => Boolean(mirror.name))
-        .map((mirror) => ({
-          label: mirror.displayName,
-          value: stripResourcePrefix(mirror.name, "mirrors/"),
-          sourceType: SOURCE_TYPE_MIRROR,
-          distribution: mirror.distribution,
-          architectures: mirror.architectures ?? [],
-        })),
+      mirrors.map((mirror) => ({
+        label: mirror.displayName,
+        value: stripResourcePrefix(mirror.name, "mirrors/"),
+        sourceType: SOURCE_TYPE_MIRROR,
+        distribution: mirror.distribution,
+        architectures: mirror.architectures ?? [],
+      })),
     [mirrors],
   );
 
   const localSources = useMemo<SelectableSource[]>(
     () =>
-      locals
-        .filter((localSource) => Boolean(localSource.name))
-        .map((localSource) => ({
-          label: localSource.displayName,
-          value: stripResourcePrefix(localSource.name, "locals/"),
-          sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
-          distribution: localSource.defaultDistribution,
-          architectures: [],
-        })),
+      locals.map((localSource) => ({
+        label: localSource.display_name,
+        value: stripResourcePrefix(localSource.name, "locals/"),
+        sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
+        distribution: localSource.distribution,
+        architectures: [],
+      })),
     [locals],
   );
 
@@ -142,20 +122,20 @@ const AddPublicationForm: FC = () => {
   const isLocalSourceType =
     formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY;
 
-  const isGettingSources = isGettingLocals || isGettingMirrors;
+  const isGettingSources =
+    formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY &&
+    isGettingLocals;
 
   const publicationTargetOptions = useMemo<SelectOption[]>(
     () => [
       { label: "Select publication target", value: "" },
-      ...publicationTargets
-        .filter((publicationTarget) => Boolean(publicationTarget.name))
-        .map((publicationTarget) => ({
-          label: publicationTarget.displayName,
-          value: stripResourcePrefix(
-            publicationTarget.name,
-            "publicationTargets/",
-          ),
-        })),
+      ...publicationTargets.map((publicationTarget) => ({
+        label: publicationTarget.displayName,
+        value: stripResourcePrefix(
+          publicationTarget.name,
+          "publicationTargets/",
+        ),
+      })),
     ],
     [publicationTargets],
   );
@@ -296,26 +276,12 @@ const AddPublicationForm: FC = () => {
           )}
           containerClassName={classes.section}
         >
-          <label
-            className="p-form__label is-required"
-            htmlFor="uploader_distribution"
-          >
-            Distribution
-          </label>
-          <div
-            className={classNames(
-              "u-no-margin--bottom",
-              classes.derivedDistribution,
-            )}
-          >
-            <span
-              className={classes.derivedDistributionValue}
-              id="uploader_distribution"
-            >
-              {formik.values.uploader_distribution}
-            </span>
-            <Icon name="lock-locked" aria-hidden />
-          </div>
+          <ReadOnlyField
+            label="Distribution"
+            required
+            value={formik.values.uploader_distribution}
+            tooltipMessage="The distribution is derived from the selected source."
+          />
 
           {!isLocalSourceType && (
             <Select
@@ -417,6 +383,7 @@ const AddPublicationForm: FC = () => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting || isCreatingPublication}
         submitButtonText="Add publication"
+        onCancel={closePanel}
       />
     </Form>
   );

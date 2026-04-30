@@ -1,9 +1,9 @@
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { boolToLabel } from "@/utils/output";
+import type { Publication } from "@canonical/landscape-openapi";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
-import type { Publication } from "../../types";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 
@@ -44,7 +44,7 @@ const PublicationDetails = ({
             className="p-segmented-control__button"
             onClick={openRepublishModal}
             hasIcon
-            aria-label={`Republish ${publication.label}`}
+            aria-label={`Republish ${publication.displayName}`}
           >
             <Icon name="upload" />
             <span>Republish</span>
@@ -55,7 +55,7 @@ const PublicationDetails = ({
             className="p-segmented-control__button"
             onClick={openRemoveModal}
             hasIcon
-            aria-label={`Remove ${publication.label}`}
+            aria-label={`Remove ${publication.displayName}`}
           >
             <Icon name={`${ICONS.delete}--negative`} />
             <span className="u-text--negative">Remove</span>
@@ -66,7 +66,7 @@ const PublicationDetails = ({
       <Blocks>
         <Blocks.Item title="Details" titleClassName="p-text--small-caps">
           <InfoGrid dense>
-            <InfoGrid.Item label="Name" large value={publication.label} />
+            <InfoGrid.Item label="Name" large value={publication.displayName} />
 
             <InfoGrid.Item label="Source" value={sourceDisplayName} />
 
@@ -91,7 +91,7 @@ const PublicationDetails = ({
             <InfoGrid.Item
               label="Architectures"
               large
-              value={publication.architectures.join(", ")}
+              value={publication.architectures?.join(", ")}
             />
           </InfoGrid>
         </Blocks.Item>

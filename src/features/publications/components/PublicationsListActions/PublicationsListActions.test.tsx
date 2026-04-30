@@ -8,7 +8,7 @@ import PublicationsListActions from "./PublicationsListActions";
 describe("PublicationsListActions", () => {
   const user = userEvent.setup();
   const [publication] = publications;
-  const publicationLabel = publication.label;
+  const publicationLabel = publication.displayName;
 
   it("shows all dropdown actions", async () => {
     renderWithProviders(<PublicationsListActions publication={publication} />);

@@ -3,9 +3,9 @@ import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import type { Publication } from "../../types";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
+import type { Publication } from "@canonical/landscape-openapi";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -15,7 +15,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
 }) => {
   const { createPageParamsSetter } = usePageParams();
-  const publicationLabel = publication.label;
+  const publicationDisplayName = publication.displayName;
 
   const {
     value: isRemoveModalOpen,
@@ -33,7 +33,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
-      "aria-label": `View details of "${publicationLabel}" publication`,
+      "aria-label": `View details of "${publicationDisplayName}" publication`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
         name: publication.publicationId,
@@ -42,7 +42,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "upload",
       label: "Republish",
-      "aria-label": `Republish "${publicationLabel}" publication`,
+      "aria-label": `Republish "${publicationDisplayName}" publication`,
       onClick: openRepublishModal,
     },
   ];
@@ -51,7 +51,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${publicationLabel}" publication`,
+      "aria-label": `Remove "${publicationDisplayName}" publication`,
       onClick: openRemovalModal,
     },
   ];
@@ -59,7 +59,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${publicationLabel} actions`}
+        toggleAriaLabel={`${publicationDisplayName} actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />

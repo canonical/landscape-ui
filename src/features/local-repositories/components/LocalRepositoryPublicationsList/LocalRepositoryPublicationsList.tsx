@@ -1,11 +1,11 @@
-import { ROUTES } from "@/libs/routes";
-import type { Publication } from "@/features/publications";
-import { useMemo, type FC } from "react";
-import StaticLink from "@/components/layout/StaticLink";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import type { Column, CellProps } from "react-table";
-import usePageParams from "@/hooks/usePageParams";
+import StaticLink from "@/components/layout/StaticLink";
 import { TablePagination } from "@/components/layout/TablePagination";
+import usePageParams from "@/hooks/usePageParams";
+import { ROUTES } from "@/libs/routes";
+import type { Publication } from "@canonical/landscape-openapi";
+import { useMemo, type FC } from "react";
+import type { CellProps, Column } from "react-table";
 
 interface LocalRepositoryPublicationsListProps {
   readonly publications: Publication[];

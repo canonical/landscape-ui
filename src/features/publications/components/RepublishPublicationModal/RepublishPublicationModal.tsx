@@ -2,8 +2,8 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import type { Publication } from "../../types";
 import { usePublishPublication } from "../../api";
+import type { Publication } from "@canonical/landscape-openapi";
 
 interface RepublishPublicationModalProps {
   readonly publication: Publication;
@@ -24,12 +24,12 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
   const handleRepublishPublication = async () => {
     try {
       await publishPublication({
-        publicationName: publication.name,
+        publicationName: publication.name ?? "", // TODO: change when the api is updated
         body: { forceOverwrite: true, forceCleanup: true },
       });
 
       notify.success({
-        title: `You have marked ${publication.label} to be republished`,
+        title: `You have marked ${publication.displayName} to be republished`,
         message:
           "This publication has been queued for republishing to the designated target.",
       });
@@ -48,7 +48,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
     <ConfirmationModal
       renderInPortal
       close={close}
-      title={`Republish ${publication.label}`}
+      title={`Republish ${publication.displayName}`}
       confirmButtonLabel="Republish"
       confirmButtonAppearance="positive"
       confirmButtonLoading={isPublishingPublication}

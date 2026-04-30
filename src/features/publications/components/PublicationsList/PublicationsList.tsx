@@ -6,13 +6,13 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import type { Publication } from "../../types";
 import PublicationsListActions from "../PublicationsListActions";
 import {
   getPublicationTargetName,
   getSourceName,
   getSourceType,
 } from "../../helpers";
+import type { Publication } from "@canonical/landscape-openapi";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -42,7 +42,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
               name: row.original.publicationId,
             })}
           >
-            {row.original.label}
+            {row.original.displayName}
           </Button>
         ),
       },

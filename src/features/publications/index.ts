@@ -1,9 +1,12 @@
-export { useAddPublication, usePublishPublication } from "./api";
+export {
+  usePublishPublication,
+  useCreatePublication,
+  useGetPublications,
+} from "./api";
 export { default as PublicationsContainer } from "./components/PublicationsContainer";
 export { default as AddPublicationButton } from "./components/AddPublicationButton";
 export { default as AddPublicationForm } from "./components/AddPublicationForm";
 export { default as PublicationDetails } from "./components/PublicationDetails";
 export { default as PublicationDetailsSidePanel } from "./components/PublicationDetailsSidePanel";
-export type { Publication, PublicationTarget, Local, Mirror } from "./types";
-export { getSourceName, getSourceType } from "./helpers";
 export { default as AssociatedPublicationsList } from "./components/AssociatedPublicationsList";
+export { getSourceName, getSourceType } from "./helpers";

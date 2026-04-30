@@ -6,11 +6,14 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
-import type { PublicationTarget } from "../../types";
 import RemoveTargetForm from "../RemoveTargetForm";
 import Blocks from "@/components/layout/Blocks/Blocks";
-import { getTargetType, TARGET_TYPE_LABELS } from "../EditTargetForm/EditTargetForm";
+import {
+  getTargetType,
+  TARGET_TYPE_LABELS,
+} from "../EditTargetForm/EditTargetForm";
 import { AssociatedPublicationsList } from "@/features/publications";
+import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
@@ -94,12 +97,14 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
         <Blocks.Item title="General">
           <InfoGrid dense>
             <InfoGrid.Item label="Name" value={target.displayName} />
-            <InfoGrid.Item label="Type" value={TARGET_TYPE_LABELS[getTargetType(target)]} />
+            <InfoGrid.Item
+              label="Type"
+              value={TARGET_TYPE_LABELS[getTargetType(target)]}
+            />
           </InfoGrid>
         </Blocks.Item>
         <Blocks.Item title="Details">
-        <InfoGrid dense>
-
+          <InfoGrid dense>
             {s3Fields && (
               <>
                 <InfoGrid.Item label="Region" value={s3Fields.region} />
@@ -127,25 +132,44 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
             {swiftFields && (
               <>
-                <InfoGrid.Item label="Auth URL" large value={swiftFields.authUrl} />
-                <InfoGrid.Item label="Container" value={swiftFields.container} />
+                <InfoGrid.Item
+                  label="Auth URL"
+                  large
+                  value={swiftFields.authUrl}
+                />
+                <InfoGrid.Item
+                  label="Container"
+                  value={swiftFields.container}
+                />
                 <InfoGrid.Item label="Prefix" value={swiftFields.prefix} />
                 <InfoGrid.Item label="Tenant" value={swiftFields.tenant} />
                 <InfoGrid.Item label="Tenant ID" value={swiftFields.tenantId} />
                 <InfoGrid.Item label="Domain" value={swiftFields.domain} />
                 <InfoGrid.Item label="Domain ID" value={swiftFields.domainId} />
-                <InfoGrid.Item label="Tenant domain" value={swiftFields.tenantDomain} />
-                <InfoGrid.Item label="Tenant domain ID" value={swiftFields.tenantDomainId} />
+                <InfoGrid.Item
+                  label="Tenant domain"
+                  value={swiftFields.tenantDomain}
+                />
+                <InfoGrid.Item
+                  label="Tenant domain ID"
+                  value={swiftFields.tenantDomainId}
+                />
               </>
             )}
 
             {filesystemFields && (
               <>
-                <InfoGrid.Item label="Path" large value={filesystemFields.path} />
-                <InfoGrid.Item label="Link method" value={filesystemFields.linkMethod} />
+                <InfoGrid.Item
+                  label="Path"
+                  large
+                  value={filesystemFields.path}
+                />
+                <InfoGrid.Item
+                  label="Link method"
+                  value={filesystemFields.linkMethod}
+                />
               </>
             )}
-
           </InfoGrid>
         </Blocks.Item>
 

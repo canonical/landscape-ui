@@ -24,7 +24,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "../../../../types";
 import {
-  useAddPublication,
+  useCreatePublication,
   usePublishPublication,
 } from "@/features/publications";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
@@ -41,7 +41,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
-  const { addPublication, isAddingPublication } = useAddPublication();
+  const { createPublication, isCreatingPublication } = useCreatePublication();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
@@ -62,22 +62,28 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   };
 
   const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
-    const valuesforCreation = {
-      publication_target: values.publication_target,
-      source: repository.name,
-      distribution: repository.distribution,
-      hash_indexing: values.hash_indexing,
-      automatic_installation: values.automatic_installation,
-      automatic_upgrades: values.automatic_upgrades,
-      skip_bz2: values.skip_bz2,
-      skip_content_indexing: values.skip_content_indexing,
-      gpg_key: values.signing_key,
-    };
-
     try {
-      const { data: publication } = await addPublication(valuesforCreation);
+      const { data: publication } = await createPublication({
+        body: {
+          displayName: values.name,
+          publicationTarget: values.publication_target,
+          source: repository.name,
+          distribution: repository.distribution,
+          acquireByHash: values.hash_indexing,
+          notAutomatic: !values.automatic_installation,
+          butAutomaticUpgrades: values.automatic_upgrades,
+          skipBz2: values.skip_bz2,
+          skipContents: values.skip_content_indexing,
+          gpgKey: values.signing_key
+            ? { armor: values.signing_key }
+            : undefined,
+        },
+      });
 
-      await publishPublication({ name: publication.name });
+      await publishPublication({
+        publicationName: publication.name ?? "", // TODO change to use non-null assertion after fixing the API to return the publication name in the response
+        body: { forceOverwrite: true, forceCleanup: true },
+      });
 
       closeSidePanel();
 
@@ -103,7 +109,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
       { label: "Select publication target", value: "" },
       ...publicationTargets.map((publicationTarget) => ({
         label: publicationTarget.displayName,
-        value: publicationTarget.name,
+        value: publicationTarget.name ?? "", // TODO change when API is fixed to return the name as non undefined
       })),
     ],
     [publicationTargets],
@@ -222,7 +228,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
       <SidePanelFormButtons
         submitButtonDisabled={!formik.isValid}
         submitButtonLoading={
-          formik.isSubmitting || isAddingPublication || isPublishingPublication
+          formik.isSubmitting ||
+          isCreatingPublication ||
+          isPublishingPublication
         }
         submitButtonText="Publish repository"
         onCancel={closeSidePanel}

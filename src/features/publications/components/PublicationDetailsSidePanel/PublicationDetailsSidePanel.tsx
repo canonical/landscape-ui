@@ -1,13 +1,10 @@
 import SidePanel from "@/components/layout/SidePanel";
+import { useBatchGetLocals } from "@/features/local-repositories";
+import { useBatchGetMirrors } from "@/features/mirrors";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useMemo } from "react";
-import {
-  useBatchGetLocals,
-  useBatchGetMirrors,
-  useBatchGetPublicationTargets,
-  useGetPublication,
-} from "../../api";
+import { useBatchGetPublicationTargets, useGetPublication } from "../../api";
 import { getPublicationTargetName, getSourceName } from "../../helpers";
 import PublicationDetails from "../PublicationDetails";
 
@@ -47,7 +44,7 @@ const PublicationDetailsSidePanel: FC = () => {
 
   return (
     <>
-      <SidePanel.Header>{publication.label}</SidePanel.Header>
+      <SidePanel.Header>{publication.displayName}</SidePanel.Header>
       <SidePanel.Content>
         <PublicationDetails
           publication={publication}
