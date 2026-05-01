@@ -12,8 +12,8 @@ export const getMessage = (type: ProfileTypes) => {
       return "Removal profiles let you automatically remove client instances from Landscape that haven't communicated with the Landscape server in a specified number of days. This helps Landscape keep license seats open and avoid tracking stale or retired data for long periods of time.";
     case ProfileTypes.script:
       return "Script profiles let you automate your script runs based on triggers. Triggers can be either a recurring schedule, on a set date, or after enrollment.";
-    case ProfileTypes.security:
-      return "Add a security profile to ensure security and compliance across your instances. Security profile audits aggregate audit results over time and in bulk, helping you align with tailored security benchmarks, run scheduled audits, and generate detailed audits for your estate.";
+    case ProfileTypes.usg:
+      return "Add a USG profile to ensure security and compliance across your instances. USG profile audits aggregate audit results over time and in bulk, helping you align with tailored security benchmarks, run scheduled audits, and generate detailed audits for your estate.";
     case ProfileTypes.upgrade:
       return "Upgrade profiles let you schedule when upgrades should be automatically installed on associated instances.";
     case ProfileTypes.wsl:
@@ -25,8 +25,8 @@ export const getLink = (type: ProfileTypes) => {
   switch (type) {
     case ProfileTypes.repository:
       return "https://documentation.ubuntu.com/landscape/how-to-guides/repository-mirrors/manage-repositories-in-the-web-portal/#create-a-repository-profile-and-associate-client-machines-to-the-profile";
-    case ProfileTypes.security:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/security/use-security-profiles/#how-to-web-portal-use-security-profiles";
+    case ProfileTypes.usg:
+      return "https://documentation.ubuntu.com/landscape/how-to-guides/security/use-usg-profiles/#how-to-web-portal-use-usg-profiles";
     case ProfileTypes.wsl:
       return "https://documentation.ubuntu.com/landscape/how-to-guides/wsl-integration/use-wsl-profiles/#how-to-use-wsl-profiles";
     default:

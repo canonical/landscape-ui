@@ -71,7 +71,7 @@ function setupLanguage(
     usgStatuses?: readonly string[];
     wslStatuses?: readonly string[];
   } = {
-    profileTypes: ["security", "wsl", "script"],
+    profileTypes: ["usg", "wsl", "script"],
     usgStatuses: ["pass", "fail"],
     wslStatuses: ["compliant", "noncompliant"],
   },
@@ -348,7 +348,7 @@ describe("completion provider - value context (colon in token)", () => {
 
 describe("completion provider - profile deep suggestions", () => {
   const config = {
-    profileTypes: ["security", "wsl", "script"],
+    profileTypes: ["usg", "wsl", "script"],
     usgStatuses: ["pass", "fail"],
     wslStatuses: ["compliant", "noncompliant"],
   };
@@ -360,20 +360,20 @@ describe("completion provider - profile deep suggestions", () => {
     expect(suggestions[0]).toMatchObject({ detail: "Profile Type", kind: 2 });
   });
 
-  it("returns <profile_id> Text placeholder at depth 2 (profile:security:)", () => {
+  it("returns <profile_id> Text placeholder at depth 2 (profile:usg:)", () => {
     const { provider } = setupLanguage(["profile"], config);
-    const suggestions = callProvider(provider, "profile:security:");
+    const suggestions = callProvider(provider, "profile:usg:");
     expect(suggestions).toHaveLength(1);
     expect(suggestions[0]).toMatchObject({
       label: "<profile_id>",
-      detail: "ID for security",
+      detail: "ID for usg",
       kind: 4,
     });
   });
 
-  it("returns USG statuses at depth 3 for profile:security:id:", () => {
+  it("returns USG statuses at depth 3 for profile:usg:id:", () => {
     const { provider } = setupLanguage(["profile"], config);
-    const suggestions = callProvider(provider, "profile:security:1:");
+    const suggestions = callProvider(provider, "profile:usg:1:");
     expect(suggestions.map((s) => s.label)).toEqual(config.usgStatuses);
     expect(suggestions[0]).toMatchObject({ detail: "Audit Result" });
   });
@@ -385,7 +385,7 @@ describe("completion provider - profile deep suggestions", () => {
     expect(suggestions[0]).toMatchObject({ detail: "Compliance Status" });
   });
 
-  it("returns empty suggestions at depth 3 for non-security/wsl profile types", () => {
+  it("returns empty suggestions at depth 3 for non-usg/wsl profile types", () => {
     const { provider } = setupLanguage(["profile"], config);
     const suggestions = callProvider(provider, "profile:script:1:");
     expect(suggestions).toHaveLength(0);
@@ -393,11 +393,11 @@ describe("completion provider - profile deep suggestions", () => {
 
   it("returns empty suggestions at depth 3 when usgStatuses config is empty", () => {
     const { provider } = setupLanguage(["profile"], {
-      profileTypes: ["security"],
+      profileTypes: ["usg"],
       usgStatuses: [],
       wslStatuses: [],
     });
-    const suggestions = callProvider(provider, "profile:security:1:");
+    const suggestions = callProvider(provider, "profile:usg:1:");
     expect(suggestions).toHaveLength(0);
   });
 

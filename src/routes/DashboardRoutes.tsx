@@ -70,10 +70,10 @@ export const DashboardRoutes = (
         />
 
         <Route
-          path={PATHS.profiles.security}
+          path={PATHS.profiles.usg}
           element={
             <FeatureGuard feature="usg-profiles">
-              <Pages.SecurityProfilesPage />
+              <Pages.USGProfilesPage />
             </FeatureGuard>
           }
         />

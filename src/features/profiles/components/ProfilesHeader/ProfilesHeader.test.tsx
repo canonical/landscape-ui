@@ -24,7 +24,7 @@ describe("ProfilesHeader", () => {
   });
 
   it("renders security status filter and pass rate filter", async () => {
-    renderWithProviders(<ProfilesHeader type={ProfileTypes.security} />);
+    renderWithProviders(<ProfilesHeader type={ProfileTypes.usg} />);
 
     expect(screen.getByRole("searchbox")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Status" })).toBeInTheDocument();

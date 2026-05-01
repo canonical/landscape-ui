@@ -153,12 +153,12 @@ const validateProfileToken = (
     return keyError(key, "ID must be a number.");
   }
 
-  if (type === "security" || type === "wsl") {
+  if (type === "usg" || type === "wsl") {
     if (!status) {
       return keyError(`${key}:${type}`, "requires a status.");
     }
 
-    if (type === "security" && !isUsgStatus(status, allowedUsgStatuses)) {
+    if (type === "usg" && !isUsgStatus(status, allowedUsgStatuses)) {
       return keyError(
         `${key}:${type}`,
         `has invalid security status "${status}".`,

@@ -7,7 +7,7 @@ import {
   isProfileArchived,
   isRebootProfile,
   isScriptProfile,
-  isSecurityProfile,
+  isUsgProfile,
   isUpgradeProfile,
 } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
@@ -71,7 +71,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
           />
         )}
 
-        {isSecurityProfile(profile) && profile.mode == "audit-fix-restart" && (
+        {isUsgProfile(profile) && profile.mode == "audit-fix-restart" && (
           <InfoGrid.Item
             label="Restart schedule"
             large

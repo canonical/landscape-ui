@@ -39,7 +39,7 @@ export const VALID_ROOT_KEYS = [
   "last-ping",
 ] as const;
 export const PROFILE_TYPES = [
-  "security",
+  "usg",
   "wsl",
   "script",
   "repository",

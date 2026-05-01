@@ -28,8 +28,8 @@ export const getTo = (profile: Profile) => {
         sidePath: ["view"],
         name: profile.id.toString() || "",
       });
-    case "security":
-      return ROUTES.profiles.security({
+    case "usg":
+      return ROUTES.profiles.usg({
         sidePath: ["view"],
         name: profile.id.toString() || "",
       });

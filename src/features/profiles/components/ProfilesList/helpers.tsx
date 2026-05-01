@@ -7,7 +7,7 @@ import {
   isRebootProfile,
   isRemovalProfile,
   isScriptProfile,
-  isSecurityProfile,
+  isUsgProfile,
   isWslProfile,
   type ProfileTypes,
 } from "../../helpers";
@@ -24,22 +24,22 @@ import { ROUTES } from "@/libs/routes";
 import type { AxiosResponse } from "axios";
 import type { ScriptProfile } from "@/features/script-profiles";
 import {
-  type SecurityProfile,
-  SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
-  SECURITY_PROFILE_MODE_LABELS,
-  SecurityProfileAuditPassRate,
-  SecurityProfileLastRunWithSchedule,
-} from "@/features/security-profiles";
+  type USGProfile,
+  USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT,
+  USG_PROFILE_MODE_LABELS,
+  USGProfileAuditPassRate,
+  USGProfileLastRunWithSchedule,
+} from "@/features/usg-profiles";
 import AssociatedInstancesCell from "./components/AssociatedInstancesCell";
 
-const getStatus = (profile: ScriptProfile | SecurityProfile) => {
+const getStatus = (profile: ScriptProfile | USGProfile) => {
   if (isProfileArchived(profile)) {
     return { label: "Archived", icon: "status-queued-small" };
   }
 
   if (
-    isSecurityProfile(profile) &&
-    profile.associated_instances > SECURITY_PROFILE_ASSOCIATED_INSTANCES_LIMIT
+    isUsgProfile(profile) &&
+    profile.associated_instances > USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT
   ) {
     return {
       label: (
@@ -125,17 +125,17 @@ export const getGeneralColumns = (
 
 export const getStatusColumn = (): Column<Profile> => ({
   Header: "Status",
-  accessor: (row) => (isSecurityProfile(row) ? "status" : "archived"),
+  accessor: (row) => (isUsgProfile(row) ? "status" : "archived"),
   meta: {
     ariaLabel: ({ original: profile }) => `"${profile.title}" profile status`,
   },
   getCellIcon: ({ row: { original: profile } }: CellProps<Profile>) => {
-    if (isSecurityProfile(profile) || isScriptProfile(profile)) {
+    if (isUsgProfile(profile) || isScriptProfile(profile)) {
       return getStatus(profile).icon;
     }
   },
   Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-    if (isSecurityProfile(profile) || isScriptProfile(profile)) {
+    if (isUsgProfile(profile) || isScriptProfile(profile)) {
       return getStatus(profile).label;
     }
   },
@@ -183,7 +183,7 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
   },
 ];
 
-export const getSecurityColumns = (): Column<Profile>[] => [
+export const getUsgColumns = (): Column<Profile>[] => [
   {
     accessor: "last_run_results",
     className: "medium-cell",
@@ -193,8 +193,8 @@ export const getSecurityColumns = (): Column<Profile>[] => [
         `"${profile.title}" profile last audit pass rate`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isSecurityProfile(profile)) {
-        return <SecurityProfileAuditPassRate profile={profile} />;
+      if (isUsgProfile(profile)) {
+        return <USGProfileAuditPassRate profile={profile} />;
       }
     },
   },
@@ -212,8 +212,8 @@ export const getSecurityColumns = (): Column<Profile>[] => [
         `"${profile.title}" profile last run and schedule`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isSecurityProfile(profile)) {
-        return <SecurityProfileLastRunWithSchedule profile={profile} />;
+      if (isUsgProfile(profile)) {
+        return <USGProfileLastRunWithSchedule profile={profile} />;
       }
     },
   },
@@ -224,8 +224,8 @@ export const getSecurityColumns = (): Column<Profile>[] => [
       ariaLabel: ({ original: profile }) => `"${profile.title}" profile mode`,
     },
     Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
-      if (isSecurityProfile(profile)) {
-        return SECURITY_PROFILE_MODE_LABELS[profile.mode];
+      if (isUsgProfile(profile)) {
+        return USG_PROFILE_MODE_LABELS[profile.mode];
       }
     },
   },

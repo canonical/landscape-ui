@@ -8,7 +8,7 @@ import ProfilesList from "./ProfilesList";
 
 const profiles: Profile[] = [
   { id: 1, name: "profile-1", title: "Profile One", type: "package" },
-  { id: 2, name: "profile-2", title: "Profile Two", type: "security" },
+  { id: 2, name: "profile-2", title: "Profile Two", type: "usg" },
 ];
 
 const instanceWithProfiles = { ...ubuntuInstance, profiles };

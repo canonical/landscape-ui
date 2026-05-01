@@ -17,8 +17,8 @@ const PROFILES_SUBMENU: MenuItem[] = [
     requiresFeature: "wsl-child-instance-profiles",
   },
   {
-    label: "Security profiles",
-    path: ROUTES.profiles.security(),
+    label: "USG profiles",
+    path: ROUTES.profiles.usg(),
     requiresFeature: "usg-profiles",
   },
 ];

@@ -76,7 +76,7 @@ const getProfileSuggestions = (
   }
 
   if (depth === 3) {
-    if (profileType === "security" && config.usgStatuses.length > 0) {
+    if (profileType === "usg" && config.usgStatuses.length > 0) {
       return config.usgStatuses.map((s) => createItem(s, "Audit Result"));
     }
     if (profileType === "wsl" && config.wslStatuses.length > 0) {

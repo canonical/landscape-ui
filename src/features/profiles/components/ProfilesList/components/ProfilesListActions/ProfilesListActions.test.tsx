@@ -7,7 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { profiles } from "@/tests/mocks/profiles";
 
 const actionLabels = {
-  security: [
+  usg: [
     "View details",
     "Edit",
     "Download audit",
@@ -25,7 +25,7 @@ const actionLabels = {
   reboot: ["View details", "Edit", "Duplicate", "Remove"],
   script: ["View details", "Edit", "Archive"],
   default: ["View details", "Edit", "Remove"],
-  archivedSecurity: ["View details", "Download audit", "Duplicate"],
+  archivedUsg: ["View details", "Download audit", "Duplicate"],
   archivedScript: ["View details"],
 };
 
@@ -81,10 +81,10 @@ describe("ProfilesListActions", () => {
   it.each([
     ["default", baseProfile, ProfileTypes.repository, actionLabels.default],
     [
-      "security",
+      "usg",
       { ...baseProfile, benchmark: "cis_level1_workstation" },
-      ProfileTypes.security,
-      actionLabels.security,
+      ProfileTypes.usg,
+      actionLabels.usg,
     ],
     [
       "reboot",
@@ -119,14 +119,14 @@ describe("ProfilesListActions", () => {
       actionLabels.script,
     ],
     [
-      "archived security",
+      "archived usg",
       {
         ...baseProfile,
         benchmark: "cis_level1_workstation",
         status: "archived",
       },
-      ProfileTypes.security,
-      actionLabels.archivedSecurity,
+      ProfileTypes.usg,
+      actionLabels.archivedUsg,
     ],
     [
       "archived script",

@@ -3,7 +3,7 @@ export type ProfileType =
   | "reboot"
   | "removal"
   | "repository"
-  | "security"
+  | "usg"
   | "script"
   | "upgrade"
   | "wsl";
