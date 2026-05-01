@@ -16,7 +16,7 @@ import { useFormik } from "formik";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
 import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
-import { useGetOperation } from "../../api/useGetOperation";
+import { useGetOperation } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralizeWithCount } from "@/utils/_helpers";
