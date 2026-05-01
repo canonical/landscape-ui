@@ -32,7 +32,7 @@ export interface SwiftFormValues {
 
 export interface FilesystemFormValues {
   path: string;
-  linkMethod: FilesystemTargetLinkMethod | "";
+  linkMethod: FilesystemTargetLinkMethod;
 }
 
 export interface AddPublicationTargetFormValues {
@@ -73,7 +73,7 @@ export const SWIFT_INITIAL_VALUES: SwiftFormValues = {
 
 export const FILESYSTEM_INITIAL_VALUES: FilesystemFormValues = {
   path: "",
-  linkMethod: "",
+  linkMethod: "HARDLINK",
 };
 
 export const INITIAL_VALUES: AddPublicationTargetFormValues = {

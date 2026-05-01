@@ -29,7 +29,7 @@ export interface EditTargetFormValues {
   tenantDomainId: string;
   // Filesystem
   path: string;
-  linkMethod: FilesystemTargetLinkMethod | "";
+  linkMethod: FilesystemTargetLinkMethod;
 }
 
 export const EMPTY_VALUES: EditTargetFormValues = {
@@ -57,7 +57,7 @@ export const EMPTY_VALUES: EditTargetFormValues = {
   tenantDomain: "",
   tenantDomainId: "",
   path: "",
-  linkMethod: "",
+  linkMethod: "HARDLINK",
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
