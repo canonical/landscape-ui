@@ -160,11 +160,7 @@ describe("AvailableProviderList", () => {
 
   it("should handle external search param for Ubuntu One redirect", async () => {
     const { AvailableProviderList } = await import("./AvailableProviderList");
-    renderWithProviders(
-      <AvailableProviderList {...props} />,
-      {},
-      "/?external",
-    );
+    renderWithProviders(<AvailableProviderList {...props} />, {}, "/?external");
 
     const ubuntuButton = await screen.findByRole("button", {
       name: /Sign in with Ubuntu One/i,

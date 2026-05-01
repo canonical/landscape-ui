@@ -62,7 +62,11 @@ describe("InvitesPanel", () => {
     await expectLoadingState();
 
     const revokeButtons = screen.getAllByRole("button", { name: /revoke/i });
-    await user.click(revokeButtons[0]);
+    const [revokeButton] = revokeButtons;
+
+    assert(revokeButton);
+
+    await user.click(revokeButton);
 
     const dialog = await screen.findByRole("dialog");
     expect(dialog).toBeInTheDocument();
@@ -82,8 +86,16 @@ describe("InvitesPanel", () => {
 
     await expectLoadingState();
 
-    // "kasgkjhas" ends in 's'; find its row and click Revoke
-    const row = screen.getByText("kasgkjhas").closest("tr")!;
+    const invitationEndingInS = invitations.find((inv) =>
+      inv.name.endsWith("s"),
+    )?.name;
+
+    assert(invitationEndingInS);
+
+    const row = screen.getByText(invitationEndingInS).closest("tr");
+
+    assert(row);
+
     const revokeButton = within(row).getByRole("button", { name: /revoke/i });
     await user.click(revokeButton);
 
@@ -95,12 +107,15 @@ describe("InvitesPanel", () => {
 
     // Success notification appears — the name ends in 's', so no trailing 's' after apostrophe
     await screen.findByText(/you revoked an administrator invite/i);
-    // Verify the message text: "kasgkjhas'" not "kasgkjhas's"
     expect(
-      screen.getByText((text) => text.includes("kasgkjhas") && text.includes("invitation has been revoked")),
+      screen.getByText(
+        (text) =>
+          text.includes(invitationEndingInS) &&
+          text.includes("invitation has been revoked"),
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText((text) => text.includes("kasgkjhas's")),
+      screen.queryByText((text) => text.includes(`${invitationEndingInS}'s`)),
     ).not.toBeInTheDocument();
   });
 
@@ -110,7 +125,11 @@ describe("InvitesPanel", () => {
     await expectLoadingState();
 
     const resendButtons = screen.getAllByRole("button", { name: /resend/i });
-    await user.click(resendButtons[0]);
+    const [resendButton] = resendButtons;
+
+    assert(resendButton);
+
+    await user.click(resendButton);
 
     const dialog = await screen.findByRole("dialog");
     expect(dialog).toBeInTheDocument();

@@ -119,7 +119,9 @@ describe("LoginPage", () => {
 
     // After queries complete, navigate to /create-account is triggered
     await waitFor(() => {
-      expect(screen.getByTestId("location")).toHaveTextContent("create-account");
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "create-account",
+      );
     });
   });
 

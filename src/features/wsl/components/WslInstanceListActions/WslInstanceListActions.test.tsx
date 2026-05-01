@@ -26,7 +26,10 @@ const renderActions = (
 
 describe("WslInstanceListActions", () => {
   it("renders nothing when compliance is pending", () => {
-    const pendingInstance = { ...compliantInstanceChild, compliance: "pending" } as const;
+    const pendingInstance = {
+      ...compliantInstanceChild,
+      compliance: "pending",
+    } as const;
     renderActions(pendingInstance);
     expect(
       screen.queryByLabelText(`${pendingInstance.name} instance actions`),
@@ -151,7 +154,8 @@ describe("WslInstanceListActions", () => {
   });
 
   it("shows error when set as default fails", async () => {
-    const { setEndpointStatus } = await import("@/tests/controllers/controller");
+    const { setEndpointStatus } =
+      await import("@/tests/controllers/controller");
 
     setEndpointStatus({
       status: "error",
@@ -172,7 +176,8 @@ describe("WslInstanceListActions", () => {
   });
 
   it("shows error notification when install fails", async () => {
-    const { setEndpointStatus } = await import("@/tests/controllers/controller");
+    const { setEndpointStatus } =
+      await import("@/tests/controllers/controller");
 
     setEndpointStatus({
       status: "error",
@@ -182,7 +187,9 @@ describe("WslInstanceListActions", () => {
     renderActions(uninstalledInstanceChild);
 
     await userEvent.click(
-      screen.getByLabelText(`${uninstalledInstanceChild.name} instance actions`),
+      screen.getByLabelText(
+        `${uninstalledInstanceChild.name} instance actions`,
+      ),
     );
     await userEvent.click(screen.getByText("Install"));
 

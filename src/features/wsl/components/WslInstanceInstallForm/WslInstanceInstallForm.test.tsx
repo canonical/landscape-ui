@@ -113,7 +113,9 @@ describe("WslInstanceInstallForm", () => {
       screen.getByText(/an activity has been queued to install it/i),
     ).toBeInTheDocument();
 
-    const viewDetailsButton = screen.getByRole("button", { name: /view details/i });
+    const viewDetailsButton = screen.getByRole("button", {
+      name: /view details/i,
+    });
     await userEvent.click(viewDetailsButton);
   });
 
@@ -162,11 +164,9 @@ describe("WslInstanceInstallForm", () => {
   it("submits with a valid cloud-init file", async () => {
     renderForm();
 
-    const validFile = new File(
-      ["cloud-init: true"],
-      "cloud-init.yaml",
-      { type: "text/yaml" },
-    );
+    const validFile = new File(["cloud-init: true"], "cloud-init.yaml", {
+      type: "text/yaml",
+    });
     const fileInput = screen.getByLabelText(/cloud-init/i);
     await userEvent.upload(fileInput, validFile);
 
@@ -181,11 +181,9 @@ describe("WslInstanceInstallForm", () => {
   it("allows removing an uploaded cloud-init file", async () => {
     renderForm();
 
-    const validFile = new File(
-      ["cloud-init: true"],
-      "cloud-init.yaml",
-      { type: "text/yaml" },
-    );
+    const validFile = new File(["cloud-init: true"], "cloud-init.yaml", {
+      type: "text/yaml",
+    });
     const fileInput = screen.getByLabelText(/cloud-init/i);
     await userEvent.upload(fileInput, validFile);
 
@@ -199,7 +197,10 @@ describe("WslInstanceInstallForm", () => {
     renderForm();
 
     const file = new File(["content"], "test.yaml", { type: "text/yaml" });
-    Object.defineProperty(file, "size", { value: undefined, configurable: true });
+    Object.defineProperty(file, "size", {
+      value: undefined,
+      configurable: true,
+    });
 
     const fileInput = screen.getByLabelText(/cloud-init/i);
     await userEvent.upload(fileInput, file);

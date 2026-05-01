@@ -89,7 +89,9 @@ describe("UsnPackagesContainer", () => {
 
     await screen.findByText(/packages affected by/i);
 
-    const showMoreButton = await screen.findByRole("button", { name: /show.*more/i });
+    const showMoreButton = await screen.findByRole("button", {
+      name: /show.*more/i,
+    });
     expect(showMoreButton).toBeInTheDocument();
     await userEvent.click(showMoreButton);
   });
@@ -106,11 +108,12 @@ describe("UsnPackagesContainer", () => {
 
     await screen.findByText(/instances affected by/i);
 
-    const showMoreButton = await screen.findByRole("button", { name: /show.*more/i });
+    const showMoreButton = await screen.findByRole("button", {
+      name: /show.*more/i,
+    });
     expect(showMoreButton).toBeInTheDocument();
     await userEvent.click(showMoreButton);
     // After clicking "Show more", limit increases and more instances load
     expect(screen.getByText(/instances affected by/i)).toBeInTheDocument();
   });
 });
-

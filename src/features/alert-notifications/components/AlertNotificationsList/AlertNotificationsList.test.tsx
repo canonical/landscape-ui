@@ -123,10 +123,7 @@ describe("AlertNotificationsList", () => {
     ];
 
     renderWithProviders(
-      <AlertNotificationsList
-        alerts={unknownAlerts}
-        pendingInstances={[]}
-      />,
+      <AlertNotificationsList alerts={unknownAlerts} pendingInstances={[]} />,
     );
 
     expect(screen.getByText("Some unknown alert")).toBeInTheDocument();

@@ -100,12 +100,16 @@ describe("AvailabilityZoneFilter", () => {
     await userEvent.click(screen.getByRole("button"));
 
     // First select "none"
-    const noneCheckbox = screen.getByRole("checkbox", { name: "Without zones" });
+    const noneCheckbox = screen.getByRole("checkbox", {
+      name: "Without zones",
+    });
     await userEvent.click(noneCheckbox);
     expect(noneCheckbox).toBeChecked();
 
     // Then select a regular zone - this should deselect "none"
-    const zoneACheckbox = screen.getByRole("checkbox", { name: options[0].label });
+    const zoneACheckbox = screen.getByRole("checkbox", {
+      name: options[0].label,
+    });
     await userEvent.click(zoneACheckbox);
     expect(props.onChange).toHaveBeenCalled();
   });
@@ -141,7 +145,8 @@ describe("AvailabilityZoneFilter", () => {
   it("works correctly without an onChange prop", async () => {
     const propsWithoutOnChange: Omit<typeof props, "onChange"> = {
       options: props.options,
-      value: props.value,
+      label: props.label,
+      inline: props.inline,
     };
 
     renderWithProviders(<AvailabilityZoneFilter {...propsWithoutOnChange} />);

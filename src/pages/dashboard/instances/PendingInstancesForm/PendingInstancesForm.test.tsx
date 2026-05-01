@@ -66,8 +66,11 @@ describe("PendingInstancesForm", () => {
     });
 
     // Select instances first
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     expect(screen.getByRole("button", { name: /reject/i })).toBeInTheDocument();
   });
@@ -79,8 +82,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     expect(
       screen.getByRole("button", { name: /approve/i }),
@@ -94,8 +100,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     const approveBtn = screen.getByRole("button", { name: /^approve$/i });
     await user.click(approveBtn);
@@ -114,8 +123,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /^approve$/i }));
 
@@ -131,14 +143,17 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /^approve$/i }));
 
-    await waitFor(() =>
-      { expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: /back/i })).toBeInTheDocument();
+    });
 
     await user.click(screen.getByRole("button", { name: /back/i }));
 
@@ -154,8 +169,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /reject/i }));
 
@@ -171,17 +189,18 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /reject/i }));
 
     const dialog = await screen.findByRole("dialog");
     await user.click(within(dialog).getByRole("button", { name: /^reject$/i }));
 
-    expect(
-      await screen.findByText(/you have rejected/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/you have rejected/i)).toBeInTheDocument();
   });
 
   it("shows approve confirmation modal in approving step", async () => {
@@ -191,8 +210,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /^approve$/i }));
 
@@ -221,8 +243,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /^approve$/i }));
 
@@ -244,9 +269,7 @@ describe("PendingInstancesForm", () => {
       within(dialog).getByRole("button", { name: /^approve$/i }),
     );
 
-    expect(
-      await screen.findByText(/you have approved/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/you have approved/i)).toBeInTheDocument();
   });
 
   it("changes the access group select in approving step", async () => {
@@ -256,8 +279,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /^approve$/i }));
 
@@ -266,7 +292,11 @@ describe("PendingInstancesForm", () => {
     });
 
     // Change the access group select to trigger the onChange handler
-    await user.selectOptions(accessGroupSelect, accessGroupSelect.querySelectorAll("option")[0]);
+    const [firstOption] = accessGroupSelect.querySelectorAll("option");
+
+    assert(firstOption);
+
+    await user.selectOptions(accessGroupSelect, firstOption);
   });
 
   it("shows error notification when reject API fails", async () => {
@@ -278,8 +308,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /reject/i }));
 
@@ -301,8 +334,11 @@ describe("PendingInstancesForm", () => {
       expect(screen.getByRole("table")).toBeInTheDocument();
     });
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await user.click(checkboxes[0]);
+    const [firstCheckbox] = screen.getAllByRole("checkbox");
+
+    assert(firstCheckbox);
+
+    await user.click(firstCheckbox);
 
     await user.click(screen.getByRole("button", { name: /^approve$/i }));
 
@@ -320,7 +356,9 @@ describe("PendingInstancesForm", () => {
     await user.click(approveConfirmBtn);
 
     const dialog = await screen.findByRole("dialog");
-    await user.click(within(dialog).getByRole("button", { name: /^approve$/i }));
+    await user.click(
+      within(dialog).getByRole("button", { name: /^approve$/i }),
+    );
 
     // Error is caught and debug() called — no success notification
     await waitFor(() => {
@@ -328,4 +366,3 @@ describe("PendingInstancesForm", () => {
     });
   });
 });
-

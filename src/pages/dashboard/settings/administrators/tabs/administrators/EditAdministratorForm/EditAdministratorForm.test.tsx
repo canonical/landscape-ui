@@ -100,7 +100,8 @@ describe("EditAdministratorForm", () => {
       btn.textContent?.toLowerCase().includes("remove"),
     );
     expect(confirmButton).toBeDefined();
-    fireEvent.click(confirmButton!);
+    assert(confirmButton);
+    fireEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

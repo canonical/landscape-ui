@@ -188,9 +188,7 @@ describe("PackageList", () => {
       <PackageList {...props} packages={[packageWithAvailableVersion]} />,
     );
 
-    expect(
-      screen.getByText("available version: 8.0"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("available version: 8.0")).toBeInTheDocument();
   });
 
   it("shows Installed status when installed packages have no available version", () => {
@@ -253,9 +251,7 @@ describe("PackageList", () => {
       available_version: "3.0.0",
     };
 
-    renderWithProviders(
-      <PackageList {...props} packages={[heldPackage]} />,
-    );
+    renderWithProviders(<PackageList {...props} packages={[heldPackage]} />);
 
     const row = screen.getByText(heldPackage.name).closest("tr");
     assert(row);

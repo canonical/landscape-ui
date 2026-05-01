@@ -116,11 +116,12 @@ const WslInstanceInstallForm: FC = () => {
     },
   });
 
-  const instanceQueryResultOptions =
-    wslInstanceTypes.map(({ label, name }) => ({
+  const instanceQueryResultOptions = wslInstanceTypes.map(
+    ({ label, name }) => ({
       label,
       value: name,
-    }));
+    }),
+  );
 
   const instanceOptions = [
     ...instanceQueryResultOptions,

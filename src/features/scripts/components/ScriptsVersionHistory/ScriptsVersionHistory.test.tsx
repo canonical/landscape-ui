@@ -8,7 +8,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, assert } from "vitest";
 import ScriptsVersionHistory from "./ScriptsVersionHistory";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
@@ -64,8 +64,10 @@ describe("Scripts Version History", () => {
   it("should open version details panel when clicking a version number", async () => {
     renderWithProviders(<ScriptsVersionHistory {...props} />);
 
+    const [firstVersion] = scriptVersionsWithPagination;
+    assert(firstVersion);
     const versionButton = await screen.findByRole("button", {
-      name: `${scriptVersionsWithPagination[0]!.version_number}`,
+      name: `${firstVersion.version_number}`,
     });
 
     await user.click(versionButton);

@@ -43,9 +43,7 @@ describe("AutoinstallFilesPanel", () => {
       await screen.findByRole("button", { name: /add autoinstall file/i }),
     );
     await waitFor(() => {
-      expect(
-        screen.getByText(/add new autoinstall file/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/add new autoinstall file/i)).toBeInTheDocument();
     });
   });
 
@@ -55,9 +53,7 @@ describe("AutoinstallFilesPanel", () => {
     await screen.findByText("default-autoinstall.yaml");
     await user.click(screen.getByRole("button", { name: /add new/i }));
     await waitFor(() => {
-      expect(
-        screen.getByText(/add new autoinstall file/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/add new autoinstall file/i)).toBeInTheDocument();
     });
   });
 });

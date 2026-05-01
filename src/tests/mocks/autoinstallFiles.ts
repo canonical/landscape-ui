@@ -38,7 +38,8 @@ export const autoinstallFileVersions = [
 
 export const autoinstallValidateOverrideError = {
   error: "AutoinstallOverrideWarning",
-  message: "The autoinstall file you submitted overrides fields users, identity",
+  message:
+    "The autoinstall file you submitted overrides fields users, identity",
 };
 
 export const autoinstallFileCode = `#cloud-config

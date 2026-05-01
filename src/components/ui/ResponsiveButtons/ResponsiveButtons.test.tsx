@@ -210,18 +210,16 @@ describe("ResponsiveButtons", () => {
       />,
     );
 
-    expect(
-      screen.getByRole("button", { name: /actions/i }),
-    ).toHaveAttribute("aria-disabled");
+    expect(screen.getByRole("button", { name: /actions/i })).toHaveAttribute(
+      "aria-disabled",
+    );
   });
 
   it("pushes non-button nodes to visible on small screens", () => {
     setScreenSize("xs");
 
     const nonButtonNode = <span key="text-node">Text content</span>;
-    render(
-      <ResponsiveButtons buttons={[nonButtonNode]} alwaysVisible={0} />,
-    );
+    render(<ResponsiveButtons buttons={[nonButtonNode]} alwaysVisible={0} />);
 
     expect(screen.getByText("Text content")).toBeInTheDocument();
   });
@@ -232,11 +230,7 @@ describe("ResponsiveButtons", () => {
     render(
       <ResponsiveButtons
         buttons={[
-          <ContextualMenu
-            key="context-menu"
-            toggleLabel="Filter"
-            links={[]}
-          />,
+          <ContextualMenu key="context-menu" toggleLabel="Filter" links={[]} />,
           <Button key="btn" type="button" onClick={vi.fn()}>
             Action
           </Button>,

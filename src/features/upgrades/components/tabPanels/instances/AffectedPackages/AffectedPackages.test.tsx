@@ -138,12 +138,7 @@ describe("AffectedPackages", () => {
   });
 
   it("should exclude all packages when toggle-all is clicked while all are included", async () => {
-    render(
-      <AffectedPackages
-        {...props}
-        packages={packages.slice(0, limit)}
-      />,
-    );
+    render(<AffectedPackages {...props} packages={packages.slice(0, limit)} />);
 
     const toggleAllCheckbox = screen.getByLabelText("Toggle all packages");
     expect(toggleAllCheckbox).toBeChecked();
@@ -163,12 +158,13 @@ describe("AffectedPackages", () => {
   });
 
   it("should un-exclude a package when its checkbox is clicked and it was excluded", async () => {
-    const firstPackage = packages[0];
+    const [firstPackage] = packages;
     assert(firstPackage);
-    const withFirstExcluded = excludedPackages.map(({ id, exclude_packages }) =>
-      id === instance.id
-        ? { id, exclude_packages: [firstPackage.id] }
-        : { id, exclude_packages },
+    const withFirstExcluded = excludedPackages.map(
+      ({ id, exclude_packages }) =>
+        id === instance.id
+          ? { id, exclude_packages: [firstPackage.id] }
+          : { id, exclude_packages },
     );
 
     render(
@@ -211,7 +207,7 @@ describe("AffectedPackages", () => {
       { id: otherInstanceId, exclude_packages: [1, 2] },
     ];
 
-    const firstPackage = packages[0];
+    const [firstPackage] = packages;
     assert(firstPackage);
 
     render(
@@ -229,21 +225,20 @@ describe("AffectedPackages", () => {
 
     const { calls } = onExcludedPackagesChange.mock;
     expect(calls.length).toBeGreaterThan(0);
-    const lastCall = calls[calls.length - 1][0] as InstancePackagesToExclude[];
+
+    const lastCall = calls[
+      calls.length - 1
+    ]?.[0] as InstancePackagesToExclude[];
     const otherEntry = lastCall.find((e) => e.id === otherInstanceId);
     // Other instance's excluded packages should be unchanged
     expect(otherEntry?.exclude_packages).toEqual([1, 2]);
   });
 
   it("should show loading indicator in last row when packagesLoading with packages", () => {
-    const firstPackage = packages[0];
+    const [firstPackage] = packages;
     assert(firstPackage);
     render(
-      <AffectedPackages
-        {...props}
-        packagesLoading
-        packages={[firstPackage]}
-      />,
+      <AffectedPackages {...props} packagesLoading packages={[firstPackage]} />,
     );
     // The last row in the table (the loading row) shows LoadingState
     expect(screen.getByText("Loading...")).toBeInTheDocument();
@@ -255,12 +250,14 @@ describe("AffectedPackages", () => {
     render(
       <AffectedPackages
         {...props}
-        excludedPackages={[{ id: NON_EXISTENT_INSTANCE_ID, exclude_packages: [] }]}
+        excludedPackages={[
+          { id: NON_EXISTENT_INSTANCE_ID, exclude_packages: [] },
+        ]}
         packages={packages.slice(0, limit)}
       />,
     );
     // All packages checkboxes should be checked (none excluded)
-    const firstPackage = packages[0];
+    const [firstPackage] = packages;
     assert(firstPackage);
     const checkbox = screen.getByLabelText(
       `Toggle ${firstPackage.name} package`,
@@ -315,7 +312,9 @@ describe("AffectedPackages", () => {
       await userEvent.click(selectAllText);
 
       const { calls } = onExcludedPackagesChange.mock;
-      const lastCall = calls[calls.length - 1][0] as InstancePackagesToExclude[];
+      const lastCall = calls[
+        calls.length - 1
+      ]?.[0] as InstancePackagesToExclude[];
       const otherEntry = lastCall.find((e) => e.id === otherInstanceId);
       // Other instance's packages should be preserved (id !== instance.id branch)
       expect(otherEntry?.exclude_packages).toEqual([1, 2]);
@@ -345,7 +344,7 @@ describe("AffectedPackages", () => {
     expect(calls.length).toBeGreaterThan(0);
     const lastCall = calls[
       calls.length - 1
-    ][0] as InstancePackagesToExclude[];
+    ]?.[0] as InstancePackagesToExclude[];
     const otherEntry = lastCall.find((e) => e.id === otherInstanceId);
     // Other instance's excluded packages should remain unchanged
     expect(otherEntry?.exclude_packages).toEqual([1, 2, 3]);

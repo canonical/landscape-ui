@@ -92,9 +92,7 @@ describe("useArchiveScriptModal", () => {
   });
 
   it("shows success notification after archive", async () => {
-    renderWithProviders(
-      <ArchiveModalConsumer script={scriptWithNoProfiles} />,
-    );
+    renderWithProviders(<ArchiveModalConsumer script={scriptWithNoProfiles} />);
 
     await user.click(screen.getByRole("button", { name: /confirm archive/i }));
 

@@ -11,7 +11,13 @@ vi.mock("@/features/instances", () => ({
     { term: "status:running", description: "Running instances" },
     { term: "alert:offline", description: "Offline instances" },
   ],
-  getProfileTypes: () => ["package", "reboot", "removal", "repository", "upgrade"],
+  getProfileTypes: () => [
+    "package",
+    "reboot",
+    "removal",
+    "repository",
+    "upgrade",
+  ],
 }));
 
 describe("SearchBoxWithSavedSearches", () => {
@@ -267,9 +273,13 @@ describe("SearchBoxWithSavedSearches", () => {
     const titleInput = screen.queryByRole("textbox", { name: /title/i });
     if (titleInput) {
       await user.type(titleInput, "Test");
-      const submitBtn = screen.getByRole("button", { name: "Add saved search" });
+      const submitBtn = screen.getByRole("button", {
+        name: "Add saved search",
+      });
       await user.click(submitBtn);
-      await waitFor(() => { expect(searchBox).toHaveValue(""); });
+      await waitFor(() => {
+        expect(searchBox).toHaveValue("");
+      });
     }
   });
 
@@ -332,9 +342,7 @@ describe("SearchBoxWithSavedSearches", () => {
 
   it("should work without an onChange callback when a saved search is clicked", async () => {
     renderWithProviders(
-      <SearchBoxWithSavedSearches
-        onHelpButtonClick={vi.fn()}
-      />,
+      <SearchBoxWithSavedSearches onHelpButtonClick={vi.fn()} />,
     );
 
     const searchBox = screen.getByRole("searchbox");

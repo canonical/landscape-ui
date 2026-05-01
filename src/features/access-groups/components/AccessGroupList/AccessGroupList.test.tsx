@@ -35,7 +35,9 @@ describe("AccessGroupList", () => {
   });
 
   it("shows the parent title in the parent column for child groups", () => {
-    const childGroup = accessGroups.find((g) => g.parent === DEFAULT_ACCESS_GROUP_NAME);
+    const childGroup = accessGroups.find(
+      (g) => g.parent === DEFAULT_ACCESS_GROUP_NAME,
+    );
     assert(childGroup);
 
     const parentGroup = accessGroups.find((g) => g.name === childGroup.parent);

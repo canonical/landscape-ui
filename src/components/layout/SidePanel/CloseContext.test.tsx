@@ -18,7 +18,9 @@ describe("CloseContext", () => {
 
     const btn = screen.getByTestId("close-btn");
     // Should not throw when clicked (default noop)
-    expect(() => { btn.click(); }).not.toThrow();
+    expect(() => {
+      btn.click();
+    }).not.toThrow();
   });
 
   it("provides a custom function via Provider", () => {

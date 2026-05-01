@@ -397,7 +397,8 @@ describe("getUpgradesCellIconAndLabel with alerts (DETAILED_UPGRADES_VIEW_ENABLE
   });
 
   it("uses alerts when DETAILED_UPGRADES_VIEW_ENABLED is false", async () => {
-    const { getUpgradesCellIconAndLabel } = await import("./helpers");
+    const { getUpgradesCellIconAndLabel: getUpgradesCellIconAndLabelDynamic } =
+      await import("./helpers");
 
     const instance: Instance = {
       ...ubuntuInstance,
@@ -412,13 +413,14 @@ describe("getUpgradesCellIconAndLabel with alerts (DETAILED_UPGRADES_VIEW_ENABLE
         { type: "SecurityUpgradesAlert", summary: "", severity: "warning" },
       ],
     };
-    const result = getUpgradesCellIconAndLabel(instance);
+    const result = getUpgradesCellIconAndLabelDynamic(instance);
     expect(result.icon).toBeTruthy();
     expect(result.label).toBeTruthy();
   });
 
   it("returns up-to-date via alerts when no upgrade alerts exist", async () => {
-    const { getUpgradesCellIconAndLabel } = await import("./helpers");
+    const { getUpgradesCellIconAndLabel: getUpgradesCellIconAndLabelDynamic } =
+      await import("./helpers");
 
     const instance: Instance = {
       ...ubuntuInstance,
@@ -430,7 +432,7 @@ describe("getUpgradesCellIconAndLabel with alerts (DETAILED_UPGRADES_VIEW_ENABLE
       },
       alerts: [],
     };
-    const result = getUpgradesCellIconAndLabel(instance);
+    const result = getUpgradesCellIconAndLabelDynamic(instance);
     expect(result).toBeDefined();
   });
 });

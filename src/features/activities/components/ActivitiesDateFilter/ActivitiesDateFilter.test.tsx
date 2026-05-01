@@ -122,7 +122,9 @@ describe("ActivitiesDateFilter", () => {
 
     // Menu closes after successful submit
     await waitFor(() => {
-      expect(screen.queryByRole("button", { name: /apply/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /apply/i }),
+      ).not.toBeInTheDocument();
     });
   });
 });

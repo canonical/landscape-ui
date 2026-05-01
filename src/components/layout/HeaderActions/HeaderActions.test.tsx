@@ -101,7 +101,9 @@ describe("HeaderActions", () => {
       <HeaderActions actions={{ nondestructive: collapsedActions }} />,
     );
 
-    expect(screen.getByRole("button", { name: /actions/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /actions/i }),
+    ).toBeInTheDocument();
   });
 
   it("disables collapsed actions menu when all collapsed actions are disabled", () => {
@@ -131,7 +133,9 @@ describe("HeaderActions", () => {
   });
 
   it("handles container resize when width changes", () => {
-    interface MockFn { mock: { calls: [() => void][] } }
+    interface MockFn {
+      mock: { calls: [() => void][] };
+    }
     const ResizeObserverMock = window.ResizeObserver as unknown as MockFn;
     const initialCallCount = ResizeObserverMock.mock.calls.length;
 
@@ -164,7 +168,9 @@ describe("HeaderActions", () => {
   });
 
   it("handles grow-with-collapsed resize and same-width early return", async () => {
-    interface MockFn { mock: { calls: [() => void][] } }
+    interface MockFn {
+      mock: { calls: [() => void][] };
+    }
     const ResizeObserverMock = window.ResizeObserver as unknown as MockFn;
     const initialCallCount = ResizeObserverMock.mock.calls.length;
 
@@ -209,6 +215,8 @@ describe("HeaderActions", () => {
       });
     }
 
-    expect(screen.getByRole("button", { name: /actions/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /actions/i }),
+    ).toBeInTheDocument();
   });
 });

@@ -123,7 +123,9 @@ describe("InstancesPanel", () => {
 
     // tableLimit increased; more instances are shown
     await screen.findByText(/Showing \d+ of \d+ instances/i);
-    expect(screen.getByText(/Showing \d+ of \d+ instances/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Showing \d+ of \d+ instances/i),
+    ).toBeInTheDocument();
   });
 
   it("should expand packages sub-table and show load-more", async () => {
@@ -135,10 +137,7 @@ describe("InstancesPanel", () => {
     assert(instanceWith17Packages);
 
     renderWithProviders(
-      <InstancesPanel
-        {...props}
-        instances={[instanceWith17Packages]}
-      />,
+      <InstancesPanel {...props} instances={[instanceWith17Packages]} />,
     );
 
     const rows = screen.getAllByRole("row");

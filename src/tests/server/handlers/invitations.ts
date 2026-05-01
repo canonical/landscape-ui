@@ -2,7 +2,10 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import type { InvitationSummary } from "@/types/Invitation";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
 import { invitations, invitationsSummary } from "@/tests/mocks/invitations";
 
 export const invitationState = {
@@ -10,30 +13,27 @@ export const invitationState = {
 };
 
 export default [
-  http.get<never, never>(
-    `${API_URL}invitations`,
-    () => {
-      const { status } = getEndpointStatus();
+  http.get<never, never>(`${API_URL}invitations`, () => {
+    const { status } = getEndpointStatus();
 
-      if (status === "empty") {
-        return HttpResponse.json(
-          generatePaginatedResponse({
-            data: [],
-            limit: 20,
-            offset: 0,
-          }),
-        );
-      }
-
+    if (status === "empty") {
       return HttpResponse.json(
         generatePaginatedResponse({
-          data: invitations,
+          data: [],
           limit: 20,
           offset: 0,
         }),
       );
-    },
-  ),
+    }
+
+    return HttpResponse.json(
+      generatePaginatedResponse({
+        data: invitations,
+        limit: 20,
+        offset: 0,
+      }),
+    );
+  }),
 
   http.get<{ id: string }, never, InvitationSummary>(
     `${API_URL}invitations/:id/summary`,

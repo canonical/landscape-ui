@@ -165,7 +165,10 @@ describe("Legend", () => {
     assert(legendContainer);
     fireEvent.mouseLeave(legendContainer);
     expect(mockSetSelectedArc).toHaveBeenCalledWith(null);
-    expect((mockChartInstance as { update: ReturnType<typeof vi.fn> }).update).toHaveBeenCalled();
+    expect(
+      (mockChartInstance as unknown as { update: ReturnType<typeof vi.fn> })
+        .update,
+    ).toHaveBeenCalled();
   });
 
   it("applies reduced opacity to non-selected items when selectedArc is set", () => {

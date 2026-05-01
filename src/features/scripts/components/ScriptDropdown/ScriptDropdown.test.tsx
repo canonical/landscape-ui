@@ -2,7 +2,7 @@ import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi, assert } from "vitest";
 import ScriptDropdown from "./ScriptDropdown";
 
 describe("ScriptDropdown", () => {
@@ -60,7 +60,8 @@ describe("ScriptDropdown", () => {
       );
     });
 
-    const firstOption = screen.getAllByTestId("dropdownElement")[0]!;
+    const [firstOption] = screen.getAllByTestId("dropdownElement");
+    assert(firstOption);
     await user.click(firstOption);
 
     expect(setScript).toHaveBeenCalled();
@@ -152,9 +153,7 @@ describe("ScriptDropdown", () => {
 
     await waitFor(
       () => {
-        expect(
-          screen.getByText(/no scripts found by/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/no scripts found by/i)).toBeInTheDocument();
       },
       { timeout: 3000 },
     );
@@ -191,7 +190,9 @@ describe("ScriptDropdown", () => {
     await user.click(searchBox);
 
     await waitFor(() => {
-      expect(screen.getAllByTestId("dropdownElement").length).toBeGreaterThan(0);
+      expect(screen.getAllByTestId("dropdownElement").length).toBeGreaterThan(
+        0,
+      );
     });
 
     await user.keyboard("{Escape}");
@@ -208,13 +209,24 @@ describe("ScriptDropdown", () => {
     await user.click(searchBox);
 
     await waitFor(() => {
-      expect(screen.getAllByTestId("dropdownElement").length).toBeGreaterThan(0);
+      expect(screen.getAllByTestId("dropdownElement").length).toBeGreaterThan(
+        0,
+      );
     });
 
     const list = screen.getByRole("listbox");
-    Object.defineProperty(list, "scrollTop", { configurable: true, value: 100 });
-    Object.defineProperty(list, "scrollHeight", { configurable: true, value: 500 });
-    Object.defineProperty(list, "clientHeight", { configurable: true, value: 200 });
+    Object.defineProperty(list, "scrollTop", {
+      configurable: true,
+      value: 100,
+    });
+    Object.defineProperty(list, "scrollHeight", {
+      configurable: true,
+      value: 500,
+    });
+    Object.defineProperty(list, "clientHeight", {
+      configurable: true,
+      value: 200,
+    });
     fireEvent.scroll(list);
 
     expect(list).toBeInTheDocument();

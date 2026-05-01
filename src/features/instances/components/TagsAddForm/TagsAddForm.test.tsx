@@ -78,15 +78,18 @@ describe("TagsAddForm", async () => {
       renderWithProviders(<TagsAddForm selected={instances} />);
       await expectLoadingState();
 
-      const checkboxes = screen.getAllByRole("checkbox");
+      const [checkbox] = screen.getAllByRole("checkbox");
+
+      assert(checkbox);
+
       // Select all (click header checkbox)
-      await userEvent.click(checkboxes[0]);
+      await userEvent.click(checkbox);
 
       // Header checkbox should now be checked
-      expect(checkboxes[0]).toBeChecked();
+      expect(checkbox).toBeChecked();
 
       // Toggle all off by clicking header checkbox again
-      await userEvent.click(checkboxes[0]);
+      await userEvent.click(checkbox);
 
       // Submit button should be disabled again
       const assignButton = screen.getByRole("button", { name: /assign/i });
@@ -104,8 +107,11 @@ describe("TagsAddForm", async () => {
     renderWithProviders(<TagsAddForm selected={[selectedInstance]} />);
     await expectLoadingState();
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await userEvent.click(checkboxes[1]); // click first tag checkbox
+    const [, checkbox] = screen.getAllByRole("checkbox");
+
+    assert(checkbox);
+
+    await userEvent.click(checkbox);
 
     await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
@@ -149,13 +155,18 @@ describe("TagsAddForm", async () => {
     renderWithProviders(<TagsAddForm selected={[selectedInstance]} />);
     await expectLoadingState();
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await userEvent.click(checkboxes[1]);
+    const [, checkbox] = screen.getAllByRole("checkbox");
+
+    assert(checkbox);
+
+    await userEvent.click(checkbox);
 
     await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
     // Should not show success notification
-    expect(screen.queryByText(/tags successfully assigned/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/tags successfully assigned/i),
+    ).not.toBeInTheDocument();
   });
 
   it("should show error when adding tags fails", async () => {
@@ -168,8 +179,11 @@ describe("TagsAddForm", async () => {
     renderWithProviders(<TagsAddForm selected={[selectedInstance]} />);
     await expectLoadingState();
 
-    const checkboxes = screen.getAllByRole("checkbox");
-    await userEvent.click(checkboxes[1]);
+    const [, checkbox] = screen.getAllByRole("checkbox");
+
+    assert(checkbox);
+
+    await userEvent.click(checkbox);
 
     await userEvent.click(screen.getByRole("button", { name: /assign/i }));
 
@@ -196,11 +210,11 @@ describe("TagsAddForm", async () => {
     // Get checkboxes fresh
     const [, firstCheckbox] = screen.getAllByRole("checkbox");
 
-    // Click to select
+    assert(firstCheckbox);
+
     await userEvent.click(firstCheckbox);
     expect(firstCheckbox).toBeChecked();
 
-    // Click to deselect
     await userEvent.click(firstCheckbox);
     expect(firstCheckbox).not.toBeChecked();
   });
@@ -212,7 +226,8 @@ describe("TagsAddForm", async () => {
 
     const [, firstTagCheckbox] = screen.getAllByRole("checkbox");
 
-    // Select via userEvent first
+    assert(firstTagCheckbox);
+
     await userEvent.click(firstTagCheckbox);
     expect(firstTagCheckbox).toBeChecked();
 
@@ -232,7 +247,10 @@ describe("TagsAddForm", async () => {
 
     // The "appservers" checkbox is checked and disabled because the instance already has it
     const checkboxes = screen.getAllByRole("checkbox");
-    const appserversCheckbox = checkboxes[1];
+    const [, appserversCheckbox] = checkboxes;
+
+    assert(appserversCheckbox);
+
     expect(appserversCheckbox).toBeChecked();
 
     // Use fireEvent to call toggle even on the disabled/checked checkbox
@@ -240,9 +258,10 @@ describe("TagsAddForm", async () => {
 
     // Assign button remains disabled since selectedTags is still empty
     await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /assign/i }),
-      ).toHaveAttribute("aria-disabled", "true");
+      expect(screen.getByRole("button", { name: /assign/i })).toHaveAttribute(
+        "aria-disabled",
+        "true",
+      );
     });
   });
 
@@ -261,7 +280,6 @@ describe("TagsAddForm", async () => {
     // At least one data checkbox exists
     expect(checkboxes.length).toBeGreaterThan(1);
   });
-
 });
 
 describe("computeNewTags", () => {

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { vi } from "vitest";
+import { vi, assert } from "vitest";
 import SearchBoxWithDescriptionButton from "./SearchBoxWithDescriptionButton";
 
 const props: ComponentProps<typeof SearchBoxWithDescriptionButton> = {
@@ -98,8 +98,8 @@ describe("SearchBoxWithDescriptionButton", () => {
     );
 
     const form = container.querySelector("form");
-    expect(form).not.toBeNull();
-    fireEvent.submit(form!);
+    assert(form);
+    fireEvent.submit(form);
 
     expect(onSearchClick).toHaveBeenCalled();
   });

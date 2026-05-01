@@ -7,8 +7,20 @@ const TestConsumer = () => {
   return (
     <div>
       <span data-testid="mode">{isDarkMode ? "dark" : "light"}</span>
-      <button onClick={() => { set(true); }}>Set Dark</button>
-      <button onClick={() => { set(false); }}>Set Light</button>
+      <button
+        onClick={() => {
+          set(true);
+        }}
+      >
+        Set Dark
+      </button>
+      <button
+        onClick={() => {
+          set(false);
+        }}
+      >
+        Set Light
+      </button>
     </div>
   );
 };
@@ -135,10 +147,20 @@ describe("ThemeProvider", () => {
   it("default context set function is a no-op when called without provider", () => {
     const TestDefault = () => {
       const { set } = useTheme();
-      return <button onClick={() => { set(true); }}>call set</button>;
+      return (
+        <button
+          onClick={() => {
+            set(true);
+          }}
+        >
+          call set
+        </button>
+      );
     };
 
     render(<TestDefault />);
-    expect(() => { screen.getByText("call set").click(); }).not.toThrow();
+    expect(() => {
+      screen.getByText("call set").click();
+    }).not.toThrow();
   });
 });

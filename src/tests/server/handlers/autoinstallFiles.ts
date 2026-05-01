@@ -9,7 +9,10 @@ import type {
 } from "@/features/autoinstall-files";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
-import { generatePaginatedResponse, shouldApplyEndpointStatus } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";

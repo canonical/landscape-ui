@@ -154,9 +154,7 @@ describe("Script Version History Details", () => {
     await user.click(confirmButton);
 
     await waitFor(() => {
-      expect(
-        screen.queryByRole("dialog"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
   });
 });

@@ -183,7 +183,9 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
                 selected.some((instance) => instance.tags.includes(tag)) &&
                 selected.some((instance) => !instance.tags.includes(tag))
               }
-              onChange={() => { toggleTag(tag); }}
+              onChange={() => {
+                toggleTag(tag);
+              }}
             />
           );
         },

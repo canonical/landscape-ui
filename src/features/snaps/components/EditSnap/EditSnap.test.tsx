@@ -82,7 +82,10 @@ describe("EditSnap", () => {
 
   describe("common edit snap form functionalities", () => {
     beforeEach(async () => {
-      renderEditSnap({ ...SwitchSnapFormProps, installedSnaps: [snapData.snap2] });
+      renderEditSnap({
+        ...SwitchSnapFormProps,
+        installedSnaps: [snapData.snap2],
+      });
     });
 
     it("radio button functionalities", async () => {
@@ -111,14 +114,14 @@ describe("EditSnap", () => {
       await userEvent.click(scheduledRadio);
 
       const deliverAfterInput = await screen.findByLabelText(/deliver after/i);
-      fireEvent.change(deliverAfterInput, { target: { value: "2026-12-31T12:00" } });
+      fireEvent.change(deliverAfterInput, {
+        target: { value: "2026-12-31T12:00" },
+      });
 
       const submitButton = screen.getByRole("button", { name: /switch/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
 
     it("submits with randomize delivery enabled", async () => {
@@ -128,15 +131,16 @@ describe("EditSnap", () => {
       const submitButton = screen.getByRole("button", { name: /switch/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
   });
 
   describe("Switch Edit Snap Form", () => {
     beforeEach(async () => {
-      renderEditSnap({ ...SwitchSnapFormProps, installedSnaps: [snapData.snap2] });
+      renderEditSnap({
+        ...SwitchSnapFormProps,
+        installedSnaps: [snapData.snap2],
+      });
     });
 
     it("renders switch-form only fields", async () => {
@@ -166,9 +170,7 @@ describe("EditSnap", () => {
       const submitButton = screen.getByRole("button", { name: /switch/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
   });
 
@@ -200,9 +202,7 @@ describe("EditSnap", () => {
       const submitButton = screen.getByRole("button", { name: /hold/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
   });
 
@@ -219,9 +219,7 @@ describe("EditSnap", () => {
       const submitButton = screen.getByRole("button", { name: /uninstall/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
   });
 
@@ -238,9 +236,7 @@ describe("EditSnap", () => {
       const submitButton = screen.getByRole("button", { name: /unhold/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
   });
 
@@ -257,9 +253,7 @@ describe("EditSnap", () => {
       const submitButton = screen.getByRole("button", { name: /refresh/i });
       await userEvent.click(submitButton);
 
-      expect(
-        await screen.findByText(/you queued/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
     });
   });
 });

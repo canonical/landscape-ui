@@ -32,7 +32,9 @@ describe("NewAccessGroupForm", () => {
     const parentSelect = await screen.findByRole("combobox", {
       name: /parent/i,
     });
-    await waitFor(() => { expect(parentSelect).not.toBeDisabled(); });
+    await waitFor(() => {
+      expect(parentSelect).not.toBeDisabled();
+    });
 
     const titleInput = screen.getByRole("textbox", { name: /title/i });
     await userEvent.type(titleInput, "New Test Group");
@@ -42,6 +44,8 @@ describe("NewAccessGroupForm", () => {
     });
     await userEvent.click(submitButton);
 
-    expect(screen.queryByText("This field is required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
   });
 });

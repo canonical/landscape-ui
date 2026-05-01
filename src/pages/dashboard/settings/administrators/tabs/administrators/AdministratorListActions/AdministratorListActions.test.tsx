@@ -52,7 +52,10 @@ describe("AdministratorListActions", () => {
 
     expect(
       await screen.findByText(
-        new RegExp(`removed ${administrators[0].name} as an administrator`, "i"),
+        new RegExp(
+          `removed ${administrators[0].name} as an administrator`,
+          "i",
+        ),
       ),
     ).toBeInTheDocument();
   });
@@ -64,7 +67,9 @@ describe("AdministratorListActions", () => {
     await user.click(removeMenuItem);
 
     const dialog = screen.getByRole("dialog");
-    const cancelButton = within(dialog).getByRole("button", { name: /cancel/i });
+    const cancelButton = within(dialog).getByRole("button", {
+      name: /cancel/i,
+    });
     await user.click(cancelButton);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();

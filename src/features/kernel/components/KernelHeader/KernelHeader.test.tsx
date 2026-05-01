@@ -115,9 +115,7 @@ describe("KernelHeader", () => {
       name: /downgrade kernel/i,
     });
     await user.click(downgradeButton);
-    expect(
-      await screen.findByText(/security warning/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/security warning/i)).toBeInTheDocument();
   });
 
   it("clicking Upgrade kernel button opens the upgrade side panel", async () => {
@@ -133,9 +131,7 @@ describe("KernelHeader", () => {
       name: /upgrade kernel/i,
     });
     await user.click(upgradeButton);
-    expect(
-      await screen.findByText(/restart recommended/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/restart recommended/i)).toBeInTheDocument();
   });
 
   it("renders with null installed kernel version gracefully", () => {

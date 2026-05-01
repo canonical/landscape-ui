@@ -4,7 +4,7 @@ import { renderWithProviders } from "@/tests/render";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, vi } from "vitest";
+import { describe, expect, vi, assert } from "vitest";
 import UsnList from "./UsnList";
 
 const mockedUsns = usns.slice(0, 5);
@@ -77,22 +77,17 @@ describe("UsnList", () => {
     assert(usnWithNoCves, "Expected a USN with no CVEs in mock data");
 
     render(
-      <UsnList
-        {...expandableProps}
-        usns={[usnWithNoCves]}
-        totalUsnCount={1}
-      />,
+      <UsnList {...expandableProps} usns={[usnWithNoCves]} totalUsnCount={1} />,
     );
 
     expect(screen.getByText("---")).toBeInTheDocument();
   });
 
   it("should deselect a USN when it is already selected", async () => {
+    const [firstMockedUsn] = mockedUsns;
+    assert(firstMockedUsn);
     render(
-      <UsnList
-        {...expandableProps}
-        selectedUsns={[mockedUsns[0]!.usn]}
-      />,
+      <UsnList {...expandableProps} selectedUsns={[firstMockedUsn.usn]} />,
     );
 
     await userEvent.click(screen.getByText(`Toggle ${usns[0].usn}`));
@@ -101,11 +96,10 @@ describe("UsnList", () => {
   });
 
   it("should deselect all when some are selected and toggle-all is clicked", async () => {
+    const [firstMockedUsn] = mockedUsns;
+    assert(firstMockedUsn);
     render(
-      <UsnList
-        {...expandableProps}
-        selectedUsns={[mockedUsns[0]!.usn]}
-      />,
+      <UsnList {...expandableProps} selectedUsns={[firstMockedUsn.usn]} />,
     );
 
     await userEvent.click(screen.getByText(/toggle all security issues/i));
@@ -140,13 +134,7 @@ describe("UsnList", () => {
   });
 
   it("should render loading state row when isUsnsLoading is true", () => {
-    render(
-      <UsnList
-        {...expandableProps}
-        isUsnsLoading
-        usns={mockedUsns}
-      />,
-    );
+    render(<UsnList {...expandableProps} isUsnsLoading usns={mockedUsns} />);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
@@ -219,18 +207,19 @@ describe("UsnList", () => {
       name: /show more/i,
     });
     if (showMoreButtons.length > 0) {
-      await userEvent.click(showMoreButtons[0]!);
+      const [firstShowMoreButton] = showMoreButtons;
+      assert(firstShowMoreButton);
+      await userEvent.click(firstShowMoreButton);
       // Now click outside the table row to collapse
       await userEvent.click(document.body);
     }
   });
 
   it("should clear selection when paginating", async () => {
+    const [firstMockedUsn] = mockedUsns;
+    assert(firstMockedUsn);
     renderWithProviders(
-      <UsnList
-        {...paginatedProps}
-        selectedUsns={[mockedUsns[0]!.usn]}
-      />,
+      <UsnList {...paginatedProps} selectedUsns={[firstMockedUsn.usn]} />,
     );
 
     const nextPageButton = screen.getByRole("button", { name: /next page/i });

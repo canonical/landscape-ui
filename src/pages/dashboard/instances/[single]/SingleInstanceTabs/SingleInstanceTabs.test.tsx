@@ -280,9 +280,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(
-          screen.getByRole("tab", { name: /packages/i }),
-        ).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", { name: /packages/i })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
       });
     });
 
@@ -338,9 +339,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(
-          screen.getByRole("tab", { name: /processes/i }),
-        ).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", { name: /processes/i })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
       });
     });
 
@@ -381,9 +383,10 @@ describe("SingleInstanceTabs", () => {
         "/computers/:instanceId",
       );
       await waitFor(() => {
-        expect(
-          screen.getByRole("tab", { name: /hardware/i }),
-        ).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", { name: /hardware/i })).toHaveAttribute(
+          "aria-selected",
+          "true",
+        );
       });
     });
 

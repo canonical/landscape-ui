@@ -31,6 +31,9 @@ const props: ComponentProps<typeof DowngradeKernelForm> = {
   instanceName: "test-instance",
 };
 
+const [firstDowngradeVersion] = props.downgradeKernelVersions;
+assert(firstDowngradeVersion);
+
 describe("DowngradeKernelForm", () => {
   const user = userEvent.setup();
 
@@ -137,7 +140,7 @@ describe("DowngradeKernelForm", () => {
   it("submits downgrade and shows a success notification", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -147,14 +150,10 @@ describe("DowngradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /downgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /downgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Downgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Downgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Downgrade" }));
 
     expect(
       await screen.findByText(
@@ -166,7 +165,7 @@ describe("DowngradeKernelForm", () => {
   it("submits downgrade and restart and shows a success notification", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -197,7 +196,7 @@ describe("DowngradeKernelForm", () => {
   it("shows notification with reboot message when reboot_after is true", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -226,7 +225,7 @@ describe("DowngradeKernelForm", () => {
   it("shows notification with no-reboot message when reboot_after is false", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -236,14 +235,10 @@ describe("DowngradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /downgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /downgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Downgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Downgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Downgrade" }));
 
     expect(
       await screen.findByText(DOWNGRADE_MESSAGE_WITHOUT_REBOOT),
@@ -253,7 +248,7 @@ describe("DowngradeKernelForm", () => {
   it("can click View details after successful downgrade to open activity panel", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -263,14 +258,10 @@ describe("DowngradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /downgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /downgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Downgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Downgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Downgrade" }));
 
     await user.click(
       await screen.findByRole("button", { name: "View details" }),
@@ -284,7 +275,7 @@ describe("DowngradeKernelForm", () => {
   it("submits downgrade with scheduled delivery option", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -301,14 +292,10 @@ describe("DowngradeKernelForm", () => {
       target: { value: "2099-12-31T23:59" },
     });
 
-    await user.click(
-      screen.getByRole("button", { name: /downgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /downgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Downgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Downgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Downgrade" }));
 
     expect(
       await screen.findByText(
@@ -320,7 +307,7 @@ describe("DowngradeKernelForm", () => {
   it("submits downgrade with randomize delivery enabled", async () => {
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -332,14 +319,10 @@ describe("DowngradeKernelForm", () => {
 
     await user.click(screen.getByLabelText("Yes"));
 
-    await user.click(
-      screen.getByRole("button", { name: /downgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /downgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Downgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Downgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Downgrade" }));
 
     expect(
       await screen.findByText(
@@ -353,7 +336,7 @@ describe("DowngradeKernelForm", () => {
 
     const propsWithSingleVersion: ComponentProps<typeof DowngradeKernelForm> = {
       ...props,
-      downgradeKernelVersions: [props.downgradeKernelVersions[0]!],
+      downgradeKernelVersions: [firstDowngradeVersion],
     };
 
     renderWithProviders(
@@ -363,14 +346,10 @@ describe("DowngradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /downgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /downgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Downgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Downgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Downgrade" }));
 
     expect(
       screen.queryByText(

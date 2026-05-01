@@ -18,17 +18,31 @@ const TestConsumer = () => (
     }) => (
       <div>
         <button
-          onClick={() =>
-            { setSidePanelContent("Test Title", <div>Panel Body</div>); }
-          }
+          onClick={() => {
+            setSidePanelContent("Test Title", <div>Panel Body</div>);
+          }}
         >
           Open Panel
         </button>
-        <button onClick={() => { closeSidePanel(); }}>Close Panel</button>
-        <button onClick={() => { changeSidePanelSize("medium"); }}>
+        <button
+          onClick={() => {
+            closeSidePanel();
+          }}
+        >
+          Close Panel
+        </button>
+        <button
+          onClick={() => {
+            changeSidePanelSize("medium");
+          }}
+        >
           Make Medium
         </button>
-        <button onClick={() => { changeSidePanelTitleLabel("subtitle"); }}>
+        <button
+          onClick={() => {
+            changeSidePanelTitleLabel("subtitle");
+          }}
+        >
           Set Title Label
         </button>
       </div>
@@ -72,14 +86,14 @@ describe("SidePanelProvider", () => {
     );
 
     await user.click(screen.getByText("Open Panel"));
-    await waitFor(() =>
-      { expect(screen.getByText("Panel Body")).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText("Panel Body")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByText("Close Panel"));
-    await waitFor(() =>
-      { expect(screen.queryByText("Panel Body")).not.toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.queryByText("Panel Body")).not.toBeInTheDocument();
+    });
   });
 
   it("closes side panel when clicking the close button in the header", async () => {
@@ -90,14 +104,14 @@ describe("SidePanelProvider", () => {
     );
 
     await user.click(screen.getByText("Open Panel"));
-    await waitFor(() =>
-      { expect(screen.getByText("Panel Body")).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText("Panel Body")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByRole("button", { name: /close side panel/i }));
-    await waitFor(() =>
-      { expect(screen.queryByText("Panel Body")).not.toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.queryByText("Panel Body")).not.toBeInTheDocument();
+    });
   });
 
   it("changes size when changeSidePanelSize is called", async () => {
@@ -108,9 +122,9 @@ describe("SidePanelProvider", () => {
     );
 
     await user.click(screen.getByText("Open Panel"));
-    await waitFor(() =>
-      { expect(screen.getByText("Panel Body")).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText("Panel Body")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByText("Make Medium"));
     expect(screen.getByText("Panel Body")).toBeInTheDocument();
@@ -124,9 +138,9 @@ describe("SidePanelProvider", () => {
     );
 
     await user.click(screen.getByText("Open Panel"));
-    await waitFor(() =>
-      { expect(screen.getByText("Panel Body")).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText("Panel Body")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByText("Set Title Label"));
     expect(screen.getByText("subtitle")).toBeInTheDocument();
@@ -166,16 +180,16 @@ describe("SidePanelProvider", () => {
             {({ notify }) => (
               <div>
                 <button
-                  onClick={() =>
-                    { setSidePanelContent("Title", <div>Panel Content</div>); }
-                  }
+                  onClick={() => {
+                    setSidePanelContent("Title", <div>Panel Content</div>);
+                  }}
                 >
                   Open
                 </button>
                 <button
-                  onClick={() =>
-                    { notify.error({ title: "Error", message: "Error message" }); }
-                  }
+                  onClick={() => {
+                    notify.error({ title: "Error", message: "Error message" });
+                  }}
                 >
                   Trigger Error
                 </button>
@@ -193,13 +207,13 @@ describe("SidePanelProvider", () => {
     );
 
     await user.click(screen.getByText("Open"));
-    await waitFor(() =>
-      { expect(screen.getByText("Panel Content")).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByText("Panel Content")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByText("Trigger Error"));
-    await waitFor(() =>
-      { expect(screen.getAllByText("Error message").length).toBeGreaterThan(0); },
-    );
+    await waitFor(() => {
+      expect(screen.getAllByText("Error message").length).toBeGreaterThan(0);
+    });
   });
 });

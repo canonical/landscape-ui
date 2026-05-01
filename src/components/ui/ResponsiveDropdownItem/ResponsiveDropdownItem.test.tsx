@@ -68,10 +68,7 @@ describe("ResponsiveDropdownItem", () => {
 
   it("renders with explicit label prop", async () => {
     renderWithProviders(
-      <ResponsiveDropdownItem
-        el={<div>content</div>}
-        label="Custom Label"
-      />,
+      <ResponsiveDropdownItem el={<div>content</div>} label="Custom Label" />,
     );
 
     expect(screen.getByText("Custom Label")).toBeInTheDocument();
@@ -79,11 +76,7 @@ describe("ResponsiveDropdownItem", () => {
 
   it("renders disabled button when disabled prop is true", () => {
     renderWithProviders(
-      <ResponsiveDropdownItem
-        el={<div>content</div>}
-        label="Label"
-        disabled
-      />,
+      <ResponsiveDropdownItem el={<div>content</div>} label="Label" disabled />,
     );
 
     expect(screen.getByRole("button")).toHaveAttribute("aria-disabled");

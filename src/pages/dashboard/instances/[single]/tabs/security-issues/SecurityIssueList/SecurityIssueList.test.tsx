@@ -74,9 +74,7 @@ describe("SecurityIssueList", () => {
     await screen.findByText("6557-1");
 
     const checkboxes = screen.getAllByRole("checkbox");
-    const usnCheckbox = checkboxes.find(
-      (cb) => !cb.closest("th"),
-    );
+    const usnCheckbox = checkboxes.find((cb) => !cb.closest("th"));
     if (usnCheckbox) {
       await user.click(usnCheckbox);
       expect(

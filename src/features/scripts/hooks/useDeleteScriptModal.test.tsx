@@ -92,9 +92,7 @@ describe("useDeleteScriptModal", () => {
   });
 
   it("shows success notification after delete", async () => {
-    renderWithProviders(
-      <DeleteModalConsumer script={scriptWithNoProfiles} />,
-    );
+    renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
 
     await user.click(screen.getByRole("button", { name: /confirm delete/i }));
 

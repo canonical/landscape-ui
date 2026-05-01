@@ -31,6 +31,9 @@ const props: ComponentProps<typeof UpgradeKernelForm> = {
   instanceName: "test-instance",
 };
 
+const [firstUpgradeVersion] = props.upgradeKernelVersions;
+assert(firstUpgradeVersion);
+
 describe("UpgradeKernelForm", () => {
   const user = userEvent.setup();
 
@@ -72,9 +75,7 @@ describe("UpgradeKernelForm", () => {
 
   it("clicking 'Upgrade kernel' opens confirmation modal with correct message", async () => {
     renderWithProviders(<UpgradeKernelForm {...props} />);
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -99,7 +100,7 @@ describe("UpgradeKernelForm", () => {
   it("submits upgrade and shows a success notification", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -109,14 +110,10 @@ describe("UpgradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Upgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Upgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Upgrade" }));
 
     expect(
       await screen.findByText(/you queued kernel upgrade for "test-instance"/i),
@@ -126,7 +123,7 @@ describe("UpgradeKernelForm", () => {
   it("submits upgrade and restart and shows a success notification", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -155,7 +152,7 @@ describe("UpgradeKernelForm", () => {
   it("shows notification with reboot message when reboot_after is true", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -184,7 +181,7 @@ describe("UpgradeKernelForm", () => {
   it("shows notification with no-reboot message when reboot_after is false", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -194,14 +191,10 @@ describe("UpgradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Upgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Upgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Upgrade" }));
 
     expect(
       await screen.findByText(UPGRADE_MESSAGE_WITHOUT_REBOOT),
@@ -211,7 +204,7 @@ describe("UpgradeKernelForm", () => {
   it("can click View details after successful upgrade to open activity panel", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -221,14 +214,10 @@ describe("UpgradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Upgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Upgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Upgrade" }));
 
     await user.click(
       await screen.findByRole("button", { name: "View details" }),
@@ -242,7 +231,7 @@ describe("UpgradeKernelForm", () => {
   it("submits upgrade with scheduled delivery option", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -259,14 +248,10 @@ describe("UpgradeKernelForm", () => {
       target: { value: "2099-12-31T23:59" },
     });
 
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Upgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Upgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Upgrade" }));
 
     expect(
       await screen.findByText(/you queued kernel upgrade for "test-instance"/i),
@@ -276,7 +261,7 @@ describe("UpgradeKernelForm", () => {
   it("submits upgrade with randomize delivery enabled", async () => {
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -288,14 +273,10 @@ describe("UpgradeKernelForm", () => {
 
     await user.click(screen.getByLabelText("Yes"));
 
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Upgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Upgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Upgrade" }));
 
     expect(
       await screen.findByText(/you queued kernel upgrade for "test-instance"/i),
@@ -307,7 +288,7 @@ describe("UpgradeKernelForm", () => {
 
     const propsWithSingleVersion: ComponentProps<typeof UpgradeKernelForm> = {
       ...props,
-      upgradeKernelVersions: [props.upgradeKernelVersions[0]!],
+      upgradeKernelVersions: [firstUpgradeVersion],
     };
 
     renderWithProviders(
@@ -317,14 +298,10 @@ describe("UpgradeKernelForm", () => {
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /upgrade kernel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /upgrade kernel/i }));
 
     const dialog = screen.getByRole("dialog", { name: "Upgrading kernel" });
-    await user.click(
-      within(dialog).getByRole("button", { name: "Upgrade" }),
-    );
+    await user.click(within(dialog).getByRole("button", { name: "Upgrade" }));
 
     expect(
       screen.queryByText(/you queued kernel upgrade for "test-instance"/i),

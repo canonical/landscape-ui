@@ -14,8 +14,7 @@ const allInvalidInstances = instances.slice(1, 3);
 
 // Find the instance with an attached Ubuntu Pro token (result:success, attached:true)
 const instanceWithToken = instances.find(
-  (i) =>
-    i.ubuntu_pro_info?.result === "success" && i.ubuntu_pro_info?.attached,
+  (i) => i.ubuntu_pro_info?.result === "success" && i.ubuntu_pro_info?.attached,
 );
 
 describe("TokenFormBase", () => {
@@ -253,7 +252,11 @@ describe("TokenFormBase", () => {
       ).toBeInTheDocument();
     });
 
-    await user.click(screen.getAllByRole("button", { name: /close/i })[0]);
+    const [closeButton] = screen.getAllByRole("button", { name: /close/i });
+
+    assert(closeButton);
+
+    await user.click(closeButton);
 
     await waitFor(() => {
       expect(
@@ -350,9 +353,7 @@ describe("TokenFormBase", () => {
     await user.click(screen.getByRole("button", { name: /confirm/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/no instances to attach/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/no instances to attach/i)).toBeInTheDocument();
     });
   });
 

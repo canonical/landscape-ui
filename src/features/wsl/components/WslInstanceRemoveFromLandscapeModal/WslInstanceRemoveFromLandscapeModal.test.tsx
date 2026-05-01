@@ -128,8 +128,6 @@ describe("WslInstanceRemoveFromLandscapeModal", () => {
     await user.click(screen.getByRole("button", { name: /^remove$/i }));
 
     expect(closeFn).toHaveBeenCalled();
-    expect(
-      screen.queryByText(/successfully removed/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/successfully removed/i)).not.toBeInTheDocument();
   });
 });

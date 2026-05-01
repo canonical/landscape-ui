@@ -1,6 +1,9 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
-import { autoinstallFiles, autoinstallFileVersions } from "@/tests/mocks/autoinstallFiles";
+import {
+  autoinstallFiles,
+  autoinstallFileVersions,
+} from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

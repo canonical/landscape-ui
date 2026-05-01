@@ -47,7 +47,9 @@ describe("ChangePasswordForm", () => {
 
     // When the password has non-required errors, the inline error is not shown
     // (only "This field is required" triggers the inline error on new-password)
-    expect(screen.queryByText("This field is required")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
   });
 
   it("submits successfully and shows success notification", async () => {

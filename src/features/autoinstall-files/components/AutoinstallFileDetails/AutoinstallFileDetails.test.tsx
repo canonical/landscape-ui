@@ -1,6 +1,9 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
-import { autoinstallFiles, autoinstallFileVersions } from "@/tests/mocks/autoinstallFiles";
+import {
+  autoinstallFiles,
+  autoinstallFileVersions,
+} from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -21,9 +24,7 @@ describe("AutoinstallFileDetails", () => {
     expect(
       screen.getByRole("button", { name: /set as default/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /remove/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /remove/i })).toBeInTheDocument();
   });
 
   it("disables set-as-default and remove buttons for the default file", () => {
@@ -84,7 +85,10 @@ describe("AutoinstallFileDetails", () => {
 
   it("renders with an initial tab id", () => {
     renderWithProviders(
-      <AutoinstallFileDetails {...defaultProps} initialTabId="version-history" />,
+      <AutoinstallFileDetails
+        {...defaultProps}
+        initialTabId="version-history"
+      />,
     );
     expect(
       screen.getByRole("tab", { name: /version history/i }),
@@ -104,7 +108,10 @@ describe("AutoinstallFileDetails", () => {
     });
 
     renderWithProviders(
-      <AutoinstallFileDetails {...defaultProps} initialTabId="version-history" />,
+      <AutoinstallFileDetails
+        {...defaultProps}
+        initialTabId="version-history"
+      />,
     );
 
     // Wait for version history to load
@@ -120,11 +127,12 @@ describe("AutoinstallFileDetails", () => {
     const aside = await screen.findByRole("complementary");
 
     // Wait for loading to finish inside the side panel
-    await waitFor(() => {
-      expect(
-        within(aside).queryByRole("status"),
-      ).not.toBeInTheDocument();
-    }, { timeout: 5000 });
+    await waitFor(
+      () => {
+        expect(within(aside).queryByRole("status")).not.toBeInTheDocument();
+      },
+      { timeout: 5000 },
+    );
 
     // Click the Back button in the version detail panel
     const backButton = await screen.findByRole("button", { name: /back/i });

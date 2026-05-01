@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { act, screen } from "@testing-library/react";
 import { Chart, registerables } from "chart.js";
+import type { ActiveElement, ChartEvent } from "chart.js";
 import { describe, vi } from "vitest";
 import PieChart from "./PieChart";
 import { colorMap } from "../../constants";
@@ -28,8 +29,10 @@ const MOCK_CHART = {
 // When false, the mock Pie does NOT set ref.current (tests the `if (chartRef.current)` false branch)
 let mockSetsRef = true;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let capturedOnHover: ((event: any, elements: any[], chart: any) => void) | undefined;
+ 
+let capturedOnHover:
+  | ((event: ChartEvent, elements: ActiveElement[], chart: Chart) => void)
+  | undefined;
 
 vi.mock("react-chartjs-2", async () => {
   const { forwardRef } = await import("react");
@@ -43,11 +46,13 @@ vi.mock("react-chartjs-2", async () => {
       MOCK_CHART.data = {
         labels: props.data?.labels ?? [],
         datasets:
-          props.data?.datasets?.map((d: { data: number[]; backgroundColor: string[] }) => ({
-            ...d,
-            data: [...d.data],
-            backgroundColor: [...(d.backgroundColor as string[])],
-          })) ?? [],
+          props.data?.datasets?.map(
+            (d: { data: number[]; backgroundColor: string[] }) => ({
+              ...d,
+              data: [...d.data],
+              backgroundColor: [...(d.backgroundColor as string[])],
+            }),
+          ) ?? [],
       };
       // Set stable ref so PieChart's useEffect can run with a non-null chartInstance
       if (mockSetsRef && ref && typeof ref === "object" && ref !== null) {
@@ -136,7 +141,7 @@ describe("PieChart", () => {
       },
     };
     await act(async () => {
-      capturedOnHover?.({}, [{ datasetIndex: 0 }], mockChart);
+      capturedOnHover?.({} as unknown as ChartEvent, [{ datasetIndex: 0 } as ActiveElement], mockChart as unknown as Chart);
     });
     expect(mockChart.update).toHaveBeenCalled();
   });
@@ -156,7 +161,7 @@ describe("PieChart", () => {
       },
     };
     await act(async () => {
-      capturedOnHover?.({}, [], mockChart);
+      capturedOnHover?.({} as unknown as ChartEvent, [], mockChart as unknown as Chart);
     });
     expect(mockChart.update).toHaveBeenCalled();
   });

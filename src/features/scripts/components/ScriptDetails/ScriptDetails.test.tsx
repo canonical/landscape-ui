@@ -181,7 +181,10 @@ describe("ScriptDetails", () => {
 
   it("should navigate back from version history details", async () => {
     renderWithProviders(
-      <ScriptDetails scriptId={activeScriptId} initialTabId="version-history" />,
+      <ScriptDetails
+        scriptId={activeScriptId}
+        initialTabId="version-history"
+      />,
     );
 
     const versionButton = await screen.findByRole("button", { name: "1" });

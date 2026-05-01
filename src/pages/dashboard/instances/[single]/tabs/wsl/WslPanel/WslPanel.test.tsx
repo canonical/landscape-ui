@@ -51,9 +51,7 @@ describe("WslPanel", () => {
 
     renderWithProviders(<WslPanel instance={windowsInstance} />);
 
-    expect(
-      await screen.findByText(/limit reached/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/limit reached/i)).toBeInTheDocument();
   });
 
   it("shows error boundary when children endpoint fails", async () => {

@@ -9,11 +9,7 @@ import type { Cell, Row } from "react-table";
 import { describe, expect, it } from "vitest";
 import type { Employee } from "../../types";
 import EmployeeList from "./EmployeeList";
-import {
-  getTableRows,
-  handleCellProps,
-  handleRowProps,
-} from "./helpers";
+import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
 
 const employeeWithEmptyComputers: Employee = {
   id: 99,
@@ -339,7 +335,10 @@ describe("EmployeeList", () => {
     const computersCell = within(row).getByRole("cell", {
       name: /associated instances/i,
     });
-    const computerLink = within(computersCell).getAllByRole("link")[0];
+    const [computerLink] = within(computersCell).getAllByRole("link");
+
+    assert(computerLink);
+
     await user.click(computerLink);
 
     // Cell should remain expanded (Show more button still absent)
@@ -422,7 +421,10 @@ describe("EmployeeList", () => {
 
 describe("handleCellProps (EmployeeList)", () => {
   const makeCell = (columnId: string, rowIndex: number) =>
-    ({ column: { id: columnId }, row: { index: rowIndex } }) as unknown as Cell<Employee>;
+    ({
+      column: { id: columnId },
+      row: { index: rowIndex },
+    }) as unknown as Cell<Employee>;
 
   it("sets aria-label='Associated instances' for the computers column", () => {
     const result = handleCellProps(null)(makeCell("computers", 0));
@@ -509,8 +511,7 @@ describe("getTableRows (EmployeeList)", () => {
   it("sets ref.current to tbody tr elements when instance is provided", () => {
     const ref = { current: [] as HTMLTableRowElement[] };
     const div = document.createElement("div");
-    div.innerHTML =
-      "<table><tbody><tr></tr><tr></tr><tr></tr></tbody></table>";
+    div.innerHTML = "<table><tbody><tr></tr><tr></tr><tr></tr></tbody></table>";
     getTableRows(ref)(div);
     expect(ref.current).toHaveLength(3);
   });

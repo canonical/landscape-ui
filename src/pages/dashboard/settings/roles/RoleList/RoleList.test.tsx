@@ -64,10 +64,10 @@ describe("RoleList", () => {
     renderWithProviders(<RoleList {...props} />);
 
     const nonGlobalAdminRole = roles.find((r) => r.name !== "GlobalAdmin");
-    expect(nonGlobalAdminRole).toBeDefined();
+    assert(nonGlobalAdminRole);
 
     const actionButtons = screen.getAllByRole("button", {
-      name: new RegExp(`${nonGlobalAdminRole!.name} role actions`, "i"),
+      name: new RegExp(`${nonGlobalAdminRole.name} role actions`, "i"),
     });
     expect(actionButtons.length).toBeGreaterThan(0);
   });
@@ -81,7 +81,8 @@ describe("RoleList", () => {
   it("expands view permissions cell when Show more button is clicked", async () => {
     renderWithProviders(<RoleList {...props} />);
 
-    const serverAdmin = roles.find((r) => r.name === "ServerAdmin")!;
+    const serverAdmin = roles.find((r) => r.name === "ServerAdmin");
+    assert(serverAdmin);
     const row = screen.getByRole("row", {
       name: (n) => n.toLowerCase().includes(serverAdmin.name.toLowerCase()),
     });
@@ -104,7 +105,8 @@ describe("RoleList", () => {
   it("expands manage permissions cell when Show more button is clicked", async () => {
     renderWithProviders(<RoleList {...props} />);
 
-    const serverAdmin = roles.find((r) => r.name === "ServerAdmin")!;
+    const serverAdmin = roles.find((r) => r.name === "ServerAdmin");
+    assert(serverAdmin);
     const row = screen.getByRole("row", {
       name: (n) => n.toLowerCase().includes(serverAdmin.name.toLowerCase()),
     });
@@ -127,7 +129,8 @@ describe("RoleList", () => {
   it("collapses expanded view cell when clicking outside", async () => {
     const { container } = renderWithProviders(<RoleList {...props} />);
 
-    const serverAdmin = roles.find((r) => r.name === "ServerAdmin")!;
+    const serverAdmin = roles.find((r) => r.name === "ServerAdmin");
+    assert(serverAdmin);
     const row = screen.getByRole("row", {
       name: (n) => n.toLowerCase().includes(serverAdmin.name.toLowerCase()),
     });
@@ -151,7 +154,10 @@ describe("RoleList", () => {
 
 describe("handleCellProps", () => {
   const makeCell = (columnId: string, rowIndex: number) =>
-    ({ column: { id: columnId }, row: { index: rowIndex } }) as unknown as Cell<Role>;
+    ({
+      column: { id: columnId },
+      row: { index: rowIndex },
+    }) as unknown as Cell<Role>;
 
   it("sets expandedCell className when coordinates match", () => {
     const expandedCell = { rowIndex: 1, columnId: "view" };
@@ -238,7 +244,8 @@ describe("getPermissionListByType", () => {
   });
 
   it("returns 'All properties' when all permissions of a type are present", () => {
-    const serverAdmin = roles.find((r) => r.name === "ServerAdmin")!;
+    const serverAdmin = roles.find((r) => r.name === "ServerAdmin");
+    assert(serverAdmin);
     const result = getPermissionListByType(
       serverAdmin,
       permissionOptions,
@@ -248,7 +255,8 @@ describe("getPermissionListByType", () => {
   });
 
   it("returns a comma-separated list when only some permissions are present", () => {
-    const desktopAdmin = roles.find((r) => r.name === "DesktopAdmin")!;
+    const desktopAdmin = roles.find((r) => r.name === "DesktopAdmin");
+    assert(desktopAdmin);
     const result = getPermissionListByType(
       desktopAdmin,
       permissionOptions,
@@ -260,7 +268,8 @@ describe("getPermissionListByType", () => {
   });
 
   it("handles a role without global_permissions property", () => {
-    const globalAdmin = roles.find((r) => r.name === "GlobalAdmin")!;
+    const globalAdmin = roles.find((r) => r.name === "GlobalAdmin");
+    assert(globalAdmin);
     const result = getPermissionListByType(
       globalAdmin,
       permissionOptions,
@@ -280,8 +289,7 @@ describe("getTableRows (RoleList)", () => {
   it("sets ref.current to tbody tr elements when instance is provided", () => {
     const ref = { current: [] as HTMLTableRowElement[] };
     const div = document.createElement("div");
-    div.innerHTML =
-      "<table><tbody><tr></tr><tr></tr></tbody></table>";
+    div.innerHTML = "<table><tbody><tr></tr><tr></tr></tbody></table>";
     getTableRows(ref)(div);
     expect(ref.current).toHaveLength(2);
   });

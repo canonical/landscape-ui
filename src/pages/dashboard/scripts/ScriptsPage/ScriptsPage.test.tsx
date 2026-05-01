@@ -50,10 +50,14 @@ describe("ScriptsPage", () => {
 
     renderWithProviders(<ScriptsPage />);
 
-    const notification = screen.getByText(/this page only displays v2 scripts/i);
+    const notification = screen.getByText(
+      /this page only displays v2 scripts/i,
+    );
     expect(notification).toBeInTheDocument();
 
-    const dismissButton = screen.getByRole("button", { name: /close notification/i });
+    const dismissButton = screen.getByRole("button", {
+      name: /close notification/i,
+    });
     await userEvent.click(dismissButton);
 
     await waitFor(() => {

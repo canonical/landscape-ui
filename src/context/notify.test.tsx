@@ -15,18 +15,26 @@ const TestConsumer = () => (
           </div>
         )}
         <button
-          onClick={() =>
-            { notify.success({ title: "Done", message: "Success msg" }); }
-          }
+          onClick={() => {
+            notify.success({ title: "Done", message: "Success msg" });
+          }}
         >
           Trigger Success
         </button>
         <button
-          onClick={() => { notify.error({ title: "Fail", message: "Error msg" }); }}
+          onClick={() => {
+            notify.error({ title: "Fail", message: "Error msg" });
+          }}
         >
           Trigger Error
         </button>
-        <button onClick={() => { notify.clear(); }}>Clear</button>
+        <button
+          onClick={() => {
+            notify.clear();
+          }}
+        >
+          Clear
+        </button>
       </div>
     )}
   </NotifyContext.Consumer>
@@ -89,14 +97,14 @@ describe("NotifyProvider", () => {
     );
 
     await user.click(screen.getByText("Trigger Success"));
-    await waitFor(() =>
-      { expect(screen.getByTestId("notification")).toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId("notification")).toBeInTheDocument();
+    });
 
     await user.click(screen.getByText("Clear"));
-    await waitFor(() =>
-      { expect(screen.queryByTestId("notification")).not.toBeInTheDocument(); },
-    );
+    await waitFor(() => {
+      expect(screen.queryByTestId("notification")).not.toBeInTheDocument();
+    });
   });
 
   it("shows an info notification when notify.info is called", async () => {
@@ -110,9 +118,9 @@ describe("NotifyProvider", () => {
               </div>
             )}
             <button
-              onClick={() =>
-                { notify.info({ title: "Info", message: "Info msg" }); }
-              }
+              onClick={() => {
+                notify.info({ title: "Info", message: "Info msg" });
+              }}
             >
               Trigger Info
             </button>
@@ -154,8 +162,20 @@ describe("NotifyProvider", () => {
         {({ sidePanel }) => (
           <div>
             <span data-testid="open">{sidePanel.open ? "open" : "closed"}</span>
-            <button onClick={() => { sidePanel.setOpen(true); }}>Open</button>
-            <button onClick={() => { sidePanel.setOpen(false); }}>Close</button>
+            <button
+              onClick={() => {
+                sidePanel.setOpen(true);
+              }}
+            >
+              Open
+            </button>
+            <button
+              onClick={() => {
+                sidePanel.setOpen(false);
+              }}
+            >
+              Close
+            </button>
           </div>
         )}
       </NotifyContext.Consumer>

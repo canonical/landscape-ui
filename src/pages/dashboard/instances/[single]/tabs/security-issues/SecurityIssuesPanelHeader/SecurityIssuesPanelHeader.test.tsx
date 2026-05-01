@@ -123,7 +123,9 @@ describe("SecurityIssuesPanelHeader", () => {
     await user.click(await screen.findByRole("button", { name: /upgrade/i }));
 
     const dialog = await screen.findByRole("dialog");
-    await user.click(within(dialog).getByRole("button", { name: /^upgrade$/i }));
+    await user.click(
+      within(dialog).getByRole("button", { name: /^upgrade$/i }),
+    );
 
     await screen.findByText(/you queued packages to be upgraded/i);
 
@@ -132,7 +134,9 @@ describe("SecurityIssuesPanelHeader", () => {
     });
     await user.click(viewDetailsButton);
 
-    expect(screen.queryByText(/you queued packages to be upgraded/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/you queued packages to be upgraded/i),
+    ).not.toBeInTheDocument();
   });
 
   it("handles error gracefully when upgrade endpoint fails", async () => {
@@ -150,7 +154,9 @@ describe("SecurityIssuesPanelHeader", () => {
     await user.click(await screen.findByRole("button", { name: /upgrade/i }));
 
     const dialog = await screen.findByRole("dialog");
-    await user.click(within(dialog).getByRole("button", { name: /^upgrade$/i }));
+    await user.click(
+      within(dialog).getByRole("button", { name: /^upgrade$/i }),
+    );
 
     expect(
       screen.queryByText(/you queued packages to be upgraded/i),

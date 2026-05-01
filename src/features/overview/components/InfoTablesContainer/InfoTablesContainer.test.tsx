@@ -1,4 +1,8 @@
-import { activities, manyUnapprovedActivities, manyDeliveredActivities } from "@/tests/mocks/activity";
+import {
+  activities,
+  manyUnapprovedActivities,
+  manyDeliveredActivities,
+} from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
 import { packages } from "@/tests/mocks/packages";
 import { usns } from "@/tests/mocks/usn";
@@ -105,7 +109,7 @@ describe("InfoTablesContainer", () => {
 
       // Should show instances again
       const shownInstances = instances.slice(0, LIST_LIMIT);
-      const firstInstance = shownInstances[0];
+      const [firstInstance] = shownInstances;
       assert(firstInstance);
       const instanceTitle = await screen.findByText(firstInstance.title);
       expect(instanceTitle).toBeInTheDocument();
@@ -125,7 +129,7 @@ describe("InfoTablesContainer", () => {
         (a) => a.activity_status === "unapproved",
       );
       expect(unapprovedActivities.length).toBeGreaterThan(0);
-      const firstActivity = unapprovedActivities[0];
+      const [firstActivity] = unapprovedActivities;
       assert(firstActivity);
       const activitySummary = await screen.findAllByText(firstActivity.summary);
       expect(activitySummary.length).toBeGreaterThan(0);
@@ -136,7 +140,7 @@ describe("InfoTablesContainer", () => {
     it("opens confirmation modal and triggers upgrade when confirmed", async () => {
       // Wait for instances to load
       const shownInstances = instances.slice(0, LIST_LIMIT);
-      const firstInstance = shownInstances[0];
+      const [firstInstance] = shownInstances;
       assert(firstInstance);
       await screen.findByText(firstInstance.title);
 
@@ -146,9 +150,7 @@ describe("InfoTablesContainer", () => {
       await userEvent.click(upgradeAllButton);
 
       const modal = await screen.findByRole("dialog");
-      expect(
-        within(modal).getByText(/upgrade packages/i),
-      ).toBeInTheDocument();
+      expect(within(modal).getByText(/upgrade packages/i)).toBeInTheDocument();
 
       const confirmButton = within(modal).getByRole("button", {
         name: /^upgrade$/i,
@@ -161,7 +163,7 @@ describe("InfoTablesContainer", () => {
     });
 
     it("handles upgrade error gracefully", async () => {
-      const firstInstance = instances[0];
+      const [firstInstance] = instances;
       assert(firstInstance);
       await screen.findByText(firstInstance.title);
 
@@ -189,7 +191,7 @@ describe("InfoTablesContainer", () => {
       const unapprovedActivities = activities.filter(
         (a) => a.activity_status === "unapproved",
       );
-      const firstActivity = unapprovedActivities[0];
+      const [firstActivity] = unapprovedActivities;
       assert(firstActivity);
       await screen.findAllByText(firstActivity.summary);
 
@@ -220,7 +222,7 @@ describe("InfoTablesContainer", () => {
       const unapprovedActivities = activities.filter(
         (a) => a.activity_status === "unapproved",
       );
-      const firstActivity = unapprovedActivities[0];
+      const [firstActivity] = unapprovedActivities;
       assert(firstActivity);
       await screen.findAllByText(firstActivity.summary);
 
@@ -246,7 +248,7 @@ describe("InfoTablesContainer", () => {
     it("shows the footer and triggers view-all navigation on instances tab", async () => {
       // With 35 instances total and MAX = 10, footer should appear
       const shownInstances = instances.slice(0, LIST_LIMIT);
-      const firstInstance = shownInstances[0];
+      const [firstInstance] = shownInstances;
       assert(firstInstance);
       await screen.findByText(firstInstance.title);
 
@@ -264,7 +266,7 @@ describe("InfoTablesContainer", () => {
       await userEvent.click(packagesTab);
 
       const shownPackages = packages.slice(0, LIST_LIMIT);
-      const firstPackage = shownPackages[0];
+      const [firstPackage] = shownPackages;
       assert(firstPackage);
       await screen.findByText(firstPackage.name);
 
@@ -281,7 +283,7 @@ describe("InfoTablesContainer", () => {
       await userEvent.click(usnsTab);
 
       const shownUsns = usns.slice(0, LIST_LIMIT);
-      const firstUsn = shownUsns[0];
+      const [firstUsn] = shownUsns;
       assert(firstUsn);
       await screen.findByText(firstUsn.usn);
 
@@ -300,7 +302,10 @@ describe("InfoTablesContainer activities footer", () => {
     setEndpointStatus({
       status: "variant",
       path: "activities",
-      response: { unapproved: manyUnapprovedActivities, delivered: manyDeliveredActivities },
+      response: {
+        unapproved: manyUnapprovedActivities,
+        delivered: manyDeliveredActivities,
+      },
     });
     renderWithProviders(<InfoTablesContainer />);
 
@@ -314,7 +319,8 @@ describe("InfoTablesContainer activities footer", () => {
     const viewAllButtons = await screen.findAllByRole("button", {
       name: /view all/i,
     });
-    const activitiesViewAllButton = viewAllButtons[viewAllButtons.length - 1]!;
+    const activitiesViewAllButton = viewAllButtons.at(-1);
+    assert(activitiesViewAllButton);
     await userEvent.click(activitiesViewAllButton);
     expect(screen.getByText("Activities")).toBeInTheDocument();
   });
@@ -323,7 +329,10 @@ describe("InfoTablesContainer activities footer", () => {
     setEndpointStatus({
       status: "variant",
       path: "activities",
-      response: { unapproved: manyUnapprovedActivities, delivered: manyDeliveredActivities },
+      response: {
+        unapproved: manyUnapprovedActivities,
+        delivered: manyDeliveredActivities,
+      },
     });
     renderWithProviders(<InfoTablesContainer />);
 
@@ -341,7 +350,8 @@ describe("InfoTablesContainer activities footer", () => {
     const viewAllButtons = await screen.findAllByRole("button", {
       name: /view all/i,
     });
-    const activitiesViewAllButton = viewAllButtons[viewAllButtons.length - 1]!;
+    const activitiesViewAllButton = viewAllButtons.at(-1);
+    assert(activitiesViewAllButton);
     await userEvent.click(activitiesViewAllButton);
     expect(screen.getByText("Activities")).toBeInTheDocument();
   });
@@ -365,7 +375,8 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
 
     // Wait for instances to load, then switch to packages tab
     await screen.findByRole("tab", { name: /instances/i });
-    const packagesTab = screen.getAllByRole("tab", { name: /packages/i })[0]!;
+    const [packagesTab] = screen.getAllByRole("tab", { name: /packages/i });
+    assert(packagesTab);
     await userEvent.click(packagesTab);
 
     const refreshButton = await screen.findByRole("button", {
@@ -398,7 +409,9 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
       name: /refresh/i,
     });
     // Click the last refresh button (activities section, upgrades may also have refresh)
-    await userEvent.click(refreshButtons[refreshButtons.length - 1]!);
+    const lastRefreshButton = refreshButtons.at(-1);
+    assert(lastRefreshButton);
+    await userEvent.click(lastRefreshButton);
     expect(screen.getByText("Activities")).toBeInTheDocument();
   });
 
@@ -414,7 +427,9 @@ describe("InfoTablesContainer empty-state refresh handlers", () => {
     const refreshButtons = await screen.findAllByRole("button", {
       name: /refresh/i,
     });
-    await userEvent.click(refreshButtons[refreshButtons.length - 1]!);
+    const lastRefreshButton = refreshButtons.at(-1);
+    assert(lastRefreshButton);
+    await userEvent.click(lastRefreshButton);
     expect(screen.getByText("Activities")).toBeInTheDocument();
   });
 });

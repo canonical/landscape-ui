@@ -148,9 +148,7 @@ describe("ShutDownModal", () => {
     await user.click(screen.getByRole("button", { name: /shut down/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/this field is required/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/this field is required/i)).toBeInTheDocument();
     });
   });
 

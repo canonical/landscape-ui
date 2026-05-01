@@ -85,12 +85,12 @@ describe("InstallSnaps", () => {
     const addButton = await screen.findByRole("button", { name: /add/i });
     await userEvent.click(addButton);
 
-    const installButton = screen.getByRole("button", { name: /install snaps/i });
+    const installButton = screen.getByRole("button", {
+      name: /install snaps/i,
+    });
     expect(installButton).not.toHaveAttribute("aria-disabled", "true");
     await userEvent.click(installButton);
 
-    expect(
-      await screen.findByText(/you queued/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
   });
 });

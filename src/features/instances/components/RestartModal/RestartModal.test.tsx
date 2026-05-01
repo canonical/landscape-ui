@@ -134,9 +134,7 @@ describe("RestartModal", () => {
     await user.click(screen.getByRole("button", { name: /^restart$/i }));
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/this field is required/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/this field is required/i)).toBeInTheDocument();
     });
   });
 
