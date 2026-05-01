@@ -155,8 +155,8 @@ export default function useUsgProfileFormBenchmarkStep<
           {...formik.getFieldProps("tailoring_file")}
           help={
             <>
-              Customize your USG profile by adjusting or disabling rules to
-              fit your system while staying compliant.
+              Customize your USG profile by adjusting or disabling rules to fit
+              your system while staying compliant.
               <br />
               Max file size: 5mb. Supported format: .xml.
             </>
