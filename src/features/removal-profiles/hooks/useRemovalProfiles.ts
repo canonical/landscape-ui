@@ -53,8 +53,10 @@ export default function useRemovalProfiles() {
         params: { ...rest, tags: normalizedTags },
       });
     },
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["removalProfiles"] });
+      await queryClient.invalidateQueries({ queryKey: ["removalProfile"] });
+    },
   });
 
   const removeRemovalProfileQuery = useMutation<

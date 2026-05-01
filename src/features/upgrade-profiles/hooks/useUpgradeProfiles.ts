@@ -72,8 +72,10 @@ export default function useUpgradeProfiles() {
         params: { ...rest, tags: normalizedTags },
       });
     },
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] });
+      await queryClient.invalidateQueries({ queryKey: ["upgradeProfile"] });
+    },
   });
 
   const removeUpgradeProfileQuery = useMutation<
