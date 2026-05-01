@@ -116,7 +116,7 @@ export default [
       const endpointStatus = getEndpointStatus();
 
       if (endpointStatus.status === "error") {
-        throw getEndpointStatusApiError();
+        throw createEndpointStatusError();
       }
 
       return HttpResponse.json(activities[0]);

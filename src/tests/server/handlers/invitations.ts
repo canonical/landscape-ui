@@ -1,9 +1,8 @@
 import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import type { Invitation, InvitationSummary } from "@/types/Invitation";
+import type { InvitationSummary } from "@/types/Invitation";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse } from "./_helpers";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "./_helpers";
 import { invitations, invitationsSummary } from "@/tests/mocks/invitations";
 
 export const invitationState = {
@@ -11,7 +10,7 @@ export const invitationState = {
 };
 
 export default [
-  http.get<never, never, ApiPaginatedResponse<Invitation>>(
+  http.get<never, never>(
     `${API_URL}invitations`,
     () => {
       const { status } = getEndpointStatus();
@@ -46,16 +45,14 @@ export default [
   ),
 
   http.post(`${API_URL}accept-invitation`, () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path ||
-        endpointStatus.path.includes("accept-invitation"))
-    ) {
-      return HttpResponse.json(
-        { error: "InternalServerError", message: "Accept failed" },
-        { status: 500 },
-      );
+    if (shouldApplyEndpointStatus("accept-invitation")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return HttpResponse.json(
+          { error: "InternalServerError", message: "Accept failed" },
+          { status: 500 },
+        );
+      }
     }
     invitationState.accepted = true;
     return HttpResponse.json({
@@ -65,16 +62,14 @@ export default [
   }),
 
   http.post(`${API_URL}reject-invitation`, () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path ||
-        endpointStatus.path.includes("reject-invitation"))
-    ) {
-      return HttpResponse.json(
-        { error: "InternalServerError", message: "Reject failed" },
-        { status: 500 },
-      );
+    if (shouldApplyEndpointStatus("reject-invitation")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return HttpResponse.json(
+          { error: "InternalServerError", message: "Reject failed" },
+          { status: 500 },
+        );
+      }
     }
     return new HttpResponse(null, { status: 204 });
   }),

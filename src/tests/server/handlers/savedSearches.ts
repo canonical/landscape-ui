@@ -3,7 +3,7 @@ import { API_URL_OLD } from "@/constants";
 import { isAction } from "./_helpers";
 import { savedSearches } from "@/tests/mocks/savedSearches";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { getEndpointStatusApiError } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get(API_URL_OLD, ({ request }) => {
@@ -24,7 +24,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "CreateSavedSearch")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({

@@ -77,7 +77,7 @@ export default [
       endpointStatus.status === "error" &&
       (!endpointStatus.path || endpointStatus.path === "AddTagsToComputers")
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     const { searchParams } = new URL(request.url);

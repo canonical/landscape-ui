@@ -15,7 +15,7 @@ import {
   isAction,
   shouldApplyEndpointStatus,
 } from "@/tests/server/handlers/_helpers";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
   createEndpointStatusNetworkError,
@@ -96,7 +96,7 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "scripts/versions/detail"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json(scriptVersion);
@@ -243,27 +243,29 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "archive"
     ) {
-      throw getEndpointStatusApiError();
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json({});
   }),
 
   http.post(`${API_URL}scripts/:id\\:redact`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error" && endpointStatus.path === "redact") {
-      throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus("redact")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json({});
   }),
 
   http.post(`${API_URL}scripts/run`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error" && endpointStatus.path === "run") {
-      throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus("run")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json({});

@@ -9,7 +9,7 @@ import type {
 } from "@/features/autoinstall-files";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
@@ -60,19 +60,23 @@ export default [
     const withMetadata = url.searchParams.get("with_metadata") === "true";
 
     if (withMetadata) {
-      const endpointStatus = getEndpointStatus();
-      const metadata =
-        endpointStatus.status === "variant" && endpointStatus.path === "autoinstall"
-          ? endpointStatus.response
-          : {
-              current_version: autoinstallFile.version,
-              max_versions: 5,
-              versions: [],
-            };
+      if (
+        shouldApplyEndpointStatus("autoinstall") &&
+        getEndpointStatus().status === "variant"
+      ) {
+        return HttpResponse.json({
+          ...autoinstallFile,
+          metadata: getEndpointStatus().response,
+        });
+      }
 
       return HttpResponse.json({
         ...autoinstallFile,
-        metadata,
+        metadata: {
+          current_version: autoinstallFile.version,
+          max_versions: 5,
+          versions: [],
+        },
       });
     }
 
@@ -95,20 +99,18 @@ export default [
     },
   ),
   http.post(`${API_URL}autoinstall:validate`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "variant" &&
-      endpointStatus.path === "autoinstall-validate"
-    ) {
-      return HttpResponse.json(endpointStatus.response, { status: 400 });
+    if (shouldApplyEndpointStatus("autoinstall-validate")) {
+      const { status, response } = getEndpointStatus();
+      if (status === "variant") {
+        return HttpResponse.json(response, { status: 400 });
+      }
     }
 
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "autoinstall:validate")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("autoinstall:validate")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json({});

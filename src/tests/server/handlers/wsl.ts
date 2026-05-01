@@ -6,27 +6,21 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { instanceChildren, wslInstanceNames } from "@/tests/mocks/wsl";
 import type { InstanceChild } from "@/types/Instance";
 import { delay, http, HttpResponse } from "msw";
-import { isAction } from "./_helpers";
+import { isAction, shouldApplyEndpointStatus } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<{ id: string }, never, { children: InstanceChild[] }>(
     `${API_URL}computers/:id/children`,
     () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (
-        endpointStatus.status === "empty" &&
-        endpointStatus.path === "children"
-      ) {
-        return HttpResponse.json({ children: [] });
-      }
-
-      if (
-        endpointStatus.status === "error" &&
-        endpointStatus.path === "children"
-      ) {
-        throw createEndpointStatusError();
+      if (shouldApplyEndpointStatus("children")) {
+        const { status } = getEndpointStatus();
+        if (status === "empty") {
+          return HttpResponse.json({ children: [] });
+        }
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
       }
 
       return HttpResponse.json({ children: instanceChildren });
@@ -48,9 +42,11 @@ export default [
   ),
 
   http.post(`${API_URL}child-instance-profiles/:name\\:reapply`, () => {
-    const { status } = getEndpointStatus();
-    if (status === "error") {
-      return createEndpointStatusError();
+    if (shouldApplyEndpointStatus("child-instance-profiles/:name:reapply")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
     return HttpResponse.json();
   }),
@@ -60,12 +56,11 @@ export default [
       return;
     }
 
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "SetDefaultChildComputer"
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("SetDefaultChildComputer")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json();
@@ -74,13 +69,11 @@ export default [
   http.post<{ parent_id: string }, never, Activity>(
     `${API_URL}computers/:parent_id/children`,
     () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (
-        endpointStatus.status === "error" &&
-        endpointStatus.path === "create-wsl-instance"
-      ) {
-        throw createEndpointStatusError();
+      if (shouldApplyEndpointStatus("create-wsl-instance")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
       }
 
       return HttpResponse.json({
@@ -113,14 +106,14 @@ export default [
   }),
 
   http.get(`${API_URL}wsl-feature-limits`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "loading" && (!endpointStatus.path || endpointStatus.path === "wsl-feature-limits")) {
-      await delay("infinite");
-    }
-
-    if (endpointStatus.status === "variant" && endpointStatus.path === "wsl-feature-limits") {
-      return HttpResponse.json(endpointStatus.response);
+    if (shouldApplyEndpointStatus("wsl-feature-limits")) {
+      const { status, response } = getEndpointStatus();
+      if (status === "loading") {
+        await delay("infinite");
+      }
+      if (status === "variant") {
+        return HttpResponse.json(response);
+      }
     }
 
     return HttpResponse.json<{

@@ -6,24 +6,26 @@ import { API_URL } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { usnPackages, usns } from "@/tests/mocks/usn";
 import { activities } from "@/tests/mocks/activity";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import { generatePaginatedResponse, shouldApplyEndpointStatus } from "@/tests/server/handlers/_helpers";
 import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, GetUsnsParams, ApiPaginatedResponse<Usn>>(
     `${API_URL}usns`,
     async ({ request }) => {
-      const endpointStatus = getEndpointStatus();
       const url = new URL(request.url);
 
       const limit = Number(url.searchParams.get("limit")) || usns.length;
       const offset = Number(url.searchParams.get("offset")) || 0;
       const search = url.searchParams.get("search") ?? "";
 
-      if (endpointStatus.status === "empty" && endpointStatus.path === "usns") {
-        return HttpResponse.json(
-          generatePaginatedResponse<Usn>({ data: [], limit, offset }),
-        );
+      if (shouldApplyEndpointStatus("usns")) {
+        const { status } = getEndpointStatus();
+        if (status === "empty") {
+          return HttpResponse.json(
+            generatePaginatedResponse<Usn>({ data: [], limit, offset }),
+          );
+        }
       }
 
       return HttpResponse.json(
@@ -43,30 +45,33 @@ export default [
   }),
 
   http.post(`${API_URL}computers/usns/upgrade-packages`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus()) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(activities[0]);
   }),
 
   http.post(`${API_URL}computers/:instanceId/usns/upgrade-packages`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus()) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(activities[0]);
   }),
 
   http.post(`${API_URL}computers/:instanceId/usns/remove-packages`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw getEndpointStatusApiError();
+    if (shouldApplyEndpointStatus()) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(activities[0]);

@@ -9,7 +9,6 @@ import {
   packages,
 } from "@/tests/mocks/packages";
 import { activities } from "@/tests/mocks/activity";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import {
   generatePaginatedResponse,
   isAction,
@@ -33,7 +32,7 @@ const parseBooleanParam = (value: string | null): boolean | undefined => {
 };
 
 export default [
-  http.get<never, GetPackagesParams, ApiPaginatedResponse<Package>>(
+  http.get<never, GetPackagesParams>(
     `${API_URL}packages`,
     async ({ request }) => {
       if (shouldApplyEndpointStatus("packages")) {
@@ -68,12 +67,11 @@ export default [
   ),
 
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "computers-packages"
-    ) {
-      throw new HttpResponse(null, { status: 500 });
+    if (shouldApplyEndpointStatus("computers-packages")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
     }
 
     const url = new URL(request.url);
@@ -157,12 +155,11 @@ export default [
       return;
     }
 
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "UpgradePackages")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("UpgradePackages")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json<Activity>(activities[0]);

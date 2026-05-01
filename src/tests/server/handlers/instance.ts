@@ -35,187 +35,91 @@ import {
 } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
 
+function matchComputersQuery(
+  query: string,
+  endpointStatus: ReturnType<typeof getEndpointStatus>,
+  limit: number,
+  offset: number,
+): HttpResponse | null {
+  if (
+    endpointStatus.status === "empty" &&
+    endpointStatus.path === "computers-pro-empty" &&
+    query.includes("has-pro-management:false")
+  ) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({ data: [], limit, offset }),
+    );
+  }
+  if (query.includes("has-pro-management:false")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: [instances[1], instances[2]],
+        limit,
+        offset,
+      }),
+    );
+  }
+  if (query.includes("access-group:singular-access-group")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: [instances[0]],
+        limit,
+        offset,
+      }),
+    );
+  }
+  if (query.includes("access-group:empty-access-group")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({ data: [], limit, offset }),
+    );
+  }
+  if (
+    endpointStatus.status === "empty" &&
+    (endpointStatus.path === "computers-alert-empty" ||
+      endpointStatus.path === "empty-upgrades") &&
+    (query.includes("alert:security-upgrades") ||
+      query.includes("alert:package-upgrades"))
+  ) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({ data: [], limit, offset }),
+    );
+  }
+  if (query.includes("profile:repository:")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: instances.slice(0, 2),
+        limit,
+        offset,
+      }),
+    );
+  }
+  return null;
+}
+
 export default [
   http.get(`${API_URL}computers`, async ({ request }) => {
     const url = new URL(request.url);
     const query = url.searchParams.get("query") || "";
     const endpointStatus = getEndpointStatus();
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const limit = Number(url.searchParams.get("limit")) || 1;
 
     if (shouldApplyEndpointStatus("computers")) {
-      if (
-        endpointStatus.status === "error" &&
-        (!endpointStatus.path || endpointStatus.path === "computers")
-      ) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
         throw createEndpointStatusError();
       }
     }
 
-    const offset = Number(url.searchParams.get("offset")) || 0;
-    const limit = Number(url.searchParams.get("limit")) || 1;
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "computers-pro-empty" &&
-      query.includes("has-pro-management:false")
-    ) {
-      return HttpResponse.json(
+    return (
+      matchComputersQuery(query, endpointStatus, limit, offset) ??
+      HttpResponse.json(
         generatePaginatedResponse<Instance>({
-          data: [],
+          data: instances,
           limit,
           offset,
         }),
-      );
-    }
-
-    if (query.includes("has-pro-management:false")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [instances[1], instances[2]],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("access-group:singular-access-group")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [instances[0]],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("access-group:empty-access-group")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "computers-alert-empty" &&
-      (query.includes("alert:security-upgrades") ||
-        query.includes("alert:package-upgrades"))
-    ) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "computers-pro-empty" &&
-      query.includes("has-pro-management:false")
-    ) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("has-pro-management:false")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [instances[1], instances[2]],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("access-group:singular-access-group")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [instances[0]],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("access-group:empty-access-group")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "empty-upgrades" &&
-      (query.includes("alert:security-upgrades") ||
-        query.includes("alert:package-upgrades"))
-    ) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    //   return HttpResponse.json(
-    //     generatePaginatedResponse<Instance>({
-    //       data: [instances[1], instances[2]],
-    //       limit,
-    //       offset,
-    //     }),
-    //   );
-    // }
-
-    if (query.includes("access-group:singular-access-group")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [instances[0]],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("access-group:empty-access-group")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: [],
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    if (query.includes("profile:repository:")) {
-      return HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: instances.slice(0, 2),
-          limit,
-          offset,
-        }),
-      );
-    }
-
-    return HttpResponse.json(
-      generatePaginatedResponse<Instance>({
-        data: instances,
-        limit,
-        offset,
-      }),
+      )
     );
   }),
 
@@ -386,29 +290,6 @@ export default [
     const releaseUpgradeActivity = RELEASE_UPGRADE_ACTIVITY;
     return HttpResponse.json(releaseUpgradeActivity);
   }),
-
-  http.post(`${API_URL}computers/upgrade-packages`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (endpointStatus.status === "error") {
-      throw createEndpointStatusError();
-    }
-
-    return HttpResponse.json(activities[0]);
-  }),
-
-  http.post<never, never, Activity>(
-    `${API_URL}computers/:computerId/restart`,
-    async () => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw createEndpointStatusError();
-      }
-
-      return HttpResponse.json(activities[0]);
-    },
-  ),
 
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
     if (shouldApplyEndpointStatus("computers/upgrade-packages")) {

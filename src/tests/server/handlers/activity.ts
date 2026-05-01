@@ -1,5 +1,5 @@
 import { API_URL, API_URL_OLD } from "@/constants";
-import type { Activity, GetActivitiesParams } from "@/features/activities";
+import type { Activity } from "@/features/activities";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
@@ -142,66 +142,6 @@ export default [
       }),
     );
   }),
-
-  http.get<{ id: string }, GetActivitiesParams, Activity>(
-    `${API_URL}activities/:id`,
-    async ({ params: { id } }) => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
-      }
-
-      return HttpResponse.json<Activity>(
-        activities.find((activity) => activity.id === parseInt(id)) ?? {
-          activity_status: "succeeded",
-          approval_time: null,
-          children: [],
-          completion_time: null,
-          computer_id: 0,
-          creation_time: "",
-          creator: { email: "", id: 0, name: "" },
-          deliver_after_time: null,
-          deliver_before_time: null,
-          delivery_time: null,
-          id: 0,
-          modification_time: "",
-          parent_id: null,
-          result_code: null,
-          result_text: null,
-          schedule_after_time: null,
-          schedule_before_time: null,
-          summary: "",
-          type: "",
-        },
-        { status: 400 },
-      );
-    },
-  ),
-
-  //   const { status, type, searchQuery } = parseActivitiesQuery(query);
-  //   const filteredActivities = activities.filter((activity) => {
-  //     if (status && activity.activity_status !== status) {
-  //       return false;
-  //     }
-
-  //     if (type && activity.type !== type) {
-  //       return false;
-  //     }
-
-  //     return true;
-  //   });
-
-  //   return HttpResponse.json(
-  //     generatePaginatedResponse<Activity>({
-  //       data: filteredActivities,
-  //       limit,
-  //       offset,
-  //       search: searchQuery,
-  //       searchFields: ["summary"],
-  //     }),
-  //   );
-  // }),
 
   http.get(`${API_URL}activities/:id`, async ({ params: { id } }) => {
     if (shouldApplyEndpointStatus("activities/:id")) {
