@@ -1,18 +1,12 @@
-import { delay, http, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import {
-  repoPackages,
-  repositories,
-  succeededTask,
-  failedTask,
-  inProgressTask,
-  emptyTask,
-} from "@/tests/mocks/localRepositories";
+import { repoPackages, repositories } from "@/tests/mocks/localRepositories";
 import type {
   LocalServiceImportLocalPackagesBody,
   BatchGetLocalsRequest,
   LocalWritable,
 } from "@canonical/landscape-openapi";
+import { idleOperation } from "@/tests/mocks/operations";
 
 const getBatchLocalsResponse = async (
   request: Request,
@@ -97,22 +91,21 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();
-
-      delay(1000);
+      let id = "ssss-cccc-dddd";
 
       if (url === "failed") {
-        return HttpResponse.json(failedTask);
+        id = "ffff-llll-dddd";
       }
 
       if (url === "in/progress") {
-        return HttpResponse.json(inProgressTask);
+        id = "pppp-gggg-ssss";
       }
 
       if (url === "empty") {
-        return HttpResponse.json(emptyTask);
+        id = "mmmm-pppp-tttt";
       }
 
-      return HttpResponse.json(succeededTask);
+      return HttpResponse.json({ ...idleOperation, name: `operations/${id}` });
     },
   ),
 

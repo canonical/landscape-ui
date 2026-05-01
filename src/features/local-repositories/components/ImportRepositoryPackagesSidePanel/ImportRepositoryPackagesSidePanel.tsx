@@ -16,10 +16,13 @@ import { useFormik } from "formik";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
 import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
+import { useGetOperation } from "../../api/useGetOperation";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import type { TaskStatus } from "../../types/Task";
+
+const POLL_INTERVAL = 500;
 
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
@@ -35,13 +38,38 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   });
 
   const repositoryName = `locals/${name}`;
+  const [operationName, setOperationName] = useState<string>("");
   const [validateTask, setValidateTask] = useState<
     | {
+        done: boolean;
         status: TaskStatus;
         response: string[];
       }
     | undefined
   >(undefined);
+
+  const isPolling = !!operationName;
+  const { operation } = useGetOperation(operationName, {
+    enabled: isPolling,
+    refetchInterval: ({ state }) =>
+      state.data?.data?.done ? false : POLL_INTERVAL,
+  });
+
+  const resolvedValidateTask = (() => {
+    if (!isPolling || !operation) return validateTask;
+
+    if (operation.done) {
+      if (operation.error) {
+        return { status: "failed" as TaskStatus, response: [] };
+      }
+      return {
+        status: "succeeded" as TaskStatus,
+        response: (operation.response as unknown as string[]) ?? [],
+      };
+    }
+
+    return { status: "in progress" as TaskStatus, response: [] };
+  })();
 
   const handleSubmit = async (values: { source: string }) => {
     try {
@@ -84,20 +112,19 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
         validateOnly: true,
       });
 
-      setValidateTask({
-        status: data.metadata?.status as TaskStatus,
-        response: data.response as unknown as string[],
-      });
+      setOperationName(data.name ?? "");
     } catch (error) {
       debug(error);
     }
   };
 
   const hasPackages =
-    validateTask?.status === "succeeded" && !!validateTask.response.length;
+    resolvedValidateTask?.status === "failed" ||
+    (resolvedValidateTask?.status === "succeeded" &&
+      !!resolvedValidateTask.response.length);
 
-  const packagesCount = hasPackages
-    ? pluralizeWithCount(validateTask?.response.length, "package")
+  const packagesCount = resolvedValidateTask?.response.length
+    ? pluralizeWithCount(resolvedValidateTask?.response.length, "package")
     : "packages";
 
   return (
@@ -125,7 +152,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               className={classes.button}
             >
               {isImportingRepositoryPackages ||
-              validateTask?.status === "in progress" ? (
+              resolvedValidateTask?.status === "in progress" ? (
                 <LoadingState inline />
               ) : (
                 "Fetch packages"
@@ -133,7 +160,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             </Button>
           </div>
 
-          {validateTask?.status === "failed" && (
+          {resolvedValidateTask?.status === "failed" && (
             <Notification
               severity="caution"
               title="Fetching packages timed out"
@@ -147,9 +174,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             </Notification>
           )}
 
-          {validateTask?.status === "succeeded" && (
+          {resolvedValidateTask?.status === "succeeded" && (
             <>
-              {!validateTask?.response.length ? (
+              {!resolvedValidateTask?.response.length ? (
                 <Notification
                   severity="negative"
                   title="No packages available from the URL provided"
@@ -157,7 +184,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
                 />
               ) : (
                 <List
-                  items={validateTask.response.map((file) => (
+                  items={resolvedValidateTask.response.map((file) => (
                     <div className={classes.file} key={file}>
                       {file}
                     </div>
