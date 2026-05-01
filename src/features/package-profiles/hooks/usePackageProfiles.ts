@@ -103,7 +103,10 @@ export default function usePackageProfiles() {
   >({
     mutationFn: async ({ tags, ...rest }) => {
       const normalizedTags = tags ?? [];
-      return authFetch.post("packageprofiles", { ...rest, tags: normalizedTags });
+      return authFetch.post("packageprofiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
@@ -116,7 +119,10 @@ export default function usePackageProfiles() {
   >({
     mutationFn: async ({ tags, ...rest }) => {
       const normalizedTags = tags ?? [];
-      return authFetch.post("packageprofiles", { ...rest, tags: normalizedTags });
+      return authFetch.post("packageprofiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
@@ -140,7 +146,10 @@ export default function usePackageProfiles() {
   >({
     mutationFn: async ({ name, tags, ...rest }) => {
       const normalizedTags = tags ?? [];
-      return authFetch.put(`packageprofiles/${name}`, { ...rest, tags: normalizedTags });
+      return authFetch.put(`packageprofiles/${name}`, {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["packageProfiles"] });

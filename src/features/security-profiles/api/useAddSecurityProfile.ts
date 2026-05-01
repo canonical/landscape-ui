@@ -30,7 +30,10 @@ export const useAddSecurityProfile = (): {
   >({
     mutationFn: async ({ tags, ...rest }) => {
       const normalizedTags = tags?.length ? tags : [];
-      return authFetch.post("security-profiles", { ...rest, tags: normalizedTags });
+      return authFetch.post("security-profiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["securityProfiles"] }),

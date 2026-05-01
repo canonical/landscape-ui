@@ -29,7 +29,10 @@ export default function useEditRebootProfile() {
     mutationKey: ["rebootprofiles", "edit"],
     mutationFn: async ({ id, tags, ...rest }) => {
       const normalizedTags = tags ?? [];
-      return authFetch.patch(`rebootprofiles/${id}`, { ...rest, tags: normalizedTags });
+      return authFetch.patch(`rebootprofiles/${id}`, {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["rebootprofiles"] });

@@ -23,7 +23,10 @@ export const useUpdateSecurityProfile = () => {
   >({
     mutationFn: async ({ id, tags, ...rest }) => {
       const normalizedTags = tags?.length ? tags : [];
-      return authFetch.patch(`security-profiles/${id}`, { ...rest, tags: normalizedTags });
+      return authFetch.patch(`security-profiles/${id}`, {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ["securityProfiles"] });

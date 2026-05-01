@@ -26,7 +26,10 @@ export const useAddScriptProfile = () => {
   >({
     mutationFn: async ({ tags, ...rest }) => {
       const normalizedTags = tags ?? [];
-      return authFetch.post("script-profiles", { ...rest, tags: normalizedTags });
+      return authFetch.post("script-profiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["scriptProfiles"] }),
