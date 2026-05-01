@@ -7,6 +7,6 @@ export interface Local extends Record<string, unknown> {
   defaultComponent: string;
 }
 
-export interface LocalPackage {
+export interface LocalPackage extends Record<string, unknown> {
   name: string;
 }
