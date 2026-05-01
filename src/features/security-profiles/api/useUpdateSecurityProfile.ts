@@ -21,10 +21,16 @@ export const useUpdateSecurityProfile = () => {
     AxiosError<ApiError>,
     UpdateSecurityProfileParams
   >({
-    mutationFn: async ({ id, ...params }) =>
-      authFetch.patch(`security-profiles/${id}`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["securityProfiles"] }),
+    mutationFn: async ({ id, tags, ...rest }) => {
+      const normalizedTags = tags?.length ? tags : [];
+      return authFetch.patch(`security-profiles/${id}`, { ...rest, tags: normalizedTags });
+    },
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["securityProfiles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["securityProfile", variables.id],
+      });
+    },
   });
 
   return {

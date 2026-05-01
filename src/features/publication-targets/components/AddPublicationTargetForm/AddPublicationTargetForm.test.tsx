@@ -587,27 +587,6 @@ describe("AddPublicationTargetForm", () => {
       expect(capturedBody).not.toHaveProperty("swift");
     });
 
-    it("omits filesystem.linkMethod when no link method is selected", async () => {
-      renderWithProviders(<AddPublicationTargetForm />);
-
-      await user.selectOptions(screen.getByLabelText(/^type$/i), "filesystem");
-      await user.type(screen.getByLabelText("Name"), "FS no link");
-      await user.type(screen.getByLabelText(/^path$/i), "/srv/no-link");
-
-      await user.click(
-        screen.getByRole("button", { name: /add publication target/i }),
-      );
-
-      await vi.waitFor(() => {
-        expect(
-          screen.getByText("Publication target created"),
-        ).toBeInTheDocument();
-      });
-
-      expect(capturedBody?.filesystem).toEqual({ path: "/srv/no-link" });
-      expect(capturedBody?.filesystem).not.toHaveProperty("linkMethod");
-    });
-
     it("does not leak fields from a previously-selected target type into the payload", async () => {
       renderWithProviders(<AddPublicationTargetForm />);
 

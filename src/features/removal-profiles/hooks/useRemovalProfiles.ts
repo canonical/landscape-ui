@@ -32,8 +32,12 @@ export default function useRemovalProfiles() {
     AxiosError<ApiError>,
     CreateRemovalProfileParams
   >({
-    mutationFn: async (params) =>
-      authFetchOld.get("CreateRemovalProfile", { params }),
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetchOld.get("CreateRemovalProfile", {
+        params: { ...rest, tags: normalizedTags },
+      });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });
@@ -43,8 +47,12 @@ export default function useRemovalProfiles() {
     AxiosError<ApiError>,
     EditRemovalProfileParams
   >({
-    mutationFn: async (params) =>
-      authFetchOld.get(`EditRemovalProfile`, { params }),
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetchOld.get(`EditRemovalProfile`, {
+        params: { ...rest, tags: normalizedTags },
+      });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["removalProfiles"] }),
   });

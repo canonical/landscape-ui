@@ -78,9 +78,7 @@ const getFilesystemInitialValues = (
 ): EditTargetFormValues => ({
   ...base,
   path: target.filesystem?.path ?? "",
-  linkMethod: (target.filesystem?.linkMethod ?? "") as
-    | FilesystemTargetLinkMethod
-    | "",
+  linkMethod: target.filesystem?.linkMethod as FilesystemTargetLinkMethod,
 });
 
 const getInitialValues = (target: PublicationTarget): EditTargetFormValues => {

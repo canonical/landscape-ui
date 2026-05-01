@@ -51,8 +51,11 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     CreateUpgradeProfileParams
   >({
-    mutationFn: async (params) => {
-      return authFetchOld.get("CreateUpgradeProfile", { params });
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetchOld.get("CreateUpgradeProfile", {
+        params: { ...rest, tags: normalizedTags },
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
@@ -63,8 +66,11 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     EditUpgradeProfileParams
   >({
-    mutationFn: async (params) => {
-      return authFetchOld.get("EditUpgradeProfile", { params });
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetchOld.get("EditUpgradeProfile", {
+        params: { ...rest, tags: normalizedTags },
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),

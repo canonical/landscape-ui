@@ -26,10 +26,19 @@ export const useEditWslProfile = () => {
     AxiosError<ApiError>,
     EditWslProfileParams
   >({
-    mutationFn: async ({ name, ...params }) =>
-      authFetch.patch(`child-instance-profiles/${name}`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["wslProfiles"] }),
+    mutationFn: async ({ name, tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.patch(`child-instance-profiles/${name}`, {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["wslProfiles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["wslProfile", variables.name],
+      });
+    },
   });
 
   return {

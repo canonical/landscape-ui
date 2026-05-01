@@ -64,9 +64,11 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     CreateRepositoryProfileParams
   >({
-    mutationFn: async ({ apt_sources, ...params }) =>
-      authFetch.post("repositoryprofiles", {
-        ...params,
+    mutationFn: async ({ apt_sources, tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.post("repositoryprofiles", {
+        ...rest,
+        tags: normalizedTags,
         apt_sources: apt_sources?.map(
           ({ name: sourceName, line, gpg_key }) => ({
             name: sourceName,
@@ -74,7 +76,8 @@ export default function useRepositoryProfiles() {
             gpg_key: gpg_key ? { content: gpg_key } : null,
           }),
         ),
-      }),
+      });
+    },
     onSuccess: async () => {
       queryClient.invalidateQueries({
         queryKey: ["aptSources"],
@@ -89,9 +92,11 @@ export default function useRepositoryProfiles() {
     AxiosError<ApiError>,
     EditRepositoryProfileParams
   >({
-    mutationFn: async ({ name, add_apt_sources, ...params }) =>
-      authFetch.put(`repositoryprofiles/${name}`, {
-        ...params,
+    mutationFn: async ({ name, add_apt_sources, tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.put(`repositoryprofiles/${name}`, {
+        ...rest,
+        tags: normalizedTags,
         add_apt_sources: add_apt_sources?.map(
           ({ name: sourceName, line, gpg_key }) => ({
             name: sourceName,
@@ -99,13 +104,17 @@ export default function useRepositoryProfiles() {
             gpg_key: gpg_key ? { content: gpg_key } : null,
           }),
         ),
-      }),
-    onSuccess: async () => {
-      queryClient.invalidateQueries({
+      });
+    },
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({
         queryKey: ["aptSources"],
         refetchType: "all",
       });
-      queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] });
+      await queryClient.invalidateQueries({ queryKey: ["repositoryProfiles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["repositoryProfile", variables.name],
+      });
     },
   });
 
