@@ -5,7 +5,7 @@ import ProfilesList from "./ProfilesList";
 import { ProfileTypes } from "../../helpers";
 import { profiles } from "@/tests/mocks/profiles";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { securityProfiles } from "@/tests/mocks/securityProfiles";
+import { usgProfiles as usgProfiles } from "@/tests/mocks/usgProfiles";
 import { capitalize } from "@/utils/_helpers";
 import { wslProfiles } from "@/tests/mocks/wsl-profiles";
 
@@ -53,7 +53,7 @@ describe("ProfilesList", () => {
       ],
     ],
     [
-      ProfileTypes.security,
+      ProfileTypes.usg,
       [
         "Profile name",
         "Status",
@@ -105,10 +105,10 @@ describe("ProfilesList", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders rows with security profile data", async () => {
-    const selectedProfiles = securityProfiles.slice(0, 2);
+  it("renders rows with usg profile data", async () => {
+    const selectedProfiles = usgProfiles.slice(0, 2);
     renderWithProviders(
-      <ProfilesList profiles={selectedProfiles} type={ProfileTypes.security} />,
+      <ProfilesList profiles={selectedProfiles} type={ProfileTypes.usg} />,
     );
 
     for (const profile of selectedProfiles) {

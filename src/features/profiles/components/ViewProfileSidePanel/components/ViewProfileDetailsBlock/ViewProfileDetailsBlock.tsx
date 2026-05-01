@@ -3,7 +3,7 @@ import type { Profile } from "../../../../types";
 import {
   isRemovalProfile,
   isScriptProfile,
-  isSecurityProfile,
+  isUsgProfile,
   isUpgradeProfile,
   isWslProfile,
 } from "../../../../helpers";
@@ -22,9 +22,9 @@ const ViewScriptProfileDetailsBlock = lazy(async () =>
   })),
 );
 
-const ViewSecurityProfileDetailsBlock = lazy(async () =>
-  import("@/features/security-profiles").then((module) => ({
-    default: module.ViewSecurityProfileDetailsBlock,
+const ViewUSGProfileDetailsBlock = lazy(async () =>
+  import("@/features/usg-profiles").then((module) => ({
+    default: module.ViewUSGProfileDetailsBlock,
   })),
 );
 
@@ -56,8 +56,8 @@ const ViewProfileDetailsBlock: FC<ViewProfileDetailsBlockProps> = ({
       return <ViewScriptProfileDetailsBlock profile={profile} />;
     }
 
-    if (isSecurityProfile(profile)) {
-      return <ViewSecurityProfileDetailsBlock profile={profile} />;
+    if (isUsgProfile(profile)) {
+      return <ViewUSGProfileDetailsBlock profile={profile} />;
     }
 
     if (isUpgradeProfile(profile)) {

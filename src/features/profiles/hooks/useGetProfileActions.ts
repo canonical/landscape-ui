@@ -1,7 +1,7 @@
 import type { Action } from "@/types/Action";
 import { ICONS } from "@canonical/react-components";
 import {
-  isSecurityProfile,
+  isUsgProfile,
   isPackageProfile,
   canDuplicateProfile,
   canArchiveProfile,
@@ -11,10 +11,10 @@ import {
 import useDebug from "@/hooks/useDebug";
 import { useNavigate } from "react-router";
 import useNotify from "@/hooks/useNotify";
-import { useRunSecurityProfile } from "@/features/security-profiles";
+import { useRunUsgProfile } from "@/features/usg-profiles";
 import { ROUTES } from "@/libs/routes";
 import { useOpenProfileSidePanel } from "./useOpenProfileSidePanel";
-import type { SecurityProfileMode } from "@/features/security-profiles";
+import type { USGProfileMode } from "@/features/usg-profiles";
 import useProfiles from "@/hooks/useProfiles";
 import type { Profile } from "../types";
 
@@ -30,13 +30,13 @@ export const useGetProfileActions = ({
   openModal,
 }: UseGetProfileActionsProps) => {
   const openProfileSidePanel = useOpenProfileSidePanel();
-  const { runSecurityProfile } = useRunSecurityProfile();
+  const { runUsgProfile } = useRunUsgProfile();
   const { isProfileLimitReached } = useProfiles();
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
 
-  const getNotificationMessage = (mode: SecurityProfileMode) => {
+  const getNotificationMessage = (mode: USGProfileMode) => {
     switch (mode) {
       case "audit-fix-restart":
         return "Applying remediation fixes, restarting associated instances, and generating an audit have been queued in Activities.";
@@ -47,14 +47,14 @@ export const useGetProfileActions = ({
     }
   };
 
-  const handleRunSecurityProfile = async (mode: SecurityProfileMode) => {
+  const handleRunUsgProfile = async (mode: USGProfileMode) => {
     try {
-      const { data: activity } = await runSecurityProfile({ id: profile.id });
+      const { data: activity } = await runUsgProfile({ id: profile.id });
 
       const message = getNotificationMessage(mode);
 
       notify.success({
-        title: `You have successfully initiated run of the ${profile.title} security profile`,
+        title: `You have successfully initiated run of the ${profile.title} USG profile`,
         message,
         actions: [
           {
@@ -105,12 +105,12 @@ export const useGetProfileActions = ({
     });
   }
 
-  if (isSecurityProfile(profile)) {
+  if (isUsgProfile(profile)) {
     actions.push(
       {
         icon: "begin-downloading",
         label: "Download audit",
-        "aria-label": `Download ${profile.title} security profile audit`,
+        "aria-label": `Download ${profile.title} USG profile audit`,
         onClick: () => {
           openProfileSidePanel(profile, "download");
         },
@@ -118,10 +118,10 @@ export const useGetProfileActions = ({
       {
         icon: "play",
         label: "Run",
-        "aria-label": `Run ${profile.title} security profile`,
+        "aria-label": `Run ${profile.title} USG profile`,
         onClick: async () => {
           if (!profile.mode.includes("fix")) {
-            await handleRunSecurityProfile(profile.mode);
+            await handleRunUsgProfile(profile.mode);
             return;
           }
           openProfileSidePanel(profile, "run");

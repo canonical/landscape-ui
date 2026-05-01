@@ -110,16 +110,16 @@ describe("validateSearchQuery", () => {
       '"profile" ID must be a number.',
     );
 
-    expect(validateSearchQuery("profile:security:1 ")).toBe(
-      '"profile:security" requires a status.',
+    expect(validateSearchQuery("profile:usg:1 ")).toBe(
+      '"profile:usg" requires a status.',
     );
 
-    expect(validateSearchQuery("profile:security:1:foo ")).toBe(
-      '"profile:security" has invalid security status "foo".',
+    expect(validateSearchQuery("profile:usg:1:foo ")).toBe(
+      '"profile:usg" has invalid security status "foo".',
     );
 
     expect(
-      validateSearchQuery(`profile:security:1:${validUsgStatus} `),
+      validateSearchQuery(`profile:usg:1:${validUsgStatus} `),
     ).toBeUndefined();
 
     expect(validateSearchQuery("profile:wsl:1:foo ")).toBe(
@@ -193,8 +193,8 @@ describe("validateSearchQuery with ValidationConfig", () => {
       '"profile" has invalid profile type "script".',
     );
 
-    expect(validateSearchQuery("profile:security:1:pass ", false, config)).toBe(
-      '"profile" has invalid profile type "security".',
+    expect(validateSearchQuery("profile:usg:1:pass ", false, config)).toBe(
+      '"profile" has invalid profile type "usg".',
     );
 
     expect(validateSearchQuery("profile:wsl:1:compliant ", false, config)).toBe(
@@ -204,31 +204,31 @@ describe("validateSearchQuery with ValidationConfig", () => {
 
   it("should accept USG statuses from config", () => {
     const config = {
-      profileTypes: ["security"],
+      profileTypes: ["usg"],
       usgStatuses: ["pass", "fail"],
     };
 
     expect(
-      validateSearchQuery("profile:security:1:pass ", false, config),
+      validateSearchQuery("profile:usg:1:pass ", false, config),
     ).toBeUndefined();
     expect(
-      validateSearchQuery("profile:security:1:fail ", false, config),
+      validateSearchQuery("profile:usg:1:fail ", false, config),
     ).toBeUndefined();
   });
 
   it("should reject USG statuses not in config", () => {
     const config = {
-      profileTypes: ["security"],
+      profileTypes: ["usg"],
       usgStatuses: ["pass"],
     };
 
-    expect(validateSearchQuery("profile:security:1:fail ", false, config)).toBe(
-      '"profile:security" has invalid security status "fail".',
+    expect(validateSearchQuery("profile:usg:1:fail ", false, config)).toBe(
+      '"profile:usg" has invalid security status "fail".',
     );
 
     expect(
-      validateSearchQuery("profile:security:1:in-progress ", false, config),
-    ).toBe('"profile:security" has invalid security status "in-progress".');
+      validateSearchQuery("profile:usg:1:in-progress ", false, config),
+    ).toBe('"profile:usg" has invalid security status "in-progress".');
   });
 
   it("should accept WSL statuses from config", () => {
@@ -266,7 +266,7 @@ describe("validateSearchQuery with ValidationConfig", () => {
   it("should use default values when no config provided", () => {
     expect(validateSearchQuery("profile:package:1 ")).toBeUndefined();
     expect(validateSearchQuery("profile:script:1 ")).toBeUndefined();
-    expect(validateSearchQuery("profile:security:1:pass ")).toBeUndefined();
+    expect(validateSearchQuery("profile:usg:1:pass ")).toBeUndefined();
     expect(validateSearchQuery("profile:wsl:1:compliant ")).toBeUndefined();
   });
 });
@@ -302,18 +302,18 @@ describe("validateSearchField with ValidationConfig", () => {
 
   it("should validate with mixed config settings", () => {
     const config = {
-      profileTypes: ["security", "wsl"],
+      profileTypes: ["usg", "wsl"],
       usgStatuses: ["pass"],
       wslStatuses: ["compliant"],
     };
 
     expect(
-      validateSearchField("profile:security:1:pass ", "strict", config),
+      validateSearchField("profile:usg:1:pass ", "strict", config),
     ).toBeUndefined();
 
-    expect(
-      validateSearchField("profile:security:1:fail ", "strict", config),
-    ).toBe('"profile:security" has invalid security status "fail".');
+    expect(validateSearchField("profile:usg:1:fail ", "strict", config)).toBe(
+      '"profile:usg" has invalid security status "fail".',
+    );
 
     expect(
       validateSearchField("profile:wsl:1:compliant ", "strict", config),

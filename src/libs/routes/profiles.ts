@@ -6,7 +6,7 @@ export const PROFILES_PATHS = {
   reboot: "reboot",
   removal: "removal",
   repositoryProfiles: "repository-profiles",
-  security: "security",
+  usg: "usg",
   upgrade: "upgrade",
   wsl: "wsl",
 } as const;
@@ -23,7 +23,7 @@ export const PROFILES_ROUTES = {
   repositoryProfiles: createRoute(
     buildProfilePath(PROFILES_PATHS.repositoryProfiles),
   ),
-  security: createRoute(buildProfilePath(PROFILES_PATHS.security)),
+  usg: createRoute(buildProfilePath(PROFILES_PATHS.usg)),
   upgrade: createRoute(buildProfilePath(PROFILES_PATHS.upgrade)),
   wsl: createRoute(buildProfilePath(PROFILES_PATHS.wsl)),
 } as const;

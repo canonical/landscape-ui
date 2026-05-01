@@ -30,7 +30,7 @@ import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
-import securityProfiles from "./securityProfiles";
+import usgProfiles from "./usgProfiles";
 import snap from "./snap";
 import standaloneAccount from "./standaloneAccount";
 import tag from "./tag";
@@ -73,7 +73,7 @@ export default [
   ...repositoryProfiles,
   ...roles,
   ...savedSearches,
-  ...securityProfiles,
+  ...usgProfiles,
   ...script,
   ...scriptProfiles,
   ...snap,

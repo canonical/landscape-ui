@@ -422,11 +422,11 @@ const useInstanceSearchHelpTerms = () => {
 
   if (isFeatureEnabled("usg-profiles")) {
     instanceSearchHelpTerms.push({
-      term: "profile:security:<profile_id>:<last_audit_result>",
+      term: "profile:usg:<profile_id>:<last_audit_result>",
       description: (
         <>
           <span>
-            Instances associated with the security profile with the id{" "}
+            Instances associated with the USG profile with the id{" "}
             <code>&lt;profile_id&gt;</code> with a last security audit result of{" "}
             <code>&lt;last_audit_result&gt;</code>
           </span>

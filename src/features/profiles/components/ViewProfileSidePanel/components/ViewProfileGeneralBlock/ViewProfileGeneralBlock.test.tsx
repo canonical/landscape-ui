@@ -40,7 +40,7 @@ describe("ViewProfileGeneralBlock", () => {
     expect(screen.queryByText(/^Description$/i)).not.toBeInTheDocument();
   });
 
-  it.each([[ProfileTypes.script], [ProfileTypes.security]])(
+  it.each([[ProfileTypes.script], [ProfileTypes.usg]])(
     "renders active status for %s profile",
     async (type) => {
       renderWithProviders(
@@ -62,7 +62,7 @@ describe("ViewProfileGeneralBlock", () => {
 
   it.each([
     [ProfileTypes.script, { ...baseProfile, archived: true }],
-    [ProfileTypes.security, { ...baseProfile, status: "archived" }],
+    [ProfileTypes.usg, { ...baseProfile, status: "archived" }],
   ])("renders archived status for %s profile", async (type, profile) => {
     renderWithProviders(
       <ViewProfileGeneralBlock profile={profile} type={type} />,

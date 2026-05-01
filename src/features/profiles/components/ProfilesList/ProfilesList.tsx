@@ -11,7 +11,7 @@ import {
   getRebootColumn,
   getRemovalColumn,
   getScriptColumns,
-  getSecurityColumns,
+  getUsgColumns,
   getStatusColumn,
 } from "./helpers";
 import {
@@ -63,8 +63,8 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       cols.push(...getComplianceColumns(type));
     }
 
-    if (type === ProfileTypes.security) {
-      cols.push(...getSecurityColumns());
+    if (type === ProfileTypes.usg) {
+      cols.push(...getUsgColumns());
     }
 
     if (type === ProfileTypes.script) {

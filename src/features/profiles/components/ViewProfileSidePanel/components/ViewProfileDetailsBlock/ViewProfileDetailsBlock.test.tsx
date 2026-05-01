@@ -10,8 +10,8 @@ vi.mock("@/features/script-profiles/", () => ({
 vi.mock("@/features/removal-profiles/", () => ({
   ViewRemovalProfileDetailsBlock: () => <div>removal details</div>,
 }));
-vi.mock("@/features/security-profiles/", () => ({
-  ViewSecurityProfileDetailsBlock: () => <div>security details</div>,
+vi.mock("@/features/usg-profiles/", () => ({
+  ViewUSGProfileDetailsBlock: () => <div>usg details</div>,
 }));
 vi.mock("@/features/upgrade-profiles/", () => ({
   ViewUpgradeProfileDetailsBlock: () => <div>upgrade details</div>,
@@ -26,7 +26,7 @@ describe("ViewProfileDetailsBlock", () => {
   it.each([
     ["removal", { ...baseProfile, days_without_exchange: 30 }],
     ["script", { ...baseProfile, script_id: 3 }],
-    ["security", { ...baseProfile, benchmark: "disa_stig" }],
+    ["usg", { ...baseProfile, benchmark: "disa_stig" }],
     ["upgrade", { ...baseProfile, upgrade_type: "all" }],
     ["wsl", { ...baseProfile, image_name: "image" }],
   ])("renders details block for %s profiles", async (type, profile) => {

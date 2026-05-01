@@ -77,8 +77,8 @@ export const UpgradeProfilesPage = Loadable(
 export const WslProfilesPage = Loadable(
   lazy(() => import("@/pages/dashboard/profiles/wsl-profiles")),
 );
-export const SecurityProfilesPage = Loadable(
-  lazy(() => import("@/pages/dashboard/profiles/security-profiles")),
+export const USGProfilesPage = Loadable(
+  lazy(() => import("@/pages/dashboard/profiles/usg-profiles")),
 );
 export const RebootProfilesPage = Loadable(
   lazy(() => import("@/pages/dashboard/profiles/reboot-profiles")),

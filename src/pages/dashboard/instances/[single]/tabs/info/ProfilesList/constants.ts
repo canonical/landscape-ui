@@ -16,9 +16,9 @@ export const FILTER_OPTIONS: Record<Profile["type"], SelectOption> = {
     label: "Script",
     value: "script",
   },
-  security: {
-    label: "Security",
-    value: "security",
+  usg: {
+    label: "USG",
+    value: "usg",
   },
   upgrade: {
     label: "Upgrade",

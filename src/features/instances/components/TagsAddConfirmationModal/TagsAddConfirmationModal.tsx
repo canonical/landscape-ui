@@ -77,7 +77,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
               RepositoryProfile: "Repository",
               ScriptProfile: "Script",
               UpgradeProfile: "Upgrade",
-              UsgProfile: "Security",
+              UsgProfile: "USG",
             })[profileChange.profile.profile_type],
         },
         {

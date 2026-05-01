@@ -22,7 +22,7 @@ describe("SearchQueryEditor", () => {
         languageId="landscape-query"
         terms={["status"]}
         languageConfig={{
-          profileTypes: ["security"],
+          profileTypes: ["usg"],
           usgStatuses: ["compliant"],
           wslStatuses: ["enabled"],
         }}
@@ -51,7 +51,7 @@ describe("SearchQueryEditor", () => {
       "landscape-query",
       ["status"],
       {
-        profileTypes: ["security"],
+        profileTypes: ["usg"],
         usgStatuses: ["compliant"],
         wslStatuses: ["enabled"],
       },

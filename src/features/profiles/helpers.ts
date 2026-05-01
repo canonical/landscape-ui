@@ -4,7 +4,7 @@ import type { RebootProfile } from "../reboot-profiles";
 import type { WslProfile } from "../wsl-profiles";
 import type { PackageProfile } from "../package-profiles";
 import type { UpgradeProfile } from "../upgrade-profiles";
-import type { SecurityProfile } from "../security-profiles";
+import type { USGProfile } from "../usg-profiles";
 import type { RemovalProfile } from "../removal-profiles";
 import type { Profile } from "./types";
 import { toCronPhrase } from "@/components/form/CronSchedule/components/CronSchedule/helpers";
@@ -15,8 +15,8 @@ export enum ProfileTypes {
   removal = "removal",
   repository = "repository",
   script = "script",
-  security = "security",
   upgrade = "upgrade",
+  usg = "USG",
   wsl = "WSL",
 }
 
@@ -39,9 +39,7 @@ export function isScriptProfile(profile: Profile): profile is ScriptProfile {
   return "script_id" in profile;
 }
 
-export function isSecurityProfile(
-  profile: Profile,
-): profile is SecurityProfile {
+export function isUsgProfile(profile: Profile): profile is USGProfile {
   return "benchmark" in profile;
 }
 
@@ -75,10 +73,10 @@ export function isWslProfile(profile: Profile): profile is WslProfile {
 
 export const canDuplicateProfile = (
   profile: Profile,
-): profile is RebootProfile | PackageProfile | SecurityProfile =>
+): profile is RebootProfile | PackageProfile | USGProfile =>
   isRebootProfile(profile) ||
   isPackageProfile(profile) ||
-  isSecurityProfile(profile);
+  isUsgProfile(profile);
 
 export const hasComplianceData = (
   profile: Profile,
@@ -94,8 +92,8 @@ export const usesNameAsIdentifier = (
 
 export const hasLastRunData = (
   profile: Profile,
-): profile is ScriptProfile | SecurityProfile =>
-  isScriptProfile(profile) || isSecurityProfile(profile);
+): profile is ScriptProfile | USGProfile =>
+  isScriptProfile(profile) || isUsgProfile(profile);
 
 export const hasAssociations = (profile: Profile) =>
   !!profile.tags.length || profile.all_computers;
@@ -111,7 +109,7 @@ export const hasSchedule = (type: ProfileTypes) =>
     ProfileTypes.script,
     ProfileTypes.reboot,
     ProfileTypes.upgrade,
-    ProfileTypes.security,
+    ProfileTypes.usg,
   ].includes(type);
 
 export const hasDescription = (type: ProfileTypes) =>
@@ -120,10 +118,10 @@ export const hasDescription = (type: ProfileTypes) =>
   );
 
 export const canArchiveProfile = (type: ProfileTypes) =>
-  [ProfileTypes.security, ProfileTypes.script].includes(type);
+  [ProfileTypes.usg, ProfileTypes.script].includes(type);
 
 export const hasApiSearch = (type: ProfileTypes) =>
-  [ProfileTypes.script, ProfileTypes.security, ProfileTypes.wsl].includes(type);
+  [ProfileTypes.script, ProfileTypes.usg, ProfileTypes.wsl].includes(type);
 
 export const hasComplianceColumns = (type: ProfileTypes) =>
   [ProfileTypes.wsl, ProfileTypes.package].includes(type);
