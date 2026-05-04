@@ -28,7 +28,7 @@ const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
       }}
     >
       {pluralizeNew(data.data.publications.length, "publication", {
-        showCount: data.data.nextPageToken === undefined ? "exact" : "limited",
+        showCount: data.data.nextPageToken ? "limited" : "exact",
       })}
     </StaticLink>
   );
