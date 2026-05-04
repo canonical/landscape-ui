@@ -49,12 +49,12 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const getTaskStatus = (): PackagesValidationState | undefined => {
     if (isPolling && operation) {
       const { response, count } = getPackageList(
-        (operation.response?.value as string) ?? "",
+        (operation.response?.output as string) ?? "",
       );
 
       return {
         done: operation.done ?? false,
-        status: operation.metadata?.status as OperationStatus,
+        status: (operation.metadata?.status as OperationStatus) ?? "idle",
         response: response,
         count: count,
       };

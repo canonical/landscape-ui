@@ -17,7 +17,7 @@ import { getPackageList } from "../helpers";
 const makeTask = (
   operation: PackagesValidationOperation,
 ): PackagesValidationState => {
-  const { response, count } = getPackageList(operation.response?.value ?? "");
+  const { response, count } = getPackageList(operation.response?.output ?? "");
   return {
     status: operation.metadata?.status,
     count: count,
