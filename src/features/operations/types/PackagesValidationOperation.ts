@@ -20,7 +20,6 @@ export interface PackagesValidationOperation {
   response?: {
     "@type": string;
     output?: string;
-    value?: string;
   };
   error?: {
     code: number;

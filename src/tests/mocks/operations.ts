@@ -67,7 +67,7 @@ export const inProgressOperation: PackagesValidationOperation = {
   done: false,
   response: {
     "@type": "type.googleapis.com/google.protobuf.StringValue",
-    value: "",
+    output: "",
   },
 };
 
