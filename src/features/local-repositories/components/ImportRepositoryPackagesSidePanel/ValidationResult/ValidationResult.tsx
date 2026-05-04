@@ -1,21 +1,14 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
-import type { OperationStatus } from "@/features/operations";
+import type { PackagesValidationState } from "@/features/operations";
 import LocalRepositoryPackagesList from "../../LocalRepositoryPackagesList";
 
-export interface ValidationTaskResult {
-  done: boolean;
-  status: OperationStatus;
-  response: string[];
-  count: number;
-}
-
 interface ValidationResultProps {
-  readonly validationTask: ValidationTaskResult;
+  readonly validationTask: PackagesValidationState;
 }
 
 const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
-  if (validationTask?.status === "failed") {
+  if (validationTask.status === "failed") {
     return (
       <Notification
         severity="caution"
@@ -31,43 +24,35 @@ const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
     );
   }
 
-  if (validationTask && validationTask.count > 100) {
+  if (!validationTask.count) {
     return (
-      <>
-        <Notification
-          severity="caution"
-          title={`Only the first 100 packages of ${validationTask.count} are displayed`}
-          borderless
-        >
-          <span>
-            If you proceed with the import, all {validationTask.count} packages will be imported.
-          </span>
-        </Notification>
-        <LocalRepositoryPackagesList
-          packages={validationTask.response}
-          header="Packages to import"
-        />
-      </>
+      <Notification
+        severity="negative"
+        title="No packages available from the URL provided"
+        borderless
+      />
     );
   }
 
-  if (validationTask?.status === "succeeded") {
-    if (!validationTask?.count) {
-      return (
+  return (
+    <>
+      {validationTask.count > 100 &&
         <Notification
-          severity="negative"
-          title="No packages available from the URL provided"
-          borderless
-        />
-      );
-    }
-    return (
+            severity="caution"
+            title={`Only the first 100 packages of ${validationTask.count} are displayed`}
+            borderless
+          >
+            <span>
+              If you proceed with the import, all {validationTask.count} packages will be imported.
+            </span>
+          </Notification>
+      }
       <LocalRepositoryPackagesList
         packages={validationTask.response}
         header="Packages to import"
       />
-    );
-  }
+    </>
+  );
 };
 
 export default ValidationResult;

@@ -4,6 +4,7 @@ import {
   inProgressOperation,
   emptyOperation,
   succeededOperation,
+  overCountOperation,
 } from "@/tests/mocks/operations";
 import { http, delay, HttpResponse } from "msw";
 
@@ -24,6 +25,10 @@ export default [
       return HttpResponse.json(emptyOperation);
     }
 
-    return HttpResponse.json(succeededOperation);
+    if (operationId === "ssss-cccc-dddd") {
+      return HttpResponse.json(succeededOperation);
+    }
+
+    return HttpResponse.json(overCountOperation);
   }),
 ];

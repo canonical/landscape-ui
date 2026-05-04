@@ -1,4 +1,6 @@
-export const idleOperation = {
+import type { PackagesValidationOperation } from "@/features/operations";
+
+export const idleOperation: PackagesValidationOperation = {
   name: "operations/iiii-dddd-llll",
   metadata: {
     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
@@ -12,22 +14,22 @@ export const idleOperation = {
   }
 };
 
-// export const succeededOperation = {
-//   name: "operations/ssss-cccc-dddd",
-//   metadata: {
-//     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
-//     description: "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
-//     operationId: "ssss-cccc-dddd",
-//     status: "succeeded"
-//   },
-//   done: true,
-//   response: {
-//     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
-//     value: "Would add: python3-snap-http_1.4.0-0ubuntu0_all\nWould add: package2-1.0.0\nTotal packages that would be added: 123\n"
-//   }
-// };
+export const succeededOperation: PackagesValidationOperation = {
+  name: "operations/ssss-cccc-dddd",
+  metadata: {
+    "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+    description: "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
+    operationId: "ssss-cccc-dddd",
+    status: "succeeded"
+  },
+  done: true,
+  response: {
+    "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
+    value: "Would add: python3-snap-http_1.4.0-0ubuntu0_all\nWould add: package2-1.0.0\nTotal packages that would be added: 2\n"
+  }
+};
 
-export const failedOperation = {
+export const failedOperation: PackagesValidationOperation = {
   name: "operations/ffff-llll-dddd",
   metadata: {
     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
@@ -43,7 +45,7 @@ export const failedOperation = {
   }
 };
 
-export const inProgressOperation = {
+export const inProgressOperation: PackagesValidationOperation = {
   name: "operations/pppp-gggg-ssss",
   metadata: {
     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
@@ -58,7 +60,7 @@ export const inProgressOperation = {
   }
 };
 
-export const emptyOperation = {
+export const emptyOperation: PackagesValidationOperation = {
   name: "operations/mmmm-pppp-tttt",
   metadata: {
     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
@@ -72,12 +74,12 @@ export const emptyOperation = {
   }
 };
 
-export const succeededOperation = {
-  name: "operations/ssss-cccc-dddd",
+export const overCountOperation: PackagesValidationOperation = {
+  name: "operations/oooo-vvvv-cccc",
   metadata: {
     "@type": "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
     description: "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
-    operationId: "ssss-cccc-dddd",
+    operationId: "oooo-vvvv-cccc",
     status: "succeeded"
   },
   done: true,

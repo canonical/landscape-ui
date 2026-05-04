@@ -1,3 +1,8 @@
 export * from "./api";
 
-export type { OperationMetadata, OperationStatus } from "./types";
+export type {
+  OperationMetadata,
+  OperationStatus,
+  PackagesValidationState,
+  PackagesValidationOperation
+} from "./types";

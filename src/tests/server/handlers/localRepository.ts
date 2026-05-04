@@ -91,7 +91,7 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();
-      let id = "ssss-cccc-dddd";
+      let id = "oooo-vvvv-cccc";
 
       if (url === "failed") {
         id = "ffff-llll-dddd";
@@ -103,6 +103,10 @@ export default [
 
       if (url === "empty") {
         id = "mmmm-pppp-tttt";
+      }
+
+      if (url === "succeeded") {
+        id = "ssss-cccc-dddd";
       }
 
       return HttpResponse.json({ ...idleOperation, name: `operations/${id}` });

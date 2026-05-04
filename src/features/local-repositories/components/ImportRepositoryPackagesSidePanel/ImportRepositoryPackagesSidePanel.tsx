@@ -18,7 +18,7 @@ import { useGetOperation } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import type { OperationStatus } from "@/features/operations";
+import type { OperationStatus, PackagesValidationState } from "@/features/operations";
 import { getPackageList } from "./helpers";
 import ValidationResult from "./ValidationResult/ValidationResult";
 
@@ -47,7 +47,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       state.data?.data?.done ? false : POLL_INTERVAL,
   });
 
-  const getTaskStatus = () => {
+  const getTaskStatus = (): PackagesValidationState | undefined => {
     if (isPolling && operation) {
       const { response, count } = getPackageList(operation.response?.value as string ?? "");
 
@@ -152,7 +152,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             </Button>
           </div>
 
-          {validationTask &&
+          {validationTask?.done &&
             <ValidationResult validationTask={validationTask} />
           }
 
