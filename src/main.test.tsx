@@ -39,8 +39,11 @@ describe("main", () => {
     expect(render).toHaveBeenCalledTimes(1);
   });
 
-  it("does not start worker outside dev", async () => {
-    const loadWorker = vi.fn();
+  it("starts worker when enabled even outside dev (e.g. preview/production)", async () => {
+    const workerStart = vi.fn();
+    const loadWorker = vi.fn(async () => ({
+      worker: { start: workerStart },
+    }));
     const render = vi.fn();
 
     await startApp({
@@ -51,7 +54,8 @@ describe("main", () => {
       render,
     });
 
-    expect(loadWorker).not.toHaveBeenCalled();
+    expect(loadWorker).toHaveBeenCalledTimes(1);
+    expect(workerStart).toHaveBeenCalledTimes(1);
     expect(render).toHaveBeenCalledTimes(1);
   });
 

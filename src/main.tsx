@@ -73,7 +73,7 @@ export const startApp = async ({
     return;
   }
 
-  if (isDevEnv && isMswEnabled) {
+  if (isMswEnabled) {
     const { worker } = await loadWorker();
     await worker.start();
   }
