@@ -3,3 +3,4 @@ export { default as useGetPublicationsByTarget } from "./useGetPublicationsByTar
 export { default as useCreatePublicationTarget } from "./useCreatePublicationTarget";
 export { default as useEditPublicationTarget } from "./useEditPublicationTarget";
 export { default as useRemovePublicationTarget } from "./useRemovePublicationTarget";
+export { useBatchGetPublicationTargets } from "./useBatchGetPublicationTargets";

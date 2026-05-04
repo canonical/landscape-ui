@@ -10,5 +10,6 @@ export {
   useCreatePublicationTarget,
   useEditPublicationTarget,
   useRemovePublicationTarget,
+  useBatchGetPublicationTargets,
 } from "./api";
 export { default as NoPublicationTargetsModal } from "./components/NoPublicationTargetsModal";
