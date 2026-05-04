@@ -18,7 +18,11 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
 
   const formattedPackages: LocalPackage[] = packages.map((name) => ({ name }));
   const pagedPackages = useMemo(
-    () => formattedPackages.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    () =>
+      formattedPackages.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize,
+      ),
     [formattedPackages, currentPage, pageSize],
   );
 
@@ -49,7 +53,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
         emptyMsg={"No packages associated with this local repository."}
         minWidth={320}
       />
-      <ModalTablePagination 
+      <ModalTablePagination
         current={currentPage}
         max={maxPage}
         onPrev={() => {
@@ -57,7 +61,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
         }}
         onNext={() => {
           setCurrentPage((p) => Math.min(maxPage, p + 1));
-        }}      
+        }}
       />
     </>
   );

@@ -2,20 +2,28 @@ import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import ValidationResult from "./ValidationResult";
-import type { PackagesValidationState, PackagesValidationOperation } from "@/features/operations";
-import { emptyOperation, overCountOperation, failedOperation, succeededOperation } from "@/tests/mocks/operations";
+import type {
+  PackagesValidationState,
+  PackagesValidationOperation,
+} from "@/features/operations";
+import {
+  emptyOperation,
+  overCountOperation,
+  failedOperation,
+  succeededOperation,
+} from "@/tests/mocks/operations";
 import { getPackageList } from "../helpers";
 
-const makeTask = (operation: PackagesValidationOperation): PackagesValidationState => {
+const makeTask = (
+  operation: PackagesValidationOperation,
+): PackagesValidationState => {
   const { response, count } = getPackageList(operation.response?.value ?? "");
-  return (
-    {
-      status: operation.metadata?.status,
-      count: count,
-      response: response,
-      done: operation.done,
-    }
-  );
+  return {
+    status: operation.metadata?.status,
+    count: count,
+    response: response,
+    done: operation.done,
+  };
 };
 
 describe("ValidationResult", () => {
@@ -24,9 +32,7 @@ describe("ValidationResult", () => {
       <ValidationResult validationTask={makeTask(failedOperation)} />,
     );
 
-    expect(
-      screen.getByText("Fetching packages timed out"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Fetching packages timed out")).toBeInTheDocument();
     expect(
       screen.getByText(/you can still proceed to import packages/i),
     ).toBeInTheDocument();
@@ -34,9 +40,7 @@ describe("ValidationResult", () => {
 
   it("renders error notification when succeeded with zero count", () => {
     renderWithProviders(
-      <ValidationResult
-        validationTask={makeTask(emptyOperation)}
-      />,
+      <ValidationResult validationTask={makeTask(emptyOperation)} />,
     );
 
     expect(
@@ -46,15 +50,11 @@ describe("ValidationResult", () => {
 
   it("renders warning and paginated list when count exceeds 100", () => {
     renderWithProviders(
-      <ValidationResult
-        validationTask={makeTask(overCountOperation)}
-      />,
+      <ValidationResult validationTask={makeTask(overCountOperation)} />,
     );
 
     expect(
-      screen.getByText(
-        "Only the first 100 packages of 147 are displayed",
-      ),
+      screen.getByText("Only the first 100 packages of 147 are displayed"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(/all 147 packages will be imported/i),
@@ -64,25 +64,18 @@ describe("ValidationResult", () => {
     expect(
       screen.getByText("python3-snap-http_1.4.0-0ubuntu0_all"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/page 1 of 10/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/page 1 of 10/i)).toBeInTheDocument();
   });
 
   it("renders packages list with proper header when succeeded with packages", () => {
     renderWithProviders(
-      <ValidationResult
-        validationTask={makeTask(succeededOperation)}
-      />,
+      <ValidationResult validationTask={makeTask(succeededOperation)} />,
     );
 
     expect(screen.getByText(/packages to import/i)).toBeInTheDocument();
     expect(
       screen.getByText("python3-snap-http_1.4.0-0ubuntu0_all"),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText("package2-1.0.0"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("package2-1.0.0")).toBeInTheDocument();
   });
-
 });

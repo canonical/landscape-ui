@@ -16,9 +16,8 @@ const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
         borderless
       >
         <span>
-          You can still proceed to import packages, although this process
-          may fail if we can&apos;t fetch the packages from the source
-          provided.
+          You can still proceed to import packages, although this process may
+          fail if we can&apos;t fetch the packages from the source provided.
         </span>
       </Notification>
     );
@@ -36,17 +35,18 @@ const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
 
   return (
     <>
-      {validationTask.count > 100 &&
+      {validationTask.count > 100 && (
         <Notification
-            severity="caution"
-            title={`Only the first 100 packages of ${validationTask.count} are displayed`}
-            borderless
-          >
-            <span>
-              If you proceed with the import, all {validationTask.count} packages will be imported.
-            </span>
-          </Notification>
-      }
+          severity="caution"
+          title={`Only the first 100 packages of ${validationTask.count} are displayed`}
+          borderless
+        >
+          <span>
+            If you proceed with the import, all {validationTask.count} packages
+            will be imported.
+          </span>
+        </Notification>
+      )}
       <LocalRepositoryPackagesList
         packages={validationTask.response}
         header="Packages to import"

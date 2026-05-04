@@ -5,11 +5,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Button,
-  Form,
-  Input,
-} from "@canonical/react-components";
+import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
@@ -18,7 +14,10 @@ import { useGetOperation } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import type { OperationStatus, PackagesValidationState } from "@/features/operations";
+import type {
+  OperationStatus,
+  PackagesValidationState,
+} from "@/features/operations";
 import { getPackageList } from "./helpers";
 import ValidationResult from "./ValidationResult/ValidationResult";
 
@@ -49,7 +48,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const getTaskStatus = (): PackagesValidationState | undefined => {
     if (isPolling && operation) {
-      const { response, count } = getPackageList(operation.response?.value as string ?? "");
+      const { response, count } = getPackageList(
+        (operation.response?.value as string) ?? "",
+      );
 
       return {
         done: operation.done ?? false,
@@ -114,9 +115,10 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     validationTask?.status === "failed" ||
     (validationTask?.status === "succeeded" && !!validationTask.count);
 
-  const packagesCount = validationTask && validationTask.count > 0
-    ? pluralizeWithCount(validationTask.count, "package")
-    : "packages";
+  const packagesCount =
+    validationTask && validationTask.count > 0
+      ? pluralizeWithCount(validationTask.count, "package")
+      : "packages";
 
   return (
     <>
@@ -143,7 +145,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               className={classes.button}
             >
               {isImportingRepositoryPackages ||
-              validationTask?.status === "idle" || 
+              validationTask?.status === "idle" ||
               validationTask?.status === "in progress" ? (
                 <LoadingState inline />
               ) : (
@@ -152,9 +154,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             </Button>
           </div>
 
-          {validationTask?.done &&
+          {validationTask?.done && (
             <ValidationResult validationTask={validationTask} />
-          }
+          )}
 
           <SidePanelFormButtons
             submitButtonDisabled={!canImport}

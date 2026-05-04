@@ -19,9 +19,7 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
     return <LoadingState />;
   }
 
-  return (
-    <LocalRepositoryPackagesList packages={packages} />
-  );
+  return <LocalRepositoryPackagesList packages={packages} />;
 };
 
 export default ViewRepositoryPackagesTab;

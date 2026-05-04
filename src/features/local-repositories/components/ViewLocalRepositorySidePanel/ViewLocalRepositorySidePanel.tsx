@@ -53,10 +53,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
 
         {tabId === "packages" && (
           <Suspense fallback={<LoadingState />}>
-            <ViewRepositoryPackagesTab
-              repository={repository}
-              key="packages"
-            />
+            <ViewRepositoryPackagesTab repository={repository} key="packages" />
           </Suspense>
         )}
       </SidePanel.Content>
