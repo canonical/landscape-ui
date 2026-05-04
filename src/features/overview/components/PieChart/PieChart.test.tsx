@@ -38,10 +38,9 @@ vi.mock("react-chartjs-2", async () => {
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Pie: forwardRef((props: any, ref: any) => {
-      // eslint-disable-next-line react-hooks/globals
       capturedOnHover = props.options?.onHover;
       // Keep data in sync with props each render
-      // eslint-disable-next-line react-hooks/immutability
+
       MOCK_CHART.data = {
         labels: props.data?.labels ?? [],
         datasets:

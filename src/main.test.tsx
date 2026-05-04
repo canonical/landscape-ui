@@ -12,7 +12,6 @@ describe("main", () => {
 
     await startApp({
       mode: "development",
-      isDevEnv: true,
       isMswEnabled: true,
       loadWorker,
       render,
@@ -29,7 +28,6 @@ describe("main", () => {
 
     await startApp({
       mode: "development",
-      isDevEnv: true,
       isMswEnabled: false,
       loadWorker,
       render,
@@ -48,7 +46,6 @@ describe("main", () => {
 
     await startApp({
       mode: "development",
-      isDevEnv: false,
       isMswEnabled: true,
       loadWorker,
       render,
@@ -65,7 +62,6 @@ describe("main", () => {
 
     await startApp({
       mode: "test",
-      isDevEnv: true,
       isMswEnabled: true,
       loadWorker,
       render,

@@ -54,7 +54,6 @@ export const renderApp = (
 
 interface StartAppOptions {
   mode?: string;
-  isDevEnv?: boolean;
   isMswEnabled?: boolean;
   loadWorker?: WorkerLoader;
   render?: () => void;
@@ -62,7 +61,6 @@ interface StartAppOptions {
 
 export const startApp = async ({
   mode = import.meta.env.MODE,
-  isDevEnv = IS_DEV_ENV,
   isMswEnabled = IS_MSW_ENABLED,
   loadWorker = defaultLoadWorker,
   render = () => {
