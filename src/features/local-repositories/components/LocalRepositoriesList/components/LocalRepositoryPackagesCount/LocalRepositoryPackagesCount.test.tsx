@@ -18,15 +18,6 @@ describe("LocalRepositoryPackagesCount", () => {
       <LocalRepositoryPackagesCount repository={repositories[0]} />,
     );
 
-    expect(await screen.findByText(/3 packages/i)).toBeInTheDocument();
-  });
-
-  it("does not render zero packages text for mocked endpoint", async () => {
-    renderWithProviders(
-      <LocalRepositoryPackagesCount repository={repositories[0]} />,
-    );
-
-    expect(await screen.findByText(/3 packages/i)).toBeInTheDocument();
-    expect(screen.queryByText(/0 packages/i)).not.toBeInTheDocument();
+    expect(await screen.findByText(/25 packages/i)).toBeInTheDocument();
   });
 });

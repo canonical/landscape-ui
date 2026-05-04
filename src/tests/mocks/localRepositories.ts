@@ -6,7 +6,6 @@ export const repositories = [
     localId: "aaaa-bbbb-cccc",
     defaultComponent: "component 1",
     displayName: "repo 1",
-    comment: "repo 1 description",
     defaultDistribution: "distribution 1",
   },
   {
@@ -27,4 +26,7 @@ export const repositories = [
   },
 ] as const satisfies Local[];
 
-export const repoPackages = ["package 1", "package 2", "package 3"] as const;
+export const paginatedPackages = Array.from(
+  { length: 25 },
+  (_, i) => `package-${i + 1}`,
+);

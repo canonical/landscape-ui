@@ -16,8 +16,8 @@ describe("ViewRepositoryPackagesTab", () => {
       await screen.findByRole("columnheader", { name: "Package name" }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText("package 1")).toBeInTheDocument();
-    expect(screen.getByText("package 2")).toBeInTheDocument();
-    expect(screen.getByText("package 3")).toBeInTheDocument();
+    expect(await screen.findByText("package-1")).toBeInTheDocument();
+    expect(screen.getByText("package-2")).toBeInTheDocument();
+    expect(screen.getByText("package-3")).toBeInTheDocument();
   });
 });

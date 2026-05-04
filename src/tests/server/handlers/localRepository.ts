@@ -1,6 +1,9 @@
 import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import { repoPackages, repositories } from "@/tests/mocks/localRepositories";
+import {
+  paginatedPackages,
+  repositories,
+} from "@/tests/mocks/localRepositories";
 import type {
   LocalServiceImportLocalPackagesBody,
   BatchGetLocalsRequest,
@@ -83,7 +86,7 @@ export default [
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
     return HttpResponse.json({
-      localPackages: repoPackages,
+      localPackages: paginatedPackages,
     });
   }),
 
@@ -114,6 +117,6 @@ export default [
   ),
 
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
-    return HttpResponse.json(repoPackages[0]);
+    return HttpResponse.json(paginatedPackages[0]);
   }),
 ];

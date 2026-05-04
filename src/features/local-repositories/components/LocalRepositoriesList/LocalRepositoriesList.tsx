@@ -32,10 +32,6 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       {
         accessor: "name",
         Header: "Name",
-        meta: {
-          ariaLabel: ({ original: repository }) =>
-            `${repository.displayName} local repository name`,
-        },
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <Button
             type="button"
@@ -52,41 +48,23 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         Header: "Description",
-        meta: {
-          ariaLabel: ({ original: repository }) =>
-            repository.comment
-              ? `${repository.displayName} profile description`
-              : `No description for ${repository.displayName} profile`,
-        },
         Cell: ({ row: { original: repository } }: CellProps<Local>) =>
           repository.comment || <NoData />,
       },
       {
         Header: "Packages",
-        meta: {
-          ariaLabel: ({ original: repository }) =>
-            `${repository.displayName} local repository packages`,
-        },
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoryPackagesCount repository={repository} />
         ),
       },
       {
         Header: "Publications",
-        meta: {
-          ariaLabel: ({ original: repository }) =>
-            `${repository.displayName} local repository publications`,
-        },
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoryPublicationsCount repository={repository} />
         ),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        meta: {
-          ariaLabel: ({ original: repository }) =>
-            `"${repository.displayName}" local repository actions`,
-        },
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoriesListActions repository={repository} />
         ),
