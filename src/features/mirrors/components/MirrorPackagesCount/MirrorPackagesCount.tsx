@@ -17,7 +17,7 @@ const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
   if (isError || !data) return <NoData />;
 
   return pluralizeNew(data.data.mirrorPackages?.length, "package", {
-    showCount: data.data.nextPageToken === undefined ? "exact" : "limited",
+    showCount: data.data.nextPageToken ? "limited" : "exact",
   });
 };
 
