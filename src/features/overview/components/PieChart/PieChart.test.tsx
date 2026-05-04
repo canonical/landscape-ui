@@ -29,7 +29,6 @@ const MOCK_CHART = {
 // When false, the mock Pie does NOT set ref.current (tests the `if (chartRef.current)` false branch)
 let mockSetsRef = true;
 
- 
 let capturedOnHover:
   | ((event: ChartEvent, elements: ActiveElement[], chart: Chart) => void)
   | undefined;
@@ -141,7 +140,11 @@ describe("PieChart", () => {
       },
     };
     await act(async () => {
-      capturedOnHover?.({} as unknown as ChartEvent, [{ datasetIndex: 0 } as ActiveElement], mockChart as unknown as Chart);
+      capturedOnHover?.(
+        {} as unknown as ChartEvent,
+        [{ datasetIndex: 0 } as ActiveElement],
+        mockChart as unknown as Chart,
+      );
     });
     expect(mockChart.update).toHaveBeenCalled();
   });
@@ -161,7 +164,11 @@ describe("PieChart", () => {
       },
     };
     await act(async () => {
-      capturedOnHover?.({} as unknown as ChartEvent, [], mockChart as unknown as Chart);
+      capturedOnHover?.(
+        {} as unknown as ChartEvent,
+        [],
+        mockChart as unknown as Chart,
+      );
     });
     expect(mockChart.update).toHaveBeenCalled();
   });
