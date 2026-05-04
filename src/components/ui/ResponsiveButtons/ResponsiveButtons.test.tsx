@@ -9,6 +9,7 @@ import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 const simpleButtonClick = vi.fn();
 const buttonWithIconClick = vi.fn();
 const disabledButtonClick = vi.fn();
+const menuAction = vi.fn();
 
 const buttons: ComponentProps<typeof ResponsiveButtons>["buttons"] = [
   <button key="primary" onClick={simpleButtonClick}>
@@ -32,11 +33,25 @@ const buttons: ComponentProps<typeof ResponsiveButtons>["buttons"] = [
   >
     Disabled button
   </Button>,
+  <ContextualMenu
+    key="ctx-menu"
+    toggleLabel="More"
+    links={[
+      {
+        children: "Sub action",
+        onClick: menuAction,
+      },
+      {
+        children: "Read only link",
+      },
+    ]}
+  />,
 ];
 
 describe("ResponsiveButtons", () => {
   beforeEach(() => {
     resetScreenSize();
+    vi.clearAllMocks();
   });
 
   it("renders every button on large screens", () => {
@@ -311,5 +326,117 @@ describe("ResponsiveButtons", () => {
     });
 
     expect(buttonWithIcon.querySelector(".p-icon--code")).toBeInTheDocument();
+  });
+
+  it("applies custom className to wrapper", () => {
+    setScreenSize("lg");
+
+    const { container } = render(
+      <ResponsiveButtons
+        buttons={buttons}
+        collapseFrom="md"
+        className="custom-class"
+      />,
+    );
+
+    expect(container.firstChild).toHaveClass("custom-class");
+  });
+
+  it("disables the menu toggle when all collapsed items are disabled", () => {
+    setScreenSize("xs");
+
+    const allDisabledButtons = [
+      <Button key="d1" type="button" onClick={vi.fn()} disabled>
+        Disabled 1
+      </Button>,
+      <Button key="d2" type="button" onClick={vi.fn()} disabled>
+        Disabled 2
+      </Button>,
+    ];
+
+    render(<ResponsiveButtons buttons={allDisabledButtons} />);
+
+    expect(screen.getByRole("button", { name: /actions/i })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+  });
+
+  it("keeps non-interactive nodes visible even on small screens", () => {
+    setScreenSize("xs");
+
+    const mixedButtons = [
+      <span key="text">Just a label</span>,
+      <Button key="action" type="button" onClick={vi.fn()}>
+        Action
+      </Button>,
+    ];
+
+    render(<ResponsiveButtons buttons={mixedButtons} />);
+
+    expect(screen.getByText("Just a label")).toBeInTheDocument();
+  });
+
+  it("collapses a ContextualMenu into the dropdown on small screens", async () => {
+    setScreenSize("xs");
+
+    render(<ResponsiveButtons buttons={buttons} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+    await userEvent.click(screen.getByRole("button", { name: "More" }));
+
+    expect(
+      screen.getByRole("button", { name: "Read only link" }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Sub action" }));
+    expect(menuAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("closes the menu after clicking a collapsed item", async () => {
+    setScreenSize("xs");
+
+    render(<ResponsiveButtons buttons={buttons} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Simple button" }),
+    );
+
+    expect(simpleButtonClick).toHaveBeenCalledTimes(1);
+
+    expect(
+      screen.queryByRole("button", { name: "Simple button" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("uses custom menuLabel", () => {
+    setScreenSize("xs");
+
+    render(<ResponsiveButtons buttons={buttons} menuLabel="Custom Menu" />);
+
+    expect(
+      screen.getByRole("button", { name: /custom menu/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("extracts text from nested children for collapsed button label", async () => {
+    setScreenSize("xs");
+
+    const nestedButtons = [
+      <Button key="nested" type="button" onClick={vi.fn()}>
+        <span>
+          <span>Nested text</span>
+        </span>
+      </Button>,
+    ];
+
+    render(<ResponsiveButtons buttons={nestedButtons} />);
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+
+    expect(
+      screen.getByRole("button", { name: "Nested text" }),
+    ).toBeInTheDocument();
   });
 });

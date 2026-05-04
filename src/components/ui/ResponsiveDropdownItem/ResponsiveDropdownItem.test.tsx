@@ -5,40 +5,28 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import ResponsiveDropdownItem from "./ResponsiveDropdownItem";
 
+const element = (
+  <PageParamFilter
+    pageParamKey="status"
+    label="Status"
+    options={[{ label: "Option 1", value: "option-1" }]}
+  />
+);
+
 describe("ResponsiveDropdownItem", () => {
   const user = userEvent.setup();
+  const onMenuClose = vi.fn();
 
   it("renders an element", async () => {
-    renderWithProviders(
-      <ResponsiveDropdownItem
-        el={
-          <PageParamFilter
-            pageParamKey="status"
-            label="Status"
-            options={[{ label: "Option 1", value: "option-1" }]}
-          />
-        }
-      />,
-    );
+    renderWithProviders(<ResponsiveDropdownItem el={element} />);
 
     await user.click(screen.getByRole("button", { name: "Status" }));
     expect(screen.getByText("Option 1")).toBeInTheDocument();
   });
 
-  it("calls onMenuClose when content area is clicked", async () => {
-    const onMenuClose = vi.fn();
-
+  it("closes the menu when an element is clicked", async () => {
     renderWithProviders(
-      <ResponsiveDropdownItem
-        el={
-          <PageParamFilter
-            pageParamKey="status"
-            label="Status"
-            options={[{ label: "Option 1", value: "option-1" }]}
-          />
-        }
-        onMenuClose={onMenuClose}
-      />,
+      <ResponsiveDropdownItem el={element} onMenuClose={onMenuClose} />,
     );
 
     await user.click(screen.getByRole("button", { name: "Status" }));
@@ -114,5 +102,16 @@ describe("ResponsiveDropdownItem", () => {
 
     await user.click(screen.getByRole("button", { name: "outside" }));
     expect(screen.queryByText("Option 1")).not.toBeInTheDocument();
+    expect(onMenuClose).toHaveBeenCalled();
+  });
+
+  it("renders a disabled element with given label", async () => {
+    renderWithProviders(
+      <ResponsiveDropdownItem el={element} disabled label="Label" />,
+    );
+
+    const button = await screen.findByRole("button", { name: "Label" });
+    expect(button).toHaveClass("is-disabled");
+    expect(button).toHaveAttribute("aria-disabled", "true");
   });
 });
