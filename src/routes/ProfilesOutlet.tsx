@@ -6,7 +6,7 @@ const ProfilesOutlet: FC = () => {
   const { pathname } = useLocation();
 
   return (
-    <ProfilesProvider path={pathname}>
+    <ProfilesProvider key={pathname} path={pathname}>
       <Outlet />
     </ProfilesProvider>
   );

@@ -9,7 +9,7 @@ import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
-import ProfilesOutlet from "./ProfilesOutlet";
+import ProfilesOutlet from "@/routes/ProfilesOutlet";
 
 export const DashboardRoutes = (
   <Route
