@@ -63,4 +63,8 @@ export default [
       wslProfiles.find((wslProfile) => wslProfile.name === params.name),
     );
   }),
+
+  http.delete(`${API_URL}child-instance-profiles/:name`, () => {
+    return HttpResponse.json({});
+  }),
 ];

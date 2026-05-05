@@ -9,7 +9,13 @@ export default [
       return HttpResponse.json(upgradeProfiles);
     }
 
-    if (!isAction(request, ["CreateUpgradeProfile", "EditUpgradeProfile"])) {
+    if (
+      !isAction(request, [
+        "CreateUpgradeProfile",
+        "EditUpgradeProfile",
+        "RemoveUpgradeProfile",
+      ])
+    ) {
       return;
     }
 
