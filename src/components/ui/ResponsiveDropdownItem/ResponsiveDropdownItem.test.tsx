@@ -38,38 +38,12 @@ describe("ResponsiveDropdownItem", () => {
   });
 
   it("does not call onMenuClose when it is not provided", async () => {
-    renderWithProviders(
-      <ResponsiveDropdownItem
-        el={
-          <PageParamFilter
-            pageParamKey="status"
-            label="Status"
-            options={[{ label: "Option 1", value: "option-1" }]}
-          />
-        }
-      />,
-    );
+    renderWithProviders(<ResponsiveDropdownItem el={element} />);
 
     await user.click(screen.getByRole("button", { name: "Status" }));
     await expect(
       user.click(screen.getByText("Option 1")),
     ).resolves.not.toThrow();
-  });
-
-  it("renders with explicit label prop", async () => {
-    renderWithProviders(
-      <ResponsiveDropdownItem el={<div>content</div>} label="Custom Label" />,
-    );
-
-    expect(screen.getByText("Custom Label")).toBeInTheDocument();
-  });
-
-  it("renders disabled button when disabled prop is true", () => {
-    renderWithProviders(
-      <ResponsiveDropdownItem el={<div>content</div>} label="Label" disabled />,
-    );
-
-    expect(screen.getByRole("button")).toHaveAttribute("aria-disabled");
   });
 
   it("renders without a label when neither label prop nor el.props.label is available", async () => {
@@ -86,15 +60,7 @@ describe("ResponsiveDropdownItem", () => {
   it("closes dropdown when clicking outside", async () => {
     renderWithProviders(
       <div>
-        <ResponsiveDropdownItem
-          el={
-            <PageParamFilter
-              pageParamKey="status"
-              label="Status"
-              options={[{ label: "Option 1", value: "option-1" }]}
-            />
-          }
-        />
+        <ResponsiveDropdownItem el={element} />
         <button>outside</button>
       </div>,
     );

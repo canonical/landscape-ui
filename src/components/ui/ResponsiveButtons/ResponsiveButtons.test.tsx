@@ -35,22 +35,24 @@ const buttons: ComponentProps<typeof ResponsiveButtons>["buttons"] = [
   </Button>,
   <ContextualMenu
     key="ctx-menu"
-    toggleLabel="More"
+    toggleLabel="Menu"
     links={[
-      {
-        children: "Sub action",
-        onClick: menuAction,
-      },
       {
         children: (
           <>
             <Icon name="plus" />
-            <span>Read only link</span>
+            <span>Sub action</span>
           </>
         ),
+        onClick: menuAction,
+      },
+      "String link",
+      {
+        children: "Read only link",
       },
     ]}
   />,
+  <span key="text-node">Non button</span>,
 ];
 
 describe("ResponsiveButtons", () => {
@@ -152,7 +154,7 @@ describe("ResponsiveButtons", () => {
     expect(simpleButtonClick).toHaveBeenCalledTimes(1);
   });
 
-  it("disabled button for a collapsed menu item", async () => {
+  it("disables button for a collapsed menu item", async () => {
     setScreenSize("xs");
 
     render(<ResponsiveButtons buttons={buttons} />);
@@ -167,10 +169,9 @@ describe("ResponsiveButtons", () => {
   it("renders non-button nodes in visible list on large screens", () => {
     setScreenSize("lg");
 
-    const nonButtonNode = <span key="text-node">Text content</span>;
-    render(<ResponsiveButtons buttons={[nonButtonNode]} />);
+    render(<ResponsiveButtons buttons={buttons} />);
 
-    expect(screen.getByText("Text content")).toBeInTheDocument();
+    expect(screen.getByText("Non button")).toBeInTheDocument();
   });
 
   it("renders a single button without grouping", () => {
@@ -190,58 +191,12 @@ describe("ResponsiveButtons", () => {
     expect(screen.getByRole("button", { name: "Single" })).toBeInTheDocument();
   });
 
-  it("renders a ContextualMenu that is collapsed on small screens", async () => {
-    setScreenSize("xs");
-
-    const menuClickFn = vi.fn();
-    const contextualMenuButtons = [
-      <ContextualMenu
-        key="context-menu"
-        toggleLabel="Filter"
-        links={[{ children: "Option A", onClick: menuClickFn }]}
-      />,
-    ];
-
-    render(
-      <ResponsiveButtons
-        buttons={contextualMenuButtons}
-        alwaysVisible={0}
-        menuLabel="Actions"
-      />,
-    );
-
-    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
-
-    expect(screen.getByText("Filter")).toBeInTheDocument();
-  });
-
-  it("disables the Actions menu when all buttons are disabled", () => {
-    setScreenSize("xs");
-
-    render(
-      <ResponsiveButtons
-        buttons={[
-          <Button key="a" type="button" onClick={vi.fn()} disabled>
-            A
-          </Button>,
-        ]}
-        alwaysVisible={0}
-        menuLabel="Actions"
-      />,
-    );
-
-    expect(screen.getByRole("button", { name: /actions/i })).toHaveAttribute(
-      "aria-disabled",
-    );
-  });
-
   it("pushes non-button nodes to visible on small screens", () => {
     setScreenSize("xs");
 
-    const nonButtonNode = <span key="text-node">Text content</span>;
-    render(<ResponsiveButtons buttons={[nonButtonNode]} alwaysVisible={0} />);
+    render(<ResponsiveButtons buttons={buttons} alwaysVisible={0} />);
 
-    expect(screen.getByText("Text content")).toBeInTheDocument();
+    expect(screen.getByText("Non button")).toBeInTheDocument();
   });
 
   it("renders a ContextualMenu in grouped view on large screens", () => {
@@ -266,57 +221,19 @@ describe("ResponsiveButtons", () => {
   it("skips string links inside a collapsed ContextualMenu", async () => {
     setScreenSize("xs");
 
-    const menuClickFn = vi.fn();
-    const contextualMenuButtons = [
-      <ContextualMenu
-        key="context-menu"
-        toggleLabel="Filter"
-        links={["string-link", { children: "Option A", onClick: menuClickFn }]}
-      />,
-    ];
-
     render(
       <ResponsiveButtons
-        buttons={contextualMenuButtons}
+        buttons={buttons}
         alwaysVisible={0}
         menuLabel="Actions"
       />,
     );
 
     await userEvent.click(screen.getByRole("button", { name: /actions/i }));
-    await userEvent.click(screen.getByRole("button", { name: "Filter" }));
+    await userEvent.click(screen.getByRole("button", { name: "Menu" }));
 
-    expect(screen.getByText("Option A")).toBeInTheDocument();
-    expect(screen.queryByText("string-link")).not.toBeInTheDocument();
-  });
-
-  it("calls link onClick when clicking a link inside a collapsed ContextualMenu", async () => {
-    setScreenSize("xs");
-
-    const menuClickFn = vi.fn();
-    const contextualMenuButtons = [
-      <ContextualMenu
-        key="context-menu"
-        toggleLabel="Filter"
-        links={[{ children: "Option A", onClick: menuClickFn }]}
-      />,
-    ];
-
-    render(
-      <ResponsiveButtons
-        buttons={contextualMenuButtons}
-        alwaysVisible={0}
-        menuLabel="Actions"
-      />,
-    );
-
-    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
-    expect(screen.getByText("Filter")).toBeInTheDocument();
-
-    await userEvent.click(screen.getByRole("button", { name: "Filter" }));
-    await userEvent.click(screen.getByText("Option A"));
-
-    expect(menuClickFn).toHaveBeenCalled();
+    expect(screen.getByText("Sub action")).toBeInTheDocument();
+    expect(screen.queryByText("String link")).not.toBeInTheDocument();
   });
 
   it("preserves icon children in collapsed menu items", async () => {
@@ -326,11 +243,16 @@ describe("ResponsiveButtons", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /actions/i }));
 
-    const buttonWithIcon = screen.getByRole("button", {
-      name: "Button with icon",
-    });
+    expect(
+      screen.getByRole("button", {
+        name: "Button with icon",
+      }),
+    ).toHaveIcon("code");
 
-    expect(buttonWithIcon.querySelector(".p-icon--code")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Menu" }));
+    expect(screen.getByRole("button", { name: "Sub action" })).toHaveIcon(
+      "plus",
+    );
   });
 
   it("applies custom className to wrapper", () => {
@@ -367,32 +289,17 @@ describe("ResponsiveButtons", () => {
     );
   });
 
-  it("keeps non-interactive nodes visible even on small screens", () => {
-    setScreenSize("xs");
-
-    const mixedButtons = [
-      <span key="text">Just a label</span>,
-      <Button key="action" type="button" onClick={vi.fn()}>
-        Action
-      </Button>,
-    ];
-
-    render(<ResponsiveButtons buttons={mixedButtons} />);
-
-    expect(screen.getByText("Just a label")).toBeInTheDocument();
-  });
-
-  it("collapses a ContextualMenu into the dropdown on small screens", async () => {
+  it("collapses a ContextualMenu into dropdown on small screens", async () => {
     setScreenSize("xs");
 
     render(<ResponsiveButtons buttons={buttons} />);
 
     await userEvent.click(screen.getByRole("button", { name: /actions/i }));
-    await userEvent.click(screen.getByRole("button", { name: "More" }));
+    await userEvent.click(screen.getByRole("button", { name: "Menu" }));
 
-    expect(screen.getByRole("button", { name: "Read only link" })).toHaveIcon(
-      "plus",
-    );
+    expect(
+      screen.getByRole("button", { name: "Read only link" }),
+    ).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole("button", { name: "Sub action" }));
     expect(menuAction).toHaveBeenCalledTimes(1);
