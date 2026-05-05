@@ -30,7 +30,7 @@ export default function useGetPublicationsByTarget(
             "publications",
             {
               params: {
-                publicationTargetId,
+                filter: `publication_target="publicationTargets/${publicationTargetId}"`,
                 pageSize: 100,
                 pageToken,
               },

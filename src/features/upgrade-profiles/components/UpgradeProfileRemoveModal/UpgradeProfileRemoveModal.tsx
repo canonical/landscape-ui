@@ -4,7 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
-import { useUpgradeProfiles } from "../../hooks";
+import { useRemoveUpgradeProfile } from "../../api";
 import type { UpgradeProfile } from "../../types";
 
 interface UpgradeProfileRemoveModalProps extends Pick<
@@ -23,9 +23,8 @@ const UpgradeProfileRemoveModal: FC<UpgradeProfileRemoveModalProps> = ({
   const { notify } = useNotify();
   const { setPageParams } = usePageParams();
 
-  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
-  const { mutateAsync: removeUpgradeProfile, isPending: isRemoving } =
-    removeUpgradeProfileQuery;
+  const { removeUpgradeProfile, isRemovingUpgradeProfile: isRemoving } =
+    useRemoveUpgradeProfile();
 
   const handleRemoveUpgradeProfile = async () => {
     try {

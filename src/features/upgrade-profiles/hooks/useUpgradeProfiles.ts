@@ -1,4 +1,3 @@
-import type { Activity } from "@/features/activities";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/api/QueryFnType";
@@ -32,10 +31,6 @@ interface EditUpgradeProfileParams extends Omit<
 > {
   name: string;
   title?: string;
-}
-
-interface RemoveUpgradeProfileParams {
-  name: string;
 }
 
 interface GetUpgradeProfilesParams {
@@ -78,18 +73,6 @@ export default function useUpgradeProfiles() {
     },
   });
 
-  const removeUpgradeProfileQuery = useMutation<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    RemoveUpgradeProfileParams
-  >({
-    mutationFn: async (params) => {
-      return authFetchOld.get("RemoveUpgradeProfile", { params });
-    },
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
-  });
-
   const getUpgradeProfilesQuery: QueryFnType<
     AxiosResponse<UpgradeProfile[]>,
     GetUpgradeProfilesParams
@@ -104,7 +87,6 @@ export default function useUpgradeProfiles() {
   return {
     createUpgradeProfileQuery,
     editUpgradeProfileQuery,
-    removeUpgradeProfileQuery,
     getUpgradeProfilesQuery,
   };
 }

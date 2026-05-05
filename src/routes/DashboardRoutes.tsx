@@ -9,6 +9,7 @@ import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
+import ProfilesOutlet from "./ProfilesOutlet";
 
 export const DashboardRoutes = (
   <Route
@@ -38,7 +39,7 @@ export const DashboardRoutes = (
       </Route>
 
       {/* --- Profiles --- */}
-      <Route path={PATHS.profiles.root}>
+      <Route path={PATHS.profiles.root} element={<ProfilesOutlet />}>
         <Route
           path={PATHS.profiles.repositoryProfiles}
           element={<Pages.RepositoryProfilesPage />}

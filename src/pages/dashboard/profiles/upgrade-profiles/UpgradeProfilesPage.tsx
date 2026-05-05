@@ -9,6 +9,7 @@ import {
 import {
   useUpgradeProfiles,
   useGetPageUpgradeProfile,
+  useRemoveUpgradeProfile,
 } from "@/features/upgrade-profiles";
 import type { FC } from "react";
 import { lazy, useEffect } from "react";
@@ -40,15 +41,19 @@ const UpgradeProfilesPage: FC = () => {
 
   const { upgradeProfile } = useGetPageUpgradeProfile();
 
-  const { removeUpgradeProfileQuery } = useUpgradeProfiles();
+  const { removeUpgradeProfile, isRemovingUpgradeProfile } =
+    useRemoveUpgradeProfile();
   const { setRemoveProfile, setIsRemovingProfile } = useProfiles();
 
   useEffect(() => {
-    setRemoveProfile(({ name }) =>
-      removeUpgradeProfileQuery.mutateAsync({ name }),
-    );
-    setIsRemovingProfile(removeUpgradeProfileQuery.isPending);
-  }, [setRemoveProfile, removeUpgradeProfileQuery, setIsRemovingProfile]);
+    setRemoveProfile(({ name }) => removeUpgradeProfile({ name }));
+    setIsRemovingProfile(isRemovingUpgradeProfile);
+  }, [
+    setRemoveProfile,
+    removeUpgradeProfile,
+    setIsRemovingProfile,
+    isRemovingUpgradeProfile,
+  ]);
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "view"]);
 
