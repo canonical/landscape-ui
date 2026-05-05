@@ -46,7 +46,9 @@ describe("ValidationResult", () => {
     );
 
     expect(screen.getByText("Could not fetch packages")).toBeInTheDocument();
-    expect(screen.getByText(/the operation failed unexpectedly/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/the operation failed unexpectedly/i),
+    ).toBeInTheDocument();
   });
 
   it("renders default error notification when failed without error message", () => {
