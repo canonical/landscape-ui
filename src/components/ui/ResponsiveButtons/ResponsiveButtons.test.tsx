@@ -42,7 +42,12 @@ const buttons: ComponentProps<typeof ResponsiveButtons>["buttons"] = [
         onClick: menuAction,
       },
       {
-        children: "Read only link",
+        children: (
+          <>
+            <Icon name="plus" />
+            <span>Read only link</span>
+          </>
+        ),
       },
     ]}
   />,
@@ -387,7 +392,7 @@ describe("ResponsiveButtons", () => {
 
     expect(
       screen.getByRole("button", { name: "Read only link" }),
-    ).toBeInTheDocument();
+    ).toHaveIcon("plus");
 
     await userEvent.click(screen.getByRole("button", { name: "Sub action" }));
     expect(menuAction).toHaveBeenCalledTimes(1);

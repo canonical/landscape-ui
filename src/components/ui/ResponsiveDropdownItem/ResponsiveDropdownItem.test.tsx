@@ -20,8 +20,10 @@ describe("ResponsiveDropdownItem", () => {
   it("renders an element", async () => {
     renderWithProviders(<ResponsiveDropdownItem el={element} />);
 
-    await user.click(screen.getByRole("button", { name: "Status" }));
+    const button = await screen.findByRole("button", { name: "Status" });
+    await user.click(button);
     expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(button).toHaveIcon("chevron-right");
   });
 
   it("closes the menu when an element is clicked", async () => {
@@ -105,13 +107,14 @@ describe("ResponsiveDropdownItem", () => {
     expect(onMenuClose).toHaveBeenCalled();
   });
 
-  it("renders a disabled element with given label", async () => {
+  it("renders a disabled element with given label and right position", async () => {
     renderWithProviders(
-      <ResponsiveDropdownItem el={element} disabled label="Label" />,
+      <ResponsiveDropdownItem el={element} disabled label="Label" position="right" />,
     );
 
     const button = await screen.findByRole("button", { name: "Label" });
     expect(button).toHaveClass("is-disabled");
     expect(button).toHaveAttribute("aria-disabled", "true");
+    expect(button).toHaveIcon("chevron-left");
   });
 });
