@@ -1,4 +1,5 @@
 import FileInput from "@/components/form/FileInput";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
 import { CustomSelect, Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
@@ -19,23 +20,56 @@ export default function useUsgProfileFormBenchmarkStep<
     await formik.setFieldValue("tailoring_file", null);
   };
 
+  const getTailoringFileValue = () => {
+    const file = formik.values.tailoring_file;
+    if (!file) return "None";
+    if (typeof file === "string") return file;
+    return file.name;
+  };
+
   return {
     isValid: !formik.errors.benchmark && !formik.errors.mode,
     isLoading: false,
     description:
       "Select a USG profile benchmark, choose the profile mode, and optionally upload a tailoring file to customize the USG profile.",
-    content: (
+    content: disabled ? (
       <>
-        {!disabled && (
-          <Notification severity="caution" title="Changes restricted:" inline>
-            After profile creation, the USG profile benchmark and mode cannot be
-            changed. Please review before proceeding.
-          </Notification>
-        )}
+        <ReadOnlyField
+          label="Base profile"
+          value={
+            USG_PROFILE_BENCHMARK_LABELS[
+              formik.values
+                .benchmark as keyof typeof USG_PROFILE_BENCHMARK_LABELS
+            ] ?? formik.values.benchmark
+          }
+          tooltipMessage="You can't change the base profile after the USG profile has been created"
+        />
+
+        <ReadOnlyField
+          label="Mode"
+          value={
+            USG_PROFILE_MODE_LABELS[
+              formik.values.mode as keyof typeof USG_PROFILE_MODE_LABELS
+            ] ?? formik.values.mode
+          }
+          tooltipMessage="You can't change the mode after the USG profile has been created"
+        />
+
+        <ReadOnlyField
+          label="Tailoring file"
+          value={getTailoringFileValue()}
+          tooltipMessage="You can't change the tailoring file after the USG profile has been created"
+        />
+      </>
+    ) : (
+      <>
+        <Notification severity="caution" title="Changes restricted:" inline>
+          After profile creation, the USG profile benchmark and mode cannot be
+          changed. Please review before proceeding.
+        </Notification>
 
         <CustomSelect
           label="Base profile"
-          disabled={disabled}
           options={[
             {
               label: (
@@ -106,7 +140,6 @@ export default function useUsgProfileFormBenchmarkStep<
 
         <CustomSelect
           label="Mode"
-          disabled={disabled}
           options={[
             {
               label: (
@@ -150,7 +183,6 @@ export default function useUsgProfileFormBenchmarkStep<
 
         <FileInput
           label="Upload tailoring file"
-          disabled={disabled}
           accept=".xml"
           {...formik.getFieldProps("tailoring_file")}
           help={

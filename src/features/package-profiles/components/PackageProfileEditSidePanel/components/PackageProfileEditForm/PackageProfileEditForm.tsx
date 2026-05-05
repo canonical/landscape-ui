@@ -1,12 +1,13 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { type SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Input, Select } from "@canonical/react-components";
+import { getTitleByName } from "@/utils/_helpers";
+import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { usePackageProfiles } from "../../../../hooks";
@@ -26,14 +27,8 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   const { editPackageProfileQuery } = usePackageProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+  const { data: accessGroupsData } = getAccessGroupQuery();
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
-
-  const accessGroupOptions: SelectOption[] =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
 
   const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
@@ -83,11 +78,10 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
         {...formik.getFieldProps("description")}
       />
 
-      <Select
+      <ReadOnlyField
         label="Access group"
-        disabled
-        options={accessGroupOptions}
-        value={profile.access_group}
+        value={getTitleByName(profile.access_group, accessGroupsData)}
+        tooltipMessage="You can't change the access group after the package profile has been created"
       />
 
       <AssociationBlock formik={formik} />

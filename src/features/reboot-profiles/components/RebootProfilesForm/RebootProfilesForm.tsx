@@ -1,12 +1,14 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
 import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 import MultiSelectField from "@/components/form/MultiSelectField";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
+import { getTitleByName } from "@/utils/_helpers";
 import {
   Form,
   Icon,
@@ -37,13 +39,13 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
+  const { data: accessGroupsData } = getAccessGroupQuery();
   const { createRebootProfile, isCreatingRebootProfile } =
     useCreateRebootProfileQuery();
   const { editRebootProfile, isEditingRebootProfile } =
     useEditRebootProfileQuery();
   const accessGroupOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
+    accessGroupsData?.data.map(({ name, title }) => ({
       label: title,
       value: name,
     })) ?? [];
@@ -109,14 +111,21 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
           error={getFormikError(formik, "title")}
         />
 
-        <Select
-          label="Access group"
-          aria-label="Access group"
-          options={accessGroupOptions}
-          disabled={props.action === "edit"}
-          {...formik.getFieldProps("access_group")}
-          error={getFormikError(formik, "access_group")}
-        />
+        {props.action === "edit" ? (
+          <ReadOnlyField
+            label="Access group"
+            value={getTitleByName(props.profile.access_group, accessGroupsData)}
+            tooltipMessage="You can't change the access group after the reboot profile has been created"
+          />
+        ) : (
+          <Select
+            label="Access group"
+            aria-label="Access group"
+            options={accessGroupOptions}
+            {...formik.getFieldProps("access_group")}
+            error={getFormikError(formik, "access_group")}
+          />
+        )}
 
         <div className={classes.container}>
           <p className="p-heading--5">Schedule</p>
