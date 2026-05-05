@@ -12,7 +12,7 @@ import { useFormik } from "formik";
 import { type FC } from "react";
 import { useEditWslProfile } from "../../../../api";
 import type { WslProfile } from "../../../../types";
-import { getValidationSchema } from "./helpers";
+import { getCloudInitValue, getValidationSchema } from "./helpers";
 import classes from "./WslProfileEditForm.module.scss";
 
 interface WslProfileEditFormProps {
@@ -39,12 +39,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
     ? "From URL"
     : profile.image_name;
 
-  const getCloudInitValue = () => {
-    if (profile.cloud_init_contents) return "Plain text";
-    if (profile.cloud_init_secret_name) return "From a file";
-    return "None";
-  };
-  const cloudInitValue = getCloudInitValue();
+  const cloudInitValue = getCloudInitValue(profile);
   const complianceValue = profile.only_landscape_created
     ? "Uninstall non-Landscape instances"
     : "Ignore non-Landscape instances";
