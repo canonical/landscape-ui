@@ -34,7 +34,7 @@ const EditMirrorForm: FC = () => {
   const { name, popSidePath, createPageParamsSetter } = usePageParams();
 
   const mirror = useGetMirror(name).data.data;
-  const updateMirror = useUpdateMirror().mutateAsync;
+  const updateMirror = useUpdateMirror(name).mutateAsync;
 
   const close = createPageParamsSetter({ sidePath: [], name: "" });
 
@@ -54,18 +54,15 @@ const EditMirrorForm: FC = () => {
     onSubmit: async (values) => {
       try {
         await updateMirror({
-          mirrorName: name,
-          params: {
-            displayName: values.name,
-            archiveRoot: mirror.archiveRoot,
-            components: mirror.components,
-            downloadUdebs: values.downloadUdebPackages,
-            downloadSources: values.downloadSources,
-            downloadInstaller: values.downloadInstallerFiles,
-            gpgKey: values.verificationGpgKey
-              ? { armor: values.verificationGpgKey }
-              : undefined,
-          },
+          displayName: values.name,
+          archiveRoot: mirror.archiveRoot,
+          components: mirror.components,
+          downloadUdebs: values.downloadUdebPackages,
+          downloadSources: values.downloadSources,
+          downloadInstaller: values.downloadInstallerFiles,
+          gpgKey: values.verificationGpgKey
+            ? { armor: values.verificationGpgKey }
+            : undefined,
         });
 
         close();

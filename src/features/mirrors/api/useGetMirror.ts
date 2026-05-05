@@ -24,7 +24,7 @@ export function useGetMirror(
     AxiosResponse<GetMirrorResponse>,
     AxiosError<GetMirrorError>
   >({
-    queryKey: ["mirrors", mirrorName],
+    queryKey: ["mirror", mirrorName],
     queryFn: async () => authFetchDebArchive.get(mirrorName),
     ...options,
   });

@@ -4,24 +4,23 @@ import type {
   DeleteMirrorError,
   DeleteMirrorResponse,
 } from "@canonical/landscape-openapi";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-
-export interface UseDeleteMirrorVariables {
-  mirrorName: DeleteMirrorData["path"]["name_1"];
-  params?: DeleteMirrorData["query"];
-}
-
-export function useDeleteMirror() {
+export function useDeleteMirror(name: DeleteMirrorData["path"]["name_1"]) {
   const authFetchDebArchive = useFetchDebArchive();
+  const queryClient = useQueryClient();
 
   return useMutation<
     AxiosResponse<DeleteMirrorResponse>,
     AxiosError<DeleteMirrorError>,
-    UseDeleteMirrorVariables
+    DeleteMirrorData["query"]
   >({
     mutationKey: ["mirrors"],
-    mutationFn: async ({ mirrorName, params }) =>
-      authFetchDebArchive.delete(mirrorName, { params }),
+    mutationFn: async (params) => authFetchDebArchive.delete(name, { params }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({
+        queryKey: ["mirrors"]
+      });
+    },
   });
 }

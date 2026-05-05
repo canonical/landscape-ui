@@ -24,7 +24,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
   const { setPageParams } = usePageParams();
 
   const { mutateAsync: syncMirror, isPending: isSyncingMirror } =
-    useSyncMirror();
+    useSyncMirror(mirrorName);
 
   const { value: ignoreChecksums, toggle: toggleIgnoreChecksums } =
     useBoolean();
@@ -41,13 +41,10 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
   const tryUpdateMirror = async () => {
     try {
       await syncMirror({
-        mirrorName,
-        params: {
-          ignoreChecksums,
-          ignoreSignatures,
-          forceUpdate,
-          skipExistingPackages,
-        },
+        ignoreChecksums,
+        ignoreSignatures,
+        forceUpdate,
+        skipExistingPackages,
       });
 
       setPageParams({ sidePath: [], name: "" });
