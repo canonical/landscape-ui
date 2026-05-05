@@ -91,7 +91,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           title: values.title,
           description: values.description,
           access_group: props.profile.access_group,
-          tags: values.tags,
+          tags: !values.all_computers ? values.tags : [],
           all_computers: values.all_computers,
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
           remove_apt_sources: originalSources
