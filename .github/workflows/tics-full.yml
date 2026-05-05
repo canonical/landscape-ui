@@ -12,7 +12,8 @@ jobs:
     env:
       VITE_API_URL: ${{ vars.API_URL }}
       VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
-      VITE_API_URL_DEB_ARCHIVE: /v1beta1/
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /new_dashboard/
       VITE_REPORT_VIEW_ENABLED: false

@@ -64,37 +64,53 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   });
 
   const viewVersionHistory = (): void => {
+    if (!script) {
+      return;
+    }
+
     setSidePanelContent(
-      script!.title,
+      script.title,
       <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script!.id} initialTabId="version-history" />
+        <ScriptDetails scriptId={script.id} initialTabId="version-history" />
       </Suspense>,
     );
   };
 
   const handleBackToDetails = (): void => {
+    if (!script) {
+      return;
+    }
+
     setSidePanelContent(
-      script!.title,
+      script.title,
       <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script!.id} />
+        <ScriptDetails scriptId={script.id} />
       </Suspense>,
     );
   };
 
   const handleEditScript = (): void => {
+    if (!script) {
+      return;
+    }
+
     setSidePanelContent(
-      `Edit "${script!.title}" script`,
+      `Edit "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <EditScriptForm script={script!} onBack={handleBackToDetails} />
+        <EditScriptForm script={script} onBack={handleBackToDetails} />
       </Suspense>,
     );
   };
 
   const handleRunScript = (): void => {
+    if (!script) {
+      return;
+    }
+
     setSidePanelContent(
-      `Run "${script!.title}" script`,
+      `Run "${script.title}" script`,
       <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script!} onBack={handleBackToDetails} />
+        <RunScriptForm script={script} onBack={handleBackToDetails} />
       </Suspense>,
     );
   };
