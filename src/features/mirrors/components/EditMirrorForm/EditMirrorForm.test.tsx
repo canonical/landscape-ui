@@ -97,7 +97,7 @@ describe("EditMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ params: expect.objectContaining(params) }),
+      expect.objectContaining(params),
     );
   });
 });
