@@ -24,7 +24,7 @@ export const useBatchGetPublicationTargets = (names: string[]) => {
       const lookup: Record<string, string> = {};
       for (const target of response.data.publicationTargets ?? []) {
         if (target.name) {
-          lookup[target.name] = target.displayName;
+          lookup[target.name] = target.displayName ?? target.name;
         }
       }
       return lookup;
