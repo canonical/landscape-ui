@@ -5,9 +5,12 @@ import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import PublicationsHeader from "../PublicationsHeader";
-import { useGetPublicationTargets } from "@/features/publication-targets";
+import {
+  useBatchGetPublicationTargets,
+  useGetPublicationTargets,
+} from "@/features/publication-targets";
 import { useMemo } from "react";
-import { useBatchGetPublicationTargets, useGetPublications } from "../../api";
+import { useGetPublications } from "../../api";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import AddPublicationButton from "../AddPublicationButton";

@@ -4,7 +4,8 @@ import { useBatchGetMirrors } from "@/features/mirrors";
 import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useMemo } from "react";
-import { useBatchGetPublicationTargets, useGetPublication } from "../../api";
+import { useBatchGetPublicationTargets } from "@/features/publication-targets";
+import { useGetPublication } from "../../api";
 import { getPublicationTargetName, getSourceName } from "../../helpers";
 import PublicationDetails from "../PublicationDetails";
 
