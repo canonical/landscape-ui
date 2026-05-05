@@ -123,7 +123,7 @@ export default [
         return new HttpResponse(null, { status: 404 });
       }
 
-      const { add_apt_sources, remove_apt_sources, ...rest } = body;
+      const { add_apt_sources, remove_apt_sources } = body;
 
       let updatedSources: APTSource[] = profile.apt_sources ?? [];
       if (remove_apt_sources?.length) {
