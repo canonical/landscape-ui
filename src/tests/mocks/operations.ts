@@ -49,7 +49,26 @@ export const failedOperation: PackagesValidationOperation = {
   done: true,
   error: {
     code: 13,
-    message: "task failed unexpectedly: ",
+    message: "The operation failed unexpectedly.",
+    details: [],
+  },
+};
+
+export const timeoutOperation: PackagesValidationOperation = {
+  name: "operations/tttt-mmmm-oooo",
+  metadata: {
+    "@type":
+      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+    description:
+      "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
+    operationId: "tttt-mmmm-oooo",
+    status: "failed",
+  },
+  done: true,
+  error: {
+    code: 4,
+    message:
+      "Deadline exceeded. Retry the operation or reduce the scope of the request.",
     details: [],
   },
 };

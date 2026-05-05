@@ -57,6 +57,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
         status: (operation.metadata?.status as OperationStatus) ?? "idle",
         response: response,
         count: count,
+        error: operation.error,
       };
     }
     return undefined;
@@ -112,7 +113,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   };
 
   const canImport =
-    validationTask?.status === "failed" ||
+    validationTask?.error?.code === 4 ||
     (validationTask?.status === "succeeded" && !!validationTask.count);
 
   const packagesCount =

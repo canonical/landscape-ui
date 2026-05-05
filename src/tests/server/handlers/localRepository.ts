@@ -100,6 +100,14 @@ export default [
         id = "ffff-llll-dddd";
       }
 
+      if (url === "timeout") {
+        id = "tttt-mmmm-oooo";
+      }
+
+      if (url === "idle") {
+        id = "iiii-dddd-llll";
+      }
+
       if (url === "in/progress") {
         id = "pppp-gggg-ssss";
       }

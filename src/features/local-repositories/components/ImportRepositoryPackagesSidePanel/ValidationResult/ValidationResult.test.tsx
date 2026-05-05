@@ -11,6 +11,7 @@ import {
   overCountOperation,
   failedOperation,
   succeededOperation,
+  timeoutOperation,
 } from "@/tests/mocks/operations";
 import { getPackageList } from "../helpers";
 
@@ -23,19 +24,40 @@ const makeTask = (
     count: count,
     response: response,
     done: operation.done,
+    error: operation.error,
   };
 };
 
 describe("ValidationResult", () => {
-  it("renders timeout warning when status is failed", () => {
+  it("renders timeout warning when error code is 4", () => {
     renderWithProviders(
-      <ValidationResult validationTask={makeTask(failedOperation)} />,
+      <ValidationResult validationTask={makeTask(timeoutOperation)} />,
     );
 
     expect(screen.getByText("Fetching packages timed out")).toBeInTheDocument();
     expect(
       screen.getByText(/you can still proceed to import packages/i),
     ).toBeInTheDocument();
+  });
+
+  it("renders error notification when status is failed not timeout", () => {
+    renderWithProviders(
+      <ValidationResult validationTask={makeTask(failedOperation)} />,
+    );
+
+    expect(screen.getByText("Could not fetch packages")).toBeInTheDocument();
+    expect(screen.getByText(/task failed unexpectedly/i)).toBeInTheDocument();
+  });
+
+  it("renders default error notification when failed without error message", () => {
+    renderWithProviders(
+      <ValidationResult
+        validationTask={makeTask({ ...failedOperation, error: undefined })}
+      />,
+    );
+
+    expect(screen.getByText("Could not fetch packages")).toBeInTheDocument();
+    expect(screen.getByText(/an unknown error occurred/i)).toBeInTheDocument();
   });
 
   it("renders error notification when succeeded with zero count", () => {

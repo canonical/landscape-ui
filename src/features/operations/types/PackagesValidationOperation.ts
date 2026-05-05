@@ -6,6 +6,10 @@ export interface PackagesValidationState {
   status: OperationStatus;
   response: string[];
   count: number;
+  error?: {
+    code?: number;
+    message?: string;
+  };
 }
 
 export interface PackagesValidationOperation {
@@ -22,8 +26,8 @@ export interface PackagesValidationOperation {
     output?: string;
   };
   error?: {
-    code: number;
-    message: string;
-    details: Any[];
+    code?: number;
+    message?: string;
+    details?: Any[];
   };
 }

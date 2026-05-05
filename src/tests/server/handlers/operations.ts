@@ -5,6 +5,8 @@ import {
   emptyOperation,
   succeededOperation,
   overCountOperation,
+  timeoutOperation,
+  idleOperation,
 } from "@/tests/mocks/operations";
 import { http, delay, HttpResponse } from "msw";
 
@@ -15,6 +17,14 @@ export default [
 
     if (operationId === "ffff-llll-dddd") {
       return HttpResponse.json(failedOperation);
+    }
+
+    if (operationId === "iiii-dddd-llll") {
+      return HttpResponse.json(idleOperation);
+    }
+
+    if (operationId === "tttt-mmmm-oooo") {
+      return HttpResponse.json(timeoutOperation);
     }
 
     if (operationId === "pppp-gggg-ssss") {

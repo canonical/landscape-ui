@@ -8,7 +8,7 @@ interface ValidationResultProps {
 }
 
 const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
-  if (validationTask.status === "failed") {
+  if (validationTask.error?.code === 4) {
     return (
       <Notification
         severity="caution"
@@ -18,6 +18,21 @@ const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
         <span>
           You can still proceed to import packages, although this process may
           fail if we can&apos;t fetch the packages from the source provided.
+        </span>
+      </Notification>
+    );
+  }
+
+  if (validationTask.status === "failed") {
+    return (
+      <Notification
+        severity="negative"
+        title="Could not fetch packages"
+        borderless
+      >
+        <span>
+          {validationTask.error?.message ??
+            "An unknown error occurred. Please try again later."}
         </span>
       </Notification>
     );

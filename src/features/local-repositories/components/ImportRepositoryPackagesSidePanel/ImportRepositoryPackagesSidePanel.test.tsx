@@ -77,11 +77,11 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     expect(importButton).toBeEnabled();
   });
 
-  it("shows caution notification when validation fails (timeout)", async () => {
+  it("shows caution notification when validation times out", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "failed");
+    await user.type(input, "timeout");
 
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
@@ -96,6 +96,25 @@ describe("ImportRepositoryPackagesSidePanel", () => {
       name: /import packages/i,
     });
     expect(importButton).toBeEnabled();
+  });
+
+  it("shows error notification when validation fails", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "failed");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/task failed unexpectedly/i)).toBeInTheDocument();
+    });
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    expect(importButton).toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows negative notification when no packages are available", async () => {
