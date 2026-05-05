@@ -17,6 +17,8 @@ import { AssociatedPublicationsList } from "@/features/publications";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
 import { useBatchGetMirrors } from "@/features/mirrors";
 import { useBatchGetLocals } from "@/features/local-repositories";
+import { LINK_METHOD_OPTIONS } from "../../constants";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
@@ -205,7 +207,11 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
                 />
                 <InfoGrid.Item
                   label="Link method"
-                  value={filesystemFields.linkMethod}
+                  value={
+                    LINK_METHOD_OPTIONS.find(
+                      (o) => o.value === filesystemFields.linkMethod,
+                    )?.label ?? NO_DATA_TEXT
+                  }
                 />
               </>
             )}
