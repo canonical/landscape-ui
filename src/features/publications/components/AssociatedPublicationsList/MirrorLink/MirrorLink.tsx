@@ -4,11 +4,13 @@ import type { FC } from "react";
 
 interface MirrorLinkProps {
   readonly mirrorName: string;
+  readonly displayName?: string;
   readonly openInNewTab?: boolean;
 }
 
 const MirrorLink: FC<MirrorLinkProps> = ({
   mirrorName,
+  displayName,
   openInNewTab = false,
 }) => (
   <StaticLink
@@ -18,7 +20,7 @@ const MirrorLink: FC<MirrorLinkProps> = ({
     })}
     target={openInNewTab ? "_blank" : undefined}
   >
-    {mirrorName}
+    {displayName ?? mirrorName}
   </StaticLink>
 );
 

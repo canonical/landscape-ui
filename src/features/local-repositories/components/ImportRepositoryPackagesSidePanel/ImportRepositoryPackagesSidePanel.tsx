@@ -5,21 +5,23 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Button,
-  Form,
-  Input,
-  List,
-  Notification,
-} from "@canonical/react-components";
+import { Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
 import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
+import { useGetOperation } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralizeWithCount } from "@/utils/_helpers";
-import type { TaskStatus } from "../../types/Task";
+import type {
+  OperationStatus,
+  PackagesValidationState,
+} from "@/features/operations";
+import { getPackageList } from "./helpers";
+import ValidationResult from "./ValidationResult/ValidationResult";
+
+const POLL_INTERVAL = 2000;
 
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
@@ -35,13 +37,33 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   });
 
   const repositoryName = `locals/${name}`;
-  const [validateTask, setValidateTask] = useState<
-    | {
-        status: TaskStatus;
-        response: string[];
-      }
-    | undefined
-  >(undefined);
+  const [operationName, setOperationName] = useState<string>("");
+
+  const isPolling = !!operationName;
+  const { operation } = useGetOperation(operationName, {
+    enabled: isPolling,
+    refetchInterval: ({ state }) =>
+      state.data?.data?.done ? false : POLL_INTERVAL,
+  });
+
+  const getTaskStatus = (): PackagesValidationState | undefined => {
+    if (isPolling && operation) {
+      const { response, count } = getPackageList(
+        (operation.response?.output as string) ?? "",
+      );
+
+      return {
+        done: operation.done ?? false,
+        status: (operation.metadata?.status as OperationStatus) ?? "idle",
+        response: response,
+        count: count,
+        error: operation.error,
+      };
+    }
+    return undefined;
+  };
+
+  const validationTask = getTaskStatus();
 
   const handleSubmit = async (values: { source: string }) => {
     try {
@@ -76,7 +98,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const handleValidate = async () => {
     try {
-      setValidateTask(undefined);
+      setOperationName("");
 
       const { data } = await importRepositoryPackages({
         name: repositoryName,
@@ -84,21 +106,20 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
         validateOnly: true,
       });
 
-      setValidateTask({
-        status: data.metadata?.status as TaskStatus,
-        response: data.response as unknown as string[],
-      });
+      setOperationName(data.name ?? "");
     } catch (error) {
       debug(error);
     }
   };
 
-  const hasPackages =
-    validateTask?.status === "succeeded" && !!validateTask.response.length;
+  const canImport =
+    validationTask?.error?.code === 4 ||
+    (validationTask?.status === "succeeded" && !!validationTask.count);
 
-  const packagesCount = hasPackages
-    ? pluralizeWithCount(validateTask?.response.length, "package")
-    : "packages";
+  const packagesCount =
+    validationTask && validationTask.count > 0
+      ? pluralizeWithCount(validationTask.count, "package")
+      : "packages";
 
   return (
     <>
@@ -125,7 +146,8 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               className={classes.button}
             >
               {isImportingRepositoryPackages ||
-              validateTask?.status === "in progress" ? (
+              validationTask?.status === "idle" ||
+              validationTask?.status === "in progress" ? (
                 <LoadingState inline />
               ) : (
                 "Fetch packages"
@@ -133,43 +155,12 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             </Button>
           </div>
 
-          {validateTask?.status === "failed" && (
-            <Notification
-              severity="caution"
-              title="Fetching packages timed out"
-              borderless
-            >
-              <span>
-                You can still proceed to import packages, although this process
-                may fail if we can&apos;t fetch the packages from the source
-                provided.
-              </span>
-            </Notification>
-          )}
-
-          {validateTask?.status === "succeeded" && (
-            <>
-              {!validateTask?.response.length ? (
-                <Notification
-                  severity="negative"
-                  title="No packages available from the URL provided"
-                  borderless
-                />
-              ) : (
-                <List
-                  items={validateTask.response.map((file) => (
-                    <div className={classes.file} key={file}>
-                      {file}
-                    </div>
-                  ))}
-                  divided
-                />
-              )}
-            </>
+          {validationTask?.done && (
+            <ValidationResult validationTask={validationTask} />
           )}
 
           <SidePanelFormButtons
-            submitButtonDisabled={!hasPackages}
+            submitButtonDisabled={!canImport}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePath}

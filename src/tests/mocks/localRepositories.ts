@@ -6,7 +6,6 @@ export const repositories = [
     localId: "aaaa-bbbb-cccc",
     defaultComponent: "component 1",
     displayName: "repo 1",
-    comment: "repo 1 description",
     defaultDistribution: "distribution 1",
   },
   {
@@ -27,52 +26,7 @@ export const repositories = [
   },
 ] as const satisfies Local[];
 
-export const repoPackages = ["package 1", "package 2", "package 3"] as const;
-
-export const succeededTask = {
-  name: "task/vvvv-tttt-pppp",
-  done: true,
-  response: ["package-A", "package-B"],
-  metadata: {
-    description: "validate packages",
-    operation_id: "vvvv-tttt-pppp",
-    status: "succeeded",
-  },
-};
-
-export const failedTask = {
-  name: "task/vvvv-tttt-pppp",
-  done: true,
-  response: ["package-A"],
-  error: {
-    code: 408,
-    message: "Request timed out",
-  },
-  metadata: {
-    description: "validate packages",
-    operation_id: "vvvv-tttt-pppp",
-    status: "failed",
-  },
-};
-
-export const inProgressTask = {
-  name: "task/vvvv-tttt-pppp",
-  done: true,
-  response: [],
-  metadata: {
-    description: "validate packages",
-    operation_id: "vvvv-tttt-pppp",
-    status: "in progress",
-  },
-};
-
-export const emptyTask = {
-  name: "task/vvvv-tttt-pppp",
-  done: true,
-  response: [],
-  metadata: {
-    description: "validate packages",
-    operation_id: "vvvv-tttt-pppp",
-    status: "succeeded",
-  },
-};
+export const paginatedPackages = Array.from(
+  { length: 25 },
+  (_, i) => `package-${i + 1}`,
+);

@@ -9,9 +9,13 @@ interface MirrorPackagesCount {
 }
 
 const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
-  const { data, isLoading, isError } = useListMirrorPackages(mirrorName, {
-    pageSize: 1000,
-  });
+  const { data, isLoading, isError } = useListMirrorPackages(
+    mirrorName,
+    {
+      pageSize: 1000,
+    },
+    { refetchOnMount: false },
+  );
 
   if (isLoading) return <Spinner />;
   if (isError || !data) return <NoData />;

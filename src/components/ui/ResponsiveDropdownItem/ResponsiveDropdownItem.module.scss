@@ -6,9 +6,7 @@
 
 .label {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0;
-  margin-right: 0;
+  margin: 0;
   min-width: 12rem;
   place-items: center flex-start;
   text-align: left;
@@ -16,16 +14,12 @@
 
   .text {
     flex-grow: 1;
+    padding-right: 0.5rem;
   }
-}
-
-.icon {
-  rotate: -90deg;
 }
 
 .content {
   display: block;
-  min-width: 15rem;
   top: 0;
 }
 

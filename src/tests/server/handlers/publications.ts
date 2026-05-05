@@ -14,7 +14,7 @@ import type {
   Publication,
   PublishPublicationResponse,
 } from "@canonical/landscape-openapi";
-import { succeededTask } from "@/tests/mocks/localRepositories";
+import { succeededOperation } from "@/tests/mocks/operations";
 
 const matchesPublicationsPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("publications");
@@ -124,7 +124,7 @@ const getDeletePublicationResponse = () => {
 const getPublishPublicationResponse =
   (): StrictResponse<PublishPublicationResponse> => {
     return HttpResponse.json(
-      { ...succeededTask, response: undefined },
+      { ...succeededOperation, response: undefined },
       { status: 200 },
     );
   };

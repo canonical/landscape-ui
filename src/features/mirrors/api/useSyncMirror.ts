@@ -7,21 +7,16 @@ import type {
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-export interface UseSyncMirrorVariables {
-  mirrorName: SyncMirrorData["path"]["name"];
-  params?: SyncMirrorData["body"];
-}
-
-export function useSyncMirror() {
+export function useSyncMirror(name: SyncMirrorData["path"]["name"]) {
   const authFetchDebArchive = useFetchDebArchive();
 
   return useMutation<
     AxiosResponse<SyncMirrorResponse>,
     AxiosError<SyncMirrorError>,
-    UseSyncMirrorVariables
+    SyncMirrorData["body"]
   >({
-    mutationKey: ["mirrors"],
-    mutationFn: async ({ mirrorName, params }) =>
-      authFetchDebArchive.post(`${mirrorName}:sync`, params),
+    mutationKey: ["mirror", name, "sync"],
+    mutationFn: async (params) =>
+      authFetchDebArchive.post(`${name}:sync`, params),
   });
 }

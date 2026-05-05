@@ -17,6 +17,7 @@ import kernel from "./kernel";
 import mirrors from "./mirrors";
 import localRepository from "./localRepository";
 import oidcIssuers from "./oidcIssuers";
+import operations from "./operations";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
 import packages from "./packages";
@@ -60,6 +61,7 @@ export default [
   ...kernel,
   ...mirrors,
   ...localRepository,
+  ...operations,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,

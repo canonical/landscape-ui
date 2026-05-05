@@ -4,24 +4,27 @@ import type {
   UpdateMirrorError,
   UpdateMirrorResponse,
 } from "@canonical/landscape-openapi";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-export interface UseUpdateMirrorVariables {
-  mirrorName: UpdateMirrorData["path"]["mirror.name"];
-  params: UpdateMirrorData["body"];
-}
+type UpdateMirrorParams = Omit<UpdateMirrorData["body"], "gpgKey"> & {
+  gpgKey: { armor: string | null };
+};
 
-export function useUpdateMirror() {
+export function useUpdateMirror(name: UpdateMirrorData["path"]["mirror.name"]) {
   const authFetchDebArchive = useFetchDebArchive();
+  const queryClient = useQueryClient();
 
   return useMutation<
     AxiosResponse<UpdateMirrorResponse>,
     AxiosError<UpdateMirrorError>,
-    UseUpdateMirrorVariables
+    UpdateMirrorParams
   >({
-    mutationKey: ["mirrors"],
-    mutationFn: async ({ mirrorName, params }) =>
-      authFetchDebArchive.patch(mirrorName, params),
+    mutationKey: ["mirror", name, "update"],
+    mutationFn: async (params) => authFetchDebArchive.patch(name, params),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["mirrors"] });
+      queryClient.invalidateQueries({ queryKey: ["mirror", name] });
+    },
   });
 }

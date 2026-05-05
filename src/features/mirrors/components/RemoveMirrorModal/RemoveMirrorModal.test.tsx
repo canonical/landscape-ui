@@ -86,8 +86,6 @@ describe("RemoveMirrorModal", () => {
     );
     await user.click(screen.getByRole("button", { name: /remove mirror/i }));
 
-    expect(mockDeleteMirror).toHaveBeenCalledWith(
-      expect.objectContaining({ mirrorName: props.mirrorName }),
-    );
+    expect(mockDeleteMirror).toHaveBeenCalledTimes(1);
   });
 });

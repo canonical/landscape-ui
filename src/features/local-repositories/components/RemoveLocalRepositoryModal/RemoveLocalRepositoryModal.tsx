@@ -30,16 +30,12 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     repository.name,
   );
 
-  const noPublicationsText = (
+  const content = !publications.length ? (
     <p>
       This action will remove the local repository from Landscape and it
       won&apos;t be available to be published in the future.{" "}
       <strong>This action is irreversible.</strong>
     </p>
-  );
-
-  const publicationsContent = isGettingPublications ? (
-    <LoadingState />
   ) : (
     <>
       <p>This repository is associated with the following publications:</p>
@@ -56,10 +52,6 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
       </p>
     </>
   );
-
-  const content = !publications.length
-    ? noPublicationsText
-    : publicationsContent;
 
   const handleRemoveLocalRepository = async () => {
     try {
@@ -90,7 +82,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
       confirmationText={`remove ${repository.displayName}`}
       isOpen={isOpen}
     >
-      {content}
+      {isGettingPublications ? <LoadingState /> : content}
     </TextConfirmationModal>
   );
 };

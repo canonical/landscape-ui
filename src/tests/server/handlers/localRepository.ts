@@ -1,18 +1,15 @@
-import { delay, http, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import {
-  repoPackages,
+  paginatedPackages,
   repositories,
-  succeededTask,
-  failedTask,
-  inProgressTask,
-  emptyTask,
 } from "@/tests/mocks/localRepositories";
 import type {
   LocalServiceImportLocalPackagesBody,
   BatchGetLocalsRequest,
   LocalWritable,
 } from "@canonical/landscape-openapi";
+import { idleOperation } from "@/tests/mocks/operations";
 
 const getBatchLocalsResponse = async (
   request: Request,
@@ -89,7 +86,7 @@ export default [
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
     return HttpResponse.json({
-      localPackages: repoPackages,
+      localPackages: paginatedPackages,
     });
   }),
 
@@ -97,26 +94,37 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();
-
-      delay(1000);
+      let id = "oooo-vvvv-cccc";
 
       if (url === "failed") {
-        return HttpResponse.json(failedTask);
+        id = "ffff-llll-dddd";
+      }
+
+      if (url === "timeout") {
+        id = "tttt-mmmm-oooo";
+      }
+
+      if (url === "idle") {
+        id = "iiii-dddd-llll";
       }
 
       if (url === "in/progress") {
-        return HttpResponse.json(inProgressTask);
+        id = "pppp-gggg-ssss";
       }
 
       if (url === "empty") {
-        return HttpResponse.json(emptyTask);
+        id = "mmmm-pppp-tttt";
       }
 
-      return HttpResponse.json(succeededTask);
+      if (url === "succeeded") {
+        id = "ssss-cccc-dddd";
+      }
+
+      return HttpResponse.json({ ...idleOperation, name: `operations/${id}` });
     },
   ),
 
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
-    return HttpResponse.json(repoPackages[0]);
+    return HttpResponse.json(paginatedPackages[0]);
   }),
 ];

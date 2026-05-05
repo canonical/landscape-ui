@@ -4,6 +4,7 @@ import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
 import RemoveTargetForm from "../RemoveTargetForm";
@@ -14,6 +15,8 @@ import {
 } from "../EditTargetForm/EditTargetForm";
 import { AssociatedPublicationsList } from "@/features/publications";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
+import { useBatchGetMirrors } from "@/features/mirrors";
+import { useBatchGetLocals } from "@/features/local-repositories";
 
 interface TargetDetailsProps {
   readonly target: PublicationTarget;
@@ -24,6 +27,42 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
     target.publicationTargetId,
   );
+
+  const mirrorNames = useMemo(
+    () => [
+      ...new Set(
+        publications
+          .map((p) => p.source)
+          .filter((s) => s.startsWith("mirrors/")),
+      ),
+    ],
+    [publications],
+  );
+
+  const localNames = useMemo(
+    () => [
+      ...new Set(
+        publications
+          .map((p) => p.source)
+          .filter((s) => s.startsWith("locals/")),
+      ),
+    ],
+    [publications],
+  );
+
+  const { mirrorDisplayNames, isLoadingMirrorDisplayNames } =
+    useBatchGetMirrors(mirrorNames);
+  const { localDisplayNames, isLoadingLocalDisplayNames } =
+    useBatchGetLocals(localNames);
+
+  const sourceDisplayNames = useMemo(
+    () => ({ ...mirrorDisplayNames, ...localDisplayNames }),
+    [mirrorDisplayNames, localDisplayNames],
+  );
+
+  const isLoadingDisplayNames =
+    isLoadingMirrorDisplayNames || isLoadingLocalDisplayNames;
+
   const {
     value: isRemoveModalOpen,
     setTrue: openRemoveModal,
@@ -175,7 +214,12 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
         {!isGettingPublications && publications.length > 0 && (
           <Blocks.Item title="Used In" titleClassName="p-text--small-caps">
-            <AssociatedPublicationsList publications={publications} />
+            <AssociatedPublicationsList
+              publications={publications}
+              sourceDisplayNames={
+                isLoadingDisplayNames ? undefined : sourceDisplayNames
+              }
+            />
           </Blocks.Item>
         )}
       </Blocks>

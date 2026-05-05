@@ -5,7 +5,7 @@ import { Tabs } from "@canonical/react-components";
 import classes from "./ViewLocalRepositorySidePanel.module.scss";
 import ViewRepositoryActionsBlock from "./components/ViewRepositoryActionsBlock";
 import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetailsTab";
-import LocalRepositoryPackagesList from "./components/LocalRepositoryPackagesList";
+import ViewRepositoryPackagesTab from "./components/ViewRepositoryPackagesTab";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 
 const ViewLocalRepositorySidePanel: FC = () => {
@@ -53,10 +53,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
 
         {tabId === "packages" && (
           <Suspense fallback={<LoadingState />}>
-            <LocalRepositoryPackagesList
-              repository={repository}
-              key="packages"
-            />
+            <ViewRepositoryPackagesTab repository={repository} key="packages" />
           </Suspense>
         )}
       </SidePanel.Content>

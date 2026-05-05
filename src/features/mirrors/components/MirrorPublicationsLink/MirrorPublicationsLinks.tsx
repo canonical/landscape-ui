@@ -11,10 +11,13 @@ interface MirrorPublicationsLinkProps {
 const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
   mirrorName,
 }) => {
-  const { data } = useListPublications({
-    filter: `source="${mirrorName}"`,
-    pageSize: 1000,
-  });
+  const { data } = useListPublications(
+    {
+      filter: `source="${mirrorName}"`,
+      pageSize: 1000,
+    },
+    { refetchOnMount: false },
+  );
 
   if (!data.data.publications?.length) {
     return "0 publications";

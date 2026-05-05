@@ -29,16 +29,13 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   const { publications } = useGetPublicationsBySource(mirrorName);
 
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
-    useDeleteMirror();
+    useDeleteMirror(mirrorName);
 
   const tryRemoveMirror = async () => {
     try {
-      await deleteMirror({
-        mirrorName,
-      });
+      await deleteMirror({});
 
       setPageParams({ sidePath: [], name: "" });
-      close();
 
       notify.success({
         title: `You have successfully removed ${mirrorDisplayName}.`,
@@ -46,6 +43,8 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       });
     } catch (error) {
       debug(error);
+    } finally {
+      close();
     }
   };
 

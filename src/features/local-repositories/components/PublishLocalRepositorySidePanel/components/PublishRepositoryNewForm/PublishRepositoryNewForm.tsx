@@ -61,7 +61,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
       notAutomatic: values.notAutomatic,
       skipBz2: values.skipBz2,
       skipContents: values.skipContents,
-      gpgKey: { armor: values.gpgKey },
+      ...(values.gpgKey && { gpgKey: { armor: values.gpgKey } }),
     };
 
     try {

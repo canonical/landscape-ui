@@ -1,6 +1,6 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { mirrors } from "@/tests/mocks/mirrors";
+import { mirrors as mockMirrors } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
@@ -12,11 +12,15 @@ import type {
   CreateMirrorResponse,
   SyncMirrorResponse,
   BatchGetMirrorsResponse,
+  MirrorWritable,
+  Mirror,
 } from "@canonical/landscape-openapi";
 import {
   getDebArchivePaginatedResponse,
   getDebArchivePaginationParams,
 } from "./_helpers";
+
+const mirrors = [...(mockMirrors as Mirror[])];
 
 const getMirrorsResponse = (requestUrl: string) => {
   const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
@@ -70,10 +74,23 @@ export default [
     return getMirrorsResponse(request.url);
   }),
 
-  http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async () => {
-    await delay();
-    return HttpResponse.json<CreateMirrorResponse>();
-  }),
+  http.post<never, MirrorWritable>(
+    `${API_URL_DEB_ARCHIVE}mirrors`,
+    async ({ request }) => {
+      await delay();
+
+      const requestBody = await request.json();
+      const mirrorId = requestBody.displayName.toLowerCase();
+
+      mirrors.push({
+        name: `mirrors/${mirrorId}`,
+        mirrorId,
+        ...requestBody,
+      });
+
+      return HttpResponse.json<CreateMirrorResponse>();
+    },
+  ),
 
   http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
     await delay();
@@ -87,26 +104,64 @@ export default [
     }
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`, async () => {
+  http.get(
+    `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`,
+    async ({ params }) => {
+      await delay();
+
+      const mirror = mirrors.find(
+        ({ mirrorId }) => mirrorId === params.mirrorId,
+      );
+
+      if (!mirror) {
+        return new HttpResponse(null, { status: 404 });
+      } else {
+        return HttpResponse.json<ListMirrorPackagesResponse>({
+          mirrorPackages: ["package-1", "package-2", "package-3"],
+        });
+      }
+    },
+  ),
+
+  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
     await delay();
 
-    return HttpResponse.json<ListMirrorPackagesResponse>({
-      mirrorPackages: ["package-1", "package-2", "package-3"],
-    });
+    const mirror = mirrors.find(({ mirrorId }) => mirrorId === params.mirrorId);
+
+    if (!mirror) {
+      return new HttpResponse(null, { status: 404 });
+    } else {
+      return HttpResponse.json<UpdateMirrorResponse>();
+    }
   }),
 
-  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async () => {
+  http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
     await delay();
-    return HttpResponse.json<UpdateMirrorResponse>();
+
+    const mirror = mirrors.find(({ mirrorId }) => mirrorId === params.mirrorId);
+
+    if (!mirror) {
+      return new HttpResponse(null, { status: 404 });
+    } else {
+      mirrors.splice(mirrors.indexOf(mirror), 1);
+      return HttpResponse.json<DeleteMirrorResponse>(mirror);
+    }
   }),
 
-  http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async () => {
-    await delay();
-    return HttpResponse.json<DeleteMirrorResponse>();
-  }),
+  http.post(
+    `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId\\:sync`,
+    async ({ params }) => {
+      await delay();
 
-  http.post(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId\\:sync`, async () => {
-    await delay();
-    return HttpResponse.json<SyncMirrorResponse>();
-  }),
+      const mirror = mirrors.find(
+        ({ mirrorId }) => mirrorId === params.mirrorId,
+      );
+
+      if (!mirror) {
+        return new HttpResponse(null, { status: 404 });
+      } else {
+        return HttpResponse.json<SyncMirrorResponse>();
+      }
+    },
+  ),
 ];

@@ -4,10 +4,15 @@ import type { FC } from "react";
 
 interface LocalLinkProps {
   readonly localName: string;
+  readonly displayName?: string;
   readonly openInNewTab?: boolean;
 }
 
-const LocalLink: FC<LocalLinkProps> = ({ localName, openInNewTab = false }) => (
+const LocalLink: FC<LocalLinkProps> = ({
+  localName,
+  displayName,
+  openInNewTab = false,
+}) => (
   <StaticLink
     to={ROUTES.repositories.localRepositories({
       sidePath: ["view"],
@@ -15,7 +20,7 @@ const LocalLink: FC<LocalLinkProps> = ({ localName, openInNewTab = false }) => (
     })}
     target={openInNewTab ? "_blank" : undefined}
   >
-    {localName}
+    {displayName ?? localName}
   </StaticLink>
 );
 

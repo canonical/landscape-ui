@@ -16,6 +16,7 @@ import type { Publication } from "@canonical/landscape-openapi";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { ROUTES } from "@/libs/routes";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -92,11 +93,11 @@ const PublicationsList: FC<PublicationsListProps> = ({
       },
       {
         accessor: "publishTime",
-        Header: "Publish date",
+        Header: "Date published",
         Cell: ({ row: { original } }: CellProps<Publication>) =>
           original.publishTime
             ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
-            : "unknown",
+            : NO_DATA_TEXT,
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,

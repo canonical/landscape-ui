@@ -354,4 +354,73 @@ describe("AssociatedPublicationsList", () => {
       expect(screen.getByText(firstPub.source)).toBeInTheDocument();
     });
   });
+
+  describe("sourceDisplayNames prop", () => {
+    it("renders display names when sourceDisplayNames is provided", () => {
+      const [firstPub] = publications;
+      if (!firstPub) throw new Error("Missing mock publication");
+
+      const sourceDisplayNames = {
+        [firstPub.source]: "My Friendly Mirror Name",
+      };
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[firstPub]}
+          sourceDisplayNames={sourceDisplayNames}
+        />,
+      );
+
+      expect(screen.getByText("My Friendly Mirror Name")).toBeInTheDocument();
+      expect(screen.queryByText(firstPub.source)).not.toBeInTheDocument();
+    });
+
+    it("falls back to raw source name when displayName not in lookup", () => {
+      const [firstPub] = publications;
+      if (!firstPub) throw new Error("Missing mock publication");
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[firstPub]}
+          sourceDisplayNames={{}}
+        />,
+      );
+
+      expect(screen.getByText(firstPub.source)).toBeInTheDocument();
+    });
+
+    it("renders display names for local repositories", () => {
+      const localPub: Publication = {
+        name: "publications/local-pub-id",
+        publicationId: "local-pub-id",
+        displayName: "Local Publication",
+        label: "local",
+        publicationTarget: "publicationTargets/test",
+        source: "locals/some-local-uuid",
+        distribution: "jammy",
+        origin: "",
+        architectures: [],
+        acquireByHash: false,
+        butAutomaticUpgrades: false,
+        notAutomatic: false,
+        multiDist: false,
+        skipBz2: false,
+        skipContents: false,
+        publishTime: new Date("March 12, 2026"),
+      };
+
+      const sourceDisplayNames = {
+        "locals/some-local-uuid": "My Custom Local Repo",
+      };
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[localPub]}
+          sourceDisplayNames={sourceDisplayNames}
+        />,
+      );
+
+      expect(screen.getByText("My Custom Local Repo")).toBeInTheDocument();
+    });
+  });
 });
