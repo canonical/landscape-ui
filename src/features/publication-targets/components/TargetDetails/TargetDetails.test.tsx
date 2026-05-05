@@ -12,6 +12,20 @@ vi.mock("../../api/useGetPublicationsByTarget", () => ({
   default: vi.fn(),
 }));
 
+vi.mock("@/features/mirrors", () => ({
+  useBatchGetMirrors: () => ({
+    mirrorDisplayNames: {},
+    isLoadingMirrorDisplayNames: false,
+  }),
+}));
+
+vi.mock("@/features/local-repositories", () => ({
+  useBatchGetLocals: () => ({
+    localDisplayNames: {},
+    isLoadingLocalDisplayNames: false,
+  }),
+}));
+
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 
 const [targetWithPublications, targetWithoutPublications] = publicationTargets;
