@@ -69,12 +69,11 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       title: values.title,
     };
 
-    if (!values.all_computers) {
-      valuesToSubmit.tags = values.tags;
-    }
-
     try {
       if (props.action === "add") {
+        if (!values.all_computers) {
+          valuesToSubmit.tags = values.tags;
+        }
         await createRepositoryProfile({
           access_group: values.access_group,
           ...valuesToSubmit,
@@ -89,9 +88,12 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         const originalSources = props.profile.apt_sources ?? [];
         await editRepositoryProfile({
           name: props.profile.name,
-          ...valuesToSubmit,
+          title: values.title,
+          description: values.description,
+          access_group: props.profile.access_group,
+          tags: values.tags,
+          all_computers: values.all_computers,
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
-          access_group: props.profile.access_group, // Access group cannot be edited, but API requires it in the payload
           remove_apt_sources: originalSources
             .filter(
               (orig) => !values.apt_sources.some((cur) => cur.id === orig.id),

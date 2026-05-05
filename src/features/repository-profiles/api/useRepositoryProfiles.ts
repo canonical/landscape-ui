@@ -26,13 +26,13 @@ export interface CreateRepositoryProfileParams {
 
 interface EditRepositoryProfileParams {
   name: string;
-  all_computers?: boolean;
+  title: string;
+  access_group: string;
+  all_computers: boolean;
+  description: string;
+  tags: string[];
   add_apt_sources?: APTSource[];
   remove_apt_sources?: number[];
-  description?: string;
-  tags?: string[];
-  title?: string;
-  access_group?: string;
 }
 
 interface RemoveRepositoryProfileParams {
