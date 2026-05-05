@@ -32,10 +32,9 @@ export const computeNewTags = (
   selected: Instance[],
 ): string[] => {
   if (prevTags.includes(tag)) {
-    return prevTags.toSpliced(
-      prevTags.findIndex((t) => t == tag),
-      1,
-    );
+    const tagIndex = prevTags.findIndex((existingTag) => existingTag === tag);
+
+    return [...prevTags.slice(0, tagIndex), ...prevTags.slice(tagIndex + 1)];
   }
 
   if (selected.every((instance) => instance.tags.includes(tag))) {

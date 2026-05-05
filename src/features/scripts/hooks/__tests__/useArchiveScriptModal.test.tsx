@@ -1,14 +1,13 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { scripts } from "@/tests/mocks/script";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, it, expect } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import { useArchiveScriptModal } from "./useArchiveScriptModal";
-import { scripts } from "@/tests/mocks/script";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useArchiveScriptModal } from "../useArchiveScriptModal";
 
 const [, scriptWithProfiles, scriptWithNoProfiles] = scripts;
 
-// Wrapper component to surface hook values in the DOM
 const ArchiveModalConsumer = ({
   script,
   afterSuccess,
@@ -20,6 +19,7 @@ const ArchiveModalConsumer = ({
     script,
     afterSuccess: afterSuccess ?? (() => undefined),
   });
+
   return (
     <div>
       <span data-testid="title">{modal.archiveModalTitle}</span>
@@ -42,6 +42,7 @@ describe("useArchiveScriptModal", () => {
 
   it("returns empty values when script is null", () => {
     renderWithProviders(<ArchiveModalConsumer script={null} />);
+
     expect(screen.getByTestId("title")).toHaveTextContent("");
     expect(screen.getByTestId("label")).toHaveTextContent("");
     expect(screen.getByTestId("pending")).toHaveTextContent("idle");
@@ -49,6 +50,7 @@ describe("useArchiveScriptModal", () => {
 
   it("returns correct title and label when script has no profiles", () => {
     renderWithProviders(<ArchiveModalConsumer script={scriptWithNoProfiles} />);
+
     expect(screen.getByTestId("title")).toHaveTextContent(
       `Archive ${scriptWithNoProfiles.title}`,
     );
@@ -57,6 +59,7 @@ describe("useArchiveScriptModal", () => {
 
   it("returns correct title and label when script has profiles", () => {
     renderWithProviders(<ArchiveModalConsumer script={scriptWithProfiles} />);
+
     expect(screen.getByTestId("title")).toHaveTextContent(
       `Archive ${scriptWithProfiles.title}`,
     );
@@ -67,11 +70,13 @@ describe("useArchiveScriptModal", () => {
 
   it("renders body with irreversible message for script with no profiles", () => {
     renderWithProviders(<ArchiveModalConsumer script={scriptWithNoProfiles} />);
+
     expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
   it("renders body with profile names for script with profiles", () => {
     renderWithProviders(<ArchiveModalConsumer script={scriptWithProfiles} />);
+
     for (const profile of scriptWithProfiles.script_profiles) {
       expect(screen.getByTestId("body")).toHaveTextContent(profile.title);
     }
@@ -79,6 +84,7 @@ describe("useArchiveScriptModal", () => {
 
   it("calls afterSuccess when onConfirmArchive completes", async () => {
     const afterSuccess = vi.fn();
+
     renderWithProviders(
       <ArchiveModalConsumer
         script={scriptWithNoProfiles}
@@ -112,6 +118,7 @@ describe("useArchiveScriptModal", () => {
   it("handles archive API error gracefully", async () => {
     setEndpointStatus({ status: "error", path: "archive" });
     const afterSuccess = vi.fn();
+
     renderWithProviders(
       <ArchiveModalConsumer
         script={scriptWithNoProfiles}

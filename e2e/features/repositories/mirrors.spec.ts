@@ -9,7 +9,7 @@ test.describe("@saas", () => {
   test("should not display repository mirrors page in sidebar", async ({
     authenticatedPage,
   }) => {
-    await expect(authenticatedPage.getByText("Mirrors")).not.toBeVisible();
+    await expect(authenticatedPage.getByText("Repositories")).not.toBeVisible();
   });
 
   test("should display environment error when visiting repository mirrors page", async ({

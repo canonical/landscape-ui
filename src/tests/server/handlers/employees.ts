@@ -6,7 +6,7 @@ import {
   generatePaginatedResponse,
   shouldApplyEndpointStatus,
 } from "@/tests/server/handlers/_helpers";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
 
 export default [
@@ -14,6 +14,10 @@ export default [
     `${API_URL}employees`,
     async ({ request }) => {
       const DEFAULT_PAGE_SIZE = 20;
+      const url = new URL(request.url);
+      const offset = Number(url.searchParams.get("offset")) || 0;
+      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
+      const search = url.searchParams.get("search") ?? "";
 
       const endpointStatus = getEndpointStatus();
 
@@ -21,12 +25,11 @@ export default [
         if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
         }
-      }
 
-      const url = new URL(request.url);
-      const offset = Number(url.searchParams.get("offset")) || 0;
-      const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
-      const search = url.searchParams.get("search") ?? "";
+        if (endpointStatus.status === "loading" && offset > 0) {
+          await delay("infinite");
+        }
+      }
 
       return HttpResponse.json(
         generatePaginatedResponse<Employee>({

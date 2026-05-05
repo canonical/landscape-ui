@@ -1,14 +1,13 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { scripts } from "@/tests/mocks/script";
+import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, it, expect } from "vitest";
-import { renderWithProviders } from "@/tests/render";
-import { useDeleteScriptModal } from "./useDeleteScriptModal";
-import { scripts } from "@/tests/mocks/script";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useDeleteScriptModal } from "../useDeleteScriptModal";
 
 const [, scriptWithProfiles, scriptWithNoProfiles] = scripts;
 
-// Wrapper component to surface hook values in the DOM
 const DeleteModalConsumer = ({
   script,
   afterSuccess,
@@ -20,6 +19,7 @@ const DeleteModalConsumer = ({
     script,
     afterSuccess: afterSuccess ?? (() => undefined),
   });
+
   return (
     <div>
       <span data-testid="title">{modal.deleteModalTitle}</span>
@@ -42,6 +42,7 @@ describe("useDeleteScriptModal", () => {
 
   it("returns empty values when script is null", () => {
     renderWithProviders(<DeleteModalConsumer script={null} />);
+
     expect(screen.getByTestId("title")).toHaveTextContent("");
     expect(screen.getByTestId("label")).toHaveTextContent("");
     expect(screen.getByTestId("pending")).toHaveTextContent("idle");
@@ -49,6 +50,7 @@ describe("useDeleteScriptModal", () => {
 
   it("returns correct title and label when script has no profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
+
     expect(screen.getByTestId("title")).toHaveTextContent(
       `Delete ${scriptWithNoProfiles.title}`,
     );
@@ -57,6 +59,7 @@ describe("useDeleteScriptModal", () => {
 
   it("returns alternative button label when script has profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithProfiles} />);
+
     expect(screen.getByTestId("title")).toHaveTextContent(
       `Delete ${scriptWithProfiles.title}`,
     );
@@ -67,11 +70,13 @@ describe("useDeleteScriptModal", () => {
 
   it("renders body with irreversible message for script with no profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithNoProfiles} />);
+
     expect(screen.getByTestId("body")).toHaveTextContent(/irreversible/i);
   });
 
   it("renders body with profile names for script with profiles", () => {
     renderWithProviders(<DeleteModalConsumer script={scriptWithProfiles} />);
+
     for (const profile of scriptWithProfiles.script_profiles) {
       expect(screen.getByTestId("body")).toHaveTextContent(profile.title);
     }
@@ -79,6 +84,7 @@ describe("useDeleteScriptModal", () => {
 
   it("calls afterSuccess when onConfirmDelete completes", async () => {
     const afterSuccess = vi.fn();
+
     renderWithProviders(
       <DeleteModalConsumer
         script={scriptWithNoProfiles}
@@ -112,6 +118,7 @@ describe("useDeleteScriptModal", () => {
   it("handles delete API error gracefully", async () => {
     setEndpointStatus({ status: "error", path: "redact" });
     const afterSuccess = vi.fn();
+
     renderWithProviders(
       <DeleteModalConsumer
         script={scriptWithNoProfiles}
