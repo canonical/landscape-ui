@@ -138,7 +138,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   useEffect(() => {
     formik.setFieldValue("apt_sources", props.aptSources);
-  }, [props.aptSources]);
+  }, [props.aptSources, formik]);
 
   const handleRemoveSource = (source: APTSource) => {
     props.onAptSourcesChange(
