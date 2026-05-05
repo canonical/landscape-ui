@@ -1,17 +1,15 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useGetWslInstanceTypes } from "@/features/wsl";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Input, Notification, Select } from "@canonical/react-components";
+import { Form, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type FC } from "react";
 import { useEditWslProfile } from "../../../../api";
 import type { WslProfile } from "../../../../types";
-import { CLOUD_INIT_OPTIONS } from "../../../constants";
 import { getValidationSchema } from "./helpers";
 import classes from "./WslProfileEditForm.module.scss";
 
@@ -22,41 +20,30 @@ interface WslProfileEditFormProps {
 interface FormProps {
   title: string;
   description: string;
-  instanceType: string;
-  customImageName: string;
-  rootfsImage: string;
   all_computers: boolean;
   tags: string[];
 }
 
 const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
-  const { getAccessGroupQuery } = useRoles();
   const debug = useDebug();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
 
   const { editWslProfile } = useEditWslProfile();
-  const { wslInstanceTypes } = useGetWslInstanceTypes();
 
-  const instanceQueryResultOptions =
-    wslInstanceTypes.map(({ label, name }) => ({
-      label,
-      value: name,
-    })) || [];
+  const rootfsImageValue = profile.image_source
+    ? "From URL"
+    : profile.image_name;
 
-  const ROOTFS_IMAGE_OPTIONS = [
-    { label: "Select", value: "" },
-    ...instanceQueryResultOptions,
-    { label: "From URL", value: "custom" },
-  ];
-
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery();
-
-  const accessGroupResultOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
-      label: title,
-      value: name,
-    })) ?? [];
+  const getCloudInitValue = () => {
+    if (profile.cloud_init_contents) return "Plain text";
+    if (profile.cloud_init_secret_name) return "From a file";
+    return "None";
+  };
+  const cloudInitValue = getCloudInitValue();
+  const complianceValue = profile.only_landscape_created
+    ? "Uninstall non-Landscape instances"
+    : "Ignore non-Landscape instances";
 
   const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
@@ -85,9 +72,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
     initialValues: {
       title: profile.title,
       description: profile.description ?? "",
-      instanceType: profile.image_source ? "custom" : profile.image_name,
-      customImageName: profile.image_source ? profile.image_name : "",
-      rootfsImage: profile.image_source || "",
       all_computers: profile.all_computers,
       tags: profile.tags,
     },
@@ -120,69 +104,44 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
         error={getFormikError(formik, "description")}
       />
 
-      <Select
+      <ReadOnlyField
         label="Access group"
-        aria-label="Access group"
-        options={accessGroupResultOptions}
-        disabled
-        required
+        value={profile.access_group}
+        tooltipMessage="You can't change the access group after the WSL profile has been created"
       />
 
       <div className={classes.block}>
-        <Select
-          disabled
+        <ReadOnlyField
           label="rootfs image"
-          aria-label="rootfs image"
-          options={ROOTFS_IMAGE_OPTIONS}
-          {...formik.getFieldProps("instanceType")}
-          error={getFormikError(formik, "instanceType")}
+          value={rootfsImageValue}
+          tooltipMessage="You can't change the rootfs image after the WSL profile has been created"
         />
 
-        {formik.values.instanceType === "custom" && (
+        {profile.image_source && (
           <>
-            <Input
-              disabled
+            <ReadOnlyField
               label="Image name"
-              type="text"
-              required
-              {...formik.getFieldProps("customImageName")}
-              error={getFormikError(formik, "customImageName")}
+              value={profile.image_name}
+              tooltipMessage="You can't change the image name after the WSL profile has been created"
             />
-            <Input
-              disabled
-              type="text"
+            <ReadOnlyField
               label="rootfs image URL"
-              required
-              {...formik.getFieldProps("rootfsImage")}
-              error={getFormikError(formik, "rootfsImage")}
-              help="The file path must be reachable by the affected WSL instances."
+              value={profile.image_source}
+              tooltipMessage="You can't change the rootfs image URL after the WSL profile has been created"
             />
           </>
         )}
 
-        <Select
+        <ReadOnlyField
           label="cloud-init"
-          aria-label="cloud-init"
-          options={CLOUD_INIT_OPTIONS}
-          disabled
+          value={cloudInitValue}
+          tooltipMessage="You can't change the cloud-init value after the WSL profile has been created"
         />
 
-        <Select
+        <ReadOnlyField
           label="Compliance settings"
-          options={[
-            {
-              label:
-                "Ignore WSL child instances that have not been created by Landscape",
-              value: "ignore",
-            },
-            {
-              label:
-                "Uninstall WSL child instances that have not been created by Landscape",
-              value: "uninstall",
-            },
-          ]}
-          disabled
-          value={profile.only_landscape_created ? "uninstall" : "ignore"}
+          value={complianceValue}
+          tooltipMessage="You can't change the compliance settings after the WSL profile has been created"
         />
       </div>
 

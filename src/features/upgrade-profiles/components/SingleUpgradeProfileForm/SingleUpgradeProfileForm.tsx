@@ -1,4 +1,5 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -111,6 +112,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     initialValues:
       props.action === "edit"
         ? {
+            access_group: props.profile.access_group,
             all_computers: props.profile.all_computers,
             at_hour: props.profile.at_hour
               ? parseInt(props.profile.at_hour)
@@ -163,14 +165,21 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         checked={formik.values.autoremove}
       />
 
-      <Select
-        label="Access group"
-        aria-label="Access group"
-        options={accessGroupOptions}
-        disabled={props.action === "edit"}
-        {...formik.getFieldProps("access_group")}
-        error={getFormikError(formik, "access_group")}
-      />
+      {props.action === "edit" ? (
+        <ReadOnlyField
+          label="Access group"
+          tooltipMessage="You can't change the access group after the upgrade profile has been created"
+          {...formik.getFieldProps("access_group")}
+        />
+      ) : (
+        <Select
+          label="Access group"
+          aria-label="Access group"
+          options={accessGroupOptions}
+          {...formik.getFieldProps("access_group")}
+          error={getFormikError(formik, "access_group")}
+        />
+      )}
 
       <UpgradeProfileScheduleBlock formik={formik} />
 
