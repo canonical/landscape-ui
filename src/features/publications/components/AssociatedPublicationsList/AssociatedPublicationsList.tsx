@@ -13,6 +13,8 @@ import MirrorLink from "./MirrorLink/MirrorLink";
 import LocalLink from "./LocalLink/LocalLink";
 import { getSourceType } from "@/features/publications";
 
+const EMPTY_SOURCE_DISPLAY_NAMES: Record<string, string> = {};
+
 interface AssociatedPublicationsListProps {
   readonly publications: Publication[];
   readonly pageSize?: number;
@@ -26,7 +28,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
   pageSize = 10,
   openInNewTab = false,
   showSources = true,
-  sourceDisplayNames = {},
+  sourceDisplayNames = EMPTY_SOURCE_DISPLAY_NAMES,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
