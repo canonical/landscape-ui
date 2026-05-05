@@ -208,17 +208,35 @@ const InstancesPageActions = memo(function InstancesPageActions({
   const proServicesLinks = [
     allInstancesHaveToken
       ? {
-          children: <span>Replace token</span>,
+          children: (
+            <>
+              <Icon name="change-version" />
+              <span>Replace token</span>
+            </>
+          ),
           onClick: handleReplaceToken,
+          hasIcon: true,
         }
       : {
-          children: <span>Attach token</span>,
+          children: (
+            <>
+              <Icon name="private-key" />
+              <span>Attach token</span>
+            </>
+          ),
           onClick: handleAttachToken,
+          hasIcon: true,
         },
     isFeatureEnabled("ubuntu-pro-licensing")
       ? {
-          children: <span>Detach token</span>,
+          children: (
+            <>
+              <Icon name="disconnect" />
+              <span>Detach token</span>
+            </>
+          ),
           onClick: openDetachModal,
+          hasIcon: true,
         }
       : {},
   ].filter((link) => link.children);
@@ -230,7 +248,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
         buttons={[
           <Button
             key="shutdown-instances"
-            className="has-icon"
+            hasIcon
             type="button"
             disabled={0 === selectedInstances.length || isGettingInstances}
             onClick={openShutdownModal}
@@ -255,12 +273,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
               disabled={0 === selectedInstances.length}
+              hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
             </Button>
           ) : (
             <ContextualMenu
-              position="left"
+              position="right"
               key="pro-services"
               hasToggleIcon
               links={proServicesLinks}
@@ -274,6 +293,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <Button
               key="report-view"
               type="button"
+              hasIcon
               onClick={handleReportView}
               disabled={0 === selectedInstances.length}
             >

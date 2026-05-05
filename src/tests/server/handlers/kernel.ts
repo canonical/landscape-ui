@@ -109,4 +109,17 @@ export default [
       return HttpResponse.json(activities[0]);
     },
   ),
+
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:id/kernel/downgrade`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      return HttpResponse.json(activities[0]);
+    },
+  ),
 ];

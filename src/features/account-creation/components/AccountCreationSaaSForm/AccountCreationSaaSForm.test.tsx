@@ -1,10 +1,16 @@
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { afterEach, describe, expect, it } from "vitest";
 import AccountCreationSaaSForm from "./AccountCreationSaaSForm";
 
 describe("AccountCreationSaaSForm", () => {
   const user = userEvent.setup();
+
+  afterEach(() => {
+    setEndpointStatus("default");
+  });
 
   it("renders the form correctly", () => {
     renderWithProviders(<AccountCreationSaaSForm />);
@@ -35,5 +41,39 @@ describe("AccountCreationSaaSForm", () => {
     await user.click(submitButton);
 
     expect(screen.getByText("This field is required.")).toBeInTheDocument();
+  });
+
+  it("submits the form when a valid title is provided", async () => {
+    renderWithProviders(<AccountCreationSaaSForm />);
+
+    const titleInput = screen.getByLabelText("Organization name");
+    await user.type(titleInput, "My Organization");
+
+    const submitButton = screen.getByRole("button", { name: "Create account" });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("This field is required."),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("handles API error gracefully when account creation fails", async () => {
+    setEndpointStatus({ status: "error" });
+    renderWithProviders(<AccountCreationSaaSForm />);
+
+    const titleInput = screen.getByLabelText("Organization name");
+    await user.type(titleInput, "My Organization");
+
+    const submitButton = screen.getByRole("button", { name: "Create account" });
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      // Form stays mounted without crashing after error
+      expect(
+        screen.getByRole("button", { name: "Create account" }),
+      ).toBeInTheDocument();
+    });
   });
 });

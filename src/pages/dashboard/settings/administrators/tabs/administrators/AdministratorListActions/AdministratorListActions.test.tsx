@@ -3,7 +3,7 @@ import AdministratorListActions from "./AdministratorListActions";
 import type { ComponentProps } from "react";
 import { administrators } from "@/tests/mocks/administrators";
 import userEvent from "@testing-library/user-event";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 
 const props: ComponentProps<typeof AdministratorListActions> = {
   administrator: administrators[0],
@@ -36,5 +36,42 @@ describe("AdministratorListActions", () => {
 
     const modal = screen.getByRole("dialog");
     expect(modal).toBeInTheDocument();
+  });
+
+  it("removes administrator and shows success notification upon confirmation", async () => {
+    const removeMenuItem = screen.getByRole("menuitem", {
+      name: `Remove "${administrators[0].name}" administrator`,
+    });
+    await user.click(removeMenuItem);
+
+    const dialog = screen.getByRole("dialog");
+    const confirmButton = within(dialog).getByRole("button", {
+      name: /remove/i,
+    });
+    await user.click(confirmButton);
+
+    expect(
+      await screen.findByText(
+        new RegExp(
+          `removed ${administrators[0].name} as an administrator`,
+          "i",
+        ),
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("closes the modal on cancel", async () => {
+    const removeMenuItem = screen.getByRole("menuitem", {
+      name: `Remove "${administrators[0].name}" administrator`,
+    });
+    await user.click(removeMenuItem);
+
+    const dialog = screen.getByRole("dialog");
+    const cancelButton = within(dialog).getByRole("button", {
+      name: /cancel/i,
+    });
+    await user.click(cancelButton);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

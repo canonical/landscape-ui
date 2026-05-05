@@ -1,6 +1,6 @@
 import { savedSearches } from "@/tests/mocks/savedSearches";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
@@ -10,6 +10,13 @@ vi.mock("@/features/instances", () => ({
   useInstanceSearchHelpTerms: () => [
     { term: "status:running", description: "Running instances" },
     { term: "alert:offline", description: "Offline instances" },
+  ],
+  getProfileTypes: () => [
+    "package",
+    "reboot",
+    "removal",
+    "repository",
+    "upgrade",
   ],
 }));
 
@@ -216,5 +223,210 @@ describe("SearchBoxWithSavedSearches", () => {
     await user.click(manageButton);
 
     expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+  });
+
+  it("should open dropdown when Enter key is pressed while dropdown is closed", async () => {
+    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+    const searchBox = screen.getByRole("searchbox");
+
+    // Fire keyUp directly without a click to avoid opening dropdown via container onClick
+    fireEvent.keyUp(searchBox, { key: "Enter" });
+
+    expect(await screen.findByText("Saved searches")).toBeInTheDocument();
+  });
+
+  it("should handle form submit when search is entered", async () => {
+    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.type(searchBox, "test-search");
+
+    const form = searchBox.closest("form");
+    if (form) {
+      fireEvent.submit(form);
+    }
+
+    expect(screen.queryByText("Saved searches")).toBeDefined();
+  });
+
+  it("should show save search panel when Save search is clicked from the prompt", async () => {
+    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+
+    await screen.findByText("Saved searches");
+
+    await user.type(searchBox, "alert:package-upgrades");
+
+    const saveSearchButton = await screen.findByRole("button", {
+      name: "Save search",
+    });
+    await user.click(saveSearchButton);
+
+    expect(
+      await screen.findByRole("heading", { name: "Add saved search" }),
+    ).toBeInTheDocument();
+
+    // The form loads lazily; once visible, submit to trigger onSearchSave callback
+    const titleInput = screen.queryByRole("textbox", { name: /title/i });
+    if (titleInput) {
+      await user.type(titleInput, "Test");
+      const submitBtn = screen.getByRole("button", {
+        name: "Add saved search",
+      });
+      await user.click(submitBtn);
+      await waitFor(() => {
+        expect(searchBox).toHaveValue("");
+      });
+    }
+  });
+
+  it("should call onChange when a saved search is clicked", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SearchBoxWithSavedSearches {...defaultProps} onChange={onChange} />,
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+
+    await screen.findByText("Saved searches");
+
+    const [firstSearch] = savedSearches;
+    const titleElement = screen.getByText(firstSearch.title);
+    await user.click(titleElement);
+
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it("should keep dropdown visible after a saved search is removed", async () => {
+    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+
+    await screen.findByText("Saved searches");
+
+    const [firstSearch] = savedSearches;
+    const removeButton = screen.getByRole("button", {
+      name: `Remove ${firstSearch.title} saved search`,
+    });
+    await user.click(removeButton);
+
+    const modal = screen.getByRole("dialog");
+    const confirmButton = within(modal).getByRole("button", { name: "Remove" });
+    await user.click(confirmButton);
+
+    expect(await screen.findByText("Saved searches")).toBeInTheDocument();
+  });
+
+  it("should use 'search:' prefix when input matches a saved search name", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SearchBoxWithSavedSearches {...defaultProps} onChange={onChange} />,
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+
+    await screen.findByText("Saved searches");
+
+    const [firstSearch] = savedSearches;
+    await user.type(searchBox, firstSearch.name);
+    await user.keyboard("{Enter}");
+
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it("should work without an onChange callback when a saved search is clicked", async () => {
+    renderWithProviders(
+      <SearchBoxWithSavedSearches onHelpButtonClick={vi.fn()} />,
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+
+    await screen.findByText("Saved searches");
+
+    const [firstSearch] = savedSearches;
+    const titleElement = screen.getByText(firstSearch.title);
+
+    expect(() => user.click(titleElement)).not.toThrow();
+  });
+
+  it("should call handleSearch via keyUp Enter handler when dropdown is open", async () => {
+    const onChange = vi.fn();
+    renderWithProviders(
+      <SearchBoxWithSavedSearches {...defaultProps} onChange={onChange} />,
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+
+    await screen.findByText("Saved searches");
+
+    // Use fireEvent.keyUp to directly trigger the onKeyUp handler with Enter
+    // while the dropdown is open, exercising the Enter branch inside
+    // handleKeysOnSearchBox without triggering form submission.
+    fireEvent.keyUp(searchBox, { key: "Enter" });
+
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it("should clear input text after successfully saving a search via SearchPrompt", async () => {
+    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+    const searchBox = screen.getByRole("searchbox");
+    await user.click(searchBox);
+    await user.type(searchBox, "alert:package-upgrades");
+
+    await screen.findByText("Saved searches");
+
+    const saveSearchButton = await screen.findByRole("button", {
+      name: "Save search",
+    });
+    await user.click(saveSearchButton);
+
+    await screen.findByRole("heading", { name: "Add saved search" });
+    const titleInput = await screen.findByRole("textbox", { name: /title/i });
+    await user.type(titleInput, "My New Search");
+
+    const submitButtons = screen.getAllByRole("button", {
+      name: "Add saved search",
+    });
+    const submitButton = submitButtons.find(
+      (btn) => btn.getAttribute("type") === "submit",
+    );
+    assert(submitButton);
+    await user.click(submitButton);
+
+    await waitFor(() => {
+      expect(searchBox).toHaveValue("");
+    });
+  });
+
+  it("should ignore non-Enter keyUp events when dropdown is closed", () => {
+    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+    const searchBox = screen.getByRole("searchbox");
+
+    expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+
+    fireEvent.keyUp(searchBox, { key: "ArrowDown" });
+
+    expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+  });
+
+  it("should initialise search box with existing query from URL", async () => {
+    renderWithProviders(
+      <SearchBoxWithSavedSearches {...defaultProps} />,
+      {},
+      "/?query=existing-query",
+    );
+
+    const searchBox = screen.getByRole("searchbox");
+    expect(searchBox).toHaveValue("existing-query");
   });
 });

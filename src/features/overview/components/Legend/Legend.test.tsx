@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Chart, ChartData } from "chart.js";
 import { vi } from "vitest";
@@ -103,6 +103,7 @@ describe("Legend", () => {
         },
       ],
     },
+    update: vi.fn(),
   } as unknown as Chart;
 
   const props = {
@@ -149,5 +150,61 @@ describe("Legend", () => {
     const legendItem = screen.getByText(chosenLegendItem);
     await userEvent.hover(legendItem);
     expect(mockSetSelectedArc).toHaveBeenCalled();
+  });
+
+  it("renders nothing when chartInstance is null", () => {
+    const { container } = renderWithProviders(
+      <Legend {...props} chartInstance={null} />,
+    );
+    expect(container.firstChild).toBeEmptyDOMElement();
+  });
+
+  it("fires onMouseLeave handler on the legend container", () => {
+    const { container } = renderWithProviders(<Legend {...props} />);
+    const legendContainer = container.querySelector("div");
+    assert(legendContainer);
+    fireEvent.mouseLeave(legendContainer);
+    expect(mockSetSelectedArc).toHaveBeenCalledWith(null);
+    expect(
+      (mockChartInstance as unknown as { update: ReturnType<typeof vi.fn> })
+        .update,
+    ).toHaveBeenCalled();
+  });
+
+  it("applies reduced opacity to non-selected items when selectedArc is set", () => {
+    const { container } = renderWithProviders(
+      <Legend {...props} selectedArc={0} />,
+    );
+    const legendItems = container.querySelectorAll("[style]");
+    // Item at index 0 should have opacity 1; others should have 0.3
+    expect(legendItems[0]).toHaveStyle({ opacity: "1" });
+    expect(legendItems[1]).toHaveStyle({ opacity: "0.3" });
+  });
+
+  it("falls back to Unknown status for unrecognised legend item text", () => {
+    const unknownLegendChart = {
+      ...mockChartInstance,
+      legend: {
+        legendItems: [{ text: "Unrecognised", index: 0 }],
+      },
+    } as unknown as Chart;
+
+    const { container } = renderWithProviders(
+      <Legend {...props} chartInstance={unknownLegendChart} />,
+    );
+    // Renders a legend item using the Unknown fallback (no crash)
+    expect(container.querySelector("div")).toBeInTheDocument();
+  });
+
+  it("handles data without datasets (nullish ?? [] fallback)", () => {
+    const dataWithoutDatasets = {
+      labels: ["Up to date"],
+    } as unknown as ChartData<"pie">;
+
+    const { container } = renderWithProviders(
+      <Legend {...props} data={dataWithoutDatasets} />,
+    );
+    // numberOfInstances falls back to [] via ?? operator; component renders without crash
+    expect(container.querySelector("div")).toBeInTheDocument();
   });
 });

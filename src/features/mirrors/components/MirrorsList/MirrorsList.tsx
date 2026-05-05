@@ -55,7 +55,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         Header: "Packages",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.name !== undefined ? (
+          mirror.name ? (
             <MirrorPackagesCount mirrorName={mirror.name} />
           ) : (
             <NoData />
@@ -64,7 +64,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         Header: "Publications",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.name !== undefined ? (
+          mirror.name ? (
             <Suspense fallback={<Spinner />}>
               <MirrorPublicationsLink mirrorName={mirror.name} />
             </Suspense>
@@ -76,7 +76,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.name !== undefined ? (
+          mirror.name ? (
             <Suspense fallback={<Spinner />}>
               <MirrorActions
                 mirrorDisplayName={mirror.displayName}

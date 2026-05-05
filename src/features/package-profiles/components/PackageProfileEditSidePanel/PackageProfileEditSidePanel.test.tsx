@@ -23,7 +23,9 @@ describe("PackageProfileEditSidePanel", () => {
     expect(screen.getByRole("textbox", { name: /description/i })).toHaveValue(
       packageProfiles[0].description,
     );
-    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+    expect(
+      screen.getByText(packageProfiles[0].access_group),
+    ).toBeInTheDocument();
     expect(screen.getByText("Association")).toBeInTheDocument();
 
     if (packageProfiles[0].all_computers) {

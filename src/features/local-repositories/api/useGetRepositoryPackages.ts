@@ -39,7 +39,7 @@ export const useGetRepositoryPackages = (repository: string) => {
   });
 
   return {
-    packages: data?.map((name) => ({ name: name })) ?? [],
+    packages: data ?? [],
     isGettingRepositoryPackages: isPending,
   };
 };

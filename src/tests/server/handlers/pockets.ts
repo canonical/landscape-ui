@@ -20,7 +20,8 @@ export default [
     const endpointStatus = getEndpointStatus();
     const action = new URL(request.url).searchParams.get("action");
     if (
-      endpointStatus.path === "SyncMirrorPocketLoading" &&
+      endpointStatus.status === "loading" &&
+      endpointStatus.path === "SyncMirrorPocket" &&
       isAction(request, "SyncMirrorPocket")
     ) {
       return new Promise<never>(() => undefined);

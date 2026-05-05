@@ -5,8 +5,11 @@ import { roles } from "@/tests/mocks/roles";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+const nonGlobalAdminRole = roles.find((r) => r.name !== "GlobalAdmin");
+assert(nonGlobalAdminRole);
+
 const props: ComponentProps<typeof RoleListActions> = {
-  role: roles[0],
+  role: nonGlobalAdminRole,
 };
 
 describe("RoleListActions", () => {
@@ -65,5 +68,20 @@ describe("RoleListActions", () => {
         name: `Edit "${props.role.name}" role`,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("confirms removal of a role", async () => {
+    const removeMenuItem = await screen.findByRole("menuitem", {
+      name: `Remove "${props.role.name}" role`,
+    });
+    await user.click(removeMenuItem);
+
+    const dialog = await screen.findByRole("dialog");
+    const confirmButton = within(dialog).getByRole("button", {
+      name: /remove/i,
+    });
+    await user.click(confirmButton);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });

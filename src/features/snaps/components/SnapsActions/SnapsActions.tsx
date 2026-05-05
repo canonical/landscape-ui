@@ -33,16 +33,19 @@ const SnapsActions: FC<SnapsActionProps> = ({
   const { held, unheld } = getSnapUpgradeCounts(selectedSnaps);
 
   const handleEditSnap = (action: EditSnapType) => {
-    const count =
-      action === EditSnapType.Unhold
-        ? held
-        : action === EditSnapType.Hold
-          ? unheld
-          : selectedSnapIds.length;
+    const getCount = () => {
+      if (action === EditSnapType.Unhold) {
+        return held;
+      }
+      if (action === EditSnapType.Hold) {
+        return unheld;
+      }
+      return selectedSnapIds.length;
+    };
 
     const title = singleSnap
       ? `${action} ${singleSnap.snap.name}${action === EditSnapType.Switch ? "'s channel" : ""}`
-      : `${action} ${pluralizeWithCount(count, "snap")}`;
+      : `${action} ${pluralizeWithCount(getCount(), "snap")}`;
 
     setSidePanelContent(
       title,
@@ -81,6 +84,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               onClick={() => {
                 handleEditSnap(EditSnapType.Switch);
               }}
+              hasIcon
             >
               <Icon name="fork" />
               <span>Switch channel</span>
@@ -94,6 +98,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             onClick={() => {
               handleEditSnap(EditSnapType.Uninstall);
             }}
+            hasIcon
           >
             <Icon name={ICONS.delete} />
             <span>Uninstall</span>
@@ -107,6 +112,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               onClick={() => {
                 handleEditSnap(EditSnapType.Hold);
               }}
+              hasIcon
             >
               <Icon name="pause" />
               <span>Hold</span>
@@ -121,6 +127,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               onClick={() => {
                 handleEditSnap(EditSnapType.Unhold);
               }}
+              hasIcon
             >
               <Icon name="play" />
               <span>Unhold</span>
@@ -134,6 +141,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             onClick={() => {
               handleEditSnap(EditSnapType.Refresh);
             }}
+            hasIcon
           >
             <Icon name="change-version" />
             <span>Refresh</span>

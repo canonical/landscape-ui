@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { ComponentProps } from "react";
@@ -69,5 +69,72 @@ describe("ActivitiesHeader", () => {
     await user.click(clearButton);
 
     expect(searchBox).toHaveValue("");
+  });
+
+  it("should trigger search when search button is clicked", async () => {
+    const searchBox = screen.getByRole("searchbox", { name: /search/i });
+    await user.type(searchBox, "my-query");
+
+    const searchButton = screen.getByRole("button", { name: /^search$/i });
+    await user.click(searchButton);
+
+    // Should still render without crashing
+    expect(searchBox).toBeInTheDocument();
+  });
+
+  it("should not search when query is empty (early return)", async () => {
+    const searchButton = screen.getByRole("button", { name: /^search$/i });
+    await user.click(searchButton);
+    // Component still renders without errors
+    expect(
+      screen.getByRole("searchbox", { name: /search/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("should close search help popup when close button is clicked", async () => {
+    const helpButton = screen.getByRole("button", { name: /help/i });
+    await user.click(helpButton);
+
+    expect(
+      screen.getByRole("dialog", { name: /search help/i }),
+    ).toBeInTheDocument();
+
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    await user.click(closeButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("dialog", { name: /search help/i }),
+      ).not.toBeInTheDocument();
+    });
+  });
+});
+
+describe("ActivitiesHeader with instanceId (panel mode)", () => {
+  it("renders actions when rendered in panel mode with instanceId", () => {
+    renderWithProviders(
+      <ActivitiesHeader selected={[]} resetSelectedIds={vi.fn()} />,
+      undefined,
+      "/computers/1/activities",
+      "/computers/:instanceId/activities",
+    );
+
+    // In panel mode, actions should be visible (ActivitiesActions is rendered)
+    expect(
+      screen.getByRole("searchbox", { name: /search/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("initialises search text from URL query parameter (non-nullish ?? branch)", async () => {
+    renderWithProviders(
+      <ActivitiesHeader {...props} />,
+      undefined,
+      "/activities?query=initial-test",
+    );
+    // useEffect runs with query = "initial-test" (non-nullish side of ??)
+    const searchBox = screen.getByRole("searchbox", { name: /search/i });
+    await waitFor(() => {
+      expect(searchBox).toHaveValue("initial-test");
+    });
   });
 });

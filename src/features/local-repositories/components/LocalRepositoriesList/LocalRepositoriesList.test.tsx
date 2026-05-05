@@ -2,10 +2,14 @@ import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import LocalRepositoriesList from "./LocalRepositoriesList";
 import { repositories } from "@/tests/mocks/localRepositories";
-import { screen } from "@testing-library/react";
+import { getAllByRole, screen } from "@testing-library/react";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import userEvent from "@testing-library/user-event";
 
 describe("LocalRepositoriesList", () => {
-  it("renders table with column headers", () => {
+  const user = userEvent.setup();
+
+  it("renders table with column headers and pagination", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
     expect(
@@ -20,6 +24,11 @@ describe("LocalRepositoriesList", () => {
     expect(
       screen.getByRole("columnheader", { name: "Publications" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Actions" }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText(/showing.*of/i)).toBeInTheDocument();
   });
 
   it("renders repositories as buttons", () => {
@@ -33,6 +42,7 @@ describe("LocalRepositoriesList", () => {
   it("renders descriptions in rows", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
     expect(screen.getByText("repo 2 description")).toBeInTheDocument();
     expect(screen.getByText("repo 3 description")).toBeInTheDocument();
   });
@@ -45,16 +55,16 @@ describe("LocalRepositoriesList", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders pagination info", () => {
-    renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
-
-    expect(screen.getByText(/showing.*of/i)).toBeInTheDocument();
-  });
-
-  it("renders action buttons for each repository", () => {
+  it("renders action buttons for each repository", async () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
     const actionButtons = screen.getAllByRole("button", { name: /actions/i });
-    expect(actionButtons.length).toBeGreaterThan(0);
+    expect(actionButtons).toHaveLength(repositories.length);
+    assert(actionButtons[0]);
+
+    await user.click(actionButtons[0]);
+
+    const dropdown = await screen.findByRole("menu");
+    expect(getAllByRole(dropdown, "menuitem")).toHaveLength(5);
   });
 });

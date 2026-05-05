@@ -75,4 +75,22 @@ describe("InstallSnaps", () => {
     expect(screen.queryByText("Snap 2")).not.toBeInTheDocument();
     expect(screen.getByText("Snap 3")).toBeInTheDocument();
   });
+
+  it("installs snaps after selecting and submitting", async () => {
+    const searchBox = screen.getByRole("searchbox");
+
+    await userEvent.type(searchBox, "Snap 2");
+    const matchingSnap = await screen.findByText("Snap 2");
+    await userEvent.click(matchingSnap);
+    const addButton = await screen.findByRole("button", { name: /add/i });
+    await userEvent.click(addButton);
+
+    const installButton = screen.getByRole("button", {
+      name: /install snaps/i,
+    });
+    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
+    await userEvent.click(installButton);
+
+    expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
+  });
 });

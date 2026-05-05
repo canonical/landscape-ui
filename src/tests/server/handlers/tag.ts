@@ -72,6 +72,14 @@ export default [
       return;
     }
 
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "AddTagsToComputers")
+    ) {
+      throw createEndpointStatusError();
+    }
+
     const { searchParams } = new URL(request.url);
 
     const queryParam = searchParams.get("query") || "";

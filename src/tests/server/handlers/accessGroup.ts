@@ -37,4 +37,18 @@ export default [
 
     return HttpResponse.json({ success: true });
   }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "CreateAccessGroup")) {
+      return;
+    }
+
+    const url = new URL(request.url);
+    return HttpResponse.json({
+      name: url.searchParams.get("name"),
+      title: url.searchParams.get("title"),
+      parent: url.searchParams.get("parent"),
+      children: "",
+    });
+  }),
 ];

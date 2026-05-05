@@ -15,7 +15,7 @@ import {
   isAction,
   shouldApplyEndpointStatus,
 } from "@/tests/server/handlers/_helpers";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
   createEndpointStatusNetworkError,
@@ -90,6 +90,15 @@ export default [
   }),
 
   http.get(`${API_URL}scripts/:id/versions/:versionId`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "scripts/versions/detail"
+    ) {
+      throw createEndpointStatusError();
+    }
+
     return HttpResponse.json(scriptVersion);
   }),
 
@@ -122,6 +131,15 @@ export default [
   ),
 
   http.get(`${API_URL}scripts/:id/versions`, async ({ request }) => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "loading" &&
+      (!endpointStatus.path || endpointStatus.path === "scripts/versions")
+    ) {
+      await delay("infinite");
+    }
+
     const DEFAULT_PAGE_SIZE = 20;
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit")) || DEFAULT_PAGE_SIZE;
@@ -216,5 +234,40 @@ export default [
     }
 
     return HttpResponse.json(activities[0]);
+  }),
+
+  http.post(`${API_URL}scripts/:id\\:archive`, async () => {
+    const endpointStatus = getEndpointStatus();
+
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "archive"
+    ) {
+      throw createEndpointStatusError();
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.post(`${API_URL}scripts/:id\\:redact`, async () => {
+    if (shouldApplyEndpointStatus("redact")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json({});
+  }),
+
+  http.post(`${API_URL}scripts/run`, async () => {
+    if (shouldApplyEndpointStatus("run")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json({});
   }),
 ];

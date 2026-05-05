@@ -2,7 +2,6 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
-import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
 import moment from "moment";
@@ -39,7 +38,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   } = useBoolean();
 
   const { setSidePanelContent } = useSidePanel();
-  const debug = useDebug();
 
   const { script } = useGetSingleScript(scriptId);
 
@@ -66,8 +64,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   });
 
   const viewVersionHistory = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
+    if (!script) {
       return;
     }
 
@@ -80,8 +77,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   };
 
   const handleBackToDetails = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
+    if (!script) {
       return;
     }
 
@@ -94,8 +90,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   };
 
   const handleEditScript = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
+    if (!script) {
       return;
     }
 
@@ -108,8 +103,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
   };
 
   const handleRunScript = (): void => {
-    if (script === null) {
-      debug("Script not loaded");
+    if (!script) {
       return;
     }
 

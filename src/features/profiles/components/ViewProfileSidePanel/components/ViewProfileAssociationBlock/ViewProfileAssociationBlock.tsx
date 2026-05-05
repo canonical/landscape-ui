@@ -48,37 +48,39 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
           }
         />
 
-        {hasAssociations(profile) && hasComplianceData(profile) && (
-          <>
-            <InfoGrid.Item
-              label="Compliant"
-              value={
-                <ProfileAssociatedInstancesLink
-                  profile={profile}
-                  count={
-                    profile.computers.constrained.length -
-                    profile.computers["non-compliant"].length
-                  }
-                  query={`${type}:${profile.id}:compliant`}
-                  isPending={isGettingInstances}
-                />
-              }
-            />
+        {hasAssociations(profile) &&
+          hasComplianceData(profile) &&
+          profile.computers && (
+            <>
+              <InfoGrid.Item
+                label="Compliant"
+                value={
+                  <ProfileAssociatedInstancesLink
+                    profile={profile}
+                    count={
+                      (profile.computers.constrained?.length ?? 0) -
+                      (profile.computers["non-compliant"]?.length ?? 0)
+                    }
+                    query={`${type}:${profile.id}:compliant`}
+                    isPending={isGettingInstances}
+                  />
+                }
+              />
 
-            <InfoGrid.Item
-              label="Not compliant"
-              value={
-                <ProfileAssociatedInstancesLink
-                  profile={profile}
-                  count={profile.computers["non-compliant"].length}
-                  query={`${type}:${profile.id}:noncompliant`}
-                  isPending={isGettingInstances}
-                />
-              }
-            />
-          </>
-        )}
-        {!!profile.tags.length && (
+              <InfoGrid.Item
+                label="Not compliant"
+                value={
+                  <ProfileAssociatedInstancesLink
+                    profile={profile}
+                    count={profile.computers["non-compliant"]?.length ?? 0}
+                    query={`${type}:${profile.id}:noncompliant`}
+                    isPending={isGettingInstances}
+                  />
+                }
+              />
+            </>
+          )}
+        {!!profile.tags?.length && (
           <InfoGrid.Item
             label="Tags"
             large

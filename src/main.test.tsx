@@ -39,12 +39,12 @@ describe("main", () => {
     expect(render).toHaveBeenCalledTimes(1);
   });
 
-  it("does not start worker outside dev", async () => {
+  it("does not start worker when enabled outside dev", async () => {
     const loadWorker = vi.fn();
     const render = vi.fn();
 
     await startApp({
-      mode: "development",
+      mode: "production",
       isDevEnv: false,
       isMswEnabled: true,
       loadWorker,
@@ -61,7 +61,6 @@ describe("main", () => {
 
     await startApp({
       mode: "test",
-      isDevEnv: true,
       isMswEnabled: true,
       loadWorker,
       render,

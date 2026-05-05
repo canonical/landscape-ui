@@ -9,15 +9,19 @@ interface MirrorPackagesCount {
 }
 
 const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
-  const { data, isLoading, isError } = useListMirrorPackages(mirrorName, {
-    pageSize: 1000,
-  });
+  const { data, isLoading, isError } = useListMirrorPackages(
+    mirrorName,
+    {
+      pageSize: 1000,
+    },
+    { refetchOnMount: false },
+  );
 
   if (isLoading) return <Spinner />;
   if (isError || !data) return <NoData />;
 
   return pluralizeNew(data.data.mirrorPackages?.length, "package", {
-    showCount: data.data.nextPageToken === undefined ? "exact" : "limited",
+    showCount: data.data.nextPageToken ? "limited" : "exact",
   });
 };
 

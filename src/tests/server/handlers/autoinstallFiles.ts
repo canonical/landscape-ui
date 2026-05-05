@@ -9,7 +9,10 @@ import type {
 } from "@/features/autoinstall-files";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
@@ -60,6 +63,16 @@ export default [
     const withMetadata = url.searchParams.get("with_metadata") === "true";
 
     if (withMetadata) {
+      if (
+        shouldApplyEndpointStatus("autoinstall") &&
+        getEndpointStatus().status === "variant"
+      ) {
+        return HttpResponse.json({
+          ...autoinstallFile,
+          metadata: getEndpointStatus().response,
+        });
+      }
+
       return HttpResponse.json({
         ...autoinstallFile,
         metadata: {
@@ -89,27 +102,18 @@ export default [
     },
   ),
   http.post(`${API_URL}autoinstall:validate`, async () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "autoinstall:validate-override"
-    ) {
-      return HttpResponse.json(
-        {
-          error: "AutoinstallOverrideWarning",
-          message:
-            "The autoinstall file you submitted overrides fields users, identity",
-        },
-        { status: 400 },
-      );
+    if (shouldApplyEndpointStatus("autoinstall-validate")) {
+      const { status, response } = getEndpointStatus();
+      if (status === "variant") {
+        return HttpResponse.json(response, { status: 400 });
+      }
     }
 
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "autoinstall:validate"
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("autoinstall:validate")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json({});

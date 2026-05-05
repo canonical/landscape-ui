@@ -96,7 +96,7 @@ export const hasLastRunData = (
   isScriptProfile(profile) || isUsgProfile(profile);
 
 export const hasAssociations = (profile: Profile) =>
-  !!profile.tags.length || profile.all_computers;
+  !!(profile.tags?.length ?? 0) || profile.all_computers;
 
 export const isProfileArchived = (profile: Profile) =>
   profile.status === "archived" || !!profile.archived;

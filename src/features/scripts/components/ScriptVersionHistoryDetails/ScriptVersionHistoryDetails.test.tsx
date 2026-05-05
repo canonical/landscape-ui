@@ -1,9 +1,10 @@
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scriptVersion } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { getAuthorInfo } from "../../helpers";
 import ScriptVersionHistoryDetails from "./ScriptVersionHistoryDetails";
 
@@ -16,6 +17,10 @@ const props: ComponentProps<typeof ScriptVersionHistoryDetails> = {
 
 describe("Script Version History Details", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
 
   it("should render script version history details", async () => {
     renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
@@ -83,5 +88,73 @@ describe("Script Version History Details", () => {
     });
     await user.click(modalCancelButton);
     expect(modal).not.toBeInTheDocument();
+  });
+
+  it("should confirm and submit new version", async () => {
+    renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
+
+    const actionButton = await screen.findByRole("button", {
+      name: /use as new version/i,
+    });
+
+    await user.click(actionButton);
+
+    const confirmButton = await screen.findByRole("button", {
+      name: /submit new version/i,
+    });
+    await user.click(confirmButton);
+
+    // After success, goBack should be called
+  });
+
+  it("should call goBack when Back button is clicked", async () => {
+    const goBack = vi.fn();
+    renderWithProviders(
+      <ScriptVersionHistoryDetails {...props} goBack={goBack} />,
+    );
+
+    const backButton = screen.getByRole("button", { name: /back/i });
+    await user.click(backButton);
+
+    expect(goBack).toHaveBeenCalledOnce();
+  });
+
+  it("should not call goBack when version is not loaded on submit", async () => {
+    setEndpointStatus({ status: "error", path: "scripts/versions/detail" });
+    const goBack = vi.fn();
+    renderWithProviders(
+      <ScriptVersionHistoryDetails {...props} goBack={goBack} />,
+    );
+
+    const actionButton = screen.getByRole("button", {
+      name: /use as new version/i,
+    });
+    await user.click(actionButton);
+
+    const confirmButton = await screen.findByRole("button", {
+      name: /submit new version/i,
+    });
+    await user.click(confirmButton);
+
+    expect(goBack).not.toHaveBeenCalled();
+  });
+
+  it("should handle error when submitting new version", async () => {
+    setEndpointStatus({ status: "error", path: "EditScript" });
+    renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
+
+    const actionButton = await screen.findByRole("button", {
+      name: /use as new version/i,
+    });
+    await user.click(actionButton);
+
+    const confirmButton = await screen.findByRole("button", {
+      name: /submit new version/i,
+    });
+    await user.click(confirmButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
   });
 });

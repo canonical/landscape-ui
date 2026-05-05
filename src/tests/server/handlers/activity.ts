@@ -5,6 +5,8 @@ import {
   activities,
   activityTypes,
   INVALID_ACTIVITY_SEARCH_QUERY,
+  manyDeliveredActivities,
+  manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
 import {
@@ -76,6 +78,7 @@ export default [
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || 1;
     const query = url.searchParams.get("query") ?? "";
+    const endpointStatus = getEndpointStatus();
 
     if (query === INVALID_ACTIVITY_SEARCH_QUERY) {
       throw HttpResponse.json(
@@ -88,6 +91,35 @@ export default [
     }
 
     const { status, type, searchQuery } = parseActivitiesQuery(query);
+
+    if (
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "activities"
+    ) {
+      const { unapproved, delivered } = endpointStatus.response as {
+        unapproved: Activity[];
+        delivered: Activity[];
+      };
+      const bulkData = status === "unapproved" ? unapproved : delivered;
+      return HttpResponse.json(
+        generatePaginatedResponse<Activity>({ data: bulkData, limit, offset }),
+      );
+    }
+
+    if (endpointStatus.path === "many-activities") {
+      const bulkData =
+        status === "unapproved"
+          ? manyUnapprovedActivities
+          : manyDeliveredActivities;
+      return HttpResponse.json(
+        generatePaginatedResponse<Activity>({
+          data: bulkData,
+          limit,
+          offset,
+        }),
+      );
+    }
+
     const filteredActivities = activities.filter((activity) => {
       if (status && activity.activity_status !== status) {
         return false;
@@ -163,6 +195,14 @@ export default [
   http.get<never, never, string[]>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "ApproveActivities")) {
       return;
+    }
+
+    const endpointStatus = getEndpointStatus();
+    if (
+      endpointStatus.status === "error" &&
+      (!endpointStatus.path || endpointStatus.path === "ApproveActivities")
+    ) {
+      throw createEndpointStatusError();
     }
 
     return HttpResponse.json([

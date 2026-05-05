@@ -11,10 +11,13 @@ interface MirrorPublicationsLinkProps {
 const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
   mirrorName,
 }) => {
-  const { data } = useListPublications({
-    filter: `source="${mirrorName}"`,
-    pageSize: 1000,
-  });
+  const { data } = useListPublications(
+    {
+      filter: `source="${mirrorName}"`,
+      pageSize: 1000,
+    },
+    { refetchOnMount: false },
+  );
 
   if (!data.data.publications?.length) {
     return "0 publications";
@@ -28,7 +31,7 @@ const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
       }}
     >
       {pluralizeNew(data.data.publications.length, "publication", {
-        showCount: data.data.nextPageToken === undefined ? "exact" : "limited",
+        showCount: data.data.nextPageToken ? "limited" : "exact",
       })}
     </StaticLink>
   );

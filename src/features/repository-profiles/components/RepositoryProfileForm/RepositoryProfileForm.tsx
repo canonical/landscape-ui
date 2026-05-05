@@ -69,12 +69,11 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       title: values.title,
     };
 
-    if (!values.all_computers) {
-      valuesToSubmit.tags = values.tags;
-    }
-
     try {
       if (props.action === "add") {
+        if (!values.all_computers) {
+          valuesToSubmit.tags = values.tags;
+        }
         await createRepositoryProfile({
           access_group: values.access_group,
           ...valuesToSubmit,
@@ -89,7 +88,11 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         const originalSources = props.profile.apt_sources ?? [];
         await editRepositoryProfile({
           name: props.profile.name,
-          ...valuesToSubmit,
+          title: values.title,
+          description: values.description,
+          access_group: props.profile.access_group,
+          tags: values.all_computers ? [] : (values.tags ?? []),
+          all_computers: values.all_computers,
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
           remove_apt_sources: originalSources
             .filter(
@@ -126,7 +129,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       all_computers: props.profile.all_computers,
       apt_sources: props.aptSources,
       description: props.profile.description || "",
-      tags: props.profile.tags,
+      tags: props.profile.tags ?? [],
       title: props.profile.title,
     });
     // Only re-initialize when the profile identity changes, not on every aptSources update.
@@ -135,7 +138,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   useEffect(() => {
     formik.setFieldValue("apt_sources", props.aptSources);
-  }, [props.aptSources]);
+  }, [props.aptSources, formik]);
 
   const handleRemoveSource = (source: APTSource) => {
     props.onAptSourcesChange(
