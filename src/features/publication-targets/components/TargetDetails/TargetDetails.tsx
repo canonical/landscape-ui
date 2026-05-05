@@ -214,14 +214,12 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
 
         {!isGettingPublications && publications.length > 0 && (
           <Blocks.Item title="Used In" titleClassName="p-text--small-caps">
-            {isLoadingDisplayNames ? (
-              <LoadingState />
-            ) : (
-              <AssociatedPublicationsList
-                publications={publications}
-                sourceDisplayNames={sourceDisplayNames}
-              />
-            )}
+            <AssociatedPublicationsList
+              publications={publications}
+              sourceDisplayNames={
+                isLoadingDisplayNames ? undefined : sourceDisplayNames
+              }
+            />
           </Blocks.Item>
         )}
       </Blocks>
