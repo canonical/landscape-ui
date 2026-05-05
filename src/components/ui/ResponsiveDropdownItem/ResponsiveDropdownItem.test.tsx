@@ -109,7 +109,12 @@ describe("ResponsiveDropdownItem", () => {
 
   it("renders a disabled element with given label and right position", async () => {
     renderWithProviders(
-      <ResponsiveDropdownItem el={element} disabled label="Label" position="right" />,
+      <ResponsiveDropdownItem
+        el={element}
+        disabled
+        label="Label"
+        position="right"
+      />,
     );
 
     const button = await screen.findByRole("button", { name: "Label" });

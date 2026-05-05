@@ -390,9 +390,9 @@ describe("ResponsiveButtons", () => {
     await userEvent.click(screen.getByRole("button", { name: /actions/i }));
     await userEvent.click(screen.getByRole("button", { name: "More" }));
 
-    expect(
-      screen.getByRole("button", { name: "Read only link" }),
-    ).toHaveIcon("plus");
+    expect(screen.getByRole("button", { name: "Read only link" })).toHaveIcon(
+      "plus",
+    );
 
     await userEvent.click(screen.getByRole("button", { name: "Sub action" }));
     expect(menuAction).toHaveBeenCalledTimes(1);
