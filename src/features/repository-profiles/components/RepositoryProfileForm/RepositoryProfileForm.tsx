@@ -91,6 +91,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           name: props.profile.name,
           ...valuesToSubmit,
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
+          access_group: props.profile.access_group, // Access group cannot be edited, but API requires it in the payload
           remove_apt_sources: originalSources
             .filter(
               (orig) => !values.apt_sources.some((cur) => cur.id === orig.id),

@@ -32,6 +32,7 @@ interface EditRepositoryProfileParams {
   description?: string;
   tags?: string[];
   title?: string;
+  access_group?: string;
 }
 
 interface RemoveRepositoryProfileParams {
