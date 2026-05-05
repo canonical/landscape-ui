@@ -91,7 +91,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           title: values.title,
           description: values.description,
           access_group: props.profile.access_group,
-          tags: !values.all_computers ? values.tags : [],
+          tags: values.all_computers ? [] : (values.tags ?? []),
           all_computers: values.all_computers,
           add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
           remove_apt_sources: originalSources
@@ -129,7 +129,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
       all_computers: props.profile.all_computers,
       apt_sources: props.aptSources,
       description: props.profile.description || "",
-      tags: props.profile.tags,
+      tags: props.profile.tags ?? [],
       title: props.profile.title,
     });
     // Only re-initialize when the profile identity changes, not on every aptSources update.

@@ -104,14 +104,19 @@ export default [
   http.put(
     `${API_URL}repositoryprofiles/:name`,
     async ({ params, request }) => {
-      type PutBody = Omit<Partial<RepositoryProfile>, "apt_sources"> & {
+      interface PutBody {
+        title: string;
+        description: string;
+        access_group: string;
+        tags: string[];
+        all_computers: boolean;
         add_apt_sources?: {
           name: string;
           line: string;
           gpg_key: { content: string } | null;
         }[];
         remove_apt_sources?: number[];
-      };
+      }
       const body = (await request.json()) as PutBody;
       const profile = repositoryProfiles.find((p) => p.name === params.name);
       if (!profile) {
@@ -133,15 +138,28 @@ export default [
           name: s.name,
           line: s.line,
           gpg_key: s.gpg_key ? s.gpg_key.content : null,
-          access_group: profile.access_group,
+          access_group: body.access_group,
           profiles: [profile.name],
         }));
         updatedSources = [...updatedSources, ...newSources];
       }
 
-      Object.assign(profile, { ...rest, apt_sources: updatedSources });
+      const updatedProfile: RepositoryProfile = {
+        id: profile.id,
+        name: profile.name,
+        title: body.title,
+        description: body.description,
+        access_group: body.access_group,
+        all_computers: body.all_computers,
+        apt_sources: updatedSources,
+        applied_count: profile.applied_count,
+        tags: body.tags,
+        pending_count: profile.pending_count,
+      };
 
-      return HttpResponse.json(profile, { status: 200 });
+      Object.assign(profile, updatedProfile);
+
+      return HttpResponse.json(updatedProfile, { status: 200 });
     },
   ),
 

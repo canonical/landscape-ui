@@ -58,6 +58,8 @@ export const handleParams = ({
             paramsToPass[param] = value.toString();
           }
         }
+      } else if (!isOld && config.method === "put") {
+        paramsToPass[param] = value;
       }
     } else if (["number", "boolean"].includes(typeof value)) {
       paramsToPass[param] =

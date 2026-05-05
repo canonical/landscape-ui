@@ -48,7 +48,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
           }
         />
 
-        {hasAssociations(profile) && hasComplianceData(profile) && (
+        {hasAssociations(profile) && hasComplianceData(profile) && profile.computers && (
           <>
             <InfoGrid.Item
               label="Compliant"
@@ -56,8 +56,8 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
                 <ProfileAssociatedInstancesLink
                   profile={profile}
                   count={
-                    profile.computers.constrained.length -
-                    profile.computers["non-compliant"].length
+                    (profile.computers.constrained?.length ?? 0) -
+                    (profile.computers["non-compliant"]?.length ?? 0)
                   }
                   query={`${type}:${profile.id}:compliant`}
                   isPending={isGettingInstances}
@@ -70,7 +70,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
               value={
                 <ProfileAssociatedInstancesLink
                   profile={profile}
-                  count={profile.computers["non-compliant"].length}
+                  count={profile.computers["non-compliant"]?.length ?? 0}
                   query={`${type}:${profile.id}:noncompliant`}
                   isPending={isGettingInstances}
                 />
@@ -78,7 +78,7 @@ const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
             />
           </>
         )}
-        {!!profile.tags.length && (
+        {!!profile.tags?.length && (
           <InfoGrid.Item
             label="Tags"
             large
