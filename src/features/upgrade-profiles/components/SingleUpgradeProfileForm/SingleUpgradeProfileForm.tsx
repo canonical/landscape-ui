@@ -6,6 +6,7 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
+import { getTitleByName } from "@/utils/_helpers";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -33,13 +34,13 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery(
+  const { data: accessGroupsData } = getAccessGroupQuery(
     {},
     { enabled: props.action === "add" },
   );
 
   const accessGroupOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
+    accessGroupsData?.data.map(({ name, title }) => ({
       label: title,
       value: name,
     })) ?? [];
@@ -168,8 +169,8 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       {props.action === "edit" ? (
         <ReadOnlyField
           label="Access group"
+          value={getTitleByName(props.profile.access_group, accessGroupsData)}
           tooltipMessage="You can't change the access group after the upgrade profile has been created"
-          {...formik.getFieldProps("access_group")}
         />
       ) : (
         <Select

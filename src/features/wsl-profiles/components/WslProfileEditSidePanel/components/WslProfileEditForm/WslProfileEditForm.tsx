@@ -4,7 +4,9 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
+import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
+import { getTitleByName } from "@/utils/_helpers";
 import { Form, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type FC } from "react";
@@ -28,8 +30,10 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const debug = useDebug();
   const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
   const { notify } = useNotify();
+  const { getAccessGroupQuery } = useRoles();
 
   const { editWslProfile } = useEditWslProfile();
+  const { data: accessGroupsData } = getAccessGroupQuery();
 
   const rootfsImageValue = profile.image_source
     ? "From URL"
@@ -106,7 +110,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
 
       <ReadOnlyField
         label="Access group"
-        value={profile.access_group}
+        value={getTitleByName(profile.access_group, accessGroupsData)}
         tooltipMessage="You can't change the access group after the WSL profile has been created"
       />
 

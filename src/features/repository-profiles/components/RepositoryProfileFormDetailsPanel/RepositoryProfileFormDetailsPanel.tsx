@@ -21,6 +21,10 @@ const RepositoryProfileFormDetailsPanel: FC<
     value: name,
   }));
 
+  const accessGroupTitle =
+    accessGroups.find((ag) => ag.name === formik.values.access_group)?.title ??
+    formik.values.access_group;
+
   return (
     <>
       <Input
@@ -41,8 +45,8 @@ const RepositoryProfileFormDetailsPanel: FC<
       {isAccessGroupDisabled ? (
         <ReadOnlyField
           label="Access group"
+          value={accessGroupTitle}
           tooltipMessage={`You can't change the access group after the repository profile has been created`}
-          {...formik.getFieldProps("access_group")}
         />
       ) : (
         <Select
