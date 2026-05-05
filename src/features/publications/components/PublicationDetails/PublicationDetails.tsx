@@ -10,6 +10,7 @@ import { getSourceType } from "../../helpers";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import usePageParams from "@/hooks/usePageParams/usePageParams";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -89,9 +90,13 @@ const PublicationDetails = ({
 
             <InfoGrid.Item
               label="Date published"
-              value={moment(publication.publishTime).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              )}
+              value={
+                publication.publishTime
+                  ? moment(publication.publishTime).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    )
+                  : NO_DATA_TEXT
+              }
             />
           </InfoGrid>
         </Blocks.Item>
