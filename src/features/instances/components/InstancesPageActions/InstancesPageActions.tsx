@@ -279,7 +279,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             </Button>
           ) : (
             <ContextualMenu
-              position="left"
+              position="right"
               key="pro-services"
               hasToggleIcon
               links={proServicesLinks}

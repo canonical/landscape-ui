@@ -54,6 +54,19 @@ const ResponsiveDropdownItem: FC<ResponsiveDropdownItemProps> = ({
   };
   const alignmentClass = alignmentClassMap[position];
 
+  const buttonContent =
+    position === "right" ? (
+      <>
+        <Icon name="chevron-left" />
+        <span className={classes.text}>{displayLabel}</span>
+      </>
+    ) : (
+      <>
+        <span className={classes.text}>{displayLabel}</span>
+        <Icon name="chevron-right" />
+      </>
+    );
+
   return (
     <div
       ref={ref}
@@ -65,9 +78,9 @@ const ResponsiveDropdownItem: FC<ResponsiveDropdownItemProps> = ({
         className={classNames(classes.label, { [classes.isOpen]: isOpen })}
         onClick={toggle}
         disabled={disabled}
+        hasIcon={position === "right"}
       >
-        <span className={classes.text}>{displayLabel}</span>
-        <Icon name="chevron-down" className={classes.icon} />
+        {buttonContent}
       </Button>
       {isOpen && (
         <div
