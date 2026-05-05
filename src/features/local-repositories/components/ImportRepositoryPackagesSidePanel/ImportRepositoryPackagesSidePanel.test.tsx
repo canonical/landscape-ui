@@ -108,7 +108,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     await user.click(fetchButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/task failed unexpectedly/i)).toBeInTheDocument();
+      expect(screen.getByText(/the operation failed unexpectedly/i)).toBeInTheDocument();
     });
 
     const importButton = screen.getByRole("button", {
