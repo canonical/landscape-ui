@@ -62,10 +62,9 @@ const EditMirrorForm: FC = () => {
             downloadUdebs: values.downloadUdebPackages,
             downloadSources: values.downloadSources,
             downloadInstaller: values.downloadInstallerFiles,
-            gpgKey:
-              values.verificationGpgKey === undefined
-                ? undefined
-                : { armor: values.verificationGpgKey },
+            gpgKey: values.verificationGpgKey
+              ? { armor: values.verificationGpgKey }
+              : undefined,
           },
         });
 
