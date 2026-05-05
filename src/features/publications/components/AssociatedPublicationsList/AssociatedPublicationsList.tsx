@@ -18,6 +18,7 @@ interface AssociatedPublicationsListProps {
   readonly pageSize?: number;
   readonly openInNewTab?: boolean;
   readonly showSources?: boolean;
+  readonly sourceDisplayNames?: Record<string, string>;
 }
 
 const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
@@ -25,6 +26,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
   pageSize = 10,
   openInNewTab = false,
   showSources = true,
+  sourceDisplayNames = {},
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -60,17 +62,23 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 },
               }: CellProps<Publication>): ReactNode => {
                 const sourceType = getSourceType(source);
+                const displayName = sourceDisplayNames[source];
                 let content: ReactNode;
                 if (sourceType === "Mirror") {
                   content = (
                     <MirrorLink
                       mirrorName={source}
+                      displayName={displayName}
                       openInNewTab={openInNewTab}
                     />
                   );
                 } else if (sourceType === "Local repository") {
                   content = (
-                    <LocalLink localName={source} openInNewTab={openInNewTab} />
+                    <LocalLink
+                      localName={source}
+                      displayName={displayName}
+                      openInNewTab={openInNewTab}
+                    />
                   );
                 } else {
                   content = source;
@@ -78,7 +86,9 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 return openInNewTab ? (
                   content
                 ) : (
-                  <TooltipCell message={source ?? ""}>{content}</TooltipCell>
+                  <TooltipCell message={displayName ?? source ?? ""}>
+                    {content}
+                  </TooltipCell>
                 );
               },
             },
@@ -102,7 +112,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
           ),
       },
     ],
-    [openInNewTab, showSources],
+    [openInNewTab, showSources, sourceDisplayNames],
   );
 
   const pagedData =
