@@ -154,6 +154,7 @@ const RepositoryProfileDetails: FC = () => {
         confirmButtonLoading={isRemoving}
         onConfirm={handleRemoveProfile}
         close={closeModal}
+        renderInPortal
       >
         <p>
           This will remove &quot;{profile.title}&quot; profile. This action is{" "}

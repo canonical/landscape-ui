@@ -99,6 +99,7 @@ const RepositoryProfileListActions: FC<RepositoryProfileListActionsProps> = ({
         confirmButtonLoading={isRemoving}
         onConfirm={handleRemoveProfile}
         close={closeModal}
+        renderInPortal
       >
         <p>
           This will remove &quot;{profile.title}&quot; profile. This action is{" "}

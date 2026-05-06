@@ -5,6 +5,7 @@ import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useDeletePublication } from "../../api";
 import type { Publication } from "@canonical/landscape-openapi";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
 
 interface RemovePublicationModalProps extends Pick<
   TextConfirmationModalProps,
@@ -21,6 +22,7 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { deletePublication, isRemovingPublication } = useDeletePublication();
+  const { closeSidePanel } = usePageParams();
 
   const handleRemovePublication = async () => {
     try {
@@ -34,6 +36,7 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
       debug(error);
     } finally {
       close();
+      closeSidePanel();
     }
   };
 
