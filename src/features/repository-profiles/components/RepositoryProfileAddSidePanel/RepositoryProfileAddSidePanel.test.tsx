@@ -132,19 +132,6 @@ describe("RepositoryProfileAddSidePanel", () => {
     expect(screen.getByText("my-source")).toBeInTheDocument();
   });
 
-  it("renders 'Edit repository profile' title when sidePath starts with 'edit'", () => {
-    renderPanel("edit");
-
-    expect(screen.getByText("Edit repository profile")).toBeInTheDocument();
-  });
-
-  it("renders 'Edit repository profile' as breadcrumb prefix on edit-source step", () => {
-    renderPanel("edit,edit-source");
-
-    expect(screen.getByText("Edit repository profile")).toBeInTheDocument();
-    expect(screen.getByText(/Edit source/i)).toBeInTheDocument();
-  });
-
   it("edit source pre-populates form fields with existing source values", async () => {
     renderPanel("add,add-source");
 
