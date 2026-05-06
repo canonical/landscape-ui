@@ -138,7 +138,9 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
 
   useEffect(() => {
     formik.setFieldValue("apt_sources", props.aptSources);
-  }, [props.aptSources, formik]);
+    // Including `formik` causes a rerender loop because Formik recreates it on updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.aptSources]);
 
   const handleRemoveSource = (source: APTSource) => {
     props.onAptSourcesChange(
