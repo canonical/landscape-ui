@@ -19,7 +19,7 @@ export function useDeleteMirror(name: DeleteMirrorData["path"]["name_1"]) {
     mutationFn: async (params) => authFetchDebArchive.delete(name, { params }),
     onSuccess: async () => {
       queryClient.invalidateQueries({
-        queryKey: ["mirrors"]
+        queryKey: ["mirrors"],
       });
     },
   });

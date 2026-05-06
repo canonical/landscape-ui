@@ -27,8 +27,12 @@ export default function useUpdatePublication() {
         `publications/${encodeURIComponent(publicationName)}`,
         body,
       ),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["publications"] }),
+    onSuccess: async (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["publications"] });
+      queryClient.invalidateQueries({
+        queryKey: ["publication", variables.publicationName],
+      });
+    },
   });
 
   return {

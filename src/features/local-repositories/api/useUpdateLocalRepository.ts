@@ -19,8 +19,10 @@ export const useUpdateLocalRepository = () => {
     mutationKey: ["local", "update"],
     mutationFn: async ({ name, ...local }) =>
       authFetchDebArchive.patch(name, local),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["locals"] }),
+    onSuccess: async (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["locals"] });
+      queryClient.invalidateQueries({ queryKey: ["local", variables.name] });
+    },
   });
 
   return {
