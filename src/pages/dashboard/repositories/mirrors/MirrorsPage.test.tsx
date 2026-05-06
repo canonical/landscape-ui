@@ -1,9 +1,12 @@
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { PATHS, ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import {
+  expectLoadingState,
+  resetScreenSize,
+  setScreenSize,
+} from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import MirrorsPage from "./MirrorsPage";
 import { Suspense } from "react";
@@ -57,9 +60,6 @@ describe("MirrorsPage", () => {
       <Suspense fallback={<LoadingState />}>
         <MirrorsPage />
       </Suspense>,
-      undefined,
-      ROUTES.repositories.mirrors(),
-      `/${PATHS.repositories.root}/${PATHS.repositories.mirrors}`,
     );
 
     await screen.findByRole("heading", { name: "Mirrors" });
@@ -67,6 +67,62 @@ describe("MirrorsPage", () => {
 
     expect(
       await screen.findByRole("heading", { name: "Add mirror" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the edit form side panel when sidePath=edit is in the URL", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+      undefined,
+      "/?sidePath=edit&name=mirrors/ubuntu-archive-mirror",
+    );
+
+    await expectLoadingState();
+
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("button", {
+        name: /save changes/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the view form side panel when sidePath=view is in the URL", async () => {
+    setScreenSize("xxl");
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+      undefined,
+      "/?sidePath=view&name=mirrors/ubuntu-archive-mirror",
+    );
+
+    await expectLoadingState();
+
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("button", {
+        name: /remove/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the publish form side panel when sidePath=publish is in the URL", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+      undefined,
+      "/?sidePath=publish&name=mirrors/ubuntu-archive-mirror",
+    );
+
+    await expectLoadingState();
+
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("button", {
+        name: /publish mirror/i,
+      }),
     ).toBeInTheDocument();
   });
 });

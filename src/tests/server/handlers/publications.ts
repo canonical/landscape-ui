@@ -1,7 +1,6 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
-import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import {
@@ -10,7 +9,6 @@ import {
 } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import type {
-  BatchGetPublicationTargetsResponse,
   Publication,
   PublishPublicationResponse,
 } from "@canonical/landscape-openapi";
@@ -129,25 +127,7 @@ const getPublishPublicationResponse =
     );
   };
 
-const getBatchPublicationTargetsResponse = async (
-  request: Request,
-): Promise<StrictResponse<BatchGetPublicationTargetsResponse>> => {
-  const body = (await request.json()) as { names?: string[] };
-  const requestedNames = body.names ?? [];
-  const matched = publicationTargets.filter(({ name }) =>
-    name ? requestedNames.includes(name) : false,
-  );
-  return HttpResponse.json({ publicationTargets: matched });
-};
-
 export default [
-  http.post(
-    `${API_URL_DEB_ARCHIVE}publicationTargets:batchGet`,
-    async ({ request }) => {
-      return getBatchPublicationTargetsResponse(request);
-    },
-  ),
-
   http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
     await delay();
 

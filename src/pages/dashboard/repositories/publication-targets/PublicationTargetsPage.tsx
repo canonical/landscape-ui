@@ -35,7 +35,14 @@ const PublicationTargetsPage: FC = () => {
   useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
 
   if (isGettingPublicationTargets) {
-    return <LoadingState />;
+    return (
+      <PageMain>
+        <PageHeader title="Publication targets" />
+        <PageContent>
+          <LoadingState />
+        </PageContent>
+      </PageMain>
+    );
   }
 
   const viewTarget = publicationTargets.find(

@@ -130,6 +130,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
       <ModularTable
         columns={columns as Column<Record<string, unknown>>[]}
         data={pagedData as unknown as Record<string, unknown>[]}
+        emptyMsg="No associated publications were found."
       />
       <ModalTablePagination
         current={currentPage}

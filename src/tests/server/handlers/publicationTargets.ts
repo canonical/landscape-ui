@@ -1,8 +1,11 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
-import type { PublicationTarget } from "@canonical/landscape-openapi";
-import { http, HttpResponse } from "msw";
+import type {
+  PublicationTarget,
+  BatchGetPublicationTargetsResponse,
+} from "@canonical/landscape-openapi";
+import { http, HttpResponse, type StrictResponse } from "msw";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import {
   getDebArchivePaginatedResponse,
@@ -21,6 +24,17 @@ const getPublicationTargetsResponse = (requestUrl: string) => {
     publicationTargets: paginatedData,
     nextPageToken,
   });
+};
+
+const getBatchPublicationTargetsResponse = async (
+  request: Request,
+): Promise<StrictResponse<BatchGetPublicationTargetsResponse>> => {
+  const body = (await request.json()) as { names?: string[] };
+  const requestedNames = body.names ?? [];
+  const matched = publicationTargets.filter(({ name }) =>
+    name ? requestedNames.includes(name) : false,
+  );
+  return HttpResponse.json({ publicationTargets: matched });
 };
 
 export default [
@@ -67,6 +81,13 @@ export default [
       } as PublicationTarget;
       publicationTargets[idx] = updated;
       return HttpResponse.json(updated);
+    },
+  ),
+
+  http.post(
+    `${API_URL_DEB_ARCHIVE}publicationTargets:batchGet`,
+    async ({ request }) => {
+      return getBatchPublicationTargetsResponse(request);
     },
   ),
 

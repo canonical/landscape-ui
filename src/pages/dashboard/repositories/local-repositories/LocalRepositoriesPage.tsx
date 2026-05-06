@@ -43,7 +43,7 @@ const PublishLocalRepositorySidePanel = lazy(async () =>
 );
 
 const LocalRepositoriesPage: FC = () => {
-  const { search, lastSidePathSegment, sidePath, popSidePath } =
+  const { search, lastSidePathSegment, sidePath, createPageParamsSetter } =
     usePageParams();
 
   const { repositories, isGettingRepositories } =
@@ -74,7 +74,10 @@ const LocalRepositoriesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel onClose={popSidePath} isOpen={!!sidePath.length}>
+      <SidePanel
+        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        isOpen={!!sidePath.length}
+      >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <AddLocalRepositorySidePanel />

@@ -220,11 +220,12 @@ describe("AssociatedPublicationsList", () => {
   });
 
   describe("edge cases", () => {
-    it("renders without error with empty publications array", () => {
+    it("renders empty message with empty publications array", () => {
       renderWithProviders(<AssociatedPublicationsList publications={[]} />);
 
-      // Table should render but with no data rows
-      expect(screen.getByText("Publication")).toBeInTheDocument();
+      expect(
+        screen.getByText("No associated publications were found."),
+      ).toBeInTheDocument();
     });
 
     it("renders single publication correctly", () => {
