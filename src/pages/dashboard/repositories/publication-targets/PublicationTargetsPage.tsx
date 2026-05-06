@@ -28,7 +28,7 @@ const EditTargetForm = lazy(async () =>
 );
 
 const PublicationTargetsPage: FC = () => {
-  const { lastSidePathSegment, name, createPageParamsSetter } = usePageParams();
+  const { lastSidePathSegment, name, popSidePathUntilClear } = usePageParams();
   const { publicationTargets, count, isGettingPublicationTargets } =
     useGetPublicationTargets();
 
@@ -94,7 +94,7 @@ const PublicationTargetsPage: FC = () => {
       <PageContent hasTable={hasTable}>{children}</PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePathUntilClear}
         isOpen={
           lastSidePathSegment === "add" ||
           (!!lastSidePathSegment && !!viewTarget)

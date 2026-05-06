@@ -18,7 +18,7 @@ const PublicationDetailsSidePanel = lazy(async () =>
 );
 
 const PublicationsPage: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "add-target", "view"]);
@@ -26,10 +26,7 @@ const PublicationsPage: FC = () => {
     <PageMain>
       <PublicationsContainer />
 
-      <SidePanel
-        isOpen={!!sidePath.length}
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-      >
+      <SidePanel isOpen={!!sidePath.length} onClose={popSidePathUntilClear}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <SidePanel.Header>Add publication</SidePanel.Header>

@@ -36,8 +36,13 @@ const PublishMirrorForm = lazy(async () =>
 );
 
 const MirrorsPage: FC = () => {
-  const { search, sidePath, lastSidePathSegment, createPageParamsSetter } =
-    usePageParams();
+  const {
+    search,
+    sidePath,
+    lastSidePathSegment,
+    popSidePathUntilClear,
+    createPageParamsSetter,
+  } = usePageParams();
 
   useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
 
@@ -94,10 +99,7 @@ const MirrorsPage: FC = () => {
     <PageMain>
       <PageHeader title="Mirrors" actions={actions} />
       <PageContent hasTable={hasTable}>{children}</PageContent>
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <AddMirrorForm />

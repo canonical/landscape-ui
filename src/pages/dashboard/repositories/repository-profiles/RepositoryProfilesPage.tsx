@@ -32,7 +32,7 @@ const RepositoryProfileEditForm = lazy(async () =>
 
 const RepositoryProfilesPage: FC = () => {
   const { getRepositoryProfilesQuery } = useRepositoryProfiles();
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   useSetDynamicFilterValidation("sidePath", [
@@ -68,10 +68,7 @@ const RepositoryProfilesPage: FC = () => {
           }
         />
       </PageContent>
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {sidePath.includes("add") && (
           <SidePanel.Suspense key="add">
             <RepositoryProfileAddSidePanel />
