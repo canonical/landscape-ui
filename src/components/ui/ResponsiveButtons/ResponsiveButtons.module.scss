@@ -6,11 +6,21 @@
   :global(.p-segmented-control__list) {
     > :global(.p-contextual-menu) {
       > :global(.p-button) {
-        border-left-width: 0;
         border-radius: 0;
-        border-right-width: 0;
         margin-right: 0;
         position: relative;
+      }
+    }
+
+    > :global(.p-contextual-menu):not(:first-child) {
+      > :global(.p-button) {
+        border-left-width: 0px;
+      }
+    }
+
+    > :global(.p-contextual-menu):not(:last-child) {
+      > :global(.p-button) {
+        border-right-width: 0px;
       }
     }
 
