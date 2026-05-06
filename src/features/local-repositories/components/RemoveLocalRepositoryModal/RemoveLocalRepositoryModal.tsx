@@ -24,7 +24,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
 }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
   const { removeRepository, isRemovingRepository } = useRemoveLocalRepository();
   const { publications, isGettingPublications } = useGetPublicationsBySource(
     repository.name,
@@ -57,7 +57,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
     try {
       await removeRepository({ name: repository.name ?? "" });
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
 
       notify.success({
         title: `You have successfully removed ${repository.displayName}`,

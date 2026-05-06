@@ -16,13 +16,13 @@ import type { APTSource } from "../../types";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import classes from "./RepositoryProfileForm.module.scss";
+import usePageParams from "@/hooks/usePageParams";
 
 type RepositoryProfileFormProps =
   | {
@@ -31,7 +31,6 @@ type RepositoryProfileFormProps =
       onAptSourcesChange: (sources: APTSource[]) => void;
       onAddSourceClick: () => void;
       onEditSourceClick: (source: APTSource) => void;
-      onClose?: () => void;
     }
   | {
       action: "edit";
@@ -40,15 +39,12 @@ type RepositoryProfileFormProps =
       onAptSourcesChange: (sources: APTSource[]) => void;
       onAddSourceClick: () => void;
       onEditSourceClick: (source: APTSource) => void;
-      onClose?: () => void;
-      hasBackButton?: boolean;
-      onBackButtonPress?: () => void;
     };
 
 const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
 
   const { getAccessGroupQuery } = useRoles();
   const { createRepositoryProfileQuery, editRepositoryProfileQuery } =
@@ -79,7 +75,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
           ...valuesToSubmit,
           apt_sources: values.apt_sources,
         });
-        (props.onClose ?? closeSidePanel)();
+        closeSidePanel();
         notify.success({
           title: "Repository profile created",
           message: `Repository profile "${values.title}" created successfully`,
@@ -100,7 +96,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
             )
             .map((s) => s.id),
         });
-        (props.onClose ?? closeSidePanel)();
+        closeSidePanel();
         notify.success({
           title: `You have successfully edited ${values.title}`,
           message: `The repository profile details have been updated.`,
@@ -197,13 +193,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
-        onCancel={props.action === "edit" ? props.onClose : undefined}
-        hasBackButton={
-          props.action === "edit" ? props.hasBackButton : undefined
-        }
-        onBackButtonPress={
-          props.action === "edit" ? props.onBackButtonPress : undefined
-        }
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

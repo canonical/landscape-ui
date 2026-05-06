@@ -36,16 +36,11 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
 
   const { createPublication, isCreatingPublication } = useCreatePublication();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
-
-  const close = createPageParamsSetter({
-    sidePath: [],
-    name: "",
-  });
 
   const formik = useFormik({
     initialValues: {
@@ -85,7 +80,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           body: { forceCleanup: true, forceOverwrite: true },
         });
 
-        close();
+        closeSidePanel();
 
         notify.success({
           title: `You have marked ${mirror.displayName} to be published.`,
@@ -233,7 +228,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           isPublishingPublication
         }
         submitButtonText="Publish mirror"
-        onCancel={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

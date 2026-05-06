@@ -38,17 +38,12 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
-
-  const closeSidePanel = createPageParamsSetter({
-    sidePath: [],
-    name: "",
-  });
 
   const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
     const valuesforCreation = {
@@ -230,7 +225,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
           isPublishingPublication
         }
         submitButtonText="Publish repository"
-        onCancel={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

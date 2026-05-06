@@ -34,12 +34,11 @@ import * as Yup from "yup";
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { createPageParamsSetter } = usePageParams();
+  const { closeSidePanel } = usePageParams();
 
   const ubuntuArchiveQuery = useGetUbuntuArchiveInfo();
   const ubuntuEsmQuery = useGetUbuntuEsmInfo();
   const createMirror = useCreateMirror().mutateAsync;
-  const close = createPageParamsSetter({ sidePath: [] });
 
   const ubuntuArchiveInfo = ubuntuArchiveQuery.data?.data;
   const ubuntuEsmInfo = ubuntuEsmQuery.data?.data.results ?? [];
@@ -110,7 +109,7 @@ const AddMirrorForm: FC = () => {
             : undefined,
         });
 
-        close();
+        closeSidePanel();
 
         notify.success({
           title: `You have successfully added ${values.name}.`,
@@ -381,7 +380,7 @@ const AddMirrorForm: FC = () => {
           <SidePanelFormButtons
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Add mirror"
-            onCancel={close}
+            onCancel={closeSidePanel}
           />
         </Form>
       </SidePanel.Content>

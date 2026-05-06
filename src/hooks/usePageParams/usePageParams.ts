@@ -10,6 +10,7 @@ interface UsePageParamsReturnType extends PageParams {
   createSidePathPusher: (value: string) => () => void;
   createPageParamsSetter: (newParams: Partial<PageParams>) => () => void;
   popSidePathUntilClear: () => void;
+  closeSidePanel: () => void;
 }
 
 const usePageParams = (): UsePageParamsReturnType => {
@@ -75,13 +76,13 @@ const usePageParams = (): UsePageParamsReturnType => {
     });
   };
 
+  const closeSidePanel = createPageParamsSetter({
+    sidePath: [],
+    name: "",
+  });
+
   const popSidePathUntilClear =
-    parsedSearchParams.sidePath.length > 1
-      ? popSidePath
-      : createPageParamsSetter({
-          sidePath: [],
-          name: "",
-        });
+    parsedSearchParams.sidePath.length > 1 ? popSidePath : closeSidePanel;
 
   return {
     ...parsedSearchParams,
@@ -91,6 +92,7 @@ const usePageParams = (): UsePageParamsReturnType => {
     createSidePathPusher,
     createPageParamsSetter,
     popSidePathUntilClear,
+    closeSidePanel,
   };
 };
 

@@ -7,13 +7,8 @@ import RepositoryProfileForm from "../RepositoryProfileForm";
 import RepositoryProfileSourceForm from "../RepositoryProfileSourceForm";
 
 const RepositoryProfileAddSidePanel: FC = () => {
-  const {
-    sidePath,
-    lastSidePathSegment,
-    popSidePath,
-    createSidePathPusher,
-    createPageParamsSetter,
-  } = usePageParams();
+  const { lastSidePathSegment, popSidePath, createSidePathPusher } =
+    usePageParams();
 
   const [aptSources, setAptSources] = useState<APTSource[]>([]);
   const [sourceToEdit, setSourceToEdit] = useState<APTSource | null>(null);
@@ -22,11 +17,7 @@ const RepositoryProfileAddSidePanel: FC = () => {
     lastSidePathSegment === "add-source" ||
     lastSidePathSegment === "edit-source";
 
-  const panelTitle =
-    sidePath[0] === "add"
-      ? "Add repository profile"
-      : "Edit repository profile";
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
+  const panelTitle = "Add repository profile";
 
   const handleSourceSuccess = (source: APTSource) => {
     if (lastSidePathSegment === "add-source") {
@@ -67,7 +58,6 @@ const RepositoryProfileAddSidePanel: FC = () => {
             action="add"
             aptSources={aptSources}
             onAptSourcesChange={setAptSources}
-            onClose={closePanel}
             onAddSourceClick={createSidePathPusher("add-source")}
             onEditSourceClick={(source) => {
               setSourceToEdit(source);

@@ -18,13 +18,8 @@ import Blocks from "@/components/layout/Blocks";
 const AddLocalRepositorySidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { createPageParamsSetter } = usePageParams();
+  const { closeSidePanel } = usePageParams();
   const { createRepository, isCreatingRepository } = useCreateLocalRepository();
-
-  const closeSidePanel = createPageParamsSetter({
-    sidePath: [],
-    name: "",
-  });
 
   const handleSubmit = async (values: AddLocalRepositoryFormValues) => {
     const valuesforCreation = {

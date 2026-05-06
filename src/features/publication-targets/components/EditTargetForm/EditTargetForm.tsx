@@ -129,8 +129,7 @@ const buildFilesystemPayload = (values: EditTargetFormValues) => ({
 
 const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   const debug = useDebug();
-  const { createPageParamsSetter, popSidePath } = usePageParams();
-  const closeForm = createPageParamsSetter({ sidePath: [], name: "" });
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const { editPublicationTargetQuery } = useEditPublicationTarget();
   const { mutateAsync: editTarget } = editPublicationTargetQuery;
@@ -162,7 +161,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           });
         }
 
-        closeForm();
+        closeSidePanel();
 
         notify.success({
           title: "Publication target edited",
@@ -356,7 +355,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
-        onCancel={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

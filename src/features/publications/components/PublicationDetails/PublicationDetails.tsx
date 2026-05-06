@@ -23,8 +23,7 @@ const PublicationDetails = ({
   sourceDisplayName,
   publicationTargetDisplayName,
 }: PublicationDetailsProps) => {
-  const { createPageParamsSetter } = usePageParams();
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
+  const { closeSidePanel } = usePageParams();
 
   const {
     value: isRemoveModalOpen,
@@ -150,7 +149,7 @@ const PublicationDetails = ({
         isOpen={isRepublishModalOpen}
         close={() => {
           closeRepublishModal();
-          closePanel();
+          closeSidePanel();
         }}
         publication={publication}
       />
@@ -159,7 +158,7 @@ const PublicationDetails = ({
         isOpen={isRemoveModalOpen}
         close={() => {
           closeRemoveModal();
-          closePanel();
+          closeSidePanel();
         }}
         publication={publication}
       />

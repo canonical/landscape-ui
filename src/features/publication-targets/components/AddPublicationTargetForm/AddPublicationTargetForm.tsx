@@ -96,8 +96,7 @@ const buildFilesystemPayload = (values: FilesystemFormValues) => ({
 
 const AddPublicationTargetForm: FC = () => {
   const debug = useDebug();
-  const { createPageParamsSetter } = usePageParams();
-  const closeForm = createPageParamsSetter({ sidePath: [], name: "" });
+  const { closeSidePanel } = usePageParams();
   const { notify } = useNotify();
   const { createPublicationTargetQuery } = useCreatePublicationTarget();
 
@@ -125,7 +124,7 @@ const AddPublicationTargetForm: FC = () => {
           });
         }
 
-        closeForm();
+        closeSidePanel();
 
         notify.success({
           title: "Publication target created",
@@ -170,7 +169,7 @@ const AddPublicationTargetForm: FC = () => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add publication target"
-        onCancel={closeForm}
+        onCancel={closeSidePanel}
       />
     </Form>
   );

@@ -21,7 +21,7 @@ const RemovalProfileRemoveModal: FC<RemovalProfileRemoveModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
 
   const { removeRemovalProfileQuery } = useRemovalProfiles();
   const { mutateAsync: removeRemovalProfile, isPending: isRemoving } =
@@ -31,7 +31,7 @@ const RemovalProfileRemoveModal: FC<RemovalProfileRemoveModalProps> = ({
     try {
       await removeRemovalProfile({ name: removalProfile.name });
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
 
       notify.success({
         title: "Removal profile removed",

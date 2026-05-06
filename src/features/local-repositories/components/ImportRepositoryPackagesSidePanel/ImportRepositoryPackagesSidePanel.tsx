@@ -26,15 +26,11 @@ const POLL_INTERVAL = 2000;
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { popSidePath, name, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, name, closeSidePanel } = usePageParams();
   const { repository, isGettingRepository } = useGetPageLocalRepository();
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =
     useImportRepositoryPackages();
-  const closeSidePanel = createPageParamsSetter({
-    sidePath: [],
-    name: "",
-  });
 
   const repositoryName = `locals/${name}`;
   const [operationName, setOperationName] = useState<string>("");
@@ -163,7 +159,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             submitButtonDisabled={!canImport}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
-            onCancel={popSidePath}
+            onCancel={popSidePathUntilClear}
           />
         </Form>
       </SidePanel.Content>

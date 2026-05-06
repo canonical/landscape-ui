@@ -40,8 +40,7 @@ import type { FormProps, SelectableSource } from "./types";
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { createPageParamsSetter } = usePageParams();
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
+  const { closeSidePanel } = usePageParams();
   const { data: mirrorsData } = useListMirrors();
   const { repositories: locals, isGettingRepositories: isGettingLocals } =
     useGetLocalRepositories();
@@ -57,7 +56,7 @@ const AddPublicationForm: FC = () => {
         const payload = getPublicationPayload(values);
         await createPublication(payload);
 
-        closePanel();
+        closeSidePanel();
 
         notify.success({
           title: "Publication created",
@@ -383,7 +382,7 @@ const AddPublicationForm: FC = () => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting || isCreatingPublication}
         submitButtonText="Add publication"
-        onCancel={closePanel}
+        onCancel={closeSidePanel}
       />
     </Form>
   );

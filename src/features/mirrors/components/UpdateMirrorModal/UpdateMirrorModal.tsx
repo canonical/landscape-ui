@@ -21,7 +21,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
 
   const { mutateAsync: syncMirror, isPending: isSyncingMirror } =
     useSyncMirror(mirrorName);
@@ -47,7 +47,7 @@ const UpdateMirrorModal: FC<UpdateMirrorModalProps> = ({
         skipExistingPackages,
       });
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
       close();
 
       notify.success({

@@ -24,7 +24,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
 
   const { publications } = useGetPublicationsBySource(mirrorName);
 
@@ -35,7 +35,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
     try {
       await deleteMirror({});
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
 
       notify.success({
         title: `You have successfully removed ${mirrorDisplayName}.`,

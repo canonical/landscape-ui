@@ -31,12 +31,10 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData";
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { name, popSidePath, createPageParamsSetter } = usePageParams();
+  const { name, popSidePathUntilClear, closeSidePanel } = usePageParams();
 
   const mirror = useGetMirror(name).data.data;
   const updateMirror = useUpdateMirror(name).mutateAsync;
-
-  const close = createPageParamsSetter({ sidePath: [], name: "" });
 
   const formik = useFormik<FormProps>({
     initialValues: {
@@ -63,7 +61,7 @@ const EditMirrorForm: FC = () => {
           gpgKey: { armor: values.verificationGpgKey || null },
         });
 
-        close();
+        closeSidePanel();
 
         notify.success({
           title: `You have successfully edited ${mirror.displayName}.`,
@@ -163,7 +161,7 @@ const EditMirrorForm: FC = () => {
           <SidePanelFormButtons
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Save changes"
-            onCancel={popSidePath}
+            onCancel={popSidePathUntilClear}
           />
         </Form>
       </SidePanel.Content>
