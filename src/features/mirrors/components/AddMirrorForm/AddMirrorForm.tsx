@@ -30,6 +30,8 @@ import { UBUNTU_SNAPSHOTS_HOST } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { isArchiveInfoValid } from "../../helpers";
 import * as Yup from "yup";
+import classes from "./AddMirrorForm.module.scss";
+import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
@@ -103,6 +105,10 @@ const AddMirrorForm: FC = () => {
           downloadInstaller: values.downloadInstallerFiles,
           downloadSources: values.downloadSources,
           downloadUdebs: values.downloadUdebPackages,
+          filter: values.packageFilter,
+          filterWithDeps: values.packageFilter
+            ? values.includeDependencies
+            : undefined,
           gpgKey: values.verificationGpgKey
             ? {
                 armor: values.verificationGpgKey,
@@ -360,7 +366,28 @@ const AddMirrorForm: FC = () => {
                   <Icon name={ICONS.help} />
                 </Tooltip>
               </div>
-              <p>Download options:</p>
+              <p className={classes.heading}>Filter options:</p>
+              <div className={classes.wrapper}>
+                <div className={classes.formContainer}>
+                  <Input
+                    type="text"
+                    label="Package filter"
+                    {...formik.getFieldProps("packageFilter")}
+                  />
+                </div>
+                <MirrorFilterHelpButton />
+              </div>
+              <CheckboxInput
+                label="Include dependencies in filter"
+                {...formik.getFieldProps("includeDependencies")}
+                checked={
+                  !!formik.values.packageFilter &&
+                  formik.values.includeDependencies
+                }
+                disabled={!formik.values.packageFilter}
+                inline
+              />
+              <p className={classes.heading}>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "
                 {...formik.getFieldProps("downloadUdebPackages")}

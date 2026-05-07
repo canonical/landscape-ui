@@ -95,6 +95,8 @@ export function getInitialBaseValues(
     downloadUdebPackages: false,
     downloadSources: false,
     downloadInstallerFiles: false,
+    packageFilter: "",
+    includeDependencies: false,
   };
 }
 

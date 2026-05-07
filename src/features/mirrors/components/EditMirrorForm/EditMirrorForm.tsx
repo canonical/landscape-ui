@@ -27,6 +27,8 @@ import {
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import * as Yup from "yup";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import classes from "./EditMirrorForm.module.scss";
+import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
@@ -44,6 +46,8 @@ const EditMirrorForm: FC = () => {
       downloadSources: !!mirror.downloadSources,
       downloadInstallerFiles: !!mirror.downloadInstaller,
       verificationGpgKey: mirror.gpgKey?.armor,
+      packageFilter: mirror.filter,
+      includeDependencies: mirror.filterWithDeps,
       keepCurrentGpgKey: !!mirror.gpgKey,
     },
 
@@ -66,6 +70,10 @@ const EditMirrorForm: FC = () => {
               ? { armor: values.verificationGpgKey }
               : null,
           }),
+          filter: values.packageFilter,
+          filterWithDeps: values.packageFilter
+            ? values.includeDependencies
+            : undefined,
         });
 
         closeSidePanel();
@@ -139,7 +147,28 @@ const EditMirrorForm: FC = () => {
                   <Icon name={ICONS.help} />
                 </Tooltip>
               </div>
-              <p>Download options:</p>
+              <p className={classes.heading}>Filter options:</p>
+              <div className={classes.wrapper}>
+                <div className={classes.formContainer}>
+                  <Input
+                    type="text"
+                    label="Package filter"
+                    {...formik.getFieldProps("packageFilter")}
+                  />
+                </div>
+                <MirrorFilterHelpButton />
+              </div>
+              <CheckboxInput
+                label="Include dependencies in filter"
+                {...formik.getFieldProps("includeDependencies")}
+                checked={
+                  !!formik.values.packageFilter &&
+                  formik.values.includeDependencies
+                }
+                disabled={!formik.values.packageFilter}
+                inline
+              />
+              <p className={classes.heading}>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "
                 {...formik.getFieldProps("downloadUdebPackages")}
