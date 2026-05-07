@@ -53,7 +53,7 @@ const MirrorPackagesList: FC<MirrorPackagesListProps> = ({ mirrorName }) => {
       <ResponsiveTable
         columns={columns}
         data={pagedPackages}
-        emptyMsg={"No packages associated with this local repository."}
+        emptyMsg={"No packages associated with this mirror."}
         minWidth={320}
       />
       <ModalTablePagination
