@@ -33,7 +33,14 @@
 }
 
 .modal {
-  table {
-    width: 60rem;
+  p {
+    max-width: 60rem;
   }
+}
+
+.tableWrapper {
+  max-height: 55vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
