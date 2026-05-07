@@ -39,6 +39,7 @@ const EditMirrorForm: FC = () => {
   const formik = useFormik<FormProps>({
     initialValues: {
       name: mirror.displayName,
+      preserveSignatures: !!mirror.preserveSignatures,
       downloadUdebPackages: !!mirror.downloadUdebs,
       downloadSources: !!mirror.downloadSources,
       downloadInstallerFiles: !!mirror.downloadInstaller,
@@ -55,6 +56,7 @@ const EditMirrorForm: FC = () => {
           displayName: values.name,
           archiveRoot: mirror.archiveRoot,
           components: mirror.components,
+          preserveSignatures: values.preserveSignatures,
           downloadUdebs: values.downloadUdebPackages,
           downloadSources: values.downloadSources,
           downloadInstaller: values.downloadInstallerFiles,
@@ -117,6 +119,20 @@ const EditMirrorForm: FC = () => {
                 value={mirror.architectures?.join(", ") || NO_DATA_TEXT}
                 tooltipMessage="You can’t change the architectures after the mirror is created."
               />
+              <div className="u-sv2">
+                <CheckboxInput
+                  label="Preserve signatures"
+                  {...formik.getFieldProps("preserveSignatures")}
+                  checked={formik.values.preserveSignatures}
+                  inline
+                />{" "}
+                <Tooltip
+                  position="right"
+                  message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
+                >
+                  <Icon name={ICONS.help} />
+                </Tooltip>
+              </div>
               <p>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "
