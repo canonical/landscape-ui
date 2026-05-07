@@ -1,0 +1,1 @@
+import{J as e,Q as t,Z as n}from"./index-CDULgVHm.js";import{n as r,t as i}from"./DeliveryScheduling-Bx2Q8agk.js";var a=e().shape({...i,...r,new_kernel_version_id:n().required(`You have to select a kernel`),reboot_after:t()});export{a as t};

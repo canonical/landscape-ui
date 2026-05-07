@@ -1,0 +1,1 @@
+import{Xt as e}from"./index-CDULgVHm.js";var t={header:`_header_4ocjm_1`,cell:`_cell_4ocjm_6`},n=e(),r={accessor:`title`,id:`title`,Header:(0,n.jsx)(`div`,{className:t.header,children:`Profile Name`})},i=({...e})=>(0,n.jsx)(`div`,{className:t.cell,...e});export{r as n,i as t};

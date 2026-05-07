@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-jRWAZmH_.js";import{$t as t,s as n}from"./index-CDULgVHm.js";var r=e(t(),1);function i(){let e=(0,r.useContext)(n);if(!e)throw Error(`useFetchOld must be used within FetchOldProvider`);return e}export{i as t};

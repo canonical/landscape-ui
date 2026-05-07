@@ -1,0 +1,27 @@
+# Params
+# - title: A dictionary with "text" and optional "link_attrs" (a dictionary of link attributes for the title).
+# - padding: Type of padding to apply to the pattern - "deep", "shallow", "default" (default is "default").
+# - is_split_on_medium: Boolean to indicate if the section should be split on medium screens (default is false).
+# - top_rule_variant: Type of HR to render at the top of the pattern. "default" | "muted" (default is "default").
+{% from "_macros/vf_basic-section.jinja" import basic_section_title %}
+{% from "_macros/shared/vf_section_top_rule.jinja" import vf_section_top_rule %}
+{% from "_macros/shared/vf_divided-section-block.jinja" import vf_divided_section_block %}
+{% macro vf_divided_section(title, blocks=[], padding="default", is_split_on_medium=False, top_rule_variant="default", caller=None) %}
+  {%- set padding = padding | trim -%}
+  {%- if padding not in ["deep", "shallow", "default"] -%}
+    {%- set padding = "default" -%}
+  {%- endif -%}
+  {%- set padding_classes = "p-section--" + padding -%}
+  {%- if padding == "default" -%}
+    {%- set padding_classes = "p-section" -%}
+  {%- endif -%}
+  <section class="{{ padding_classes }}">
+    <div class="grid-row--50-50{%- if not is_split_on_medium -%}-on-large{%- endif -%}">
+      {{ vf_section_top_rule(top_rule_variant) }}
+      <div class="grid-col">{{- basic_section_title(title) -}}</div>
+      <div class="grid-col">
+        {{ vf_divided_section_block(blocks=blocks) }}
+      </div>
+    </div>
+  </section>
+{% endmacro %}

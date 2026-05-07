@@ -1,0 +1,1 @@
+import{Ft as e,Xt as t}from"./index-CDULgVHm.js";var n=t(),r=({className:t,...r})=>(0,n.jsx)(e,{className:t,...r});export{r as t};

@@ -1,0 +1,176 @@
+/*
+  @classreference
+  equal-height-row:
+    Equal height row:
+      .p-equal-height-row:
+        Main element of the equal height row component.
+      "&.has-divider-1":
+        Cross-column divider shown between the first and second grid rows.
+      "&.has-divider-2":
+        Cross-column divider shown between the second and third grid rows.
+      "&.has-divider-3":
+        Cross-column divider shown between the third and fourth grid rows.
+      .p-equal-height-row--wrap:
+        Wraps contents such that two items appear per row on medium screen sizes.
+    Column:
+      .p-equal-height-row__col:
+        Column element within an equal height row.
+      .p-equal-height-row__col.is-borderless:
+        Column element within an equal height row with no top border.
+    Item:
+      .p-equal-height-row__item:
+        Item element within an equal height row column.
+*/
+
+@use 'sass:math';
+@import 'settings';
+
+@mixin vf-p-equal-height-row {
+  .p-equal-height-row,
+  .p-equal-height-row--wrap {
+    @extend %vf-grid-row;
+
+    position: relative;
+
+    .p-equal-height-row__col {
+      // At smaller sizes, each column will have top border by default
+      border-top-color: $colors--theme--border-low-contrast;
+      border-top-style: solid;
+      border-top-width: 1px;
+      display: grid;
+      grid-column: span $grid-8-columns-small;
+      grid-row: span 4;
+      grid-template-rows: subgrid;
+      margin-bottom: $spv--small;
+      position: relative;
+
+      @media screen and ($breakpoint-small <= width < $breakpoint-large) {
+        grid-column: span $grid-8-columns-medium;
+        grid-template-columns: subgrid;
+
+        // At medium size, each column item will take half of the available
+        // cols from the parent grid
+        .p-equal-height-row__item {
+          grid-column: span calc($grid-8-columns-medium / 2);
+        }
+
+        // At medium size, position the first column item on the left of the
+        // grid
+        .p-equal-height-row__item:first-child {
+          // This needs to be sufficiently large so remaining column items won't
+          // get stretched
+          grid-row: span 100;
+        }
+      }
+
+      @media screen and (width >= $breakpoint-large) {
+        border: none;
+        grid-column: span calc($grid-8-columns / 4);
+        margin-bottom: 0;
+      }
+    }
+
+    .p-equal-height-row__col.is-borderless {
+      border: none;
+    }
+
+    // DIVIDERS
+
+    // For each row or column grid we only have access to two pseudo elements:
+    // If 1st-divider (::before) is present, assume 2nd-divider (::after) isn't, then 3rd-divider must be (::after)
+    // If 2nd-divider (::after) is present, assume 1st-divider (::before) isn't, then 3rd-divider must be (::before)
+    &.has-divider-1::before,
+    &.has-divider-2::after,
+    &.has-divider-3:not(.has-divider-1)::before,
+    &.has-divider-3:not(.has-divider-2)::after {
+      @extend %vf-pseudo-border;
+
+      // Override border color to be low contrast
+      background-color: $colors--theme--border-low-contrast;
+      // Row-level dividers are not visible on smaller screen sizes
+      display: none;
+      grid-column-end: span $grid-8-columns;
+      grid-column-start: 1;
+      margin: auto;
+
+      @media screen and (width >= $breakpoint-large) {
+        display: block;
+      }
+    }
+
+    &.has-divider-1::before {
+      grid-row: 2;
+    }
+
+    &.has-divider-2::after {
+      grid-row: 3;
+    }
+
+    // When 3rd-divider is present and 1st-divider is not present
+    &.has-divider-3:not(.has-divider-1)::before,
+    // When 3rd-divider is present and 2nd-divider is not present
+    &.has-divider-3:not(.has-divider-2)::after,
+    // When only 3rd-divider is present
+    &.has-divider-3:not(.has-divider-1):not(.has-divider-2)::before {
+      grid-row: 4;
+    }
+
+    &.has-divider-3:not(.has-divider-1):not(.has-divider-2)::after {
+      display: none;
+    }
+  }
+
+  // WRAP VARIANT
+
+  // This variant displays multiple columns side-by-side and wraps them at
+  // medium size; we have to unset some grid properties from the default
+  // variant to enable this functionality
+  .p-equal-height-row--wrap {
+    .p-equal-height-row__col {
+      @media screen and ($breakpoint-small <= width < $breakpoint-large) {
+        // Fit 2 columns onto each row at medium size
+        grid-column: span calc($grid-8-columns-medium / 2);
+        grid-template-columns: none;
+
+        .p-equal-height-row__item {
+          grid-column: auto;
+        }
+
+        .p-equal-height-row__item:first-child {
+          grid-row: auto;
+        }
+      }
+    }
+  }
+
+  // ADVANCED GRID SUPPORT
+
+  // Support for 25-75 split on large screen size
+  // The equal height row has been moved to the 8-column grid, but we still support the equal height row component
+  // being placed inside legacy grid row to ensure backward compatibility, this works since the ratio of columns
+  // remains the same.
+  // This would break if legacy grid is used inside the component itself.
+  .grid-row--25-75-on-large > .grid-col,
+  .grid-row > .grid-col-6,
+  .row--25-75-on-large > .col,
+  .row > .col-9 {
+    & .p-equal-height-row,
+    & .p-equal-height-row--wrap {
+      @media screen and (width >= $breakpoint-large) {
+        grid-template-columns: repeat(#{(math.div($grid-8-columns, 4) * 3)}, minmax(0, 1fr));
+      }
+    }
+  }
+
+  .grid-row--50-50-on-large > .grid-col,
+  .grid-row > .grid-col-4,
+  .row--50-50-on-large > .col,
+  .row > .col-6 {
+    & .p-equal-height-row,
+    & .p-equal-height-row--wrap {
+      @media screen and (width >= $breakpoint-large) {
+        grid-template-columns: repeat(#{math.div($grid-8-columns, 2)}, minmax(0, 1fr));
+      }
+    }
+  }
+}

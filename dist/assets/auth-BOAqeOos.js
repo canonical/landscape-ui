@@ -1,0 +1,1 @@
+import"./AuthTemplate-OB0_xCqz.js";

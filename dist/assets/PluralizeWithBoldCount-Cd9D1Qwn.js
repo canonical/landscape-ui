@@ -1,0 +1,1 @@
+import{Xt as e,xt as t}from"./index-CDULgVHm.js";var n=e(),r=({count:e,singular:r,plural:i})=>(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(`strong`,{children:e.toLocaleString()}),` `,t(e,r,i)]});export{r as t};

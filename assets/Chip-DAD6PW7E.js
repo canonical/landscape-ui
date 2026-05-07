@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-jRWAZmH_.js";import{Jt as t,Xt as n}from"./index-CDULgVHm.js";var r=e(t(),1),i={chip:`_chip_8o9xt_1`},a=n(),o=({className:e,value:t})=>(0,a.jsx)(`span`,{className:(0,r.default)(`p-chip is-dense u-no-margin--bottom u-no-margin--right`,i.chip,e),children:(0,a.jsx)(`span`,{className:`p-chip__value`,children:t})});export{o as t};

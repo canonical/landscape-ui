@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-jRWAZmH_.js";import{Jt as t,Xt as n}from"./index-CDULgVHm.js";var r=e(t(),1),i={wrapper:`_wrapper_b288j_1`,pageContent:`_pageContent_b288j_6`},a=n(),o=({children:e})=>(0,a.jsx)(`div`,{className:i.pageContent,children:(0,a.jsx)(`div`,{className:(0,r.default)(`p-panel`,i.wrapper),children:e})});export{o as t};
