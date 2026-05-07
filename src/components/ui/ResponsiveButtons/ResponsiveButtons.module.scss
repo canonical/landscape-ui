@@ -14,13 +14,13 @@
 
     > :global(.p-contextual-menu):not(:first-child) {
       > :global(.p-button) {
-        border-left-width: 0px;
+        border-left-width: 0;
       }
     }
 
     > :global(.p-contextual-menu):not(:last-child) {
       > :global(.p-button) {
-        border-right-width: 0px;
+        border-right-width: 0;
 
         &::after {
           background-color: var(--vf-color-border-low-contrast);
