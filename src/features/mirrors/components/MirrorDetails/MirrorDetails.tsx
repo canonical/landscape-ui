@@ -1,6 +1,6 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { Button, Icon, ICONS, Tabs } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useGetMirror, useListPublicationTargets } from "../../api";
@@ -18,6 +18,8 @@ import {
   AssociatedPublicationsList,
   useGetPublicationsBySource,
 } from "@/features/publications";
+import classes from "./MirrorDetails.module.scss";
+import MirrorPackagesList from "../MirrorPackagesList";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher, sidePath, setPageParams } =
@@ -39,6 +41,8 @@ const MirrorDetails: FC = () => {
     setFalse: closeNoPublicationTargetsModal,
   } = useBoolean();
 
+  const [tabId, setTabId] = useState<"details" | "packages">("details");
+
   const mirror = useGetMirror(name).data.data;
 
   const { publications } = useGetPublicationsBySource(name);
@@ -56,6 +60,25 @@ const MirrorDetails: FC = () => {
       openNoPublicationTargetsModal();
     }
   };
+
+  const tabs: { label: string; id: "details" | "packages" }[] = [
+    {
+      label: "General details",
+      id: "details",
+    },
+    {
+      label: "Packages",
+      id: "packages",
+    },
+  ];
+
+  const links = tabs.map(({ label, id }) => ({
+    label,
+    active: tabId == id,
+    onClick: () => {
+      setTabId(id);
+    },
+  }));
 
   return (
     <>
@@ -99,80 +122,89 @@ const MirrorDetails: FC = () => {
             <span className="u-text--negative">Remove</span>
           </Button>
         </div>
-        <Blocks>
-          <Blocks.Item title="Details" titleClassName="p-text--small-caps">
-            <InfoGrid dense>
-              <InfoGrid.Item label="Name" value={mirror.displayName} />
-              <InfoGrid.Item
-                label="Source type"
-                value={getSourceType(mirror.archiveRoot)}
+        <Tabs listClassName={classes.marginBottom} links={links} />
+        {tabId === "details" && (
+          <Blocks>
+            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+              <InfoGrid dense>
+                <InfoGrid.Item label="Name" value={mirror.displayName} />
+                <InfoGrid.Item
+                  label="Source type"
+                  value={getSourceType(mirror.archiveRoot)}
+                />
+                <InfoGrid.Item
+                  label="Source URL"
+                  value={
+                    <a
+                      href={mirror.archiveRoot}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {mirror.archiveRoot}
+                    </a>
+                  }
+                  large
+                />
+                <InfoGrid.Item
+                  label="Last update"
+                  value={
+                    mirror.lastDownloadDate &&
+                    moment(mirror.lastDownloadDate).format(
+                      DISPLAY_DATE_TIME_FORMAT,
+                    )
+                  }
+                />
+                <InfoGrid.Item
+                  label="Packages"
+                  value={
+                    mirror.name && (
+                      <MirrorPackagesCount mirrorName={mirror.name} />
+                    )
+                  }
+                />
+              </InfoGrid>
+            </Blocks.Item>
+            <Blocks.Item title="Contents" titleClassName="p-text--small-caps">
+              <InfoGrid dense>
+                <InfoGrid.Item
+                  label="Distribution"
+                  value={mirror.distribution}
+                />
+                <InfoGrid.Item
+                  label="Components"
+                  value={mirror.components?.join(", ")}
+                  large
+                />
+                <InfoGrid.Item
+                  label="Architectures"
+                  value={mirror.architectures?.join(", ")}
+                  large
+                />
+                <InfoGrid.Item
+                  label="Download .udeb"
+                  value={boolToLabel(mirror.downloadUdebs)}
+                />
+                <InfoGrid.Item
+                  label="Download sources"
+                  value={boolToLabel(mirror.downloadSources)}
+                />
+                <InfoGrid.Item
+                  label="Download installer files"
+                  value={boolToLabel(mirror.downloadInstaller)}
+                />
+              </InfoGrid>
+            </Blocks.Item>
+            <Blocks.Item title="Used in" titleClassName="p-text--small-caps">
+              <AssociatedPublicationsList
+                publications={publications}
+                showSources={false}
               />
-              <InfoGrid.Item
-                label="Source URL"
-                value={
-                  <a
-                    href={mirror.archiveRoot}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {mirror.archiveRoot}
-                  </a>
-                }
-                large
-              />
-              <InfoGrid.Item
-                label="Last update"
-                value={
-                  mirror.lastDownloadDate &&
-                  moment(mirror.lastDownloadDate).format(
-                    DISPLAY_DATE_TIME_FORMAT,
-                  )
-                }
-              />
-              <InfoGrid.Item
-                label="Packages"
-                value={
-                  mirror.name && (
-                    <MirrorPackagesCount mirrorName={mirror.name} />
-                  )
-                }
-              />
-            </InfoGrid>
-          </Blocks.Item>
-          <Blocks.Item title="Contents" titleClassName="p-text--small-caps">
-            <InfoGrid dense>
-              <InfoGrid.Item label="Distribution" value={mirror.distribution} />
-              <InfoGrid.Item
-                label="Components"
-                value={mirror.components?.join(", ")}
-                large
-              />
-              <InfoGrid.Item
-                label="Architectures"
-                value={mirror.architectures?.join(", ")}
-                large
-              />
-              <InfoGrid.Item
-                label="Download .udeb"
-                value={boolToLabel(mirror.downloadUdebs)}
-              />
-              <InfoGrid.Item
-                label="Download sources"
-                value={boolToLabel(mirror.downloadSources)}
-              />
-              <InfoGrid.Item
-                label="Download installer files"
-                value={boolToLabel(mirror.downloadInstaller)}
-              />
-            </InfoGrid>
-          </Blocks.Item>
-          <Blocks.Item title="Used in" titleClassName="p-text--small-caps">
-            <AssociatedPublicationsList
-              publications={publications}
-              showSources={false}
-            />
-          </Blocks.Item>
-        </Blocks>
+            </Blocks.Item>
+          </Blocks>
+        )}
+        {tabId === "packages" && mirror.name && (
+          <MirrorPackagesList mirrorName={mirror.name} />
+        )}
       </SidePanel.Content>
       <UpdateMirrorModal
         isOpen={isUpdateModalOpen}
