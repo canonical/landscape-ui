@@ -54,7 +54,7 @@ const USGProfileRunFixSidePanel = lazy(() =>
 
 const USGProfilesPage: FC = () => {
   const {
-    createPageParamsSetter,
+    popSidePathUntilClear,
     lastSidePathSegment,
     sidePath,
     currentPage,
@@ -156,7 +156,7 @@ const USGProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePathUntilClear}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

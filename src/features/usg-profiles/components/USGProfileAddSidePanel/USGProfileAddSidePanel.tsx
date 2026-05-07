@@ -21,7 +21,7 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
   showRetentionNotification,
 }) => {
   const { notify } = useNotify();
-  const { createPageParamsSetter } = usePageParams();
+  const { closeSidePanel } = usePageParams();
 
   const { addUsgProfile, isUsgProfileAdding } = useAddUsgProfile();
 
@@ -104,7 +104,7 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
           }
           submitButtonLoading={steps[step].isLoading || isUsgProfileAdding}
           submitButtonText={steps[step].submitButtonText}
-          onCancel={createPageParamsSetter({ sidePath: [] })}
+          onCancel={closeSidePanel}
         />
       </SidePanel.Content>
     </>

@@ -36,7 +36,7 @@ const UpgradeProfilesPage: FC = () => {
   const { data: getUpgradeProfilesResult, isPending } =
     getUpgradeProfilesQuery();
 
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { upgradeProfile } = useGetPageUpgradeProfile();
@@ -76,7 +76,7 @@ const UpgradeProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePathUntilClear}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

@@ -17,6 +17,7 @@ import { useOpenProfileSidePanel } from "./useOpenProfileSidePanel";
 import type { USGProfileMode } from "@/features/usg-profiles";
 import useProfiles from "@/hooks/useProfiles";
 import type { Profile } from "../types";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
 
 interface UseGetProfileActionsProps {
   readonly profile: Profile;
@@ -32,6 +33,7 @@ export const useGetProfileActions = ({
   const openProfileSidePanel = useOpenProfileSidePanel();
   const { runUsgProfile } = useRunUsgProfile();
   const { isProfileLimitReached } = useProfiles();
+  const { closeSidePanel } = usePageParams();
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
@@ -50,6 +52,8 @@ export const useGetProfileActions = ({
   const handleRunUsgProfile = async (mode: USGProfileMode) => {
     try {
       const { data: activity } = await runUsgProfile({ id: profile.id });
+
+      closeSidePanel();
 
       const message = getNotificationMessage(mode);
 

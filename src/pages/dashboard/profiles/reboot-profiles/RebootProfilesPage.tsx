@@ -40,7 +40,7 @@ const RebootProfileEditSidePanel = lazy(async () =>
 const RebootProfilesPage: FC = () => {
   const { rebootProfiles, rebootProfilesCount, isGettingRebootProfiles } =
     useGetRebootProfiles();
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { rebootProfile } = useGetPageRebootProfile();
@@ -86,7 +86,7 @@ const RebootProfilesPage: FC = () => {
       </PageContent>
 
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePathUntilClear}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

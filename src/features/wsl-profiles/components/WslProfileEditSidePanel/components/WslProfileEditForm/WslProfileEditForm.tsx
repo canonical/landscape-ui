@@ -28,7 +28,7 @@ interface FormProps {
 
 const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
 
@@ -43,8 +43,6 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
   const complianceValue = profile.only_landscape_created
     ? "Uninstall non-Landscape instances"
     : "Ignore non-Landscape instances";
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: FormProps) => {
     try {
@@ -149,9 +147,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
       <SidePanelFormButtons
         submitButtonText="Save changes"
         submitButtonDisabled={formik.isSubmitting}
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

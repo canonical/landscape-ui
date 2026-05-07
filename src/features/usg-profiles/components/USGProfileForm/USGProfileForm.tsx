@@ -32,7 +32,7 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
   onBackButtonPress,
   ...props
 }) => {
-  const { createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear } = usePageParams();
 
   const { formik, steps } = useUsgProfileForm(props);
 
@@ -84,7 +84,7 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
           submitButtonDisabled={!!step.isLoading || submitting}
           submitButtonLoading={step.isLoading || submitting}
           submitButtonText={submitButtonText}
-          onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
+          onCancel={popSidePathUntilClear}
         />
       </>
     );
@@ -109,7 +109,7 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
         submitButtonText={submitButtonText}
         hasBackButton={hasBackButton}
         onBackButtonPress={onBackButtonPress}
-        onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
+        onCancel={popSidePathUntilClear}
       />
     </>
   );

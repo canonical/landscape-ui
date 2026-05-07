@@ -50,7 +50,7 @@ const WslProfilesPage: FC = () => {
     setRemoveProfile,
     setIsRemovingProfile,
   } = useProfiles();
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { wslProfile } = useGetPageWslProfile();
@@ -111,7 +111,7 @@ const WslProfilesPage: FC = () => {
         />
       </PageContent>
       <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
+        onClose={popSidePathUntilClear}
         isOpen={!!sidePath.length}
       >
         {lastSidePathSegment === "add" && (

@@ -22,15 +22,13 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const { editPackageProfileQuery } = usePackageProfiles();
   const { getAccessGroupQuery } = useRoles();
 
   const { data: accessGroupsData } = getAccessGroupQuery();
   const { mutateAsync: editPackageProfile } = editPackageProfileQuery;
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: EditFormProps) => {
     try {
@@ -89,9 +87,7 @@ const PackageProfileEditForm: FC<PackageProfileEditFormProps> = ({
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
-        onCancel={closeSidePanel}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );
