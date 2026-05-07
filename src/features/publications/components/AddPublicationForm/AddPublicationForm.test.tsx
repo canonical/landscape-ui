@@ -162,7 +162,7 @@ describe("AddPublicationForm", () => {
     await selectMirrorSource(user, "ubuntu-archive-mirror");
 
     expect(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
+      screen.getByRole("heading", { name: "Signing GPG Key" }),
     ).toBeInTheDocument();
   });
 
@@ -174,7 +174,7 @@ describe("AddPublicationForm", () => {
     await selectMirrorSource(user, "ubuntu-security-mirror");
 
     expect(
-      screen.queryByRole("textbox", { name: "Signing GPG key" }),
+      screen.queryByRole("heading", { name: "Signing GPG Key" }),
     ).not.toBeInTheDocument();
   });
 
@@ -186,7 +186,7 @@ describe("AddPublicationForm", () => {
     await selectLocalSource(user);
 
     expect(
-      screen.queryByRole("textbox", { name: "Signing GPG key" }),
+      screen.queryByRole("heading", { name: "Signing GPG Key" }),
     ).not.toBeInTheDocument();
   });
 });

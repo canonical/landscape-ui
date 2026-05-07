@@ -67,10 +67,10 @@ describe("EditMirrorForm", () => {
 
   it("edits a third party mirror", async () => {
     const mirror = mirrors.find(
-      ({ archiveRoot }) =>
+      ({ archiveRoot, gpgKey }) =>
         ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
           new URL(archiveRoot).host,
-        ),
+        ) && gpgKey,
     );
 
     assert(mirror);
@@ -91,6 +91,7 @@ describe("EditMirrorForm", () => {
 
     // Mirror has existing GPG key, so checkbox is checked by default - uncheck to show textarea
     await user.click(screen.getByLabelText("Keep current GPG key"));
+    await user.clear(screen.getByLabelText("Verification GPG key"));
     await user.type(
       screen.getByLabelText("Verification GPG key"),
       params.gpgKey.armor,
@@ -105,10 +106,10 @@ describe("EditMirrorForm", () => {
 
   it("preserves existing GPG key when checkbox is checked", async () => {
     const mirror = mirrors.find(
-      ({ archiveRoot }) =>
+      ({ archiveRoot, gpgKey }) =>
         ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
           new URL(archiveRoot).host,
-        ),
+        ) && gpgKey,
     );
 
     assert(mirror);
@@ -138,7 +139,7 @@ describe("EditMirrorForm", () => {
     );
   });
 
-  it("toggles preserve signatures", async () => {
+  it("shows preserve signatures as disabled", async () => {
     const mirror = mirrors.find(({ preserveSignatures }) => preserveSignatures);
 
     assert(mirror);
@@ -155,14 +156,6 @@ describe("EditMirrorForm", () => {
 
     const checkbox = screen.getByLabelText("Preserve signatures");
     expect(checkbox).toBeChecked();
-
-    await user.click(checkbox);
-    await user.click(screen.getByRole("button", { name: "Save changes" }));
-
-    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        preserveSignatures: false,
-      }),
-    );
+    expect(checkbox).toBeDisabled();
   });
 });

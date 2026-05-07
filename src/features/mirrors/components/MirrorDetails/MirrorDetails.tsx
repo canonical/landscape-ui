@@ -181,6 +181,10 @@ const MirrorDetails: FC = () => {
                   large
                 />
                 <InfoGrid.Item
+                  label="Preserve signatures"
+                  value={boolToLabel(mirror.preserveSignatures)}
+                />
+                <InfoGrid.Item
                   label="Download .udeb"
                   value={boolToLabel(mirror.downloadUdebs)}
                 />
