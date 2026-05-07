@@ -43,7 +43,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     try {
       await publishPublication({
         publicationName: values.name,
-        body: { forceOverwrite: true, forceCleanup: true },
+        body: { forceOverwrite: true },
       });
 
       closeSidePanel();

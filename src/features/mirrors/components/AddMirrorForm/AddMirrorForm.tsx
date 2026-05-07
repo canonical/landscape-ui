@@ -373,6 +373,7 @@ const AddMirrorForm: FC = () => {
                     type="text"
                     label="Package filter"
                     {...formik.getFieldProps("packageFilter")}
+                    disabled={formik.values.preserveSignatures}
                   />
                 </div>
                 <MirrorFilterHelpButton />
@@ -384,7 +385,10 @@ const AddMirrorForm: FC = () => {
                   !!formik.values.packageFilter &&
                   formik.values.includeDependencies
                 }
-                disabled={!formik.values.packageFilter}
+                disabled={
+                  !formik.values.packageFilter ||
+                  formik.values.preserveSignatures
+                }
                 inline
               />
               <p className={classes.heading}>Download options:</p>
