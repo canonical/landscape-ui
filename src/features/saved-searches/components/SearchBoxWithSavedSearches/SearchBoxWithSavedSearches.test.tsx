@@ -429,4 +429,370 @@ describe("SearchBoxWithSavedSearches", () => {
     const searchBox = screen.getByRole("searchbox");
     expect(searchBox).toHaveValue("existing-query");
   });
+
+  describe("keyboard accessibility", () => {
+    it("should open the dropdown when the search box receives keyboard focus", async () => {
+      renderWithProviders(
+        <div>
+          <button>Before</button>
+          <SearchBoxWithSavedSearches {...defaultProps} />
+        </div>,
+      );
+
+      const beforeButton = screen.getByRole("button", { name: "Before" });
+      beforeButton.focus();
+      expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+
+      await user.tab();
+
+      expect(screen.getByRole("searchbox")).toHaveFocus();
+      expect(await screen.findByText("Saved searches")).toBeInTheDocument();
+    });
+
+    it("should expose aria-expanded and aria-controls linking the input to the dropdown panel", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      expect(searchBox).toHaveAttribute("aria-expanded", "false");
+      expect(searchBox).not.toHaveAttribute("aria-controls");
+
+      await user.click(searchBox);
+      await screen.findByText("Saved searches");
+
+      expect(searchBox).toHaveAttribute("aria-expanded", "true");
+      const controlsId = searchBox.getAttribute("aria-controls");
+      expect(controlsId).toBeTruthy();
+
+      const panel = screen.getByRole("group", { name: "Saved searches" });
+      expect(panel).toHaveAttribute("id", controlsId);
+    });
+
+    it("should keep the dropdown open while focus moves between focusable items inside it", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const manageButton = screen.getByRole("button", { name: "Manage" });
+      manageButton.focus();
+      expect(manageButton).toHaveFocus();
+
+      // After focus moves to a button inside the panel, the dropdown must remain visible.
+      expect(screen.getByText("Saved searches")).toBeInTheDocument();
+    });
+
+    it("should close the dropdown when keyboard focus moves to an element outside the component", async () => {
+      renderWithProviders(
+        <div>
+          <SearchBoxWithSavedSearches {...defaultProps} />
+          <button>After</button>
+        </div>,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const afterButton = screen.getByRole("button", { name: "After" });
+      afterButton.focus();
+
+      await waitFor(() => {
+        expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+      });
+    });
+
+    it("should close the dropdown and return focus to the search box when Escape is pressed inside the panel", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const manageButton = screen.getByRole("button", { name: "Manage" });
+      manageButton.focus();
+      expect(manageButton).toHaveFocus();
+
+      await user.keyboard("{Escape}");
+
+      expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+      expect(searchBox).toHaveFocus();
+    });
+
+    it("should not re-open the dropdown when focus is restored to the search box on Escape", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const manageButton = screen.getByRole("button", { name: "Manage" });
+      manageButton.focus();
+
+      await user.keyboard("{Escape}");
+
+      expect(searchBox).toHaveFocus();
+      expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+    });
+
+    it("should keep the dropdown open while focus is on the help button inside the search container", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const helpButton = screen.getByRole("button", { name: "Search help" });
+      helpButton.focus();
+      expect(helpButton).toHaveFocus();
+      expect(screen.getByText("Saved searches")).toBeInTheDocument();
+    });
+
+    it("should keep the dropdown open while a modal opened from inside it has focus", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const [firstSearch] = savedSearches;
+      const removeButton = screen.getByRole("button", {
+        name: `Remove ${firstSearch.title} saved search`,
+      });
+      await user.click(removeButton);
+
+      const modal = screen.getByRole("dialog");
+      expect(modal).toBeInTheDocument();
+      expect(screen.getByText("Saved searches")).toBeInTheDocument();
+    });
+
+    it("should re-open the dropdown when the search box is clicked after Escape closed it", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      await user.keyboard("{Escape}");
+      expect(screen.queryByText("Saved searches")).not.toBeInTheDocument();
+
+      await user.click(searchBox);
+      expect(await screen.findByText("Saved searches")).toBeInTheDocument();
+    });
+
+    it("should highlight the first saved search when ArrowDown is pressed", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      expect(searchBox).not.toHaveAttribute("aria-activedescendant");
+
+      await user.keyboard("{ArrowDown}");
+
+      const activeId = searchBox.getAttribute("aria-activedescendant");
+      expect(activeId).toBeTruthy();
+
+      const [firstSearch] = savedSearches;
+      assert(firstSearch);
+      const activeButton = document.getElementById(activeId ?? "");
+      assert(activeButton);
+      expect(activeButton).toHaveAttribute("aria-selected", "true");
+      expect(activeButton).toHaveTextContent(firstSearch.title);
+    });
+
+    it("should move highlight down through items and clamp at the last one", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      // Press ArrowDown more times than there are items so we exercise the clamp.
+      for (let i = 0; i < savedSearches.length + 2; i += 1) {
+        await user.keyboard("{ArrowDown}");
+      }
+
+      const lastSearch = savedSearches.at(-1);
+      assert(lastSearch);
+      const activeId = searchBox.getAttribute("aria-activedescendant");
+      const activeButton = document.getElementById(activeId ?? "");
+      assert(activeButton);
+      expect(activeButton).toHaveTextContent(lastSearch.title);
+    });
+
+    it("should highlight the last saved search when ArrowUp is pressed with no current selection", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      await user.keyboard("{ArrowUp}");
+
+      const lastSearch = savedSearches.at(-1);
+      assert(lastSearch);
+      const activeId = searchBox.getAttribute("aria-activedescendant");
+      const activeButton = document.getElementById(activeId ?? "");
+      assert(activeButton);
+      expect(activeButton).toHaveTextContent(lastSearch.title);
+    });
+
+    it("should clamp ArrowUp at the first item", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      await user.keyboard("{ArrowDown}");
+      await user.keyboard("{ArrowUp}");
+      await user.keyboard("{ArrowUp}");
+
+      const [firstSearch] = savedSearches;
+      assert(firstSearch);
+      const activeId = searchBox.getAttribute("aria-activedescendant");
+      const activeButton = document.getElementById(activeId ?? "");
+      assert(activeButton);
+      expect(activeButton).toHaveTextContent(firstSearch.title);
+    });
+
+    it("should jump to the first item with Home and the last with End", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const [firstSearch] = savedSearches;
+      const lastSearch = savedSearches.at(-1);
+      assert(firstSearch);
+      assert(lastSearch);
+
+      await user.keyboard("{End}");
+      let activeId = searchBox.getAttribute("aria-activedescendant");
+      expect(document.getElementById(activeId ?? "")).toHaveTextContent(
+        lastSearch.title,
+      );
+
+      await user.keyboard("{Home}");
+      activeId = searchBox.getAttribute("aria-activedescendant");
+      expect(document.getElementById(activeId ?? "")).toHaveTextContent(
+        firstSearch.title,
+      );
+    });
+
+    it("should apply the highlighted saved search when Enter is pressed", async () => {
+      const onChange = vi.fn();
+      renderWithProviders(
+        <SearchBoxWithSavedSearches {...defaultProps} onChange={onChange} />,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const [, secondSearch] = savedSearches;
+      assert(secondSearch);
+
+      await user.keyboard("{ArrowDown}{ArrowDown}");
+      await user.keyboard("{Enter}");
+
+      expect(onChange).toHaveBeenCalled();
+      expect(searchBox).toHaveValue(`search:${secondSearch.name}`);
+    });
+
+    it("should fall back to plain search on Enter when no item is highlighted", async () => {
+      const onChange = vi.fn();
+      renderWithProviders(
+        <SearchBoxWithSavedSearches {...defaultProps} onChange={onChange} />,
+      );
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+      await user.type(searchBox, "free-text-query");
+
+      await user.keyboard("{Enter}");
+
+      expect(onChange).toHaveBeenCalled();
+      expect(searchBox).toHaveValue("free-text-query");
+    });
+
+    it("should reset the highlight when the input text changes", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      await user.keyboard("{ArrowDown}");
+      expect(searchBox).toHaveAttribute("aria-activedescendant");
+
+      await user.type(searchBox, "x");
+
+      expect(searchBox).not.toHaveAttribute("aria-activedescendant");
+    });
+
+    it("should scroll the highlighted item into view when navigating with the arrow keys", async () => {
+      const scrollIntoViewSpy = vi
+        .spyOn(Element.prototype, "scrollIntoView")
+        .mockImplementation(() => undefined);
+
+      try {
+        renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+        const searchBox = screen.getByRole("searchbox");
+        await user.click(searchBox);
+
+        await screen.findByText("Saved searches");
+
+        scrollIntoViewSpy.mockClear();
+
+        await user.keyboard("{ArrowDown}");
+
+        const activeId = searchBox.getAttribute("aria-activedescendant");
+        const activeItem = document.getElementById(activeId ?? "");
+        assert(activeItem);
+
+        const scrollCalls = scrollIntoViewSpy.mock.instances.filter(
+          (instance) => instance === activeItem,
+        );
+        expect(scrollCalls.length).toBeGreaterThan(0);
+        expect(scrollIntoViewSpy).toHaveBeenLastCalledWith({
+          block: "nearest",
+        });
+      } finally {
+        scrollIntoViewSpy.mockRestore();
+      }
+    });
+
+    it("should render a muted helper hint describing keyboard shortcuts", async () => {
+      renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+
+      const searchBox = screen.getByRole("searchbox");
+      await user.click(searchBox);
+
+      await screen.findByText("Saved searches");
+
+      const hint = screen.getByText(/to navigate/i);
+      expect(hint).toBeInTheDocument();
+      expect(hint).toHaveTextContent("Enter");
+      expect(hint).toHaveTextContent("Esc");
+    });
+  });
 });
