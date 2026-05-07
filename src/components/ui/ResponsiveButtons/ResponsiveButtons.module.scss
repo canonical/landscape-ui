@@ -21,18 +21,16 @@
     > :global(.p-contextual-menu):not(:last-child) {
       > :global(.p-button) {
         border-right-width: 0px;
-      }
-    }
 
-    > :global(.p-contextual-menu):not(:last-child) {
-      > :global(.p-button)::after {
-        background-color: var(--vf-color-border-low-contrast);
-        bottom: 0;
-        content: "";
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 1.5px;
+        &::after {
+          background-color: var(--vf-color-border-low-contrast);
+          bottom: 0;
+          content: "";
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 1.5px;
+        }
       }
     }
 

@@ -352,12 +352,14 @@ const InstancesPageActions = memo(function InstancesPageActions({
     <>
       <ResponsiveButtons
         collapseFrom="sm"
+        className={classes.buttons}
         buttons={[
           <ContextualMenu
             key="operations"
             links={operationsLinks}
             position="right"
             toggleLabel="Operations"
+            toggleClassName="u-no-margin--bottom"
             toggleDisabled={0 === selectedInstances.length}
             hasToggleIcon
           />,
@@ -366,6 +368,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             links={groupingLinks}
             position="right"
             toggleLabel="Grouping"
+            toggleClassName="u-no-margin--bottom"
             toggleDisabled={0 === selectedInstances.length}
             hasToggleIcon
           />,
@@ -386,6 +389,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               key="pro-services"
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
+              toggleClassName="u-no-margin--bottom"
               toggleDisabled={0 === selectedInstances.length}
               hasToggleIcon
             />
