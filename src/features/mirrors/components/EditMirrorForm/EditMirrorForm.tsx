@@ -44,6 +44,7 @@ const EditMirrorForm: FC = () => {
       downloadSources: !!mirror.downloadSources,
       downloadInstallerFiles: !!mirror.downloadInstaller,
       verificationGpgKey: mirror.gpgKey?.armor,
+      keepCurrentGpgKey: !!mirror.gpgKey,
     },
 
     validationSchema: Yup.object().shape({
@@ -60,9 +61,11 @@ const EditMirrorForm: FC = () => {
           downloadUdebs: values.downloadUdebPackages,
           downloadSources: values.downloadSources,
           downloadInstaller: values.downloadInstallerFiles,
-          gpgKey: values.verificationGpgKey
-            ? { armor: values.verificationGpgKey }
-            : null,
+          ...(!values.keepCurrentGpgKey && {
+            gpgKey: values.verificationGpgKey
+              ? { armor: values.verificationGpgKey }
+              : null,
+          }),
         });
 
         closeSidePanel();
@@ -167,11 +170,28 @@ const EditMirrorForm: FC = () => {
                   title="Authentication"
                   titleClassName="p-text--small-caps"
                 >
-                  <Textarea
-                    label="Verification GPG key"
-                    {...formik.getFieldProps("verificationGpgKey")}
-                    error={getFormikError(formik, "verificationGpgKey")}
-                  />
+                  {mirror.gpgKey ? (
+                    <>
+                      <CheckboxInput
+                        label="Keep current GPG key"
+                        {...formik.getFieldProps("keepCurrentGpgKey")}
+                        checked={formik.values.keepCurrentGpgKey}
+                      />
+                      {!formik.values.keepCurrentGpgKey && (
+                        <Textarea
+                          label="Verification GPG key"
+                          {...formik.getFieldProps("verificationGpgKey")}
+                          error={getFormikError(formik, "verificationGpgKey")}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <Textarea
+                      label="Verification GPG key"
+                      {...formik.getFieldProps("verificationGpgKey")}
+                      error={getFormikError(formik, "verificationGpgKey")}
+                    />
+                  )}
                 </Blocks.Item>
               )}
             </Blocks.Item>
