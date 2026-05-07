@@ -28,6 +28,7 @@ import ReadOnlyField from "@/components/form/ReadOnlyField";
 import * as Yup from "yup";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import classes from "./EditMirrorForm.module.scss";
+import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 
 const EditMirrorForm: FC = () => {
   const debug = useDebug();
@@ -141,11 +142,16 @@ const EditMirrorForm: FC = () => {
                 </Tooltip>
               </div>
               <p className={classes.heading}>Filter options:</p>
-              <Input
-                type="text"
-                label="Package filter"
-                {...formik.getFieldProps("packageFilter")}
-              />
+              <div className={classes.wrapper}>
+                <div className={classes.formContainer}>
+                  <Input
+                    type="text"
+                    label="Package filter"
+                    {...formik.getFieldProps("packageFilter")}
+                  />
+                </div>
+                <MirrorFilterHelpButton />
+              </div>
               <CheckboxInput
                 label="Include dependencies in filter"
                 {...formik.getFieldProps("includeDependencies")}

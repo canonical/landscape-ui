@@ -31,6 +31,7 @@ import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { isArchiveInfoValid } from "../../helpers";
 import * as Yup from "yup";
 import classes from "./AddMirrorForm.module.scss";
+import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
@@ -366,11 +367,16 @@ const AddMirrorForm: FC = () => {
                 </Tooltip>
               </div>
               <p className={classes.heading}>Filter options:</p>
-              <Input
-                type="text"
-                label="Package filter"
-                {...formik.getFieldProps("packageFilter")}
-              />
+              <div className={classes.wrapper}>
+                <div className={classes.formContainer}>
+                  <Input
+                    type="text"
+                    label="Package filter"
+                    {...formik.getFieldProps("packageFilter")}
+                  />
+                </div>
+                <MirrorFilterHelpButton />
+              </div>
               <CheckboxInput
                 label="Include dependencies in filter"
                 {...formik.getFieldProps("includeDependencies")}
