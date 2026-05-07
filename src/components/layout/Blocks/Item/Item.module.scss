@@ -10,12 +10,12 @@
 }
 
 .heading {
-  margin: 0 0 $sp-unit * 4;
+  margin: 0 0 $spv--large;
   padding: 0;
 }
 
-.denseHeading {
-  margin-bottom: 1rem;
+.spacedHeading {
+  margin-bottom: $sp-unit * 4;
 }
 
 .titleWithDescription {

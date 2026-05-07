@@ -149,7 +149,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <AppErrorBoundary>
-        <Blocks dense>
+        <Blocks>
           <Blocks.Item title="Details">
             <RepositoryProfileFormDetailsPanel
               accessGroups={accessGroupsResult?.data ?? []}

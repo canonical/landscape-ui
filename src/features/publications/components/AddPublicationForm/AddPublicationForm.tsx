@@ -17,7 +17,6 @@ import {
   Textarea,
   Tooltip,
 } from "@canonical/react-components";
-import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -190,14 +189,7 @@ const AddPublicationForm: FC = () => {
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Blocks>
-        <Blocks.Item
-          title="Details"
-          titleClassName={classNames(
-            "p-text--small-caps",
-            classes.sectionTitle,
-          )}
-          containerClassName={classes.section}
-        >
+        <Blocks.Item title="Details">
           <Input
             type="text"
             label="Publication name"
@@ -242,14 +234,7 @@ const AddPublicationForm: FC = () => {
           />
         </Blocks.Item>
 
-        <Blocks.Item
-          title="Uploaders"
-          titleClassName={classNames(
-            "p-text--small-caps",
-            classes.sectionTitle,
-          )}
-          containerClassName={classes.section}
-        >
+        <Blocks.Item title="Uploaders">
           <ReadOnlyField
             label="Distribution"
             required
@@ -271,10 +256,7 @@ const AddPublicationForm: FC = () => {
 
         {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
           selectedSource.preserveSignatures === false && (
-            <Blocks.Item
-              title="Signing GPG Key"
-              containerClassName={classes.section}
-            >
+            <Blocks.Item title="Signing GPG Key">
               <Textarea
                 {...formik.getFieldProps("signing_key")}
                 error={getFormikError(formik, "signing_key")}
@@ -282,14 +264,7 @@ const AddPublicationForm: FC = () => {
             </Blocks.Item>
           )}
 
-        <Blocks.Item
-          title="Settings"
-          titleClassName={classNames(
-            classes.sectionTitle,
-            "p-text--small-caps",
-          )}
-          containerClassName={classes.section}
-        >
+        <Blocks.Item title="Settings">
           <Input
             type="checkbox"
             label={

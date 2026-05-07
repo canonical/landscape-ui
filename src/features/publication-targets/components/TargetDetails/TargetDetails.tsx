@@ -133,7 +133,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
           <span className="u-text--negative">Remove</span>
         </Button>
       </div>
-      <Blocks dense>
+      <Blocks>
         <Blocks.Item title="General">
           <InfoGrid dense>
             <InfoGrid.Item label="Name" value={target.displayName} />

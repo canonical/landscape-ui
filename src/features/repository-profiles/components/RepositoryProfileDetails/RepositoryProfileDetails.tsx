@@ -113,7 +113,7 @@ const RepositoryProfileDetails: FC = () => {
             </Button>
           </div>
         </div>
-        <Blocks dense>
+        <Blocks>
           <ViewProfileGeneralBlock
             profile={profile}
             type={ProfileTypes.repository}

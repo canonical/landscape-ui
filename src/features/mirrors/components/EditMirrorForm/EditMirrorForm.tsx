@@ -113,10 +113,7 @@ const EditMirrorForm: FC = () => {
                 tooltipMessage="You can’t change the source URL after the mirror is created."
               />
             </Blocks.Item>
-            <Blocks.Item
-              title="Mirror contents"
-              titleClassName="p-text--small-caps"
-            >
+            <Blocks.Item title="Mirror contents">
               <ReadOnlyField
                 label="Distribution"
                 value={mirror.distribution || NO_DATA_TEXT}
@@ -200,10 +197,7 @@ const EditMirrorForm: FC = () => {
                 UBUNTU_SNAPSHOTS_HOST,
                 UBUNTU_PRO_HOST,
               ].includes(new URL(mirror.archiveRoot).host) && (
-                <Blocks.Item
-                  title="Authentication"
-                  titleClassName="p-text--small-caps"
-                >
+                <Blocks.Item title="Authentication">
                   <GpgKeyField
                     existingKey={mirror.gpgKey}
                     keepCurrentKey={formik.values.keepCurrentGpgKey}

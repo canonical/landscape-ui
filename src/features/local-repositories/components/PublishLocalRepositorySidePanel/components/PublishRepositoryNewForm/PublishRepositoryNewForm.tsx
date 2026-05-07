@@ -111,7 +111,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks dense>
+      <Blocks>
         <Blocks.Item title="Details">
           <Input
             type="text"

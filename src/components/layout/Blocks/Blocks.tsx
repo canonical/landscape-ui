@@ -5,19 +5,19 @@ import Item from "./Item";
 
 interface BlocksProps {
   readonly children: ReactNode;
-  readonly dense?: boolean;
+  readonly spaced?: boolean;
 }
 
-export const BlocksDenseContext = createContext(false);
-export const useBlocksDense = () => useContext(BlocksDenseContext);
+export const BlocksSpacedContext = createContext(false);
+export const useBlocksSpaced = () => useContext(BlocksSpacedContext);
 
 const Blocks: FC<BlocksProps> & { Item: FC<ItemProps> } = ({
   children,
-  dense = false,
+  spaced = false,
 }: BlocksProps) => (
-  <BlocksDenseContext.Provider value={dense}>
+  <BlocksSpacedContext.Provider value={spaced}>
     <div className={classes.blocks}>{children}</div>
-  </BlocksDenseContext.Provider>
+  </BlocksSpacedContext.Provider>
 );
 
 Blocks.Item = Item;
