@@ -95,15 +95,6 @@ describe("AddPublicationForm", () => {
       "edge",
     );
     await user.click(
-      screen.getByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    );
-    await user.type(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
-      "-----BEGIN PGP PRIVATE KEY BLOCK-----test-key",
-    );
-    await user.click(
       screen.getByRole("checkbox", { name: /Hash based indexing/i }),
     );
     await user.click(
@@ -126,9 +117,6 @@ describe("AddPublicationForm", () => {
     expect(
       screen.getByRole("textbox", { name: "Directory prefix" }),
     ).toHaveValue("edge");
-    expect(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
-    ).toHaveValue("-----BEGIN PGP PRIVATE KEY BLOCK-----test-key");
   });
 
   it("uses static local-source fields without uploader architectures", async () => {
@@ -163,79 +151,5 @@ describe("AddPublicationForm", () => {
     expect(publicationTargetSelect).toHaveValue(
       "bbbbbbbb-0000-0000-0000-000000000002",
     );
-  });
-
-  it("hides preserve mirror signing key when local source is selected", async () => {
-    const user = userEvent.setup();
-
-    renderForm();
-
-    await selectMirrorSource(user);
-
-    const preserveKeyCheckbox = screen.getByRole("checkbox", {
-      name: /Preserve mirror signing key/i,
-    });
-
-    expect(preserveKeyCheckbox).toBeInTheDocument();
-
-    await selectLocalSource(user);
-
-    expect(
-      screen.queryByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("resets preserve_mirror_signing_key to default when switching source type", async () => {
-    const user = userEvent.setup();
-
-    renderForm();
-
-    await selectMirrorSource(user);
-
-    const preserveKeyCheckbox = screen.getByRole("checkbox", {
-      name: /Preserve mirror signing key/i,
-    });
-
-    await user.click(preserveKeyCheckbox);
-    expect(preserveKeyCheckbox).not.toBeChecked();
-
-    await selectLocalSource(user);
-
-    const sourceTypeSelect = screen.getByRole("combobox", {
-      name: "Source type",
-    });
-    await user.selectOptions(sourceTypeSelect, "Mirror");
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("checkbox", { name: /Preserve mirror signing key/i }),
-      ).toBeChecked();
-    });
-  });
-
-  it("resets mirror_signing_key when switching source type", async () => {
-    const user = userEvent.setup();
-
-    renderForm();
-
-    await selectMirrorSource(user);
-
-    await user.click(
-      screen.getByRole("checkbox", { name: /Preserve mirror signing key/i }),
-    );
-
-    const signingKeyTextarea = screen.getByRole("textbox", {
-      name: "Signing GPG key",
-    });
-    await user.type(signingKeyTextarea, "my-signing-key");
-    expect(signingKeyTextarea).toHaveValue("my-signing-key");
-
-    await selectLocalSource(user);
-
-    expect(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
-    ).toHaveValue("");
   });
 });

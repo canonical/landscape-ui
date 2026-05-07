@@ -14,7 +14,6 @@ import {
   Icon,
   Input,
   Select,
-  Textarea,
   Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
@@ -160,14 +159,6 @@ const AddPublicationForm: FC = () => {
     await formik.setFieldValue("source", "");
     await formik.setFieldValue("uploader_distribution", "");
     await formik.setFieldValue("uploader_architectures", "");
-    await formik.setFieldValue(
-      "preserve_mirror_signing_key",
-      INITIAL_VALUES.preserve_mirror_signing_key,
-    );
-    await formik.setFieldValue(
-      "mirror_signing_key",
-      INITIAL_VALUES.mirror_signing_key,
-    );
   };
 
   const handleSourceChange = async (
@@ -243,27 +234,6 @@ const AddPublicationForm: FC = () => {
             label="Directory prefix"
             error={getFormikError(formik, "prefix")}
             {...formik.getFieldProps("prefix")}
-          />
-
-          {!isLocalSourceType && (
-            <>
-              <span>Signing GPG key</span>
-              <Input
-                type="checkbox"
-                label="Preserve mirror signing key"
-                checked={formik.values.preserve_mirror_signing_key}
-                {...formik.getFieldProps("preserve_mirror_signing_key")}
-              />
-            </>
-          )}
-
-          <Textarea
-            label="Signing GPG key"
-            labelClassName={!isLocalSourceType ? "u-off-screen" : undefined}
-            rows={4}
-            disabled={formik.values.preserve_mirror_signing_key}
-            error={getFormikError(formik, "mirror_signing_key")}
-            {...formik.getFieldProps("mirror_signing_key")}
           />
         </Blocks.Item>
 
