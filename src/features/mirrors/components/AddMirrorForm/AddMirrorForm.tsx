@@ -99,6 +99,7 @@ const AddMirrorForm: FC = () => {
             architecture.trim(),
           ),
           distribution: values.distribution,
+          preserveSignatures: values.preserveSignatures,
           downloadInstaller: values.downloadInstallerFiles,
           downloadSources: values.downloadSources,
           downloadUdebs: values.downloadUdebPackages,
@@ -149,6 +150,7 @@ const AddMirrorForm: FC = () => {
         ubuntuEsmInfo,
       }),
       name: formik.values.name,
+      preserveSignatures: formik.values.preserveSignatures,
       downloadUdebPackages: formik.values.downloadUdebPackages,
       downloadInstallerFiles: formik.values.downloadInstallerFiles,
       downloadSources: formik.values.downloadSources,
@@ -213,6 +215,7 @@ const AddMirrorForm: FC = () => {
                       ubuntuEsmInfo,
                     }),
                     name: formik.values.name,
+                    preserveSignatures: formik.values.preserveSignatures,
                     downloadUdebPackages: formik.values.downloadUdebPackages,
                     downloadInstallerFiles:
                       formik.values.downloadInstallerFiles,
@@ -343,6 +346,20 @@ const AddMirrorForm: FC = () => {
                   isLoading={isMirrorContentsLoading}
                 />
               )}
+              <div className="u-sv2">
+                <CheckboxInput
+                  label="Preserve signatures"
+                  {...formik.getFieldProps("preserveSignatures")}
+                  checked={formik.values.preserveSignatures}
+                  inline
+                />{" "}
+                <Tooltip
+                  position="right"
+                  message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
+                >
+                  <Icon name={ICONS.help} />
+                </Tooltip>
+              </div>
               <p>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "

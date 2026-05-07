@@ -5,6 +5,7 @@ export interface BaseFormProps {
   distribution: string;
   components: string[];
   architectures: string[];
+  preserveSignatures: boolean;
   downloadUdebPackages: boolean;
   downloadSources: boolean;
   downloadInstallerFiles: boolean;

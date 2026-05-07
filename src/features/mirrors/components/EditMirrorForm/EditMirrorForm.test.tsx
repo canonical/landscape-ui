@@ -100,4 +100,32 @@ describe("EditMirrorForm", () => {
       expect.objectContaining(params),
     );
   });
+
+  it("toggles preserve signatures", async () => {
+    const mirror = mirrors.find(({ preserveSignatures }) => preserveSignatures);
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    const checkbox = screen.getByLabelText("Preserve signatures");
+    expect(checkbox).toBeChecked();
+
+    await user.click(checkbox);
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        preserveSignatures: false,
+      }),
+    );
+  });
 });
