@@ -14,6 +14,7 @@ import {
   Icon,
   Input,
   Select,
+  Textarea,
   Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
@@ -77,6 +78,7 @@ const AddPublicationForm: FC = () => {
         sourceType: SOURCE_TYPE_MIRROR,
         distribution: mirror.distribution,
         architectures: mirror.architectures ?? [],
+        preserveSignatures: mirror.preserveSignatures,
       })),
     [mirrors],
   );
@@ -159,6 +161,7 @@ const AddPublicationForm: FC = () => {
     await formik.setFieldValue("source", "");
     await formik.setFieldValue("uploader_distribution", "");
     await formik.setFieldValue("uploader_architectures", "");
+    await formik.setFieldValue("signing_key", "");
   };
 
   const handleSourceChange = async (
@@ -175,11 +178,13 @@ const AddPublicationForm: FC = () => {
 
     if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
       await formik.setFieldValue("uploader_architectures", "");
+      await formik.setFieldValue("signing_key", "");
 
       return;
     }
 
     await formik.setFieldValue("uploader_architectures", "");
+    await formik.setFieldValue("signing_key", "");
   };
 
   return (
@@ -263,6 +268,19 @@ const AddPublicationForm: FC = () => {
             />
           )}
         </Blocks.Item>
+
+        {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
+          selectedSource.preserveSignatures === false && (
+            <Blocks.Item
+              title="Signing GPG Key"
+              containerClassName={classes.section}
+            >
+              <Textarea
+                {...formik.getFieldProps("signing_key")}
+                error={getFormikError(formik, "signing_key")}
+              />
+            </Blocks.Item>
+          )}
 
         <Blocks.Item
           title="Settings"

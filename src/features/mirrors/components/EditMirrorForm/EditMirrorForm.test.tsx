@@ -89,6 +89,8 @@ describe("EditMirrorForm", () => {
       gpgKey: { armor: "ABCDEF" },
     };
 
+    // Mirror has existing GPG key, so checkbox is checked by default - uncheck to show textarea
+    await user.click(screen.getByLabelText("Keep current GPG key"));
     await user.type(
       screen.getByLabelText("Verification GPG key"),
       params.gpgKey.armor,
@@ -98,6 +100,41 @@ describe("EditMirrorForm", () => {
 
     expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining(params),
+    );
+  });
+
+  it("preserves existing GPG key when checkbox is checked", async () => {
+    const mirror = mirrors.find(
+      ({ archiveRoot }) =>
+        ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
+          new URL(archiveRoot).host,
+        ),
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    // Keep current GPG key checkbox is checked by default
+    expect(screen.getByLabelText("Keep current GPG key")).toBeChecked();
+    // Textarea should be hidden
+    expect(
+      screen.queryByLabelText("Verification GPG key"),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    // gpgKey should NOT be in the payload when keeping existing key
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.not.objectContaining({ gpgKey: expect.anything() }),
     );
   });
 

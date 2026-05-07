@@ -41,12 +41,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
         return getCsvValues(value).length > 0;
       },
     }),
-  preserve_mirror_signing_key: Yup.boolean(),
-  mirror_signing_key: Yup.string().when("preserve_mirror_signing_key", {
-    is: false,
-    then: (schema) => schema.required(REQUIRED_FIELD_MESSAGE),
-    otherwise: (schema) => schema,
-  }),
+  signing_key: Yup.string(),
   hash_indexing: Yup.boolean(),
   automatic_installation: Yup.boolean(),
   automatic_upgrades: Yup.boolean(),
@@ -100,11 +95,9 @@ export const getPublicationPayload = (values: FormProps) => {
       butAutomaticUpgrades: values.automatic_upgrades,
       skipBz2: values.skip_bz2,
       skipContents: values.skip_content_indexing,
-      gpgKey: values.preserve_mirror_signing_key
-        ? undefined
-        : {
-            armor: values.mirror_signing_key.trim(),
-          },
+      gpgKey: values.signing_key.trim()
+        ? { armor: values.signing_key.trim() }
+        : undefined,
     },
   };
 };

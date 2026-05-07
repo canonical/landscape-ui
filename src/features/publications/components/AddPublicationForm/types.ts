@@ -6,8 +6,7 @@ export interface FormProps {
   prefix: string;
   uploader_distribution: string;
   uploader_architectures: string;
-  preserve_mirror_signing_key: boolean;
-  mirror_signing_key: string;
+  signing_key: string;
   hash_indexing: boolean;
   automatic_installation: boolean;
   automatic_upgrades: boolean;
@@ -21,4 +20,5 @@ export interface SelectableSource {
   sourceType: string;
   distribution?: string;
   architectures: string[];
+  preserveSignatures?: boolean;
 }

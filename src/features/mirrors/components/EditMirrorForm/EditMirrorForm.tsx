@@ -14,9 +14,9 @@ import {
   Icon,
   ICONS,
   Input,
-  Textarea,
   Tooltip,
 } from "@canonical/react-components";
+import GpgKeyField from "@/components/form/GpgKeyField";
 import { getFormikError } from "@/utils/formikErrors";
 import { getSourceType } from "../MirrorDetails/helpers";
 import {
@@ -129,6 +129,7 @@ const EditMirrorForm: FC = () => {
                   label="Preserve signatures"
                   {...formik.getFieldProps("preserveSignatures")}
                   checked={formik.values.preserveSignatures}
+                  disabled
                   inline
                 />{" "}
                 <Tooltip
@@ -170,28 +171,22 @@ const EditMirrorForm: FC = () => {
                   title="Authentication"
                   titleClassName="p-text--small-caps"
                 >
-                  {mirror.gpgKey ? (
-                    <>
-                      <CheckboxInput
-                        label="Keep current GPG key"
-                        {...formik.getFieldProps("keepCurrentGpgKey")}
-                        checked={formik.values.keepCurrentGpgKey}
-                      />
-                      {!formik.values.keepCurrentGpgKey && (
-                        <Textarea
-                          label="Verification GPG key"
-                          {...formik.getFieldProps("verificationGpgKey")}
-                          error={getFormikError(formik, "verificationGpgKey")}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <Textarea
-                      label="Verification GPG key"
-                      {...formik.getFieldProps("verificationGpgKey")}
-                      error={getFormikError(formik, "verificationGpgKey")}
-                    />
-                  )}
+                  <GpgKeyField
+                    existingKey={mirror.gpgKey}
+                    keepCurrentKey={formik.values.keepCurrentGpgKey}
+                    gpgKeyValue={formik.values.verificationGpgKey}
+                    gpgKeyError={getFormikError(formik, "verificationGpgKey")}
+                    textareaLabel="Verification GPG key"
+                    onKeepCurrentChange={(checked) =>
+                      formik.setFieldValue("keepCurrentGpgKey", checked)
+                    }
+                    onGpgKeyChange={(value) =>
+                      formik.setFieldValue("verificationGpgKey", value)
+                    }
+                    onGpgKeyBlur={() =>
+                      formik.setFieldTouched("verificationGpgKey", true)
+                    }
+                  />
                 </Blocks.Item>
               )}
             </Blocks.Item>

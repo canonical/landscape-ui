@@ -16,6 +16,7 @@ const renderForm = () =>
 describe("AddPublicationForm", () => {
   const selectMirrorSource = async (
     user: ReturnType<typeof userEvent.setup>,
+    mirrorId = "ubuntu-archive-mirror",
   ) => {
     const sourceTypeSelect = await screen.findByRole("combobox", {
       name: "Source type",
@@ -28,7 +29,7 @@ describe("AddPublicationForm", () => {
       expect(sourceSelect).toBeEnabled();
     });
 
-    await user.selectOptions(sourceSelect, "ubuntu-archive-mirror");
+    await user.selectOptions(sourceSelect, mirrorId);
   };
 
   const selectLocalSource = async (
@@ -151,5 +152,41 @@ describe("AddPublicationForm", () => {
     expect(publicationTargetSelect).toHaveValue(
       "bbbbbbbb-0000-0000-0000-000000000002",
     );
+  });
+
+  it("shows signing key field when mirror has preserveSignatures=false", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectMirrorSource(user, "ubuntu-archive-mirror");
+
+    expect(
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides signing key field when mirror has preserveSignatures=true", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectMirrorSource(user, "ubuntu-security-mirror");
+
+    expect(
+      screen.queryByRole("textbox", { name: "Signing GPG key" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides signing key field when local repository is selected", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectLocalSource(user);
+
+    expect(
+      screen.queryByRole("textbox", { name: "Signing GPG key" }),
+    ).not.toBeInTheDocument();
   });
 });
