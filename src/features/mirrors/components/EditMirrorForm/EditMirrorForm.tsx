@@ -45,8 +45,8 @@ const EditMirrorForm: FC = () => {
       downloadSources: !!mirror.downloadSources,
       downloadInstallerFiles: !!mirror.downloadInstaller,
       verificationGpgKey: mirror.gpgKey?.armor,
-      packageFilter: undefined,
-      includeDependencies: false,
+      packageFilter: mirror.filter,
+      includeDependencies: mirror.filterWithDeps,
     },
 
     validationSchema: Yup.object().shape({
@@ -64,7 +64,7 @@ const EditMirrorForm: FC = () => {
           downloadSources: values.downloadSources,
           downloadInstaller: values.downloadInstallerFiles,
           gpgKey: { armor: values.verificationGpgKey || null },
-          filter: values.packageFilter || undefined,
+          filter: values.packageFilter,
           filterWithDeps: values.packageFilter
             ? values.includeDependencies
             : undefined,
