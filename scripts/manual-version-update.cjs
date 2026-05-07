@@ -90,13 +90,29 @@ function renderChangelogSection(version, entries) {
     if (groups[bump].length === 0) continue;
     out += `### ${labels[bump]}\n\n`;
     for (const summary of groups[bump]) {
-      // Collapse paragraphs into a single bullet so the rendered list
-      // stays flat regardless of how the changeset author formatted it.
-      out += `- ${summary.replace(/\s*\n\s*/g, " ").trim()}\n`;
+      out += `${renderBullets(summary)}\n`;
     }
     out += `\n`;
   }
   return out;
+}
+
+function renderBullets(summary) {
+  // If the changeset body is itself a flat markdown list (every non-empty
+  // line starts with `-` or `*`), preserve it as multiple top-level bullets
+  // — otherwise the leading dash gets re-prefixed and we end up with
+  // visible `- - item` lines. For prose summaries, collapse internal
+  // whitespace into a single bullet.
+  const lines = summary.trim().split(/\r?\n/);
+  const nonEmpty = lines.filter((l) => l.trim() !== "");
+  const isList =
+    nonEmpty.length > 0 && nonEmpty.every((l) => /^\s*[-*]\s+/.test(l));
+  if (isList) {
+    return nonEmpty
+      .map((l) => `- ${l.replace(/^\s*[-*]\s+/, "").trim()}`)
+      .join("\n");
+  }
+  return `- ${summary.trim().replace(/\s*\n\s*/g, " ")}`;
 }
 
 function prependChangelog(filePath, section) {
