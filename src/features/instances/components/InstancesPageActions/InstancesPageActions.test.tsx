@@ -92,6 +92,23 @@ describe("InstancesPageActions", () => {
       }
     });
 
+    it("should disable buttons while getting instances", () => {
+      renderWithProviders(
+        <InstancesPageActions
+          isGettingInstances={true}
+          selectedInstances={[]}
+        />,
+      );
+
+      const buttons = screen.getAllByRole("button");
+
+      expect(buttons).toHaveLength(MENU_LABELS.length);
+
+      for (const button of buttons) {
+        expect(button).toHaveClass("is-disabled");
+      }
+    });
+
     it("'View report' menu item should be visible when feature enabled", async () => {
       renderWithProviders(
         <InstancesPageActions
