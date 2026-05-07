@@ -150,7 +150,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       <AppErrorBoundary>
         <Blocks dense>
-          <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+          <Blocks.Item title="Details">
             <RepositoryProfileFormDetailsPanel
               accessGroups={accessGroupsResult?.data ?? []}
               isTitleRequired={props.action === "add"}

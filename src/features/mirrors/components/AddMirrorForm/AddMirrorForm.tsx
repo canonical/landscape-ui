@@ -177,7 +177,7 @@ const AddMirrorForm: FC = () => {
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Blocks>
-            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+            <Blocks.Item title="Details">
               <Input
                 type="text"
                 label="Name"

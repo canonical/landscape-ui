@@ -118,7 +118,7 @@ const RepositoryProfileDetails: FC = () => {
             profile={profile}
             type={ProfileTypes.repository}
           />
-          <Blocks.Item title="Sources" titleClassName="p-text--small-caps">
+          <Blocks.Item title="Sources">
             <ModularTable
               columns={aptSourceColumns}
               data={pagedSources}
@@ -140,7 +140,6 @@ const RepositoryProfileDetails: FC = () => {
         <ViewProfileAssociationBlock
           profile={profile}
           type={ProfileTypes.repository}
-          titleClassName="p-text--small-caps"
         />
       </SidePanel.Content>
 
