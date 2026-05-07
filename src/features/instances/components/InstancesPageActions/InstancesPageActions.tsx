@@ -241,31 +241,137 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : {},
   ].filter((link) => link.children);
 
+  const groupingLinks = [
+    {
+      children: (
+        <>
+          <Icon name="user-group" />
+          <span>Assign access group</span>
+        </>
+      ),
+      onClick: handleAccessGroupChange,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="tag" />
+          <span>Assign tag</span>
+        </>
+      ),
+      onClick: handleTagsAssign,
+      hasIcon: true,
+    },
+  ];
+
+  const operationsLinks = [
+    {
+      children: (
+        <>
+          <Icon name="power-off" />
+          <span>Shut down</span>
+        </>
+      ),
+      onClick: openShutdownModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Restart</span>
+        </>
+      ),
+      onClick: openRebootModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Remove from Landscape</span>
+        </>
+      ),
+      onClick: openRemoveModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="change-version" />
+          <span>Upgrade</span>
+        </>
+      ),
+      onClick: handleUpgradesRequest,
+      hasIcon: true,
+      disabled:
+        selectedInstances.every((instance) => !hasUpgrades(instance.alerts)) ||
+        isGettingInstances,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Upgrade distributions</span>
+        </>
+      ),
+      onClick: handleDistributionUpgradesRequest,
+      hasIcon: true,
+      disabled:
+        isGettingInstances ||
+        !selectedInstances.some((instance) => instance.has_release_upgrades),
+    },
+    REPORT_VIEW_ENABLED
+      ? {
+          children: (
+            <>
+              <Icon name="status" />
+              <span>View report</span>
+            </>
+          ),
+          onClick: handleReportView,
+          hasIcon: true,
+        }
+      : {},
+    {
+      children: (
+        <>
+          <Icon name="code" />
+          <span>Run script</span>
+        </>
+      ),
+      onClick: handleRunScript,
+      hasIcon: true,
+      disabled:
+        isGettingInstances ||
+        selectedInstances.every((instance) => !getFeatures(instance).scripts),
+    },
+  ].filter((link) => link.children);
+
   return (
     <>
       <ResponsiveButtons
-        collapseFrom="xl"
+        collapseFrom="sm"
+        className={classes.buttons}
         buttons={[
-          <Button
-            key="shutdown-instances"
-            hasIcon
-            type="button"
-            disabled={0 === selectedInstances.length || isGettingInstances}
-            onClick={openShutdownModal}
-          >
-            <Icon name="power-off" />
-            <span>Shut down</span>
-          </Button>,
-          <Button
-            key="reboot-instances"
-            hasIcon
-            type="button"
-            disabled={0 === selectedInstances.length || isGettingInstances}
-            onClick={openRebootModal}
-          >
-            <Icon name="restart" />
-            <span>Restart</span>
-          </Button>,
+          <ContextualMenu
+            key="operations"
+            links={operationsLinks}
+            position="right"
+            toggleLabel="Operations"
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={0 === selectedInstances.length}
+            hasToggleIcon
+          />,
+          <ContextualMenu
+            key="grouping"
+            links={groupingLinks}
+            position="right"
+            toggleLabel="Grouping"
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={0 === selectedInstances.length}
+            hasToggleIcon
+          />,
           hasOneItem(proServicesLinks) ? (
             <Button
               key="pro-services"
@@ -281,105 +387,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
             <ContextualMenu
               position="right"
               key="pro-services"
-              hasToggleIcon
               links={proServicesLinks}
-              toggleLabel={<span>Pro services</span>}
+              toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
               toggleDisabled={0 === selectedInstances.length}
-              dropdownProps={{ style: { zIndex: 10 } }}
+              hasToggleIcon
             />
           ),
-          REPORT_VIEW_ENABLED && (
-            <Button
-              key="report-view"
-              type="button"
-              hasIcon
-              onClick={handleReportView}
-              disabled={0 === selectedInstances.length}
-            >
-              <Icon name="status" />
-              <span>View report</span>
-            </Button>
-          ),
-          <Button
-            key="run-script"
-            type="button"
-            hasIcon
-            onClick={handleRunScript}
-            disabled={
-              selectedInstances.every((instance) => {
-                return !getFeatures(instance).scripts;
-              }) || isGettingInstances
-            }
-          >
-            <Icon name="code" />
-            <span>Run script</span>
-          </Button>,
-          <Button
-            key="upgrade-instances"
-            type="button"
-            hasIcon
-            onClick={handleUpgradesRequest}
-            disabled={
-              selectedInstances.every(
-                (instance) => !hasUpgrades(instance.alerts),
-              ) || isGettingInstances
-            }
-          >
-            <Icon name="change-version" />
-            <span>Upgrade</span>
-          </Button>,
-          <Button
-            key="remove"
-            type="button"
-            hasIcon
-            onClick={openRemoveModal}
-            disabled={!selectedInstances.length || isGettingInstances}
-          >
-            <Icon name="delete" />
-            <span>Remove from Landscape</span>
-          </Button>,
-          <Button
-            key="upgrade-distributions"
-            type="button"
-            hasIcon
-            onClick={handleDistributionUpgradesRequest}
-            disabled={
-              0 === selectedInstances.length ||
-              isGettingInstances ||
-              !selectedInstances.some(
-                (instance) => instance.has_release_upgrades,
-              )
-            }
-          >
-            <Icon name="arrow-up" />
-            <span>Upgrade distributions</span>
-          </Button>,
         ]}
       />
-      <ContextualMenu
-        hasToggleIcon
-        links={[
-          {
-            children: "Access group",
-            onClick: handleAccessGroupChange,
-          },
-          {
-            children: "Tags",
-            onClick: handleTagsAssign,
-          },
-        ]}
-        position="right"
-        toggleLabel={
-          <>
-            <Icon name="plus" />
-            <span>Assign</span>
-          </>
-        }
-        toggleClassName="u-no-margin--bottom"
-        toggleDisabled={0 === selectedInstances.length}
-        dropdownProps={{ style: { zIndex: 10 } }}
-      />
+
       {rebootModalOpen && (
         <RestartModal close={closeRebootModal} instances={selectedInstances} />
       )}
