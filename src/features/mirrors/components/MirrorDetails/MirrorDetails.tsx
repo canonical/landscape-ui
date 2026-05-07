@@ -185,6 +185,18 @@ const MirrorDetails: FC = () => {
                   value={boolToLabel(mirror.preserveSignatures)}
                 />
                 <InfoGrid.Item
+                  label="Package filter"
+                  value={mirror.filter}
+                  large
+                />
+                {mirror.filter && (
+                  <InfoGrid.Item
+                    label="Include dependencies in filter"
+                    value={boolToLabel(mirror.filterWithDeps)}
+                    large
+                  />
+                )}
+                <InfoGrid.Item
                   label="Download .udeb"
                   value={boolToLabel(mirror.downloadUdebs)}
                 />

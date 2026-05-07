@@ -13,6 +13,8 @@ export interface BaseFormProps {
   snapshotDate?: string;
   proService?: string;
   verificationGpgKey?: string;
+  packageFilter?: string;
+  includeDependencies?: boolean;
 }
 
 export interface UbuntuArchiveFormProps extends BaseFormProps {
