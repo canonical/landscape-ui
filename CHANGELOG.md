@@ -3,6 +3,45 @@
 
 ---
 
+## 26.04.1.109
+
+### Minor Changes
+
+- Update instance modals
+- Bulk deletion of instances
+- Deb Archive
+- Select instances across pages
+- Add recovery key management feature for instances
+- Support for v2 deletion endpoint
+- Add new feature to upgrade distributions for instances
+
+### Patch Changes
+
+- fix account-scoped alerts
+- Added spacing between the text and the link in the pending instances notification.
+- move version info to the bottom of navigation sidebar
+- Remove undo action from activities
+- fix issue where package profiles search shows up in package constraints side panel
+- Add missing search terms
+- Initial transition to Landscape Server release cycle and CalVer versioning.
+- Fix organization switching by more precise cache invalidation
+- Fix registration key not set to null
+- Initial synchronization with Landscape Server release cycle and CalVer versioning.
+- Fix computer alert always showing as Online in detailed instance view
+- Include Monaco editor in bundle
+- Fix bug causing saved searches dropdown to appear above wide sidepanels and modals
+- Added line wrapping to error output on /repositories/mirrors
+- Move columns filter outside filters dropdown for instances table
+- Fix CSS ordering inconsistency between dev and production builds
+- Fixed an issue where the wrong Windows instance was targeted during a WSL reinstallation
+- Add missing buttons to script details panel
+- Add ability to edit a script before running
+- Fix large script attachments not being uploaded properly
+- Fix audit and tailor security profile files not being downloaded properly
+- fix long script bodies
+- Fix PAM users being unable to log in to the UI
+- Disable ResponsiveButtons when all items are disabled
+
 # [1.23.0](https://github.com/canonical/landscape-ui/compare/v1.22.0...v1.23.0) (2026-01-08)
 
 
