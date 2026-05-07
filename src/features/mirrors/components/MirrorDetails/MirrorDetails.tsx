@@ -20,6 +20,7 @@ import {
 } from "@/features/publications";
 import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
+import LoadingState from "@/components/layout/LoadingState";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher, sidePath, setPageParams } =
@@ -45,7 +46,8 @@ const MirrorDetails: FC = () => {
 
   const mirror = useGetMirror(name).data.data;
 
-  const { publications } = useGetPublicationsBySource(name);
+  const { publications, isGettingPublications } =
+    useGetPublicationsBySource(name);
 
   const { publicationTargets = [] } = useListPublicationTargets({
     pageSize: 1000,
@@ -125,7 +127,7 @@ const MirrorDetails: FC = () => {
         <Tabs listClassName={classes.marginBottom} links={links} />
         {tabId === "details" && (
           <Blocks>
-            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+            <Blocks.Item title="Details">
               <InfoGrid dense>
                 <InfoGrid.Item label="Name" value={mirror.displayName} />
                 <InfoGrid.Item
@@ -164,7 +166,7 @@ const MirrorDetails: FC = () => {
                 />
               </InfoGrid>
             </Blocks.Item>
-            <Blocks.Item title="Contents" titleClassName="p-text--small-caps">
+            <Blocks.Item title="Contents">
               <InfoGrid dense>
                 <InfoGrid.Item
                   label="Distribution"
@@ -210,11 +212,15 @@ const MirrorDetails: FC = () => {
                 />
               </InfoGrid>
             </Blocks.Item>
-            <Blocks.Item title="Used in" titleClassName="p-text--small-caps">
-              <AssociatedPublicationsList
-                publications={publications}
-                showSources={false}
-              />
+            <Blocks.Item title="Used in">
+              {isGettingPublications ? (
+                <LoadingState />
+              ) : (
+                <AssociatedPublicationsList
+                  publications={publications}
+                  showSources={false}
+                />
+              )}
             </Blocks.Item>
           </Blocks>
         )}
