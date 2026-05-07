@@ -67,10 +67,10 @@ describe("EditMirrorForm", () => {
 
   it("edits a third party mirror", async () => {
     const mirror = mirrors.find(
-      ({ archiveRoot, gpgKey }) =>
+      (m) =>
         ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
-          new URL(archiveRoot).host,
-        ) && gpgKey,
+          new URL(m.archiveRoot).host,
+        ) && "gpgKey" in m,
     );
 
     assert(mirror);
@@ -106,10 +106,10 @@ describe("EditMirrorForm", () => {
 
   it("preserves existing GPG key when checkbox is checked", async () => {
     const mirror = mirrors.find(
-      ({ archiveRoot, gpgKey }) =>
+      (m) =>
         ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
-          new URL(archiveRoot).host,
-        ) && gpgKey,
+          new URL(m.archiveRoot).host,
+        ) && "gpgKey" in m,
     );
 
     assert(mirror);
