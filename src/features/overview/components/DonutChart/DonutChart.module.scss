@@ -57,11 +57,55 @@
   }
 }
 
-.pieChart {
-  margin: 0;
+.svg {
+  display: block;
+  height: 100%;
+  overflow: visible;
   padding: 10px;
+  width: 100%;
 }
 
 .title {
   font-weight: 550;
+}
+
+.ring {
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid $colors--theme--link-default;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity 150ms ease;
+  }
+}
+
+.ring--inactive {
+  opacity: 0.4;
+}
+
+.ring--active {
+  opacity: 1;
+}
+
+.track {
+  stroke: $colors--theme--background-neutral-default;
+}
+
+.centerNumber {
+  dominant-baseline: middle;
+  fill: $colors--theme--text-muted;
+  font-size: 12px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+
+.centerSubLabel {
+  dominant-baseline: middle;
+  fill: $colors--theme--text-muted;
+  font-size: 5px;
+  text-anchor: middle;
 }
