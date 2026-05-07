@@ -110,10 +110,7 @@ const WslProfilesPage: FC = () => {
           isPending={isGettingWslLimits || isGettingWslProfiles}
         />
       </PageContent>
-      <SidePanel
-        onClose={popSidePathUntilClear}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <WslProfileAddSidePanel />

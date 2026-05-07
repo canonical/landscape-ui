@@ -112,10 +112,7 @@ const ScriptProfilesTab: FC = () => {
         }
       />
 
-      <SidePanel
-        onClose={popSidePathUntilClear}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <ScriptProfileAddSidePanel />

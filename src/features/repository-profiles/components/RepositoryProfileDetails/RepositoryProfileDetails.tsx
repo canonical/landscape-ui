@@ -34,8 +34,7 @@ const aptSourceColumns: Column<APTSource>[] = [
 ];
 
 const RepositoryProfileDetails: FC = () => {
-  const { name, closeSidePanel, createSidePathPusher } =
-    usePageParams();
+  const { name, closeSidePanel, createSidePathPusher } = usePageParams();
   const profile = useGetRepositoryProfile(name).data;
   const debug = useDebug();
   const { notify } = useNotify();

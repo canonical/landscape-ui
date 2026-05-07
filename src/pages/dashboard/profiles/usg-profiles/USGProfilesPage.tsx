@@ -155,10 +155,7 @@ const USGProfilesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel
-        onClose={popSidePathUntilClear}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <USGProfileAddSidePanel

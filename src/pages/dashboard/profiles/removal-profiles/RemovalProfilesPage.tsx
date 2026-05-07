@@ -72,10 +72,7 @@ const RemovalProfilesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel
-        isOpen={!!sidePath.length}
-        onClose={popSidePathUntilClear}
-      >
+      <SidePanel isOpen={!!sidePath.length} onClose={popSidePathUntilClear}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <RemovalProfileAddSidePanel />
