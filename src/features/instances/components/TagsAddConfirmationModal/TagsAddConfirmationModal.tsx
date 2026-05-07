@@ -123,6 +123,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
       )}`}
       confirmButtonLabel="Add tags"
       {...props}
+      renderInPortal
     >
       <p>Adding tags could trigger irreversible changes to your instances.</p>
 
