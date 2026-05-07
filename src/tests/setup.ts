@@ -35,6 +35,14 @@ HTMLCanvasElement.prototype.getContext = (() => {
 
 document.queryCommandSupported = vi.fn(() => true);
 
+// jsdom does not implement Element.prototype.scrollIntoView; polyfill as a
+// no-op so components that call it during tests (e.g. for keyboard nav) work.
+if (typeof Element.prototype.scrollIntoView !== "function") {
+  Element.prototype.scrollIntoView = function scrollIntoView() {
+    /* no-op */
+  };
+}
+
 if (typeof globalThis.ProgressEvent === "undefined") {
   class TestProgressEvent extends Event implements ProgressEvent<EventTarget> {
     lengthComputable = false;

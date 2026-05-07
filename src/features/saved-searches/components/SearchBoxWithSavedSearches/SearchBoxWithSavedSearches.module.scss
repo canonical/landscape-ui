@@ -1,3 +1,4 @@
+@import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_placeholders";
 @import "vanilla-framework/scss/settings_spacing";
 
@@ -29,5 +30,19 @@
 
   :global(.p-search-box__input) {
     border-bottom: 0;
+  }
+}
+
+.keyboardHint {
+  border-top: 1px solid $colors--theme--border-default;
+  padding: $spv--small $sph--large;
+
+  kbd {
+    background-color: $colors--theme--background-neutral-default;
+    border: 1px solid $colors--theme--border-default;
+    border-radius: 0.125rem;
+    font-family: inherit;
+    font-size: 0.75em;
+    padding: 0 0.25rem;
   }
 }
