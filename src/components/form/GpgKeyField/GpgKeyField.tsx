@@ -31,14 +31,18 @@ const GpgKeyField: FC<GpgKeyFieldProps> = ({
         <CheckboxInput
           label={keepCurrentLabel}
           checked={keepCurrentKey}
-          onChange={(e) => { onKeepCurrentChange(e.target.checked); }}
+          onChange={(e) => {
+            onKeepCurrentChange(e.target.checked);
+          }}
         />
         {!keepCurrentKey && (
           <Textarea
             label={textareaLabel}
             value={gpgKeyValue ?? ""}
             error={gpgKeyError}
-            onChange={(e) => { onGpgKeyChange(e.target.value); }}
+            onChange={(e) => {
+              onGpgKeyChange(e.target.value);
+            }}
             onBlur={onGpgKeyBlur}
           />
         )}
@@ -51,7 +55,9 @@ const GpgKeyField: FC<GpgKeyFieldProps> = ({
       label={textareaLabel}
       value={gpgKeyValue ?? ""}
       error={gpgKeyError}
-      onChange={(e) => { onGpgKeyChange(e.target.value); }}
+      onChange={(e) => {
+        onGpgKeyChange(e.target.value);
+      }}
       onBlur={onGpgKeyBlur}
     />
   );
