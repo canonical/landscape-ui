@@ -45,6 +45,8 @@ const EditMirrorForm: FC = () => {
       downloadSources: !!mirror.downloadSources,
       downloadInstallerFiles: !!mirror.downloadInstaller,
       verificationGpgKey: mirror.gpgKey?.armor,
+      packageFilter: undefined,
+      includeDependencies: false,
     },
 
     validationSchema: Yup.object().shape({
@@ -62,6 +64,10 @@ const EditMirrorForm: FC = () => {
           downloadSources: values.downloadSources,
           downloadInstaller: values.downloadInstallerFiles,
           gpgKey: { armor: values.verificationGpgKey || null },
+          filter: values.packageFilter || undefined,
+          filterWithDeps: values.packageFilter
+            ? values.includeDependencies
+            : undefined,
         });
 
         closeSidePanel();
@@ -135,7 +141,7 @@ const EditMirrorForm: FC = () => {
                 </Tooltip>
               </div>
               <p className={classes.heading}>Filter options:</p>
-              {/* <Input
+              <Input
                 type="text"
                 label="Package filter"
                 {...formik.getFieldProps("packageFilter")}
@@ -149,7 +155,7 @@ const EditMirrorForm: FC = () => {
                 }
                 disabled={!formik.values.packageFilter}
                 inline
-              /> */}
+              />
               <p className={classes.heading}>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "
