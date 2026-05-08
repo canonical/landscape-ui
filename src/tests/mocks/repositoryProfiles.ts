@@ -165,4 +165,17 @@ export const repositoryProfiles = [
     tags: ["web", "prod"],
     pending_count: 0,
   },
+  {
+    id: 13,
+    name: "repo-profile-no-gpg-key",
+    title: "Repository profile no GPG key",
+    description: "Profile with source missing gpg_key",
+    access_group: "global",
+    all_computers: false,
+    apt_sources: [{ ...aptSources[0], gpg_key: null }],
+    applied_count: 0,
+    pockets: [],
+    tags: [],
+    pending_count: 0,
+  },
 ] as const satisfies RepositoryProfile[];

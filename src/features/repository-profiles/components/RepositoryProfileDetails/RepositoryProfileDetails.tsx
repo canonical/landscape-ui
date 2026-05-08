@@ -16,6 +16,7 @@ import Blocks from "@/components/layout/Blocks/Blocks";
 import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileAssociationBlock/ViewProfileAssociationBlock";
 import { ProfileTypes } from "@/features/profiles";
 import TooltipCell from "@/components/layout/TooltipCell/TooltipCell";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 const SOURCES_PAGE_SIZE = 10;
 
@@ -35,8 +36,10 @@ const aptSourceColumns: Column<APTSource>[] = [
     accessor: "gpg_key.fingerprint",
     Header: "Fingerprint",
     Cell: ({ row: { original } }: CellProps<APTSource>) => (
-      <TooltipCell message={String(original.gpg_key?.fingerprint ?? "")}>
-        {original.gpg_key?.fingerprint}
+      <TooltipCell
+        message={String(original.gpg_key?.fingerprint ?? NO_DATA_TEXT)}
+      >
+        {original.gpg_key?.fingerprint ?? NO_DATA_TEXT}
       </TooltipCell>
     ),
   },

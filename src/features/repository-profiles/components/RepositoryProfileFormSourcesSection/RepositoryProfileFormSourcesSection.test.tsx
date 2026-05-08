@@ -131,7 +131,19 @@ describe("RepositoryProfileFormSourcesSection", () => {
       />,
     );
 
-    expect(screen.getByText(sourceWithoutKey.name)).toBeInTheDocument();
+    expect(screen.getByText("---")).toBeInTheDocument();
+  });
+
+  it("renders (pending) in Fingerprint column when source has gpg_key but is pending", () => {
+    const pendingSourceWithKey = { ...aptSources[0], id: 0 };
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection
+        {...defaultProps}
+        sources={[pendingSourceWithKey]}
+      />,
+    );
+
+    expect(screen.getByText("(pending)")).toBeInTheDocument();
   });
 
   it("shows only the first 10 sources on page 1 when there are more than 10", () => {
