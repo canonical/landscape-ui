@@ -12,34 +12,29 @@ import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { lazy } from "react";
 
-const AddLocalRepositorySidePanel = lazy(async () =>
-  import("@/features/local-repositories").then((module) => ({
-    default: module.AddLocalRepositorySidePanel,
-  })),
+const AddLocalRepositorySidePanel = lazy(
+  async () =>
+    import("@/features/local-repositories/components/AddLocalRepositorySidePanel"),
 );
 
-const ViewLocalRepositorySidePanel = lazy(async () =>
-  import("@/features/local-repositories").then((module) => ({
-    default: module.ViewLocalRepositorySidePanel,
-  })),
+const ViewLocalRepositorySidePanel = lazy(
+  async () =>
+    import("@/features/local-repositories/components/ViewLocalRepositorySidePanel"),
 );
 
-const EditLocalRepositorySidePanel = lazy(async () =>
-  import("@/features/local-repositories").then((module) => ({
-    default: module.EditLocalRepositorySidePanel,
-  })),
+const EditLocalRepositorySidePanel = lazy(
+  async () =>
+    import("@/features/local-repositories/components/EditLocalRepositorySidePanel"),
 );
 
-const ImportRepositoryPackagesSidePanel = lazy(async () =>
-  import("@/features/local-repositories").then((module) => ({
-    default: module.ImportRepositoryPackagesSidePanel,
-  })),
+const ImportRepositoryPackagesSidePanel = lazy(
+  async () =>
+    import("@/features/local-repositories/components/ImportRepositoryPackagesSidePanel"),
 );
 
-const PublishLocalRepositorySidePanel = lazy(async () =>
-  import("@/features/local-repositories").then((module) => ({
-    default: module.PublishLocalRepositorySidePanel,
-  })),
+const PublishLocalRepositorySidePanel = lazy(
+  async () =>
+    import("@/features/local-repositories/components/PublishLocalRepositorySidePanel"),
 );
 
 const LocalRepositoriesPage: FC = () => {

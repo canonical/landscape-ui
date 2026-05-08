@@ -63,10 +63,8 @@ const EditInstance = lazy(
   async () =>
     import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
 );
-const RunInstanceScriptForm = lazy(async () =>
-  import("@/features/scripts").then((module) => ({
-    default: module.RunInstanceScriptForm,
-  })),
+const RunInstanceScriptForm = lazy(
+  async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
 
 const AssignEmployeeToInstanceForm = lazy(

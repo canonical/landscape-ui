@@ -15,16 +15,14 @@ import {
 import { lazy, type FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 
-const AddPublicationTargetForm = lazy(async () =>
-  import("@/features/publication-targets").then((module) => ({
-    default: module.AddPublicationTargetForm,
-  })),
+const AddPublicationTargetForm = lazy(
+  async () =>
+    import("@/features/publication-targets/components/AddPublicationTargetForm"),
 );
 
-const EditTargetForm = lazy(async () =>
-  import("@/features/publication-targets").then((module) => ({
-    default: module.EditTargetForm,
-  })),
+const EditTargetForm = lazy(
+  async () =>
+    import("@/features/publication-targets/components/EditTargetForm"),
 );
 
 const PublicationTargetsPage: FC = () => {

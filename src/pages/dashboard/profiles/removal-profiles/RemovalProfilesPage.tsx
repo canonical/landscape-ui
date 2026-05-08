@@ -18,16 +18,14 @@ import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const RemovalProfileAddSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileAddSidePanel,
-  })),
+const RemovalProfileAddSidePanel = lazy(
+  async () =>
+    import("@/features/removal-profiles/components/RemovalProfileAddSidePanel"),
 );
 
-const RemovalProfileEditSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileEditSidePanel,
-  })),
+const RemovalProfileEditSidePanel = lazy(
+  async () =>
+    import("@/features/removal-profiles/components/RemovalProfileEditSidePanel"),
 );
 
 const RemovalProfilesPage: FC = () => {

@@ -19,16 +19,14 @@ import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const UpgradeProfileAddSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileAddSidePanel,
-  })),
+const UpgradeProfileAddSidePanel = lazy(
+  () =>
+    import("@/features/upgrade-profiles/components/UpgradeProfileAddSidePanel"),
 );
 
-const UpgradeProfileEditSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileEditSidePanel,
-  })),
+const UpgradeProfileEditSidePanel = lazy(
+  () =>
+    import("@/features/upgrade-profiles/components/UpgradeProfileEditSidePanel"),
 );
 
 const UpgradeProfilesPage: FC = () => {

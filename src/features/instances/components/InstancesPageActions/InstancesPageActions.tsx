@@ -20,15 +20,11 @@ import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
 
-const RunInstanceScriptForm = lazy(async () =>
-  import("@/features/scripts").then((module) => ({
-    default: module.RunInstanceScriptForm,
-  })),
+const RunInstanceScriptForm = lazy(
+  async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
-const Upgrades = lazy(async () =>
-  import("@/features/upgrades").then((module) => ({
-    default: module.Upgrades,
-  })),
+const Upgrades = lazy(
+  async () => import("@/features/upgrades/components/Upgrades"),
 );
 const ReportView = lazy(
   async () => import("@/pages/dashboard/instances/ReportView"),
@@ -38,15 +34,11 @@ const DistributionUpgrades = lazy(
   async () => import("../DistributionUpgrades"),
 );
 const TagsAddForm = lazy(async () => import("../TagsAddForm"));
-const AttachTokenForm = lazy(async () =>
-  import("@/features/ubuntupro").then((module) => ({
-    default: module.AttachTokenForm,
-  })),
+const AttachTokenForm = lazy(
+  async () => import("@/features/ubuntupro/components/AttachTokenForm"),
 );
-const ReplaceTokenForm = lazy(async () =>
-  import("@/features/ubuntupro").then((module) => ({
-    default: module.ReplaceTokenForm,
-  })),
+const ReplaceTokenForm = lazy(
+  async () => import("@/features/ubuntupro/components/ReplaceTokenForm"),
 );
 
 interface InstancesPageActionsProps {

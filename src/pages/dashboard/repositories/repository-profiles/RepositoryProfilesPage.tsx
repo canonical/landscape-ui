@@ -12,22 +12,19 @@ import usePageParams from "@/hooks/usePageParams";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import { lazy, type FC } from "react";
 
-const RepositoryProfileAddSidePanel = lazy(async () =>
-  import("@/features/repository-profiles").then((module) => ({
-    default: module.RepositoryProfileAddSidePanel,
-  })),
+const RepositoryProfileAddSidePanel = lazy(
+  async () =>
+    import("@/features/repository-profiles/components/RepositoryProfileAddSidePanel"),
 );
 
-const RepositoryProfileDetails = lazy(async () =>
-  import("@/features/repository-profiles").then((module) => ({
-    default: module.RepositoryProfileDetails,
-  })),
+const RepositoryProfileDetails = lazy(
+  async () =>
+    import("@/features/repository-profiles/components/RepositoryProfileDetails"),
 );
 
-const RepositoryProfileEditForm = lazy(async () =>
-  import("@/features/repository-profiles").then((module) => ({
-    default: module.RepositoryProfileEditForm,
-  })),
+const RepositoryProfileEditForm = lazy(
+  async () =>
+    import("@/features/repository-profiles/components/RepositoryProfileEditForm"),
 );
 
 const RepositoryProfilesPage: FC = () => {

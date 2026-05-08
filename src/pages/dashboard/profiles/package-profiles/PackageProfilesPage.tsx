@@ -18,34 +18,29 @@ import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const PackageProfileAddSidePanel = lazy(async () =>
-  import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileAddSidePanel,
-  })),
+const PackageProfileAddSidePanel = lazy(
+  async () =>
+    import("@/features/package-profiles/components/PackageProfileAddSidePanel"),
 );
 
-const PackageProfileConstraintsAddSidePanel = lazy(async () =>
-  import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsAddSidePanel,
-  })),
+const PackageProfileConstraintsAddSidePanel = lazy(
+  async () =>
+    import("@/features/package-profiles/components/PackageProfileConstraintsAddSidePanel"),
 );
 
-const PackageProfileConstraintsEditSidePanel = lazy(async () =>
-  import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileConstraintsEditSidePanel,
-  })),
+const PackageProfileConstraintsEditSidePanel = lazy(
+  async () =>
+    import("@/features/package-profiles/components/PackageProfileConstraintsEditSidePanel"),
 );
 
-const PackageProfileDuplicateSidePanel = lazy(async () =>
-  import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileDuplicateSidePanel,
-  })),
+const PackageProfileDuplicateSidePanel = lazy(
+  async () =>
+    import("@/features/package-profiles/components/PackageProfileDuplicateSidePanel"),
 );
 
-const PackageProfileEditSidePanel = lazy(async () =>
-  import("@/features/package-profiles").then((module) => ({
-    default: module.PackageProfileEditSidePanel,
-  })),
+const PackageProfileEditSidePanel = lazy(
+  async () =>
+    import("@/features/package-profiles/components/PackageProfileEditSidePanel"),
 );
 
 const PackageProfilesPage: FC = () => {

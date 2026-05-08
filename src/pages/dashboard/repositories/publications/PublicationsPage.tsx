@@ -5,16 +5,13 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { lazy, type FC } from "react";
 
-const AddPublicationForm = lazy(async () =>
-  import("@/features/publications").then((module) => ({
-    default: module.AddPublicationForm,
-  })),
+const AddPublicationForm = lazy(
+  async () => import("@/features/publications/components/AddPublicationForm"),
 );
 
-const PublicationDetailsSidePanel = lazy(async () =>
-  import("@/features/publications").then((module) => ({
-    default: module.PublicationDetailsSidePanel,
-  })),
+const PublicationDetailsSidePanel = lazy(
+  async () =>
+    import("@/features/publications/components/PublicationDetailsSidePanel"),
 );
 
 const PublicationsPage: FC = () => {

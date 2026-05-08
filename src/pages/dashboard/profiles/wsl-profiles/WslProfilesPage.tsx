@@ -21,16 +21,12 @@ import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
 
-const WslProfileAddSidePanel = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileAddSidePanel,
-  })),
+const WslProfileAddSidePanel = lazy(
+  () => import("@/features/wsl-profiles/components/WslProfileAddSidePanel"),
 );
 
-const WslProfileEditSidePanel = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileEditSidePanel,
-  })),
+const WslProfileEditSidePanel = lazy(
+  () => import("@/features/wsl-profiles/components/WslProfileEditSidePanel"),
 );
 
 const WslProfilesPage: FC = () => {

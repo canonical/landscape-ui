@@ -22,34 +22,29 @@ import { useBoolean } from "usehooks-ts";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import { ProfileTypes } from "@/features/profiles";
 
-const USGProfileAddSidePanel = lazy(() =>
-  import("@/features/usg-profiles").then((module) => ({
-    default: module.USGProfileAddSidePanel,
-  })),
+const USGProfileAddSidePanel = lazy(
+  () =>
+    import("@/features/usg-profiles/components/USGProfileAddSidePanel/USGProfileAddSidePanel"),
 );
 
-const USGProfileDownloadAuditSidePanel = lazy(() =>
-  import("@/features/usg-profiles").then((module) => ({
-    default: module.USGProfileDownloadAuditSidePanel,
-  })),
+const USGProfileDownloadAuditSidePanel = lazy(
+  () =>
+    import("@/features/usg-profiles/components/USGProfileDownloadAuditSidePanel/USGProfileDownloadAuditSidePanel"),
 );
 
-const USGProfileDuplicateSidePanel = lazy(() =>
-  import("@/features/usg-profiles").then((module) => ({
-    default: module.USGProfileDuplicateSidePanel,
-  })),
+const USGProfileDuplicateSidePanel = lazy(
+  () =>
+    import("@/features/usg-profiles/components/USGProfileDuplicateSidePanel/USGProfileDuplicateSidePanel"),
 );
 
-const USGProfileEditSidePanel = lazy(() =>
-  import("@/features/usg-profiles").then((module) => ({
-    default: module.USGProfileEditSidePanel,
-  })),
+const USGProfileEditSidePanel = lazy(
+  () =>
+    import("@/features/usg-profiles/components/USGProfileEditSidePanel/USGProfileEditSidePanel"),
 );
 
-const USGProfileRunFixSidePanel = lazy(() =>
-  import("@/features/usg-profiles").then((module) => ({
-    default: module.USGProfileRunFixSidePanel,
-  })),
+const USGProfileRunFixSidePanel = lazy(
+  () =>
+    import("@/features/usg-profiles/components/USGProfileRunFixSidePanel/USGProfileRunFixSidePanel"),
 );
 
 const USGProfilesPage: FC = () => {

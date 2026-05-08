@@ -1,13 +1,18 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import LoadingState from "@/components/layout/LoadingState";
 import { redirectToExternalUrl } from "@/features/auth";
-import { ScriptsContainer, ScriptsTabs } from "@/features/scripts";
+import { ScriptsTabs } from "@/features/scripts";
 import useAuth from "@/hooks/useAuth";
 import useFetch from "@/hooks/useFetch";
 import { Button, Notification } from "@canonical/react-components";
-import type { FC } from "react";
+import { lazy, Suspense, type FC } from "react";
 import { useBoolean } from "usehooks-ts";
+
+const ScriptsContainer = lazy(
+  async () => import("@/features/scripts/components/ScriptsContainer"),
+);
 
 const ScriptsPage: FC = () => {
   const { isFeatureEnabled } = useAuth();
@@ -47,7 +52,9 @@ const ScriptsPage: FC = () => {
         {isFeatureEnabled("script-profiles") ? (
           <ScriptsTabs />
         ) : (
-          <ScriptsContainer />
+          <Suspense fallback={<LoadingState />}>
+            <ScriptsContainer />
+          </Suspense>
         )}
       </PageContent>
     </PageMain>
