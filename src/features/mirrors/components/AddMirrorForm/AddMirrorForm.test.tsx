@@ -129,7 +129,7 @@ describe("AddMirrorForm", () => {
   });
 
   it("submits a mirror with preserve signatures enabled", async () => {
-    await user.click(screen.getByLabelText("Preserve signatures"));
+    await user.click(screen.getByLabelText("Preserve upstream signing key"));
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(

@@ -154,7 +154,7 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    const checkbox = screen.getByLabelText("Preserve signatures");
+    const checkbox = screen.getByLabelText("Preserve upstream signing key");
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
   });

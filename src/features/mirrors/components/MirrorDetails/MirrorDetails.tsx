@@ -152,6 +152,11 @@ const MirrorDetails: FC = () => {
                   }
                   large
                 />
+
+                <InfoGrid.Item
+                  label="Preserve upstream signing key"
+                  value={boolToLabel(mirror.preserveSignatures)}
+                />
                 <InfoGrid.Item
                   label="Last update"
                   value={
@@ -187,15 +192,7 @@ const MirrorDetails: FC = () => {
                   value={mirror.architectures?.join(", ")}
                   large
                 />
-                <InfoGrid.Item
-                  label="Preserve signatures"
-                  value={boolToLabel(mirror.preserveSignatures)}
-                />
-                <InfoGrid.Item
-                  label="Package filter"
-                  value={mirror.filter}
-                  large
-                />
+                <InfoGrid.Item label="Filter" value={mirror.filter} large />
                 {mirror.filter && (
                   <InfoGrid.Item
                     label="Include dependencies in filter"

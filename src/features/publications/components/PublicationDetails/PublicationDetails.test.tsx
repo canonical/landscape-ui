@@ -12,7 +12,7 @@ import moment from "moment";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
-  const [publication] = publications;
+  const [publication, publicationWithKey] = publications;
 
   const sourceDisplayName =
     mirrors.find((m) => m.name === publication.source)?.displayName ??
@@ -54,6 +54,21 @@ describe("PublicationDetails", () => {
     for (const { label, value } of infoItems) {
       expect(container).toHaveInfoItem(label, value);
     }
+  });
+
+  it("renders GPG key fingerprint when it exists", async () => {
+    const { container } = renderWithProviders(
+      <PublicationDetails
+        publication={publicationWithKey}
+        sourceDisplayName={sourceDisplayName}
+        publicationTargetDisplayName={publicationTargetDisplayName}
+      />,
+    );
+
+    expect(container).toHaveInfoItem(
+      "Signing GPG Key",
+      publicationWithKey.gpgKey?.fingerprint,
+    );
   });
 
   it("opens republish modal", async () => {

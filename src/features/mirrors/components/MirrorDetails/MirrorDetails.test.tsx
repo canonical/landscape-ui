@@ -18,6 +18,61 @@ describe("MirrorDetails", () => {
     );
 
     await expectLoadingState();
+
+    expect(
+      screen.getByRole("heading", { name: mirrors[0].displayName }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { name: "Details" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Source type")).toBeInTheDocument();
+    expect(screen.getByText("Source URL")).toBeInTheDocument();
+    expect(screen.getByText("Last update")).toBeInTheDocument();
+    expect(screen.getAllByText("Packages")).toHaveLength(2);
+
+    expect(
+      screen.getByRole("heading", { name: "Contents" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Distribution")).toBeInTheDocument();
+    expect(screen.getByText("Components")).toBeInTheDocument();
+    expect(screen.getByText("Architectures")).toBeInTheDocument();
+    expect(
+      screen.getByText("Preserve upstream signing key"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Filter")).toBeInTheDocument();
+    expect(screen.getByText(/Download .udeb/i)).toBeInTheDocument();
+    expect(screen.getByText("Download sources")).toBeInTheDocument();
+    expect(screen.getByText(/Download installer files/i)).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", { name: "Authentication" }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { name: "Used in" }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders GPG key fingerprint", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[2].name}`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByRole("heading", { name: "Authentication" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Verification GPG Key")).toBeInTheDocument();
+    expect(
+      screen.getByText(mirrors[2].gpgKey?.fingerprint),
+    ).toBeInTheDocument();
   });
 
   it("displays preserve signatures status", async () => {
@@ -37,7 +92,7 @@ describe("MirrorDetails", () => {
 
     await expectLoadingState();
 
-    const label = screen.getByText("Preserve signatures");
+    const label = screen.getByText("Preserve upstream signing key");
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
   });
