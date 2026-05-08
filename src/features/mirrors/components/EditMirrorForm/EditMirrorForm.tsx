@@ -112,6 +112,19 @@ const EditMirrorForm: FC = () => {
                 value={mirror.archiveRoot}
                 tooltipMessage="You can’t change the source URL after the mirror is created."
               />
+              <CheckboxInput
+                label="Preserve upstream signing key"
+                {...formik.getFieldProps("preserveSignatures")}
+                checked={formik.values.preserveSignatures}
+                disabled
+                inline
+              />{" "}
+              <Tooltip
+                position="right"
+                message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
+              >
+                <Icon name={ICONS.help} />
+              </Tooltip>
             </Blocks.Item>
             <Blocks.Item title="Mirror contents">
               <ReadOnlyField
@@ -129,29 +142,14 @@ const EditMirrorForm: FC = () => {
                 value={mirror.architectures?.join(", ") || NO_DATA_TEXT}
                 tooltipMessage="You can’t change the architectures after the mirror is created."
               />
-              <div className="u-sv2">
-                <CheckboxInput
-                  label="Preserve signatures"
-                  {...formik.getFieldProps("preserveSignatures")}
-                  checked={formik.values.preserveSignatures}
-                  disabled
-                  inline
-                />{" "}
-                <Tooltip
-                  position="right"
-                  message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
-                >
-                  <Icon name={ICONS.help} />
-                </Tooltip>
-              </div>
-              <p className={classes.heading}>Filter options:</p>
               <div className={classes.wrapper}>
                 <div className={classes.formContainer}>
                   <Input
                     type="text"
-                    label="Package filter"
+                    label="Filter"
                     {...formik.getFieldProps("packageFilter")}
                     disabled={formik.values.preserveSignatures}
+                    help="The filter limits what packages are mirrored."
                   />
                 </div>
                 <MirrorFilterHelpButton />

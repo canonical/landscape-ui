@@ -260,6 +260,18 @@ const AddMirrorForm: FC = () => {
                   tooltipMessage="The source URL is set automatically by the source type."
                 />
               )}
+              <CheckboxInput
+                label="Preserve upstream signing key"
+                {...formik.getFieldProps("preserveSignatures")}
+                checked={formik.values.preserveSignatures}
+                inline
+              />{" "}
+              <Tooltip
+                position="right"
+                message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
+              >
+                <Icon name={ICONS.help} />
+              </Tooltip>
             </Blocks.Item>
             <Blocks.Item
               title="Mirror contents"
@@ -351,28 +363,14 @@ const AddMirrorForm: FC = () => {
                   isLoading={isMirrorContentsLoading}
                 />
               )}
-              <div className="u-sv2">
-                <CheckboxInput
-                  label="Preserve signatures"
-                  {...formik.getFieldProps("preserveSignatures")}
-                  checked={formik.values.preserveSignatures}
-                  inline
-                />{" "}
-                <Tooltip
-                  position="right"
-                  message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
-                >
-                  <Icon name={ICONS.help} />
-                </Tooltip>
-              </div>
-              <p className={classes.heading}>Filter options:</p>
               <div className={classes.wrapper}>
                 <div className={classes.formContainer}>
                   <Input
                     type="text"
-                    label="Package filter"
+                    label="Filter"
                     {...formik.getFieldProps("packageFilter")}
                     disabled={formik.values.preserveSignatures}
+                    help="The filter limits what packages are mirrored."
                   />
                 </div>
                 <MirrorFilterHelpButton />

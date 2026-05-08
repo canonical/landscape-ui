@@ -94,6 +94,13 @@ const PublicationDetails = ({
                   : NO_DATA_TEXT
               }
             />
+
+            {publication.gpgKey && (
+              <InfoGrid.Item
+                label="Signing GPG Key"
+                value={publication.gpgKey.fingerprint}
+              />
+            )}
           </InfoGrid>
         </Blocks.Item>
 

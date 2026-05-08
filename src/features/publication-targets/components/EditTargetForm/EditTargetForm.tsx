@@ -8,7 +8,6 @@ import {
   CheckboxInput,
   Form,
   Input,
-  Select,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -19,7 +18,6 @@ import type {
 import useNotify from "@/hooks/useNotify";
 import {
   EMPTY_VALUES,
-  LINK_METHOD_OPTIONS,
   TARGET_TYPE_LABELS,
   VALIDATION_SCHEMA,
 } from "../../constants";
@@ -343,11 +341,10 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
             tooltipMessage="The path cannot be changed after the target has been created. To use a different path, create a new publication target."
             {...formik.getFieldProps("path")}
           />
-          <Select
+          <ReadOnlyField
             label="Link method"
-            options={LINK_METHOD_OPTIONS}
-            error={getFormikError(formik, "linkMethod")}
             {...formik.getFieldProps("linkMethod")}
+            tooltipMessage="The link method cannot be changed after the target has been created. To use a different link method, create a new publication target."
           />
         </>
       )}
