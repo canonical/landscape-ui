@@ -12,6 +12,7 @@ const TooltipCell: FC<TooltipCellProps> = ({ message, children }) => (
     <Tooltip
       message={message}
       positionElementClassName={classes.tooltipWrapper}
+      tooltipClassName={classes.tooltipMessage}
     >
       {children}
     </Tooltip>

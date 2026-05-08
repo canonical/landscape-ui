@@ -65,12 +65,14 @@ const RepositoryProfileFormSourcesSection: FC<
         ),
       },
       {
-        id: "key_id",
-        accessor: (row: SourceRow) => row.source.gpg_key?.key_id ?? "",
-        Header: "Key ID",
+        id: "fingerprint",
+        accessor: (row: SourceRow) => row.source.gpg_key?.fingerprint ?? "",
+        Header: "Fingerprint",
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
-          <TooltipCell message={String(original.source.gpg_key?.key_id ?? "")}>
-            {original.source.gpg_key?.key_id}
+          <TooltipCell
+            message={String(original.source.gpg_key?.fingerprint ?? "")}
+          >
+            {original.source.gpg_key?.fingerprint}
           </TooltipCell>
         ),
       },

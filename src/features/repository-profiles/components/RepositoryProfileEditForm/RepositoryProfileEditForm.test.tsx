@@ -133,11 +133,11 @@ describe("RepositoryProfileEditForm", () => {
     );
   });
 
-  it("renders gpg_key.key_id in the sources table", async () => {
+  it("renders gpg_key.fingerprint in the sources table", async () => {
     renderEditForm("view,edit");
 
     await screen.findByText(aptSources[0].name);
-    expect(screen.getByText("KEY1ID00")).toBeInTheDocument();
+    expect(screen.getByText("AAAA1111")).toBeInTheDocument();
   });
 
   it("removing a source removes it from the sources table", async () => {

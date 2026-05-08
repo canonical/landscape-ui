@@ -101,16 +101,16 @@ describe("RepositoryProfileFormSourcesSection", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders Deb line and Key ID column headers", () => {
+  it("renders Deb line and Fingerprint column headers", () => {
     renderWithProviders(
       <RepositoryProfileFormSourcesSection {...defaultProps} />,
     );
 
     expect(screen.getByText("Deb line")).toBeInTheDocument();
-    expect(screen.getByText("Key ID")).toBeInTheDocument();
+    expect(screen.getByText("Fingerprint")).toBeInTheDocument();
   });
 
-  it("renders gpg_key.key_id in the Key ID column", () => {
+  it("renders gpg_key.fingerprint in the Fingerprint column", () => {
     const [first] = aptSources;
     renderWithProviders(
       <RepositoryProfileFormSourcesSection
@@ -119,10 +119,10 @@ describe("RepositoryProfileFormSourcesSection", () => {
       />,
     );
 
-    expect(screen.getByText(first.gpg_key!.key_id)).toBeInTheDocument();
+    expect(screen.getByText(first.gpg_key!.fingerprint)).toBeInTheDocument();
   });
 
-  it("renders empty Key ID cell when gpg_key is null", () => {
+  it("renders empty Fingerprint cell when gpg_key is null", () => {
     const sourceWithoutKey = { ...aptSources[0], gpg_key: null };
     renderWithProviders(
       <RepositoryProfileFormSourcesSection
