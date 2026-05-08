@@ -139,6 +139,24 @@ describe("AddMirrorForm", () => {
     );
   });
 
+  it("clears package filter and include dependencies when preserve signatures is enabled", async () => {
+    const packageFilterField = screen.getByLabelText("Package filter");
+    const includeDepsCheckbox = screen.getByLabelText(
+      "Include dependencies in filter",
+    );
+
+    await user.type(packageFilterField, "nginx*");
+    await user.click(includeDepsCheckbox);
+
+    expect(packageFilterField).toHaveValue("nginx*");
+    expect(includeDepsCheckbox).toBeChecked();
+
+    await user.click(screen.getByLabelText("Preserve signatures"));
+
+    expect(packageFilterField).toHaveValue("");
+    expect(includeDepsCheckbox).not.toBeChecked();
+  });
+
   it("submits a third-party mirror", async () => {
     const params = {
       archiveRoot: "https://archive.ubuntu.com/",
