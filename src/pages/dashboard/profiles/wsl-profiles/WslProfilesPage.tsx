@@ -13,7 +13,6 @@ import {
   useRemoveWslProfile,
 } from "@/features/wsl-profiles";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
-import { Notification } from "@canonical/react-components";
 import { lazy, useEffect, type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
@@ -93,16 +92,6 @@ const WslProfilesPage: FC = () => {
         }
       />
       <PageContent hasTable>
-        <Notification severity="caution" title="WSL profiles is a beta feature">
-          We are gathering feedback to improve this feature.{" "}
-          <a
-            target="_blank"
-            rel="noreferrer noopener nofollow"
-            href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
-          >
-            Share your feedback
-          </a>
-        </Notification>
         <ProfilesContainer
           type={ProfileTypes.wsl}
           profiles={wslProfiles}

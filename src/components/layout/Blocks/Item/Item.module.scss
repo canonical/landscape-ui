@@ -9,6 +9,12 @@
   }
 }
 
+:global(.p-panel__content) {
+  .item:first-child {
+    padding-top: 0;
+  }
+}
+
 .heading {
   margin: 0 0 $sp-unit * 4;
   padding: 0;
