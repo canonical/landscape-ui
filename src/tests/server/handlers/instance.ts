@@ -25,7 +25,11 @@ import {
   pendingInstances,
 } from "@/tests/mocks/instance";
 import { userGroups } from "@/tests/mocks/userGroup";
-import type { Instance, PendingInstance } from "@/types/Instance";
+import type {
+  Instance,
+  InstanceAlert,
+  PendingInstance,
+} from "@/types/Instance";
 import type { GroupsResponse, Group } from "@/types/User";
 import { delay, http, HttpResponse } from "msw";
 import {
@@ -34,6 +38,24 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
+
+function isUpgradeAlert(alert: InstanceAlert) {
+  return ["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(alert.type);
+}
+
+function hasSecurityUpgrades(instance: Instance) {
+  return instance.alerts?.some(
+    (alert) => alert.type === "SecurityUpgradesAlert",
+  );
+}
+
+function hasUpgrades(instance: Instance) {
+  return instance.alerts?.some(isUpgradeAlert);
+}
+
+function isUpToDate(instance: Instance) {
+  return !hasUpgrades(instance);
+}
 
 function matchComputersQuery(
   query: string,
@@ -71,6 +93,33 @@ function matchComputersQuery(
   if (query.includes("access-group:empty-access-group")) {
     return HttpResponse.json(
       generatePaginatedResponse<Instance>({ data: [], limit, offset }),
+    );
+  }
+  if (query.includes("NOT alert:package-upgrades")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: instances.filter(isUpToDate),
+        limit,
+        offset,
+      }),
+    );
+  }
+  if (query.includes("alert:package-upgrades")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: instances.filter(hasUpgrades),
+        limit,
+        offset,
+      }),
+    );
+  }
+  if (query.includes("alert:security-upgrades")) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: instances.filter(hasSecurityUpgrades),
+        limit,
+        offset,
+      }),
     );
   }
   if (
