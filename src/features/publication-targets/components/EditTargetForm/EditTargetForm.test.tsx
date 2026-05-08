@@ -190,7 +190,7 @@ describe("EditTargetForm", () => {
     it("pre-populates linkMethod as read-only", () => {
       renderWithProviders(<EditTargetForm target={filesystemTarget} />);
 
-      expect(screen.getByText(filesystem.linkMethod ?? "")).toBeInTheDocument();
+      expect(screen.getByText("Hardlink")).toBeInTheDocument();
     });
 
     it("submits and shows success notification", async () => {

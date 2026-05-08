@@ -14,6 +14,7 @@ import type {
 import useNotify from "@/hooks/useNotify";
 import {
   EMPTY_VALUES,
+  LINK_METHOD_OPTIONS,
   TARGET_TYPE_LABELS,
   VALIDATION_SCHEMA,
 } from "../../constants";
@@ -339,7 +340,11 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           />
           <ReadOnlyField
             label="Link method"
-            {...formik.getFieldProps("linkMethod")}
+            value={
+              LINK_METHOD_OPTIONS.find(
+                (o) => o.value === formik.getFieldProps("linkMethod").value,
+              )?.label
+            }
             tooltipMessage="The link method cannot be changed after the target has been created. To use a different link method, create a new publication target."
           />
         </>
