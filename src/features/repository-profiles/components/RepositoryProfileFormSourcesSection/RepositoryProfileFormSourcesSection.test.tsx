@@ -101,7 +101,7 @@ describe("RepositoryProfileFormSourcesSection", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders all three column headers", () => {
+  it("renders Deb line and Key ID column headers", () => {
     renderWithProviders(
       <RepositoryProfileFormSourcesSection {...defaultProps} />,
     );
