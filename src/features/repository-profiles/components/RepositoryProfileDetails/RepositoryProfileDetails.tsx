@@ -32,7 +32,7 @@ const aptSourceColumns: Column<APTSource>[] = [
     ),
   },
   {
-    accessor: "key_id",
+    accessor: "gpg_key.key_id",
     Header: "Key ID",
     Cell: ({ row: { original } }: CellProps<APTSource>) => (
       <TooltipCell message={String(original.gpg_key?.key_id ?? "")}>

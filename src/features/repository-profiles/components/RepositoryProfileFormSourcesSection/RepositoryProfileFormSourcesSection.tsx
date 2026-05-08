@@ -65,7 +65,8 @@ const RepositoryProfileFormSourcesSection: FC<
         ),
       },
       {
-        accessor: "key_id",
+        id: "key_id",
+        accessor: (row: SourceRow) => row.source.gpg_key?.key_id ?? "",
         Header: "Key ID",
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
           <TooltipCell message={String(original.source.gpg_key?.key_id ?? "")}>
