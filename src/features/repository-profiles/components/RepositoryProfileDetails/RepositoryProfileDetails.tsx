@@ -31,6 +31,15 @@ const aptSourceColumns: Column<APTSource>[] = [
       <TooltipCell message={original.line}>{original.line}</TooltipCell>
     ),
   },
+  {
+    accessor: "key_id",
+    Header: "Key ID",
+    Cell: ({ row: { original } }: CellProps<APTSource>) => (
+      <TooltipCell message={String(original.gpg_key?.key_id ?? "")}>
+        {original.gpg_key?.key_id}
+      </TooltipCell>
+    ),
+  },
 ];
 
 const RepositoryProfileDetails: FC = () => {
@@ -118,7 +127,7 @@ const RepositoryProfileDetails: FC = () => {
             profile={profile}
             type={ProfileTypes.repository}
           />
-          <Blocks.Item title="Sources" titleClassName="p-text--small-caps">
+          <Blocks.Item title="Sources">
             <ModularTable
               columns={aptSourceColumns}
               data={pagedSources}

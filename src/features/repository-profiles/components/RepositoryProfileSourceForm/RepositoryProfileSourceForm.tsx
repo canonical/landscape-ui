@@ -29,7 +29,15 @@ const RepositoryProfileSourceForm: FC<RepositoryProfileSourceFormProps> = ({
         profiles: [],
         name: values.name,
         line: values.deb_line,
-        gpg_key: values.gpg_key_name || null,
+        gpg_key: values.gpg_key_name
+          ? {
+              id: 0,
+              name: values.gpg_key_name,
+              key_id: "",
+              fingerprint: "",
+              has_secret: false,
+            }
+          : null,
       };
       onSuccess(source);
     },

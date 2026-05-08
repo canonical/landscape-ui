@@ -74,7 +74,7 @@ export default function useRepositoryProfiles() {
           ({ name: sourceName, line, gpg_key }) => ({
             name: sourceName,
             line,
-            gpg_key: gpg_key ? { content: gpg_key } : null,
+            gpg_key: gpg_key ? { content: gpg_key.name } : null,
           }),
         ),
       });
@@ -102,7 +102,7 @@ export default function useRepositoryProfiles() {
           ({ name: sourceName, line, gpg_key }) => ({
             name: sourceName,
             line,
-            gpg_key: gpg_key ? { content: gpg_key } : null,
+            gpg_key: gpg_key ? { content: gpg_key.name } : null,
           }),
         ),
       });

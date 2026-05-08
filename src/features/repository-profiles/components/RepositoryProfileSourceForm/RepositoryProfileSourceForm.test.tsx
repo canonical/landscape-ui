@@ -75,7 +75,13 @@ describe("RepositoryProfileSourceForm", () => {
       profiles: [],
       name: "my-source",
       line: "deb http://example.com/ubuntu focal main",
-      gpg_key: "sign-key",
+      gpg_key: {
+        id: 0,
+        name: "sign-key",
+        key_id: "",
+        fingerprint: "",
+        has_secret: false,
+      },
     };
 
     expect(defaultProps.onSuccess).toHaveBeenCalledWith(expected);
@@ -110,6 +116,45 @@ describe("RepositoryProfileSourceForm", () => {
 
     expect(
       await screen.findByText(/name must start with alphanumeric/i),
+    ).toBeInTheDocument();
+  });
+
+  it("pre-populates fields from initialValues", () => {
+    const initialValues = {
+      name: "existing-source",
+      deb_line: "deb http://archive.ubuntu.com/ubuntu focal main",
+      gpg_key_name: "my-gpg-key",
+    };
+    renderWithProviders(
+      <RepositoryProfileSourceForm
+        {...defaultProps}
+        initialValues={initialValues}
+      />,
+    );
+
+    expect(screen.getByLabelText(/source name/i)).toHaveValue(
+      "existing-source",
+    );
+    expect(screen.getByLabelText(/deb line/i)).toHaveValue(
+      "deb http://archive.ubuntu.com/ubuntu focal main",
+    );
+    expect(screen.getByLabelText(/gpg key/i)).toHaveValue("my-gpg-key");
+  });
+
+  it("shows Save changes button text when initialValues provided", () => {
+    renderWithProviders(
+      <RepositoryProfileSourceForm
+        {...defaultProps}
+        initialValues={{
+          name: "s",
+          deb_line: "deb http://x.com focal main",
+          gpg_key_name: "",
+        }}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: /save changes/i }),
     ).toBeInTheDocument();
   });
 });

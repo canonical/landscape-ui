@@ -100,4 +100,61 @@ describe("RepositoryProfileFormSourcesSection", () => {
       screen.queryByText("At least one source is required."),
     ).not.toBeInTheDocument();
   });
+
+  it("renders all three column headers", () => {
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
+
+    expect(screen.getByText("Deb line")).toBeInTheDocument();
+    expect(screen.getByText("Key ID")).toBeInTheDocument();
+  });
+
+  it("renders gpg_key.key_id in the Key ID column", () => {
+    const [first] = aptSources;
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection
+        {...defaultProps}
+        sources={[first]}
+      />,
+    );
+
+    expect(screen.getByText(first.gpg_key!.key_id)).toBeInTheDocument();
+  });
+
+  it("renders empty Key ID cell when gpg_key is null", () => {
+    const sourceWithoutKey = { ...aptSources[0], gpg_key: null };
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection
+        {...defaultProps}
+        sources={[sourceWithoutKey]}
+      />,
+    );
+
+    expect(screen.getByText(sourceWithoutKey.name)).toBeInTheDocument();
+  });
+
+  it("shows only the first 10 sources on page 1 when there are more than 10", () => {
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
+
+    expect(screen.getByText("source1")).toBeInTheDocument();
+    expect(screen.getByText("source10")).toBeInTheDocument();
+    expect(screen.queryByText("source11")).not.toBeInTheDocument();
+  });
+
+  it("navigating to the next page shows remaining sources", async () => {
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
+
+    expect(screen.queryByText("source11")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(screen.getByText("source11")).toBeInTheDocument();
+    expect(screen.getByText("source12")).toBeInTheDocument();
+    expect(screen.queryByText("source1")).not.toBeInTheDocument();
+  });
 });
