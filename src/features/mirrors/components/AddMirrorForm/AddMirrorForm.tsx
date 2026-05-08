@@ -134,6 +134,14 @@ const AddMirrorForm: FC = () => {
     disabled: !isArchiveInfoValid(proService),
   }));
 
+  useEffect(() => {
+    if (formik.values.preserveSignatures) {
+      void formik.setFieldValue("packageFilter", "");
+      void formik.setFieldValue("includeDependencies", false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values.preserveSignatures]);
+
   // Once the archive/ESM info finishes loading, hydrate the data-dependent
   // fields (distribution, components, architectures, pro service) for the
   // user's currently selected source type while preserving anything they have
