@@ -1,6 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import usePageParams from "@/hooks/usePageParams";
-import type { ComponentProps, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
 import type { UseUSGProfileFormProps } from "../../hooks/useUsgProfileForm";
@@ -8,13 +8,7 @@ import useUsgProfileForm from "../../hooks/useUsgProfileForm";
 import type { USGProfileFormValues } from "../../types/USGProfileAddFormValues";
 import classes from "./USGProfileForm.module.scss";
 
-interface USGProfileFormProps
-  extends
-    UseUSGProfileFormProps,
-    Pick<
-      ComponentProps<typeof SidePanelFormButtons>,
-      "hasBackButton" | "onBackButtonPress"
-    > {
+interface USGProfileFormProps extends UseUSGProfileFormProps {
   readonly getConfirmationStepDisabled?: (
     values: USGProfileFormValues,
   ) => boolean;
@@ -28,8 +22,6 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
   confirmationStepDescription,
   submitButtonText = "",
   submitting = false,
-  hasBackButton,
-  onBackButtonPress,
   ...props
 }) => {
   const { popSidePathUntilClear } = usePageParams();
@@ -107,8 +99,6 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
         submitButtonDisabled={!formik.isValid || submitting}
         submitButtonLoading={steps.some((step) => step.isLoading) || submitting}
         submitButtonText={submitButtonText}
-        hasBackButton={hasBackButton}
-        onBackButtonPress={onBackButtonPress}
         onCancel={popSidePathUntilClear}
       />
     </>
