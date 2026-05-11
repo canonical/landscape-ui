@@ -5,7 +5,7 @@ export interface FormProps {
   publication_target: string;
   prefix: string;
   uploader_distribution: string;
-  uploader_architectures: string;
+  uploader_architectures: string[];
   preserve_mirror_signing_key: boolean;
   mirror_signing_key: string;
   hash_indexing: boolean;
