@@ -49,14 +49,14 @@ describe("AddPublicationForm", () => {
     await user.selectOptions(sourceSelect, "aaaa-bbbb-cccc");
   };
 
-  it("updates uploader fields when a mirror source is selected", async () => {
+  it("updates contents fields when a mirror source is selected", async () => {
     const user = userEvent.setup();
 
     renderForm();
 
     await selectMirrorSource(user);
 
-    expect(screen.getByText("jammy")).toBeInTheDocument();
+    expect(screen.getByLabelText(/^distribution$/i)).toHaveValue("jammy");
     expect(
       screen.getByRole("combobox", { name: "Architectures" }),
     ).toBeInTheDocument();
@@ -159,7 +159,7 @@ describe("AddPublicationForm", () => {
 
     renderForm();
 
-    await selectMirrorSource(user, "ubuntu-archive-mirror");
+    await selectMirrorSource(user);
 
     expect(
       screen.getByRole("heading", { name: "Signing GPG Key" }),
@@ -176,6 +176,24 @@ describe("AddPublicationForm", () => {
     expect(
       screen.queryByRole("heading", { name: "Signing GPG Key" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("locks distribution field when mirror has preserveSignatures=true", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await selectMirrorSource(user, "ubuntu-security-mirror");
+
+    expect(screen.getByText("noble")).toBeInTheDocument();
+  });
+
+  it("locks distribution field when local repository is selected", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await selectLocalSource(user);
+
+    expect(screen.getByText("distribution 1")).toBeInTheDocument();
   });
 
   it("hides signing key field when local repository is selected", async () => {

@@ -1,210 +1,148 @@
 import { renderWithProviders } from "@/tests/render";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Chart, ChartData } from "chart.js";
-import { vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import Legend from "./Legend";
 
 describe("Legend", () => {
-  const mockSetSelectedArc = vi.fn();
-  const mockData: ChartData<"pie"> = {
-    labels: ["Up to date", "Regular", "Security"],
-    datasets: [
-      {
-        backgroundColor: ["#335280", "#fbfbfb"],
-        data: [6, 7],
-        borderWidth: 3,
-        borderColor: "#fbfbfb",
-        hoverBorderColor: "#fbfbfb",
-      },
-      {
-        backgroundColor: ["#f99b11", "#fbfbfb"],
-        data: [7, 6],
-        borderWidth: 3,
-        borderColor: "#fbfbfb",
-        hoverBorderColor: "#fbfbfb",
-      },
-      {
-        backgroundColor: ["#da0b0b", "#fbfbfb"],
-        data: [5, 8],
-        borderWidth: 3,
-        borderColor: "#fbfbfb",
-        hoverBorderColor: "#fbfbfb",
-      },
-    ],
-  };
-  const mockChartInstance = {
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        tooltip: {
-          enabled: false,
-        },
-      },
-      scales: {},
-    },
-    data: {
-      labels: ["Up to date", "Regular", "Security"],
-      datasets: [
-        {
-          backgroundColor: ["#335280", "#fbfbfb"],
-          data: [6, 7],
-          borderWidth: 3,
-          borderColor: "#fbfbfb",
-          hoverBorderColor: "#fbfbfb",
-        },
-        {
-          backgroundColor: ["#f99b11", "#fbfbfb"],
-          data: [7, 6],
-          borderWidth: 3,
-          borderColor: "#fbfbfb",
-          hoverBorderColor: "#fbfbfb",
-        },
-        {
-          backgroundColor: ["#da0b0b", "#fbfbfb"],
-          data: [5, 8],
-          borderWidth: 3,
-          borderColor: "#fbfbfb",
-          hoverBorderColor: "#fbfbfb",
-        },
-      ],
-    },
-    legend: {
-      legendItems: [
-        {
-          text: "Up to date",
-          fillStyle: "#335280",
-          strokeStyle: "#fbfbfb",
-          fontColor: "#666",
-          lineWidth: 3,
-          hidden: false,
-          index: 0,
-        },
-        {
-          text: "Regular",
-          strokeStyle: "#fbfbfb",
-          fontColor: "#666",
-          lineWidth: 3,
-          hidden: false,
-          index: 1,
-        },
-        {
-          text: "Security",
-          fillStyle: "#335280",
-          strokeStyle: "#fbfbfb",
-          fontColor: "#666",
-          lineWidth: 3,
-          hidden: false,
-          index: 2,
-        },
-      ],
-    },
-    update: vi.fn(),
-  } as unknown as Chart;
+  const mockOnArcEnter = vi.fn();
+  const mockOnArcLeave = vi.fn();
+
+  const items = [
+    { label: "Up to date", count: 6 },
+    { label: "Regular", count: 7 },
+    { label: "Security", count: 5 },
+  ];
 
   const props = {
-    data: mockData,
-    chartInstance: mockChartInstance,
+    items,
     selectedArc: null,
-    setSelectedArc: mockSetSelectedArc,
+    onArcEnter: mockOnArcEnter,
+    onArcLeave: mockOnArcLeave,
   };
+
+  beforeEach(() => {
+    mockOnArcEnter.mockClear();
+    mockOnArcLeave.mockClear();
+  });
 
   it("renders without crashing", () => {
     renderWithProviders(<Legend {...props} />);
   });
 
-  it("renders legend items", () => {
+  it("renders a row for each item label", () => {
     renderWithProviders(<Legend {...props} />);
-    const legendItems = mockChartInstance.data.labels as string[];
-    legendItems.forEach((item) => {
-      expect(screen.getByText(item)).toBeInTheDocument();
+
+    items.forEach((item) => {
+      expect(screen.getByText(item.label)).toBeInTheDocument();
     });
   });
 
-  it("renders links for legend items", () => {
+  it("renders a link with the count for each item", () => {
     renderWithProviders(<Legend {...props} />);
-    const legendData = mockChartInstance.data.datasets.map(
-      (set) => set.data[0] as number,
-    );
 
-    for (const singleLegendData of legendData) {
+    items.forEach((item) => {
       expect(
-        screen.getByRole("link", { name: `${singleLegendData} instances` }),
+        screen.getByRole("link", { name: `${item.count} instances` }),
       ).toBeInTheDocument();
-    }
+    });
   });
 
-  it("calls setSelectedArc when a legend item is moused over", async () => {
+  it("renders zero counts as plain text rather than a link", () => {
+    renderWithProviders(
+      <Legend
+        {...props}
+        items={[
+          { label: "Up to date", count: 6 },
+          { label: "Regular", count: 0 },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "0 instances" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("0 instances")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "6 instances" }),
+    ).toBeInTheDocument();
+  });
+
+  it("calls onArcEnter with the index when an item is hovered", async () => {
     renderWithProviders(<Legend {...props} />);
 
-    const chosenLegendItem =
-      mockChartInstance?.data?.labels &&
-      mockChartInstance.data.labels.length > 0
-        ? (mockChartInstance.data.labels[0] as string)
-        : "";
+    await userEvent.hover(screen.getByText("Up to date"));
 
-    const legendItem = screen.getByText(chosenLegendItem);
-    await userEvent.hover(legendItem);
-    expect(mockSetSelectedArc).toHaveBeenCalled();
+    expect(mockOnArcEnter).toHaveBeenCalledWith(0);
   });
 
-  it("renders nothing when chartInstance is null", () => {
-    const { container } = renderWithProviders(
-      <Legend {...props} chartInstance={null} />,
-    );
-    expect(container.firstChild).toBeEmptyDOMElement();
+  it("calls onArcEnter when an item receives focus", () => {
+    renderWithProviders(<Legend {...props} />);
+
+    const row = screen.getByText("Regular").closest("div")?.parentElement;
+    expect(row).not.toBeNull();
+    fireEvent.focus(row as HTMLElement);
+
+    expect(mockOnArcEnter).toHaveBeenCalledWith(1);
   });
 
-  it("fires onMouseLeave handler on the legend container", () => {
+  it("calls onArcLeave when the legend container loses pointer", () => {
     const { container } = renderWithProviders(<Legend {...props} />);
+
     const legendContainer = container.querySelector("div");
-    assert(legendContainer);
-    fireEvent.mouseLeave(legendContainer);
-    expect(mockSetSelectedArc).toHaveBeenCalledWith(null);
-    expect(
-      (mockChartInstance as unknown as { update: ReturnType<typeof vi.fn> })
-        .update,
-    ).toHaveBeenCalled();
+    expect(legendContainer).not.toBeNull();
+    fireEvent.mouseLeave(legendContainer as HTMLElement);
+
+    expect(mockOnArcLeave).toHaveBeenCalled();
   });
 
-  it("applies reduced opacity to non-selected items when selectedArc is set", () => {
+  it("dims rows that are not the selected arc", () => {
     const { container } = renderWithProviders(
       <Legend {...props} selectedArc={0} />,
     );
-    const legendItems = container.querySelectorAll("[style]");
-    // Item at index 0 should have opacity 1; others should have 0.3
-    expect(legendItems[0]).toHaveStyle({ opacity: "1" });
-    expect(legendItems[1]).toHaveStyle({ opacity: "0.3" });
+
+    const rows = container.querySelectorAll("[style]");
+    expect(rows[0]).toHaveStyle({ opacity: "1" });
+    expect(rows[1]).toHaveStyle({ opacity: "0.55" });
+    expect(rows[2]).toHaveStyle({ opacity: "0.55" });
   });
 
-  it("falls back to Unknown status for unrecognised legend item text", () => {
-    const unknownLegendChart = {
-      ...mockChartInstance,
-      legend: {
-        legendItems: [{ text: "Unrecognised", index: 0 }],
-      },
-    } as unknown as Chart;
-
+  it("marks the selected row with aria-current and an active class", () => {
     const { container } = renderWithProviders(
-      <Legend {...props} chartInstance={unknownLegendChart} />,
+      <Legend {...props} selectedArc={1} />,
     );
-    // Renders a legend item using the Unknown fallback (no crash)
-    expect(container.querySelector("div")).toBeInTheDocument();
+
+    const rows = container.querySelectorAll("[style]");
+    expect(rows[0]).not.toHaveAttribute("aria-current");
+    expect(rows[1]).toHaveAttribute("aria-current", "true");
+    expect(rows[1]?.getAttribute("class") ?? "").toMatch(/legendItem--active/);
   });
 
-  it("handles data without datasets (nullish ?? [] fallback)", () => {
-    const dataWithoutDatasets = {
-      labels: ["Up to date"],
-    } as unknown as ChartData<"pie">;
+  it("renders all rows at full opacity when selectedArc is null", () => {
+    const { container } = renderWithProviders(<Legend {...props} />);
 
+    const rows = container.querySelectorAll("[style]");
+    rows.forEach((row) => {
+      expect(row).toHaveStyle({ opacity: "1" });
+    });
+  });
+
+  it("renders nothing when items is empty", () => {
+    renderWithProviders(<Legend {...props} items={[]} />);
+    items.forEach((item) => {
+      expect(screen.queryByText(item.label)).not.toBeInTheDocument();
+    });
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("falls back to the Unknown status icon when a label is unrecognised", () => {
     const { container } = renderWithProviders(
-      <Legend {...props} data={dataWithoutDatasets} />,
+      <Legend {...props} items={[{ label: "Mystery label", count: 1 }]} />,
     );
-    // numberOfInstances falls back to [] via ?? operator; component renders without crash
-    expect(container.querySelector("div")).toBeInTheDocument();
+
+    expect(screen.getByText("Mystery label")).toBeInTheDocument();
+    expect(
+      container.querySelector("i.p-icon--package-profiles-alert"),
+    ).toBeInTheDocument();
   });
 });

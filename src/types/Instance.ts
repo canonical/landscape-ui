@@ -112,7 +112,7 @@ export interface GroupedHardware {
   usb: Usb[];
 }
 
-interface InstanceAlert {
+export interface InstanceAlert {
   type: string;
   summary: string;
   severity: "warning" | "danger" | "info";

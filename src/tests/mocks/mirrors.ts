@@ -42,6 +42,9 @@ export const mirrors = [
     downloadSources: false,
     downloadUdebs: false,
     lastDownloadDate: new Date("2024-04-01T12:00:00Z"),
-    gpgKey: { armor: "-----BEGIN PGP PUBLIC KEY BLOCK-----" },
+    gpgKey: {
+      armor: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
+      fingerprint: "ABCDEF1234567890",
+    },
   },
 ] as const satisfies Mirror[];

@@ -187,31 +187,15 @@ describe("EditTargetForm", () => {
       expect(screen.getByText(filesystem.path)).toBeInTheDocument();
     });
 
-    it("pre-populates linkMethod select", () => {
+    it("pre-populates linkMethod as read-only", () => {
       renderWithProviders(<EditTargetForm target={filesystemTarget} />);
 
-      expect(screen.getByLabelText(/link method/i)).toHaveValue(
-        filesystem.linkMethod ?? "",
-      );
+      expect(screen.getByText("Hardlink")).toBeInTheDocument();
     });
 
     it("submits and shows success notification", async () => {
       renderWithProviders(<EditTargetForm target={filesystemTarget} />);
 
-      await user.click(screen.getByRole("button", { name: /save/i }));
-
-      expect(
-        await screen.findByText(/publication target edited/i),
-      ).toBeInTheDocument();
-    });
-
-    it("user can change linkMethod and submit successfully", async () => {
-      renderWithProviders(<EditTargetForm target={filesystemTarget} />);
-
-      await user.selectOptions(
-        screen.getByLabelText(/link method/i),
-        "SYMLINK",
-      );
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(

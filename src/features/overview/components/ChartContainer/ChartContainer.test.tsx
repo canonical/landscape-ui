@@ -1,10 +1,10 @@
 import { screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import ChartContainer from "./ChartContainer";
 
-vi.mock("../PieChart", () => ({
-  default: () => <div data-testid="pie-chart" />,
+vi.mock("../DonutChart", () => ({
+  default: () => <div data-testid="donut-chart" />,
 }));
 
 describe("ChartContainer", () => {
@@ -14,9 +14,9 @@ describe("ChartContainer", () => {
     expect(document.body).toBeTruthy();
   });
 
-  it("renders a PieChart element", () => {
+  it("renders a DonutChart element", () => {
     renderWithProviders(<ChartContainer />);
 
-    expect(screen.getByTestId("pie-chart")).toBeInTheDocument();
+    expect(screen.getByTestId("donut-chart")).toBeInTheDocument();
   });
 });

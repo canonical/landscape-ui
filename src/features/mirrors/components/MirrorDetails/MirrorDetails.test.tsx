@@ -61,7 +61,7 @@ describe("MirrorDetails", () => {
 
     await expectLoadingState();
 
-    const label = screen.getByText("Preserve signatures");
+    const label = screen.getByText("Preserve upstream signing key");
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
   });

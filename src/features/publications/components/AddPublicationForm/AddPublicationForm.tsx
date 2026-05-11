@@ -240,13 +240,23 @@ const AddPublicationForm: FC = () => {
           />
         </Blocks.Item>
 
-        <Blocks.Item title="Uploaders">
-          <ReadOnlyField
-            label="Distribution"
-            required
-            value={formik.values.uploader_distribution}
-            tooltipMessage="The distribution is derived from the selected source."
-          />
+        <Blocks.Item title="Contents">
+          {isLocalSourceType || selectedSource?.preserveSignatures ? (
+            <ReadOnlyField
+              label="Distribution"
+              required
+              value={formik.values.uploader_distribution}
+              tooltipMessage="The distribution is derived from the selected source."
+            />
+          ) : (
+            <Input
+              type="text"
+              label="Distribution"
+              required
+              error={getFormikError(formik, "uploader_distribution")}
+              {...formik.getFieldProps("uploader_distribution")}
+            />
+          )}
 
           {!isLocalSourceType && (
             <MultiSelectField

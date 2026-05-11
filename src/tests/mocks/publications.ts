@@ -41,6 +41,7 @@ export const publications = [
     skipContents: true,
     gpgKey: {
       armor: "-----BEGIN PGP PRIVATE KEY BLOCK-----...",
+      fingerprint: "38683D0347E42FDA",
     },
     publishTime: new Date("March 12, 2026"),
   },

@@ -21,6 +21,11 @@ import {
 import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
+import {
+  UBUNTU_ARCHIVE_HOST,
+  UBUNTU_PRO_HOST,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
 
 const MirrorDetails: FC = () => {
   const { name, createSidePathPusher, sidePath, setPageParams } =
@@ -147,6 +152,11 @@ const MirrorDetails: FC = () => {
                   }
                   large
                 />
+
+                <InfoGrid.Item
+                  label="Preserve upstream signing key"
+                  value={boolToLabel(mirror.preserveSignatures)}
+                />
                 <InfoGrid.Item
                   label="Last update"
                   value={
@@ -182,15 +192,7 @@ const MirrorDetails: FC = () => {
                   value={mirror.architectures?.join(", ")}
                   large
                 />
-                <InfoGrid.Item
-                  label="Preserve signatures"
-                  value={boolToLabel(mirror.preserveSignatures)}
-                />
-                <InfoGrid.Item
-                  label="Package filter"
-                  value={mirror.filter}
-                  large
-                />
+                <InfoGrid.Item label="Filter" value={mirror.filter} large />
                 {mirror.filter && (
                   <InfoGrid.Item
                     label="Include dependencies in filter"
@@ -212,6 +214,20 @@ const MirrorDetails: FC = () => {
                 />
               </InfoGrid>
             </Blocks.Item>
+            {![
+              UBUNTU_ARCHIVE_HOST,
+              UBUNTU_SNAPSHOTS_HOST,
+              UBUNTU_PRO_HOST,
+            ].includes(new URL(mirror.archiveRoot).host) && (
+              <Blocks.Item title="Authentication">
+                <InfoGrid dense>
+                  <InfoGrid.Item
+                    label="Verification GPG Key"
+                    value={mirror.gpgKey?.fingerprint}
+                  />
+                </InfoGrid>
+              </Blocks.Item>
+            )}
             <Blocks.Item title="Used in">
               {isGettingPublications ? (
                 <LoadingState />
