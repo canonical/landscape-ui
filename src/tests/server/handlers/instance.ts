@@ -95,6 +95,17 @@ function matchComputersQuery(
       generatePaginatedResponse<Instance>({ data: [], limit, offset }),
     );
   }
+  if (
+    endpointStatus.status === "empty" &&
+    (endpointStatus.path === "computers-alert-empty" ||
+      endpointStatus.path === "empty-upgrades") &&
+    (query.includes("alert:security-upgrades") ||
+      query.includes("alert:package-upgrades"))
+  ) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({ data: [], limit, offset }),
+    );
+  }
   if (query.includes("NOT alert:package-upgrades")) {
     return HttpResponse.json(
       generatePaginatedResponse<Instance>({
@@ -120,17 +131,6 @@ function matchComputersQuery(
         limit,
         offset,
       }),
-    );
-  }
-  if (
-    endpointStatus.status === "empty" &&
-    (endpointStatus.path === "computers-alert-empty" ||
-      endpointStatus.path === "empty-upgrades") &&
-    (query.includes("alert:security-upgrades") ||
-      query.includes("alert:package-upgrades"))
-  ) {
-    return HttpResponse.json(
-      generatePaginatedResponse<Instance>({ data: [], limit, offset }),
     );
   }
   if (query.includes("profile:repository:")) {

@@ -554,6 +554,7 @@ export const instances = [
       distributor: "Canonical",
       release: "12.04",
     },
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
@@ -1366,6 +1367,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1406,6 +1408,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1446,6 +1449,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1486,6 +1490,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1526,6 +1531,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1566,6 +1572,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1606,6 +1613,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1646,6 +1654,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1686,6 +1695,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1726,6 +1736,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1763,6 +1774,7 @@ export const instances = [
       distributor: "Canonical",
       release: "12.04",
     },
+    alerts: [{ type: "PackageUpgradesAlert", summary: "", severity: "info" }],
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",

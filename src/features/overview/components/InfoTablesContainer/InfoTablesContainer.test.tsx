@@ -29,8 +29,12 @@ describe("InfoTablesContainer", () => {
     });
 
     it("renders instance list", async () => {
-      const shownInstances = instances.slice(0, LIST_LIMIT);
-      for (const instance of shownInstances) {
+      const instancesWithUpgrades = instances.filter((instance) =>
+        instance.alerts?.some(({ type }) =>
+          ["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
+        ),
+      );
+      for (const instance of instancesWithUpgrades.slice(0, LIST_LIMIT)) {
         const instanceTitle = await screen.findByText(instance.title);
         expect(instanceTitle).toBeInTheDocument();
       }
