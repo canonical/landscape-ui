@@ -21,4 +21,5 @@ export interface SelectableSource {
   sourceType: string;
   distribution?: string;
   architectures: string[];
+  preserveSignatures?: boolean;
 }

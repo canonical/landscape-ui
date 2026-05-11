@@ -24,7 +24,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
   profile,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const { getAccessGroupQuery } = useRoles();
   const { copyPackageProfileQuery } = usePackageProfiles();
@@ -38,8 +38,6 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       label: title,
       value: name,
     })) ?? [];
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (values: DuplicateFormProps) => {
     const valuesToSubmit: CopyPackageProfileParams = {
@@ -111,9 +109,7 @@ const PackageProfileDuplicateForm: FC<PackageProfileDuplicateFormProps> = ({
       <SidePanelFormButtons
         submitButtonLoading={formik.isSubmitting}
         submitButtonText="Duplicate"
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
-        onCancel={closeSidePanel}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

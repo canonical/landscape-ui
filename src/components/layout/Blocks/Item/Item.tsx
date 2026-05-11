@@ -1,15 +1,13 @@
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import classes from "./Item.module.scss";
-import { useBlocksDense } from "../Blocks";
+import { useBlocksSpaced } from "../Blocks";
 
 export interface ItemProps {
   readonly children: ReactNode;
   readonly title?: string;
   readonly description?: ReactNode;
   readonly action?: ReactNode;
-  readonly titleClassName?: string;
-  readonly containerClassName?: string;
 }
 
 const Item: FC<ItemProps> = ({
@@ -17,16 +15,14 @@ const Item: FC<ItemProps> = ({
   title,
   description,
   action,
-  titleClassName,
-  containerClassName,
 }: ItemProps) => {
-  const dense = useBlocksDense();
+  const spaced = useBlocksSpaced();
   return (
-    <section className={classNames(classes.item, containerClassName)}>
+    <section className={classes.item}>
       {(title || description || action) && (
         <div
           className={classNames(classes.heading, {
-            [classes.denseHeading as string]: dense,
+            [classes.spacedHeading as string]: spaced,
           })}
         >
           {title && (
@@ -36,7 +32,6 @@ const Item: FC<ItemProps> = ({
                   [classes.titleWithDescription as string]: !!description,
                 },
                 "p-heading--5 p-text--small-caps u-no-padding",
-                titleClassName,
               )}
             >
               {title}

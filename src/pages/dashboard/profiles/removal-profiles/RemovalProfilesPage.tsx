@@ -18,16 +18,14 @@ import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const RemovalProfileAddSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileAddSidePanel,
-  })),
+const RemovalProfileAddSidePanel = lazy(
+  async () =>
+    import("@/features/removal-profiles/components/RemovalProfileAddSidePanel"),
 );
 
-const RemovalProfileEditSidePanel = lazy(async () =>
-  import("@/features/removal-profiles").then((module) => ({
-    default: module.RemovalProfileEditSidePanel,
-  })),
+const RemovalProfileEditSidePanel = lazy(
+  async () =>
+    import("@/features/removal-profiles/components/RemovalProfileEditSidePanel"),
 );
 
 const RemovalProfilesPage: FC = () => {
@@ -37,7 +35,7 @@ const RemovalProfilesPage: FC = () => {
     isPending: isGettingRemovalProfiles,
   } = getRemovalProfilesQuery();
 
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { removalProfile } = useGetPageRemovalProfile();
@@ -72,10 +70,7 @@ const RemovalProfilesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel
-        isOpen={!!sidePath.length}
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-      >
+      <SidePanel isOpen={!!sidePath.length} onClose={popSidePathUntilClear}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <RemovalProfileAddSidePanel />

@@ -37,7 +37,7 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
   usgProfile,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear } = usePageParams();
 
   const { getUsgProfileReport, isUsgProfileReportLoading } =
     useGetUsgProfileReport();
@@ -309,9 +309,7 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
         submitButtonDisabled={!formik.isValid || isUsgProfileReportLoading}
         submitButtonLoading={isUsgProfileReportLoading}
         submitButtonText="Generate CSV"
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
-        onCancel={createPageParamsSetter({ sidePath: [], name: "" })}
+        onCancel={popSidePathUntilClear}
       />
     </>
   );

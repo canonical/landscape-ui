@@ -1,6 +1,5 @@
 import SidePanel from "@/components/layout/SidePanel";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useAddUsgProfile } from "../../api";
 import { useGetPageUsgProfile } from "../../api/useGetPageUsgProfile";
@@ -9,7 +8,6 @@ import USGProfileForm from "../USGProfileForm";
 
 const USGProfileDuplicateSidePanel: FC = () => {
   const { notify } = useNotify();
-  const { sidePath, popSidePath } = usePageParams();
 
   const { usgProfile, isGettingUsgProfile } = useGetPageUsgProfile();
   const { addUsgProfile, isUsgProfileAdding } = useAddUsgProfile();
@@ -49,10 +47,7 @@ const USGProfileDuplicateSidePanel: FC = () => {
           }}
           submitButtonText="Duplicate"
           submitting={isUsgProfileAdding}
-          hasBackButton={sidePath.length > 1}
-          onBackButtonPress={popSidePath}
         />
-        ;
       </SidePanel.Content>
     </>
   );

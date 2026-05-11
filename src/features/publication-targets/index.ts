@@ -1,4 +1,4 @@
-export { AddPublicationTargetForm } from "./components/AddPublicationTargetForm";
+export { default as AddPublicationTargetForm } from "./components/AddPublicationTargetForm";
 export { default as EditTargetForm } from "./components/EditTargetForm";
 export { default as PublicationTargetAddButton } from "./components/PublicationTargetAddButton";
 export { default as PublicationTargetContainer } from "./components/PublicationTargetContainer";

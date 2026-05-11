@@ -63,11 +63,9 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   submitting = false,
 }) => {
   const debug = useDebug();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -378,9 +376,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         }
         submitButtonLoading={submitting}
         submitButtonText={submitButtonText}
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

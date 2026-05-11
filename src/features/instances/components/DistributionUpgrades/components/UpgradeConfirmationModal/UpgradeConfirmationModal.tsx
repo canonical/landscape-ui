@@ -27,6 +27,7 @@ const UpgradeConfirmationModal: FC<UpgradeConfirmationModalProps> = ({
       onConfirm={onConfirm}
       confirmButtonDisabled={isCreating}
       confirmButtonLoading={isCreating}
+      renderInPortal
     >
       <p>
         A reboot is required to complete this action. There is a risk that the{" "}

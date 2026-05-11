@@ -10,6 +10,9 @@ import RepositoryProfileDetails from "./RepositoryProfileDetails";
 import type { RepositoryProfile } from "../../types";
 
 const [profileWithSources, profileWithoutSources] = repositoryProfiles;
+const profileWithNoGpgKey = repositoryProfiles.find(
+  (p) => p.name === "repo-profile-no-gpg-key",
+)!;
 
 const renderDetails = (profile: RepositoryProfile) =>
   renderWithProviders(
@@ -105,5 +108,11 @@ describe("RepositoryProfileDetails", () => {
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
+  });
+
+  it("renders NO_DATA_TEXT in Fingerprint column when source has no gpg_key", async () => {
+    renderDetails(profileWithNoGpgKey);
+
+    expect(await screen.findByText("---")).toBeInTheDocument();
   });
 });

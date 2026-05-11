@@ -12,3 +12,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.tooltipMessage {
+  max-width: 20rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}

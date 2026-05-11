@@ -18,7 +18,7 @@ const USGProfileRunFixSidePanel: FC = () => {
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
 
   const { usgProfile: profile, isGettingUsgProfile } = useGetPageUsgProfile();
   const { runUsgProfile } = useRunUsgProfile();
@@ -26,8 +26,6 @@ const USGProfileRunFixSidePanel: FC = () => {
   if (isGettingUsgProfile) {
     return <SidePanel.LoadingState />;
   }
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], name: "" });
 
   const handleSubmit = async (event: SyntheticEvent) => {
     event.preventDefault();
@@ -138,9 +136,7 @@ const USGProfileRunFixSidePanel: FC = () => {
           <SidePanelFormButtons
             submitButtonDisabled={false}
             submitButtonText="Run"
-            onCancel={closeSidePanel}
-            hasBackButton={sidePath.length > 1}
-            onBackButtonPress={popSidePath}
+            onCancel={popSidePathUntilClear}
           />
         </Form>
       </SidePanel.Content>

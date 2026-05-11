@@ -43,7 +43,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     try {
       await publishPublication({
         publicationName: values.name,
-        body: { forceOverwrite: true, forceCleanup: true },
+        body: { forceOverwrite: true },
       });
 
       closeSidePanel();
@@ -81,7 +81,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <Blocks dense>
+      <Blocks>
         <Blocks.Item title="Details">
           <Select
             label="Publication name"

@@ -8,10 +8,8 @@ import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 
-const NewAccessGroupForm = lazy(() =>
-  import("@/features/access-groups").then((module) => ({
-    default: module.NewAccessGroupForm,
-  })),
+const NewAccessGroupForm = lazy(
+  () => import("@/features/access-groups/components/NewAccessGroupForm"),
 );
 
 const AccessGroupsPage: FC = () => {

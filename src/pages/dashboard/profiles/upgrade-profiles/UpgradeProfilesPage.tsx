@@ -19,16 +19,14 @@ import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const UpgradeProfileAddSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileAddSidePanel,
-  })),
+const UpgradeProfileAddSidePanel = lazy(
+  () =>
+    import("@/features/upgrade-profiles/components/UpgradeProfileAddSidePanel"),
 );
 
-const UpgradeProfileEditSidePanel = lazy(() =>
-  import("@/features/upgrade-profiles").then((module) => ({
-    default: module.UpgradeProfileEditSidePanel,
-  })),
+const UpgradeProfileEditSidePanel = lazy(
+  () =>
+    import("@/features/upgrade-profiles/components/UpgradeProfileEditSidePanel"),
 );
 
 const UpgradeProfilesPage: FC = () => {
@@ -36,7 +34,7 @@ const UpgradeProfilesPage: FC = () => {
   const { data: getUpgradeProfilesResult, isPending } =
     getUpgradeProfilesQuery();
 
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { upgradeProfile } = useGetPageUpgradeProfile();
@@ -75,10 +73,7 @@ const UpgradeProfilesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <UpgradeProfileAddSidePanel />

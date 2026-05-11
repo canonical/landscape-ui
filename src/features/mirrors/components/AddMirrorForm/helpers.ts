@@ -91,9 +91,12 @@ export function getInitialBaseValues(
     distribution: distribution.slug,
     components,
     architectures,
+    preserveSignatures: false,
     downloadUdebPackages: false,
     downloadSources: false,
     downloadInstallerFiles: false,
+    packageFilter: "",
+    includeDependencies: false,
   };
 }
 

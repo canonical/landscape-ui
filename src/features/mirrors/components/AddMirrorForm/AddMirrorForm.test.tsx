@@ -128,6 +128,17 @@ describe("AddMirrorForm", () => {
     );
   });
 
+  it("submits a mirror with preserve signatures enabled", async () => {
+    await user.click(screen.getByLabelText("Preserve signatures"));
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        preserveSignatures: true,
+      }),
+    );
+  });
+
   it("submits a third-party mirror", async () => {
     const params = {
       archiveRoot: "https://archive.ubuntu.com/",

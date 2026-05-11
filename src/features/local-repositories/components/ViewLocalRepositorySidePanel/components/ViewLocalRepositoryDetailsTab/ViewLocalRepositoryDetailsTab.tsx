@@ -20,7 +20,7 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   );
 
   return (
-    <Blocks dense>
+    <Blocks>
       <Blocks.Item title="Details">
         <InfoGrid dense>
           <InfoGrid.Item label="Name" value={repository.displayName} />
@@ -39,7 +39,7 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
         </InfoGrid>
       </Blocks.Item>
 
-      <Blocks.Item title="Used in" titleClassName="p-text--small-caps">
+      <Blocks.Item title="Used in">
         {isGettingPublications ? (
           <LoadingState />
         ) : (

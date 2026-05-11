@@ -5,10 +5,8 @@ import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 
-const CreateScriptForm = lazy(async () =>
-  import("@/features/scripts").then((module) => ({
-    default: module.CreateScriptForm,
-  })),
+const CreateScriptForm = lazy(
+  async () => import("@/features/scripts/components/CreateScriptForm"),
 );
 
 const NoScriptsEmptyState: FC = () => {

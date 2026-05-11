@@ -3,7 +3,7 @@ import type { GPGKey } from "./GPGKey";
 
 export interface APTSource extends Record<string, unknown> {
   access_group: AccessGroup["name"];
-  gpg_key: GPGKey["name"] | null;
+  gpg_key: GPGKey | null;
   id: number;
   line: string;
   name: string;

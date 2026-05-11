@@ -30,6 +30,8 @@ import { UBUNTU_SNAPSHOTS_HOST } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { isArchiveInfoValid } from "../../helpers";
 import * as Yup from "yup";
+import classes from "./AddMirrorForm.module.scss";
+import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
@@ -99,9 +101,14 @@ const AddMirrorForm: FC = () => {
             architecture.trim(),
           ),
           distribution: values.distribution,
+          preserveSignatures: values.preserveSignatures,
           downloadInstaller: values.downloadInstallerFiles,
           downloadSources: values.downloadSources,
           downloadUdebs: values.downloadUdebPackages,
+          filter: values.packageFilter,
+          filterWithDeps: values.packageFilter
+            ? values.includeDependencies
+            : undefined,
           gpgKey: values.verificationGpgKey
             ? {
                 armor: values.verificationGpgKey,
@@ -149,6 +156,7 @@ const AddMirrorForm: FC = () => {
         ubuntuEsmInfo,
       }),
       name: formik.values.name,
+      preserveSignatures: formik.values.preserveSignatures,
       downloadUdebPackages: formik.values.downloadUdebPackages,
       downloadInstallerFiles: formik.values.downloadInstallerFiles,
       downloadSources: formik.values.downloadSources,
@@ -169,7 +177,7 @@ const AddMirrorForm: FC = () => {
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
           <Blocks>
-            <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+            <Blocks.Item title="Details">
               <Input
                 type="text"
                 label="Name"
@@ -213,6 +221,7 @@ const AddMirrorForm: FC = () => {
                       ubuntuEsmInfo,
                     }),
                     name: formik.values.name,
+                    preserveSignatures: formik.values.preserveSignatures,
                     downloadUdebPackages: formik.values.downloadUdebPackages,
                     downloadInstallerFiles:
                       formik.values.downloadInstallerFiles,
@@ -254,7 +263,6 @@ const AddMirrorForm: FC = () => {
             </Blocks.Item>
             <Blocks.Item
               title="Mirror contents"
-              titleClassName="p-text--small-caps"
               description={
                 isMirrorContentsLoading &&
                 formik.values.sourceType !== "third-party"
@@ -343,7 +351,46 @@ const AddMirrorForm: FC = () => {
                   isLoading={isMirrorContentsLoading}
                 />
               )}
-              <p>Download options:</p>
+              <div className="u-sv2">
+                <CheckboxInput
+                  label="Preserve signatures"
+                  {...formik.getFieldProps("preserveSignatures")}
+                  checked={formik.values.preserveSignatures}
+                  inline
+                />{" "}
+                <Tooltip
+                  position="right"
+                  message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
+                >
+                  <Icon name={ICONS.help} />
+                </Tooltip>
+              </div>
+              <p className={classes.heading}>Filter options:</p>
+              <div className={classes.wrapper}>
+                <div className={classes.formContainer}>
+                  <Input
+                    type="text"
+                    label="Package filter"
+                    {...formik.getFieldProps("packageFilter")}
+                    disabled={formik.values.preserveSignatures}
+                  />
+                </div>
+                <MirrorFilterHelpButton />
+              </div>
+              <CheckboxInput
+                label="Include dependencies in filter"
+                {...formik.getFieldProps("includeDependencies")}
+                checked={
+                  !!formik.values.packageFilter &&
+                  formik.values.includeDependencies
+                }
+                disabled={
+                  !formik.values.packageFilter ||
+                  formik.values.preserveSignatures
+                }
+                inline
+              />
+              <p className={classes.heading}>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "
                 {...formik.getFieldProps("downloadUdebPackages")}

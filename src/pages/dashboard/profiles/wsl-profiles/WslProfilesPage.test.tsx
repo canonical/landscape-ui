@@ -27,11 +27,6 @@ describe("WslProfilesPage", () => {
       await screen.findByRole("button", { name: "Add profile" }),
     );
 
-    await user.click(
-      await screen.findByRole("button", { name: "Add WSL profile" }),
-    );
-    await expectLoadingState();
-
     expect(
       await screen.findByRole("heading", { name: "Add WSL profile" }),
     ).toBeInTheDocument();

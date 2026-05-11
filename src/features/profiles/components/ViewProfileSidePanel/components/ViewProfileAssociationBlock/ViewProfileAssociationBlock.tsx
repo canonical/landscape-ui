@@ -20,13 +20,12 @@ interface ViewProfileAssociationBlockProps {
 const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({
   profile,
   type,
-  titleClassName,
 }) => {
   const { associatedCount, isGettingInstances } =
     useGetProfileAssociatedCount(profile);
 
   return (
-    <Blocks.Item title="Association" titleClassName={titleClassName}>
+    <Blocks.Item title="Association">
       <InfoGrid dense>
         <InfoGrid.Item
           label="Associated Instances"

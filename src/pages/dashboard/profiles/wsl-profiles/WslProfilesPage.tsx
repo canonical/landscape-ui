@@ -13,7 +13,6 @@ import {
   useRemoveWslProfile,
 } from "@/features/wsl-profiles";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
-import { Notification } from "@canonical/react-components";
 import { lazy, useEffect, type FC } from "react";
 import useProfiles from "@/hooks/useProfiles";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
@@ -21,16 +20,12 @@ import usePageParams from "@/hooks/usePageParams";
 import SidePanel from "@/components/layout/SidePanel";
 import { ProfileTypes } from "@/features/profiles";
 
-const WslProfileAddSidePanel = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileAddSidePanel,
-  })),
+const WslProfileAddSidePanel = lazy(
+  () => import("@/features/wsl-profiles/components/WslProfileAddSidePanel"),
 );
 
-const WslProfileEditSidePanel = lazy(() =>
-  import("@/features/wsl-profiles").then((module) => ({
-    default: module.WslProfileEditSidePanel,
-  })),
+const WslProfileEditSidePanel = lazy(
+  () => import("@/features/wsl-profiles/components/WslProfileEditSidePanel"),
 );
 
 const WslProfilesPage: FC = () => {
@@ -50,7 +45,7 @@ const WslProfilesPage: FC = () => {
     setRemoveProfile,
     setIsRemovingProfile,
   } = useProfiles();
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { wslProfile } = useGetPageWslProfile();
@@ -93,16 +88,6 @@ const WslProfilesPage: FC = () => {
         }
       />
       <PageContent hasTable>
-        <Notification severity="caution" title="WSL profiles is a beta feature">
-          We are gathering feedback to improve this feature.{" "}
-          <a
-            target="_blank"
-            rel="noreferrer noopener nofollow"
-            href="https://discourse.ubuntu.com/t/feedback-on-the-new-web-portal/50528"
-          >
-            Share your feedback
-          </a>
-        </Notification>
         <ProfilesContainer
           type={ProfileTypes.wsl}
           profiles={wslProfiles}
@@ -110,10 +95,7 @@ const WslProfilesPage: FC = () => {
           isPending={isGettingWslLimits || isGettingWslProfiles}
         />
       </PageContent>
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <WslProfileAddSidePanel />

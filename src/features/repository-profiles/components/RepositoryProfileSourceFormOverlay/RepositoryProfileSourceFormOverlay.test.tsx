@@ -41,7 +41,7 @@ describe("RepositoryProfileSourceFormOverlay", () => {
     );
     expect(screen.getByLabelText(/deb line/i)).toHaveValue(sourceToEdit.line);
     expect(screen.getByLabelText(/gpg key/i)).toHaveValue(
-      sourceToEdit.gpg_key ?? "",
+      sourceToEdit.gpg_key?.name ?? "",
     );
   });
 

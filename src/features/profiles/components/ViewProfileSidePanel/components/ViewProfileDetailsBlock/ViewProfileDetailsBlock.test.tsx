@@ -4,21 +4,36 @@ import { describe, expect, it, vi } from "vitest";
 import ViewProfileDetailsBlock from "./ViewProfileDetailsBlock";
 import { profiles } from "@/tests/mocks/profiles";
 
-vi.mock("@/features/script-profiles/", () => ({
-  ViewScriptProfileDetailsBlock: () => <div>script details</div>,
-}));
-vi.mock("@/features/removal-profiles/", () => ({
-  ViewRemovalProfileDetailsBlock: () => <div>removal details</div>,
-}));
-vi.mock("@/features/usg-profiles/", () => ({
-  ViewUSGProfileDetailsBlock: () => <div>usg details</div>,
-}));
-vi.mock("@/features/upgrade-profiles/", () => ({
-  ViewUpgradeProfileDetailsBlock: () => <div>upgrade details</div>,
-}));
-vi.mock("@/features/wsl-profiles", () => ({
-  ViewWslProfileDetailsBlock: () => <div>wsl details</div>,
-}));
+vi.mock(
+  "@/features/script-profiles/components/ViewScriptProfileDetailsBlock",
+  () => ({
+    default: () => <div>script details</div>,
+  }),
+);
+vi.mock(
+  "@/features/removal-profiles/components/ViewRemovalProfileDetailsBlock",
+  () => ({
+    default: () => <div>removal details</div>,
+  }),
+);
+vi.mock(
+  "@/features/usg-profiles/components/ViewUSGProfileDetailsBlock",
+  () => ({
+    default: () => <div>usg details</div>,
+  }),
+);
+vi.mock(
+  "@/features/upgrade-profiles/components/ViewUpgradeProfileDetailsBlock",
+  () => ({
+    default: () => <div>upgrade details</div>,
+  }),
+);
+vi.mock(
+  "@/features/wsl-profiles/components/ViewWslProfileDetailsBlock",
+  () => ({
+    default: () => <div>wsl details</div>,
+  }),
+);
 
 const [baseProfile] = profiles;
 

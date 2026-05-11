@@ -80,7 +80,15 @@ export default [
       id: newId * 100 + i + 1,
       name: s.name,
       line: s.line,
-      gpg_key: s.gpg_key ? s.gpg_key.content : null,
+      gpg_key: s.gpg_key
+        ? {
+            id: 0,
+            name: s.gpg_key.content,
+            key_id: "",
+            fingerprint: "",
+            has_secret: false,
+          }
+        : null,
       access_group: body.access_group ?? "global",
       profiles: [name],
     }));
@@ -137,7 +145,15 @@ export default [
           id: maxId + i + 1,
           name: s.name,
           line: s.line,
-          gpg_key: s.gpg_key ? s.gpg_key.content : null,
+          gpg_key: s.gpg_key
+            ? {
+                id: 0,
+                name: s.gpg_key.content,
+                key_id: "",
+                fingerprint: "",
+                has_secret: false,
+              }
+            : null,
           access_group: body.access_group,
           profiles: [profile.name],
         }));

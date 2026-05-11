@@ -72,7 +72,7 @@ const RepositoryProfileAddSidePanel: FC = () => {
                 ? {
                     name: sourceToEdit.name,
                     deb_line: sourceToEdit.line,
-                    gpg_key_name: sourceToEdit.gpg_key ?? "",
+                    gpg_key_name: sourceToEdit.gpg_key?.name ?? "",
                   }
                 : undefined
             }

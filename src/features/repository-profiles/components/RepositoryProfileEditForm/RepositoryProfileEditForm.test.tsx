@@ -132,4 +132,45 @@ describe("RepositoryProfileEditForm", () => {
       2,
     );
   });
+
+  it("renders gpg_key.fingerprint in the sources table", async () => {
+    renderEditForm("view,edit");
+
+    await screen.findByText(aptSources[0].name);
+    expect(screen.getByText("AAAA1111")).toBeInTheDocument();
+  });
+
+  it("removing a source removes it from the sources table", async () => {
+    renderEditForm("view,edit");
+
+    const [firstSource] = aptSources;
+    await screen.findByText(firstSource.name);
+
+    await user.click(
+      screen.getByRole("button", { name: `Remove ${firstSource.name}` }),
+    );
+
+    expect(screen.queryByText(firstSource.name)).not.toBeInTheDocument();
+  });
+
+  it("submitting edit-source form replaces the source in the list", async () => {
+    renderEditForm("view,edit");
+
+    const [firstSource] = aptSources;
+    await screen.findByText(firstSource.name);
+
+    await user.click(
+      screen.getByRole("button", { name: `Edit ${firstSource.name}` }),
+    );
+
+    const nameInput = await screen.findByRole("textbox", {
+      name: /source name/i,
+    });
+    await user.clear(nameInput);
+    await user.type(nameInput, "updated-source");
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    expect(await screen.findByText("updated-source")).toBeInTheDocument();
+    expect(screen.queryByText(firstSource.name)).not.toBeInTheDocument();
+  });
 });

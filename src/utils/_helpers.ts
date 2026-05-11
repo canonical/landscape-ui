@@ -39,8 +39,10 @@ export const handleParams = ({
   for (const param of Object.keys(requestParams)) {
     const value = requestParams[param];
 
-    if ("string" === typeof value && "" !== value) {
-      paramsToPass[param] = value;
+    if ("string" === typeof value) {
+      if ("" !== value || config.method === "put") {
+        paramsToPass[param] = value;
+      }
     } else if (Array.isArray(value)) {
       if (0 !== value.length) {
         if (isOld) {

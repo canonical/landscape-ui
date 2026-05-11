@@ -19,7 +19,6 @@ import {
   Tooltip,
   type MultiSelectItem,
 } from "@canonical/react-components";
-import classNames from "classnames";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
@@ -80,6 +79,7 @@ const AddPublicationForm: FC = () => {
         sourceType: SOURCE_TYPE_MIRROR,
         distribution: mirror.distribution,
         architectures: mirror.architectures ?? [],
+        preserveSignatures: mirror.preserveSignatures,
       })),
     [mirrors],
   );
@@ -195,14 +195,7 @@ const AddPublicationForm: FC = () => {
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
       <Blocks>
-        <Blocks.Item
-          title="Details"
-          titleClassName={classNames(
-            "p-text--small-caps",
-            classes.sectionTitle,
-          )}
-          containerClassName={classes.section}
-        >
+        <Blocks.Item title="Details">
           <Input
             type="text"
             label="Publication name"
@@ -245,37 +238,9 @@ const AddPublicationForm: FC = () => {
             error={getFormikError(formik, "prefix")}
             {...formik.getFieldProps("prefix")}
           />
-
-          {!isLocalSourceType && (
-            <>
-              <span>Signing GPG key</span>
-              <Input
-                type="checkbox"
-                label="Preserve mirror signing key"
-                checked={formik.values.preserve_mirror_signing_key}
-                {...formik.getFieldProps("preserve_mirror_signing_key")}
-              />
-            </>
-          )}
-
-          <Textarea
-            label="Signing GPG key"
-            labelClassName={!isLocalSourceType ? "u-off-screen" : undefined}
-            rows={4}
-            disabled={formik.values.preserve_mirror_signing_key}
-            error={getFormikError(formik, "mirror_signing_key")}
-            {...formik.getFieldProps("mirror_signing_key")}
-          />
         </Blocks.Item>
 
-        <Blocks.Item
-          title="Uploaders"
-          titleClassName={classNames(
-            "p-text--small-caps",
-            classes.sectionTitle,
-          )}
-          containerClassName={classes.section}
-        >
+        <Blocks.Item title="Uploaders">
           <ReadOnlyField
             label="Distribution"
             required
@@ -300,14 +265,17 @@ const AddPublicationForm: FC = () => {
           )}
         </Blocks.Item>
 
-        <Blocks.Item
-          title="Settings"
-          titleClassName={classNames(
-            classes.sectionTitle,
-            "p-text--small-caps",
+        {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
+          selectedSource.preserveSignatures === false && (
+            <Blocks.Item title="Signing GPG Key">
+              <Textarea
+                {...formik.getFieldProps("signing_key")}
+                error={getFormikError(formik, "signing_key")}
+              />
+            </Blocks.Item>
           )}
-          containerClassName={classes.section}
-        >
+
+        <Blocks.Item title="Settings">
           <Input
             type="checkbox"
             label={

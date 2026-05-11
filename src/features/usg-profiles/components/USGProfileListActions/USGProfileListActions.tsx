@@ -36,8 +36,6 @@ const USGProfileListActions: FC<USGProfileListActionsProps> = ({ profile }) => {
     try {
       const { data: activity } = await runUsgProfile({ id: profile.id });
 
-      setPageParams({ sidePath: [], name: "" });
-
       const message = getNotificationMessage(profile.mode);
 
       notify.success({
