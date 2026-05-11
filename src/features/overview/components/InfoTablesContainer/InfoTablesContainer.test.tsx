@@ -34,6 +34,7 @@ describe("InfoTablesContainer", () => {
           ["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
         ),
       );
+      expect(instancesWithUpgrades.length).toBeGreaterThan(0);
       for (const instance of instancesWithUpgrades.slice(0, LIST_LIMIT)) {
         const instanceTitle = await screen.findByText(instance.title);
         expect(instanceTitle).toBeInTheDocument();
