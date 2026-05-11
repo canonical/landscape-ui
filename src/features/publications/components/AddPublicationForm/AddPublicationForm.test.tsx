@@ -59,8 +59,6 @@ describe("AddPublicationForm", () => {
     expect(
       screen.getByRole("combobox", { name: "Architectures" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "amd64" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "arm64" })).toBeInTheDocument();
   });
 
   it("updates mirror publication fields based on the selected source", async () => {
@@ -85,10 +83,6 @@ describe("AddPublicationForm", () => {
     await user.selectOptions(
       publicationTargetSelect,
       "aaaaaaaa-0000-0000-0000-000000000001",
-    );
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Architectures" }),
-      "amd64",
     );
     await user.type(
       screen.getByRole("textbox", { name: "Directory prefix" }),
@@ -116,13 +110,19 @@ describe("AddPublicationForm", () => {
     await user.click(
       screen.getByRole("checkbox", { name: /Skip content indexing/i }),
     );
+    const archCombobox = screen.getByRole("combobox", {
+      name: "Architectures",
+    });
+    await user.click(archCombobox);
+    await user.click(await screen.findByRole("checkbox", { name: "amd64" }));
 
     expect(publicationTargetSelect).toHaveValue(
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
-    expect(screen.getByRole("combobox", { name: "Architectures" })).toHaveValue(
-      "amd64",
-    );
+    expect(screen.getByRole("checkbox", { name: "amd64" })).toBeChecked();
+    expect(
+      screen.getByRole("combobox", { name: "Architectures" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("textbox", { name: "Directory prefix" }),
     ).toHaveValue("edge");
@@ -237,5 +237,182 @@ describe("AddPublicationForm", () => {
     expect(
       screen.getByRole("textbox", { name: "Signing GPG key" }),
     ).toHaveValue("");
+  });
+
+  it("shows validation error when all architectures are deselected", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectMirrorSource(user);
+
+    const archCombobox = screen.getByRole("combobox", {
+      name: "Architectures",
+    });
+    await user.click(archCombobox);
+
+    const amd64Checkbox = await screen.findByRole("checkbox", {
+      name: "amd64",
+    });
+    await user.click(amd64Checkbox);
+    await user.click(amd64Checkbox);
+
+    await waitFor(() => {
+      expect(screen.getAllByText("This field is required")).not.toHaveLength(0);
+    });
+  });
+
+  it("shows success notification after submitting a valid local source publication", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await user.type(
+      await screen.findByRole("textbox", { name: "Publication name" }),
+      "new-local-publication",
+    );
+    await selectLocalSource(user);
+
+    const publicationTargetSelect = screen.getByRole("combobox", {
+      name: "Publication target",
+    });
+    await waitFor(() => {
+      expect(publicationTargetSelect).toBeEnabled();
+    });
+    await user.selectOptions(
+      publicationTargetSelect,
+      "bbbbbbbb-0000-0000-0000-000000000002",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Add publication" }));
+
+    expect(
+      await screen.findByText(
+        'Publication "new-local-publication" has been created.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows success notification after submitting a mirror publication with a custom signing key", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await user.type(
+      await screen.findByRole("textbox", { name: "Publication name" }),
+      "new-mirror-publication",
+    );
+    await selectMirrorSource(user);
+
+    const publicationTargetSelect = screen.getByRole("combobox", {
+      name: "Publication target",
+    });
+    await waitFor(() => {
+      expect(publicationTargetSelect).toBeEnabled();
+    });
+    await user.selectOptions(
+      publicationTargetSelect,
+      "aaaaaaaa-0000-0000-0000-000000000001",
+    );
+
+    await user.click(
+      screen.getByRole("checkbox", {
+        name: /Preserve mirror signing key/i,
+      }),
+    );
+    await user.type(
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
+      "-----BEGIN PGP PRIVATE KEY BLOCK-----test-key",
+    );
+
+    const archCombobox = screen.getByRole("combobox", {
+      name: "Architectures",
+    });
+    await user.click(archCombobox);
+    await user.click(await screen.findByRole("checkbox", { name: "amd64" }));
+
+    await user.click(screen.getByRole("button", { name: "Add publication" }));
+
+    expect(
+      await screen.findByText(
+        'Publication "new-mirror-publication" has been created.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows validation error when signing key is required but not provided", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectMirrorSource(user);
+
+    await user.click(
+      screen.getByRole("checkbox", {
+        name: /Preserve mirror signing key/i,
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Add publication" }));
+
+    await waitFor(() => {
+      expect(screen.getAllByText("This field is required")).not.toHaveLength(0);
+    });
+  });
+
+  it("allows selecting multiple architectures simultaneously", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectMirrorSource(user);
+
+    const archCombobox = screen.getByRole("combobox", {
+      name: "Architectures",
+    });
+    await user.click(archCombobox);
+
+    await user.click(await screen.findByRole("checkbox", { name: "amd64" }));
+    await user.click(screen.getByRole("checkbox", { name: "arm64" }));
+
+    expect(screen.getByRole("checkbox", { name: "amd64" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "arm64" })).toBeChecked();
+  });
+
+  it("shows success notification after submitting a valid publication", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await user.type(
+      await screen.findByRole("textbox", { name: "Publication name" }),
+      "new-mirror-publication",
+    );
+    await selectMirrorSource(user);
+
+    const publicationTargetSelect = screen.getByRole("combobox", {
+      name: "Publication target",
+    });
+    await waitFor(() => {
+      expect(publicationTargetSelect).toBeEnabled();
+    });
+    await user.selectOptions(
+      publicationTargetSelect,
+      "aaaaaaaa-0000-0000-0000-000000000001",
+    );
+
+    const archCombobox = screen.getByRole("combobox", {
+      name: "Architectures",
+    });
+    await user.click(archCombobox);
+    await user.click(await screen.findByRole("checkbox", { name: "amd64" }));
+
+    await user.click(screen.getByRole("button", { name: "Add publication" }));
+
+    expect(
+      await screen.findByText(
+        'Publication "new-mirror-publication" has been created.',
+      ),
+    ).toBeInTheDocument();
   });
 });
