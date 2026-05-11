@@ -68,7 +68,7 @@ const PublicationDetails = ({
       </div>
 
       <Blocks>
-        <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+        <Blocks.Item title="Details">
           <InfoGrid dense>
             <InfoGrid.Item label="Name" large value={publication.displayName} />
 
@@ -97,7 +97,7 @@ const PublicationDetails = ({
           </InfoGrid>
         </Blocks.Item>
 
-        <Blocks.Item title="contents" titleClassName="p-text--small-caps">
+        <Blocks.Item title="Contents">
           <InfoGrid>
             <InfoGrid.Item
               label="Architectures"
@@ -107,7 +107,7 @@ const PublicationDetails = ({
           </InfoGrid>
         </Blocks.Item>
 
-        <Blocks.Item title="Settings" titleClassName="p-text--small-caps">
+        <Blocks.Item title="Settings">
           <InfoGrid>
             <InfoGrid.Item
               label="Hash indexing"

@@ -13,10 +13,9 @@ import { Button } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 import { ADD_AUTOINSTALL_FILE_NOTIFICATION } from "./constants";
 
-const AutoinstallFileForm = lazy(async () =>
-  import("@/features/autoinstall-files").then((module) => ({
-    default: module.AutoinstallFileForm,
-  })),
+const AutoinstallFileForm = lazy(
+  async () =>
+    import("@/features/autoinstall-files/components/AutoinstallFileForm"),
 );
 
 const AutoinstallFilesPanel: FC = () => {

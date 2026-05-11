@@ -23,7 +23,7 @@ const PackageProfileConstraintsAddForm: FC<
   const cancel = useContext(CloseContext);
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath } = usePageParams();
+  const { popSidePath } = usePageParams();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
@@ -71,8 +71,6 @@ const PackageProfileConstraintsAddForm: FC<
         submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
         submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
         onCancel={cancel}
       />
     </Form>

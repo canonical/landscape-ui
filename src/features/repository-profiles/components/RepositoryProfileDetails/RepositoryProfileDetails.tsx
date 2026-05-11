@@ -16,6 +16,7 @@ import Blocks from "@/components/layout/Blocks/Blocks";
 import ViewProfileAssociationBlock from "../../../profiles/components/ViewProfileSidePanel/components/ViewProfileAssociationBlock/ViewProfileAssociationBlock";
 import { ProfileTypes } from "@/features/profiles";
 import TooltipCell from "@/components/layout/TooltipCell/TooltipCell";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 const SOURCES_PAGE_SIZE = 10;
 
@@ -31,13 +32,22 @@ const aptSourceColumns: Column<APTSource>[] = [
       <TooltipCell message={original.line}>{original.line}</TooltipCell>
     ),
   },
+  {
+    accessor: "gpg_key.fingerprint",
+    Header: "Fingerprint",
+    Cell: ({ row: { original } }: CellProps<APTSource>) => (
+      <TooltipCell
+        message={String(original.gpg_key?.fingerprint ?? NO_DATA_TEXT)}
+      >
+        {original.gpg_key?.fingerprint ?? NO_DATA_TEXT}
+      </TooltipCell>
+    ),
+  },
 ];
 
 const RepositoryProfileDetails: FC = () => {
-  const { name, createPageParamsSetter, createSidePathPusher } =
-    usePageParams();
+  const { name, closeSidePanel, createSidePathPusher } = usePageParams();
   const profile = useGetRepositoryProfile(name).data;
-  const closePanel = createPageParamsSetter({ sidePath: [], name: "" });
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -77,7 +87,7 @@ const RepositoryProfileDetails: FC = () => {
         message: `Repository profile "${profile.title}" removed successfully`,
       });
 
-      closePanel();
+      closeSidePanel();
     } catch (error) {
       debug(error);
     } finally {
@@ -113,12 +123,12 @@ const RepositoryProfileDetails: FC = () => {
             </Button>
           </div>
         </div>
-        <Blocks dense>
+        <Blocks>
           <ViewProfileGeneralBlock
             profile={profile}
             type={ProfileTypes.repository}
           />
-          <Blocks.Item title="Sources" titleClassName="p-text--small-caps">
+          <Blocks.Item title="Sources">
             <ModularTable
               columns={aptSourceColumns}
               data={pagedSources}
@@ -140,7 +150,6 @@ const RepositoryProfileDetails: FC = () => {
         <ViewProfileAssociationBlock
           profile={profile}
           type={ProfileTypes.repository}
-          titleClassName="p-text--small-caps"
         />
       </SidePanel.Content>
 

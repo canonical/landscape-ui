@@ -1,8 +1,17 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .content {
   display: flex;
-  flex-direction: column;
-  min-height: 0;
+  flex-grow: 1;
   overflow: visible;
+  padding-bottom: $sp-unit * 4;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  max-width: 100%;
 }
 
 .sidePanel {

@@ -26,7 +26,7 @@ const ScriptProfileEditSidePanel = lazy(
 );
 
 const ScriptProfilesTab: FC = () => {
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const {
@@ -112,10 +112,7 @@ const ScriptProfilesTab: FC = () => {
         }
       />
 
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <ScriptProfileAddSidePanel />

@@ -1,6 +1,5 @@
 import SidePanel from "@/components/layout/SidePanel";
 import useNotify from "@/hooks/useNotify";
-import usePageParams from "@/hooks/usePageParams";
 import type { FC } from "react";
 import { useUpdateUsgProfile } from "../../api";
 import { useGetPageUsgProfile } from "../../api/useGetPageUsgProfile";
@@ -9,7 +8,6 @@ import USGProfileForm from "../USGProfileForm";
 
 const USGProfileEditSidePanel: FC = () => {
   const { notify } = useNotify();
-  const { sidePath, popSidePath } = usePageParams();
 
   const { usgProfile, isGettingUsgProfile } = useGetPageUsgProfile();
   const { updateUsgProfile, isUsgProfileUpdating } = useUpdateUsgProfile();
@@ -47,8 +45,6 @@ const USGProfileEditSidePanel: FC = () => {
           }}
           submitButtonText="Save changes"
           submitting={isUsgProfileUpdating}
-          hasBackButton={sidePath.length > 1}
-          onBackButtonPress={popSidePath}
         />
       </SidePanel.Content>
     </>

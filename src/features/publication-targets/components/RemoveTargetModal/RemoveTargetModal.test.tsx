@@ -29,7 +29,7 @@ const [firstPublication] = publications;
 
 const defaultClose = vi.fn();
 
-describe("RemoveTargetForm", () => {
+describe("RemoveTargetModal", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {

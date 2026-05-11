@@ -123,17 +123,28 @@ export default [
     },
   ),
 
-  http.patch(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
-    await delay();
+  http.patch<{ mirrorId: string }, Partial<MirrorWritable>>(
+    `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`,
+    async ({ params, request }) => {
+      await delay();
 
-    const mirror = mirrors.find(({ mirrorId }) => mirrorId === params.mirrorId);
+      const mirrorIndex = mirrors.findIndex(
+        ({ mirrorId }) => mirrorId === params.mirrorId,
+      );
 
-    if (!mirror) {
-      return new HttpResponse(null, { status: 404 });
-    } else {
+      if (mirrorIndex === -1) {
+        return new HttpResponse(null, { status: 404 });
+      }
+
+      const requestBody = await request.json();
+      mirrors[mirrorIndex] = {
+        ...mirrors[mirrorIndex],
+        ...requestBody,
+      } as Mirror;
+
       return HttpResponse.json<UpdateMirrorResponse>();
-    }
-  }),
+    },
+  ),
 
   http.delete(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, async ({ params }) => {
     await delay();

@@ -222,7 +222,7 @@ describe("TargetDetails", () => {
       expect(screen.getByText(firstPubName)).toBeInTheDocument();
     });
 
-    it("hides the Used In section when target has no publications", () => {
+    it("shows empty table when target has no publications", () => {
       (useGetPublicationsByTarget as Mock).mockReturnValue({
         publications: [],
         isGettingPublications: false,
@@ -230,7 +230,13 @@ describe("TargetDetails", () => {
 
       renderWithProviders(<TargetDetails target={targetWithoutPublications} />);
 
-      expect(screen.queryByText("Used In")).not.toBeInTheDocument();
+      expect(screen.queryByText("Used In")).toBeInTheDocument();
+      expect(
+        screen.getByRole("columnheader", { name: /publication/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/no associated publications were found/i),
+      ).toBeInTheDocument();
     });
 
     it("shows LoadingState while publications are loading", () => {
@@ -242,7 +248,8 @@ describe("TargetDetails", () => {
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByText("Details")).toBeInTheDocument();
-      expect(screen.queryByText("Used In")).not.toBeInTheDocument();
+      expect(screen.queryByText("Used In")).toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeInTheDocument();
     });
   });
 

@@ -11,28 +11,20 @@ import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import { lazy, type FC } from "react";
 
-const EditMirrorForm = lazy(async () =>
-  import("@/features/mirrors").then((module) => ({
-    default: module.EditMirrorForm,
-  })),
+const EditMirrorForm = lazy(
+  async () => import("@/features/mirrors/components/EditMirrorForm"),
 );
 
-const AddMirrorForm = lazy(async () =>
-  import("@/features/mirrors").then((module) => ({
-    default: module.AddMirrorForm,
-  })),
+const AddMirrorForm = lazy(
+  async () => import("@/features/mirrors/components/AddMirrorForm"),
 );
 
-const MirrorDetails = lazy(async () =>
-  import("@/features/mirrors").then((module) => ({
-    default: module.MirrorDetails,
-  })),
+const MirrorDetails = lazy(
+  async () => import("@/features/mirrors/components/MirrorDetails"),
 );
 
-const PublishMirrorForm = lazy(async () =>
-  import("@/features/mirrors").then((module) => ({
-    default: module.PublishMirrorForm,
-  })),
+const PublishMirrorForm = lazy(
+  async () => import("@/features/mirrors/components/PublishMirrorForm"),
 );
 
 const MirrorsPage: FC = () => {

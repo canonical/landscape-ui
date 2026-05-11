@@ -199,4 +199,52 @@ describe("RepositoryProfileForm", () => {
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
+
+  it("shows success notification after successful create", async () => {
+    renderWithProviders(
+      <RepositoryProfileForm
+        action="add"
+        aptSources={[aptSources[0]]}
+        onAptSourcesChange={vi.fn()}
+        onAddSourceClick={vi.fn()}
+        onEditSourceClick={vi.fn()}
+      />,
+    );
+
+    await user.type(screen.getByLabelText(/Profile name/i), "repo-test");
+    await user.click(
+      screen.getByRole("button", { name: /Add a new repository profile/i }),
+    );
+
+    expect(
+      await screen.findByText(/repository profile created/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows success notification after successful edit", async () => {
+    const [profile] = repositoryProfiles;
+    renderWithProviders(
+      <RepositoryProfileForm
+        action="edit"
+        profile={profile}
+        aptSources={profile.apt_sources}
+        onAptSourcesChange={vi.fn()}
+        onAddSourceClick={vi.fn()}
+        onEditSourceClick={vi.fn()}
+      />,
+    );
+
+    await screen.findByDisplayValue(profile.title);
+    await user.click(
+      screen.getByRole("button", {
+        name: /Save changes to repository profile/i,
+      }),
+    );
+
+    expect(
+      await screen.findByText(
+        new RegExp(`successfully edited ${profile.title}`, "i"),
+      ),
+    ).toBeInTheDocument();
+  });
 });

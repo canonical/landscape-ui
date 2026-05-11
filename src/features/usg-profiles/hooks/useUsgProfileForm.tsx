@@ -40,7 +40,7 @@ const useUsgProfileForm = ({
   formMode,
 }: UseUSGProfileFormProps) => {
   const debug = useDebug();
-  const { setPageParams } = usePageParams();
+  const { closeSidePanel } = usePageParams();
   const formik = useFormik<USGProfileFormValues>({
     initialValues,
 
@@ -195,7 +195,7 @@ const useUsgProfileForm = ({
         return;
       }
 
-      setPageParams({ sidePath: [], name: "" });
+      closeSidePanel();
 
       onSuccess(values);
     },

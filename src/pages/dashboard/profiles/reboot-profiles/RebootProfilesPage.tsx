@@ -19,28 +19,25 @@ import { lazy, useEffect } from "react";
 import { ProfileTypes } from "@/features/profiles";
 import useProfiles from "@/hooks/useProfiles";
 
-const RebootProfileAddSidePanel = lazy(async () =>
-  import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileAddSidePanel,
-  })),
+const RebootProfileAddSidePanel = lazy(
+  async () =>
+    import("@/features/reboot-profiles/components/RebootProfileAddSidePanel"),
 );
 
-const RebootProfileDuplicateSidePanel = lazy(async () =>
-  import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileDuplicateSidePanel,
-  })),
+const RebootProfileDuplicateSidePanel = lazy(
+  async () =>
+    import("@/features/reboot-profiles/components/RebootProfileDuplicateSidePanel"),
 );
 
-const RebootProfileEditSidePanel = lazy(async () =>
-  import("@/features/reboot-profiles").then((module) => ({
-    default: module.RebootProfileEditSidePanel,
-  })),
+const RebootProfileEditSidePanel = lazy(
+  async () =>
+    import("@/features/reboot-profiles/components/RebootProfileEditSidePanel"),
 );
 
 const RebootProfilesPage: FC = () => {
   const { rebootProfiles, rebootProfilesCount, isGettingRebootProfiles } =
     useGetRebootProfiles();
-  const { sidePath, lastSidePathSegment, createPageParamsSetter } =
+  const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
   const { rebootProfile } = useGetPageRebootProfile();
@@ -85,10 +82,7 @@ const RebootProfilesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel
-        onClose={createPageParamsSetter({ sidePath: [], name: "" })}
-        isOpen={!!sidePath.length}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <RebootProfileAddSidePanel />

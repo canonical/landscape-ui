@@ -1,1 +1,1 @@
-export { default as AddPublicationTargetForm } from "./AddPublicationTargetForm";
+export { default } from "./AddPublicationTargetForm";

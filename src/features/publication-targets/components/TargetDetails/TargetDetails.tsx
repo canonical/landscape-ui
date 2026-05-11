@@ -5,9 +5,8 @@ import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
-import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
-import RemoveTargetForm from "../RemoveTargetForm";
+import RemoveTargetModal from "../RemoveTargetModal";
 import Blocks from "@/components/layout/Blocks/Blocks";
 import {
   getTargetType,
@@ -134,8 +133,8 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
           <span className="u-text--negative">Remove</span>
         </Button>
       </div>
-      <Blocks dense>
-        <Blocks.Item title="General" titleClassName="p-text--small-caps">
+      <Blocks>
+        <Blocks.Item title="General">
           <InfoGrid dense>
             <InfoGrid.Item label="Name" value={target.displayName} />
             <InfoGrid.Item
@@ -144,7 +143,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
             />
           </InfoGrid>
         </Blocks.Item>
-        <Blocks.Item title="Details" titleClassName="p-text--small-caps">
+        <Blocks.Item title="Details">
           <InfoGrid dense>
             {s3Fields && (
               <>
@@ -218,28 +217,25 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
           </InfoGrid>
         </Blocks.Item>
 
-        {!isGettingPublications && publications.length > 0 && (
-          <Blocks.Item title="Used In" titleClassName="p-text--small-caps">
+        <Blocks.Item title="Used In">
+          {isGettingPublications ? (
+            <LoadingState />
+          ) : (
             <AssociatedPublicationsList
               publications={publications}
               sourceDisplayNames={
                 isLoadingDisplayNames ? undefined : sourceDisplayNames
               }
             />
-          </Blocks.Item>
-        )}
+          )}
+        </Blocks.Item>
       </Blocks>
 
-      {isGettingPublications && <LoadingState />}
-
-      {createPortal(
-        <RemoveTargetForm
-          isOpen={isRemoveModalOpen}
-          close={closeRemoveModal}
-          target={target}
-        />,
-        document.body,
-      )}
+      <RemoveTargetModal
+        isOpen={isRemoveModalOpen}
+        close={closeRemoveModal}
+        target={target}
+      />
     </>
   );
 };

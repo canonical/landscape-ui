@@ -3,7 +3,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import RemoveTargetForm from "../RemoveTargetForm";
+import RemoveTargetModal from "../RemoveTargetModal";
 import type { PublicationTarget } from "@canonical/landscape-openapi";
 
 interface PublicationTargetListActionsProps {
@@ -66,7 +66,7 @@ const PublicationTargetListActions: FC<PublicationTargetListActionsProps> = ({
         destructiveActions={destructiveActions}
       />
 
-      <RemoveTargetForm
+      <RemoveTargetModal
         isOpen={isRemoveModalOpen}
         close={closeRemoveModal}
         target={target}

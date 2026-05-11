@@ -100,4 +100,73 @@ describe("RepositoryProfileFormSourcesSection", () => {
       screen.queryByText("At least one source is required."),
     ).not.toBeInTheDocument();
   });
+
+  it("renders Deb line and Fingerprint column headers", () => {
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
+
+    expect(screen.getByText("Deb line")).toBeInTheDocument();
+    expect(screen.getByText("Fingerprint")).toBeInTheDocument();
+  });
+
+  it("renders gpg_key.fingerprint in the Fingerprint column", () => {
+    const [first] = aptSources;
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection
+        {...defaultProps}
+        sources={[first]}
+      />,
+    );
+
+    expect(screen.getByText(first.gpg_key!.fingerprint)).toBeInTheDocument();
+  });
+
+  it("renders empty Fingerprint cell when gpg_key is null", () => {
+    const sourceWithoutKey = { ...aptSources[0], gpg_key: null };
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection
+        {...defaultProps}
+        sources={[sourceWithoutKey]}
+      />,
+    );
+
+    expect(screen.getByText("---")).toBeInTheDocument();
+  });
+
+  it("renders (pending) in Fingerprint column when source has gpg_key but is pending", () => {
+    const pendingSourceWithKey = { ...aptSources[0], id: 0 };
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection
+        {...defaultProps}
+        sources={[pendingSourceWithKey]}
+      />,
+    );
+
+    expect(screen.getByText("(pending)")).toBeInTheDocument();
+  });
+
+  it("shows only the first 10 sources on page 1 when there are more than 10", () => {
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
+
+    expect(screen.getByText("source1")).toBeInTheDocument();
+    expect(screen.getByText("source10")).toBeInTheDocument();
+    expect(screen.queryByText("source11")).not.toBeInTheDocument();
+  });
+
+  it("navigating to the next page shows remaining sources", async () => {
+    renderWithProviders(
+      <RepositoryProfileFormSourcesSection {...defaultProps} />,
+    );
+
+    expect(screen.queryByText("source11")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    expect(screen.getByText("source11")).toBeInTheDocument();
+    expect(screen.getByText("source12")).toBeInTheDocument();
+    expect(screen.queryByText("source1")).not.toBeInTheDocument();
+  });
 });

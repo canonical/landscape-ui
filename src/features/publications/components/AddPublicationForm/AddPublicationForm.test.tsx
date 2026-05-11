@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
@@ -16,6 +16,7 @@ const renderForm = () =>
 describe("AddPublicationForm", () => {
   const selectMirrorSource = async (
     user: ReturnType<typeof userEvent.setup>,
+    mirrorId = "ubuntu-archive-mirror",
   ) => {
     const sourceTypeSelect = await screen.findByRole("combobox", {
       name: "Source type",
@@ -28,7 +29,7 @@ describe("AddPublicationForm", () => {
       expect(sourceSelect).toBeEnabled();
     });
 
-    await user.selectOptions(sourceSelect, "ubuntu-archive-mirror");
+    await user.selectOptions(sourceSelect, mirrorId);
   };
 
   const selectLocalSource = async (
@@ -89,15 +90,6 @@ describe("AddPublicationForm", () => {
       "edge",
     );
     await user.click(
-      screen.getByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    );
-    await user.type(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
-      "-----BEGIN PGP PRIVATE KEY BLOCK-----test-key",
-    );
-    await user.click(
       screen.getByRole("checkbox", { name: /Hash based indexing/i }),
     );
     await user.click(
@@ -126,9 +118,6 @@ describe("AddPublicationForm", () => {
     expect(
       screen.getByRole("textbox", { name: "Directory prefix" }),
     ).toHaveValue("edge");
-    expect(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
-    ).toHaveValue("-----BEGIN PGP PRIVATE KEY BLOCK-----test-key");
   });
 
   it("uses static local-source fields without uploader architectures", async () => {
@@ -165,78 +154,40 @@ describe("AddPublicationForm", () => {
     );
   });
 
-  it("hides preserve mirror signing key when local source is selected", async () => {
+  it("shows signing key field when mirror has preserveSignatures=false", async () => {
     const user = userEvent.setup();
 
     renderForm();
 
-    await selectMirrorSource(user);
-
-    const preserveKeyCheckbox = screen.getByRole("checkbox", {
-      name: /Preserve mirror signing key/i,
-    });
-
-    expect(preserveKeyCheckbox).toBeInTheDocument();
-
-    await selectLocalSource(user);
+    await selectMirrorSource(user, "ubuntu-archive-mirror");
 
     expect(
-      screen.queryByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
+      screen.getByRole("heading", { name: "Signing GPG Key" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides signing key field when mirror has preserveSignatures=true", async () => {
+    const user = userEvent.setup();
+
+    renderForm();
+
+    await selectMirrorSource(user, "ubuntu-security-mirror");
+
+    expect(
+      screen.queryByRole("heading", { name: "Signing GPG Key" }),
     ).not.toBeInTheDocument();
   });
 
-  it("resets preserve_mirror_signing_key to default when switching source type", async () => {
+  it("hides signing key field when local repository is selected", async () => {
     const user = userEvent.setup();
 
     renderForm();
-
-    await selectMirrorSource(user);
-
-    const preserveKeyCheckbox = screen.getByRole("checkbox", {
-      name: /Preserve mirror signing key/i,
-    });
-
-    await user.click(preserveKeyCheckbox);
-    expect(preserveKeyCheckbox).not.toBeChecked();
-
-    await selectLocalSource(user);
-
-    const sourceTypeSelect = screen.getByRole("combobox", {
-      name: "Source type",
-    });
-    await user.selectOptions(sourceTypeSelect, "Mirror");
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("checkbox", { name: /Preserve mirror signing key/i }),
-      ).toBeChecked();
-    });
-  });
-
-  it("resets mirror_signing_key when switching source type", async () => {
-    const user = userEvent.setup();
-
-    renderForm();
-
-    await selectMirrorSource(user);
-
-    await user.click(
-      screen.getByRole("checkbox", { name: /Preserve mirror signing key/i }),
-    );
-
-    const signingKeyTextarea = screen.getByRole("textbox", {
-      name: "Signing GPG key",
-    });
-    await user.type(signingKeyTextarea, "my-signing-key");
-    expect(signingKeyTextarea).toHaveValue("my-signing-key");
 
     await selectLocalSource(user);
 
     expect(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
-    ).toHaveValue("");
+      screen.queryByRole("heading", { name: "Signing GPG Key" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows validation error when all architectures are deselected", async () => {
@@ -315,13 +266,13 @@ describe("AddPublicationForm", () => {
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
 
-    await user.click(
-      screen.getByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    );
+    const signingKeySection = screen
+      .getByRole("heading", { name: "Signing GPG Key" })
+      .closest("section");
+    if (!signingKeySection)
+      throw new Error("Signing GPG Key section not found");
     await user.type(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
+      within(signingKeySection).getByRole("textbox"),
       "-----BEGIN PGP PRIVATE KEY BLOCK-----test-key",
     );
 
@@ -338,26 +289,6 @@ describe("AddPublicationForm", () => {
         'Publication "new-mirror-publication" has been created.',
       ),
     ).toBeInTheDocument();
-  });
-
-  it("shows validation error when signing key is required but not provided", async () => {
-    const user = userEvent.setup();
-
-    renderForm();
-
-    await selectMirrorSource(user);
-
-    await user.click(
-      screen.getByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    );
-
-    await user.click(screen.getByRole("button", { name: "Add publication" }));
-
-    await waitFor(() => {
-      expect(screen.getAllByText("This field is required")).not.toHaveLength(0);
-    });
   });
 
   it("allows selecting multiple architectures simultaneously", async () => {

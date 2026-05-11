@@ -5,6 +5,7 @@ export interface BaseFormProps {
   distribution: string;
   components: string[];
   architectures: string[];
+  preserveSignatures: boolean;
   downloadUdebPackages: boolean;
   downloadSources: boolean;
   downloadInstallerFiles: boolean;
@@ -12,6 +13,8 @@ export interface BaseFormProps {
   snapshotDate?: string;
   proService?: string;
   verificationGpgKey?: string;
+  packageFilter?: string;
+  includeDependencies?: boolean;
 }
 
 export interface UbuntuArchiveFormProps extends BaseFormProps {

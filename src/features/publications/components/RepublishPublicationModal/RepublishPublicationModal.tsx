@@ -27,7 +27,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
     try {
       await publishPublication({
         publicationName: publication.name ?? "", // TODO: change when the api is updated
-        body: { forceOverwrite: true, forceCleanup: true },
+        body: { forceOverwrite: true },
       });
 
       notify.success({

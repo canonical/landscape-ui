@@ -6,6 +6,7 @@ import type { FC } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import classes from "./RepositoryProfileFormSourcesSection.module.scss";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 interface SourceRow extends Record<string, unknown> {
   name: string;
@@ -63,6 +64,29 @@ const RepositoryProfileFormSourcesSection: FC<
         Cell: ({ row: { original } }: CellProps<SourceRow>) => (
           <TooltipCell message={original.line}>{original.line}</TooltipCell>
         ),
+      },
+      {
+        id: "fingerprint",
+        accessor: (row: SourceRow) =>
+          row.source.gpg_key?.fingerprint ?? NO_DATA_TEXT,
+        Header: "Fingerprint",
+        Cell: ({ row: { original } }: CellProps<SourceRow>) => {
+          if (!original.source.gpg_key) {
+            return NO_DATA_TEXT;
+          }
+          if (original.isPending) {
+            return "(pending)";
+          }
+          return (
+            <TooltipCell
+              message={String(
+                original.source.gpg_key.fingerprint ?? NO_DATA_TEXT,
+              )}
+            >
+              {original.source.gpg_key.fingerprint ?? NO_DATA_TEXT}
+            </TooltipCell>
+          );
+        },
       },
       {
         id: "actions",

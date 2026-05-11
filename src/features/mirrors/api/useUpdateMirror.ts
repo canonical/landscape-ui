@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 type UpdateMirrorParams = Omit<UpdateMirrorData["body"], "gpgKey"> & {
-  gpgKey: { armor: string | null };
+  gpgKey?: { armor: string } | null;
 };
 
 export function useUpdateMirror(name: UpdateMirrorData["path"]["mirror.name"]) {
