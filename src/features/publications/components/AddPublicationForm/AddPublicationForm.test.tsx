@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
@@ -266,13 +266,13 @@ describe("AddPublicationForm", () => {
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
 
-    await user.click(
-      screen.getByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    );
+    const signingKeySection = screen
+      .getByRole("heading", { name: "Signing GPG Key" })
+      .closest("section");
+    if (!signingKeySection)
+      throw new Error("Signing GPG Key section not found");
     await user.type(
-      screen.getByRole("textbox", { name: "Signing GPG key" }),
+      within(signingKeySection).getByRole("textbox"),
       "-----BEGIN PGP PRIVATE KEY BLOCK-----test-key",
     );
 
@@ -289,26 +289,6 @@ describe("AddPublicationForm", () => {
         'Publication "new-mirror-publication" has been created.',
       ),
     ).toBeInTheDocument();
-  });
-
-  it("shows validation error when signing key is required but not provided", async () => {
-    const user = userEvent.setup();
-
-    renderForm();
-
-    await selectMirrorSource(user);
-
-    await user.click(
-      screen.getByRole("checkbox", {
-        name: /Preserve mirror signing key/i,
-      }),
-    );
-
-    await user.click(screen.getByRole("button", { name: "Add publication" }));
-
-    await waitFor(() => {
-      expect(screen.getAllByText("This field is required")).not.toHaveLength(0);
-    });
   });
 
   it("allows selecting multiple architectures simultaneously", async () => {

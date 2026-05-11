@@ -60,4 +60,47 @@ describe("PublicationsContainer", () => {
     ).not.toBeInTheDocument();
     screen.debug();
   });
+
+  it("filters publications by publicationTargetId: prefix", async () => {
+    const targetId = "aaaaaaaa-0000-0000-0000-000000000001";
+
+    renderWithProviders(
+      <PublicationsContainer />,
+      undefined,
+      `/?query=publicationTargetId:${targetId}`,
+    );
+
+    expect(
+      await screen.findByRole("button", { name: publications[0].displayName }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: publications[1].displayName }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("filters publications by source: prefix", async () => {
+    renderWithProviders(
+      <PublicationsContainer />,
+      undefined,
+      "/?query=source:mirrors/ubuntu-archive-mirror",
+    );
+
+    expect(
+      await screen.findByRole("button", { name: publications[0].displayName }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: publications[1].displayName }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("filters publications by plain display name", async () => {
+    renderWithProviders(<PublicationsContainer />, undefined, "/?query=jammy");
+
+    expect(
+      await screen.findByRole("button", { name: publications[0].displayName }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: publications[1].displayName }),
+    ).not.toBeInTheDocument();
+  });
 });
