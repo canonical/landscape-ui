@@ -58,7 +58,6 @@ describe("PublicationsContainer", () => {
     expect(
       screen.queryByRole("button", { name: "Add publication" }),
     ).not.toBeInTheDocument();
-    screen.debug();
   });
 
   it("filters publications by publicationTargetId: prefix", async () => {
