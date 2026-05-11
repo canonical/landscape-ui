@@ -48,6 +48,26 @@ describe("Legend", () => {
     });
   });
 
+  it("renders zero counts as plain text rather than a link", () => {
+    renderWithProviders(
+      <Legend
+        {...props}
+        items={[
+          { label: "Up to date", count: 6 },
+          { label: "Regular", count: 0 },
+        ]}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: "0 instances" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("0 instances")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "6 instances" }),
+    ).toBeInTheDocument();
+  });
+
   it("calls onArcEnter with the index when an item is hovered", async () => {
     renderWithProviders(<Legend {...props} />);
 

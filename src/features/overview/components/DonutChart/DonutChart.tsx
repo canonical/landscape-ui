@@ -41,6 +41,27 @@ const formatPercent = (proportion: number): string => {
   return `${Math.round(proportion)}%`;
 };
 
+const buildArcPath = (radius: number, proportion: number): string => {
+  if (proportion <= 0) {
+    return "";
+  }
+  const startX = CENTER;
+  const startY = CENTER - radius;
+  if (proportion >= FULL_PATH_LENGTH) {
+    const oppositeY = CENTER + radius;
+    return [
+      `M ${startX} ${startY}`,
+      `A ${radius} ${radius} 0 1 1 ${startX} ${oppositeY}`,
+      `A ${radius} ${radius} 0 1 1 ${startX} ${startY}`,
+    ].join(" ");
+  }
+  const angle = (proportion / FULL_PATH_LENGTH) * 2 * Math.PI;
+  const endX = CENTER + radius * Math.sin(angle);
+  const endY = CENTER - radius * Math.cos(angle);
+  const largeArc = proportion > FULL_PATH_LENGTH / 2 ? 1 : 0;
+  return `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY}`;
+};
+
 const COMPACT_NUMBER_FORMATTER = new Intl.NumberFormat("en", {
   notation: "compact",
   maximumFractionDigits: 1,
@@ -131,23 +152,19 @@ const DonutChart: FC<DonutChartProps> = ({ title, total, rings }) => {
                     r={radius}
                     fill="none"
                     strokeWidth={STROKE_WIDTH}
-                    pathLength={FULL_PATH_LENGTH}
                     className={classes.track}
                   />
-                  <circle
-                    cx={CENTER}
-                    cy={CENTER}
-                    r={radius}
-                    fill="none"
-                    stroke={ringColor}
-                    strokeWidth={STROKE_WIDTH}
-                    strokeLinecap="butt"
-                    pathLength={FULL_PATH_LENGTH}
-                    strokeDasharray={`${proportion} ${FULL_PATH_LENGTH - proportion}`}
-                    style={{ pointerEvents: "stroke" }}
-                    transform={`rotate(-90 ${CENTER} ${CENTER})`}
-                    data-testid={`donut-arc-${index}`}
-                  />
+                  {proportion > 0 && (
+                    <path
+                      d={buildArcPath(radius, proportion)}
+                      fill="none"
+                      stroke={ringColor}
+                      strokeWidth={STROKE_WIDTH}
+                      strokeLinecap="butt"
+                      style={{ pointerEvents: "stroke" }}
+                      data-testid={`donut-arc-${index}`}
+                    />
+                  )}
                 </g>
               );
             })}

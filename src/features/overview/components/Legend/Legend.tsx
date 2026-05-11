@@ -70,12 +70,18 @@ const Legend: FC<LegendProps> = ({
               />
               <span className={classes.legendItem__text}>{item.label}</span>
             </div>
-            <Link
-              to={ROUTES.instances.root({ status: statusItem.filterValue })}
-              className="u-no-margin u-no-padding"
-            >
-              {item.count} instances
-            </Link>
+            {item.count === 0 ? (
+              <span className="u-no-margin u-no-padding">
+                {item.count} instances
+              </span>
+            ) : (
+              <Link
+                to={ROUTES.instances.root({ status: statusItem.filterValue })}
+                className="u-no-margin u-no-padding"
+              >
+                {item.count} instances
+              </Link>
+            )}
           </div>
         );
       })}

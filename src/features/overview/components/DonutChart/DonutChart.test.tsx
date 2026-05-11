@@ -23,7 +23,7 @@ const renderChart = (overrides?: { total?: number; rings?: DonutRing[] }) =>
 
 const getArcs = (container: HTMLElement) =>
   Array.from(
-    container.querySelectorAll<SVGCircleElement>("[data-testid^='donut-arc-']"),
+    container.querySelectorAll<SVGPathElement>("[data-testid^='donut-arc-']"),
   );
 
 const getRingGroup = (index: number) => {
@@ -68,21 +68,25 @@ describe("DonutChart", () => {
     ).toBeInTheDocument();
   });
 
-  it("computes stroke-dasharray as percent of total", () => {
+  it("draws each arc starting at the top of its ring with the correct radius and large-arc flag", () => {
     const { container } = renderChart();
     const arcs = getArcs(container);
 
-    expect(arcs[0]).toHaveAttribute(
-      "stroke-dasharray",
-      `${(6 / 9) * 100} ${100 - (6 / 9) * 100}`,
+    // 6/9 = 66.67% > 50%, so largeArc=1; outer ring r=42, starts at (50, 8)
+    expect(arcs[0]?.getAttribute("d")).toMatch(
+      /^M 50 8 A 42 42 0 1 1 [-\d.]+ [-\d.]+$/,
     );
-    expect(arcs[1]).toHaveAttribute(
-      "stroke-dasharray",
-      `${(3 / 9) * 100} ${100 - (3 / 9) * 100}`,
+    // 3/9 = 33.33% <= 50%, so largeArc=0; middle ring r=32, starts at (50, 18)
+    expect(arcs[1]?.getAttribute("d")).toMatch(
+      /^M 50 18 A 32 32 0 0 1 [-\d.]+ [-\d.]+$/,
+    );
+    // 1/9 = 11.11% <= 50%, so largeArc=0; inner ring r=22, starts at (50, 28)
+    expect(arcs[2]?.getAttribute("d")).toMatch(
+      /^M 50 28 A 22 22 0 0 1 [-\d.]+ [-\d.]+$/,
     );
   });
 
-  it("renders an empty arc when count is zero", () => {
+  it("renders no colored arc when count is zero", () => {
     const { container } = renderChart({
       rings: [
         { label: "Up to date", count: 0, colorKey: "green" },
@@ -90,13 +94,10 @@ describe("DonutChart", () => {
         { label: "Security", count: 0, colorKey: "red" },
       ],
     });
-    const arcs = getArcs(container);
-    arcs.forEach((arc) => {
-      expect(arc).toHaveAttribute("stroke-dasharray", "0 100");
-    });
+    expect(getArcs(container)).toHaveLength(0);
   });
 
-  it("renders a full arc when count equals total", () => {
+  it("renders a full circle as two arcs when count equals total", () => {
     const { container } = renderChart({
       total: 4,
       rings: [
@@ -106,12 +107,21 @@ describe("DonutChart", () => {
       ],
     });
     const arcs = getArcs(container);
-    arcs.forEach((arc) => {
-      expect(arc).toHaveAttribute("stroke-dasharray", "100 0");
-    });
+    expect(arcs[0]).toHaveAttribute(
+      "d",
+      "M 50 8 A 42 42 0 1 1 50 92 A 42 42 0 1 1 50 8",
+    );
+    expect(arcs[1]).toHaveAttribute(
+      "d",
+      "M 50 18 A 32 32 0 1 1 50 82 A 32 32 0 1 1 50 18",
+    );
+    expect(arcs[2]).toHaveAttribute(
+      "d",
+      "M 50 28 A 22 22 0 1 1 50 72 A 22 22 0 1 1 50 28",
+    );
   });
 
-  it("clamps to zero when total is zero", () => {
+  it("renders no colored arc when total is zero", () => {
     const { container } = renderChart({
       total: 0,
       rings: [
@@ -120,10 +130,7 @@ describe("DonutChart", () => {
         { label: "Security", count: 0, colorKey: "red" },
       ],
     });
-    const arcs = getArcs(container);
-    arcs.forEach((arc) => {
-      expect(arc).toHaveAttribute("stroke-dasharray", "0 100");
-    });
+    expect(getArcs(container)).toHaveLength(0);
   });
 
   it("uses light-mode default colors by default", () => {
