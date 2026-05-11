@@ -10,13 +10,6 @@ export interface CreatePublicationPayload {
 
 const REQUIRED_FIELD_MESSAGE = "This field is required";
 
-export const getCsvValues = (value?: string): string[] => {
-  return (value ?? "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-};
-
 export const VALIDATION_SCHEMA = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   source_type: Yup.string().required(REQUIRED_FIELD_MESSAGE),
@@ -24,22 +17,12 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   publication_target: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   prefix: Yup.string(),
   uploader_distribution: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  uploader_architectures: Yup.string()
+  uploader_architectures: Yup.array()
+    .of(Yup.string())
     .when("source_type", {
       is: SOURCE_TYPE_LOCAL_REPOSITORY,
       then: (schema) => schema,
-      otherwise: (schema) => schema.required(REQUIRED_FIELD_MESSAGE),
-    })
-    .test({
-      name: "has-architectures",
-      message: REQUIRED_FIELD_MESSAGE,
-      test: (value, context) => {
-        if (context.parent.source_type === SOURCE_TYPE_LOCAL_REPOSITORY) {
-          return true;
-        }
-
-        return getCsvValues(value).length > 0;
-      },
+      otherwise: (schema) => schema.min(1, REQUIRED_FIELD_MESSAGE),
     }),
   signing_key: Yup.string(),
   hash_indexing: Yup.boolean(),
@@ -76,7 +59,7 @@ export const getPublicationPayload = (values: FormProps) => {
   const architectures =
     values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY
       ? []
-      : getCsvValues(values.uploader_architectures);
+      : values.uploader_architectures;
 
   return {
     publicationId,
