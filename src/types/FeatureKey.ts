@@ -1,6 +1,7 @@
 export type ServerFeatureKey =
   | "computer-soft-deletion"
   | "employee-management"
+  | "health"
   | "instance-reports"
   | "oidc-configuration"
   | "package-change-plans"
