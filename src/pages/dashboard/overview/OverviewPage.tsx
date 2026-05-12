@@ -12,10 +12,7 @@ import useAuth from "@/hooks/useAuth";
 import classes from "./OverviewPage.module.scss";
 
 const FleetHealth: FC = () => {
-  const { isFeatureEnabled } = useAuth();
-  const healthEnabled = isFeatureEnabled("health");
   const { data, isLoading, isError } = useFleetHealthSummary();
-  if (!healthEnabled) return null;
   return (
     <FleetHealthWidget
       summary={data?.data}
@@ -26,13 +23,14 @@ const FleetHealth: FC = () => {
 };
 
 const OverviewPage: FC = () => {
+  const { isFeatureEnabled } = useAuth();
+  const healthEnabled = isFeatureEnabled("health");
   return (
     <PageMain>
       <PageHeader title="Overview" />
       <PageContent>
-        <FleetHealth />
         <div className={classes.container}>
-          <ChartContainer />
+          {healthEnabled ? <FleetHealth /> : <ChartContainer />}
           <AlertsContainer />
         </div>
         <InfoTablesContainer />
