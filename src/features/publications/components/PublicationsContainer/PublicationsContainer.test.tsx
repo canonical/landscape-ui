@@ -1,10 +1,13 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
+import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationsContainer from "./PublicationsContainer";
 import { expectLoadingState } from "@/tests/helpers";
+import { http, HttpResponse } from "msw";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 describe("PublicationsContainer", () => {
   it("renders publications list data", async () => {
@@ -101,5 +104,23 @@ describe("PublicationsContainer", () => {
     expect(
       screen.queryByRole("button", { name: publications[1].displayName }),
     ).not.toBeInTheDocument();
+  });
+
+  it("handles batchGet response with no mirrors array and nameless mirrors", async () => {
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
+        HttpResponse.json({ mirrors: [{ displayName: "no-name-mirror" }] }),
+      ),
+    );
+
+    renderWithProviders(<PublicationsContainer />);
+
+    await expectLoadingState();
+
+    expect(
+      await screen.findByRole("button", {
+        name: publications[0].displayName,
+      }),
+    ).toBeInTheDocument();
   });
 });

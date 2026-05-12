@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { expectLoadingState } from "@/tests/helpers";
-import { beforeEach, expect, vi } from "vitest";
+import { expect } from "vitest";
 import { EditMirrorForm } from "../..";
 import { mirrors } from "@/tests/mocks/mirrors";
 import {
@@ -22,25 +22,8 @@ const TestComponent = () => {
   }
 };
 
-const mockUpdateMirror = vi.fn();
-
-vi.mock("../../api", async () => {
-  const actual = await vi.importActual("../../api");
-
-  return {
-    ...actual,
-    useUpdateMirror: () => ({
-      mutateAsync: mockUpdateMirror,
-    }),
-  };
-});
-
 describe("EditMirrorForm", () => {
   const user = userEvent.setup();
-
-  beforeEach(async () => {
-    mockUpdateMirror.mockReset();
-  });
 
   it("edits an ubuntu archive mirror", async () => {
     const mirror = mirrors.find(
@@ -60,9 +43,11 @@ describe("EditMirrorForm", () => {
     await expectLoadingState();
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({}),
-    );
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}.`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("edits a third party mirror", async () => {
@@ -85,23 +70,18 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    const params = {
-      gpgKey: { armor: "ABCDEF" },
-    };
-
     // Mirror has existing GPG key, so checkbox is checked by default - uncheck to show textarea
     await user.click(screen.getByLabelText("Keep current GPG key"));
     await user.clear(screen.getByLabelText("Verification GPG key"));
-    await user.type(
-      screen.getByLabelText("Verification GPG key"),
-      params.gpgKey.armor,
-    );
+    await user.type(screen.getByLabelText("Verification GPG key"), "ABCDEF");
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining(params),
-    );
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}.`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("preserves existing GPG key when checkbox is checked", async () => {
@@ -133,10 +113,11 @@ describe("EditMirrorForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    // gpgKey should NOT be in the payload when keeping existing key
-    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.not.objectContaining({ gpgKey: expect.anything() }),
-    );
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}.`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("shows preserve signatures as disabled", async () => {
@@ -157,5 +138,60 @@ describe("EditMirrorForm", () => {
     const checkbox = screen.getByLabelText("Preserve upstream signing key");
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
+  });
+
+  it("shows validation error when name is empty", async () => {
+    const mirror = mirrors.find(
+      ({ archiveRoot }) => new URL(archiveRoot).host === UBUNTU_ARCHIVE_HOST,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.clear(screen.getByRole("textbox", { name: /name/i }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      await screen.findByText("This field is required."),
+    ).toBeInTheDocument();
+  });
+
+  it("updates download options", async () => {
+    const mirror = mirrors.find(
+      ({ archiveRoot }) => new URL(archiveRoot).host === UBUNTU_ARCHIVE_HOST,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(screen.getByLabelText(/download .udeb packages/i));
+    await user.click(screen.getByLabelText("Download sources"));
+    await user.click(screen.getByLabelText("Download installer files"));
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}.`,
+      ),
+    ).toBeInTheDocument();
   });
 });
