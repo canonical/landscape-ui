@@ -140,7 +140,7 @@ describe("AddMirrorForm", () => {
   });
 
   it("clears package filter and include dependencies when preserve signatures is enabled", async () => {
-    const packageFilterField = screen.getByLabelText("Package filter");
+    const packageFilterField = screen.getByLabelText("Filter");
     const includeDepsCheckbox = screen.getByLabelText(
       "Include dependencies in filter",
     );
@@ -151,7 +151,7 @@ describe("AddMirrorForm", () => {
     expect(packageFilterField).toHaveValue("nginx*");
     expect(includeDepsCheckbox).toBeChecked();
 
-    await user.click(screen.getByLabelText("Preserve signatures"));
+    await user.click(screen.getByLabelText("Preserve upstream signing key"));
 
     expect(packageFilterField).toHaveValue("");
     expect(includeDepsCheckbox).not.toBeChecked();
