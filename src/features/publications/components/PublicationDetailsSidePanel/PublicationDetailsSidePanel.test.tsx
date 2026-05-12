@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import PublicationDetailsSidePanel from "./PublicationDetailsSidePanel";
 
 const [publication] = publications;
-const publicationId = publication.publicationId!;
+const publicationId = publication?.publicationId;
 
 const renderPanel = () =>
   renderWithProviders(
