@@ -10,6 +10,7 @@ import {
 } from "./helpers";
 import "./matcher";
 import server from "./server";
+import { resetPublicationTargets } from "./server/handlers/publicationTargets";
 
 expect.extend(matchers);
 
@@ -99,6 +100,7 @@ afterAll(() => {
 });
 
 afterEach(() => {
+  resetPublicationTargets();
   setEndpointStatus("default");
   server.resetHandlers();
   cleanup();

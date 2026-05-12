@@ -53,14 +53,17 @@ describe("PublicationsContainer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("does not render button to add publication when there are no publications", async () => {
+  it("renders add publication button in empty state CTA when there are no publications", async () => {
     setEndpointStatus({ status: "empty", path: "publications" });
 
     renderWithProviders(<PublicationsContainer />);
-    await expectLoadingState();
+    await screen.findByText(/you don.t have any publications yet/i);
+    // NoPublicationsEmptyState renders AddPublicationButton as its CTA.
+    // The header-level button is suppressed (isMissingPublications=true),
+    // so exactly one instance should be present.
     expect(
-      screen.queryByRole("button", { name: "Add publication" }),
-    ).not.toBeInTheDocument();
+      screen.getAllByRole("button", { name: "Add publication" }),
+    ).toHaveLength(1);
   });
 
   it("filters publications by publicationTargetId: prefix", async () => {
