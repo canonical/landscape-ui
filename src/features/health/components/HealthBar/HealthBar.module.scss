@@ -1,0 +1,131 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+// LA061 Health Bar — score, band, and factor breakdown.
+
+$bar-height: 0.5rem;
+$bar-width: 7rem;
+$bar-radius: 0.25rem;
+
+// Band colors. These extend the Vanilla negative/caution/positive system
+// so they read correctly in the existing themes without introducing new
+// design tokens.
+$band-critical: $color-negative;
+$band-warning: $color-caution;
+$band-healthy: $color-positive;
+
+.root {
+  align-items: center;
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  gap: $sph--small;
+  min-width: 0;
+}
+
+.score {
+  font-weight: 600;
+  line-height: 1;
+  min-width: 2.25ch;
+  text-align: right;
+}
+
+.bar {
+  background: $colors--theme--background-alt;
+  border-radius: $bar-radius;
+  display: inline-block;
+  flex-shrink: 0;
+  height: $bar-height;
+  overflow: hidden;
+  position: relative;
+  width: $bar-width;
+
+  // Touch targets — the bar itself is non-interactive, but expanding the
+  // hit area for hover/focus on the parent improves discoverability.
+  &::before {
+    content: "";
+    inset: -0.25rem 0;
+    position: absolute;
+  }
+}
+
+.fill {
+  border-radius: $bar-radius;
+  height: 100%;
+  transition: width 240ms ease-in-out;
+
+  // Respect prefers-reduced-motion so animations don't disrupt operators
+  // who've opted out.
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.fill--critical {
+  background: $band-critical;
+}
+
+.fill--warning {
+  background: $band-warning;
+}
+
+.fill--healthy {
+  background: $band-healthy;
+}
+
+.criticalCount {
+  background: $band-critical;
+  border-radius: 999rem;
+  color: $color-x-light;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.125rem 0.375rem;
+}
+
+.factorTable {
+  font-size: 0.875rem;
+  margin: 0;
+  min-width: 16rem;
+
+  th,
+  td {
+    padding: $spv--x-small $sph--small;
+    text-align: left;
+  }
+
+  th:last-child,
+  td:last-child {
+    text-align: right;
+  }
+}
+
+.empty {
+  color: $color-mid-dark;
+  font-style: italic;
+  padding: $spv--x-small $sph--small;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    $colors--theme--background-alt 0%,
+    $color-light 50%,
+    $colors--theme--background-alt 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background: $colors--theme--background-alt;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
