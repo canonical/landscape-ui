@@ -54,6 +54,7 @@ const InstancesPage: FC = () => {
     currentPage,
     pageSize,
     wsl,
+    healthBand,
     sidePath,
     popSidePathUntilClear,
     ...filters
@@ -70,6 +71,9 @@ const InstancesPage: FC = () => {
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
+    // LA061: categorical health-band filter. Omitted when the array is empty
+    // so we don't churn the query cache on every navigation.
+    ...(healthBand.length > 0 ? { health_band: healthBand.join(",") } : {}),
   });
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);

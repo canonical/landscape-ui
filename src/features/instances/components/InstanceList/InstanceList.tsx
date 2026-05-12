@@ -231,40 +231,13 @@ const InstanceList = memo(function InstanceList({
           );
         },
       },
-      {
-        accessor: "upgrades",
-        canBeHidden: true,
-        optionLabel: "Upgrades",
-        Header: "Upgrades",
-        Cell: ({ row: { original } }: CellProps<Instance>) => (
-          <InstanceUpgrades
-            instance={original}
-            onUpgradeClick={toggleUpgradeFilter}
-          />
-        ),
-      },
-      {
-        accessor: "status",
-        canBeHidden: true,
-        optionLabel: "Status",
-        Header: "Status",
-        Cell: ({ row: { original, index } }: CellProps<Instance>) => (
-          <InstanceStatus
-            instance={original}
-            expandable
-            isExpanded={
-              index === expandedRowIndex && expandedColumnId === "status"
-            }
-            onExpand={() => {
-              handleExpand(index, "status");
-            }}
-            onStatusClick={toggleStatusFilter}
-          />
-        ),
-      },
-      // LA061: Health column appears next to Status when `health` is on.
-      // TODO(LA061): extend the instance-list endpoint to include per-row
-      // health so this column doesn't fan out N fetches per page render.
+      // LA061: when `health` is on, Health replaces both Upgrades and Status
+      // (USN priorities + reboot_required already feed the score, so keeping
+      // them would duplicate signals). With the flag off, the legacy columns
+      // stay — accounts that haven't opted in keep their existing
+      // sort/filter semantics.
+      // TODO(LA061): extend the instance-list endpoint to embed per-row health
+      // so this column doesn't fan out N fetches per page render.
       ...(healthEnabled
         ? [
             {
@@ -277,7 +250,39 @@ const InstanceList = memo(function InstanceList({
               ),
             } satisfies InstanceColumn,
           ]
-        : []),
+        : [
+            {
+              accessor: "upgrades",
+              canBeHidden: true,
+              optionLabel: "Upgrades",
+              Header: "Upgrades",
+              Cell: ({ row: { original } }: CellProps<Instance>) => (
+                <InstanceUpgrades
+                  instance={original}
+                  onUpgradeClick={toggleUpgradeFilter}
+                />
+              ),
+            } satisfies InstanceColumn,
+            {
+              accessor: "status",
+              canBeHidden: true,
+              optionLabel: "Status",
+              Header: "Status",
+              Cell: ({ row: { original, index } }: CellProps<Instance>) => (
+                <InstanceStatus
+                  instance={original}
+                  expandable
+                  isExpanded={
+                    index === expandedRowIndex && expandedColumnId === "status"
+                  }
+                  onExpand={() => {
+                    handleExpand(index, "status");
+                  }}
+                  onStatusClick={toggleStatusFilter}
+                />
+              ),
+            } satisfies InstanceColumn,
+          ]),
       {
         accessor: "os",
         canBeHidden: true,

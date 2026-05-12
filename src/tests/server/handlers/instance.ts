@@ -27,6 +27,7 @@ import {
   instances,
   pendingInstances,
 } from "@/tests/mocks/instance";
+import { getHealthFixture } from "@/tests/mocks/health";
 import { userGroups } from "@/tests/mocks/userGroup";
 import type {
   Instance,
@@ -157,6 +158,11 @@ export default [
     const endpointStatus = getEndpointStatus();
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || 1;
+    // LA061: categorical health-band filter. Comma-separated, e.g. "critical,warning".
+    const healthBandRaw = url.searchParams.get("health_band") || "";
+    const healthBandSet = new Set(
+      healthBandRaw ? healthBandRaw.split(",") : [],
+    );
 
     if (shouldApplyEndpointStatus("computers")) {
       const { status, response } = getEndpointStatus("computers");
@@ -179,15 +185,32 @@ export default [
       }
     }
 
-    return (
-      matchComputersQuery(query, endpointStatus, limit, offset) ??
-      HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: instances,
-          limit,
-          offset,
-        }),
-      )
+    const filterByHealthBand = (data: Instance[]): Instance[] => {
+      if (healthBandSet.size === 0) return data;
+      const { computers: healthByComputer } = getHealthFixture();
+      const idsInBand = new Set(
+        healthByComputer
+          .filter((h) => healthBandSet.has(h.band))
+          .map((h) => h.computer_id),
+      );
+      return data.filter((instance) => idsInBand.has(instance.id));
+    };
+
+    const queryMatch = matchComputersQuery(
+      query,
+      endpointStatus,
+      limit,
+      offset,
+    );
+    if (queryMatch) {
+      return queryMatch;
+    }
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: filterByHealthBand(instances),
+        limit,
+        offset,
+      }),
     );
   }),
 

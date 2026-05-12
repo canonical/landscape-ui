@@ -6,6 +6,7 @@ export type FilterType = Pick<
   | "availabilityZones"
   | "contractExpiryDays"
   | "fromDate"
+  | "healthBand"
   | "os"
   | "status"
   | "tags"
