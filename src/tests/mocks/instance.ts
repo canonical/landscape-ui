@@ -5,6 +5,12 @@ import type {
   WindowsInstance,
 } from "@/types/Instance";
 
+const packageUpgradesAlert = {
+  type: "PackageUpgradesAlert",
+  summary: "",
+  severity: "info",
+} as const;
+
 export const ubuntuInstance: Instance = {
   id: 1,
   title: "Application Server 1",
@@ -554,6 +560,7 @@ export const instances = [
       distributor: "Canonical",
       release: "12.04",
     },
+    alerts: [packageUpgradesAlert],
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
@@ -1366,6 +1373,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1406,6 +1414,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1446,6 +1455,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1486,6 +1496,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1526,6 +1537,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1566,6 +1578,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1606,6 +1619,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1646,6 +1660,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1686,6 +1701,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1726,6 +1742,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    alerts: [packageUpgradesAlert],
     has_release_upgrades: false,
   } as Instance,
   {
@@ -1763,6 +1780,7 @@ export const instances = [
       distributor: "Canonical",
       release: "12.04",
     },
+    alerts: [packageUpgradesAlert],
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
