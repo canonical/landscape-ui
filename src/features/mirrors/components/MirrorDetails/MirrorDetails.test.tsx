@@ -22,7 +22,7 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("displays preserve signatures status", async () => {
+  it("renders mirror details for a mirror with preserve signatures enabled", async () => {
     const mirrorWithPreserveSignatures = mirrors.find(
       ({ preserveSignatures }) => preserveSignatures,
     );
