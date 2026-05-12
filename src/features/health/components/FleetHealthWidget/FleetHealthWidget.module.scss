@@ -1,0 +1,215 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+$band-critical: $color-negative;
+$band-warning: $color-caution;
+$band-healthy: $color-positive;
+
+.root {
+  background: $colors--theme--background-default;
+  border-radius: 0.25rem;
+  display: flex;
+  gap: $sph--large;
+  padding: $spv--medium $sph--medium;
+  width: 100%;
+
+  @media (max-width: 48rem) {
+    flex-direction: column;
+  }
+}
+
+.chartWrapper {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: center;
+  position: relative;
+}
+
+.svg {
+  display: block;
+  height: 11rem;
+  width: 11rem;
+}
+
+.track {
+  stroke: $colors--theme--background-alt;
+}
+
+.arc {
+  cursor: pointer;
+  transition:
+    opacity 200ms ease,
+    stroke-width 200ms ease;
+
+  &:focus-visible {
+    outline: none;
+    // Visual focus ring is the stroke-width bump below.
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.arc--inactive {
+  opacity: 0.4;
+}
+
+.arc--active {
+  stroke-width: 14;
+}
+
+.arc--critical {
+  stroke: $band-critical;
+}
+
+.arc--warning {
+  stroke: $band-warning;
+}
+
+.arc--healthy {
+  stroke: $band-healthy;
+}
+
+.centerNumber {
+  fill: $color-dark;
+  font-size: 1.85rem;
+  font-weight: 700;
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.centerLabel {
+  fill: $color-mid-dark;
+  font-size: 0.75rem;
+  pointer-events: none;
+  text-anchor: middle;
+  text-transform: uppercase;
+}
+
+.legend {
+  align-self: center;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: $spv--small;
+  min-width: 0;
+}
+
+.legendHeading {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 $spv--x-small 0;
+}
+
+.legendDescription {
+  color: $color-mid-dark;
+  font-size: 0.875rem;
+  margin: 0 0 $spv--small 0;
+}
+
+.legendList {
+  display: flex;
+  flex-direction: column;
+  gap: $spv--x-small;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legendItem {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: flex;
+  gap: $sph--small;
+  padding: $spv--x-small $sph--x-small;
+  text-align: left;
+  width: 100%;
+
+  &:hover,
+  &:focus-visible {
+    background: $colors--theme--background-alt;
+  }
+
+  &[aria-pressed="true"] {
+    background: $colors--theme--background-alt;
+  }
+}
+
+.swatch {
+  border-radius: 0.125rem;
+  flex-shrink: 0;
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.swatch--critical {
+  background: $band-critical;
+}
+
+.swatch--warning {
+  background: $band-warning;
+}
+
+.swatch--healthy {
+  background: $band-healthy;
+}
+
+.legendLabel {
+  flex: 1 1 auto;
+  font-weight: 500;
+}
+
+.legendCount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.empty {
+  align-items: center;
+  color: $color-mid-dark;
+  display: flex;
+  flex-direction: column;
+  gap: $spv--x-small;
+  padding: $spv--large $sph--large;
+  text-align: center;
+  width: 100%;
+}
+
+.error {
+  color: $color-negative;
+  padding: $spv--medium;
+  text-align: center;
+  width: 100%;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    $colors--theme--background-alt 0%,
+    $color-light 50%,
+    $colors--theme--background-alt 100%
+  );
+  background-size: 200% 100%;
+  animation: fleet-skeleton 1.4s ease-in-out infinite;
+  border-radius: 50%;
+  height: 11rem;
+  width: 11rem;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes fleet-skeleton {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
