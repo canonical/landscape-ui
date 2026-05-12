@@ -5,6 +5,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT, TSV_EXPORTS_ENABLED } from "@/constants";
+import { HealthCell } from "@/features/health";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
@@ -57,6 +58,8 @@ const InstanceList = memo(function InstanceList({
     status: activeStatus,
     upgrades: activeUpgrades,
   } = filters;
+  const { isFeatureEnabled } = useAuth();
+  const healthEnabled = isFeatureEnabled("health");
 
   const {
     expandedRowIndex,
@@ -259,6 +262,22 @@ const InstanceList = memo(function InstanceList({
           />
         ),
       },
+      // LA061: Health column appears next to Status when `health` is on.
+      // TODO(LA061): extend the instance-list endpoint to include per-row
+      // health so this column doesn't fan out N fetches per page render.
+      ...(healthEnabled
+        ? [
+            {
+              accessor: "health",
+              canBeHidden: true,
+              optionLabel: "Health",
+              Header: "Health",
+              Cell: ({ row: { original } }: CellProps<Instance>) => (
+                <HealthCell instanceId={original.id} />
+              ),
+            } satisfies InstanceColumn,
+          ]
+        : []),
       {
         accessor: "os",
         canBeHidden: true,
@@ -386,6 +405,7 @@ const InstanceList = memo(function InstanceList({
       deselect,
       toggleAll,
       onClearSelection,
+      healthEnabled,
     ],
   );
 
@@ -402,7 +422,6 @@ const InstanceList = memo(function InstanceList({
     [disabledColumns, columns],
   );
 
-  const { isFeatureEnabled } = useAuth();
   // "Select all" is only useful if the resulting selection can feed into an
   // all-selection-aware feature, currently TSV export or the report view.
   const canSelectAll =
