@@ -10,7 +10,7 @@ $band-healthy: $color-positive;
   border-radius: 0.25rem;
   display: flex;
   gap: $sph--large;
-  padding: $spv--medium $sph--medium;
+  padding: $spv--medium $sph--large;
   width: 100%;
 
   @media (max-width: 48rem) {
