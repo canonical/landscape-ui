@@ -180,7 +180,6 @@ const AddPublicationForm: FC = () => {
     );
 
     await formik.setFieldValue("uploader_architectures", []);
-    await formik.setFieldValue("signing_key", "");
   };
 
   const handleArchitectureChange = async (
