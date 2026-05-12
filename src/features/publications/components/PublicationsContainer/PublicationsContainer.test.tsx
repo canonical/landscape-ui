@@ -53,17 +53,14 @@ describe("PublicationsContainer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders add publication button in empty state CTA when there are no publications", async () => {
+  it("does not render button to add publication when there are no publications", async () => {
     setEndpointStatus({ status: "empty", path: "publications" });
 
     renderWithProviders(<PublicationsContainer />);
-    await screen.findByText(/you don.t have any publications yet/i);
-    // NoPublicationsEmptyState renders AddPublicationButton as its CTA.
-    // The header-level button is suppressed (isMissingPublications=true),
-    // so exactly one instance should be present.
+    await expectLoadingState();
     expect(
-      screen.getAllByRole("button", { name: "Add publication" }),
-    ).toHaveLength(1);
+      screen.queryByRole("button", { name: "Add publication" }),
+    ).not.toBeInTheDocument();
   });
 
   it("filters publications by publicationTargetId: prefix", async () => {
@@ -109,10 +106,28 @@ describe("PublicationsContainer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("handles batchGet response with no mirrors array and nameless mirrors", async () => {
+  it("handles batchGet response with nameless mirror entries", async () => {
     server.use(
       http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
         HttpResponse.json({ mirrors: [{ displayName: "no-name-mirror" }] }),
+      ),
+    );
+
+    renderWithProviders(<PublicationsContainer />);
+
+    await expectLoadingState();
+
+    expect(
+      await screen.findByRole("button", {
+        name: publications[0].displayName,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("handles batchGet response with no mirrors field", async () => {
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, () =>
+        HttpResponse.json({}),
       ),
     );
 

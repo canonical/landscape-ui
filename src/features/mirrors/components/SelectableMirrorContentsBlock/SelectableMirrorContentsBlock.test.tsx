@@ -80,5 +80,83 @@ describe("SelectableMirrorContentsBlock", () => {
         }}
       />,
     );
+
+    expect(
+      screen.queryByRole("combobox", { name: /distribution/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText(proService.distributions[0].label),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(proService.distributions[0].components[0].slug),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(proService.distributions[0].architectures[0].slug),
+    ).toBeInTheDocument();
+  });
+
+  it("renders empty select fields when ubuntu-pro proService is not found", () => {
+    renderWithProviders(
+      <TestComponent
+        initialValues={{
+          ...archiveBaseValues,
+          sourceType: "ubuntu-pro",
+          proService: "nonexistent-service",
+          token: "",
+        }}
+      />,
+    );
+
+    const select = screen.getByRole("combobox", { name: /distribution/i });
+    expect(select).toBeInTheDocument();
+    expect(select.querySelectorAll("option")).toHaveLength(0);
+  });
+
+  it("renders empty select when ubuntuArchiveInfo is undefined", () => {
+    renderWithProviders(
+      <TestComponent initialValues={archiveBaseValues} noArchiveInfo />,
+    );
+
+    const select = screen.getByRole("combobox", { name: /distribution/i });
+    expect(select).toBeInTheDocument();
+    expect(select.querySelectorAll("option")).toHaveLength(0);
+  });
+
+  it("disables all fields when isLoading is true", () => {
+    renderWithProviders(
+      <TestComponent initialValues={archiveBaseValues} isLoading />,
+    );
+
+    expect(
+      screen.getByRole("combobox", { name: /distribution/i }),
+    ).toBeDisabled();
+  });
+
+  it("updates components when a component option is selected", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestComponent initialValues={archiveBaseValues} />);
+
+    const componentsToggle = screen.getByRole("combobox", {
+      name: "Components",
+    });
+    await user.click(componentsToggle);
+
+    const mainOption = screen.getByText("main");
+    await user.click(mainOption);
+
+    expect(componentsToggle).toHaveTextContent("main");
+  });
+
+  it("updates architectures when an architecture option is selected", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<TestComponent initialValues={archiveBaseValues} />);
+
+    const archToggle = screen.getByRole("combobox", { name: "Architectures" });
+    await user.click(archToggle);
+
+    const amd64Option = screen.getByText("amd64");
+    await user.click(amd64Option);
+
+    expect(archToggle).toHaveTextContent("amd64");
   });
 });
