@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { authResponse } from "@/tests/mocks/auth";
+import { authResponse, authUser } from "@/tests/mocks/auth";
 import {
   clearStoredAuthUser,
   getStoredAuthToken,
@@ -18,7 +18,7 @@ describe("authStorage", () => {
     setStoredAuthUser(authResponse);
 
     expect(getStoredAuthUser()).toEqual(authResponse);
-    expect(getStoredAuthToken()).toBe(authResponse.token);
+    expect(getStoredAuthToken()).toBe(authUser.token);
   });
 
   it("returns null when nothing is stored", () => {
