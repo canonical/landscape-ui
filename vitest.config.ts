@@ -54,7 +54,11 @@ export default defineConfig({
         functions: 80,
         branches: 70,
       },
-      include: ["src/**/*.{ts,tsx}"],
+      include: [
+        "src/**/*.{ts,tsx}",
+        ".github/lighthouse/audit-sets.cjs",
+        ".github/lighthouse/lighthouserc.base.cjs",
+      ],
       exclude: [
         "**/tests/**",
         "**/*.config.*",
