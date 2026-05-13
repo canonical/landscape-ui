@@ -33,18 +33,19 @@ $bar-radius: 999rem;
 
 .iconSlot {
   align-items: center;
-  border-radius: 999rem;
   display: inline-flex;
   flex-shrink: 0;
   height: 1.125rem;
   justify-content: center;
   width: 1.125rem;
 
-  // The Vanilla `Icon` ships at 1rem and inherits color from the slot,
-  // so tinting the slot tints the glyph (great for our band colors).
+  // Bare-glyph icon. The Vanilla `Icon` inherits color from this slot,
+  // so the band class on the root tints the SVG via `currentcolor`.
+  // Scaling up to 1.125rem gives the icon visual weight after removing
+  // the circular backdrop.
   i {
-    height: 0.875rem;
-    width: 0.875rem;
+    height: 1.125rem;
+    width: 1.125rem;
   }
 }
 
@@ -100,9 +101,6 @@ $bar-radius: 999rem;
 .bandCritical {
   color: $color-negative;
 
-  .iconSlot {
-    background: rgba($color-negative, 0.18);
-  }
   .fill {
     background: $color-negative;
   }
@@ -116,9 +114,6 @@ $bar-radius: 999rem;
   // we keep the bar/icon amber but switch the label to a darker neutral.
   color: $color-caution;
 
-  .iconSlot {
-    background: rgba($color-caution, 0.18);
-  }
   .fill {
     background: $color-caution;
   }
@@ -131,9 +126,6 @@ $bar-radius: 999rem;
 .bandHealthy {
   color: $color-positive;
 
-  .iconSlot {
-    background: rgba($color-positive, 0.18);
-  }
   .fill {
     background: $color-positive;
   }
