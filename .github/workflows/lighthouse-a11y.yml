@@ -1,23 +1,64 @@
-# Foundation stub — filled by Workstream B (lighthouse-a11y/specs/03-landscape-ui-caller.md).
-#
-# Will be the Landscape UI caller for the reusable workflow:
-#   - pull_request:    annotate-mode public-URL run
-#   - workflow_dispatch: choice of block/annotate, public/msw/both
-#   - schedule (nightly): annotate-mode "both" run
-#
-# Until WS-B lands, this file is workflow_dispatch only and does nothing,
-# so it neither blocks PRs nor consumes CI minutes.
-
 name: Lighthouse a11y
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-a11y-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  stub:
+  lighthouse-a11y:
+    name: Lighthouse Accessibility
     runs-on: ubuntu-latest
+    env:
+      # Placeholders so the production build succeeds without secrets — the
+      # a11y audit only needs the public routes to render.
+      VITE_API_URL: https://example.com/api
+      VITE_API_URL_OLD: https://example.com/api-old
+      VITE_API_URL_DEB_ARCHIVE: https://example.com/api-deb
+      VITE_APP_TITLE: Landscape
+      VITE_REPORT_VIEW_ENABLED: "false"
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: "false"
+      VITE_SELF_HOSTED_ENV: "false"
+      VITE_APP_VERSION: "0.0.0-lighthouse"
+      VITE_APP_COMMIT: ${{ github.sha }}
+
     steps:
-      - name: Foundation stub
-        run: |
-          echo "::notice::lighthouse-a11y.yml is a Foundation stub."
-          echo "::notice::Workstream B will replace this with the PR / dispatch / schedule callers."
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium (with system libs)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Run Lighthouse CI
+        run: pnpm a11y:ci
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-a11y-reports
+          path: .lighthouseci
+          retention-days: 30
