@@ -13,6 +13,12 @@ export {
   getSameOriginPath,
   getSameOriginUrl,
 } from "./helpers";
+export {
+  clearStoredAuthUser,
+  getStoredAuthToken,
+  getStoredAuthUser,
+  setStoredAuthUser,
+} from "./authStorage";
 export { useAuthHandle, useInvitation } from "./hooks";
 export { getProviderIcon } from "./helpers";
 export type {

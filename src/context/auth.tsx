@@ -4,9 +4,11 @@ import { useLocation, useNavigate } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { AuthUser } from "@/features/auth";
 import {
+  clearStoredAuthUser,
   getSameOriginPath,
   getSameOriginUrl,
   redirectToExternalUrl,
+  setStoredAuthUser,
   useGetAuthState,
 } from "@/features/auth";
 import Redirecting from "@/components/layout/Redirecting";
@@ -68,6 +70,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   );
 
   const handleLogout = useCallback(() => {
+    clearStoredAuthUser();
     queryClient.setQueryData(AUTH_QUERY_KEY, null);
 
     navigate(ROUTES.auth.login(), { replace: true });
@@ -79,6 +82,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   const handleSetUser = useCallback(
     (newUser: AuthUser) => {
+      setStoredAuthUser(newUser);
       queryClient.setQueryData(AUTH_QUERY_KEY, newUser);
     },
     [queryClient],
