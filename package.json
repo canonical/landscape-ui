@@ -16,12 +16,17 @@
     "test:saas": "VITE_SELF_HOSTED_ENV=false pnpm exec playwright test --project=saas",
     "test:self-hosted": "VITE_SELF_HOSTED_ENV=true pnpm exec playwright test --project=self-hosted",
     "test:ui": "pnpm exec playwright test --ui",
+    "test:a11y": "pnpm exec playwright test --grep @a11y",
     "vitest": "vitest",
     "coverage": "vitest run --coverage",
     "test:codegen": "pnpm exec playwright codegen",
     "test:report": "pnpm exec playwright show-report",
     "tcm:run": "tcm \"src/**\" --pattern *.module.scss",
-    "tcm:watch": "pnpm tcm:run --watch"
+    "tcm:watch": "pnpm tcm:run --watch",
+    "a11y:ci": "lhci autorun --config=./lighthouserc.cjs",
+    "a11y:collect": "lhci collect --config=./lighthouserc.cjs",
+    "a11y:assert": "lhci assert --config=./lighthouserc.cjs",
+    "a11y:preview": "vite preview --host 0.0.0.0 --port 4173"
   },
   "dependencies": {
     "@canonical/landscape-openapi": "0.0.59",
@@ -55,10 +60,13 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@types/react-table": "7.7.20",
+    "@axe-core/playwright": "^4.10.0",
+    "@lhci/cli": "^0.14.0",
     "@vitejs/plugin-react": "6.0.1",
     "@vitest/coverage-v8": "~4.0.18",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.5.0",
@@ -74,6 +82,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "8.59.1",
     "vite": "8.0.10",
-    "vitest": "~4.0.18"
+    "vitest": "~4.0.18",
+    "vitest-axe": "^0.1.0"
   }
 }

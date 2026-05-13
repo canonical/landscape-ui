@@ -1,0 +1,23 @@
+# Foundation stub — filled by Workstream B (lighthouse-a11y/specs/03-landscape-ui-caller.md).
+#
+# Will be the Landscape UI caller for the reusable workflow:
+#   - pull_request:    annotate-mode public-URL run
+#   - workflow_dispatch: choice of block/annotate, public/msw/both
+#   - schedule (nightly): annotate-mode "both" run
+#
+# Until WS-B lands, this file is workflow_dispatch only and does nothing,
+# so it neither blocks PRs nor consumes CI minutes.
+
+name: Lighthouse a11y
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stub:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Foundation stub
+        run: |
+          echo "::notice::lighthouse-a11y.yml is a Foundation stub."
+          echo "::notice::Workstream B will replace this with the PR / dispatch / schedule callers."

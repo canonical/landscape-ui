@@ -1,0 +1,3 @@
+# Newline-separated URL list for authenticated Lighthouse runs (v1.1).
+# Filled by Workstream B alongside MSW auth-mode wiring.
+# Paths starting with `/` are prefixed with the workflow's `serve-url`.

@@ -1,0 +1,8 @@
+# Newline-separated URL list for unauthenticated Lighthouse runs.
+# Filled by Workstream B (lighthouse-a11y/specs/03-landscape-ui-caller.md).
+# Paths starting with `/` are prefixed with the workflow's `serve-url`.
+#
+# Example entries (commented out until WS-B lands):
+# /login
+# /create-account
+# /no-access

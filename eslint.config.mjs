@@ -1,6 +1,7 @@
 // @ts-check
 
 import eslint from "@eslint/js";
+import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import { defineConfig } from "eslint/config";
@@ -54,6 +55,14 @@ export default defineConfig(
         version: "detect",
       },
     },
+  },
+
+  // Foundation: jsx-a11y plugin is wired in with all rules off so WS-A can
+  // enable them in one isolated PR without merge conflicts.
+  {
+    files: ["src/**/*.{jsx,tsx}"],
+    plugins: { "jsx-a11y": jsxA11y },
+    rules: {},
   },
 
   {

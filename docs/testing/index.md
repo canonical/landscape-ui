@@ -10,6 +10,7 @@ Read next based on the task:
 
 - [unit.md](unit.md): unit and component tests with Vitest and React Testing Library
 - [e2e.md](e2e.md): end-to-end tests with Playwright
+- [a11y.md](a11y.md): accessibility checks (Lighthouse, Playwright + axe, vitest-axe)
 - [coverage.md](coverage.md): how to reason about coverage in this repository
 
 ## Test Layers

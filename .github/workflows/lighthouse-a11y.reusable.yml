@@ -1,0 +1,57 @@
+# Foundation stub — filled by Workstream B (lighthouse-a11y/specs/02-reusable-workflow.md).
+#
+# Will be a `workflow_call` reusable workflow that runs Lighthouse CI against
+# a built preview server with the full input surface documented in spec 02.
+#
+# Until WS-B lands, this stub accepts the locked input contract and exits
+# successfully without doing any work — so caller workflows can be authored
+# and dry-run without errors.
+
+name: Lighthouse a11y (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      wcag-level:                  { type: string,  default: aa }
+      min-score:                   { type: string,  default: "" }
+      config-path:                 { type: string,  default: "./lighthouserc.cjs" }
+      urls:                        { type: string,  default: "" }
+      urls-file:                   { type: string,  default: "" }
+      mode:                        { type: string,  default: block }
+      auth-mode:                   { type: string,  default: public }
+      build-command:               { type: string,  default: "pnpm build" }
+      serve-command:               { type: string,  default: "pnpm preview --host 0.0.0.0 --port 4173" }
+      serve-url:                   { type: string,  default: "http://localhost:4173" }
+      serve-ready-timeout-seconds: { type: number,  default: 180 }
+      working-directory:           { type: string,  default: "." }
+      node-version:                { type: string,  default: "24" }
+      package-manager:             { type: string,  default: pnpm }
+      package-manager-version:     { type: string,  default: "10" }
+      install-command:             { type: string,  default: "" }
+      upload-artifact-name:        { type: string,  default: lighthouse-report }
+      artifact-retention-days:     { type: number,  default: 30 }
+      pr-comment:                  { type: boolean, default: true }
+      lhci-version:                { type: string,  default: "0.14.x" }
+      runs-on:                     { type: string,  default: ubuntu-latest }
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: lighthouse-a11y-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stub:
+    runs-on: ${{ inputs.runs-on }}
+    steps:
+      - name: Foundation stub
+        run: |
+          echo "::notice::lighthouse-a11y.reusable.yml is a Foundation stub."
+          echo "::notice::Workstream B will replace this with the real implementation."
+          echo "Inputs received (for verification):"
+          echo "  wcag-level=${{ inputs.wcag-level }}"
+          echo "  mode=${{ inputs.mode }}"
+          echo "  auth-mode=${{ inputs.auth-mode }}"
+          echo "  urls-file=${{ inputs.urls-file }}"
