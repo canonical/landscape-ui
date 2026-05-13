@@ -10,13 +10,31 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   type ComputerHealth,
   type FleetHealthSummary,
+  type FleetTopDetractor,
   type HealthRule,
+  getFleetTopDetractors,
   getHealthFixture,
   manyFactorsComputer,
   seededRules,
 } from "@/tests/mocks/health";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
+
+// Stub action endpoint payload — matches `HealthActionResult` in the
+// frontend types. The action kinds the UI dispatches are a fixed
+// enumeration; we accept anything to keep the mock forgiving but echo
+// the dispatched value back in the response.
+interface HealthActionBody {
+  action: string;
+}
+interface HealthActionResponse {
+  action: string;
+  computer_id: number;
+  activity_id: number;
+  enqueued_at: string;
+}
+
+let nextActivityId = 90_000;
 
 // Mutable in-memory store of per-account overrides, so POST/PUT/DELETE
 // round-trip correctly within a session. Reset on page reload.
@@ -172,4 +190,50 @@ export default [
     }
     return HttpResponse.json(getHealthFixture().summary);
   }),
+
+  // GET /api/v2/health/top-detractors?limit=N — derived from the active
+  // fleet fixture so the Overview's "Top issues" panel stays in sync with
+  // the per-row breakdowns operators see in the table.
+  http.get<never, never, { results: FleetTopDetractor[] }>(
+    `${API_URL}health/top-detractors`,
+    ({ request }) => {
+      const endpointStatus = getEndpointStatus();
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+      const url = new URL(request.url);
+      const limitRaw = url.searchParams.get("limit");
+      const limit = limitRaw ? Math.max(1, Number(limitRaw)) : 3;
+      const { computers } = getHealthFixture();
+      return HttpResponse.json({
+        results: getFleetTopDetractors(computers, limit),
+      });
+    },
+  ),
+
+  // POST /api/v2/computers/:computer_id/health/actions — stub remediation
+  // dispatch. The action shim enqueues an activity equivalent to the user
+  // clicking the matching button on the Info tab; here we just echo a
+  // believable activity_id so the UI can show a success toast and the
+  // mutation can invalidate the per-computer health row.
+  http.post<{ computer_id: string }, HealthActionBody, HealthActionResponse>(
+    `${API_URL}computers/:computer_id/health/actions`,
+    async ({ params, request }) => {
+      const endpointStatus = getEndpointStatus();
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+      const computerId = Number(params.computer_id);
+      const body = (await request.json()) as HealthActionBody;
+      return HttpResponse.json(
+        {
+          action: body.action,
+          computer_id: computerId,
+          activity_id: nextActivityId++,
+          enqueued_at: NOW(),
+        },
+        { status: 202 },
+      );
+    },
+  ),
 ];

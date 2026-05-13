@@ -59,6 +59,7 @@ describe("SingleInstanceTabs", () => {
     it("should use the correct tabs for ubuntu", () => {
       validateTabs(ubuntuInstance, [
         "Info",
+        "Health",
         "Activities",
         "Kernel",
         "Security issues",
@@ -74,6 +75,7 @@ describe("SingleInstanceTabs", () => {
     it("should use the correct tabs for ubuntu core", () => {
       validateTabs(ubuntuCoreInstance, [
         "Info",
+        "Health",
         "Activities",
         "Snaps",
         "Processes",
@@ -85,6 +87,7 @@ describe("SingleInstanceTabs", () => {
     it("should use the correct tabs for windows", () => {
       validateTabs(windowsInstance, [
         "Info",
+        "Health",
         "WSL",
         "Activities",
         "Ubuntu Pro",
@@ -94,6 +97,7 @@ describe("SingleInstanceTabs", () => {
     it("should use the correct tabs for other linux", () => {
       validateTabs(debianInstance, [
         "Info",
+        "Health",
         "Activities",
         "Snaps",
         "Processes",

@@ -1,5 +1,6 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
+import { useInstanceHealthSignal } from "@/features/health";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance, WindowsInstance } from "@/types/Instance";
@@ -11,6 +12,9 @@ import classes from "./SingleInstanceTabs.module.scss";
 
 const InfoPanel = lazy(
   async () => import("@/pages/dashboard/instances/[single]/tabs/info"),
+);
+const HealthPanel = lazy(
+  async () => import("@/pages/dashboard/instances/[single]/tabs/health"),
 );
 const ProcessesPanel = lazy(
   async () => import("@/pages/dashboard/instances/[single]/tabs/processes"),
@@ -65,6 +69,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
 }) => {
   const { closeSidePanel } = useSidePanel();
   const { tab, setPageParams } = usePageParams();
+  const healthSignal = useInstanceHealthSignal(instance);
 
   const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-info";
 
@@ -81,6 +86,9 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
     usnLoading,
     kernelCount,
     kernelLoading,
+    healthScore: healthSignal.score,
+    healthBand: healthSignal.band,
+    healthLoading: healthSignal.isLoading,
   });
 
   return (
@@ -96,6 +104,11 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
           {"tab-link-info" === currentTabLinkId && (
             <Suspense fallback={<LoadingState />}>
               <InfoPanel instance={instance} />
+            </Suspense>
+          )}
+          {"tab-link-health" === currentTabLinkId && (
+            <Suspense fallback={<LoadingState />}>
+              <HealthPanel instance={instance} />
             </Suspense>
           )}
           {"tab-link-wsl" === currentTabLinkId && (

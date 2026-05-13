@@ -1,4 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { HealthScoreBadge } from "@/features/health";
+import type { HealthBand } from "@/features/health";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import type { Instance } from "@/types/Instance";
@@ -13,6 +15,9 @@ interface GetTabLabelProps {
   usnLoading: boolean;
   kernelCount: number | undefined;
   kernelLoading: boolean;
+  healthScore: number | undefined;
+  healthBand: HealthBand | undefined;
+  healthLoading: boolean;
 }
 
 const getTabLabel = ({
@@ -24,11 +29,15 @@ const getTabLabel = ({
   usnLoading,
   kernelCount,
   kernelLoading,
+  healthScore,
+  healthBand,
+  healthLoading,
 }: GetTabLabelProps) => {
   if (
     (id === "tab-link-packages" && packagesLoading) ||
     (id === "tab-link-security-issues" && usnLoading) ||
-    (id === "tab-link-kernel" && kernelLoading)
+    (id === "tab-link-kernel" && kernelLoading) ||
+    (id === "tab-link-health" && healthLoading)
   ) {
     return (
       <>
@@ -65,6 +74,19 @@ const getTabLabel = ({
     );
   }
 
+  if (
+    id === "tab-link-health" &&
+    healthBand !== undefined &&
+    healthScore !== undefined
+  ) {
+    return (
+      <>
+        <span>{label}</span>
+        <HealthScoreBadge score={healthScore} band={healthBand} />
+      </>
+    );
+  }
+
   return label;
 };
 
@@ -78,6 +100,9 @@ interface GetTabLinksProps {
   usnLoading: boolean;
   kernelCount: number | undefined;
   kernelLoading: boolean;
+  healthScore: number | undefined;
+  healthBand: HealthBand | undefined;
+  healthLoading: boolean;
 }
 
 export const getTabLinks = ({
@@ -90,6 +115,9 @@ export const getTabLinks = ({
   usnLoading,
   kernelCount,
   kernelLoading,
+  healthScore,
+  healthBand,
+  healthLoading,
 }: GetTabLinksProps) => {
   const { isFeatureEnabled } = useAuth();
 
@@ -102,6 +130,15 @@ export const getTabLinks = ({
       label: "Info",
       id: "tab-link-info",
       included: true,
+    },
+    {
+      label: "Health",
+      id: "tab-link-health",
+      // LA061: gated by the same feature flag as the Fleet Health widget
+      // and the table column. Lives second so it's the natural follow-up
+      // after Info — the score and remediation actions sit next to the
+      // identifying metadata.
+      included: isFeatureEnabled("health"),
     },
     {
       label: "WSL",
@@ -169,6 +206,9 @@ export const getTabLinks = ({
         usnLoading,
         kernelCount,
         kernelLoading,
+        healthScore,
+        healthBand,
+        healthLoading,
       }),
       id,
       role: "tab",

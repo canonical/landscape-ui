@@ -33,6 +33,9 @@ interface TabLabelProps {
   readonly usnLoading?: boolean;
   readonly kernelCount?: number;
   readonly kernelLoading?: boolean;
+  readonly healthScore?: number;
+  readonly healthBand?: "critical" | "warning" | "healthy";
+  readonly healthLoading?: boolean;
 }
 
 const TabLabelsConsumer: FC<TabLabelProps> = ({
@@ -42,6 +45,9 @@ const TabLabelsConsumer: FC<TabLabelProps> = ({
   usnLoading = false,
   kernelCount,
   kernelLoading = false,
+  healthScore,
+  healthBand,
+  healthLoading = false,
 }) => {
   const links = getTabLinks({
     activeTabId: "tab-link-packages",
@@ -53,6 +59,9 @@ const TabLabelsConsumer: FC<TabLabelProps> = ({
     usnLoading,
     kernelCount,
     kernelLoading,
+    healthScore,
+    healthBand,
+    healthLoading,
   });
 
   return (
@@ -91,6 +100,20 @@ describe("getTabLinks helpers", () => {
     expect(screen.getByText("2")).toBeInTheDocument();
   });
 
+  it("shows the health score chip with the band as its accessible name", () => {
+    renderWithProviders(
+      <TabLabelsConsumer healthScore={42} healthBand="warning" />,
+    );
+    const chip = screen.getByLabelText(/Health score 42/i);
+    expect(chip).toBeInTheDocument();
+    expect(chip).toHaveTextContent("42");
+  });
+
+  it("shows loading spinner on the Health tab when healthLoading", () => {
+    renderWithProviders(<TabLabelsConsumer healthLoading />);
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
   it("shows loading spinner when packagesLoading", () => {
     renderWithProviders(<TabLabelsConsumer packagesLoading={true} />);
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -124,6 +147,9 @@ describe("getTabLinks helpers", () => {
         usnLoading: false,
         kernelCount: undefined,
         kernelLoading: false,
+        healthScore: undefined,
+        healthBand: undefined,
+        healthLoading: false,
       });
       return (
         <ul>

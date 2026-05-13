@@ -1,36 +1,61 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-// LA061 Health Bar — score, band, and factor breakdown.
+// LA061 Health Bar — band icon, score, progress bar, band label.
+//
+// Tokens map onto Vanilla's negative/caution/positive scale so the bar
+// reads correctly in the existing themes. Each band gets a paired pale
+// background tint applied to the score chip and bar track for a richer
+// look than a flat colored fill.
 
 $bar-height: 0.5rem;
-$bar-width: 7rem;
-$bar-radius: 0.25rem;
-
-// Band colors. These extend the Vanilla negative/caution/positive system
-// so they read correctly in the existing themes without introducing new
-// design tokens.
-$band-critical: $color-negative;
-$band-warning: $color-caution;
-$band-healthy: $color-positive;
+$bar-width: 4.5rem;
+$bar-radius: 999rem;
 
 .root {
   align-items: center;
+  background: transparent;
+  border-radius: 0.25rem;
+  cursor: inherit;
   display: inline-flex;
   font-variant-numeric: tabular-nums;
-  gap: $sph--small;
+  gap: 0.5rem;
+  line-height: 1;
   min-width: 0;
+  padding: 0.125rem 0.25rem;
+  white-space: nowrap;
+}
+
+.compact {
+  gap: 0.375rem;
+  padding: 0;
+}
+
+.iconSlot {
+  align-items: center;
+  border-radius: 999rem;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 1.125rem;
+  justify-content: center;
+  width: 1.125rem;
+
+  // The Vanilla `Icon` ships at 1rem and inherits color from the slot,
+  // so tinting the slot tints the glyph (great for our band colors).
+  i {
+    height: 0.875rem;
+    width: 0.875rem;
+  }
 }
 
 .score {
   font-weight: 600;
-  line-height: 1;
   min-width: 2.25ch;
   text-align: right;
 }
 
 .bar {
-  background: $colors--theme--background-alt;
+  background: rgba($color-mid-light, 0.35);
   border-radius: $bar-radius;
   display: inline-block;
   flex-shrink: 0;
@@ -38,74 +63,104 @@ $band-healthy: $color-positive;
   overflow: hidden;
   position: relative;
   width: $bar-width;
+}
 
-  // Touch targets — the bar itself is non-interactive, but expanding the
-  // hit area for hover/focus on the parent improves discoverability.
-  &::before {
-    content: "";
-    inset: -0.25rem 0;
-    position: absolute;
-  }
+.compact .bar {
+  width: 4.5rem;
 }
 
 .fill {
+  background: currentcolor;
   border-radius: $bar-radius;
+  display: block;
   height: 100%;
   transition: width 240ms ease-in-out;
 
-  // Respect prefers-reduced-motion so animations don't disrupt operators
-  // who've opted out.
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
 }
 
-.fill--critical {
-  background: $band-critical;
-}
-
-.fill--warning {
-  background: $band-warning;
-}
-
-.fill--healthy {
-  background: $band-healthy;
+.bandLabel {
+  color: $color-mid-dark;
+  font-size: 0.8125rem;
+  font-weight: 500;
 }
 
 .criticalCount {
-  background: $band-critical;
+  background: $color-negative;
   border-radius: 999rem;
   color: $color-x-light;
   font-size: 0.75rem;
   font-weight: 700;
-  line-height: 1;
   padding: 0.125rem 0.375rem;
 }
 
-.factorTable {
-  font-size: 0.875rem;
-  margin: 0;
-  min-width: 16rem;
+// ── band variants ──
+.bandCritical {
+  color: $color-negative;
 
-  th,
-  td {
-    padding: $spv--x-small $sph--small;
-    text-align: left;
+  .iconSlot {
+    background: rgba($color-negative, 0.12);
   }
-
-  th:last-child,
-  td:last-child {
-    text-align: right;
+  .fill {
+    background: $color-negative;
+  }
+  .bandLabel {
+    color: $color-negative;
   }
 }
 
-.empty {
+.bandWarning {
+  // Caution amber doesn't pass AA on light backgrounds for thin text;
+  // we keep the bar/icon amber but switch the label to a darker neutral.
+  color: $color-caution;
+
+  .iconSlot {
+    background: rgba($color-caution, 0.18);
+  }
+  .fill {
+    background: $color-caution;
+  }
+  .bandLabel {
+    color: $color-mid-dark;
+    font-weight: 600;
+  }
+}
+
+.bandHealthy {
+  color: $color-positive;
+
+  .iconSlot {
+    background: rgba($color-positive, 0.12);
+  }
+  .fill {
+    background: $color-positive;
+  }
+  .bandLabel {
+    color: $color-mid-dark;
+  }
+}
+
+.notMeasurable {
   color: $color-mid-dark;
-  font-style: italic;
-  padding: $spv--x-small $sph--small;
+
+  .score {
+    color: $color-mid-dark;
+    font-weight: 500;
+  }
 }
 
+.errored {
+  color: $color-mid-dark;
+}
+
+// ── loading skeleton ──
 .skeleton {
+  color: $colors--theme--background-alt;
+}
+
+.shimmer {
   background: linear-gradient(
     90deg,
     $colors--theme--background-alt 0%,
@@ -114,11 +169,17 @@ $band-healthy: $color-positive;
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.25rem;
+  display: inline-block;
 
   @media (prefers-reduced-motion: reduce) {
     animation: none;
     background: $colors--theme--background-alt;
   }
+}
+
+.iconSlot.shimmer {
+  border-radius: 999rem;
 }
 
 @keyframes skeleton-shimmer {

@@ -2,7 +2,11 @@ import type { FC } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import { FleetHealthWidget, useFleetHealthSummary } from "@/features/health";
+import {
+  FleetHealthWidget,
+  useFleetHealthSummary,
+  useFleetTopDetractors,
+} from "@/features/health";
 import {
   AlertsContainer,
   ChartContainer,
@@ -12,12 +16,14 @@ import useAuth from "@/hooks/useAuth";
 import classes from "./OverviewPage.module.scss";
 
 const FleetHealth: FC = () => {
-  const { data, isLoading, isError } = useFleetHealthSummary();
+  const summaryQuery = useFleetHealthSummary();
+  const detractorsQuery = useFleetTopDetractors();
   return (
     <FleetHealthWidget
-      summary={data?.data}
-      isLoading={isLoading}
-      isError={isError}
+      summary={summaryQuery.data?.data}
+      topDetractors={detractorsQuery.data?.data.results}
+      isLoading={summaryQuery.isLoading}
+      isError={summaryQuery.isError}
     />
   );
 };

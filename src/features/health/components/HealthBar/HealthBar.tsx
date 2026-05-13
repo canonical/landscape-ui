@@ -1,55 +1,22 @@
-import { Tooltip } from "@canonical/react-components";
+import { Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import type { ComputerHealth, HealthBand, HealthFactor } from "../../types";
+import { BAND_ICON, BAND_LABEL } from "../../helpers";
+import type { ComputerHealth, HealthBand } from "../../types";
 import classes from "./HealthBar.module.scss";
 
-const BAND_LABEL: Record<HealthBand, string> = {
-  critical: "Critical",
-  warning: "Warning",
-  healthy: "Healthy",
-};
-
-const BAND_FILL_CLASS: Record<HealthBand, string> = {
-  critical: classes["fill--critical"],
-  warning: classes["fill--warning"],
-  healthy: classes["fill--healthy"],
-};
-
-interface FactorBreakdownProps {
-  readonly factors: HealthFactor[];
-}
-
-const FactorBreakdown: FC<FactorBreakdownProps> = ({ factors }) => {
-  if (factors.length === 0) {
-    return (
-      <div className={classes.empty}>No detractors — fully healthy.</div>
-    );
-  }
-  return (
-    <table className={classes.factorTable}>
-      <thead>
-        <tr>
-          <th>Factor</th>
-          <th>Points</th>
-        </tr>
-      </thead>
-      <tbody>
-        {factors.map((f) => (
-          <tr key={f.rule_id}>
-            <td>{f.description || f.rule_key}</td>
-            <td>−{f.points}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+const BAND_MOD_CLASS: Record<HealthBand, string | undefined> = {
+  critical: classes.bandCritical,
+  warning: classes.bandWarning,
+  healthy: classes.bandHealthy,
 };
 
 export interface HealthBarProps {
-  readonly health: ComputerHealth | undefined;
+  readonly health?: ComputerHealth | undefined;
   readonly isLoading?: boolean;
   readonly isError?: boolean;
+  readonly notMeasurable?: boolean;
+  readonly compact?: boolean;
   readonly className?: string;
 }
 
@@ -57,19 +24,36 @@ const HealthBar: FC<HealthBarProps> = ({
   health,
   isLoading,
   isError,
+  notMeasurable,
+  compact,
   className,
 }) => {
+  if (notMeasurable) {
+    return (
+      <span
+        className={classNames(classes.root, classes.notMeasurable, className)}
+        aria-label="Health not measurable for this instance"
+      >
+        <span className={classes.score} aria-hidden="true">
+          —
+        </span>
+        <span className={classes.bandLabel}>Not measured</span>
+      </span>
+    );
+  }
+
   if (isLoading || (!health && !isError)) {
     return (
       <span
-        className={classNames(classes.root, className)}
+        className={classNames(classes.root, classes.skeleton, className)}
         aria-busy="true"
         aria-label="Loading health score"
       >
-        <span className={classNames(classes.score, classes.skeleton)}>
-          &nbsp;&nbsp;&nbsp;
+        <span className={classNames(classes.iconSlot, classes.shimmer)} />
+        <span className={classNames(classes.score, classes.shimmer)}>
+          &nbsp;&nbsp;
         </span>
-        <span className={classNames(classes.bar, classes.skeleton)} />
+        <span className={classNames(classes.bar, classes.shimmer)} />
       </span>
     );
   }
@@ -77,64 +61,62 @@ const HealthBar: FC<HealthBarProps> = ({
   if (isError || !health) {
     return (
       <span
-        className={classNames(classes.root, className)}
+        className={classNames(classes.root, classes.errored, className)}
         aria-label="Health score unavailable"
       >
+        <span className={classes.iconSlot} aria-hidden="true">
+          <Icon name="help" />
+        </span>
         <span className={classes.score} aria-hidden="true">
           —
         </span>
-        <span className={classes.bar} aria-hidden="true" />
+        <span className={classes.bandLabel}>Unavailable</span>
       </span>
     );
   }
 
-  const { score, band, factors, critical_factor_count } = health;
+  const { score, band, critical_factor_count } = health;
   const fillWidth = `${Math.max(0, Math.min(100, score))}%`;
-  const ariaLabel = `Health score ${score} out of 100, ${BAND_LABEL[band]}${
-    critical_factor_count > 0
-      ? `, ${critical_factor_count} critical factor${
-          critical_factor_count > 1 ? "s" : ""
-        }`
-      : ""
+  const factorCount = health.factors.length;
+  const ariaLabel = `Health ${score} out of 100, ${BAND_LABEL[band]}${
+    factorCount ? `, ${factorCount} factor${factorCount > 1 ? "s" : ""}` : ""
   }.`;
 
-  const tooltipMessage = <FactorBreakdown factors={factors} />;
-
   return (
-    <Tooltip
-      message={tooltipMessage}
-      position="top-center"
-      tooltipClassName={classes.tooltip}
+    <span
+      className={classNames(
+        classes.root,
+        BAND_MOD_CLASS[band],
+        compact && classes.compact,
+        className,
+      )}
+      role="meter"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={score}
+      aria-valuetext={ariaLabel}
+      aria-label={ariaLabel}
     >
-      <span
-        className={classNames(classes.root, className)}
-        role="meter"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={score}
-        aria-valuetext={ariaLabel}
-        aria-label={ariaLabel}
-        tabIndex={0}
-      >
-        <span className={classes.score}>{score}</span>
-        <span className={classes.bar}>
-          <span
-            className={classNames(classes.fill, BAND_FILL_CLASS[band])}
-            style={{ width: fillWidth }}
-            aria-hidden="true"
-          />
-        </span>
-        {critical_factor_count > 1 ? (
-          <span
-            className={classes.criticalCount}
-            aria-hidden="true"
-            title={`${critical_factor_count} critical factors`}
-          >
-            ×{critical_factor_count}
-          </span>
-        ) : null}
+      <span className={classes.iconSlot} aria-hidden="true">
+        <Icon name={BAND_ICON[band]} />
       </span>
-    </Tooltip>
+      <span className={classes.score}>{score}</span>
+      <span className={classes.bar} aria-hidden="true">
+        <span
+          className={classes.fill}
+          style={{ width: fillWidth }}
+        />
+      </span>
+      {critical_factor_count > 1 ? (
+        <span
+          className={classes.criticalCount}
+          aria-hidden="true"
+          title={`${critical_factor_count} critical factors`}
+        >
+          ×{critical_factor_count}
+        </span>
+      ) : null}
+    </span>
   );
 };
 

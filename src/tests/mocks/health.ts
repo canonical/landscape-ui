@@ -26,7 +26,17 @@ export interface FleetHealthSummary {
   band_warning_count: number;
   band_healthy_count: number;
   total_count: number;
+  average_score?: number;
+  measurable_count?: number;
   updated_at: string | null;
+}
+
+export interface FleetTopDetractor {
+  rule_id: number;
+  rule_key: string;
+  description: string;
+  weight: number;
+  computer_count: number;
 }
 
 export interface HealthRule {
@@ -52,15 +62,12 @@ const WARNING_MAX = 60;
 // Score bands used in fixture shapes.
 const HEALTHY_SCORE = 100;
 const WARNING_SCORE_HIGH = 70;
-const WARNING_SCORE_MID = 50;
 const WARNING_SCORE_LOW = 40;
 const CRITICAL_SCORE = 0;
 
 // Fleet shape sizes.
 const FLEET_SIZE = 100;
 const HEALTHY_FLEET_WARNINGS = 3;
-const MIXED_FLEET_CRITICAL = 10;
-const MIXED_FLEET_WARNING = 40;
 const CRISIS_FLEET_CRITICAL = 80;
 const CRISIS_FLEET_WARNING = 95;
 
@@ -222,7 +229,123 @@ const factorUpdates: HealthFactor = {
   points: 1,
 };
 
+// ─── fleet helpers ──────────────────────────────────────────────────────
+
+// Walks the computer list to recompute summary fields. Used so fixtures
+// can be written by listing each computer's state and we derive the bands
+// + average automatically — keeps fixtures internally consistent.
+function summarise(computers: ComputerHealth[]): FleetHealthSummary {
+  let critical = 0;
+  let warning = 0;
+  let healthy = 0;
+  let total = 0;
+  for (const c of computers) {
+    total += c.score;
+    if (c.band === "critical") critical++;
+    else if (c.band === "warning") warning++;
+    else healthy++;
+  }
+  return {
+    account_id: 1,
+    band_critical_count: critical,
+    band_warning_count: warning,
+    band_healthy_count: healthy,
+    total_count: computers.length,
+    average_score: computers.length
+      ? Math.round(total / computers.length)
+      : 0,
+    measurable_count: computers.length,
+    updated_at: NOW,
+  };
+}
+
 // ─── fleet fixtures ─────────────────────────────────────────────────────
+//
+// IDs 1–100 cover the `instances` mock's IDs (1, 2, 3, 4, 5, 7, 8, 9, 10,
+// 11, 12, 20, 21, 33, 65) plus the 200-range. We deliberately spread
+// factor *kinds* across the population so the Overview's top-detractor
+// panel and the per-row popovers exercise every seeded rule.
+
+/* eslint-disable @typescript-eslint/no-magic-numbers --
+ * Fixture data is intentionally explicit: each (id, score) pair is a
+ * specific demo case for the Overview hero, side panel, and Health tab.
+ * Naming every literal would only obscure intent.
+ */
+
+// Per-row demo cases. Each tuple is [id, score, factors, critical_count?]
+// and is wired against the `instances` fixture in `mocks/instance.ts` so
+// the visible rows show distinct scores, bands, and breakdowns.
+const MIXED_SEEDS: readonly [
+  number,
+  number,
+  HealthFactor[],
+  number?,
+][] = [
+  // Ubuntu instances — full spectrum of band-and-factor combinations.
+  [1, 0, [factorCritical, factorReboot, factorUpdates], 1],
+  [2, 43, [factorHigh, factorOffline, factorMedium, factorUpdates]],
+  [3, 88, [factorReboot, factorLow]],
+  [4, 78, [factorHigh, factorUpdates]],
+  [5, 12, [factorCritical, factorHigh, factorOffline], 1],
+  [7, 58, [factorHigh, factorOffline, factorMedium]],
+  [8, 32, [factorHigh, factorReboot, factorOffline, factorMedium]],
+  [9, 97, [factorLow, factorUpdates]],
+  [10, 100, []],
+  [11, 64, [factorHigh, factorMedium, factorUpdates]],
+  [12, 71, [factorReboot, factorMedium, factorLow]],
+  [20, 18, [factorCritical, factorOffline], 1],
+  [21, 52, [factorHigh, factorReboot, factorMedium]],
+  [33, 94, [factorLow, factorMedium]],
+  [65, 86, [factorReboot]],
+
+  // 200-range — broader spread, including the worst-instance edge case.
+  [200, 76, [factorHigh, factorLow]],
+  [201, 100, []],
+  [202, 38, [factorHigh, factorReboot, factorOffline, factorMedium]],
+  [203, 0, [factorCritical, factorReboot, factorOffline, factorHigh], 1],
+  [204, 96, [factorLow, factorUpdates]],
+  [205, 47, [factorHigh, factorReboot, factorMedium]],
+  [206, 91, [factorReboot, factorUpdates]],
+  [207, 99, [factorUpdates]],
+  [208, 8, [factorCritical, factorHigh, factorOffline, factorReboot], 1],
+  [209, 82, [factorMedium, factorReboot]],
+  [210, 28, [factorHigh, factorReboot, factorOffline, factorMedium, factorUpdates]],
+];
+
+// Filler-tail buckets so the wider fleet summary stays believable.
+// Cycles through six archetypes by ID modulo to avoid a uniform tail.
+const FILLER_ARCHETYPES: readonly [number, HealthFactor[], number?][] = [
+  [100, [], 0], // 0 — clean
+  [88, [factorReboot], 0], // 1 — reboot pending
+  [73, [factorHigh, factorReboot], 0], // 2 — high USN
+  [55, [factorHigh, factorMedium, factorOffline], 0], // 3 — warning
+  [22, [factorHigh, factorReboot, factorOffline, factorMedium], 0], // 4 — bad warning
+  [0, [factorCritical], 1], // 5 — critical
+];
+
+const buildMixedComputers = (): ComputerHealth[] => {
+  const out: ComputerHealth[] = [];
+  for (const seed of MIXED_SEEDS) {
+    const [id, score, factors, critical] = seed;
+    out.push(makeComputerHealth(id, score, factors, critical ?? 0));
+  }
+
+  // Fill the rest of the synthetic fleet with rotating archetypes so the
+  // fleet summary's average score is plausible and operators can scroll
+  // through and see different bands rather than 100s only.
+  const usedIds = new Set(out.map((c) => c.computer_id));
+  for (let id = 1; id <= FLEET_SIZE; id++) {
+    if (usedIds.has(id)) continue;
+    const seed = FILLER_ARCHETYPES[id % FILLER_ARCHETYPES.length];
+    if (!seed) continue;
+    const [score, factors, critical] = seed;
+    out.push(makeComputerHealth(id, score, factors, critical ?? 0));
+  }
+  return out;
+};
+/* eslint-enable @typescript-eslint/no-magic-numbers */
+
+const mixedComputers = buildMixedComputers();
 
 export const healthyFleet = {
   summary: {
@@ -231,6 +354,8 @@ export const healthyFleet = {
     band_warning_count: HEALTHY_FLEET_WARNINGS,
     band_healthy_count: FLEET_SIZE - HEALTHY_FLEET_WARNINGS,
     total_count: FLEET_SIZE,
+    average_score: 96,
+    measurable_count: FLEET_SIZE,
     updated_at: NOW,
   } as FleetHealthSummary,
   computers: Array.from({ length: FLEET_SIZE }, (_, i) => {
@@ -251,26 +376,8 @@ export const healthyFleet = {
 };
 
 export const mixedFleet = {
-  summary: {
-    account_id: 1,
-    band_critical_count: MIXED_FLEET_CRITICAL,
-    band_warning_count: MIXED_FLEET_WARNING - MIXED_FLEET_CRITICAL,
-    band_healthy_count: FLEET_SIZE - MIXED_FLEET_WARNING,
-    total_count: FLEET_SIZE,
-    updated_at: NOW,
-  } as FleetHealthSummary,
-  computers: Array.from({ length: FLEET_SIZE }, (_, i) => {
-    if (i < MIXED_FLEET_CRITICAL) {
-      return makeComputerHealth(i + 1, CRITICAL_SCORE, [factorCritical], 1);
-    }
-    if (i < MIXED_FLEET_WARNING) {
-      return makeComputerHealth(i + 1, WARNING_SCORE_MID, [
-        factorHigh,
-        factorReboot,
-      ]);
-    }
-    return makeComputerHealth(i + 1, HEALTHY_SCORE);
-  }),
+  summary: summarise(mixedComputers),
+  computers: mixedComputers,
 };
 
 export const crisisFleet = {
@@ -280,6 +387,8 @@ export const crisisFleet = {
     band_warning_count: CRISIS_FLEET_WARNING - CRISIS_FLEET_CRITICAL,
     band_healthy_count: FLEET_SIZE - CRISIS_FLEET_WARNING,
     total_count: FLEET_SIZE,
+    average_score: 15,
+    measurable_count: FLEET_SIZE,
     updated_at: NOW,
   } as FleetHealthSummary,
   computers: Array.from({ length: FLEET_SIZE }, (_, i) => {
@@ -308,9 +417,52 @@ export const emptyFleet = {
     band_warning_count: 0,
     band_healthy_count: 0,
     total_count: 0,
+    average_score: 0,
+    measurable_count: 0,
     updated_at: null,
   } as FleetHealthSummary,
   computers: [] as ComputerHealth[],
+};
+
+// ─── top-detractor derivation ──────────────────────────────────────────
+//
+// Walks the active fixture's computer list and counts how many computers
+// are affected by each rule key. Returns the top N rules by count,
+// breaking ties by weight (heavier rules float to the top). The shape
+// mirrors `FleetTopDetractor` and feeds the Overview "Top issues" panel.
+
+export const getFleetTopDetractors = (
+  computers: ComputerHealth[],
+  limit = 3,
+): FleetTopDetractor[] => {
+  const byKey = new Map<
+    string,
+    { factor: HealthFactor; count: number; weight: number }
+  >();
+  for (const computer of computers) {
+    for (const factor of computer.factors) {
+      const existing = byKey.get(factor.rule_key);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        byKey.set(factor.rule_key, {
+          factor,
+          count: 1,
+          weight: factor.points,
+        });
+      }
+    }
+  }
+  return Array.from(byKey.values())
+    .sort((a, b) => b.count - a.count || b.weight - a.weight)
+    .slice(0, limit)
+    .map(({ factor, count, weight }) => ({
+      rule_id: factor.rule_id,
+      rule_key: factor.rule_key,
+      description: factor.description,
+      weight,
+      computer_count: count,
+    }));
 };
 
 // ─── per-computer detail (exercised by the Health Bar's expanded view) ──

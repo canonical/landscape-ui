@@ -246,7 +246,7 @@ const InstanceList = memo(function InstanceList({
               optionLabel: "Health",
               Header: "Health",
               Cell: ({ row: { original } }: CellProps<Instance>) => (
-                <HealthCell instanceId={original.id} />
+                <HealthCell instance={original} />
               ),
             } satisfies InstanceColumn,
           ]

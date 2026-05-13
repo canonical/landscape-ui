@@ -1,109 +1,141 @@
+import { ROUTES } from "@/libs/routes";
+import { Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useId, useMemo, useState } from "react";
-import type { FleetHealthSummary, HealthBand } from "../../types";
+import { useId, useMemo } from "react";
+import { Link } from "react-router";
+import type {
+  FleetHealthSummary,
+  FleetTopDetractor,
+  HealthBand,
+} from "../../types";
 import classes from "./FleetHealthWidget.module.scss";
 
-// SVG geometry — a single donut ring split into three band-colored arcs.
-// Coordinates use a centered 100x100 viewBox so the math reads naturally.
-const VIEW_BOX = 100;
-const CENTER = VIEW_BOX / 2;
-const RADIUS = 38;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-const STROKE_WIDTH = 10;
-const CENTER_LABEL_OFFSET = 12;
-const STARTING_ROTATION = -90; // start the first slice at 12 o'clock
+// ── Score gauge geometry ──
+// A 270° sweep speedometer (from -135° to +135°) reads as a single
+// number better than a closed donut. We render two stroked arcs: a
+// muted track + a colored progress arc whose dasharray scales with the
+// score (0–100).
+const GAUGE_VIEW = 200;
+const GAUGE_CENTER = GAUGE_VIEW / 2;
+const GAUGE_RADIUS = 78;
+const GAUGE_STROKE_WIDTH = 14;
+const GAUGE_SWEEP_DEGREES = 270;
+const FULL_DEGREES = 360;
+const QUARTER_DEGREES = 90;
+const FULL_CIRCLE = 2 * Math.PI * GAUGE_RADIUS;
+const GAUGE_ARC_LENGTH = FULL_CIRCLE * (GAUGE_SWEEP_DEGREES / FULL_DEGREES);
+const GAUGE_GAP = FULL_CIRCLE - GAUGE_ARC_LENGTH;
+// Y-offsets, relative to the gauge center, for the three stacked
+// labels — score, unit, and band — that sit inside the open bottom of
+// the sweep.
+const SCORE_Y_OFFSET = -6;
+const UNIT_Y_OFFSET = 20;
+const BAND_Y_OFFSET = 44;
+
+// Band thresholds — mirror the server-side default. The Overview won't
+// know about per-account customisations until LA061 Phase 2, but the
+// score we render comes from the server so it already reflects whatever
+// thresholds the account is configured with.
+const HEALTHY_FLOOR = 61;
+const CRITICAL_CEILING = 25;
+
+const PERCENT_BASE = 100;
+const ROUND = (n: number) => Math.round(n);
+
+const bandForScore = (score: number): HealthBand => {
+  if (score <= CRITICAL_CEILING) return "critical";
+  if (score < HEALTHY_FLOOR) return "warning";
+  return "healthy";
+};
+
+const BAND_LABEL: Record<HealthBand, string> = {
+  critical: "Critical",
+  warning: "Warning",
+  healthy: "Healthy",
+};
+
+interface FleetHealthWidgetProps {
+  readonly summary: FleetHealthSummary | undefined;
+  readonly topDetractors?: FleetTopDetractor[];
+  readonly isLoading?: boolean;
+  readonly isError?: boolean;
+  readonly heading?: string;
+  readonly description?: string;
+}
 
 interface BandRow {
   band: HealthBand;
   label: string;
   count: number;
-  swatch: string;
-  arc: string;
 }
 
-interface FleetHealthWidgetProps {
-  readonly summary: FleetHealthSummary | undefined;
-  readonly isLoading?: boolean;
-  readonly isError?: boolean;
-  readonly heading?: string;
-  readonly description?: string;
-  readonly onBandSelect?: (band: HealthBand) => void;
-}
-
-const BAND_ORDER: readonly HealthBand[] = ["critical", "warning", "healthy"];
-
-const BAND_DEFS: Record<HealthBand, Omit<BandRow, "count">> = {
-  critical: {
-    band: "critical",
-    label: "Critical",
-    swatch: classes["swatch--critical"],
-    arc: classes["arc--critical"],
-  },
-  warning: {
-    band: "warning",
-    label: "Warning",
-    swatch: classes["swatch--warning"],
-    arc: classes["arc--warning"],
-  },
-  healthy: {
-    band: "healthy",
-    label: "Healthy",
-    swatch: classes["swatch--healthy"],
-    arc: classes["arc--healthy"],
-  },
-};
-
-const computeRows = (summary: FleetHealthSummary): BandRow[] => [
-  { ...BAND_DEFS.critical, count: summary.band_critical_count },
-  { ...BAND_DEFS.warning, count: summary.band_warning_count },
-  { ...BAND_DEFS.healthy, count: summary.band_healthy_count },
-];
-
-/** Worst (most-urgent) non-empty band, for the center number's anchor. */
-const worstBand = (rows: BandRow[]): BandRow => {
-  const worst = rows.find((r) => r.count > 0);
-  return worst ?? rows[rows.length - 1];
+const computeAverage = (summary: FleetHealthSummary): number => {
+  if (typeof summary.average_score === "number") {
+    return summary.average_score;
+  }
+  // Fallback: synthesise an average from band midpoints. Not strictly
+  // accurate but always sane — used only when the server hasn't started
+  // emitting `average_score` yet.
+  const { total_count, band_critical_count, band_warning_count } = summary;
+  if (total_count === 0) return 0;
+  const HEALTHY_MID = 90;
+  const WARNING_MID = 50;
+  const CRITICAL_MID = 10;
+  const healthy = summary.band_healthy_count * HEALTHY_MID;
+  const warning = band_warning_count * WARNING_MID;
+  const critical = band_critical_count * CRITICAL_MID;
+  return ROUND((healthy + warning + critical) / total_count);
 };
 
 const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
   summary,
+  topDetractors,
   isLoading,
   isError,
   heading = "Fleet health",
-  description = "How instances are distributed across health bands.",
-  onBandSelect,
+  description = "Average score across measurable instances and the issues dragging it down.",
 }) => {
   const titleId = useId();
   const descId = useId();
-  const [hovered, setHovered] = useState<HealthBand | null>(null);
 
-  const rows = useMemo<BandRow[]>(
-    () => (summary ? computeRows(summary) : []),
-    [summary],
-  );
+  const rows = useMemo<BandRow[]>(() => {
+    if (!summary) return [];
+    return [
+      { band: "critical", label: "Critical", count: summary.band_critical_count },
+      { band: "warning", label: "Warning", count: summary.band_warning_count },
+      { band: "healthy", label: "Healthy", count: summary.band_healthy_count },
+    ];
+  }, [summary]);
 
   if (isLoading || (!summary && !isError)) {
     return (
-      <div className={classes.root} aria-busy="true" aria-label="Loading fleet health">
-        <div className={classes.chartWrapper}>
-          <div className={classes.skeleton} />
+      <section className={classes.root} aria-busy="true" aria-label="Loading fleet health">
+        <div className={classes.gaugeColumn}>
+          <div className={classNames(classes.gaugeSkeleton, classes.shimmer)} />
         </div>
-        <div className={classes.legend}>
-          <h2 className={classes.legendHeading}>{heading}</h2>
-          <p className={classes.legendDescription}>{description}</p>
+        <div className={classes.middleColumn}>
+          <h2 className={classes.heading}>{heading}</h2>
+          <p className={classes.description}>{description}</p>
+          <div className={classNames(classes.barSkeleton, classes.shimmer)} />
         </div>
-      </div>
+        <div className={classes.detractorColumn}>
+          <h3 className={classes.subheading}>Top issues now</h3>
+          <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+          <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+          <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+        </div>
+      </section>
     );
   }
 
   if (isError || !summary) {
     return (
-      <div className={classes.root}>
+      <section className={classes.root}>
         <div className={classes.error} role="alert">
           Couldn&apos;t load fleet health. Try again in a moment.
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -111,146 +143,199 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
 
   if (total === 0) {
     return (
-      <div className={classes.root}>
+      <section className={classes.root}>
         <div className={classes.empty}>
-          <strong>No instances yet</strong>
-          <span>
-            Register a computer to start seeing fleet health here.
-          </span>
+          <Icon name="information" />
+          <div>
+            <strong>No instances yet</strong>
+            <p>
+              Register a computer to start seeing fleet health here.
+            </p>
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
-  // Pre-compute the arc dasharray + offset for each ring segment, in band order.
-  let cumulative = 0;
-  const segments = rows.map((row) => {
-    const length = (row.count / total) * CIRCUMFERENCE;
-    const dasharray = `${length} ${CIRCUMFERENCE}`;
-    // -90deg rotation puts segment 0 starting at 12 o'clock; subsequent
-    // segments rotate by the cumulative angle.
-    const rotation = STARTING_ROTATION + (cumulative / total) * 360;
-    cumulative += row.count;
-    return { ...row, dasharray, rotation };
-  });
+  const measurable = summary.measurable_count ?? total;
+  const unmeasurable = Math.max(0, total - measurable);
+  const score = computeAverage(summary);
+  const scoreBand = bandForScore(score);
+  const gaugeProgress = (Math.max(0, Math.min(100, score)) / PERCENT_BASE) *
+    GAUGE_ARC_LENGTH;
+  // Rotate the start by half the missing portion so the arc is centered
+  // at the bottom of the gauge (open end at 6 o'clock).
+  const GAUGE_START_ROTATION = -QUARTER_DEGREES - GAUGE_SWEEP_DEGREES / 2;
 
-  const focus = hovered ?? worstBand(rows).band;
-  const focusRow = rows.find((r) => r.band === focus) ?? worstBand(rows);
+  const detractors = topDetractors ?? [];
 
   return (
-    <div
+    <section
       className={classes.root}
-      role="group"
       aria-labelledby={titleId}
       aria-describedby={descId}
     >
-      <div className={classes.chartWrapper}>
+      {/* ── Score gauge ── */}
+      <div className={classes.gaugeColumn}>
         <svg
-          className={classes.svg}
-          viewBox={`0 0 ${VIEW_BOX} ${VIEW_BOX}`}
+          className={classNames(
+            classes.gauge,
+            classes[`gauge_${scoreBand}`],
+          )}
+          viewBox={`0 0 ${GAUGE_VIEW} ${GAUGE_VIEW}`}
           role="img"
-          aria-label={`${total} instances: ${rows
-            .map((r) => `${r.count} ${r.label.toLowerCase()}`)
-            .join(", ")}.`}
+          aria-label={`Average health score ${score} of 100, ${BAND_LABEL[scoreBand]}`}
         >
           <circle
-            cx={CENTER}
-            cy={CENTER}
-            r={RADIUS}
-            className={classes.track}
-            strokeWidth={STROKE_WIDTH}
+            cx={GAUGE_CENTER}
+            cy={GAUGE_CENTER}
+            r={GAUGE_RADIUS}
+            className={classes.gaugeTrack}
+            strokeWidth={GAUGE_STROKE_WIDTH}
             fill="none"
+            strokeDasharray={`${GAUGE_ARC_LENGTH} ${GAUGE_GAP}`}
+            transform={`rotate(${GAUGE_START_ROTATION} ${GAUGE_CENTER} ${GAUGE_CENTER})`}
+            strokeLinecap="round"
           />
-          {segments.map((seg) =>
-            seg.count === 0 ? null : (
-              <circle
-                key={seg.band}
-                cx={CENTER}
-                cy={CENTER}
-                r={RADIUS}
-                fill="none"
-                strokeWidth={STROKE_WIDTH}
-                strokeLinecap="butt"
-                strokeDasharray={seg.dasharray}
-                transform={`rotate(${seg.rotation} ${CENTER} ${CENTER})`}
-                className={classNames(classes.arc, seg.arc, {
-                  [classes["arc--active"]]: hovered === seg.band,
-                  [classes["arc--inactive"]]:
-                    hovered !== null && hovered !== seg.band,
-                })}
-                tabIndex={0}
-                role="button"
-                aria-label={`${seg.label}: ${seg.count} of ${total}`}
-                onMouseEnter={() => { setHovered(seg.band); }}
-                onMouseLeave={() => { setHovered(null); }}
-                onFocus={() => { setHovered(seg.band); }}
-                onBlur={() => { setHovered(null); }}
-                onClick={onBandSelect ? () => { onBandSelect(seg.band); } : undefined}
-                onKeyDown={(e) => {
-                  if (onBandSelect && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault();
-                    onBandSelect(seg.band);
-                  }
-                }}
-              />
-            ),
-          )}
+          <circle
+            cx={GAUGE_CENTER}
+            cy={GAUGE_CENTER}
+            r={GAUGE_RADIUS}
+            className={classes.gaugeProgress}
+            strokeWidth={GAUGE_STROKE_WIDTH}
+            fill="none"
+            strokeDasharray={`${gaugeProgress} ${FULL_CIRCLE}`}
+            transform={`rotate(${GAUGE_START_ROTATION} ${GAUGE_CENTER} ${GAUGE_CENTER})`}
+            strokeLinecap="round"
+          />
           <text
-            x={CENTER}
-            y={CENTER}
-            className={classes.centerNumber}
+            x={GAUGE_CENTER}
+            y={GAUGE_CENTER + SCORE_Y_OFFSET}
+            className={classes.gaugeNumber}
             aria-hidden="true"
           >
-            {focusRow.count}
+            {score}
           </text>
           <text
-            x={CENTER}
-            y={CENTER}
-            dy={CENTER_LABEL_OFFSET}
-            className={classes.centerLabel}
+            x={GAUGE_CENTER}
+            y={GAUGE_CENTER + UNIT_Y_OFFSET}
+            className={classes.gaugeUnit}
             aria-hidden="true"
           >
-            {focusRow.label}
+            / 100
+          </text>
+          <text
+            x={GAUGE_CENTER}
+            y={GAUGE_CENTER + BAND_Y_OFFSET}
+            className={classes.gaugeBand}
+            aria-hidden="true"
+          >
+            {BAND_LABEL[scoreBand].toUpperCase()}
           </text>
         </svg>
       </div>
 
-      <div className={classes.legend}>
-        <h2 id={titleId} className={classes.legendHeading}>
+      {/* ── Heading + distribution ── */}
+      <div className={classes.middleColumn}>
+        <h2 id={titleId} className={classes.heading}>
           {heading}
         </h2>
-        <p id={descId} className={classes.legendDescription}>
+        <p id={descId} className={classes.description}>
           {description}
         </p>
-        <ul className={classes.legendList}>
-          {BAND_ORDER.map((band) => {
-            const row = rows.find((r) => r.band === band);
-            if (!row) return null;
+        <ul className={classes.bandList}>
+          {rows.map(({ band, label, count }) => {
+            const pct = measurable > 0 ? (count / measurable) * PERCENT_BASE : 0;
             return (
               <li key={band}>
-                <button
-                  type="button"
-                  className={classes.legendItem}
-                  aria-pressed={hovered === band}
-                  onMouseEnter={() => { setHovered(band); }}
-                  onMouseLeave={() => { setHovered(null); }}
-                  onFocus={() => { setHovered(band); }}
-                  onBlur={() => { setHovered(null); }}
-                  onClick={onBandSelect ? () => { onBandSelect(band); } : undefined}
+                <Link
+                  to={ROUTES.instances.root({ healthBand: [band] })}
+                  className={classNames(classes.bandRow, classes[`band_${band}`])}
+                  aria-label={`${count} ${label.toLowerCase()} instances, ${ROUND(pct)} percent of the measurable fleet`}
                 >
-                  <span
-                    className={classNames(classes.swatch, row.swatch)}
-                    aria-hidden="true"
-                  />
-                  <span className={classes.legendLabel}>{row.label}</span>
-                  <span className={classes.legendCount}>{row.count}</span>
-                </button>
+                  <span className={classes.bandSwatch} aria-hidden="true" />
+                  <span className={classes.bandLabel}>{label}</span>
+                  <span className={classes.bandTrack} aria-hidden="true">
+                    <span
+                      className={classes.bandFill}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </span>
+                  <span className={classes.bandCount}>{count}</span>
+                  <span className={classes.bandPct}>{ROUND(pct)}%</span>
+                </Link>
               </li>
             );
           })}
         </ul>
       </div>
-    </div>
+
+      {/* ── Top detractors ── */}
+      <div className={classes.detractorColumn}>
+        <h3 className={classes.subheading}>Top issues now</h3>
+        {detractors.length === 0 ? (
+          <p className={classes.detractorEmpty}>
+            <Icon name="success" /> No factors are dragging the fleet down.
+          </p>
+        ) : (
+          <ul className={classes.detractorList}>
+            {detractors.map((d) => (
+              <li key={d.rule_id}>
+                <Link
+                  to={ROUTES.instances.root({
+                    healthBand:
+                      d.weight >= HEALTHY_FLOOR
+                        ? ["critical"]
+                        : ["critical", "warning"],
+                  })}
+                  className={classes.detractorRow}
+                >
+                  <span
+                    className={classNames(
+                      classes.detractorIcon,
+                      d.weight >= HEALTHY_FLOOR && classes.detractorIconCritical,
+                    )}
+                    aria-hidden="true"
+                  >
+                    <Icon name={d.weight >= HEALTHY_FLOOR ? "error" : "warning"} />
+                  </span>
+                  <span className={classes.detractorBody}>
+                    <span className={classes.detractorCount}>
+                      {d.computer_count} {d.computer_count === 1 ? "instance" : "instances"}
+                    </span>
+                    <span className={classes.detractorText}>
+                      {d.description}
+                    </span>
+                  </span>
+                  <Icon name="chevron-right" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <footer className={classes.footer}>
+        <Icon name="information" />
+        <span>
+          {measurable} of {total} instances measured
+          {unmeasurable > 0 ? (
+            <>
+              {" · "}
+              <span>{unmeasurable} non-Ubuntu instance{unmeasurable === 1 ? "" : "s"} can&apos;t be measured</span>
+            </>
+          ) : null}
+          {summary.updated_at && (
+            <>
+              {" · Updated "}
+              <time dateTime={summary.updated_at}>
+                {new Date(summary.updated_at).toLocaleString()}
+              </time>
+            </>
+          )}
+        </span>
+      </footer>
+    </section>
   );
 };
 

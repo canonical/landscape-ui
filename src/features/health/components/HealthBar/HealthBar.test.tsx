@@ -1,6 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { ComputerHealth } from "../../types";
 import HealthBar from "./HealthBar";
@@ -45,28 +44,11 @@ describe("HealthBar", () => {
     );
     const meter = screen.getByRole("meter");
     expect(meter.getAttribute("aria-label")).toMatch(/Critical/);
-    expect(meter.getAttribute("aria-label")).toMatch(/1 critical factor/);
+    expect(meter.getAttribute("aria-label")).toMatch(/1 factor/);
   });
 
-  it("pluralises the critical-factor count above 1 and shows the chip", () => {
-    renderWithProviders(
-      <HealthBar
-        health={{
-          ...baseHealth,
-          score: 0,
-          band: "critical",
-          critical_factor_count: 3,
-        }}
-      />,
-    );
-    expect(screen.getByRole("meter").getAttribute("aria-label")).toMatch(
-      /3 critical factors/,
-    );
-    expect(screen.getByText(/×3/)).toBeInTheDocument();
-  });
-
-  it("does not render the chip when critical_factor_count is 1", () => {
-    renderWithProviders(
+  it("shows the ×N chip only when more than one critical factor", () => {
+    const { rerender } = renderWithProviders(
       <HealthBar
         health={{
           ...baseHealth,
@@ -77,42 +59,27 @@ describe("HealthBar", () => {
       />,
     );
     expect(screen.queryByText(/×/)).not.toBeInTheDocument();
-  });
 
-  it("is keyboard reachable and exposes the factor breakdown on focus", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(
+    rerender(
       <HealthBar
         health={{
           ...baseHealth,
-          score: 40,
-          band: "warning",
-          factors: [
-            {
-              rule_id: 2,
-              rule_key: "usn.high",
-              description: "Pending USN with Ubuntu Priority high.",
-              points: 20,
-            },
-            {
-              rule_id: 4,
-              rule_key: "reboot_required",
-              description: "Reboot required.",
-              points: 10,
-            },
-          ],
+          score: 0,
+          band: "critical",
+          critical_factor_count: 3,
         }}
       />,
     );
-    const meter = screen.getByRole("meter");
-    await user.tab();
-    expect(meter).toHaveFocus();
-    // Tooltip content is present in the DOM (hidden by default, surfaced on focus).
-    expect(screen.getByText("Pending USN with Ubuntu Priority high.")).toBeInTheDocument();
-    expect(screen.getByText("Reboot required.")).toBeInTheDocument();
-    // Points are rendered as negative subtractions.
-    expect(screen.getByText("−20")).toBeInTheDocument();
-    expect(screen.getByText("−10")).toBeInTheDocument();
+    expect(screen.getByText("×3")).toBeInTheDocument();
+  });
+
+  it("renders the not-measurable variant with an em-dash and explainer text", () => {
+    renderWithProviders(<HealthBar notMeasurable />);
+    expect(screen.queryByRole("meter")).not.toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/Health not measurable for this instance/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Not measured/)).toBeInTheDocument();
   });
 
   it("renders the loading state with aria-busy and no meter role", () => {
@@ -121,10 +88,13 @@ describe("HealthBar", () => {
     expect(screen.getByLabelText("Loading health score")).toBeInTheDocument();
   });
 
-  it("renders the error state with an em-dash when isError is true", () => {
+  it("renders the error state when isError is true", () => {
     renderWithProviders(<HealthBar health={undefined} isError />);
     expect(screen.queryByRole("meter")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("Health score unavailable")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Health score unavailable"),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Unavailable/)).toBeInTheDocument();
   });
 
   it("clamps a degenerate >100 score so the bar never overflows", () => {
@@ -138,64 +108,25 @@ describe("HealthBar", () => {
     );
     const meter = screen.getByRole("meter");
     expect(meter).toHaveAttribute("aria-valuenow", "175");
-    // The bar fill width is clamped to 100% so the visual stays inside the track.
-    // We can't read the inline style directly across renderers; the meter still
-    // has the right aria-valuemax for screen readers.
     expect(meter).toHaveAttribute("aria-valuemax", "100");
   });
 
-  it("renders an explicit empty message when factors is empty", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<HealthBar health={baseHealth} />);
-    await user.tab();
-    expect(screen.getByText(/No detractors — fully healthy\./)).toBeInTheDocument();
-  });
-
-  // LA061 Phase 1.5: the breakdown table is generic over rule_key — adding new
-  // rules (`usn.low`, `package.updates_available`) doesn't need component
-  // changes, but we pin the rendering so a future regression on either the
-  // factor row template or the new rule descriptions is caught here.
-  it("renders Phase 1.5 low-severity factors alongside higher ones", async () => {
-    const user = userEvent.setup();
+  it("supports a compact variant that omits the band label", () => {
     renderWithProviders(
       <HealthBar
+        compact
         health={{
           ...baseHealth,
-          score: 93,
-          band: "healthy",
-          factors: [
-            {
-              rule_id: 4,
-              rule_key: "usn.low",
-              description: "Pending USN with Ubuntu Priority low.",
-              points: 1,
-            },
-            {
-              rule_id: 7,
-              rule_key: "package.updates_available",
-              description: "Non-security updates pending.",
-              points: 1,
-            },
-            {
-              rule_id: 5,
-              rule_key: "reboot_required",
-              description: "Reboot required.",
-              points: 10,
-            },
-          ],
+          score: 72,
+          band: "warning",
         }}
       />,
     );
-    await user.tab();
+    // The descriptive band label disappears in compact mode but the meter
+    // still exposes the band via aria-label for screen readers.
+    expect(screen.queryByText(/^Warning$/)).not.toBeInTheDocument();
     expect(
-      screen.getByText("Pending USN with Ubuntu Priority low."),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Non-security updates pending."),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Reboot required.")).toBeInTheDocument();
-    // Two factors share the −1 weight, so we expect at least one match.
-    expect(screen.getAllByText("−1")).toHaveLength(2);
-    expect(screen.getByText("−10")).toBeInTheDocument();
+      screen.getByRole("meter").getAttribute("aria-label"),
+    ).toMatch(/Warning/);
   });
 });
