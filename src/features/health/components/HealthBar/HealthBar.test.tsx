@@ -150,4 +150,52 @@ describe("HealthBar", () => {
     await user.tab();
     expect(screen.getByText(/No detractors — fully healthy\./)).toBeInTheDocument();
   });
+
+  // LA061 Phase 1.5: the breakdown table is generic over rule_key — adding new
+  // rules (`usn.low`, `package.updates_available`) doesn't need component
+  // changes, but we pin the rendering so a future regression on either the
+  // factor row template or the new rule descriptions is caught here.
+  it("renders Phase 1.5 low-severity factors alongside higher ones", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <HealthBar
+        health={{
+          ...baseHealth,
+          score: 93,
+          band: "healthy",
+          factors: [
+            {
+              rule_id: 4,
+              rule_key: "usn.low",
+              description: "Pending USN with Ubuntu Priority low.",
+              points: 1,
+            },
+            {
+              rule_id: 7,
+              rule_key: "package.updates_available",
+              description: "Non-security updates pending.",
+              points: 1,
+            },
+            {
+              rule_id: 5,
+              rule_key: "reboot_required",
+              description: "Reboot required.",
+              points: 10,
+            },
+          ],
+        }}
+      />,
+    );
+    await user.tab();
+    expect(
+      screen.getByText("Pending USN with Ubuntu Priority low."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Non-security updates pending."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Reboot required.")).toBeInTheDocument();
+    // Two factors share the −1 weight, so we expect at least one match.
+    expect(screen.getAllByText("−1")).toHaveLength(2);
+    expect(screen.getByText("−10")).toBeInTheDocument();
+  });
 });

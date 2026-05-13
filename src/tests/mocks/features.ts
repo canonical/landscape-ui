@@ -133,6 +133,18 @@ export const features: Feature[] = [
       configuration: true,
     },
   },
+  {
+    name: "Instance Health Engine",
+    description:
+      "Aggregates monitoring signals into a single Health score per managed instance, with a Health Bar on the instance list and a fleet-health widget on the dashboard. Backed by LA061.",
+    key: "health",
+    database_key: 13,
+    enabled: true,
+    details: {
+      configuration: true,
+      account: true,
+    },
+  },
 ];
 
 export const debarchiveFeatures: DebarchiveFeature[] = [

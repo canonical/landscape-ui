@@ -64,7 +64,10 @@ const MIXED_FLEET_WARNING = 40;
 const CRISIS_FLEET_CRITICAL = 80;
 const CRISIS_FLEET_WARNING = 95;
 
-// ─── seeded system-default rules ────────────────────────────────────────
+// ─── seeded system-default rules (Phase 1.5: seven rows) ────────────────
+// Kept in sync with `canonical.landscape.health.seed.SEEDED_RULES`. Phase 1.5
+// added `usn.low` and `package.updates_available` (both weight 1) for
+// legacy-PackageUpgradesAlert parity.
 export const seededRules: HealthRule[] = [
   {
     id: 1,
@@ -105,6 +108,18 @@ export const seededRules: HealthRule[] = [
   {
     id: 4,
     account_id: null,
+    rule_key: "usn.low",
+    description: "Pending USN with Ubuntu Priority `low`.",
+    definition: { params: { ubuntu_priority: "low" } },
+    weight: 1,
+    enabled: true,
+    created_at: NOW,
+    updated_at: NOW,
+    is_system_default: true,
+  },
+  {
+    id: 5,
+    account_id: null,
     rule_key: "reboot_required",
     description: "ComputerStatus.reboot_required_flag is true.",
     definition: { params: {} },
@@ -115,12 +130,25 @@ export const seededRules: HealthRule[] = [
     is_system_default: true,
   },
   {
-    id: 5,
+    id: 6,
     account_id: null,
     rule_key: "instance.offline",
     description: "Has not exchanged with the server within the last 24 hours.",
     definition: { params: { threshold_hours: 24 } },
     weight: 20,
+    enabled: true,
+    created_at: NOW,
+    updated_at: NOW,
+    is_system_default: true,
+  },
+  {
+    id: 7,
+    account_id: null,
+    rule_key: "package.updates_available",
+    description:
+      "One or more non-security package updates are pending on the computer.",
+    definition: { params: {} },
+    weight: 1,
     enabled: true,
     created_at: NOW,
     updated_at: NOW,
@@ -163,17 +191,35 @@ const factorHigh: HealthFactor = {
   description: "Pending USN with Ubuntu Priority `high`.",
   points: 20,
 };
-const factorReboot: HealthFactor = {
+const factorMedium: HealthFactor = {
+  rule_id: 3,
+  rule_key: "usn.medium",
+  description: "Pending USN with Ubuntu Priority `medium`.",
+  points: 5,
+};
+const factorLow: HealthFactor = {
   rule_id: 4,
+  rule_key: "usn.low",
+  description: "Pending USN with Ubuntu Priority `low`.",
+  points: 1,
+};
+const factorReboot: HealthFactor = {
+  rule_id: 5,
   rule_key: "reboot_required",
   description: "Reboot required.",
   points: 10,
 };
 const factorOffline: HealthFactor = {
-  rule_id: 5,
+  rule_id: 6,
   rule_key: "instance.offline",
   description: "Offline > 24h.",
   points: 20,
+};
+const factorUpdates: HealthFactor = {
+  rule_id: 7,
+  rule_key: "package.updates_available",
+  description: "Non-security updates pending.",
+  points: 1,
 };
 
 // ─── fleet fixtures ─────────────────────────────────────────────────────
@@ -187,11 +233,21 @@ export const healthyFleet = {
     total_count: FLEET_SIZE,
     updated_at: NOW,
   } as FleetHealthSummary,
-  computers: Array.from({ length: FLEET_SIZE }, (_, i) =>
-    i < HEALTHY_FLEET_WARNINGS
-      ? makeComputerHealth(i + 1, WARNING_SCORE_HIGH, [factorReboot])
-      : makeComputerHealth(i + 1, HEALTHY_SCORE),
-  ),
+  computers: Array.from({ length: FLEET_SIZE }, (_, i) => {
+    if (i < HEALTHY_FLEET_WARNINGS) {
+      return makeComputerHealth(i + 1, WARNING_SCORE_HIGH, [factorReboot]);
+    }
+    // Scatter a small `usn.low` + `package.updates_available` tail across
+    // the otherwise-healthy population so the visualization gets to render
+    // the lowest-severity factors too. Score still in the healthy band.
+    if (i < HEALTHY_FLEET_WARNINGS + 5) {
+      return makeComputerHealth(i + 1, HEALTHY_SCORE - 2, [
+        factorLow,
+        factorUpdates,
+      ]);
+    }
+    return makeComputerHealth(i + 1, HEALTHY_SCORE);
+  }),
 };
 
 export const mixedFleet = {
@@ -258,15 +314,63 @@ export const emptyFleet = {
 };
 
 // ─── per-computer detail (exercised by the Health Bar's expanded view) ──
-// Many-factor case: a single computer with all five seeded rules matching.
+// Many-factor case: a single computer with every Phase 1.5 seeded rule
+// matching. Exercises the FactorBreakdown table at its widest.
 export const manyFactorsComputer: ComputerHealth = {
   computer_id: 9999,
   account_id: 1,
   score: 0,
   band: "critical",
   critical_factor_count: 1,
-  factors: [factorCritical, factorHigh, factorOffline, factorReboot],
+  factors: [
+    factorCritical,
+    factorHigh,
+    factorMedium,
+    factorLow,
+    factorReboot,
+    factorOffline,
+    factorUpdates,
+  ],
   updated_at: NOW,
+};
+
+// ─── Livepatch-waiver demo fleet ────────────────────────────────────────
+// Two computers with the same vulnerable kernel package: one has Livepatch
+// active and gets the critical USN penalty waived; the other does not and
+// drops to score 0. Mirrors the spec § "Livepatch waiver" case-4 scenario.
+const factorOnlyReboot = factorReboot;
+
+const LIVEPATCH_PRO_ID = 1001;
+const LIVEPATCH_NON_PRO_ID = 1002;
+// Score for the Pro instance: 100 - reboot_required(10) = 90. Healthy band.
+const LIVEPATCH_PRO_SCORE = HEALTHY_SCORE - 10;
+
+export const livepatchWaiverFleet = {
+  summary: {
+    account_id: 1,
+    band_critical_count: 1,
+    band_warning_count: 0,
+    band_healthy_count: 1,
+    total_count: 2,
+    updated_at: NOW,
+  } as FleetHealthSummary,
+  computers: [
+    // Pro / Livepatched: kernel USN waived, only the reboot factor remains.
+    {
+      ...makeComputerHealth(LIVEPATCH_PRO_ID, LIVEPATCH_PRO_SCORE, [
+        factorOnlyReboot,
+      ]),
+    },
+    // No Livepatch: full critical USN penalty applies.
+    {
+      ...makeComputerHealth(
+        LIVEPATCH_NON_PRO_ID,
+        CRITICAL_SCORE,
+        [factorCritical, factorOnlyReboot],
+        1,
+      ),
+    },
+  ],
 };
 
 // ─── runtime fixture switcher ──────────────────────────────────────────
@@ -276,6 +380,7 @@ export const fixtures = {
   mixedFleet,
   crisisFleet,
   emptyFleet,
+  livepatchWaiverFleet,
 } as const;
 
 export type FixtureName = keyof typeof fixtures;
