@@ -22,7 +22,7 @@
 }
 
 .rowCritical {
-  background: rgba($color-negative, 0.06);
+  background: rgba($color-negative, 0.16);
 
   .icon {
     color: $color-negative;
@@ -41,20 +41,20 @@
 }
 
 .description {
-  color: $color-dark;
+  color: $colors--theme--text-default;
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
 .points {
-  color: $color-mid-dark;
+  color: $colors--theme--text-muted;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
 
 .empty {
   align-items: center;
-  background: rgba($color-positive, 0.08);
+  background: rgba($color-positive, 0.16);
   border-radius: 0.25rem;
   color: $color-positive;
   display: flex;

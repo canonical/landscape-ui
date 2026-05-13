@@ -23,17 +23,17 @@ $band-healthy: $color-positive;
 }
 
 .hero_critical {
-  background: rgba($band-critical, 0.08);
+  background: rgba($band-critical, 0.14);
   color: $band-critical;
 }
 
 .hero_warning {
-  background: rgba($band-warning, 0.16);
+  background: rgba($band-warning, 0.22);
   color: darken($band-warning, 18%);
 }
 
 .hero_healthy {
-  background: rgba($band-healthy, 0.08);
+  background: rgba($band-healthy, 0.14);
   color: $band-healthy;
 }
 
@@ -62,7 +62,7 @@ $band-healthy: $color-positive;
 }
 
 .heroScore {
-  color: $color-dark;
+  color: $colors--theme--text-default;
   font-size: 3rem;
   font-variant-numeric: tabular-nums;
   font-weight: 700;
@@ -70,7 +70,7 @@ $band-healthy: $color-positive;
 }
 
 .heroUnit {
-  color: $color-mid-dark;
+  color: $colors--theme--text-muted;
   font-size: 1rem;
 }
 
@@ -101,7 +101,7 @@ $band-healthy: $color-positive;
 }
 
 .heroUpdated {
-  color: $color-mid-dark;
+  color: $colors--theme--text-muted;
   font-size: 0.75rem;
   font-weight: 400;
 }
@@ -122,14 +122,14 @@ $band-healthy: $color-positive;
 }
 
 .sectionHint {
-  color: $color-mid-dark;
+  color: $colors--theme--text-muted;
   font-size: 0.875rem;
   margin: 0;
 }
 
 .clean {
   align-items: center;
-  background: rgba($band-healthy, 0.08);
+  background: rgba($band-healthy, 0.14);
   border-radius: 0.25rem;
   color: $band-healthy;
   display: flex;
@@ -148,7 +148,7 @@ $band-healthy: $color-positive;
 .actionButton {
   align-items: stretch;
   background: $colors--theme--background-default;
-  border: 1px solid rgba($color-mid-light, 0.5);
+  border: 1px solid $colors--theme--border-low-contrast;
   border-radius: 0.25rem;
   cursor: pointer;
   display: grid;
@@ -175,7 +175,7 @@ $band-healthy: $color-positive;
   align-self: center;
   background: $colors--theme--background-alt;
   border-radius: 999rem;
-  color: $color-mid-dark;
+  color: $colors--theme--text-muted;
   display: inline-flex;
   height: 1.75rem;
   justify-content: center;
@@ -190,7 +190,7 @@ $band-healthy: $color-positive;
 }
 
 .actionDescription {
-  color: $color-mid-dark;
+  color: $colors--theme--text-muted;
   font-size: 0.8125rem;
   font-weight: 400;
   white-space: normal;
@@ -198,7 +198,7 @@ $band-healthy: $color-positive;
 
 // ── Footer ──
 .footer {
-  border-top: 1px solid rgba($color-mid-light, 0.5);
+  border-top: 1px solid $colors--theme--border-low-contrast;
   padding-top: $spv--small;
 }
 
