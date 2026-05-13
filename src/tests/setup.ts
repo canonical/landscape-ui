@@ -1,5 +1,14 @@
 import "@testing-library/jest-dom";
 import * as matchers from "@testing-library/jest-dom/matchers";
+import * as axeMatchers from "vitest-axe/matchers";
+import type { AxeMatchers } from "vitest-axe";
+
+declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  interface Assertion<T = any> {
+    toHaveNoViolations: AxeMatchers["toHaveNoViolations"];
+  }
+}
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
@@ -12,6 +21,7 @@ import "./matcher";
 import server from "./server";
 
 expect.extend(matchers);
+expect.extend(axeMatchers);
 
 interface ResizeObserverInstance {
   observe: ReturnType<typeof vi.fn>;

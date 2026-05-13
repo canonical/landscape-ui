@@ -1,0 +1,17 @@
+{
+  "requestedUrl": "/no-access",
+  "finalUrl": "/no-access",
+  "categories": {
+    "accessibility": { "id": "accessibility", "score": 0.74 }
+  },
+  "audits": {
+    "aria-required-attr": { "id": "aria-required-attr", "score": 0 },
+    "label": { "id": "label", "score": 0 },
+    "link-name": { "id": "link-name", "score": 0 },
+    "color-contrast": { "id": "color-contrast", "score": 0 },
+    "button-name": { "id": "button-name", "score": 0 },
+    "image-alt": { "id": "image-alt", "score": 0 },
+    "html-has-lang": { "id": "html-has-lang", "score": 1 },
+    "document-title": { "id": "document-title", "score": 1 }
+  }
+}

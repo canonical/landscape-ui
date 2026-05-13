@@ -58,6 +58,7 @@ export default defineConfig({
         "src/**/*.{ts,tsx}",
         ".github/lighthouse/audit-sets.cjs",
         ".github/lighthouse/lighthouserc.base.cjs",
+        ".github/lighthouse/build-comment.cjs",
       ],
       exclude: [
         "**/tests/**",

@@ -1,0 +1,10 @@
+{
+  "requestedUrl": "/no-access",
+  "finalUrl": "/no-access",
+  "categories": { "accessibility": { "id": "accessibility", "score": 1 } },
+  "audits": {
+    "color-contrast": { "id": "color-contrast", "score": 1 },
+    "button-name": { "id": "button-name", "score": 1 },
+    "image-alt": { "id": "image-alt", "score": 1 }
+  }
+}

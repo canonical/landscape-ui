@@ -1,0 +1,14 @@
+{
+  "requestedUrl": "/create-account",
+  "finalUrl": "/create-account",
+  "categories": {
+    "accessibility": { "id": "accessibility", "score": 0.88 }
+  },
+  "audits": {
+    "color-contrast": { "id": "color-contrast", "score": 0 },
+    "button-name": { "id": "button-name", "score": 0 },
+    "image-alt": { "id": "image-alt", "score": 1 },
+    "html-has-lang": { "id": "html-has-lang", "score": 1 },
+    "document-title": { "id": "document-title", "score": 1 }
+  }
+}

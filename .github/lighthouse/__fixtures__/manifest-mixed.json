@@ -1,0 +1,23 @@
+[
+  {
+    "url": "/login",
+    "isRepresentativeRun": true,
+    "htmlPath": ".lighthouseci/login-report.html",
+    "jsonPath": ".lighthouseci/lhr-login.json",
+    "summary": { "accessibility": 0.97 }
+  },
+  {
+    "url": "/create-account",
+    "isRepresentativeRun": true,
+    "htmlPath": ".lighthouseci/create-account-report.html",
+    "jsonPath": ".lighthouseci/lhr-create-account.json",
+    "summary": { "accessibility": 0.88 }
+  },
+  {
+    "url": "/no-access",
+    "isRepresentativeRun": true,
+    "htmlPath": ".lighthouseci/no-access-report.html",
+    "jsonPath": ".lighthouseci/lhr-no-access.json",
+    "summary": { "accessibility": 0.74 }
+  }
+]
