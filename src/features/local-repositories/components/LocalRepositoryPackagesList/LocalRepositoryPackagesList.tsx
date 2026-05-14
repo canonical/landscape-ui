@@ -20,7 +20,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
     () =>
       packages
         .map((name) => ({ name }))
-        .sort((a, b) => a.name.localeCompare(b.name)),
+        .toSorted((a, b) => a.name.localeCompare(b.name)),
     [packages],
   );
   const pagedPackages = useMemo(

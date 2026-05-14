@@ -9,7 +9,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 describe("LocalRepositoryPackagesList", () => {
-  it("renders table with default column header and paginateddata", async () => {
+  it("renders table with default column header and paginated data", async () => {
     renderWithProviders(
       <LocalRepositoryPackagesList packages={paginatedPackages} />,
     );

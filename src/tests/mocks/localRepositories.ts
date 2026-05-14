@@ -31,6 +31,6 @@ export const paginatedPackages = Array.from(
   (_, i) => `package-${i + 1}`,
 );
 
-export const sortedPackages = paginatedPackages.sort((a, b) =>
+export const sortedPackages = paginatedPackages.toSorted((a, b) =>
   a.localeCompare(b),
 );
