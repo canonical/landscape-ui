@@ -21,7 +21,7 @@ ENV_OVERRIDE="$PROJECT_DIR/.env.production.local"
 CLEANUP=false
 
 if [ "$MOCK" = true ]; then
-    printf 'VITE_MSW_ENABLED=true\n' > "$ENV_OVERRIDE"
+    printf 'VITE_MSW_ENABLED=true\nVITE_MSW_ENDPOINTS_TO_INTERCEPT=/\n' > "$ENV_OVERRIDE"
     CLEANUP=true
     echo "MSW mock mode enabled — writing .env.production.local"
 fi
@@ -54,30 +54,19 @@ ensure_vm
 ensure_mount
 
 echo "Syncing source into VM..."
-multipass exec "$VM_NAME" -- sudo -H -- sh -c "
-    rsync -a --delete \
-        --exclude=node_modules \
-        --exclude=dist \
-        --exclude=parts \
-        --exclude=stage \
-        --exclude=prime \
-        /build/ /root/landscape-ui-src/
-"
+multipass exec "$VM_NAME" -- sudo rsync -a --delete \
+    --exclude=node_modules \
+    --exclude=dist \
+    --exclude=parts \
+    --exclude=stage \
+    --exclude=prime \
+    /build/ /root/landscape-ui-src/
 
 echo "Building snap in VM '$VM_NAME'..."
-multipass exec "$VM_NAME" -- sudo -H -- sh -c "
-    set -e
-    cd /root/landscape-ui-src
-    # Always clean the frontend part so env changes (e.g. VITE_MSW_ENABLED)
-    # are picked up. snapcraft does not track .env files as source inputs.
-    snapcraft clean frontend --destructive-mode
-    mkdir -p /tmp/snap-output
-    snapcraft pack --destructive-mode --output /tmp/snap-output 2>&1
-"
+multipass exec "$VM_NAME" -- sudo -H sh -c 'set -e; cd /root/landscape-ui-src; snapcraft clean frontend --destructive-mode; mkdir -p /tmp/snap-output; snapcraft pack --destructive-mode --output /tmp/snap-output'
 
 echo "Copying snap to host..."
-multipass exec "$VM_NAME" -- sudo -H -- sh -c \
-    "cp /tmp/snap-output/*.snap /build/snap/"
+multipass exec "$VM_NAME" -- sudo sh -c 'cp /tmp/snap-output/*.snap /build/snap/'
 
 SNAP_FILE="$(ls "$PROJECT_DIR/snap"/*.snap 2>/dev/null | head -1)"
 if [ -n "$SNAP_FILE" ]; then

@@ -26,7 +26,7 @@ ENV_OVERRIDE="$PROJECT_DIR/.env.production.local"
 CLEANUP=false
 
 if [ "$MOCK" = true ]; then
-    printf 'VITE_MSW_ENABLED=true\n' > "$ENV_OVERRIDE"
+    printf 'VITE_MSW_ENABLED=true\nVITE_MSW_ENDPOINTS_TO_INTERCEPT=/\n' > "$ENV_OVERRIDE"
     CLEANUP=true
     echo "MSW mock mode enabled — writing .env.production.local"
 fi
