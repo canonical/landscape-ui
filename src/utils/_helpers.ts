@@ -13,7 +13,7 @@ const initParamsToPass = ({
   config: InternalAxiosRequestConfig;
   isOld: boolean;
 }): Record<string, unknown> =>
-  isOld
+  isOld && config.method === "get"
     ? {
         action: config.url ?? "",
         version: API_VERSION,
@@ -39,8 +39,10 @@ export const handleParams = ({
   for (const param of Object.keys(requestParams)) {
     const value = requestParams[param];
 
-    if ("string" === typeof value && "" !== value) {
-      paramsToPass[param] = value;
+    if ("string" === typeof value) {
+      if ("" !== value || config.method === "put") {
+        paramsToPass[param] = value;
+      }
     } else if (Array.isArray(value)) {
       if (0 !== value.length) {
         if (isOld) {
@@ -58,9 +60,12 @@ export const handleParams = ({
             paramsToPass[param] = value.toString();
           }
         }
+      } else if (!isOld && config.method === "put") {
+        paramsToPass[param] = value;
       }
     } else if (["number", "boolean"].includes(typeof value)) {
-      paramsToPass[param] = isOld ? `${value}` : value;
+      paramsToPass[param] =
+        isOld && config.method === "get" ? `${value}` : value;
     } else if (typeof value === "object") {
       paramsToPass[param] =
         isOld || "get" === config.method ? JSON.stringify(value) : value;
@@ -93,6 +98,13 @@ export const pluralizeWithCount = (
 ) => {
   return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
 };
+
+export const pluralizeNew = (
+  count = 0,
+  singularForm: string,
+  options: { pluralForm?: string; showCount?: "exact" | "limited" } = {},
+) =>
+  `${options.showCount ? `${count}${options.showCount === "limited" ? "+" : ""} ` : ""}${count === 1 ? singularForm : (options.pluralForm ?? `${singularForm}s`)}`;
 
 export const pluralizeArray = <T>(
   items: readonly T[],

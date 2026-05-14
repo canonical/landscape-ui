@@ -1,16 +1,15 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import type { FC } from "react";
-import { useRepositoryProfiles } from "../../hooks";
+import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
-import RepositoryProfileHeader from "../RepositoryProfileHeader";
 import RepositoryProfileList from "../RepositoryProfileList";
+import HeaderWithSearch from "@/components/form/HeaderWithSearch/HeaderWithSearch";
 
 interface RepositoryProfileContainerProps {
   readonly unfilteredRepositoryProfilesResult: UseQueryResult<
@@ -30,11 +29,10 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
   const {
     data: repositoryProfilesResponse,
     isPending: isPendingRepositoryProfiles,
-    error: repositoryProfilesError,
   } = getRepositoryProfilesQuery({
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    search: search ? [search] : undefined,
+    search: search || undefined,
   });
 
   if (!unfilteredRepositoryProfilesResponse) {
@@ -66,19 +64,12 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     return <LoadingState />;
   }
 
-  if (!repositoryProfilesResponse) {
-    throw repositoryProfilesError;
-  }
-
   return (
     <>
-      <RepositoryProfileHeader />
+      <HeaderWithSearch />
       <RepositoryProfileList
-        repositoryProfiles={repositoryProfilesResponse.data.results}
-      />
-      <TablePagination
-        totalItems={repositoryProfilesResponse.data.count}
-        currentItemCount={repositoryProfilesResponse.data.results.length}
+        repositoryProfiles={repositoryProfilesResponse?.data.results ?? []}
+        totalCount={repositoryProfilesResponse?.data.count ?? 0}
       />
     </>
   );

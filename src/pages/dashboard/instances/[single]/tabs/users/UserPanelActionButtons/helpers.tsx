@@ -24,16 +24,15 @@ const getSingleUserMessage = (userAction: UserAction): string => {
   }
 };
 
-const getUsersWithSameStateMessage = (userAction: UserAction): string => {
-  switch (userAction) {
-    case UserAction.Lock:
-      return "This will prevent users from logging into these accounts without deleting the files belonging to the accounts.";
-    case UserAction.Unlock:
-      return "This will restore login access for the users of these accounts.";
-    default:
-      return "";
-  }
+const usersWithSameStateMessages: Record<UserAction, string> = {
+  [UserAction.Lock]:
+    "This will prevent users from logging into these accounts without deleting the files belonging to the accounts.",
+  [UserAction.Unlock]:
+    "This will restore login access for the users of these accounts.",
 };
+
+const getUsersWithSameStateMessage = (userAction: UserAction): string =>
+  usersWithSameStateMessages[userAction];
 
 export const getUserLockStatusCounts = (
   users: User[],

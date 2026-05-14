@@ -3,6 +3,9 @@ import {
   ALERT_TYPES,
   LICENSE_TYPES,
   BOOLEANS,
+  DISTRIBUTION_UPGRADE_STATUSES,
+  HARDWARE_ATTRIBUTES,
+  HARDWARE_ROOT_KEYS,
   LOGICAL_OPERATORS,
   LAST_TOKEN_REGEX,
   WHITESPACE_TOKEN_REGEX,
@@ -73,7 +76,7 @@ const getProfileSuggestions = (
   }
 
   if (depth === 3) {
-    if (profileType === "security" && config.usgStatuses.length > 0) {
+    if (profileType === "usg" && config.usgStatuses.length > 0) {
       return config.usgStatuses.map((s) => createItem(s, "Audit Result"));
     }
     if (profileType === "wsl" && config.wslStatuses.length > 0) {
@@ -121,6 +124,20 @@ const getSimpleEnumSuggestions = <T extends string>(
   }));
 };
 
+const getHardwareAttributeSuggestions = (
+  hwRoot: keyof typeof HARDWARE_ATTRIBUTES,
+  range: MonacoRange,
+  monaco: Monaco,
+) => {
+  return HARDWARE_ATTRIBUTES[hwRoot].map((attr) => ({
+    label: attr,
+    kind: monaco.languages.CompletionItemKind.Property,
+    insertText: `${attr}:`,
+    range,
+    detail: `${hwRoot} attribute`,
+  }));
+};
+
 const getDeepSuggestions = (
   segments: string[],
   range: MonacoRange,
@@ -129,6 +146,18 @@ const getDeepSuggestions = (
 ) => {
   const [rootKey] = segments;
   const depth = segments.length - 1;
+
+  if (rootKey?.includes(".") && depth === 1) {
+    return [
+      {
+        label: "<value>",
+        kind: monaco.languages.CompletionItemKind.Text,
+        insertText: "<value>",
+        range,
+        detail: "Hardware property value",
+      },
+    ];
+  }
 
   switch (rootKey) {
     case "profile":
@@ -176,6 +205,17 @@ const getDeepSuggestions = (
     case "annotation":
       return getAnnotationSuggestions(depth, range, monaco);
 
+    case "release-upgrade":
+      if (depth === 1) {
+        return getSimpleEnumSuggestions(
+          DISTRIBUTION_UPGRADE_STATUSES,
+          "Release Upgrade Status",
+          range,
+          monaco,
+        );
+      }
+      return [];
+
     default:
       return [];
   }
@@ -218,7 +258,7 @@ export const configureSearchLanguage = (
 
   if (!registeredCompletionProviders.has(languageId)) {
     monaco.languages.registerCompletionItemProvider(languageId, {
-      triggerCharacters: [":", " ", '"'],
+      triggerCharacters: [":", " ", '"', "."],
       provideCompletionItems(model, position) {
         const word = model.getWordUntilPosition(position);
         const range: MonacoRange = {
@@ -255,15 +295,41 @@ export const configureSearchLanguage = (
           return { suggestions };
         }
 
+        // Check if we're in a hardware dot context (e.g., "cpu.", "disk.vendor")
+        const hwDotMatch = fullToken.match(
+          /^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_]*)$/,
+        );
+        if (hwDotMatch) {
+          const [, hwRoot] = hwDotMatch;
+          if (
+            HARDWARE_ROOT_KEYS.includes(
+              hwRoot as keyof typeof HARDWARE_ATTRIBUTES,
+            )
+          ) {
+            return {
+              suggestions: getHardwareAttributeSuggestions(
+                hwRoot as keyof typeof HARDWARE_ATTRIBUTES,
+                range,
+                monaco,
+              ),
+            };
+          }
+        }
+
         const currentTerms = languageData?.terms ?? [];
 
-        const termSuggestions = currentTerms.map((term) => ({
-          label: term,
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: `${term}:`,
-          range,
-          detail: "Search term",
-        }));
+        const termSuggestions = currentTerms.map((term) => {
+          const isHardwareRoot = HARDWARE_ROOT_KEYS.includes(
+            term as keyof typeof HARDWARE_ATTRIBUTES,
+          );
+          return {
+            label: term,
+            kind: monaco.languages.CompletionItemKind.Keyword,
+            insertText: isHardwareRoot ? `${term}.` : `${term}:`,
+            range,
+            detail: "Search term",
+          };
+        });
 
         const operatorSuggestions = LOGICAL_OPERATORS.map((op) => ({
           label: op,

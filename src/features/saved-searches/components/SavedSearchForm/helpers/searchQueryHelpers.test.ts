@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   ALERT_TYPES,
+  DISTRIBUTION_UPGRADE_STATUSES,
   LICENSE_TYPES,
   USG_STATUSES,
   WSL_STATUSES,
@@ -81,6 +82,14 @@ describe("validateSearchQuery", () => {
 
     expect(validateSearchQuery("upgrade-profile:daily ")).toBeUndefined();
     expect(validateSearchQuery("removal-profile:2 ")).toBeUndefined();
+
+    const [validDistributionUpgradeStatus] = DISTRIBUTION_UPGRADE_STATUSES;
+    expect(
+      validateSearchQuery(`release-upgrade:${validDistributionUpgradeStatus} `),
+    ).toBeUndefined();
+    expect(validateSearchQuery("release-upgrade:pending ")).toBe(
+      '"release-upgrade" has invalid value "pending".',
+    );
   });
 
   it("validates profile tokens and statuses", () => {
@@ -101,16 +110,16 @@ describe("validateSearchQuery", () => {
       '"profile" ID must be a number.',
     );
 
-    expect(validateSearchQuery("profile:security:1 ")).toBe(
-      '"profile:security" requires a status.',
+    expect(validateSearchQuery("profile:usg:1 ")).toBe(
+      '"profile:usg" requires a status.',
     );
 
-    expect(validateSearchQuery("profile:security:1:foo ")).toBe(
-      '"profile:security" has invalid security status "foo".',
+    expect(validateSearchQuery("profile:usg:1:foo ")).toBe(
+      '"profile:usg" has invalid security status "foo".',
     );
 
     expect(
-      validateSearchQuery(`profile:security:1:${validUsgStatus} `),
+      validateSearchQuery(`profile:usg:1:${validUsgStatus} `),
     ).toBeUndefined();
 
     expect(validateSearchQuery("profile:wsl:1:foo ")).toBe(
@@ -184,8 +193,8 @@ describe("validateSearchQuery with ValidationConfig", () => {
       '"profile" has invalid profile type "script".',
     );
 
-    expect(validateSearchQuery("profile:security:1:pass ", false, config)).toBe(
-      '"profile" has invalid profile type "security".',
+    expect(validateSearchQuery("profile:usg:1:pass ", false, config)).toBe(
+      '"profile" has invalid profile type "usg".',
     );
 
     expect(validateSearchQuery("profile:wsl:1:compliant ", false, config)).toBe(
@@ -195,31 +204,31 @@ describe("validateSearchQuery with ValidationConfig", () => {
 
   it("should accept USG statuses from config", () => {
     const config = {
-      profileTypes: ["security"],
+      profileTypes: ["usg"],
       usgStatuses: ["pass", "fail"],
     };
 
     expect(
-      validateSearchQuery("profile:security:1:pass ", false, config),
+      validateSearchQuery("profile:usg:1:pass ", false, config),
     ).toBeUndefined();
     expect(
-      validateSearchQuery("profile:security:1:fail ", false, config),
+      validateSearchQuery("profile:usg:1:fail ", false, config),
     ).toBeUndefined();
   });
 
   it("should reject USG statuses not in config", () => {
     const config = {
-      profileTypes: ["security"],
+      profileTypes: ["usg"],
       usgStatuses: ["pass"],
     };
 
-    expect(validateSearchQuery("profile:security:1:fail ", false, config)).toBe(
-      '"profile:security" has invalid security status "fail".',
+    expect(validateSearchQuery("profile:usg:1:fail ", false, config)).toBe(
+      '"profile:usg" has invalid security status "fail".',
     );
 
     expect(
-      validateSearchQuery("profile:security:1:in-progress ", false, config),
-    ).toBe('"profile:security" has invalid security status "in-progress".');
+      validateSearchQuery("profile:usg:1:in-progress ", false, config),
+    ).toBe('"profile:usg" has invalid security status "in-progress".');
   });
 
   it("should accept WSL statuses from config", () => {
@@ -257,7 +266,7 @@ describe("validateSearchQuery with ValidationConfig", () => {
   it("should use default values when no config provided", () => {
     expect(validateSearchQuery("profile:package:1 ")).toBeUndefined();
     expect(validateSearchQuery("profile:script:1 ")).toBeUndefined();
-    expect(validateSearchQuery("profile:security:1:pass ")).toBeUndefined();
+    expect(validateSearchQuery("profile:usg:1:pass ")).toBeUndefined();
     expect(validateSearchQuery("profile:wsl:1:compliant ")).toBeUndefined();
   });
 });
@@ -293,18 +302,18 @@ describe("validateSearchField with ValidationConfig", () => {
 
   it("should validate with mixed config settings", () => {
     const config = {
-      profileTypes: ["security", "wsl"],
+      profileTypes: ["usg", "wsl"],
       usgStatuses: ["pass"],
       wslStatuses: ["compliant"],
     };
 
     expect(
-      validateSearchField("profile:security:1:pass ", "strict", config),
+      validateSearchField("profile:usg:1:pass ", "strict", config),
     ).toBeUndefined();
 
-    expect(
-      validateSearchField("profile:security:1:fail ", "strict", config),
-    ).toBe('"profile:security" has invalid security status "fail".');
+    expect(validateSearchField("profile:usg:1:fail ", "strict", config)).toBe(
+      '"profile:usg" has invalid security status "fail".',
+    );
 
     expect(
       validateSearchField("profile:wsl:1:compliant ", "strict", config),
@@ -316,6 +325,70 @@ describe("validateSearchField with ValidationConfig", () => {
 
     expect(validateSearchField("profile:package:1 ", "strict", config)).toBe(
       '"profile" has invalid profile type "package".',
+    );
+  });
+});
+
+describe("validateSearchQuery hardware dot-notation", () => {
+  it("accepts valid hardware key:attribute:value tokens", () => {
+    expect(validateSearchQuery("cpu.vendor:Intel ")).toBeUndefined();
+    expect(validateSearchQuery("cpu.size:3Ghz ")).toBeUndefined();
+    expect(validateSearchQuery("disk.vendor:Samsung ")).toBeUndefined();
+    expect(validateSearchQuery("disk.size:500Gb ")).toBeUndefined();
+    expect(validateSearchQuery("display.product:HD ")).toBeUndefined();
+    expect(validateSearchQuery("firmware.version:1.0 ")).toBeUndefined();
+    expect(validateSearchQuery("memory.size:8Gb ")).toBeUndefined();
+    expect(validateSearchQuery("network.capacity:1Gb ")).toBeUndefined();
+    expect(
+      validateSearchQuery("network.serial:aa:bb:cc:dd:ee:ff "),
+    ).toBeUndefined();
+  });
+
+  it("rejects hardware key without a dot", () => {
+    expect(validateSearchQuery("cpu:Intel ")).toBe(
+      '"cpu" requires a dot-separated attribute. Valid attributes: vendor, product, version, size.',
+    );
+    expect(validateSearchQuery("disk:Samsung ")).toBe(
+      '"disk" requires a dot-separated attribute. Valid attributes: vendor, product, version, size.',
+    );
+  });
+
+  it("rejects hardware key with invalid attribute", () => {
+    expect(validateSearchQuery("cpu.colour:red ")).toBe(
+      '"cpu.colour" has invalid attribute "colour". Valid attributes: vendor, product, version, size.',
+    );
+    expect(validateSearchQuery("network.colour:blue ")).toBe(
+      '"network.colour" has invalid attribute "colour". Valid attributes: vendor, product, version, capacity, serial.',
+    );
+  });
+
+  it("rejects hardware key with missing value", () => {
+    expect(validateSearchQuery("cpu.vendor: ")).toBe(
+      '"cpu.vendor" requires a value.',
+    );
+  });
+
+  it("allows hardware terms while typing incomplete last token", () => {
+    expect(validateSearchQuery("cpu.vendor:Int")).toBeUndefined();
+    expect(validateSearchQuery("disk.size:")).toBeUndefined();
+  });
+});
+
+describe("validateSearchQuery new keys added alongside hardware", () => {
+  it("validates last-ping as numeric", () => {
+    expect(validateSearchQuery("last-ping:24 ")).toBeUndefined();
+    expect(validateSearchQuery("last-ping:8760 ")).toBeUndefined();
+    expect(validateSearchQuery("last-ping:two-hours ")).toBe(
+      '"last-ping" requires a number.',
+    );
+  });
+
+  it("validates contract-expires-within-days as numeric", () => {
+    expect(
+      validateSearchQuery("contract-expires-within-days:30 "),
+    ).toBeUndefined();
+    expect(validateSearchQuery("contract-expires-within-days:soon ")).toBe(
+      '"contract-expires-within-days" requires a number.',
     );
   });
 });

@@ -133,6 +133,7 @@ export const getSuccessMessage = (snapCount: number, action: EditSnapType) => {
       verb = "unheld";
       break;
     default:
+      verb = "updated";
       break;
   }
 

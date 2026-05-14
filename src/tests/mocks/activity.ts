@@ -1,5 +1,32 @@
 import type { Activity } from "@/features/activities";
 
+export const RELEASE_UPGRADE_ACTIVITY: Activity = {
+  id: 9001,
+  type: "ReleaseUpgradeRequest",
+  summary: "Upgrade distribution for 3 instances",
+  computer_id: 1,
+  activity_status: "undelivered",
+  completion_time: null,
+  creation_time: "2026-03-19T10:00:00Z",
+  creator: { name: "John Smith", email: "john@example.com", id: 1 },
+  parent_id: null,
+  result_code: null,
+  result_text: null,
+  actions: {
+    approvable: false,
+    cancelable: true,
+    reappliable: false,
+  },
+  approval_time: null,
+  delivery_time: null,
+  deliver_after_time: null,
+  deliver_before_time: null,
+  modification_time: "2026-03-19T10:00:00Z",
+  schedule_after_time: null,
+  schedule_before_time: null,
+  children: [],
+};
+
 export const activities = [
   {
     id: 1010,
@@ -7,7 +34,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-04-15T15:47:07Z",
     creator: {
@@ -38,7 +64,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-04-15T15:46:50Z",
     creator: {
@@ -69,7 +94,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-04-15T14:42:34Z",
     creator: {
@@ -100,7 +124,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T12:23:39Z",
     creator: {
@@ -131,7 +154,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T12:16:24Z",
     creator: {
@@ -162,7 +184,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T08:47:54Z",
     creator: {
@@ -193,7 +214,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T08:47:22Z",
     creator: {
@@ -224,7 +244,6 @@ export const activities = [
       approvable: true,
       cancelable: true,
       reappliable: true,
-      revertable: true,
     },
     creation_time: "2024-03-22T08:47:22Z",
     creator: {
@@ -249,7 +268,82 @@ export const activities = [
     activity_status: "unapproved",
     children: [],
   },
+  {
+    computer_id: 2,
+    activity_status: "undelivered",
+    approval_time: null,
+    completion_time: null,
+    creation_time: "2026-01-13T21:57:57Z",
+    creator: {
+      email: "john@example.com",
+      id: 1,
+      name: "John Smith",
+    },
+    deliver_delay_window: 0,
+    id: 115,
+    parent_id: null,
+    result_code: null,
+    result_text: null,
+    summary: "Request computer 2 to generate a FDE recovery key.",
+    type: "GenerateFDERecoveryKeyRequest",
+  },
+  RELEASE_UPGRADE_ACTIVITY,
 ] as const satisfies Activity[];
+
+export const MANY_UNAPPROVED_ACTIVITY_BASE_ID = 2000;
+export const MANY_DELIVERED_ACTIVITY_BASE_ID = 3000;
+
+export const manyUnapprovedActivities: Activity[] = Array.from(
+  { length: 15 },
+  (_, i) => ({
+    id: MANY_UNAPPROVED_ACTIVITY_BASE_ID + i,
+    actions: { approvable: true, cancelable: true, reappliable: true },
+    creation_time: "2024-03-22T08:47:22Z",
+    creator: { name: "John Smith", email: "john@example.com", id: 1 },
+    type: "StopChildComputerActivity",
+    summary: `Unapproved bulk activity ${i + 1}`,
+    result_text: null,
+    computer_id: 6,
+    approval_time: null,
+    delivery_time: null,
+    deliver_after_time: null,
+    deliver_before_time: null,
+    parent_id: null,
+    modification_time: "2024-03-22T08:47:22Z",
+    completion_time: null,
+    schedule_before_time: null,
+    schedule_after_time: null,
+    result_code: null,
+    activity_status: "unapproved" as const,
+    children: [],
+  }),
+);
+
+export const manyDeliveredActivities: Activity[] = Array.from(
+  { length: 15 },
+  (_, i) => ({
+    id: MANY_DELIVERED_ACTIVITY_BASE_ID + i,
+    actions: { approvable: true, cancelable: true, reappliable: true },
+    creation_time: "2024-04-15T15:47:07Z",
+    creator: { name: "John Smith", email: "john@example.com", id: 1 },
+    type: "StartChildComputerActivity",
+    summary: `Delivered bulk activity ${i + 1}`,
+    result_text: null,
+    computer_id: 6,
+    approval_time: null,
+    delivery_time: "2024-04-15T15:47:07Z",
+    deliver_after_time: null,
+    deliver_before_time: null,
+    parent_id: null,
+    modification_time: "2024-04-15T15:47:07Z",
+    completion_time: "2024-04-15T15:48:07Z",
+    schedule_before_time: null,
+    schedule_after_time: null,
+    result_code: null,
+    activity_status: "delivered" as const,
+    children: [],
+  }),
+);
 
 export const activityTypes = [
   "ActivityGroup",
@@ -298,6 +392,27 @@ export const activityTypes = [
   "UnlockUserRequest",
   "UpgradeAllPackagesRequest",
   "UpgradeKernelPackageRequest",
+  "GenerateFDERecoveryKeyRequest",
 ] as const;
+
+export const getMockRecoveryKeyActivity = (computerId: number) => ({
+  activity_status: "undelivered",
+  approval_time: null,
+  completion_time: null,
+  creation_time: "2026-01-13T21:57:57Z",
+  creator: {
+    email: "john@example.com",
+    id: 1,
+    name: "John Smith",
+  },
+  computer_id: computerId,
+  deliver_delay_window: 0,
+  id: 115,
+  parent_id: null,
+  result_code: null,
+  result_text: null,
+  summary: `Request computer ${computerId} to generate a FDE recovery key.`,
+  type: "GenerateFDERecoveryKeyRequest",
+});
 
 export const INVALID_ACTIVITY_SEARCH_QUERY = "invalid_search_query";

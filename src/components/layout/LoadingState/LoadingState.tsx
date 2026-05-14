@@ -5,26 +5,31 @@ import classes from "./LoadingState.module.scss";
 
 interface LoadingStateProps {
   readonly centerOnScreen?: boolean;
+  readonly inline?: boolean;
   readonly ref?: Ref<HTMLDivElement>;
 }
 
-const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, ref }) => {
+const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline, ref }) => {
+  const spinningElement = (
+    <>
+      <span className="u-off-screen">Loading...</span>
+      <Icon name={ICONS.spinner} className="u-animation--spin" aria-hidden />
+    </>
+  );
+
+  if (inline) {
+    return <span role="status">{spinningElement}</span>;
+  }
+
   return (
     <div
       className={classNames({
-        [classes.root]: centerOnScreen,
+        [classes.root as string]: centerOnScreen,
       })}
       ref={ref}
     >
       <div className="p-strip" role="status">
-        <div className="u-align-text--center">
-          <span className="u-off-screen">Loading...</span>
-          <Icon
-            name={ICONS.spinner}
-            className="u-animation--spin"
-            aria-hidden
-          />
-        </div>
+        <div className="u-align-text--center">{spinningElement}</div>
       </div>
     </div>
   );

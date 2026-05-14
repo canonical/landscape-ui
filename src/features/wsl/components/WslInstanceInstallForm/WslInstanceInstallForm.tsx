@@ -1,6 +1,6 @@
 import FileInput from "@/components/form/FileInput";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -27,7 +27,7 @@ const WslInstanceInstallForm: FC = () => {
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { isGettingWslInstanceTypes, wslInstanceTypes } =
     useGetWslInstanceTypes();
@@ -86,7 +86,7 @@ const WslInstanceInstallForm: FC = () => {
           : undefined;
 
         const { data: activity } = await createWslInstance({
-          parent_id: parseInt(instanceId ?? ""),
+          parent_id: parseInt(instanceId!),
           computer_name:
             values.instanceType === "custom"
               ? values.instanceName
@@ -116,11 +116,12 @@ const WslInstanceInstallForm: FC = () => {
     },
   });
 
-  const instanceQueryResultOptions =
-    wslInstanceTypes.map(({ label, name }) => ({
+  const instanceQueryResultOptions = wslInstanceTypes.map(
+    ({ label, name }) => ({
       label,
       value: name,
-    })) || [];
+    }),
+  );
 
   const instanceOptions = [
     ...instanceQueryResultOptions,

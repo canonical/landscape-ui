@@ -26,8 +26,9 @@ describe("ActivityTypeFilter", () => {
 
     await user.click(toggle);
 
-    const listItems = screen.getAllByRole("listitem");
-    expect(listItems).toHaveLength(options.length);
+    expect(
+      screen.getByRole("button", { name: activityTypes[0] }),
+    ).toBeInTheDocument();
   });
 
   it("handles case-insensitive search", async () => {

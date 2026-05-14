@@ -1,0 +1,88 @@
+import SidePanel from "@/components/layout/SidePanel";
+import usePageParams from "@/hooks/usePageParams";
+import { Link } from "@canonical/react-components";
+import { useState, type FC } from "react";
+import type { APTSource } from "../../types";
+import RepositoryProfileForm from "../RepositoryProfileForm";
+import RepositoryProfileSourceForm from "../RepositoryProfileSourceForm";
+
+const RepositoryProfileAddSidePanel: FC = () => {
+  const { lastSidePathSegment, popSidePath, createSidePathPusher } =
+    usePageParams();
+
+  const [aptSources, setAptSources] = useState<APTSource[]>([]);
+  const [sourceToEdit, setSourceToEdit] = useState<APTSource | null>(null);
+
+  const isSourceStep =
+    lastSidePathSegment === "add-source" ||
+    lastSidePathSegment === "edit-source";
+
+  const panelTitle = "Add repository profile";
+
+  const handleSourceSuccess = (source: APTSource) => {
+    if (lastSidePathSegment === "add-source") {
+      setAptSources((prev) => [...prev, { ...source, id: 0 }]);
+    } else if (sourceToEdit) {
+      setAptSources((prev) =>
+        prev.map((s) => {
+          const matches =
+            s.id !== 0
+              ? s.id === sourceToEdit.id
+              : s.name === sourceToEdit.name;
+          return matches ? { ...source, id: 0 } : s;
+        }),
+      );
+    }
+    popSidePath();
+  };
+
+  return (
+    <>
+      <SidePanel.Header>
+        {isSourceStep ? (
+          <>
+            <Link className="u-no-margin--bottom" onClick={popSidePath}>
+              {panelTitle}
+            </Link>
+            {lastSidePathSegment === "add-source"
+              ? " / Add source"
+              : " / Edit source"}
+          </>
+        ) : (
+          panelTitle
+        )}
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <div style={{ display: isSourceStep ? "none" : undefined }}>
+          <RepositoryProfileForm
+            action="add"
+            aptSources={aptSources}
+            onAptSourcesChange={setAptSources}
+            onAddSourceClick={createSidePathPusher("add-source")}
+            onEditSourceClick={(source) => {
+              setSourceToEdit(source);
+              createSidePathPusher("edit-source")();
+            }}
+          />
+        </div>
+        {isSourceStep && (
+          <RepositoryProfileSourceForm
+            initialValues={
+              lastSidePathSegment === "edit-source" && sourceToEdit
+                ? {
+                    name: sourceToEdit.name,
+                    deb_line: sourceToEdit.line,
+                    gpg_key_name: sourceToEdit.gpg_key?.name ?? "",
+                  }
+                : undefined
+            }
+            onSuccess={handleSourceSuccess}
+            onBack={popSidePath}
+          />
+        )}
+      </SidePanel.Content>
+    </>
+  );
+};
+
+export default RepositoryProfileAddSidePanel;

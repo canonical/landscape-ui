@@ -1,4 +1,3 @@
-import type { Activity } from "@/features/activities";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/api/QueryFnType";
@@ -34,10 +33,6 @@ interface EditUpgradeProfileParams extends Omit<
   title?: string;
 }
 
-interface RemoveUpgradeProfileParams {
-  name: string;
-}
-
 interface GetUpgradeProfilesParams {
   upgrade_type?: UpgradeProfileType;
 }
@@ -51,8 +46,11 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     CreateUpgradeProfileParams
   >({
-    mutationFn: async (params) => {
-      return authFetchOld.get("CreateUpgradeProfile", { params });
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetchOld.get("CreateUpgradeProfile", {
+        params: { ...rest, tags: normalizedTags },
+      });
     },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
@@ -63,23 +61,16 @@ export default function useUpgradeProfiles() {
     AxiosError<ApiError>,
     EditUpgradeProfileParams
   >({
-    mutationFn: async (params) => {
-      return authFetchOld.get("EditUpgradeProfile", { params });
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetchOld.get("EditUpgradeProfile", {
+        params: { ...rest, tags: normalizedTags },
+      });
     },
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
-  });
-
-  const removeUpgradeProfileQuery = useMutation<
-    AxiosResponse<Activity>,
-    AxiosError<ApiError>,
-    RemoveUpgradeProfileParams
-  >({
-    mutationFn: async (params) => {
-      return authFetchOld.get("RemoveUpgradeProfile", { params });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] });
+      await queryClient.invalidateQueries({ queryKey: ["upgradeProfile"] });
     },
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["upgradeProfiles"] }),
   });
 
   const getUpgradeProfilesQuery: QueryFnType<
@@ -96,7 +87,6 @@ export default function useUpgradeProfiles() {
   return {
     createUpgradeProfileQuery,
     editUpgradeProfileQuery,
-    removeUpgradeProfileQuery,
     getUpgradeProfilesQuery,
   };
 }

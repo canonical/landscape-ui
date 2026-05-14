@@ -30,7 +30,7 @@ describe("ProviderListActions", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: "Delete Ubuntu One provider" }),
+      screen.getByRole("menuitem", { name: "Delete Ubuntu One provider" }),
     ).toHaveAttribute("aria-disabled");
   });
 });

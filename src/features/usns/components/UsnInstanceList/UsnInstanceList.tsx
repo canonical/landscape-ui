@@ -22,14 +22,19 @@ const UsnInstanceList: FC<UsnInstanceListProps> = ({
   usn,
   usnPackages,
 }) => {
+  const affectedComputerIds = useMemo(
+    () => usnPackages.flatMap(({ computer_ids }) => computer_ids),
+    [usnPackages],
+  );
+
+  const allFilteredInstances = useMemo(
+    () => instances.filter(({ id }) => affectedComputerIds.includes(id)),
+    [instances, affectedComputerIds],
+  );
+
   const instanceData = useMemo(
-    () =>
-      instances
-        .filter(({ id }) =>
-          usnPackages.flatMap(({ computer_ids }) => computer_ids).includes(id),
-        )
-        .slice(0, limit),
-    [instances, limit, usnPackages],
+    () => allFilteredInstances.slice(0, limit),
+    [allFilteredInstances, limit],
   );
 
   const columns = useMemo<Column<Instance>[]>(
@@ -57,7 +62,7 @@ const UsnInstanceList: FC<UsnInstanceListProps> = ({
       data={instanceData}
       itemNames={{ plural: "instances", singular: "instance" }}
       onLimitChange={onLimitChange}
-      totalCount={instanceData.length}
+      totalCount={allFilteredInstances.length}
       title={
         <p className="p-heading--4">
           Instances affected by <b>{usn}</b>

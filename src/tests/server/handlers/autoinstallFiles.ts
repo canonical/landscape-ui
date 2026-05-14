@@ -9,9 +9,13 @@ import type {
 } from "@/features/autoinstall-files";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { delay, http, HttpResponse } from "msw";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<
@@ -42,7 +46,7 @@ export default [
     { autoinstallFileId: string },
     GetAutoinstallFileParams,
     AutoinstallFile
-  >(`${API_URL}autoinstall/:autoinstallFileId`, async ({ params }) => {
+  >(`${API_URL}autoinstall/:autoinstallFileId`, async ({ params, request }) => {
     const { autoinstallFileId } = params;
 
     await delay();
@@ -53,6 +57,30 @@ export default [
 
     if (!autoinstallFile) {
       throw new HttpResponse(null, { status: 404, statusText: "Not Found" });
+    }
+
+    const url = new URL(request.url);
+    const withMetadata = url.searchParams.get("with_metadata") === "true";
+
+    if (withMetadata) {
+      if (
+        shouldApplyEndpointStatus("autoinstall") &&
+        getEndpointStatus().status === "variant"
+      ) {
+        return HttpResponse.json({
+          ...autoinstallFile,
+          metadata: getEndpointStatus().response,
+        });
+      }
+
+      return HttpResponse.json({
+        ...autoinstallFile,
+        metadata: {
+          current_version: autoinstallFile.version,
+          max_versions: 5,
+          versions: [],
+        },
+      });
     }
 
     return HttpResponse.json(autoinstallFile);
@@ -73,6 +101,23 @@ export default [
       });
     },
   ),
+  http.post(`${API_URL}autoinstall:validate`, async () => {
+    if (shouldApplyEndpointStatus("autoinstall-validate")) {
+      const { status, response } = getEndpointStatus();
+      if (status === "variant") {
+        return HttpResponse.json(response, { status: 400 });
+      }
+    }
+
+    if (shouldApplyEndpointStatus("autoinstall:validate")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json({});
+  }),
 
   http.delete<{ autoinstallFileId: string }, DeleteAutoinstallFileParams, null>(
     `${API_URL}autoinstall/:autoinstallFileId`,

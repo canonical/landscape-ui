@@ -1,4 +1,5 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { instances, ubuntuCoreInstance } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
@@ -8,12 +9,12 @@ import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 
 const props: ComponentProps<typeof InstanceList> = {
-  instances,
   toggledInstances: [],
+  instances: instances.slice(0, DEFAULT_PAGE_SIZE),
   setColumnFilterOptions: vi.fn(),
   setToggledInstances: vi.fn(),
-  deselectAllInstances: vi.fn(),
   selectAllInstances: vi.fn(),
+  deselectAllInstances: vi.fn(),
   instanceCount: instances.length,
 };
 
@@ -83,13 +84,32 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setToggledInstances).toHaveBeenCalledWith(instances);
+    expect(props.setToggledInstances).toHaveBeenCalledWith(props.instances);
 
     rerender(<InstanceList {...props} toggledInstances={instances} />);
     const checkedCheckboxes = screen.getAllByRole("checkbox", {
       checked: true,
     });
-    expect(checkedCheckboxes).toHaveLength(instances.length + 1);
+    expect(checkedCheckboxes).toHaveLength(props.instances.length + 1);
+  });
+
+  it("should deselect all instances when clicking ToggleAll checkbox with an instance selected", async () => {
+    const { rerender } = renderWithProviders(
+      <InstanceList {...props} toggledInstances={[instances[0]]} />,
+    );
+
+    const toggleAllCheckbox = await screen.findByRole("checkbox", {
+      name: /toggle all/i,
+    });
+    await userEvent.click(toggleAllCheckbox);
+
+    expect(props.setToggledInstances).toHaveBeenCalledWith([]);
+
+    rerender(<InstanceList {...props} toggledInstances={[]} />);
+    const checkedCheckboxes = screen.queryAllByRole("checkbox", {
+      checked: true,
+    });
+    expect(checkedCheckboxes).toHaveLength(0);
   });
 
   it("should not show upgrades for an ubuntu core instance", async () => {
@@ -98,5 +118,46 @@ describe("InstanceList", () => {
     );
 
     expect(screen.queryByText("Up to date")).not.toBeInTheDocument();
+  });
+
+  it("selects an instance", async () => {
+    renderWithProviders(<InstanceList {...props} />);
+
+    const instanceCheckbox = await screen.findByRole("checkbox", {
+      name: instances[0].title,
+    });
+
+    await userEvent.click(instanceCheckbox);
+    expect(props.setToggledInstances).toHaveBeenCalledWith([instances[0]]);
+  });
+
+  it("deselects an instance", async () => {
+    renderWithProviders(
+      <InstanceList {...props} toggledInstances={[instances[0]]} />,
+    );
+
+    const instanceCheckbox = screen.getByRole("checkbox", {
+      name: instances[0].title,
+    });
+
+    expect(instanceCheckbox).toBeChecked();
+    await userEvent.click(instanceCheckbox);
+    expect(props.setToggledInstances).toHaveBeenCalledWith([]);
+  });
+
+  it("clears selection", async () => {
+    assert(props.instanceCount);
+    assert(props.instanceCount > props.instances.length);
+
+    renderWithProviders(
+      <InstanceList {...props} toggledInstances={instances} />,
+    );
+
+    const clearSelectionButton = await screen.findByRole("button", {
+      name: /clear selection/i,
+    });
+
+    await userEvent.click(clearSelectionButton);
+    expect(props.setToggledInstances).toHaveBeenCalledWith([]);
   });
 });

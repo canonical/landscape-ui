@@ -20,7 +20,7 @@ export const useCreateScriptAttachment = () => {
   >({
     mutationKey: ["scripts", "createAttachment"],
     mutationFn: async (params) =>
-      authFetch.get("CreateScriptAttachment", { params }),
+      authFetch.post("CreateScriptAttachment", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["scripts"] }),
   });

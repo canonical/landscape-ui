@@ -1,89 +1,92 @@
-import type { Chart, ChartData, LegendItem } from "chart.js";
 import classNames from "classnames";
 import type { FC } from "react";
 import { Link } from "react-router";
-import { handleChartMouseLeave, handleChartMouseOver } from "../../helpers";
-import classes from "./Legend.module.scss";
 import { ALERT_STATUSES } from "@/features/instances";
-import { useTheme } from "@/context/theme";
 import { ROUTES } from "@/libs/routes";
+import { pluralizeWithCount } from "@/utils/_helpers";
+import classes from "./Legend.module.scss";
 
-interface LegendProps {
-  readonly data: ChartData<"pie">;
-  readonly chartInstance: Chart | null;
-  readonly selectedArc: number | null;
-  readonly setSelectedArc: (index: number | null) => void;
+export interface LegendItem {
+  readonly label: string;
+  readonly count: number;
 }
 
-const Legend: FC<LegendProps> = ({
-  data,
-  chartInstance,
-  selectedArc,
-  setSelectedArc,
-}) => {
-  const { isDarkMode } = useTheme();
+interface LegendProps {
+  readonly items: readonly LegendItem[];
+  readonly selectedArc: number | null;
+  readonly onArcEnter: (index: number) => void;
+  readonly onArcLeave: () => void;
+}
 
-  const numberOfInstances =
-    data?.datasets?.map((dataset) => {
-      return dataset.data[0] as number;
-    }) ?? [];
+const DIMMED_OPACITY = 0.55;
+
+const Legend: FC<LegendProps> = ({
+  items,
+  selectedArc,
+  onArcEnter,
+  onArcLeave,
+}) => {
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
-    chartInstance && (
-      <div
-        className={classes.container}
-        onMouseLeave={() => {
-          handleChartMouseLeave(chartInstance, setSelectedArc, isDarkMode);
-          chartInstance.update();
-        }}
-      >
-        {chartInstance.legend?.legendItems?.map(
-          (item: LegendItem, index: number) => {
-            const statusItem =
-              Object.values(ALERT_STATUSES).find(
-                (status) => status?.alternateLabel === item.text,
-              ) ?? ALERT_STATUSES["Unknown"];
-            return (
-              <div
-                key={index}
+    <div className={classes.container} onMouseLeave={onArcLeave}>
+      {items.map((item, index) => {
+        const statusItem =
+          Object.values(ALERT_STATUSES).find(
+            (status) => status?.alternateLabel === item.label,
+          ) ?? ALERT_STATUSES["Unknown"];
+
+        const isActive = selectedArc === index;
+        const isDimmed = selectedArc !== null && !isActive;
+
+        return (
+          <div
+            key={item.label}
+            className={classNames(
+              "u-no-padding u-no-margin",
+              classes.legendItem,
+              {
+                [classes["legendItem--active"]]: isActive,
+              },
+            )}
+            style={{ opacity: isDimmed ? DIMMED_OPACITY : 1 }}
+            aria-current={isActive ? "true" : undefined}
+            onMouseEnter={() => {
+              onArcEnter(index);
+            }}
+            onFocus={() => {
+              onArcEnter(index);
+            }}
+            onBlur={onArcLeave}
+          >
+            <div className={classes.legendItem__label}>
+              <i
                 className={classNames(
-                  "u-no-padding u-no-margin",
-                  classes.legendItem,
+                  `p-icon--${statusItem.icon.color}`,
+                  classes.legendItem__icon,
                 )}
-                style={{
-                  opacity:
-                    selectedArc === index || selectedArc === null ? 1 : 0.3, // eslint-disable-line @typescript-eslint/no-magic-numbers
-                }}
-                onMouseEnter={() => {
-                  handleChartMouseOver(
-                    chartInstance,
-                    index,
-                    setSelectedArc,
-                    isDarkMode,
-                  );
-                }}
+                aria-hidden="true"
+              />
+              <span className={classes.legendItem__text}>{item.label}</span>
+            </div>
+            {item.count === 0 ? (
+              <span className="u-no-margin u-no-padding">
+                {pluralizeWithCount(item.count, "instance")}
+              </span>
+            ) : (
+              <Link
+                to={ROUTES.instances.root({ status: statusItem.filterValue })}
+                className="u-no-margin u-no-padding"
               >
-                <div className={classes.legendItem__label}>
-                  <i
-                    className={classNames(
-                      `p-icon--${statusItem.icon.color}`,
-                      classes.legendItem__icon,
-                    )}
-                  />
-                  <span>{item.text}</span>
-                </div>
-                <Link
-                  to={ROUTES.instances.root({ status: statusItem.filterValue })}
-                  className="u-no-margin u-no-padding"
-                >
-                  {numberOfInstances[index]} instances
-                </Link>
-              </div>
-            );
-          },
-        )}
-      </div>
-    )
+                {pluralizeWithCount(item.count, "instance")}
+              </Link>
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 };
 

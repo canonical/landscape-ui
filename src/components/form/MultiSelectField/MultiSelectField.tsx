@@ -1,5 +1,5 @@
 import type { FC, RefObject, ReactNode, Ref } from "react";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import type { MultiSelectProps } from "@canonical/react-components";
 import { MultiSelect } from "@canonical/react-components";
 import classNames from "classnames";
@@ -11,6 +11,9 @@ interface MultiSelectFieldProps extends Omit<MultiSelectProps, "help"> {
   readonly innerRef?: Ref<HTMLDivElement>;
   readonly label?: string;
   readonly labelClassName?: string;
+  readonly onOpen?: () => void;
+  readonly onClose?: () => void;
+  readonly warning?: ReactNode;
 }
 
 const MultiSelectField: FC<MultiSelectFieldProps> = ({
@@ -24,16 +27,57 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
   items,
   label,
   labelClassName,
+  onOpen,
+  onClose,
   required,
+  warning,
   ...otherProps
 }) => {
-  const controlRef = useRef<HTMLButtonElement | HTMLInputElement>(null);
-  const dropdownIdRef = useRef("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Keep the latest callbacks in refs so the MutationObserver always
+  // calls the most recent version without needing to re-observe.
+  const onOpenRef = useRef(onOpen);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onOpenRef.current = onOpen;
+    onCloseRef.current = onClose;
+  });
+
+  // Watch aria-expanded on the Canonical control element. This is the only
+  // reliable signal for open/close — the dropdown is portalled so focus/blur
+  // events on the wrapper are unreliable.
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // MultiSelect renders its button synchronously, so it is in the DOM
+    // by the time this effect runs (after first paint).
+    const control = container.querySelector<HTMLElement>("[aria-expanded]");
+    if (!control) return;
+
+    const observer = new MutationObserver(() => {
+      if (control.getAttribute("aria-expanded") === "true") {
+        onOpenRef.current?.();
+      } else {
+        onCloseRef.current?.();
+      }
+    });
+
+    observer.observe(control, {
+      attributes: true,
+      attributeFilter: ["aria-expanded"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const containerRefCallback = (node: HTMLDivElement | null) => {
-    if (!node) {
-      return;
-    }
+    (containerRef as RefObject<HTMLDivElement | null>).current = node;
+
+    if (!node) return;
 
     if (innerRef) {
       if (typeof innerRef === "function") {
@@ -42,22 +86,6 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
         (innerRef as RefObject<HTMLDivElement>).current = node;
       }
     }
-
-    if (!node.closest(".l-aside")) {
-      return;
-    }
-
-    const button = node.querySelector<HTMLButtonElement>(
-      ".multi-select__select-button",
-    );
-    const input = node.querySelector<HTMLInputElement>(".p-search-box__input");
-
-    (
-      controlRef as RefObject<HTMLButtonElement | HTMLInputElement | null>
-    ).current = button || input;
-
-    dropdownIdRef.current =
-      controlRef.current?.getAttribute("aria-controls") || "";
   };
 
   const footer = error ? (
@@ -80,6 +108,7 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
       className={classNames(
         "p-form-validation p-form__group",
         { "is-error": !!error },
+        { "is-caution": !!warning },
         classes.container,
         className,
       )}
@@ -108,13 +137,13 @@ const MultiSelectField: FC<MultiSelectFieldProps> = ({
         {...otherProps}
       />
       {error && (
-        <p
-          className={classNames(
-            classes.errorMessage,
-            "p-form-validation__message",
-          )}
-        >
+        <p className="p-form-validation__message">
           <span>{error}</span>
+        </p>
+      )}
+      {warning && (
+        <p className="p-form-validation__message">
+          <span>{warning}</span>
         </p>
       )}
     </div>

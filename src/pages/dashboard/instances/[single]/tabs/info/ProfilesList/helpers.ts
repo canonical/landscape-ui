@@ -7,7 +7,7 @@ export const getProfileType = (profileType: ProfileType) => {
     repository: "Repository",
     reboot: "Reboot",
     script: "Script",
-    security: "Security",
+    usg: "USG",
     upgrade: "Upgrade",
     wsl: "WSL",
   }[profileType];

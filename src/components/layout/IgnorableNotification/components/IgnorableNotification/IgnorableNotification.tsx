@@ -3,7 +3,7 @@ import type { ComponentProps, MouseEvent } from "react";
 import { useState, type FC } from "react";
 import IgnorableModal from "../IgnorableModal";
 
-interface SecurityProfileAuditRetentionNotificationProps extends Omit<
+interface USGProfileAuditRetentionNotificationProps extends Omit<
   ComponentProps<typeof Notification>,
   "onDismiss"
 > {
@@ -15,9 +15,7 @@ interface SecurityProfileAuditRetentionNotificationProps extends Omit<
   >;
 }
 
-const IgnorableNotifcation: FC<
-  SecurityProfileAuditRetentionNotificationProps
-> = ({
+const IgnorableNotifcation: FC<USGProfileAuditRetentionNotificationProps> = ({
   children,
   hide,
   modalProps = { confirmButtonLabel: undefined },

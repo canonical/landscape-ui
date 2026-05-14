@@ -1,31 +1,23 @@
 import { expect, test } from "../../support/fixtures/auth";
-import { clickSidebarButton } from "../../support/helpers/navigation";
-import { USER } from "../../support/constants";
-import { login } from "../../support/helpers/auth";
 import {
-  closeWelcomeModal,
-  waitForEnvironmentError,
-} from "../../support/helpers/utils";
-import { MirrorsPage } from "./mirrors.page";
+  navigateTo,
+  navigateToSidebarLink,
+} from "../../support/helpers/navigation";
+import { waitForEnvironmentError } from "../../support/helpers/utils";
 
 test.describe("@saas", () => {
   test("should not display repository mirrors page in sidebar", async ({
     authenticatedPage,
   }) => {
-    await clickSidebarButton(authenticatedPage, "Repositories");
-
-    await expect(authenticatedPage.getByText("Mirrors")).not.toBeVisible();
+    await expect(authenticatedPage.getByText("Repositories")).not.toBeVisible();
   });
 
   test("should display environment error when visiting repository mirrors page", async ({
-    page,
+    authenticatedPage,
   }) => {
-    await login(page, USER.email, USER.password, {
-      "redirect-to": "/repositories/mirrors",
-    });
-    await closeWelcomeModal(page);
+    await navigateTo(authenticatedPage, "/repositories/mirrors");
 
-    await waitForEnvironmentError(page);
+    await waitForEnvironmentError(authenticatedPage);
   });
 });
 
@@ -33,20 +25,18 @@ test.describe("@self-hosted", () => {
   test("should display repository mirrors page in sidebar", async ({
     authenticatedPage,
   }) => {
-    await clickSidebarButton(authenticatedPage, "Repositories");
+    await navigateToSidebarLink(authenticatedPage, "Repositories");
 
     await expect(authenticatedPage.getByText("Mirrors")).toBeVisible();
   });
 
   test("should not display environment error when visiting repository mirrors page", async ({
-    page,
+    authenticatedPage,
   }) => {
-    await login(page, USER.email, USER.password, {
-      "redirect-to": "/repositories/mirrors",
-    });
-    await closeWelcomeModal(page);
+    await navigateTo(authenticatedPage, "/repositories/mirrors");
 
-    const mirrorsPage = new MirrorsPage(page);
-    await mirrorsPage.checkPageHeading("Mirrors");
+    await expect(
+      authenticatedPage.getByText("Environment Error"),
+    ).not.toBeVisible();
   });
 });

@@ -25,6 +25,7 @@ const InstancesPage: FC = () => {
     query,
     archived_only: filters.status === "archived",
     with_alerts: true,
+    with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,

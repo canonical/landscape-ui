@@ -123,6 +123,7 @@ const PackageProfileConstraintsEditForm: FC<
               />
             }
             onSearch={setSearch}
+            searchText={search}
             disabled={formik.values.id !== 0}
           />
 

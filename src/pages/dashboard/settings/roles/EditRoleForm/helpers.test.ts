@@ -1,9 +1,14 @@
 import { accessGroups } from "@/tests/mocks/accessGroup";
-import { permissions } from "@/tests/mocks/roles";
+import { permissions, roles } from "@/tests/mocks/roles";
 import type { Role } from "@/types/Role";
-import type { PermissionOption } from "../types";
+import type { AccessGroupOption, PermissionOption } from "../types";
 import { getAccessGroupOptions, getPermissionOptions } from "../helpers";
-import { addImpliedViewPermissions, getValuesToEditRole } from "./helpers";
+import {
+  addImpliedViewPermissions,
+  getPromisesToEditRole,
+  getRoleFormProps,
+  getValuesToEditRole,
+} from "./helpers";
 
 const manageComputerPermission = permissions.find(
   (p) => p.name === "ManageComputer",
@@ -13,6 +18,36 @@ const viewComputerPermission = permissions.find(
 );
 assert(manageComputerPermission, "Mock 'ManageComputer' permission not found");
 assert(viewComputerPermission, "Mock 'ViewComputer' permission not found");
+
+const helperAccessGroupOptions: AccessGroupOption[] = [
+  {
+    value: "global",
+    label: "global",
+    children: [],
+    depth: 0,
+    parents: [],
+  },
+  {
+    value: "Server machines",
+    label: "Server machines",
+    children: [],
+    depth: 0,
+    parents: [],
+  },
+];
+
+const helperPermissionOptions: PermissionOption[] = [
+  {
+    values: { manage: "ManageComputers", view: "ViewComputers" },
+    label: "Computers",
+    global: false,
+  },
+  {
+    values: { manage: "ManageScripts", view: "ViewScripts" },
+    label: "Scripts",
+    global: false,
+  },
+];
 
 describe("Role Helpers", () => {
   describe("addImpliedViewPermissions", () => {
@@ -62,8 +97,8 @@ describe("Role Helpers", () => {
   });
 
   describe("getValuesToEditRole", () => {
-    const permissionOptions = getPermissionOptions(permissions);
-    const accessGroupOptions = getAccessGroupOptions(accessGroups);
+    const rolePermissionOptions = getPermissionOptions(permissions);
+    const roleAccessGroupOptions = getAccessGroupOptions(accessGroups);
     const mockRole: Role = {
       name: "TestRole",
       permissions: [],
@@ -89,8 +124,8 @@ describe("Role Helpers", () => {
       const { permissionsToAdd, permissionsToRemove } = getValuesToEditRole(
         formValues,
         role,
-        accessGroupOptions,
-        permissionOptions,
+        roleAccessGroupOptions,
+        rolePermissionOptions,
       );
 
       expect(permissionsToAdd).toEqual([]);
@@ -110,8 +145,8 @@ describe("Role Helpers", () => {
       const { permissionsToAdd, permissionsToRemove } = getValuesToEditRole(
         formValues,
         role,
-        accessGroupOptions,
-        permissionOptions,
+        roleAccessGroupOptions,
+        rolePermissionOptions,
       );
 
       expect(permissionsToAdd).toEqual([]);
@@ -136,12 +171,108 @@ describe("Role Helpers", () => {
       const { permissionsToAdd, permissionsToRemove } = getValuesToEditRole(
         formValues,
         role,
-        accessGroupOptions,
-        permissionOptions,
+        roleAccessGroupOptions,
+        rolePermissionOptions,
       );
 
       expect(permissionsToAdd).toEqual([]);
       expect(permissionsToRemove).toEqual([]);
+    });
+
+    it("computes permission and access-group deltas", () => {
+      const role = {
+        ...mockRole,
+        permissions: ["ManageComputers"],
+        global_permissions: ["ViewComputers"],
+        access_groups: ["global"],
+      };
+      const values = {
+        permissions: ["ManageScripts"],
+        accessGroups: ["global", "Server machines"],
+      };
+
+      expect(
+        getValuesToEditRole(
+          values,
+          role,
+          helperAccessGroupOptions,
+          helperPermissionOptions,
+        ),
+      ).toEqual({
+        accessGroupsToAdd: ["Server machines"],
+        accessGroupsToRemove: [],
+        permissionsToAdd: ["ManageScripts", "ViewScripts"],
+        permissionsToRemove: ["ManageComputers", "ViewComputers"],
+      });
+    });
+  });
+
+  describe("getPromisesToEditRole", () => {
+    it("builds mutation promises only for changed values", () => {
+      const addAccessGroups = vi.fn().mockResolvedValue({} as never);
+      const addPermissions = vi.fn().mockResolvedValue({} as never);
+      const removeAccessGroups = vi.fn().mockResolvedValue({} as never);
+      const removePermissions = vi.fn().mockResolvedValue({} as never);
+
+      const promises = getPromisesToEditRole(
+        {
+          permissions: ["ManageScripts"],
+          accessGroups: ["global", "Server machines"],
+        },
+        {
+          ...roles[0],
+          permissions: ["ManageComputers"],
+          global_permissions: ["ViewComputers"],
+          access_groups: ["global"],
+        },
+        helperAccessGroupOptions,
+        helperPermissionOptions,
+        {
+          addAccessGroups,
+          addPermissions,
+          removeAccessGroups,
+          removePermissions,
+        },
+      );
+
+      expect(promises.addAccessGroupsPromise).toBeDefined();
+      expect(promises.addPermissionsPromise).toBeDefined();
+      expect(promises.removePermissionsPromise).toBeDefined();
+      expect(promises.removeAccessGroupsPromise).toBeUndefined();
+    });
+  });
+
+  describe("getRoleFormProps", () => {
+    it("builds form props with implied permissions and nested access groups", () => {
+      const formProps = getRoleFormProps(
+        {
+          ...roles[0],
+          access_groups: ["global"],
+          permissions: ["ManageComputers"],
+          global_permissions: [],
+        },
+        [
+          {
+            value: "global",
+            label: "global",
+            children: ["child-group"],
+            depth: 0,
+            parents: [],
+          },
+        ],
+        [
+          {
+            values: { manage: "ManageComputers", view: "ViewComputers" },
+            label: "Computers",
+            global: false,
+          },
+        ],
+      );
+
+      expect(formProps).toEqual({
+        accessGroups: ["global", "child-group"],
+        permissions: ["ManageComputers", "ViewComputers"],
+      });
     });
   });
 });

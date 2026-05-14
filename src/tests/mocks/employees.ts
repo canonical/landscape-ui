@@ -1,4 +1,4 @@
-import type { Employee, RecoveryKey } from "@/features/employees";
+import type { Employee } from "@/features/employees";
 import { instances } from "./instance";
 
 export const employees = [
@@ -32,7 +32,3 @@ export const employees = [
     groups: null,
   },
 ] as const satisfies Employee[];
-
-export const recoveryKey: RecoveryKey = {
-  fde_recovery_key: "recovery-key",
-};

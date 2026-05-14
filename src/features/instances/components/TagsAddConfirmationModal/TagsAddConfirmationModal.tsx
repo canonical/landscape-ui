@@ -77,7 +77,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
               RepositoryProfile: "Repository",
               ScriptProfile: "Script",
               UpgradeProfile: "Upgrade",
-              UsgProfile: "Security",
+              UsgProfile: "USG",
             })[profileChange.profile.profile_type],
         },
         {
@@ -123,6 +123,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
       )}`}
       confirmButtonLabel="Add tags"
       {...props}
+      renderInPortal
     >
       <p>Adding tags could trigger irreversible changes to your instances.</p>
 

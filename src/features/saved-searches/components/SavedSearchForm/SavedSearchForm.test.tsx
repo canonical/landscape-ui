@@ -17,12 +17,14 @@ vi.mock("@/components/filter/SearchQueryEditor", () => {
       onChange,
       onBlur,
       error,
+      warning,
     }: {
       label: string;
       value: string | undefined;
       onChange?: (value: string | undefined) => void;
       onBlur?: () => void;
       error?: string | false;
+      warning?: string | false;
     }) => (
       <div>
         <label>
@@ -35,6 +37,7 @@ vi.mock("@/components/filter/SearchQueryEditor", () => {
           />
         </label>
         {error && <span>{error}</span>}
+        {warning && <span>{warning}</span>}
       </div>
     ),
   };
@@ -123,7 +126,7 @@ describe("SavedSearchForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("blocks submit and shows search error when search is invalid (strict)", async () => {
+  it("blocks submit and shows search warning when search is invalid (strict)", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
 
     renderWithProviders(
@@ -144,7 +147,7 @@ describe("SavedSearchForm", () => {
 
     await user.click(submitButton);
 
-    expect(onSubmit).not.toHaveBeenCalled();
+    expect(onSubmit).toHaveBeenCalled();
 
     expect(
       screen.getByText('"alert" has invalid value "compu".'),
@@ -277,7 +280,7 @@ describe("SavedSearchForm", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("should show error for profile:security queries when usg-profiles feature is disabled", async () => {
+    it("should show error for profile:usg queries when usg-profiles feature is disabled", async () => {
       vi.mocked(useAuth).mockReturnValue({
         ...authContextValues,
         isFeatureEnabled: vi.fn(() => false),
@@ -289,15 +292,15 @@ describe("SavedSearchForm", () => {
           mode="create"
           initialValues={{
             title: "Test",
-            search: "profile:security:1:pass ",
+            search: "profile:usg:1:pass ",
           }}
         />,
       );
 
       const searchField = screen.getByLabelText(/search query/i);
-      expect(searchField).toHaveValue("profile:security:1:pass ");
+      expect(searchField).toHaveValue("profile:usg:1:pass ");
       expect(
-        screen.getByText('"profile" has invalid profile type "security".'),
+        screen.getByText('"profile" has invalid profile type "usg".'),
       ).toBeInTheDocument();
     });
 
@@ -338,14 +341,14 @@ describe("SavedSearchForm", () => {
           mode="create"
           initialValues={{
             title: "Test",
-            search: "profile:script:1 AND profile:security:2:pass ",
+            search: "profile:script:1 AND profile:usg:2:pass ",
           }}
         />,
       );
 
       const searchField = screen.getByLabelText(/search query/i);
       expect(searchField).toHaveValue(
-        "profile:script:1 AND profile:security:2:pass ",
+        "profile:script:1 AND profile:usg:2:pass ",
       );
       expect(screen.queryByText(/invalid/i)).not.toBeInTheDocument();
     });
@@ -430,13 +433,13 @@ describe("SavedSearchForm", () => {
           mode="create"
           initialValues={{
             title: "Test",
-            search: "profile:security:1:pass ",
+            search: "profile:usg:1:pass ",
           }}
         />,
       );
 
       expect(
-        screen.getByText('"profile" has invalid profile type "security".'),
+        screen.getByText('"profile" has invalid profile type "usg".'),
       ).toBeInTheDocument();
     });
 

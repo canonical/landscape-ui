@@ -2,7 +2,7 @@ name: Lint & format
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [main]
 
 jobs:
   eslint:
@@ -30,7 +30,7 @@ jobs:
         if: env.FILES
         uses: actions/setup-node@v4
         with:
-          node-version: 22.15.1
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
 
       - name: Run ESLint
         if: env.FILES
-        run: pnpm eslint --config eslint.ci.config.mjs --cache ${{ env.FILES }}
+        run: pnpm eslint --cache ${{ env.FILES }}
 
   prettier:
     name: Prettier
@@ -66,7 +66,7 @@ jobs:
         if: env.FILES
         uses: actions/setup-node@v4
         with:
-          node-version: 22.15.1
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies
@@ -102,7 +102,7 @@ jobs:
         if: env.FILES
         uses: actions/setup-node@v4
         with:
-          node-version: 22.15.1
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies

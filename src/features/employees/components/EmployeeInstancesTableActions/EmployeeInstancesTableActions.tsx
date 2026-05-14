@@ -1,18 +1,23 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import {
+  GenerateRecoveryKeyModal,
+  getFeatures,
+  isRecoveryKeyActivityInProgress,
   InstanceRemoveFromLandscapeModal,
+  RegenerateRecoveryKeyModal,
+  useGetRecoveryKey,
   useSanitizeInstance,
+  ViewRecoveryKeyModal,
 } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { ROUTES } from "@/libs/routes";
-import type { Action } from "@/types/Action";
 import type { Instance } from "@/types/Instance";
-import { ICONS } from "@canonical/react-components";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router";
+import { getInstanceActions } from "./helpers";
 
 interface EmployeeInstancesTableActionsProps {
   readonly instance: Instance;
@@ -26,9 +31,17 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const navigate = useNavigate();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
+  const { recoveryKey, recoveryKeyActivityStatus, isRecoveryKeyFetched } =
+    useGetRecoveryKey(instance.id);
+  const instanceFeatures = getFeatures(instance);
+  const isRecoveryKeyGenerationActivityInProgress =
+    isRecoveryKeyActivityInProgress(recoveryKeyActivityStatus);
+  const hasRecoveryKey = Boolean(recoveryKey);
+  const shouldShowRecoveryKeyActions =
+    isRecoveryKeyFetched && instanceFeatures.recoveryKey;
 
   const handleCloseModal = () => {
     setSelectedAction("");
@@ -60,34 +73,40 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
     }
   };
 
-  const actions: Action[] = [
+  const { actions, destructiveActions } = getInstanceActions(
     {
-      icon: "show",
-      label: "View details",
-      "aria-label": `View ${instance.title} instance details`,
-      onClick: async () =>
-        navigate(ROUTES.instances.details.single(instance.id)),
-    },
-  ];
-
-  const destructiveActions: Action[] = [
-    {
-      icon: "tidy",
-      label: "Sanitize",
-      "aria-label": `Sanitize ${instance.title} instance`,
-      onClick: () => {
-        setSelectedAction("sanitize");
+      instance,
+      handlers: {
+        navigateDetails: () =>
+          navigate(ROUTES.instances.details.single(instance.id)),
+        viewRecoveryKey: () => {
+          setSelectedAction("view-recovery-key");
+        },
+        generateRecoveryKey: () => {
+          setSelectedAction("generate-recovery-key");
+        },
+        regenerateRecoveryKey: () => {
+          setSelectedAction("regenerate-recovery-key");
+        },
+        sanitize: () => {
+          setSelectedAction("sanitize");
+        },
+        remove: () => {
+          setSelectedAction("remove");
+        },
       },
     },
     {
-      icon: ICONS.delete,
-      label: "Remove from Landscape",
-      "aria-label": `Remove ${instance.title} from Landscape`,
-      onClick: () => {
-        setSelectedAction("remove");
-      },
+      canViewKey: shouldShowRecoveryKeyActions && hasRecoveryKey,
+      canGenKey:
+        shouldShowRecoveryKeyActions &&
+        !hasRecoveryKey &&
+        !isRecoveryKeyGenerationActivityInProgress,
+      canRegenKey:
+        shouldShowRecoveryKeyActions &&
+        (hasRecoveryKey || isRecoveryKeyGenerationActivityInProgress),
     },
-  ];
+  );
 
   return (
     <>
@@ -119,6 +138,24 @@ const EmployeeInstancesTableActions: FC<EmployeeInstancesTableActionsProps> = ({
           action cannot be undone. Please confirm your wish to proceed.
         </p>
       </TextConfirmationModal>
+
+      {selectedAction === "view-recovery-key" && (
+        <ViewRecoveryKeyModal instance={instance} onClose={handleCloseModal} />
+      )}
+
+      {selectedAction === "generate-recovery-key" && (
+        <GenerateRecoveryKeyModal
+          instance={instance}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {selectedAction === "regenerate-recovery-key" && (
+        <RegenerateRecoveryKeyModal
+          instance={instance}
+          onClose={handleCloseModal}
+        />
+      )}
     </>
   );
 };

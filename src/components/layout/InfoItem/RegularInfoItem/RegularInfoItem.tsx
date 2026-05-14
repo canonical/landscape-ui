@@ -4,7 +4,7 @@ import NoData from "../../NoData";
 import classes from "./RegularInfoItem.module.scss";
 
 export interface RegularInfoItemProps extends HTMLAttributes<HTMLDivElement> {
-  readonly label: string;
+  readonly label: ReactNode;
   readonly value: ReactNode;
 }
 

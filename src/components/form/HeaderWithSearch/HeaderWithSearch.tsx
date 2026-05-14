@@ -13,6 +13,7 @@ const HeaderWithSearch: FC<HeaderWithSearchProps> = ({
   afterSearch,
   autocomplete,
   onSearch,
+  searchText,
   className: customClassName,
   ...inputProps
 }) => {
@@ -31,7 +32,7 @@ const HeaderWithSearch: FC<HeaderWithSearchProps> = ({
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      inputText: search,
+      inputText: searchText ?? search,
     },
     enableReinitialize: true,
     validationSchema: Yup.object().shape({

@@ -75,9 +75,12 @@ describe("RebootProfilesForm", () => {
     expect(screen.getByLabelText(/access group/i)).toBeEnabled();
   });
 
-  it("shows disabled access group field in edit mode", () => {
-    renderWithProviders(<RebootProfilesForm action="edit" profile={profile} />);
+  it("shows read-only access group field in edit mode", () => {
+    const { container } = renderWithProviders(
+      <RebootProfilesForm action="edit" profile={profile} />,
+    );
 
-    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+    expect(container.querySelector(".p-icon--lock-locked")).toBeInTheDocument();
+    expect(screen.getByText(profile.access_group)).toBeInTheDocument();
   });
 });

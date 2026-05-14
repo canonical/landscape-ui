@@ -55,10 +55,10 @@ describe("AdministratorList", () => {
 
     await user.click(actionButton);
 
-    const removeAdministratorAction = await screen.findByRole("button", {
+    const removeAdministratorMenuItem = await screen.findByRole("menuitem", {
       name: `Remove "${administrators[0].name}" administrator`,
     });
-    expect(removeAdministratorAction).toBeInTheDocument();
+    expect(removeAdministratorMenuItem).toBeInTheDocument();
   });
 
   it("should open sidepanel when clicking the administrator name", async () => {

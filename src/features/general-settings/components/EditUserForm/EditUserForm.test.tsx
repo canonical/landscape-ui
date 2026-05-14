@@ -18,6 +18,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUserGeneralSettings } from "../../hooks";
 import type { EditUserDetailsParams, UserDetails } from "../../types";
 import EditUserForm from "./EditUserForm";
+import { MASKED_VALUE } from "@/constants";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
@@ -231,7 +232,7 @@ describe("EditUserForm", () => {
       const emailInput = screen.getByDisplayValue(mockUser.email);
       expect(emailInput).toBeDisabled();
 
-      const passwordInput = screen.getByDisplayValue("****************");
+      const passwordInput = screen.getByDisplayValue(MASKED_VALUE);
       expect(passwordInput).toBeDisabled();
     });
   });

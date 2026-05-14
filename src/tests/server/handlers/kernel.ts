@@ -1,14 +1,30 @@
 import { API_URL } from "@/constants";
+import type { Activity } from "@/features/activities";
 import type {
   KernelManagementInfo,
   LivepatchInformation,
 } from "@/features/kernel";
+import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
 import { http, HttpResponse } from "msw";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, KernelManagementInfo>(
     `${API_URL}computers/:computerId/livepatch/kernel`,
     async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json<KernelManagementInfo>({
+          downgrades: [],
+          installed: null,
+          message: "Kernel information is not available for this instance.",
+          smart_status: "",
+          upgrades: [],
+        });
+      }
+
       return HttpResponse.json<KernelManagementInfo>({
         downgrades: [],
         installed: {
@@ -79,6 +95,31 @@ export default [
           },
         },
       });
+    },
+  ),
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:id/kernel/upgrade`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      return HttpResponse.json(activities[0]);
+    },
+  ),
+
+  http.post<never, never, Activity>(
+    `${API_URL}computers/:id/kernel/downgrade`,
+    async () => {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+
+      return HttpResponse.json(activities[0]);
     },
   ),
 ];

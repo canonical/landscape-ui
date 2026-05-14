@@ -8,10 +8,10 @@ import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { Script } from "../../types";
-import ScriptDetails from "../ScriptDetails";
 
 const EditScriptForm = lazy(async () => import("../EditScriptForm"));
 const RunScriptForm = lazy(async () => import("../RunScriptForm"));
+const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
 interface ScriptListActionsProps {
   readonly script: Script;

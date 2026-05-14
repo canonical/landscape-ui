@@ -5,18 +5,24 @@ import HeaderActions from "@/components/layout/HeaderActions";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import {
   useDisassociateEmployeeFromInstance,
   useGetEmployee,
 } from "@/features/employees";
 import {
   getFeatures,
+  getRecoveryKeyRegenerationAttemptMessage,
+  isRecoveryKeyActivityInProgress,
   getStatusCellIconAndLabel,
+  GenerateRecoveryKeyModal,
   InstanceRemoveFromLandscapeModal,
-  useRestartInstances,
+  RecoveryKeyStatus,
+  RegenerateRecoveryKeyModal,
+  useGetRecoveryKey,
   useSanitizeInstance,
-  useShutDownInstances,
+  ViewRecoveryKeyModal,
+  ShutDownModal,
 } from "@/features/instances";
 import {
   WslInstanceReinstallModal,
@@ -35,37 +41,30 @@ import type {
   WslInstance,
 } from "@/types/Instance";
 import { hasOneItem } from "@/utils/_helpers";
-import { getFormikError } from "@/utils/formikErrors";
 import {
   Button,
-  CheckboxInput,
   ConfirmationModal,
-  Form,
   Icon,
   ICONS,
-  Input,
+  Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import { useFormik } from "formik";
 import moment from "moment";
 import type { FC } from "react";
 import { Fragment, lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
 import ProfileLink from "../ProfileLink";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getInstanceKeyForRemount } from "./helpers";
 import classes from "./InfoPanel.module.scss";
-import type { ModalConfirmationFormProps } from "./types";
+import { RestartModal } from "@/features/instances";
 
 const EditInstance = lazy(
   async () =>
     import("@/pages/dashboard/instances/[single]/tabs/info/EditInstance"),
 );
-const RunInstanceScriptForm = lazy(async () =>
-  import("@/features/scripts").then((module) => ({
-    default: module.RunInstanceScriptForm,
-  })),
+const RunInstanceScriptForm = lazy(
+  async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
 
 const AssignEmployeeToInstanceForm = lazy(
@@ -85,15 +84,22 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { employee, isGettingEmployee } = useGetEmployee(
     { id: instance.employee_id ?? 0 },
     { enabled: !!instance.employee_id },
   );
-  const { restartInstances, isRestartingInstances } = useRestartInstances();
+  const { recoveryKey, recoveryKeyActivityStatus, isRecoveryKeyFetched } =
+    useGetRecoveryKey(instance.id);
+  const isRecoveryKeyGenerationActivityInProgress =
+    isRecoveryKeyActivityInProgress(recoveryKeyActivityStatus);
+  const recoveryKeyRegenerationAttemptMessage =
+    getRecoveryKeyRegenerationAttemptMessage(
+      recoveryKey,
+      recoveryKeyActivityStatus,
+    );
   const { getAccessGroupQuery } = useRoles();
   const { sanitizeInstance, isSanitizingInstance } = useSanitizeInstance();
-  const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
   const { disassociateEmployeeFromInstance, isDisassociating } =
     useDisassociateEmployeeFromInstance();
 
@@ -134,6 +140,24 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   } = useBoolean();
 
   const {
+    value: isViewRecoveryKeyModalOpen,
+    setTrue: openViewRecoveryKeyModal,
+    setFalse: closeViewRecoveryKeyModal,
+  } = useBoolean();
+
+  const {
+    value: isGenerateRecoveryKeyModalOpen,
+    setTrue: openGenerateRecoveryKeyModal,
+    setFalse: closeGenerateRecoveryKeyModal,
+  } = useBoolean();
+
+  const {
+    value: isRegenerateRecoveryKeyModalOpen,
+    setTrue: openRegenerateRecoveryKeyModal,
+    setFalse: closeRegenerateRecoveryKeyModal,
+  } = useBoolean();
+
+  const {
     value: disassociateModalOpen,
     setTrue: openDisassociateModal,
     setFalse: closeDisassociateModal,
@@ -141,50 +165,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
 
   const { data: getAccessGroupQueryResult, isPending: isGettingAccessGroups } =
     getAccessGroupQuery();
-
-  const handleSubmit = async (values: ModalConfirmationFormProps) => {
-    if (!values.action) {
-      return;
-    }
-
-    const valuesToSubmit = {
-      computer_ids: [instance.id],
-      deliver_after: values.deliverImmediately
-        ? undefined
-        : `${values.deliver_after}:00Z`,
-    };
-
-    try {
-      const { data: activity } =
-        values.action === "reboot"
-          ? await restartInstances(valuesToSubmit)
-          : await shutDownInstances(valuesToSubmit);
-
-      const notificationVerb =
-        values.action === "reboot" ? "restarted" : "shut down";
-
-      notify.success({
-        title: `You queued "${instance.title}" to be ${notificationVerb}`,
-        message: `Instance "${instance.title}" will be ${notificationVerb} and is queued in Activities`,
-        actions: [
-          {
-            label: "View details",
-            onClick: () => {
-              openActivityDetails(activity);
-            },
-          },
-        ],
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const formik = useFormik({
-    initialValues: INITIAL_VALUES,
-    validationSchema: VALIDATION_SCHEMA,
-    onSubmit: handleSubmit,
-  });
 
   if (isGettingAccessGroups || isGettingEmployee) {
     return <LoadingState />;
@@ -274,11 +254,6 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
   };
 
-  const handleFormSubmit = async (action: "reboot" | "shutdown") => {
-    await formik.setFieldValue("action", action);
-    formik.handleSubmit();
-  };
-
   const goBack = () => {
     navigate(ROUTES.instances.root(), { replace: true });
   };
@@ -286,6 +261,44 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const accessGroups = getAccessGroupQueryResult
     ? getAccessGroupQueryResult.data
     : [];
+
+  const instanceFeatures = getFeatures(instance);
+  const hasRecoveryKey = Boolean(recoveryKey);
+  const shouldShowRecoveryKeyWarningInLabel = Boolean(
+    recoveryKeyRegenerationAttemptMessage,
+  );
+  const shouldShowRecoveryKeyActions =
+    isRecoveryKeyFetched && instanceFeatures.recoveryKey;
+  const shouldShowGenerateRecoveryKey =
+    shouldShowRecoveryKeyActions &&
+    !hasRecoveryKey &&
+    !isRecoveryKeyGenerationActivityInProgress;
+  const shouldShowViewRecoveryKey =
+    shouldShowRecoveryKeyActions && hasRecoveryKey;
+  const shouldShowRegenerateRecoveryKey =
+    shouldShowRecoveryKeyActions &&
+    (hasRecoveryKey || isRecoveryKeyGenerationActivityInProgress);
+
+  const getProfilesValue = () => {
+    if (!instance.profiles?.length) {
+      return null;
+    }
+
+    if (hasOneItem(instance.profiles)) {
+      return <ProfileLink profile={instance.profiles[0]} />;
+    }
+
+    return (
+      <Button
+        type="button"
+        className="u-no-margin"
+        appearance="link"
+        onClick={openProfilesList}
+      >
+        {instance.profiles.length} profiles
+      </Button>
+    );
+  };
 
   return (
     <>
@@ -312,19 +325,33 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               icon: "restart",
               label: "Restart",
               onClick: openRestartModal,
-              excluded: !getFeatures(instance).power,
+              excluded: !instanceFeatures.power,
             },
             {
               icon: "power-off",
               label: "Shut down",
               onClick: openShutDownModal,
-              excluded: !getFeatures(instance).power,
+              excluded: !instanceFeatures.power,
             },
             {
               icon: "code",
               label: "Run script",
               onClick: openRunScriptForm,
-              excluded: !getFeatures(instance).scripts,
+              excluded: !instanceFeatures.scripts,
+            },
+            {
+              icon: "private-key",
+              label: "View recovery key",
+              onClick: openViewRecoveryKeyModal,
+              collapsed: true,
+              excluded: !shouldShowViewRecoveryKey,
+            },
+            {
+              icon: "plus",
+              label: "Generate recovery key",
+              onClick: openGenerateRecoveryKeyModal,
+              collapsed: true,
+              excluded: !shouldShowGenerateRecoveryKey,
             },
             {
               icon: ICONS.user,
@@ -333,7 +360,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               collapsed: true,
               excluded:
                 !isFeatureEnabled("employee-management") ||
-                !getFeatures(instance).employees ||
+                !instanceFeatures.employees ||
                 instance.employee_id !== null,
             },
             {
@@ -343,7 +370,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               collapsed: true,
               excluded:
                 !isFeatureEnabled("employee-management") ||
-                !getFeatures(instance).employees ||
+                !instanceFeatures.employees ||
                 instance.employee_id === null,
             },
           ],
@@ -353,14 +380,21 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               label: "Reinstall",
               onClick: openReinstallModal,
               collapsed: true,
-              excluded: !getFeatures(instance).uninstallation,
+              excluded: !instanceFeatures.uninstallation,
             },
             {
               icon: "close",
               label: "Uninstall",
               onClick: openUninstallModal,
               collapsed: true,
-              excluded: !getFeatures(instance).uninstallation,
+              excluded: !instanceFeatures.uninstallation,
+            },
+            {
+              icon: "restart",
+              label: "Regenerate recovery key",
+              onClick: openRegenerateRecoveryKeyModal,
+              collapsed: true,
+              excluded: !shouldShowRegenerateRecoveryKey,
             },
             {
               icon: ICONS.delete,
@@ -373,13 +407,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               label: "Sanitize",
               onClick: openSanitizeModal,
               collapsed: true,
-              excluded: !getFeatures(instance).sanitization,
+              excluded: !instanceFeatures.sanitization,
             },
           ],
         }}
       />
 
-      <Blocks>
+      <Blocks spaced>
         <Blocks.Item title="Status">
           <InfoGrid>
             <InfoGrid.Item
@@ -416,28 +450,40 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <InfoGrid.Item
               label="Profiles"
-              value={
-                !instance.profiles?.length ? null : hasOneItem(
-                    instance.profiles,
-                  ) ? (
-                  <ProfileLink profile={instance.profiles[0]} />
-                ) : (
-                  <Button
-                    type="button"
-                    className="u-no-margin"
-                    appearance="link"
-                    onClick={openProfilesList}
-                  >
-                    {instance.profiles.length} profiles
-                  </Button>
-                )
-              }
+              value={getProfilesValue()}
               type="truncated"
             />
-            {getFeatures(instance).employees && (
+            {instanceFeatures.employees && (
               <InfoGrid.Item
                 label="Associated employee"
                 value={employee?.name}
+              />
+            )}
+            {instanceFeatures.recoveryKey && (
+              <InfoGrid.Item
+                label={
+                  <>
+                    Recovery key
+                    {shouldShowRecoveryKeyWarningInLabel && (
+                      <Tooltip
+                        position="top-center"
+                        message={recoveryKeyRegenerationAttemptMessage}
+                        className={classes.recoveryKeyTooltip}
+                      >
+                        <Icon
+                          name="warning"
+                          aria-label="Recovery key warning"
+                        />
+                      </Tooltip>
+                    )}
+                  </>
+                }
+                value={
+                  <RecoveryKeyStatus
+                    instanceId={instance.id}
+                    showWarningTooltip={false}
+                  />
+                }
               />
             )}
           </InfoGrid>
@@ -446,13 +492,13 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoGrid>
             <InfoGrid.Item label="Hostname" value={instance.hostname} />
             <InfoGrid.Item label="ID" value={instance.id} />
-            {getFeatures(instance).hardware && (
+            {instanceFeatures.hardware && (
               <InfoGrid.Item
                 label="Serial number"
                 value={instance.grouped_hardware?.system.serial}
               />
             )}
-            {getFeatures(instance).hardware && (
+            {instanceFeatures.hardware && (
               <InfoGrid.Item
                 label="Product identifier"
                 value={instance.grouped_hardware?.system.model}
@@ -462,7 +508,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
               label="OS"
               value={instance.distribution_info?.description}
             />
-            {getFeatures(instance).hardware && (
+            {instanceFeatures.hardware && (
               <InfoGrid.Item
                 label="IP addresses"
                 value={
@@ -506,63 +552,11 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
       </Blocks>
 
       {isRestartModalOpen && (
-        <ConfirmationModal
-          close={closeRestartModal}
-          title="Restart instance"
-          confirmButtonLabel="Restart"
-          confirmButtonAppearance="positive"
-          confirmButtonDisabled={isRestartingInstances}
-          confirmButtonLoading={isRestartingInstances}
-          onConfirm={async () => handleFormSubmit("reboot")}
-        >
-          <Form onSubmit={async () => handleFormSubmit("reboot")} noValidate>
-            <CheckboxInput
-              label="Deliver as soon as possible"
-              {...formik.getFieldProps("deliverImmediately")}
-              checked={formik.values.deliverImmediately}
-            />
-            <Input
-              type="datetime-local"
-              label="Schedule time"
-              labelClassName="u-off-screen"
-              placeholder="Scheduled time"
-              {...formik.getFieldProps("deliver_after")}
-              disabled={formik.values.deliverImmediately}
-              error={getFormikError(formik, "deliver_after")}
-            />
-            <p>This will restart &quot;{instance.title}&quot; instance.</p>
-          </Form>
-        </ConfirmationModal>
+        <RestartModal instances={[instance]} close={closeRestartModal} />
       )}
 
       {isShutDownModalOpen && (
-        <ConfirmationModal
-          close={closeShutDownModal}
-          title="Shut down instance"
-          confirmButtonLabel="Shut down"
-          confirmButtonAppearance="positive"
-          confirmButtonDisabled={isShuttingDownInstances}
-          confirmButtonLoading={isShuttingDownInstances}
-          onConfirm={async () => handleFormSubmit("shutdown")}
-        >
-          <Form onSubmit={async () => handleFormSubmit("shutdown")} noValidate>
-            <CheckboxInput
-              label="Deliver as soon as possible"
-              {...formik.getFieldProps("deliverImmediately")}
-              checked={formik.values.deliverImmediately}
-            />
-            <Input
-              type="datetime-local"
-              label="Schedule time"
-              labelClassName="u-off-screen"
-              placeholder="Scheduled time"
-              {...formik.getFieldProps("deliver_after")}
-              disabled={formik.values.deliverImmediately}
-              error={getFormikError(formik, "deliver_after")}
-            />
-            <p>This will shut down &quot;{instance.title}&quot; instance.</p>
-          </Form>
-        </ConfirmationModal>
+        <ShutDownModal instances={[instance]} close={closeShutDownModal} />
       )}
 
       {disassociateModalOpen && (
@@ -636,6 +630,27 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           action cannot be undone. Please confirm your wish to proceed.
         </p>
       </TextConfirmationModal>
+
+      {isViewRecoveryKeyModalOpen && (
+        <ViewRecoveryKeyModal
+          instance={instance}
+          onClose={closeViewRecoveryKeyModal}
+        />
+      )}
+
+      {isGenerateRecoveryKeyModalOpen && (
+        <GenerateRecoveryKeyModal
+          instance={instance}
+          onClose={closeGenerateRecoveryKeyModal}
+        />
+      )}
+
+      {isRegenerateRecoveryKeyModalOpen && (
+        <RegenerateRecoveryKeyModal
+          instance={instance}
+          onClose={closeRegenerateRecoveryKeyModal}
+        />
+      )}
     </>
   );
 };

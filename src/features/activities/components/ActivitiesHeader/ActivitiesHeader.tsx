@@ -6,7 +6,7 @@ import type { UrlParams } from "@/types/UrlParams";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { useActivities } from "../../hooks";
+import { useGetActivityTypes } from "../../api";
 import type { ActivityCommon } from "../../types";
 import ActivitiesActions from "../ActivitiesActions";
 import ActivitiesDateFilter from "../ActivitiesDateFilter";
@@ -31,11 +31,8 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
 
   const { query, setPageParams, createPageParamsSetter } = usePageParams();
   const { instanceId } = useParams<UrlParams>();
-  const { getActivityTypesQuery } = useActivities();
 
-  const { data: activityTypesQueryData } = getActivityTypesQuery();
-
-  const activityTypes = activityTypesQueryData?.data ?? [];
+  const { activityTypes } = useGetActivityTypes();
 
   const activityResultOptions = activityTypes.map((activityType) => ({
     label: activityType,

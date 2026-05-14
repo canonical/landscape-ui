@@ -25,7 +25,15 @@ import {
 } from "@/tests/mocks/packages";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
-import { generatePaginatedResponse, isAction } from "./_helpers";
+import {
+  generatePaginatedResponse,
+  isAction,
+  shouldApplyEndpointStatus,
+} from "./_helpers";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 
 const parseBooleanParam = (value: string | null): boolean | undefined => {
   if (value === "true") {
@@ -40,13 +48,14 @@ const parseBooleanParam = (value: string | null): boolean | undefined => {
 };
 
 export default [
-  http.get<never, GetPackagesParams, ApiPaginatedResponse<Package>>(
+  http.get<never, GetPackagesParams>(
     `${API_URL}packages`,
     async ({ request }) => {
-      const endpointStatus = getEndpointStatus();
-
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (shouldApplyEndpointStatus("packages")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusNetworkError();
+        }
       }
 
       const url = new URL(request.url);
@@ -54,6 +63,17 @@ export default [
       const offset = Number(url.searchParams.get("offset")) || 0;
       const search = url.searchParams.get("search") || "";
       const names = url.searchParams.getAll("names");
+
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "empty" &&
+        endpointStatus.path === "packages"
+      ) {
+        return HttpResponse.json(
+          generatePaginatedResponse<Package>({ data: [], limit, offset }),
+        );
+      }
 
       return HttpResponse.json(
         generatePaginatedResponse<Package>({
@@ -70,6 +90,13 @@ export default [
   ),
 
   http.get(`${API_URL}computers/:id/packages`, ({ params, request }) => {
+    if (shouldApplyEndpointStatus("computers-packages")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
+    }
+
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit"));
     const offset = Number(url.searchParams.get("offset")) || 0;
@@ -255,6 +282,13 @@ export default [
   http.get<never, never, Activity>(API_URL_OLD, async ({ request }) => {
     if (!isAction(request, "UpgradePackages")) {
       return;
+    }
+
+    if (shouldApplyEndpointStatus("UpgradePackages")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json<Activity>(activities[0]);

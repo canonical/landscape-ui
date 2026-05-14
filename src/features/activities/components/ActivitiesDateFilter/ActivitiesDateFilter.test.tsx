@@ -104,4 +104,27 @@ describe("ActivitiesDateFilter", () => {
       expect(screen.queryByLabelText(/from/i)).not.toBeInTheDocument();
     });
   });
+
+  it("submits the form with date values when Apply is clicked", async () => {
+    renderWithProviders(<ActivitiesDateFilter />);
+
+    const filterButton = screen.getByRole("button", { name: /date range/i });
+    await user.click(filterButton);
+
+    const fromInput = screen.getByLabelText(/from/i);
+    const toInput = screen.getByLabelText(/to/i);
+
+    await user.type(fromInput, fromDate);
+    await user.type(toInput, toDate);
+
+    const applyButton = screen.getByRole("button", { name: /apply/i });
+    await user.click(applyButton);
+
+    // Menu closes after successful submit
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: /apply/i }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

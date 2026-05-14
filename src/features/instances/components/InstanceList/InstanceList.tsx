@@ -14,7 +14,13 @@ import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
-import { Button, CheckboxInput } from "@canonical/react-components";
+import {
+  Button,
+  CheckboxInput,
+  Icon,
+  Tooltip,
+} from "@canonical/react-components";
+import classNames from "classnames";
 import moment from "moment";
 import { useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -228,9 +234,33 @@ const InstanceList = ({
         canBeHidden: true,
         optionLabel: "OS",
         Header: "OS",
-        Cell: ({ row: { original: instance } }: CellProps<Instance>) => (
-          <>{instance.distribution_info?.description ?? <NoData />}</>
-        ),
+        getCellIcon: () => {
+          return "";
+        },
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+          if (!instance.has_release_upgrades) {
+            return <>{instance.distribution_info?.description || <NoData />}</>;
+          }
+
+          return (
+            <span className={classes.indicatorWrapper}>
+              <span className={classes.indicatorIcon}>
+                <Tooltip message="Distribution upgrade available">
+                  <Icon
+                    className={classNames(
+                      "u-no-margin--left",
+                      classes.distributionUpgradeIcon,
+                    )}
+                    name="arrow-up--caution"
+                  />
+                </Tooltip>
+              </span>
+              <span>
+                {instance.distribution_info?.description || <NoData />}
+              </span>
+            </span>
+          );
+        },
       },
       {
         accessor: "tags",
@@ -354,7 +384,7 @@ const InstanceList = ({
 
   const subhead = (areAllInstancesSelected || !!toggledInstances.length) &&
     instanceCount > currentInstances.length && (
-      <td colSpan={8} className="u-no-padding">
+      <td colSpan={filteredColumns.length} className="u-no-padding">
         <ResponsiveTableSubhead>
           <span>
             {areAllInstancesSelected
@@ -369,23 +399,24 @@ const InstanceList = ({
           >
             Clear selection
           </Button>
-          {((areAllInstancesSelected && currentInstances.some(isToggled)) ||
-            (!areAllInstancesSelected &&
-              currentInstances.some(isNotToggled))) && (
-            <Button
-              className="u-no-padding u-no-margin"
-              appearance="link"
-              onClick={() => {
-                if (areAllInstancesSelected) {
-                  untoggleAll();
-                } else {
-                  toggleAll();
-                }
-              }}
-            >
-              Select all instances on this page
-            </Button>
-          )}
+          {SELECT_ALL_INSTANCES_ENABLED &&
+            ((areAllInstancesSelected && currentInstances.some(isToggled)) ||
+              (!areAllInstancesSelected &&
+                currentInstances.some(isNotToggled))) && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={() => {
+                  if (areAllInstancesSelected) {
+                    untoggleAll();
+                  } else {
+                    toggleAll();
+                  }
+                }}
+              >
+                Select all instances on this page
+              </Button>
+            )}
           {SELECT_ALL_INSTANCES_ENABLED &&
             ((!areAllInstancesSelected &&
               toggledInstances.length < instanceCount) ||

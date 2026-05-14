@@ -3,6 +3,7 @@ import type { RegularInfoItemProps } from "./RegularInfoItem";
 import RegularInfoItem from "./RegularInfoItem";
 import type { TruncatedInfoItemProps } from "./TruncatedInfoItem";
 import TruncatedInfoItem from "./TruncatedInfoItem";
+import { MASKED_VALUE } from "@/constants";
 
 export type InfoItemProps =
   | ({ type?: "regular" } & RegularInfoItemProps)
@@ -12,7 +13,7 @@ export type InfoItemProps =
 const InfoItem: FC<InfoItemProps> = ({ type, ...props }) => {
   switch (type) {
     case "password": {
-      return <RegularInfoItem {...props} value="****************" />;
+      return <RegularInfoItem {...props} value={MASKED_VALUE} />;
     }
 
     case "truncated": {

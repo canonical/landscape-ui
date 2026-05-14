@@ -27,7 +27,13 @@ export default function useCreateRebootProfile() {
     CreateRebootProfileParams
   >({
     mutationKey: ["rebootprofiles", "create"],
-    mutationFn: async (params) => authFetch.post("rebootprofiles", params),
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.post("rebootprofiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["rebootprofiles"] }),
   });

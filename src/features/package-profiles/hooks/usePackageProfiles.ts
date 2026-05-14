@@ -101,7 +101,13 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CopyPackageProfileParams
   >({
-    mutationFn: async (params) => authFetch.post("packageprofiles", params),
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.post("packageprofiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
@@ -111,7 +117,13 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     CreatePackageProfileParams
   >({
-    mutationFn: async (params) => authFetch.post("packageprofiles", params),
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.post("packageprofiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
   });
@@ -132,10 +144,19 @@ export default function usePackageProfiles() {
     AxiosError<ApiError>,
     EditPackageProfileParams
   >({
-    mutationFn: async ({ name, ...params }) =>
-      authFetch.put(`packageprofiles/${name}`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["packageProfiles"] }),
+    mutationFn: async ({ name, tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.put(`packageprofiles/${name}`, {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["packageProfiles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["packageProfile", variables.name],
+      });
+    },
   });
 
   const getInstancePackageProfileQuery = (

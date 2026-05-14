@@ -30,6 +30,18 @@ export const autoinstallFiles = [
   },
 ] as const satisfies AutoinstallFile[];
 
+export const autoinstallFileVersions = [
+  { version: 1, created_at: "2025-01-01T00:00:00Z" },
+  { version: 2, created_at: "2025-01-15T00:00:00Z" },
+  { version: 3, created_at: "2025-02-01T00:00:00Z" },
+];
+
+export const autoinstallValidateOverrideError = {
+  error: "AutoinstallOverrideWarning",
+  message:
+    "The autoinstall file you submitted overrides fields users, identity",
+};
+
 export const autoinstallFileCode = `#cloud-config
 autoinstall:
   version: 1

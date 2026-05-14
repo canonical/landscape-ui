@@ -7,7 +7,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 export interface ChangeOrganisationPreferencesParams {
   title?: string;
-  registration_password?: string;
+  registration_password?: string | null;
   auto_register_new_computers?: boolean;
 }
 

@@ -8,7 +8,9 @@ interface PageMainProps {
 
 const PageMain: FC<PageMainProps> = ({ children }) => {
   return (
-    <div className={classNames("p-panel", classes.wrapper)}>{children}</div>
+    <div className={classes.pageContent}>
+      <div className={classNames("p-panel", classes.wrapper)}>{children}</div>
+    </div>
   );
 };
 

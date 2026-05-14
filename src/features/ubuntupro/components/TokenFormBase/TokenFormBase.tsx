@@ -1,5 +1,5 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -23,6 +23,7 @@ import { classifyInstancesByToken } from "../../helpers";
 import { pluralize } from "@/utils/_helpers";
 import type { FormProps } from "./types";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount/PluralizeWithBoldCount";
+import { createPortal } from "react-dom";
 
 interface TokenFormBaseProps {
   readonly children: ReactNode;
@@ -42,7 +43,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const { attachToken, isAttachingToken } = useAttachToken();
 
   const idListQuery = selectedInstances.map((i) => `id:${i.id}`).join(" OR ");
@@ -157,27 +158,34 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
 
       {!!invalidInstanceIds.length &&
         (invalidInstanceIds.length === selectedInstances.length ? (
-          <Modal
-            title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, "instance")}`}
-            close={closeValidationModal}
-            buttonRow={
-              <Button
-                type="button"
-                className="u-no-margin--bottom"
-                onClick={closeValidationModal}
-              >
-                Close
-              </Button>
-            }
-          >
-            <p>
-              Your Ubuntu Pro token can&apos;t be attached to the selected{" "}
-              {pluralize(selectedInstances.length, "instance")} because{" "}
-              {pluralize(selectedInstances.length, "it doesn't", "they don't")}{" "}
-              support this feature. This could be because the Landscape Client
-              is out of date.
-            </p>
-          </Modal>
+          createPortal(
+            <Modal
+              title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, "instance")}`}
+              close={closeValidationModal}
+              buttonRow={
+                <Button
+                  type="button"
+                  className="u-no-margin--bottom"
+                  onClick={closeValidationModal}
+                >
+                  Close
+                </Button>
+              }
+            >
+              <p>
+                Your Ubuntu Pro token can&apos;t be attached to the selected{" "}
+                {pluralize(selectedInstances.length, "instance")} because{" "}
+                {pluralize(
+                  selectedInstances.length,
+                  "it doesn't",
+                  "they don't",
+                )}{" "}
+                support this feature. This could be because the Landscape Client
+                is out of date.
+              </p>
+            </Modal>,
+            document.body,
+          )
         ) : (
           <ConfirmationModal
             title="Attach Ubuntu Pro token"
@@ -186,6 +194,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
             confirmButtonLoading={isAttachingToken}
             onConfirm={handleConfirmAttachment}
             close={closeValidationModal}
+            renderInPortal
           >
             <p className="u-no-margin--bottom">Confirming this action means:</p>
             <ul>

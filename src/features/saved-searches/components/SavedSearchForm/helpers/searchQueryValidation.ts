@@ -2,6 +2,8 @@ import {
   ALERT_TYPES,
   BOOLEANS,
   DOUBLE_QUOTE_REGEX,
+  HARDWARE_ATTRIBUTES,
+  HARDWARE_ROOT_KEYS,
   INTEGER_REGEX,
   LICENSE_TYPES,
   LOGICAL_OPERATORS,
@@ -11,10 +13,12 @@ import {
   USG_STATUSES,
   VALID_ROOT_KEYS,
   WSL_STATUSES,
+  DISTRIBUTION_UPGRADE_STATUSES,
 } from "../constants";
 
 import type {
   BooleanString,
+  DistributionUpgradeStatus,
   LicenseType,
   LogicalOperator,
   ProfileType,
@@ -36,6 +40,11 @@ const isUsgStatus = (
   s: string,
   allowedStatuses: readonly string[],
 ): s is UsgStatus => allowedStatuses.includes(s);
+
+const isDistributionUpgradeAvailable = (
+  val: string,
+): val is DistributionUpgradeStatus =>
+  DISTRIBUTION_UPGRADE_STATUSES.includes(val as DistributionUpgradeStatus);
 
 const isWslStatus = (
   s: string,
@@ -144,12 +153,12 @@ const validateProfileToken = (
     return keyError(key, "ID must be a number.");
   }
 
-  if (type === "security" || type === "wsl") {
+  if (type === "usg" || type === "wsl") {
     if (!status) {
       return keyError(`${key}:${type}`, "requires a status.");
     }
 
-    if (type === "security" && !isUsgStatus(status, allowedUsgStatuses)) {
+    if (type === "usg" && !isUsgStatus(status, allowedUsgStatuses)) {
       return keyError(
         `${key}:${type}`,
         `has invalid security status "${status}".`,
@@ -175,6 +184,45 @@ const validateNumericKeyToken = (
   return keyError(key, "requires a number.");
 };
 
+const validateHardwareToken = (key: string, val: string): ValidationResult => {
+  const dotIndex = key.indexOf(".");
+
+  if (dotIndex === -1) {
+    const hwRoot = key as keyof typeof HARDWARE_ATTRIBUTES;
+    const validAttrs = HARDWARE_ATTRIBUTES[hwRoot].join(", ");
+    return keyError(
+      key,
+      `requires a dot-separated attribute. Valid attributes: ${validAttrs}.`,
+    );
+  }
+
+  const hwRoot = key.slice(0, dotIndex) as keyof typeof HARDWARE_ATTRIBUTES;
+  const attribute = key.slice(dotIndex + 1);
+
+  if (!attribute || !attribute.trim()) {
+    const validAttrs = HARDWARE_ATTRIBUTES[hwRoot].join(", ");
+    return keyError(
+      key,
+      `requires an attribute. Valid attributes: ${validAttrs}.`,
+    );
+  }
+
+  const validAttributes: readonly string[] = HARDWARE_ATTRIBUTES[hwRoot];
+  if (!validAttributes.includes(attribute)) {
+    const validAttrs = HARDWARE_ATTRIBUTES[hwRoot].join(", ");
+    return keyError(
+      key,
+      `has invalid attribute "${attribute}". Valid attributes: ${validAttrs}.`,
+    );
+  }
+
+  if (!val || !val.trim()) {
+    return keyError(key, "requires a value.");
+  }
+
+  return undefined;
+};
+
 const validateAnnotationToken = (val: string): ValidationResult => {
   if (val.trim()) {
     return undefined;
@@ -183,11 +231,25 @@ const validateAnnotationToken = (val: string): ValidationResult => {
   return keyError("annotation", "key cannot be empty.");
 };
 
+const validateDistributionUpgradeToken = (val: string): ValidationResult => {
+  if (isDistributionUpgradeAvailable(val)) {
+    return undefined;
+  }
+
+  return keyError("release-upgrade", `has invalid value "${val}".`);
+};
+
 const validateKeyToken = (
   parts: [string, string],
   config: ValidationConfig,
 ): ValidationResult => {
   const [key, val] = parts;
+
+  // Handle hardware dot-notation keys (e.g., cpu.vendor, disk.size)
+  const [hwRoot] = key.split(".");
+  if (HARDWARE_ROOT_KEYS.includes(hwRoot as keyof typeof HARDWARE_ATTRIBUTES)) {
+    return validateHardwareToken(key, val);
+  }
 
   if (!isValidRootKey(key)) {
     return keyError(key, "is not a valid query key.");
@@ -216,10 +278,14 @@ const validateKeyToken = (
     case "annotation":
       return validateAnnotationToken(val);
 
+    case "release-upgrade":
+      return validateDistributionUpgradeToken(val);
+
     case "id":
     case "contract":
     case "contract-expires-within-days":
     case "license-expires-within-days":
+    case "last-ping":
       return validateNumericKeyToken(key, val);
 
     default:

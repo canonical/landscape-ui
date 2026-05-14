@@ -4,6 +4,7 @@ import { accessGroups } from "@/tests/mocks/accessGroup";
 import type { AccessGroup } from "@/features/access-groups";
 import { isAction } from "@/tests/server/handlers/_helpers";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { createEndpointStatusError } from "./_constants";
 
 export default [
   http.get<never, never, AccessGroup[]>(API_URL_OLD, ({ request }) => {
@@ -13,19 +14,18 @@ export default [
 
     const endpointStatus = getEndpointStatus();
 
+    if (
+      endpointStatus.status === "error" &&
+      endpointStatus.path === "GetAccessGroups"
+    ) {
+      throw createEndpointStatusError();
+    }
+
     if (endpointStatus.status === "empty") {
       return HttpResponse.json([]);
     }
 
     return HttpResponse.json(accessGroups);
-  }),
-
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "ChangeComputersAccessGroup")) {
-      return;
-    }
-
-    return HttpResponse.json({ success: true });
   }),
 
   http.get(API_URL_OLD, ({ request }) => {
@@ -36,5 +36,19 @@ export default [
     }
 
     return HttpResponse.json({ success: true });
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "CreateAccessGroup")) {
+      return;
+    }
+
+    const url = new URL(request.url);
+    return HttpResponse.json({
+      name: url.searchParams.get("name"),
+      title: url.searchParams.get("title"),
+      parent: url.searchParams.get("parent"),
+      children: "",
+    });
   }),
 ];

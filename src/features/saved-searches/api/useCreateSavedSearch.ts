@@ -20,8 +20,7 @@ export const useCreateSavedSearch = () => {
     CreateSavedSearchParams
   >({
     mutationKey: ["savedSearches", "create"],
-    mutationFn: async (params) =>
-      authFetch.get("CreateSavedSearch", { params }),
+    mutationFn: async (params) => authFetch.post("CreateSavedSearch", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });

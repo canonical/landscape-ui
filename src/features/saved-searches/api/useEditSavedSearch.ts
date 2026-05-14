@@ -20,7 +20,7 @@ export const useEditSavedSearch = () => {
     EditSavedSearchParams
   >({
     mutationKey: ["savedSearches", "edit"],
-    mutationFn: async (params) => authFetch.get("EditSavedSearch", { params }),
+    mutationFn: async (params) => authFetch.post("EditSavedSearch", params),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["savedSearches"] }),
   });

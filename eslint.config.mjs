@@ -12,6 +12,7 @@ export default defineConfig(
     ignores: [
       "dist",
       "dist-ssr",
+      "assets",
       "node_modules",
       "playwright-report",
       "playwright",
@@ -65,7 +66,7 @@ export default defineConfig(
         ...globals.jest,
       },
 
-      ecmaVersion: 5,
+      ecmaVersion: "latest",
 
       parserOptions: {
         projectService: true,
@@ -95,7 +96,16 @@ export default defineConfig(
       "no-restricted-imports": [
         "error",
         {
-          patterns: ["@/features/*/*"],
+          patterns: [
+            {
+              group: ["**/tests/mocks/**"],
+              message:
+                "Mocks from src/tests/mocks/ can only be imported into test files or the /tests directory.",
+            },
+            {
+              group: ["@/features/*/*"],
+            },
+          ],
         },
       ],
       "react/prefer-read-only-props": "error",
@@ -113,6 +123,7 @@ export default defineConfig(
       "no-nested-ternary": "warn",
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+      "no-console": ["error", { allow: ["warn", "error"] }],
 
       /* These rules are set to warning to meet TICS rules. They will be changed to errors in the future. */
       complexity: ["warn", 20],
@@ -121,6 +132,23 @@ export default defineConfig(
       "@typescript-eslint/prefer-string-starts-ends-with": "warn",
       "@typescript-eslint/no-confusing-void-expression": "warn",
       "no-shadow": "warn",
+    },
+  },
+
+  {
+    files: ["src/tests/browser.ts"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+
+  {
+    files: ["**/tests/**", "**/*.test.{ts,tsx}", "**/*.spec.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        { patterns: [{ group: ["@/features/*/*"] }] },
+      ],
     },
   },
 );

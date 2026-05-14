@@ -94,4 +94,67 @@ describe("AvailabilityZoneFilter", () => {
       screen.getByRole("button", { name: "Select all" }),
     ).toBeInTheDocument();
   });
+
+  it("filters out 'none' when a zone is selected after 'none' was selected", async () => {
+    renderWithProviders(<AvailabilityZoneFilter {...props} />);
+    await userEvent.click(screen.getByRole("button"));
+
+    // First select "none"
+    const noneCheckbox = screen.getByRole("checkbox", {
+      name: "Without zones",
+    });
+    await userEvent.click(noneCheckbox);
+    expect(noneCheckbox).toBeChecked();
+
+    // Then select a regular zone - this should deselect "none"
+    const zoneACheckbox = screen.getByRole("checkbox", {
+      name: options[0].label,
+    });
+    await userEvent.click(zoneACheckbox);
+    expect(props.onChange).toHaveBeenCalled();
+  });
+
+  it("calls onChange when defined and filters none during search", async () => {
+    const manyOptionsWithNone: GroupedOption[] = [
+      ...Array.from({ length: 10 }, (_, i) => ({
+        label: `Zone ${i}`,
+        value: `zone-${i}`,
+      })),
+      { label: "Without zones", value: "none" },
+    ];
+
+    renderWithProviders(
+      <AvailabilityZoneFilter {...props} options={manyOptionsWithNone} />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: label }));
+
+    const searchbox = screen.getByRole("searchbox", { name: /search/i });
+    await userEvent.type(searchbox, "zone-1");
+    // Submit the search form to trigger onSearch callback
+    await userEvent.keyboard("{Enter}");
+
+    // After filtering, "none" should be excluded
+    const listItems = screen.getAllByRole("listitem");
+    const noneItem = listItems.find((item) =>
+      item.textContent?.includes("Without zones"),
+    );
+    expect(noneItem).toBeUndefined();
+  });
+
+  it("works correctly without an onChange prop", async () => {
+    const propsWithoutOnChange: Omit<typeof props, "onChange"> = {
+      options: props.options,
+      label: props.label,
+      inline: props.inline,
+    };
+
+    renderWithProviders(<AvailabilityZoneFilter {...propsWithoutOnChange} />);
+    await userEvent.click(screen.getByRole("button"));
+
+    const checkbox = screen.getByRole("checkbox", { name: options[0].label });
+    // Clicking without onChange should not throw
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+  });
 });

@@ -23,10 +23,19 @@ export const useEditScriptProfile = () => {
     AxiosError<ApiError>,
     EditScriptProfileParams
   >({
-    mutationFn: async ({ id, ...params }) =>
-      authFetch.patch(`script-profiles/${id}`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["scriptProfiles"] }),
+    mutationFn: async ({ id, tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.patch(`script-profiles/${id}`, {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
+    onSuccess: async (_data, variables) => {
+      await queryClient.invalidateQueries({ queryKey: ["scriptProfiles"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["scriptProfile", variables.id],
+      });
+    },
   });
 
   return {

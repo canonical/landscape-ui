@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   identityProviders,
   oidcLocationToRedirectTo,
 } from "@/tests/mocks/identityProviders";
 import type { AvailableProviderListProps } from "@/features/auth";
+import { PATHS } from "@/libs/routes";
 
 const oidcProviders = identityProviders.filter(({ enabled }) => enabled);
 const redirectToExternalUrl = vi.hoisted(() => vi.fn());
@@ -76,6 +77,90 @@ describe("AvailableProviderList", () => {
   it("should redirect to Ubuntu One url when clicking Ubuntu One", async () => {
     const { AvailableProviderList } = await import("./AvailableProviderList");
     renderWithProviders(<AvailableProviderList {...props} />);
+
+    const ubuntuButton = await screen.findByRole("button", {
+      name: /Sign in with Ubuntu One/i,
+    });
+    await userEvent.click(ubuntuButton);
+
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(
+      "https://login.ubuntu.com/mock",
+    );
+  });
+
+  it("should redirect when standalone OIDC button is clicked", async () => {
+    const { AvailableProviderList } = await import("./AvailableProviderList");
+    renderWithProviders(
+      <AvailableProviderList {...props} isStandaloneOidcEnabled={true} />,
+    );
+
+    const standaloneButton = await screen.findByRole("button", {
+      name: /Sign in with Enterprise Login/i,
+    });
+    await userEvent.click(standaloneButton);
+
+    await waitFor(() => {
+      expect(redirectToExternalUrl).toHaveBeenCalledWith(
+        `${window.location.origin}${oidcLocationToRedirectTo}`,
+      );
+    });
+  });
+
+  it("should handle return_to param in Ubuntu One redirect", async () => {
+    const { AvailableProviderList } = await import("./AvailableProviderList");
+    renderWithProviders(
+      <AvailableProviderList {...props} />,
+      {},
+      "/?return_to=/dashboard",
+    );
+
+    const ubuntuButton = await screen.findByRole("button", {
+      name: /Sign in with Ubuntu One/i,
+    });
+    await userEvent.click(ubuntuButton);
+
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(
+      "https://login.ubuntu.com/mock",
+    );
+  });
+
+  it("should show attachment message when code param is present", async () => {
+    const { AvailableProviderList } = await import("./AvailableProviderList");
+    renderWithProviders(
+      <AvailableProviderList {...props} />,
+      {},
+      "/?code=ABC123",
+    );
+
+    expect(
+      await screen.findByText(
+        /Sign in with your Identity provider to complete the attachment process/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("should handle invitationId params when rendered within invitation route", async () => {
+    const { AvailableProviderList } = await import("./AvailableProviderList");
+    renderWithProviders(
+      <AvailableProviderList {...props} />,
+      {},
+      "/accept-invitation/1",
+      PATHS.auth.invitation,
+    );
+
+    const ubuntuButton = await screen.findByRole("button", {
+      name: /Sign in with Ubuntu One/i,
+    });
+    await userEvent.click(ubuntuButton);
+
+    expect(redirectToExternalUrl).toHaveBeenCalledWith(
+      "https://login.ubuntu.com/mock",
+    );
+  });
+
+  it("should handle external search param for Ubuntu One redirect", async () => {
+    const { AvailableProviderList } = await import("./AvailableProviderList");
+    renderWithProviders(<AvailableProviderList {...props} />, {}, "/?external");
 
     const ubuntuButton = await screen.findByRole("button", {
       name: /Sign in with Ubuntu One/i,

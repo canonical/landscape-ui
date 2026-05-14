@@ -2,27 +2,50 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ListTitle, {
   LIST_TITLE_COLUMN_PROPS,
 } from "@/components/layout/ListTitle";
-import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import type { SelectOption } from "@/types/SelectOption";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import type { RepositoryProfile } from "../../types";
+import { useGetProfileInstancesCount } from "../../api";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
+import { ProfileAssociatedInstancesLink } from "@/features/profiles";
+import { pluralizeWithCount } from "@/utils/_helpers";
+
+const AssociatedCountCell: FC<{ readonly profile: RepositoryProfile }> = ({
+  profile,
+}) => {
+  const { associatedCount, isLoadingCount } = useGetProfileInstancesCount(
+    profile.id,
+  );
+  return (
+    <ProfileAssociatedInstancesLink
+      profile={profile}
+      count={associatedCount}
+      query={`repository:${profile.id}`}
+      isPending={isLoadingCount}
+      isGeneralAssociation
+    />
+  );
+};
 
 interface RepositoryProfileListProps {
   readonly repositoryProfiles: RepositoryProfile[];
+  readonly totalCount?: number;
 }
 
 const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
   repositoryProfiles,
+  totalCount = 0,
 }) => {
-  const { search } = usePageParams();
+  const { search, createPageParamsSetter } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
 
@@ -33,43 +56,29 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
     value: name,
   }));
 
-  const profiles = useMemo(() => {
-    if (!search) {
-      return repositoryProfiles;
-    }
-
-    return repositoryProfiles.filter((profile) => {
-      return profile.title.toLowerCase().includes(search.toLowerCase());
-    });
-  }, [repositoryProfiles, search]);
-
-  const columns = useMemo<Column<RepositoryProfile>[]>(
-    () => [
+  const columns = useMemo<Column<RepositoryProfile>[]>(() => {
+    return [
       {
         ...LIST_TITLE_COLUMN_PROPS,
         meta: {
           ariaLabel: ({ original }) =>
             `${original.title} profile title and name`,
         },
-        Cell: ({ row }: CellProps<RepositoryProfile>) => (
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
           <ListTitle>
-            {row.original.title}
-            <span className="u-text--muted">{row.original.name}</span>
+            <Button
+              type="button"
+              appearance="link"
+              className="u-no-margin--bottom u-no-padding--top u-align--left"
+              onClick={createPageParamsSetter({
+                sidePath: ["view"],
+                name: original.name,
+              })}
+            >
+              {original.title}
+            </Button>
           </ListTitle>
         ),
-      },
-      {
-        accessor: "description",
-        Header: "Description",
-        className: classes.description,
-        meta: {
-          ariaLabel: ({ original }) =>
-            original.description
-              ? `${original.title} profile description`
-              : `No description for ${original.title} profile`,
-        },
-        Cell: ({ row }: CellProps<RepositoryProfile>) =>
-          row.original.description || <NoData />,
       },
       {
         accessor: "access_group",
@@ -84,23 +93,64 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
           )?.label ?? original.access_group,
       },
       {
+        accessor: "associated",
+        Header: "Associated",
+        className: classes.associated,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile associated machines count`,
+        },
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
+          <AssociatedCountCell profile={original} />
+        ),
+      },
+      {
+        accessor: "applied_count",
+        Header: "Applied",
+        className: classes.applied,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile applied machines count`,
+        },
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
+          <>{pluralizeWithCount(original.applied_count ?? 0, "instance")}</>
+        ),
+      },
+      {
+        accessor: "pending_count",
+        Header: "Pending",
+        className: classes.pending,
+        meta: {
+          ariaLabel: ({ original }) =>
+            `${original.title} profile pending machines count`,
+        },
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
+          <>{pluralizeWithCount(original.pending_count ?? 0, "instance")}</>
+        ),
+      },
+      {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<RepositoryProfile>) => (
           <RepositoryProfileListActions profile={row.original} />
         ),
       },
-    ],
-    [accessGroupOptions],
-  );
+    ];
+  }, [accessGroupOptions, createPageParamsSetter]);
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={profiles}
-      getCellProps={getCellProps()}
-      getRowProps={getRowProps()}
-      emptyMsg={`No repository profiles found with the search "${search}"`}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={repositoryProfiles}
+        getCellProps={getCellProps()}
+        getRowProps={getRowProps()}
+        emptyMsg={`No repository profiles found with the search "${search}"`}
+      />
+      <TablePagination
+        totalItems={totalCount}
+        currentItemCount={repositoryProfiles.length}
+      />
+    </>
   );
 };
 

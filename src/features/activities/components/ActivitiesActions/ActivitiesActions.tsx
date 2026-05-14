@@ -1,10 +1,14 @@
 import type { FC } from "react";
-import { useActivities } from "../../hooks";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { ActivityCommon } from "../../types";
 import { pluralize, pluralizeArray } from "@/utils/_helpers";
 import { ConfirmationButton } from "@canonical/react-components";
+import {
+  useApproveActivities,
+  useCancelActivities,
+  useRedoActivities,
+} from "../../api";
 
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
@@ -13,23 +17,9 @@ interface ActivitiesActionsProps {
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
   const { notify } = useNotify();
   const debug = useDebug();
-  const {
-    approveActivitiesQuery,
-    cancelActivitiesQuery,
-    redoActivitiesQuery,
-    undoActivitiesQuery,
-  } = useActivities();
-
-  const {
-    mutateAsync: approveActivities,
-    isPending: approveActivitiesLoading,
-  } = approveActivitiesQuery;
-  const { mutateAsync: cancelActivities, isPending: cancelActivitiesLoading } =
-    cancelActivitiesQuery;
-  const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
-    redoActivitiesQuery;
-  const { mutateAsync: undoActivities, isPending: undoActivitiesLoading } =
-    undoActivitiesQuery;
+  const { approveActivities, isApprovingActivities } = useApproveActivities();
+  const { cancelActivities, isCancelingActivities } = useCancelActivities();
+  const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const selectedIds = selected.map((activity) => activity.id);
   const quantifiedActivity = pluralizeArray(
@@ -86,23 +76,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
     }
   };
 
-  const handleUndoActivities = async () => {
-    try {
-      await undoActivities({ activity_ids: selectedIds });
-
-      notify.success({
-        title: `You have successfully undone ${quantifiedActivity}.`,
-        message: `${pluralize(
-          selected.length,
-          "An activity has been queued to revert the changes delivered by this activity.",
-          "Activities have been queued to revert the changes delivered by these activities.",
-        )}`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   return (
     <div key="buttons" className="p-segmented-control">
       <div className="p-segmented-control__list">
@@ -111,7 +84,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           type="button"
           disabled={
             !selected.length ||
-            approveActivitiesLoading ||
+            isApprovingActivities ||
             selected.some((activity) => !activity.actions?.approvable)
           }
           confirmationModalProps={{
@@ -123,8 +96,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             ),
             confirmButtonLabel: "Approve",
             confirmButtonAppearance: "positive",
-            confirmButtonDisabled: approveActivitiesLoading,
-            confirmButtonLoading: approveActivitiesLoading,
+            confirmButtonDisabled: isApprovingActivities,
+            confirmButtonLoading: isApprovingActivities,
             onConfirm: handleApproveActivities,
           }}
         >
@@ -135,7 +108,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           type="button"
           disabled={
             !selected.length ||
-            cancelActivitiesLoading ||
+            isCancelingActivities ||
             selected.some((activity) => !activity.actions?.cancelable)
           }
           confirmationModalProps={{
@@ -147,8 +120,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             ),
             confirmButtonLabel: "Confirm",
             confirmButtonAppearance: "negative",
-            confirmButtonDisabled: cancelActivitiesLoading,
-            confirmButtonLoading: cancelActivitiesLoading,
+            confirmButtonDisabled: isCancelingActivities,
+            confirmButtonLoading: isCancelingActivities,
             onConfirm: handleCancelActivities,
           }}
         >
@@ -159,31 +132,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           type="button"
           disabled={
             !selected.length ||
-            undoActivitiesLoading ||
-            selected.some((activity) => !activity.actions?.revertable)
-          }
-          confirmationModalProps={{
-            title: `Undo ${pluralizedActivity}`,
-            children: (
-              <p>
-                Are you sure you want to undo selected {pluralizedActivity}?
-              </p>
-            ),
-            confirmButtonLabel: "Undo",
-            confirmButtonAppearance: "positive",
-            confirmButtonDisabled: undoActivitiesLoading,
-            confirmButtonLoading: undoActivitiesLoading,
-            onConfirm: handleUndoActivities,
-          }}
-        >
-          Undo
-        </ConfirmationButton>
-        <ConfirmationButton
-          className="p-segmented-control__button"
-          type="button"
-          disabled={
-            !selected.length ||
-            redoActivitiesLoading ||
+            isRedoingActivities ||
             selected.some((activity) => !activity.actions?.reappliable)
           }
           confirmationModalProps={{
@@ -195,8 +144,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             ),
             confirmButtonLabel: "Redo",
             confirmButtonAppearance: "positive",
-            confirmButtonDisabled: redoActivitiesLoading,
-            confirmButtonLoading: redoActivitiesLoading,
+            confirmButtonDisabled: isRedoingActivities,
+            confirmButtonLoading: isRedoingActivities,
             onConfirm: handleRedoActivities,
           }}
         >

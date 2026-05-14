@@ -1,0 +1,111 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_breakpoints";
+
+.outerContainer {
+  border: 1px solid $colors--theme--border-default;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: $sp-medium;
+
+  @media (min-width: $breakpoint-large) {
+    padding-right: 0;
+  }
+
+  @media (width >= 1300px) {
+    flex-direction: column;
+    width: 45%;
+  }
+
+  @media (width <= calc(#{$breakpoint-small} - 1px)) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.innerContainer {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  @media (width >= 1300px) {
+    flex-direction: row;
+  }
+
+  @media (width < 1300px) {
+    flex-direction: row;
+    width: 100%;
+  }
+}
+
+.chartContainer {
+  min-height: 180px;
+  min-width: 180px;
+  position: relative;
+  width: 100%;
+
+  @media (width >= 1250px) {
+    min-height: 250px;
+    min-width: 250px;
+  }
+
+  @media (min-width: $breakpoint-large) and (width <= 1249px) {
+    min-height: 150px;
+    min-width: 150px;
+  }
+}
+
+.svg {
+  display: block;
+  height: 100%;
+  overflow: visible;
+  padding: 10px;
+  width: 100%;
+}
+
+.title {
+  font-weight: 550;
+}
+
+.ring {
+  cursor: pointer;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid $colors--theme--link-default;
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: opacity 150ms ease;
+  }
+}
+
+.ring--inactive {
+  opacity: 0.4;
+}
+
+.ring--active {
+  opacity: 1;
+}
+
+.track {
+  stroke: $colors--theme--background-neutral-default;
+}
+
+.centerNumber {
+  dominant-baseline: middle;
+  fill: $colors--theme--text-muted;
+  font-size: 12px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+
+.centerSubLabel {
+  dominant-baseline: middle;
+  fill: $colors--theme--text-muted;
+  font-size: 5px;
+  text-anchor: middle;
+}

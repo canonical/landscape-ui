@@ -1,7 +1,8 @@
+import LoadingState from "@/components/layout/LoadingState";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
 import type { Instance } from "@/types/Instance";
-import { Badge, Spinner } from "@canonical/react-components";
+import { Badge } from "@canonical/react-components";
 
 interface GetTabLabelProps {
   id: string;
@@ -32,7 +33,7 @@ const getTabLabel = ({
     return (
       <>
         <span>{label}</span>
-        <Spinner className="u-no-margin--bottom u-no-padding--top" />
+        <LoadingState inline />
       </>
     );
   }

@@ -1,8 +1,17 @@
 import { API_URL } from "@/constants";
+import type { Activity } from "@/features/activities";
 import type { GetProcessesParams, Process } from "@/features/processes";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { activities } from "@/tests/mocks/activity";
 import { processes } from "@/tests/mocks/process";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
+import {
+  generatePaginatedResponse,
+  shouldApplyEndpointStatus,
+} from "@/tests/server/handlers/_helpers";
+import {
+  createEndpointStatusError,
+  createEndpointStatusNetworkError,
+} from "./_constants";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 
@@ -12,8 +21,11 @@ export default [
     async ({ request }) => {
       const endpointStatus = getEndpointStatus();
 
-      if (endpointStatus.status === "error") {
-        throw new HttpResponse(null, { status: 500 });
+      if (
+        shouldApplyEndpointStatus("computers/:instanceId/processes") &&
+        endpointStatus.status === "error"
+      ) {
+        throw createEndpointStatusNetworkError();
       }
 
       const url = new URL(request.url);
@@ -32,4 +44,27 @@ export default [
       );
     },
   ),
+  http.post<never, never, Activity>(
+    `${API_URL}processes/terminate`,
+    async () => {
+      if (shouldApplyEndpointStatus("processes/terminate")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
+      }
+
+      return HttpResponse.json(activities[0]);
+    },
+  ),
+  http.post<never, never, Activity>(`${API_URL}processes/kill`, async () => {
+    if (shouldApplyEndpointStatus("processes/kill")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
+
+    return HttpResponse.json(activities[0]);
+  }),
 ];

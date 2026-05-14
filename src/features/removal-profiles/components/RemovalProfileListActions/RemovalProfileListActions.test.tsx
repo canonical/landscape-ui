@@ -18,10 +18,12 @@ describe("RemovalProfileListActions", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: `Edit "${profile.title}" profile` }),
+      screen.getByRole("menuitem", { name: `Edit "${profile.title}" profile` }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: `Remove "${profile.title}" profile` }),
+      screen.getByRole("menuitem", {
+        name: `Remove "${profile.title}" profile`,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -32,7 +34,9 @@ describe("RemovalProfileListActions", () => {
       screen.getByRole("button", { name: `${profile.title} profile actions` }),
     );
     await user.click(
-      screen.getByRole("button", { name: `Remove "${profile.title}" profile` }),
+      screen.getByRole("menuitem", {
+        name: `Remove "${profile.title}" profile`,
+      }),
     );
 
     const modalDeleteBtn = screen.getByRole("button", { name: "Remove" });

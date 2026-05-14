@@ -90,11 +90,14 @@ describe("SingleUpgradeProfileForm", () => {
     expect(screen.getByLabelText(/access group/i)).toBeEnabled();
   });
 
-  it("shows disabled access group field in edit mode", () => {
-    renderWithProviders(
+  it("shows read-only access group field in edit mode", () => {
+    const { container } = renderWithProviders(
       <SingleUpgradeProfileForm action="edit" profile={upgradeProfiles[0]} />,
     );
 
-    expect(screen.getByLabelText(/access group/i)).toBeDisabled();
+    expect(container.querySelector(".p-icon--lock-locked")).toBeInTheDocument();
+    expect(
+      screen.getByText(upgradeProfiles[0].access_group),
+    ).toBeInTheDocument();
   });
 });

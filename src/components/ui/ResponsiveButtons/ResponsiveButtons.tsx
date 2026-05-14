@@ -21,6 +21,7 @@ import type { ButtonLikeProps, CollapsedLink, CollapsedNode } from "./types";
 export interface ResponsiveButtonGroupProps {
   readonly buttons: ReactNode[];
   readonly collapseFrom?: keyof typeof BREAKPOINT_PX;
+  readonly alwaysCollapse?: boolean;
   readonly alwaysVisible?: number;
   readonly menuLabel?: string;
   readonly className?: string;
@@ -31,15 +32,18 @@ export interface ResponsiveButtonGroupProps {
 const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
   buttons,
   collapseFrom = "md",
+  alwaysCollapse = false,
   alwaysVisible = 0,
   menuLabel = "Actions",
   className,
   menuPosition = "right",
   grouped = true,
 }) => {
-  const isLargeScreen = useMediaQuery(
+  const isLargerThanBreakpoint = useMediaQuery(
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
+
+  const isLargeScreen = alwaysCollapse ? false : isLargerThanBreakpoint;
 
   const { visibleButtons, collapsedItems } = useMemo(() => {
     const visible = isLargeScreen ? buttons : buttons.slice(0, alwaysVisible);
@@ -100,9 +104,11 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
 
         collapsed.push({
           key: `action-${index}`,
-          children: textFromNode(el) || `Action ${index + 1}`,
+          children:
+            el.props.children || textFromNode(el) || `Action ${index + 1}`,
           onClick: el.props.onClick,
           disabled: el.props.disabled,
+          hasIcon: el.props.hasIcon,
         });
 
         return;
@@ -186,6 +192,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
                         }
                       }}
                       disabled={item.disabled}
+                      hasIcon={item.hasIcon}
                     >
                       {item.children}
                     </Button>

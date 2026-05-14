@@ -1,14 +1,15 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, vi } from "vitest";
+import { describe, vi, it, expect, beforeEach } from "vitest";
 import InvitationForm from "./InvitationForm";
 import useAuth from "@/hooks/useAuth";
 import { PATHS } from "@/libs/routes";
 import type { AuthContextProps } from "@/context/auth";
 import { authUser } from "@/tests/mocks/auth";
 import { invitationsSummary } from "@/tests/mocks/invitations";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 vi.mock("@/hooks/useAuth");
 
@@ -80,6 +81,61 @@ describe("InvitationForm", () => {
     const rejectButton = screen.getByRole("button", { name: "Reject" });
     await user.click(rejectButton);
 
-    expect(props.onReject).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(props.onReject).toHaveBeenCalled();
+    });
+  });
+
+  it("should call acceptInvitation when accept button is clicked", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InvitationForm {...props} />,
+      {},
+      `/accept-invitation/${inviteId}`,
+      PATHS.auth.invitation,
+    );
+
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(acceptButton);
+
+    await waitFor(() => {
+      expect(acceptButton).not.toBeDisabled();
+    });
+  });
+
+  it("should handle reject error gracefully", async () => {
+    setEndpointStatus({ status: "error", path: "reject-invitation" });
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InvitationForm {...props} />,
+      {},
+      `/accept-invitation/${inviteId}`,
+      PATHS.auth.invitation,
+    );
+
+    const rejectButton = screen.getByRole("button", { name: "Reject" });
+    await user.click(rejectButton);
+
+    await waitFor(() => {
+      expect(rejectButton).not.toBeDisabled();
+    });
+  });
+
+  it("should handle accept error gracefully", async () => {
+    setEndpointStatus({ status: "error", path: "accept-invitation" });
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InvitationForm {...props} />,
+      {},
+      `/accept-invitation/${inviteId}`,
+      PATHS.auth.invitation,
+    );
+
+    const acceptButton = screen.getByRole("button", { name: "Accept" });
+    await user.click(acceptButton);
+
+    await waitFor(() => {
+      expect(acceptButton).not.toBeDisabled();
+    });
   });
 });

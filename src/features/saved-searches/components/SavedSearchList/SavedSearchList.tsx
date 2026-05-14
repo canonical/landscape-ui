@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Col, Row, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
-import { Suspense, type FC } from "react";
+import { Suspense, useEffect, type FC } from "react";
 import type { SavedSearch } from "../../types";
 import ManageSavedSearchesSidePanel from "../ManageSavedSeachesSidePanel";
 import classes from "./SavedSearchList.module.scss";
@@ -16,6 +16,8 @@ interface SavedSearchListProps {
   readonly savedSearches: SavedSearch[];
   readonly onManageSearches: () => void;
   readonly onSavedSearchRemove: () => void;
+  readonly activeIndex?: number | null;
+  readonly itemIdPrefix?: string;
 }
 
 const SavedSearchList: FC<SavedSearchListProps> = ({
@@ -23,9 +25,22 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
   savedSearches,
   onManageSearches,
   onSavedSearchRemove,
+  activeIndex = null,
+  itemIdPrefix,
 }) => {
   const { setSidePanelContent } = useSidePanel();
   const isLargeScreen = useMediaQuery(`(min-width: ${BREAKPOINT_PX["lg"]}px)`);
+
+  // aria-activedescendant doesn't move DOM focus, so scroll the active item ourselves.
+  useEffect(() => {
+    if (activeIndex === null || !itemIdPrefix) {
+      return;
+    }
+    const activeItem = document.getElementById(
+      `${itemIdPrefix}-${activeIndex}`,
+    );
+    activeItem?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, itemIdPrefix]);
 
   if (!savedSearches.length) {
     return null;
@@ -63,12 +78,20 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
           classes.list,
         )}
       >
-        {savedSearches.map((savedSearch) => (
+        {savedSearches.map((savedSearch, index) => (
           <li key={savedSearch.name}>
-            <div className={classes.listItem}>
+            <div
+              className={classNames(classes.listItem, {
+                [classes.activeItem]: index === activeIndex,
+              })}
+            >
               <Button
                 type="button"
                 appearance="base"
+                id={
+                  itemIdPrefix ? `${itemIdPrefix}-${index}` : undefined
+                }
+                aria-selected={index === activeIndex || undefined}
                 className={classes.search}
                 onClick={() => {
                   onSavedSearchClick(savedSearch);

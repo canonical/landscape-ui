@@ -1,12 +1,20 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
 .rowHeader {
   display: flex;
 }
 
-.statusListItem {
+.indicatorIcon {
   margin-right: 0.75rem;
 }
 
-.statusContainer {
+.distributionUpgradeIcon {
+  height: 0.75rem;
+  width: 0.75rem;
+}
+
+.indicatorWrapper {
   display: flex;
   transform: translateX(-1.5rem);
 }

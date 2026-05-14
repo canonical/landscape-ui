@@ -80,12 +80,8 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
 
   const setAsDefault = async () => {
     try {
-      if (wslInstance.computer_id === null) {
-        return;
-      }
-
       await setWslInstanceAsDefault({
-        child_id: wslInstance.computer_id,
+        child_id: wslInstance.computer_id!,
         parent_id: windowsInstance.id,
       });
 
@@ -109,7 +105,7 @@ const WslInstanceListActions: FC<WslInstanceListActionsProps> = ({
             navigate(
               ROUTES.instances.details.child(
                 windowsInstance.id,
-                wslInstance.computer_id || "",
+                wslInstance.computer_id!,
               ),
             ),
           excluded: wslInstance.computer_id === null,

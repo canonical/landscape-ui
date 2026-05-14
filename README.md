@@ -8,6 +8,7 @@ The modern web interface for Canonical's Landscape, built with React and TypeScr
 
 - [About Landscape](#about-landscape)
 - [About this Repository](#about-this-repository)
+- [Documentation Map](#documentation-map)
 - [Getting Started with Local Development](#getting-started-with-local-development)
 - [Technology Stack](#technology-stack)
 - [Feedback & Support](#feedback--support)
@@ -26,7 +27,19 @@ Landscape is available as a SaaS solution at [landscape.canonical.com](https://l
 
 This repository contains the source code for the **new, modern web interface for Landscape**.
 
-This new UI is currently under active development and is intended to eventually replace the legacy UI. For now, both user interfaces are available within the Landscape product, with the classic UI being the default. Our goal is to incrementally migrate all features to this new, improved dashboard.
+This new UI is currently under active development and is intended to replace the legacy UI. Today, both user interfaces still exist within the Landscape product, but the goal of this repository is to incrementally migrate Landscape workflows into this dashboard until the classic interface can be removed.
+
+---
+
+## Documentation Map
+
+The repository now includes a small agent- and contributor-facing knowledge base:
+
+- [AGENTS.md](AGENTS.md) is the top-level map for agent tooling and quick repo orientation.
+- [docs/index.md](docs/index.md) is the index for architecture, frontend conventions, and planning docs.
+- [docs/testing/index.md](docs/testing/index.md) defines the repository test layers and test strategy.
+- [docs/verification/index.md](docs/verification/index.md) defines the broader verification workflow, including TDD expectations and closed-loop validation.
+- Existing root docs such as [SECURITY.md](SECURITY.md), [RELEASES.md](RELEASES.md), and [CONTRIBUTING.md](CONTRIBUTING.md) remain authoritative for their current subjects.
 
 ---
 
@@ -36,7 +49,7 @@ Follow these instructions to set up the project on your local machine for develo
 
 ### Prerequisites
 
-- **Node.js** (v22 or later recommended)
+- **Node.js** (v24 or later recommended)
 - **pnpm** package manager. If you don't have it, you can install it with `npm install -g pnpm`.
 
 ### Setup Instructions

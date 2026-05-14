@@ -4,7 +4,7 @@ import { INSTANCES_PATHS } from "@/libs/routes/instances";
 import UbuntuProInfoRow from "./UbuntuProInfoRow";
 import { screen } from "@testing-library/react";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT, MASKED_VALUE } from "@/constants";
 import { getInstanceWithUbuntuPro } from "../../helpers";
 
 const instanceWithUbuntuPro = getInstanceWithUbuntuPro(instances);
@@ -91,6 +91,6 @@ describe("UbuntuProInfoRow", () => {
       singleInstancePath,
     );
 
-    expect(screen.getByText("****************")).toBeInTheDocument();
+    expect(screen.getByText(MASKED_VALUE)).toBeInTheDocument();
   });
 });

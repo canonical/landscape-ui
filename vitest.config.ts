@@ -21,6 +21,18 @@ export default defineConfig({
         find: /^.*\.(css|scss|sass)$/,
         replacement: resolve(__dirname, "src/tests/styleMock.ts"),
       },
+      {
+        find: "@/components/form/CodeEditor",
+        replacement: resolve(__dirname, "src/tests/monacoMock.tsx"),
+      },
+      {
+        find: "@monaco-editor/react",
+        replacement: resolve(__dirname, "src/tests/monacoMock.tsx"),
+      },
+      {
+        find: "@",
+        replacement: resolve(__dirname, "src"),
+      },
     ],
     deps: {
       optimizer: {
@@ -37,6 +49,12 @@ export default defineConfig({
       reporter: ["cobertura", "json-summary", "html"],
       reportOnFailure: true,
       reportsDirectory: resolve(__dirname, "reports"),
+      thresholds: {
+        statements: 80,
+        lines: 80,
+        functions: 80,
+        branches: 70,
+      },
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "**/tests/**",

@@ -2,7 +2,7 @@ import usePageParams from "@/hooks/usePageParams";
 import type { WslProfile } from "../types";
 import { useGetWslProfile } from "./useGetWslProfile";
 
-const useGetPageWslProfile = ():
+export const useGetPageWslProfile = ():
   | {
       wslProfile: WslProfile;
       isGettingWslProfile: false;
@@ -11,10 +11,11 @@ const useGetPageWslProfile = ():
       wslProfile: undefined;
       isGettingWslProfile: true;
     } => {
-  const { profile: wslProfileName } = usePageParams();
+  const { name: wslProfileName } = usePageParams();
 
   const { wslProfile, isGettingWslProfile, wslProfileError } = useGetWslProfile(
     { profile_name: wslProfileName },
+    { enabled: !!wslProfileName },
   );
 
   if (wslProfileError) {
@@ -33,5 +34,3 @@ const useGetPageWslProfile = ():
     isGettingWslProfile: false,
   };
 };
-
-export default useGetPageWslProfile;

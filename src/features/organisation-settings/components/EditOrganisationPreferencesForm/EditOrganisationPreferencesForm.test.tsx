@@ -4,6 +4,10 @@ import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import EditOrganisationPreferencesForm from "./EditOrganisationPreferencesForm";
 import { REGISTRATION_KEY_REGEX } from "./constants";
+import useAuth from "@/hooks/useAuth";
+import { authUser } from "@/tests/mocks/auth";
+
+vi.mock("@/hooks/useAuth");
 
 const props: ComponentProps<typeof EditOrganisationPreferencesForm> = {
   organisationPreferences: {
@@ -15,6 +19,20 @@ const props: ComponentProps<typeof EditOrganisationPreferencesForm> = {
 };
 
 describe("EditOrganisationPreferencesForm", () => {
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser: vi.fn(),
+      user: authUser,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+  });
+
   it("renders correct form fields", () => {
     const { container } = renderWithProviders(
       <EditOrganisationPreferencesForm {...props} />,
@@ -97,6 +115,33 @@ describe("EditOrganisationPreferencesForm", () => {
     });
   });
 
+  it("submits a null registration key when the field is empty", async () => {
+    renderWithProviders(
+      <EditOrganisationPreferencesForm
+        organisationPreferences={{
+          ...props.organisationPreferences,
+          registration_password: "key",
+        }}
+      />,
+    );
+
+    await userEvent.clear(screen.getByLabelText("Registration key"));
+
+    await userEvent.click(
+      screen.getByRole("checkbox", {
+        name: /use registration key/i,
+      }),
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
+
+    expect(
+      await screen.findByText("Your changes have been saved"),
+    ).toBeInTheDocument();
+  });
+
   it("correctly validates input with regex", () => {
     const invalidRegKeys = [
       ";key",
@@ -120,5 +165,66 @@ describe("EditOrganisationPreferencesForm", () => {
     for (const key of validRegKeys) {
       expect(key).toMatch(REGISTRATION_KEY_REGEX);
     }
+  });
+
+  it("saves changes and updates user when organisation name is changed", async () => {
+    const setUser = vi.fn();
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser,
+      user: authUser,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+
+    renderWithProviders(<EditOrganisationPreferencesForm {...props} />);
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /organization's name/i,
+    });
+    await userEvent.clear(nameInput);
+    await userEvent.type(nameInput, "New Organisation Name");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
+
+    expect(
+      await screen.findByText("Your changes have been saved"),
+    ).toBeInTheDocument();
+    expect(setUser).toHaveBeenCalled();
+  });
+
+  it("does not update user when user is null", async () => {
+    vi.mocked(useAuth).mockReturnValue({
+      logout: vi.fn(),
+      authorized: true,
+      authLoading: false,
+      setUser: vi.fn(),
+      user: null,
+      redirectToExternalUrl: vi.fn(),
+      safeRedirect: vi.fn(),
+      isFeatureEnabled: vi.fn(),
+      hasAccounts: true,
+    });
+
+    renderWithProviders(<EditOrganisationPreferencesForm {...props} />);
+
+    const nameInput = screen.getByRole("textbox", {
+      name: /organization's name/i,
+    });
+    await userEvent.type(nameInput, " Updated");
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
+
+    expect(
+      screen.queryByText("Your changes have been saved"),
+    ).not.toBeInTheDocument();
   });
 });

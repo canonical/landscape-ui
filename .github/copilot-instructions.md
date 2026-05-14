@@ -354,6 +354,26 @@ Usage in Forms:
 - **Coverage threshold:** 85% line coverage minimum
 - **Snapshot tests:** Avoid unless required for layout regressions
 
+### Hook Testing Pattern
+
+**Do not create dedicated test files for custom hooks** (e.g., `useCustomHook.test.tsx`). This violates React's rule: _"Hooks can only be called inside of the body of a function component."_
+
+**Instead, test hooks implicitly through component integration tests:**
+
+- **Queries (fetch hooks):** Test in container/page component tests that render the hook's consumer components
+- **Mutations (create/edit/delete hooks):** Test through form/action component tests by:
+  - Rendering the component that uses the mutation
+  - Simulating user interactions (form submission, button clicks)
+  - Verifying success/error states and side effects
+
+**Example:** Instead of `usePublicationTargets.test.tsx`, test the hook's methods through:
+
+- `NewPublicationTargetForm.test.tsx` → exercises `createPublicationTargetQuery`
+- `EditTargetForm.test.tsx` → exercises `editPublicationTargetQuery`
+- `RemoveTargetForm.test.tsx` → exercises `removePublicationTargetQuery` (including error paths)
+
+This pattern ensures hooks are tested in realistic component contexts with all required providers (QueryClientProvider, FetchProvider, etc.) already configured via `renderWithProviders`.
+
 ---
 
 ## CI/CD Workflows (Authoritative)
@@ -369,7 +389,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 - **Prettier:** Diff-only JS/TS/TSX/JSON/MD/HTML.
 - **Stylelint:** Diff-only SCSS.  
   **Common:**
-- Node `22.15.1`, pnpm `10`, `pnpm install --frozen-lockfile`.
+- Node `24`, pnpm `10`, `pnpm install --frozen-lockfile`.
 - Skip job if no matching changed files.
 
 ### Tests + TICS on PRs (`.github/workflows/run-tests-and-tics.yml`)
@@ -388,7 +408,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 **Trigger:** push → `dev`  
 **Jobs:**
 
-- **eslint-check:** `pnpm run lint:ci`.
+- **eslint-check:** `pnpm run lint`.
 - **e2e-tests:** needs eslint; same matrix pattern as PR e2e.
 - **unit-tests:** needs eslint; same pattern as PR unit tests; uploads `coverage-report`.
 
@@ -433,7 +453,7 @@ The repo uses multiple workflows. Copilot must follow these triggers, job orders
 
 ### CI Tooling Contracts
 
-- **Node:** `22.15.1`
+- **Node:** `24`
 - **pnpm:** `10`
 - **Install:** `pnpm install --frozen-lockfile` only
 - **Build:** `pnpm run build` before Playwright runs

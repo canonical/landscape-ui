@@ -12,11 +12,15 @@ jobs:
     env:
       VITE_API_URL: ${{ vars.API_URL }}
       VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /new_dashboard/
       VITE_REPORT_VIEW_ENABLED: false
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
       VITE_SELECT_ALL_INSTANCES_ENABLED: false
+      VITE_APP_VERSION: "26.04.0.12"
+      VITE_APP_COMMIT: ${{ github.sha }}
       VITE_SELF_HOSTED_ENV: true
     steps:
       - name: Checkout repository
@@ -32,7 +36,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.15.1
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies
@@ -68,7 +72,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.15.1
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies

@@ -27,7 +27,7 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
       label: "View details",
       onClick: createPageParamsSetter({
         sidePath: ["view"],
-        profile: scriptProfile.id.toString(),
+        name: scriptProfile.id.toString(),
       }),
     },
   ];
@@ -38,7 +38,7 @@ const ScriptProfilesListActions: FC<ScriptProfilesListActionsProps> = ({
       label: "Edit",
       onClick: createPageParamsSetter({
         sidePath: ["edit"],
-        profile: scriptProfile.id.toString(),
+        name: scriptProfile.id.toString(),
       }),
     });
   }

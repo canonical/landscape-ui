@@ -1,4 +1,4 @@
-import { describe, vi } from "vitest";
+import { describe, vi, afterEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import { renderWithProviders } from "@/tests/render";
 import LoginPage from "./LoginPage";
@@ -7,6 +7,8 @@ import { CONTACT_SUPPORT_TEAM_MESSAGE } from "@/constants";
 import { expectLoadingState } from "@/tests/helpers";
 import useEnv from "@/hooks/useEnv";
 import type { EnvContextState } from "@/context/env";
+import { standaloneAccountState } from "@/tests/server/handlers/standaloneAccount";
+import { useLocation } from "react-router";
 
 vi.mock("@/hooks/useEnv");
 
@@ -24,6 +26,11 @@ describe("LoginPage", () => {
       ...envCommon,
       displayDisaStigBanner: false,
     });
+    standaloneAccountState.exists = true;
+  });
+
+  afterEach(() => {
+    standaloneAccountState.exists = true;
   });
 
   it("should render", async () => {
@@ -84,5 +91,52 @@ describe("LoginPage", () => {
         name: /proceed after acknowledging consent/i,
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("shows loading state when self-hosted and no standalone account exists", async () => {
+    standaloneAccountState.exists = false;
+    vi.mocked(useEnv).mockReturnValue({
+      ...envCommon,
+      isSelfHosted: true,
+      isSaas: false,
+      displayDisaStigBanner: false,
+    });
+
+    const LocationTracker = () => {
+      const loc = useLocation();
+      return <span data-testid="location">{loc.pathname}</span>;
+    };
+
+    renderWithProviders(
+      <>
+        <LoginPage />
+        <LocationTracker />
+      </>,
+    );
+
+    // Loading state is shown while checking the standalone account
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+
+    // After queries complete, navigate to /create-account is triggered
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "create-account",
+      );
+    });
+  });
+
+  it("shows login form when self-hosted with existing standalone account", async () => {
+    vi.mocked(useEnv).mockReturnValue({
+      ...envCommon,
+      isSelfHosted: true,
+      isSaas: false,
+      displayDisaStigBanner: false,
+    });
+
+    renderWithProviders(<LoginPage />);
+
+    await expectLoadingState();
+
+    expect(screen.getByText("Sign in to Landscape")).toBeInTheDocument();
   });
 });

@@ -6,6 +6,7 @@ import {
   GENERIC_DOMAIN,
   HOMEPAGE_PATH,
 } from "@/constants";
+import LoadingState from "@/components/layout/LoadingState";
 import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
 import { useGetStandaloneAccount } from "@/features/account-creation";
@@ -74,9 +75,8 @@ const UbuntuOneAuthPage: FC = () => {
     <div className={classes.container}>
       {isLoading ? (
         <div className="u-align-text--center">
-          <span role="status" style={{ marginRight: "1rem" }}>
-            <span className="u-off-screen">Loading...</span>
-            <i className="p-icon--spinner u-animation--spin" aria-hidden />
+          <span className={classes.loading}>
+            <LoadingState inline />
           </span>
           <span>Please wait while your request is being processed...</span>
         </div>

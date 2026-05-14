@@ -3,13 +3,13 @@ import { navigateTo } from "./navigation";
 
 export async function login(
   page: Page,
-  email: string,
+  identifier: string,
   password: string,
   params?: Record<string, string>,
 ): Promise<void> {
   await navigateTo(page, "/login", params);
 
-  await page.fill('input[name="email"]', email);
+  await page.fill('input[name="identifier"]', identifier);
   await page.fill('input[name="password"]', password);
   await page.click('button[type="submit"]');
 }

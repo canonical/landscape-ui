@@ -3,20 +3,20 @@ import { basePage } from "../../support/pages/basePage";
 
 export class LoginPage extends basePage {
   readonly page: Page;
-  readonly emailInput: Locator;
+  readonly identifierInput: Locator;
   readonly passwordInput: Locator;
   readonly loginButton: Locator;
 
   constructor(page: Page) {
     super(page);
     this.page = page;
-    this.emailInput = page.locator('input[name="email"]');
+    this.identifierInput = page.locator('input[name="identifier"]');
     this.passwordInput = page.locator('input[name="password"]');
     this.loginButton = page.locator("[type=submit]", { hasText: "Sign in" });
   }
 
-  async login(email: string, password: string): Promise<void> {
-    await this.emailInput.fill(email);
+  async login(identifier: string, password: string): Promise<void> {
+    await this.identifierInput.fill(identifier);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
   }

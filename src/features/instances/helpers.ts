@@ -1,5 +1,45 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import type { SecurityProfile } from "../security-profiles";
+import type { USGProfile } from "../usg-profiles";
+import type { RecoveryKeyActivityStatus } from "./types/RecoveryKey";
+
+export const isRecoveryKeyActivityFailedOrCanceled = (
+  activityStatus?: RecoveryKeyActivityStatus | null,
+): boolean => {
+  return Boolean(
+    activityStatus && ["failed", "canceled"].includes(activityStatus),
+  );
+};
+
+export const isRecoveryKeyActivityInProgress = (
+  activityStatus?: RecoveryKeyActivityStatus | null,
+): boolean => {
+  return Boolean(
+    activityStatus && !isRecoveryKeyActivityFailedOrCanceled(activityStatus),
+  );
+};
+
+export const shouldShowRecoveryKeyActivityStatus = (
+  activityStatus?: RecoveryKeyActivityStatus | null,
+): boolean => {
+  return Boolean(
+    activityStatus && !isRecoveryKeyActivityFailedOrCanceled(activityStatus),
+  );
+};
+
+export const getRecoveryKeyRegenerationAttemptMessage = (
+  recoveryKey: string | null = null,
+  activityStatus: RecoveryKeyActivityStatus,
+): string | null => {
+  const shouldShowRecoveryKeyRegenerationAttemptMessage = Boolean(
+    recoveryKey && isRecoveryKeyActivityFailedOrCanceled(activityStatus),
+  );
+
+  if (!shouldShowRecoveryKeyRegenerationAttemptMessage || !activityStatus) {
+    return null;
+  }
+
+  return `The last attempt to regenerate this key ${activityStatus === "failed" ? "failed" : "was canceled"}.`;
+};
 
 export function getFeatures(instance: InstanceWithoutRelation) {
   const isUbuntu = instance.distribution_info?.distributor === "Ubuntu";
@@ -16,6 +56,7 @@ export function getFeatures(instance: InstanceWithoutRelation) {
     power: isLinux,
     pro: !isNonUbuntuLinux,
     processes: isLinux,
+    recoveryKey: isLinux,
     sanitization: isLinux && !isUbuntuCore && !instance.is_wsl_instance,
     scripts: isLinux,
     snaps: isLinux,
@@ -45,7 +86,7 @@ export const hasUpgrades = (
 };
 
 export const instancesToAssignCount = (
-  profile: SecurityProfile,
+  profile: USGProfile,
   instances: Instance[],
 ) =>
   instances.filter((instance) =>
@@ -64,7 +105,7 @@ export const getProfileTypes = (featureFlags: {
   }
 
   if (featureFlags.isUsgProfilesEnabled) {
-    profileTypes.push("security");
+    profileTypes.push("usg");
   }
 
   profileTypes.push("upgrade");

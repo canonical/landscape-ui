@@ -65,7 +65,7 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
 
       <HardwareInfoRow label="Processor">
         {groupedHardware.cpu.length ? (
-          <Blocks>
+          <Blocks spaced>
             {groupedHardware.cpu.map((cpu, index) => (
               <Blocks.Item key={index}>
                 <InfoGrid>
@@ -105,7 +105,7 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
             <InfoGrid.Item label="Network" value={groupedHardware.network} />
           </InfoGrid>
         ) : (
-          <Blocks>
+          <Blocks spaced>
             {groupedHardware.network.map((network, index) => (
               <Blocks.Item key={index}>
                 <InfoGrid>

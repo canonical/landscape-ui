@@ -1,4 +1,4 @@
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { useRestartInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -42,7 +42,7 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const { upgradeKernelQuery } = useKernel();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { restartInstance, isRestartingInstance } = useRestartInstance();
   const { mutateAsync: upgradeKernel, isPending: isUpgradingAndRestarting } =

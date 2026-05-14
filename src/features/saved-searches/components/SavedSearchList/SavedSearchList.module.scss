@@ -32,6 +32,10 @@
   }
 }
 
+.activeItem {
+  background-color: $colors--theme--background-neutral-default;
+}
+
 .list li:last-child .listItem {
   border-bottom: none !important;
 }

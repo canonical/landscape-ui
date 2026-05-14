@@ -2,13 +2,10 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
-import { useActivities } from "@/features/activities";
 import type { PackageAction } from "@/features/packages";
 import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
@@ -17,30 +14,20 @@ import {
   pluralizeArray,
   pluralizeWithCount,
 } from "@/utils/_helpers";
-import {
-  Button,
-  ConfirmationModal,
-  ContextualMenu,
-  Icon,
-} from "@canonical/react-components";
+import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, Suspense } from "react";
-import { createPortal } from "react-dom";
 import { useBoolean } from "usehooks-ts";
-import { useRestartInstances, useShutDownInstances } from "../../api";
 import { getFeatures, hasSecurityUpgrades, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
-import { getNotificationArgs } from "./helpers";
 import classes from "./InstancesPageActions.module.scss";
+import ShutDownModal from "../ShutDownModal";
+import RestartModal from "../RestartModal";
 
-const RunInstanceScriptForm = lazy(async () =>
-  import("@/features/scripts").then((module) => ({
-    default: module.RunInstanceScriptForm,
-  })),
+const RunInstanceScriptForm = lazy(
+  async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
-const Upgrades = lazy(async () =>
-  import("@/features/upgrades").then((module) => ({
-    default: module.Upgrades,
-  })),
+const Upgrades = lazy(
+  async () => import("@/features/upgrades/components/Upgrades"),
 );
 const UpgradesSummary = lazy(async () =>
   import("@/features/upgrades").then((module) => ({
@@ -51,16 +38,15 @@ const ReportView = lazy(
   async () => import("@/pages/dashboard/instances/ReportView"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
-const TagsAddForm = lazy(async () => import("../TagsAddForm"));
-const AttachTokenForm = lazy(async () =>
-  import("@/features/ubuntupro").then((module) => ({
-    default: module.AttachTokenForm,
-  })),
+const DistributionUpgrades = lazy(
+  async () => import("../DistributionUpgrades"),
 );
-const ReplaceTokenForm = lazy(async () =>
-  import("@/features/ubuntupro").then((module) => ({
-    default: module.ReplaceTokenForm,
-  })),
+const TagsAddForm = lazy(async () => import("../TagsAddForm"));
+const AttachTokenForm = lazy(
+  async () => import("@/features/ubuntupro/components/AttachTokenForm"),
+);
+const ReplaceTokenForm = lazy(
+  async () => import("@/features/ubuntupro/components/ReplaceTokenForm"),
 );
 
 interface InstancesPageActionsProps {
@@ -78,10 +64,7 @@ const InstancesPageActions = ({
   instanceCount,
   query,
 }: InstancesPageActionsProps) => {
-  const debug = useDebug();
   const { isFeatureEnabled } = useAuth();
-  const { notify } = useNotify();
-  const { openActivityDetails } = useActivities();
   const { setSidePanelContent } = useSidePanel();
 
   const {
@@ -107,9 +90,6 @@ const InstancesPageActions = ({
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
-
-  const { restartInstances, isRestartingInstances } = useRestartInstances();
-  const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
   const createInstanceCountString = (instances: Instance[]) => {
     return (
@@ -156,46 +136,6 @@ const InstancesPageActions = ({
     );
   };
 
-  const handleShutdownInstance = async () => {
-    try {
-      const { data: shutdownActivity } = await shutDownInstances({
-        computer_ids: toggledInstances.map(({ id }) => id),
-      });
-
-      notify.success(
-        getNotificationArgs({
-          action: "shutdown",
-          onDetailsClick: () => {
-            openActivityDetails(shutdownActivity);
-          },
-          selected: toggledInstances,
-        }),
-      );
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleRebootInstance = async () => {
-    try {
-      const { data: rebootActivity } = await restartInstances({
-        computer_ids: toggledInstances.map(({ id }) => id),
-      });
-
-      notify.success(
-        getNotificationArgs({
-          action: "reboot",
-          onDetailsClick: () => {
-            openActivityDetails(rebootActivity);
-          },
-          selected: toggledInstances,
-        }),
-      );
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   const handleUpgradesRequest = () => {
     setSidePanelContent(
       `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
@@ -224,6 +164,18 @@ const InstancesPageActions = ({
           query={query}
           isSelectAllUpgradesEnabled
           upgradeType="security"
+        />
+      </Suspense>,
+      "medium",
+    );
+  };
+
+  const handleDistributionUpgradesRequest = () => {
+    setSidePanelContent(
+      "Upgrade distributions",
+      <Suspense fallback={<LoadingState />}>
+        <DistributionUpgrades
+          selectedInstances={toggledInstances.map(({ id }) => id)}
         />
       </Suspense>,
       "medium",
@@ -294,24 +246,6 @@ const InstancesPageActions = ({
       instance.ubuntu_pro_info.attached,
   );
 
-  const proServicesLinks = [
-    allInstancesHaveToken
-      ? {
-          children: <span>Replace token</span>,
-          onClick: handleReplaceToken,
-        }
-      : {
-          children: <span>Attach token</span>,
-          onClick: handleAttachToken,
-        },
-    isFeatureEnabled("ubuntu_pro_licensing")
-      ? {
-          children: <span>Detach token</span>,
-          onClick: openDetachModal,
-        }
-      : {},
-  ].filter((link) => link.children);
-
   const noInstanceHasUpgrades =
     !areAllInstancesSelected &&
     toggledInstances.every((instance) => !hasUpgrades(instance.alerts));
@@ -320,7 +254,137 @@ const InstancesPageActions = ({
     !areAllInstancesSelected &&
     toggledInstances.every((instance) => !getFeatures(instance).packages);
 
-  const managePackagesLinks = [
+  const operationsLinks = [
+    {
+      children: (
+        <>
+          <Icon name="power-off" />
+          <span>Shut down</span>
+        </>
+      ),
+      onClick: openShutdownModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Restart</span>
+        </>
+      ),
+      onClick: openRebootModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Remove from Landscape</span>
+        </>
+      ),
+      onClick: openRemoveModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Upgrade distributions</span>
+        </>
+      ),
+      onClick: handleDistributionUpgradesRequest,
+      hasIcon: true,
+      disabled: toggledInstances.every(
+        (instance) => !instance.has_release_upgrades,
+      ),
+    },
+    REPORT_VIEW_ENABLED
+      ? {
+          children: (
+            <>
+              <Icon name="status" />
+              <span>View report</span>
+            </>
+          ),
+          onClick: handleReportView,
+          hasIcon: true,
+        }
+      : {},
+    {
+      children: (
+        <>
+          <Icon name="code" />
+          <span>Run script</span>
+        </>
+      ),
+      onClick: handleRunScript,
+      hasIcon: true,
+      disabled: toggledInstances.every(
+        (instance) => !getFeatures(instance).scripts,
+      ),
+    },
+  ].filter((link) => link.children);
+
+  const groupingLinks = [
+    {
+      children: (
+        <>
+          <Icon name="user-group" />
+          <span>Assign access group</span>
+        </>
+      ),
+      onClick: handleAccessGroupChange,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="tag" />
+          <span>Assign tag</span>
+        </>
+      ),
+      onClick: handleTagsAssign,
+      hasIcon: true,
+    },
+  ];
+
+  const proServicesLinks = [
+    allInstancesHaveToken
+      ? {
+          children: (
+            <>
+              <Icon name="change-version" />
+              <span>Replace token</span>
+            </>
+          ),
+          onClick: handleReplaceToken,
+          hasIcon: true,
+        }
+      : {
+          children: (
+            <>
+              <Icon name="private-key" />
+              <span>Attach token</span>
+            </>
+          ),
+          onClick: handleAttachToken,
+          hasIcon: true,
+        },
+    isFeatureEnabled("ubuntu-pro-licensing")
+      ? {
+          children: (
+            <>
+              <Icon name="disconnect" />
+              <span>Detach token</span>
+            </>
+          ),
+          onClick: openDetachModal,
+          hasIcon: true,
+        }
+      : {},
+  ].filter((link) => link.children);
+
+  const debManagementLinks = [
     {
       children: (
         <>
@@ -425,38 +489,37 @@ const InstancesPageActions = ({
     },
   ];
 
-  const disabled =
+  const bulkActionDisabled =
     (!areAllInstancesSelected && toggledInstances.length <= 0) ||
     (areAllInstancesSelected && toggledInstances.length >= instanceCount) ||
     isGettingInstances;
 
-  const nonBulkActionDisabled = disabled || areAllInstancesSelected;
+  const nonBulkActionDisabled = bulkActionDisabled || areAllInstancesSelected;
 
   return (
     <>
       <ResponsiveButtons
-        collapseFrom={REPORT_VIEW_ENABLED ? "xxl" : "xl"}
+        collapseFrom="sm"
+        className={classes.buttons}
         buttons={[
-          <Button
-            key="shutdown-instances"
-            className="has-icon"
-            type="button"
-            disabled={nonBulkActionDisabled || isShuttingDownInstances}
-            onClick={openShutdownModal}
-          >
-            <Icon name="power-off" />
-            <span>Shut down</span>
-          </Button>,
-          <Button
-            key="reboot-instances"
-            hasIcon
-            type="button"
-            disabled={nonBulkActionDisabled || isRestartingInstances}
-            onClick={openRebootModal}
-          >
-            <Icon name="restart" />
-            <span>Restart</span>
-          </Button>,
+          <ContextualMenu
+            key="operations"
+            links={operationsLinks}
+            position="right"
+            toggleLabel="Operations"
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={nonBulkActionDisabled}
+            hasToggleIcon
+          />,
+          <ContextualMenu
+            key="grouping"
+            links={groupingLinks}
+            position="right"
+            toggleLabel="Grouping"
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={nonBulkActionDisabled}
+            hasToggleIcon
+          />,
           hasOneItem(proServicesLinks) ? (
             <Button
               key="pro-services"
@@ -464,124 +527,41 @@ const InstancesPageActions = ({
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
               disabled={nonBulkActionDisabled}
+              hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
             </Button>
           ) : (
             <ContextualMenu
-              position="left"
+              position="right"
               key="pro-services"
-              hasToggleIcon
               links={proServicesLinks}
-              toggleLabel={<span>Pro services</span>}
+              toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
               toggleDisabled={nonBulkActionDisabled}
+              hasToggleIcon
             />
           ),
-          REPORT_VIEW_ENABLED && (
-            <Button
-              key="report-view"
-              type="button"
-              onClick={handleReportView}
-              disabled={nonBulkActionDisabled}
-            >
-              <Icon name="status" />
-              <span>View report</span>
-            </Button>
-          ),
-          <Button
-            key="run-script"
-            type="button"
-            hasIcon
-            onClick={handleRunScript}
-            disabled={
-              toggledInstances.every((instance) => {
-                return !getFeatures(instance).scripts;
-              }) || areAllInstancesSelected
-            }
-          >
-            <Icon name="code" />
-            <span>Run script</span>
-          </Button>,
           <ContextualMenu
-            key="manage-packages"
+            key="deb-management"
             hasToggleIcon
-            links={managePackagesLinks}
+            links={debManagementLinks}
             position="right"
-            toggleLabel={<span>Manage packages</span>}
+            toggleLabel={<span>Deb management</span>}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={disabled}
+            toggleDisabled={bulkActionDisabled}
           />,
-          <Button
-            key="remove"
-            type="button"
-            hasIcon
-            onClick={openRemoveModal}
-            disabled={nonBulkActionDisabled}
-          >
-            <Icon name="delete" />
-            <span>Remove from Landscape</span>
-          </Button>,
         ]}
       />
-      <ContextualMenu
-        hasToggleIcon
-        links={[
-          {
-            children: "Access group",
-            onClick: handleAccessGroupChange,
-          },
-          {
-            children: "Tags",
-            onClick: handleTagsAssign,
-          },
-        ]}
-        position="right"
-        toggleLabel={
-          <>
-            <Icon name="plus" />
-            <span>Assign</span>
-          </>
-        }
-        toggleDisabled={nonBulkActionDisabled}
-        toggleClassName="u-no-margin--bottom"
-      />
-      {rebootModalOpen &&
-        createPortal(
-          <ConfirmationModal
-            close={closeRebootModal}
-            title="Restarting selected instances"
-            confirmButtonLabel="Restart"
-            confirmButtonAppearance="negative"
-            confirmButtonLoading={isRestartingInstances}
-            confirmButtonDisabled={isRestartingInstances}
-            onConfirm={handleRebootInstance}
-          >
-            <p>
-              Are you sure you want to restart{" "}
-              {pluralizeWithCount(toggledInstances.length, "instance")}?
-            </p>
-          </ConfirmationModal>,
-          document.body,
-        )}
-      {shutdownModalOpen &&
-        createPortal(
-          <ConfirmationModal
-            close={closeShutdownModal}
-            title="Shutting down selected instances"
-            confirmButtonLabel="Shut down"
-            confirmButtonAppearance="negative"
-            confirmButtonLoading={isShuttingDownInstances}
-            confirmButtonDisabled={isShuttingDownInstances}
-            onConfirm={handleShutdownInstance}
-          >
-            <p>
-              Are you sure you want to shut down{" "}
-              {pluralizeWithCount(toggledInstances.length, "instance")}?
-            </p>
-          </ConfirmationModal>,
-          document.body,
-        )}
+      {rebootModalOpen && (
+        <RestartModal close={closeRebootModal} instances={toggledInstances} />
+      )}
+      {shutdownModalOpen && (
+        <ShutDownModal
+          close={closeShutdownModal}
+          instances={toggledInstances}
+        />
+      )}
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}

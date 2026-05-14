@@ -1,35 +1,20 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import type { FormikContextType } from "formik";
 import { describe, it } from "vitest";
+import { createFormik } from "@/tests/formik";
 import type { DeliveryProps } from "./DeliveryBlock";
 import DeliveryBlock from "./DeliveryBlock";
 
 describe("DeliveryBlock", () => {
-  const formik = {
-    values: {
-      deliver_immediately: true,
-    },
-    touched: {},
-    errors: {},
-    setFieldValue: vi.fn(),
-    getFieldProps: vi.fn(() => ({
-      name: "deliver_after",
-      value: "",
-      onChange: vi.fn(),
-      onBlur: vi.fn(),
-    })),
-  } as unknown as FormikContextType<DeliveryProps>;
+  const formik = createFormik<DeliveryProps>({
+    deliver_immediately: true,
+    deliver_after: "",
+  });
 
-  const formikWithScheduledDelivery = {
-    ...formik,
-    values: {
-      ...formik.values,
-      deliver_immediately: false,
-    },
-    touched: {},
-    errors: {},
-  } as unknown as FormikContextType<DeliveryProps>;
+  const formikWithScheduledDelivery = createFormik<DeliveryProps>({
+    deliver_immediately: false,
+    deliver_after: "2026-03-17T12:00",
+  });
 
   it("should display delivery block", async () => {
     renderWithProviders(<DeliveryBlock formik={formik} />);

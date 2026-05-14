@@ -8,7 +8,7 @@ const PackageProfilesEmptyState: FC = () => {
 
   const handleCreatePackageProfile = createPageParamsSetter({
     sidePath: ["add"],
-    profile: "",
+    name: "",
   });
 
   return (

@@ -5,8 +5,8 @@ export const PROFILES_PATHS = {
   package: "package",
   reboot: "reboot",
   removal: "removal",
-  repository: "repository",
-  security: "security",
+  repositoryProfiles: "repository-profiles",
+  usg: "usg",
   upgrade: "upgrade",
   wsl: "wsl",
 } as const;
@@ -20,8 +20,10 @@ export const PROFILES_ROUTES = {
   package: createRoute(buildProfilePath(PROFILES_PATHS.package)),
   reboot: createRoute(buildProfilePath(PROFILES_PATHS.reboot)),
   removal: createRoute(buildProfilePath(PROFILES_PATHS.removal)),
-  repository: createRoute(buildProfilePath(PROFILES_PATHS.repository)),
-  security: createRoute(buildProfilePath(PROFILES_PATHS.security)),
+  repositoryProfiles: createRoute(
+    buildProfilePath(PROFILES_PATHS.repositoryProfiles),
+  ),
+  usg: createRoute(buildProfilePath(PROFILES_PATHS.usg)),
   upgrade: createRoute(buildProfilePath(PROFILES_PATHS.upgrade)),
   wsl: createRoute(buildProfilePath(PROFILES_PATHS.wsl)),
 } as const;

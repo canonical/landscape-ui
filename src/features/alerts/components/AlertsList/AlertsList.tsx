@@ -1,4 +1,4 @@
-import { seriesCardClasses } from "@/features/mirrors";
+import { cardClasses } from "@/components/layout/Card";
 import useAuth from "@/hooks/useAuth";
 import type { MultiSelectItem } from "@canonical/react-components";
 import classNames from "classnames";
@@ -18,11 +18,11 @@ const AlertsList: FC<AlertsListProps> = ({ alerts, availableTagOptions }) => {
     (account) => account.name === user.current_account,
   );
   return (
-    <div className={classNames(seriesCardClasses.card, classes.card)}>
-      <div className={seriesCardClasses.header}>
-        <p className={seriesCardClasses.title}>{account?.title || "Alerts"}</p>
+    <div className={classNames(cardClasses.card, classes.card)}>
+      <div className={cardClasses.header}>
+        <p className={cardClasses.title}>{account?.title || "Alerts"}</p>
       </div>
-      <div className={classNames(seriesCardClasses.content, classes.content)}>
+      <div className={classNames(cardClasses.content, classes.content)}>
         <AlertsTable
           alerts={alerts}
           availableTagOptions={availableTagOptions}

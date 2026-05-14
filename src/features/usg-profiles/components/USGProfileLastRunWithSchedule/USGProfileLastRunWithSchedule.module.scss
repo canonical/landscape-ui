@@ -1,0 +1,20 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.tooltip {
+  display: flex !important;
+}
+
+.truncated {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ellipsis {
+  color: $colors--theme--text-muted;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

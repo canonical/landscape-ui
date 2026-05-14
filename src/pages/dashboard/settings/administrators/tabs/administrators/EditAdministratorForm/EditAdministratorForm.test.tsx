@@ -2,7 +2,7 @@ import NoData from "@/components/layout/NoData";
 import { administrators } from "@/tests/mocks/administrators";
 import { roles } from "@/tests/mocks/roles";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import EditAdministratorForm from "./EditAdministratorForm";
@@ -81,5 +81,52 @@ describe("EditAdministratorForm", () => {
     const saveButton = screen.getByRole("button", { name: /save changes/i });
     expect(saveButton).not.toHaveAttribute("aria-disabled");
     expect(saveButton).toBeEnabled();
+  });
+
+  it("confirms disable administrator", async () => {
+    renderWithProviders(<EditAdministratorForm {...props} />);
+    const removeButton = screen.getByRole("button", { name: /remove/i });
+    await user.click(removeButton);
+
+    const dialog = await screen.findByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+
+    expect(
+      within(dialog).getByText(/this will remove the administrator/i),
+    ).toBeInTheDocument();
+
+    const buttons = within(dialog).getAllByRole("button");
+    const confirmButton = buttons.find((btn) =>
+      btn.textContent?.toLowerCase().includes("remove"),
+    );
+    expect(confirmButton).toBeDefined();
+    assert(confirmButton);
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+  });
+
+  it("submits the form successfully after changing roles", async () => {
+    renderWithProviders(<EditAdministratorForm {...props} />);
+
+    const combobox = screen.getByRole("combobox", { name: /roles/i });
+    await user.click(combobox);
+
+    const uncheckedRole = roles.find(
+      (role) => !props.administrator.roles.includes(role.name),
+    );
+    assert(uncheckedRole);
+
+    await user.click(
+      screen.getByRole("checkbox", { name: uncheckedRole.name }),
+    );
+
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    expect(
+      await screen.findByText(/permission changes have been queued/i),
+    ).toBeInTheDocument();
   });
 });

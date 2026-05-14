@@ -1,5 +1,6 @@
 import type {
   Instance,
+  InstanceWithoutRelation,
   PendingInstance,
   WindowsInstance,
 } from "@/types/Instance";
@@ -39,6 +40,11 @@ export const ubuntuInstance: Instance = {
       summary: "",
       severity: "info",
     },
+    {
+      type: "EsmDisabledAlert",
+      summary: "ESM disabled",
+      severity: "warning",
+    },
   ],
   distribution_info: {
     code_name: "lucid",
@@ -52,6 +58,7 @@ export const ubuntuInstance: Instance = {
   annotations: {
     MockAnnotation: "MockValue",
   },
+  has_release_upgrades: true,
 };
 
 export const ubuntuCoreInstance: Instance = {
@@ -146,6 +153,7 @@ export const ubuntuCoreInstance: Instance = {
   },
   archived: false,
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
 };
 
 export const windowsInstance: WindowsInstance = {
@@ -204,6 +212,7 @@ export const windowsInstance: WindowsInstance = {
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: true,
     },
     {
       id: 65,
@@ -333,8 +342,9 @@ export const windowsInstance: WindowsInstance = {
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: true,
     },
-  ],
+  ] as const satisfies InstanceWithoutRelation[],
   parent: null,
   distribution_info: {
     code_name: "windows",
@@ -345,6 +355,7 @@ export const windowsInstance: WindowsInstance = {
   employee_id: null,
   archived: false,
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
 };
 
 export const debianInstance: Instance = {
@@ -406,6 +417,104 @@ export const debianInstance: Instance = {
     },
   ],
   registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
+};
+
+const recoveryKeyInstance: Instance = {
+  id: 0,
+  title: "Recovery Key Base",
+  hostname: "recovery-key-base",
+  comment: "",
+  cloud_init: {},
+  is_default_child: null,
+  total_memory: 1024,
+  total_swap: 1024,
+  reboot_required_flag: false,
+  update_manager_prompt: "normal",
+  clone_id: null,
+  secrets_name: null,
+  last_exchange_time: null,
+  last_ping_time: "2023-11-29T18:29:25Z",
+  tags: [],
+  access_group: "server",
+  distribution: "10.04",
+  cloud_instance_metadata: {},
+  vm_info: null,
+  container_info: null,
+  ubuntu_pro_info: null,
+  is_wsl_instance: false,
+  children: [],
+  parent: null,
+  upgrades: {
+    regular: 7,
+    security: 0,
+  },
+  distribution_info: {
+    code_name: "precise",
+    description: "Ubuntu 12.04 LTS",
+    distributor: "Canonical",
+    release: "12.04",
+  },
+  employee_id: 1,
+  archived: false,
+  registered_at: "2023-11-29T18:29:25Z",
+  has_release_upgrades: false,
+};
+
+export const instanceNoActivityNoKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 500,
+  title: "No Activity No Key",
+  hostname: "no-activity-no-key",
+};
+
+export const instanceActivityWithKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 501,
+  title: "Activity With Key",
+  hostname: "activity-with-key",
+};
+
+export const instanceNoActivityWithKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 502,
+  title: "No Activity With Key",
+  hostname: "no-activity-with-key",
+};
+
+export const instanceActivityNoKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 503,
+  title: "Activity No Key",
+  hostname: "activity-no-key",
+};
+
+export const instanceFailedActivityWithKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 504,
+  title: "Failed Activity With Key",
+  hostname: "failed-activity-with-key",
+};
+
+export const instanceCanceledActivityWithKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 505,
+  title: "Canceled Activity With Key",
+  hostname: "canceled-activity-with-key",
+};
+
+export const instanceFailedActivityNoKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 506,
+  title: "Failed Activity No Key",
+  hostname: "failed-activity-no-key",
+};
+
+export const instanceCanceledActivityNoKey: Instance = {
+  ...recoveryKeyInstance,
+  id: 507,
+  title: "Canceled Activity No Key",
+  hostname: "canceled-activity-no-key",
 };
 
 export const instances = [
@@ -448,6 +557,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 11,
@@ -511,10 +621,12 @@ export const instances = [
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: false,
     },
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 65,
@@ -674,10 +786,12 @@ export const instances = [
       employee_id: null,
       archived: false,
       registered_at: "2023-11-29T18:29:25Z",
+      has_release_upgrades: false,
     },
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 7,
@@ -713,6 +827,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 3,
@@ -752,6 +867,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 8,
@@ -787,6 +903,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 5,
@@ -826,6 +943,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 4,
@@ -865,6 +983,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 9,
@@ -904,6 +1023,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 10,
@@ -939,6 +1059,7 @@ export const instances = [
     employee_id: null,
     archived: true,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   windowsInstance,
   {
@@ -1084,6 +1205,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 12,
@@ -1118,6 +1240,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 21,
@@ -1194,8 +1317,17 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   ubuntuCoreInstance,
+  instanceNoActivityNoKey,
+  instanceActivityWithKey,
+  instanceNoActivityWithKey,
+  instanceActivityNoKey,
+  instanceFailedActivityWithKey,
+  instanceCanceledActivityWithKey,
+  instanceFailedActivityNoKey,
+  instanceCanceledActivityNoKey,
   {
     id: 200,
     title: "Application Server 3",
@@ -1234,6 +1366,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 201,
@@ -1273,6 +1406,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 202,
@@ -1312,6 +1446,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 203,
@@ -1351,6 +1486,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 204,
@@ -1390,6 +1526,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 205,
@@ -1429,6 +1566,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 206,
@@ -1468,6 +1606,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 207,
@@ -1507,6 +1646,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 208,
@@ -1546,6 +1686,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 209,
@@ -1585,6 +1726,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
   {
     id: 210,
@@ -1624,6 +1766,7 @@ export const instances = [
     employee_id: 1,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
+    has_release_upgrades: false,
   } as Instance,
 ] as const satisfies Instance[];
 
@@ -1662,3 +1805,45 @@ export const pendingInstances = [
     access_group: null,
   },
 ] as const satisfies PendingInstance[];
+
+export const instanceWithHardware: Instance = {
+  ...ubuntuInstance,
+  grouped_hardware: {
+    system: {
+      bios_capabilities: [],
+      model: "ThinkPad X1",
+      vendor: "Lenovo",
+      bios_vendor: "LENOVO",
+      bios_date: "2023-01-01",
+      serial: "SN12345",
+      chassis: "Notebook",
+      bios_version: "1.0",
+    },
+    cpu: [
+      {
+        vendor: "Intel",
+        clock_speed: "3.0 GHz",
+        model: "Core i7",
+        architecture: "x86_64",
+        cache: {},
+        flags: [],
+      },
+    ],
+    memory: { size: "16 GB" },
+    network: [
+      {
+        ip: "192.168.1.1",
+        vendor: "Intel",
+        product: "Ethernet",
+        mac: "aa:bb:cc:dd:ee:ff",
+        description: "Ethernet adapter",
+      },
+    ],
+    multimedia: { model: "HD Audio", vendor: "Realtek" },
+    storage: [],
+    display: { model: "", vendor: "" },
+    pci: [],
+    scsi: [],
+    usb: [],
+  },
+};
