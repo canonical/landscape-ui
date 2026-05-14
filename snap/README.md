@@ -4,24 +4,26 @@ Serves the Landscape web dashboard (Vite/React SPA) over HTTPS and reverse-proxi
 
 ---
 
-## Build
+## Contents
 
-### macOS (via Multipass)
+- [Build](#build--linux)
+  - [Linux](#build--linux)
+  - [macOS (Multipass)](#build--macos-multipass)
+- [Install](#install)
+- [Run](#run)
+- [Access](#access)
+- [Connecting to a backend](#connecting-to-a-backend)
+  - [Linux](#linux)
+  - [macOS (Multipass)](#macos-multipass)
+- [Mock mode (MSW)](#mock-mode-msw)
+- [Configuration](#configuration)
+- [Logs and data paths](#logs-and-data-paths)
+- [Snap files](#snap-files)
+- [Appendix: MSW trade-offs](#appendix-msw-trade-offs)
 
-`snapcraft` only runs on Linux, so on macOS the build script manages a Multipass Ubuntu 24.04 VM automatically — creating it on first run and reusing it on subsequent runs.
+---
 
-**Prerequisites:** [Multipass](https://multipass.run) installed.
-
-```sh
-cd landscape-packaging/landscape-ui
-
-./snap/build-snap.sh              # production build
-./snap/build-snap.sh --mock       # MSW-enabled build — no backend needed
-```
-
-The VM is named `landscape-ui-build`. The script mounts the project directory into the VM at `/build`, rsyncs source to `/root/landscape-ui-src/`, and runs `snapcraft pack --destructive-mode` there. The `.snap` file is copied back to `snap/`.
-
-### Linux
+## Build — Linux
 
 **Prerequisites:**
 
@@ -42,7 +44,26 @@ The `.snap` file is written to `snap/output/`.
 
 ---
 
+## Build — macOS (Multipass)
+
+`snapcraft` only runs on Linux. On macOS the build script manages a Multipass Ubuntu 24.04 VM automatically — creating it on first run and reusing it on subsequent runs.
+
+**Prerequisites:** [Multipass](https://multipass.run) installed.
+
+```sh
+cd landscape-packaging/landscape-ui
+
+./snap/build-snap.sh              # production build
+./snap/build-snap.sh --mock       # MSW-enabled build — no backend needed
+```
+
+The VM is named `landscape-ui-build`. The script mounts the project directory into the VM at `/build`, rsyncs source to `/root/landscape-ui-src/`, and runs `snapcraft pack --destructive-mode` there. The `.snap` file is copied back to `snap/`.
+
+---
+
 ## Install
+
+Snaps can only be installed directly on Linux. If you're on a Mac or other OS, do the following steps inside the same multipass VM where you packed the snap.
 
 ```sh
 sudo snap install --devmode landscape-ui_*.snap
@@ -81,92 +102,69 @@ A self-signed TLS certificate is generated on first start. Accept the browser wa
 
 ```sh
 multipass info landscape-ui-build | grep IPv4
-# open https://<ip>/new_dashboard/
+# then open https://<ip>/new_dashboard/ on the host
 ```
 
 ---
 
 ## Connecting to a backend
 
-The snap proxies `/api/` and `/debarchive/` to configurable hosts. There are two supported setups.
+The snap proxies `/api/` to the Landscape API and `/debarchive/` to the deb archive service. The `/debarchive/v1beta1/` URL slug used by the browser is fixed — nginx strips the `/debarchive` prefix before forwarding, so the backend always receives `/v1beta1/` regardless of host or port.
 
-### Option A — backend on the Mac host (snap in Multipass VM)
+### Linux
 
-Run the landscape-backend rock stack on your Mac as normal (`docker compose up` in `landscape-packaging/rock/`), then point the snap at the Mac's IP as seen from the VM:
+**Rock stack (localhost defaults)**
+
+The snap defaults match the rock stack's haproxy (`443`) and debarchive (`8000`) ports. Start the stack and install the snap — no `snap set` required.
 
 ```sh
-# The Mac host is always reachable from Multipass VMs at 192.168.64.1
+cd landscape-packaging/rock
+docker compose up -d
+```
+
+**Backend containers without the rock stack**
+
+If services are running directly (not via the rock stack), ports will differ. Point the snap at them explicitly:
+
+```sh
+sudo snap set landscape-ui \
+  landscape.ui.backend-host=localhost \
+  landscape.ui.backend-port=9091 \
+  landscape.ui.backend-scheme=http \
+  landscape.ui.debarchive-host=localhost \
+  landscape.ui.debarchive-port=8000 \
+  landscape.ui.debarchive-scheme=http
+```
+
+### macOS (Multipass)
+
+Run the backend on your Mac with the snap running in Multipass. The Mac host is always reachable from Multipass VMs at `192.168.64.1`:
+
+**Option A — Using the landscape-backend rock stack:**
+
+```sh
 multipass exec landscape-ui-build -- sudo snap set landscape-ui \
   landscape.ui.backend-host=192.168.64.1 \
   landscape.ui.backend-port=443 \
   landscape.ui.debarchive-host=192.168.64.1 \
-  landscape.ui.debarchive-port=443
+  landscape.ui.debarchive-port=8000
 ```
 
-The snap nginx proxies to `https://192.168.64.1:443` with TLS verification disabled (self-signed backend cert is fine).
+---
 
-Open `https://192.168.64.24/new_dashboard/` (use your VM's actual IP).
+**Option B — Using the docker setup from landscape-packaging, no rock build:**
 
-### Option B — backend inside the Multipass VM (fully self-contained)
-
-Run the rock stack inside the same VM as the snap. Useful for demos or QA where you want a fully isolated environment.
-
-**1. Install Docker in the VM:**
-
-```sh
-multipass exec landscape-ui-build -- bash -c "
-  curl -fsSL https://get.docker.com | sudo sh
-  sudo usermod -aG docker ubuntu
-"
-```
-
-**2. Copy the rock image into the VM and import it:**
-
-```sh
-# On your Mac — copy the built .rock file into the VM
-multipass transfer \
-  landscape-packaging/rock/landscape-backend_*.rock \
-  landscape-ui-build:/home/ubuntu/
-
-# In the VM — import into Docker
-multipass exec landscape-ui-build -- bash -c "
-  docker run -d -p 6100:5000 --name registry registry:2
-  skopeo copy --dest-tls-verify=false \
-    oci-archive:/home/ubuntu/landscape-backend_*.rock \
-    docker://localhost:6100/landscape-backend:latest
-  docker pull localhost:6100/landscape-backend:latest
-  docker tag localhost:6100/landscape-backend:latest landscape-backend:latest
-"
-```
-
-**3. Copy the compose stack and start it:**
-
-```sh
-multipass transfer --recursive \
-  landscape-packaging/rock/. \
-  landscape-ui-build:/home/ubuntu/landscape-rock/
-
-multipass exec landscape-ui-build -- bash -c "
-  cd /home/ubuntu/landscape-rock
-  LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS='--with-computers' docker compose up -d
-"
-```
-
-**4. Point the snap at localhost (default — no `snap set` needed):**
-
-The snap's default `backend-host` is `localhost` and `backend-port` is `443`, matching the compose stack's haproxy port. If you previously changed these, reset them:
+Same as above but with different ports:
 
 ```sh
 multipass exec landscape-ui-build -- sudo snap set landscape-ui \
-  landscape.ui.backend-host=localhost \
-  landscape.ui.backend-port=443 \
-  landscape.ui.debarchive-host=localhost \
-  landscape.ui.debarchive-port=443
+  landscape.ui.backend-host=192.168.64.1 \
+  landscape.ui.backend-port=9091 \
+  landscape.ui.backend-scheme=http \
+  landscape.ui.debarchive-host=192.168.64.1 \
+  landscape.ui.debarchive-port=8000 \
+  landscape.ui.debarchive-scheme=http
 ```
-
-The compose stack's haproxy listens on port 443 inside the VM, so the snap proxies to `https://localhost:443`.
-
-Open `https://<vm-ip>/new_dashboard/`.
 
 ---
 
@@ -175,10 +173,12 @@ Open `https://<vm-ip>/new_dashboard/`.
 Build with `--mock` to embed [Mock Service Worker](https://mswjs.io/) in the bundle. All API calls are intercepted in-browser — no Landscape backend is required. Useful for UI development and demo purposes.
 
 ```sh
-./snap/build-snap.sh --mock          # macOS
 ./snap/build-snap-linux.sh --mock    # Linux
+./snap/build-snap.sh --mock          # macOS
 sudo snap install --devmode snap/landscape-ui_*.snap
 ```
+
+See [Appendix: MSW trade-offs](#appendix-msw-trade-offs) for the implications of including or dropping this feature.
 
 ---
 
@@ -186,17 +186,17 @@ sudo snap install --devmode snap/landscape-ui_*.snap
 
 Use `snap set` to configure the snap at runtime. Changes take effect immediately (the service restarts automatically).
 
-| Key                            | Default        | Description                  |
-| ------------------------------ | -------------- | ---------------------------- |
-| `landscape.ui.listen-port`     | `443`          | HTTPS listen port            |
-| `landscape.ui.backend-host` | `localhost` | Landscape API host |
-| `landscape.ui.backend-port` | `443` | Landscape API port (haproxy) |
-| `landscape.ui.backend-scheme` | `https` | Landscape API scheme (`http` or `https`) |
-| `landscape.ui.debarchive-host` | `localhost` | Deb archive host |
-| `landscape.ui.debarchive-port` | `8000` | Deb archive port |
-| `landscape.ui.debarchive-scheme` | `http` | Deb archive scheme (`http` or `https`) |
-| `landscape.ui.cert-file`       | auto-generated | Path to TLS certificate      |
-| `landscape.ui.key-file`        | auto-generated | Path to TLS private key      |
+| Key                              | Default        | Description                              |
+| -------------------------------- | -------------- | ---------------------------------------- |
+| `landscape.ui.listen-port`       | `443`          | HTTPS listen port                        |
+| `landscape.ui.backend-host`      | `localhost`    | Landscape API host                       |
+| `landscape.ui.backend-port`      | `443`          | Landscape API port (haproxy)             |
+| `landscape.ui.backend-scheme`    | `https`        | Landscape API scheme (`http` or `https`) |
+| `landscape.ui.debarchive-host`   | `localhost`    | Deb archive host                         |
+| `landscape.ui.debarchive-port`   | `8000`         | Deb archive port                         |
+| `landscape.ui.debarchive-scheme` | `http`         | Deb archive scheme (`http` or `https`)   |
+| `landscape.ui.cert-file`         | auto-generated | Path to TLS certificate                  |
+| `landscape.ui.key-file`          | auto-generated | Path to TLS private key                  |
 
 **Example — point to a running Landscape server:**
 
@@ -238,3 +238,35 @@ sudo snap set landscape-ui \
 | `snap/hooks/configure`             | Restarts service on `snap set`                                           |
 | `snap/build-snap.sh`               | macOS build script (Multipass)                                           |
 | `snap/build-snap-linux.sh`         | Linux build script (native)                                              |
+
+---
+
+## Appendix: MSW trade-offs
+
+[Mock Service Worker](https://mswjs.io/) intercepts API requests in the browser's service worker layer. The `--mock` build flag embeds it in the snap bundle.
+
+### Keeping MSW support
+
+**Pros**
+
+- Snap works without any backend — useful for demos, UI development, offline QA
+- No `snap set` configuration needed after install
+
+**Cons**
+
+- Two source changes required to make MSW work in production builds:
+  - `main.tsx`: the `isDevEnv &&` guard on the MSW start call must be removed, because `import.meta.env.DEV` is `false` in all Vite production builds
+  - `vite.config.ts`: the `exclude-msw` plugin must skip deleting `mockServiceWorker.js` when `VITE_MSW_ENABLED=true`
+- `mockServiceWorker.js` is included in every `--mock` build (~50 KB)
+- `VITE_MSW_ENABLED=true` and `VITE_MSW_ENDPOINTS_TO_INTERCEPT=/` must both be set at build time; missing either silently disables interception
+
+### Dropping MSW support
+
+Revert these changes and the snap becomes real-backend-only:
+
+- `main.tsx` — restore `isDevEnv &&` guard
+- `vite.config.ts` — always delete `mockServiceWorker.js` from dist
+- `build-snap.sh` / `build-snap-linux.sh` — remove `VITE_MSW_ENABLED` and `VITE_MSW_ENDPOINTS_TO_INTERCEPT` from `.env.production.local`; remove `--mock` flag handling
+- `snap/README.md` — remove Mock mode section
+
+Simpler build scripts, no production-mode MSW edge cases, smaller bundle.
