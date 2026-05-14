@@ -42,7 +42,7 @@ http {
         }
 
         location /api/ {
-            proxy_pass https://${LANDSCAPE_UI_BACKEND_HOST}:${LANDSCAPE_UI_BACKEND_PORT};
+            proxy_pass ${LANDSCAPE_UI_BACKEND_SCHEME}://${LANDSCAPE_UI_BACKEND_HOST}:${LANDSCAPE_UI_BACKEND_PORT};
             proxy_ssl_verify off;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
@@ -52,7 +52,7 @@ http {
 
         location /debarchive/ {
             rewrite ^/debarchive/(.*) /$1 break;
-            proxy_pass https://${LANDSCAPE_UI_DEBARCHIVE_HOST}:${LANDSCAPE_UI_DEBARCHIVE_PORT};
+            proxy_pass ${LANDSCAPE_UI_DEBARCHIVE_SCHEME}://${LANDSCAPE_UI_DEBARCHIVE_HOST}:${LANDSCAPE_UI_DEBARCHIVE_PORT};
             proxy_ssl_verify off;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;

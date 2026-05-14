@@ -3,8 +3,10 @@
 KEY_MAPPINGS="
 LANDSCAPE_UI_BACKEND_HOST|landscape.ui.backend-host|localhost
 LANDSCAPE_UI_BACKEND_PORT|landscape.ui.backend-port|443
+LANDSCAPE_UI_BACKEND_SCHEME|landscape.ui.backend-scheme|https
 LANDSCAPE_UI_DEBARCHIVE_HOST|landscape.ui.debarchive-host|localhost
-LANDSCAPE_UI_DEBARCHIVE_PORT|landscape.ui.debarchive-port|443
+LANDSCAPE_UI_DEBARCHIVE_PORT|landscape.ui.debarchive-port|8000
+LANDSCAPE_UI_DEBARCHIVE_SCHEME|landscape.ui.debarchive-scheme|http
 LANDSCAPE_UI_LISTEN_PORT|landscape.ui.listen-port|443
 LANDSCAPE_UI_CERT_FILE|landscape.ui.cert-file|
 LANDSCAPE_UI_KEY_FILE|landscape.ui.key-file|
@@ -43,7 +45,7 @@ mkdir -p \
     "$SNAP_COMMON/nginx-tmp/scgi"
 
 # Render nginx config from template
-envsubst '${SNAP} ${SNAP_COMMON} ${LANDSCAPE_UI_LISTEN_PORT} ${LANDSCAPE_UI_CERT_FILE} ${LANDSCAPE_UI_KEY_FILE} ${LANDSCAPE_UI_BACKEND_HOST} ${LANDSCAPE_UI_BACKEND_PORT} ${LANDSCAPE_UI_DEBARCHIVE_HOST} ${LANDSCAPE_UI_DEBARCHIVE_PORT}' \
+envsubst '${SNAP} ${SNAP_COMMON} ${LANDSCAPE_UI_LISTEN_PORT} ${LANDSCAPE_UI_CERT_FILE} ${LANDSCAPE_UI_KEY_FILE} ${LANDSCAPE_UI_BACKEND_SCHEME} ${LANDSCAPE_UI_BACKEND_HOST} ${LANDSCAPE_UI_BACKEND_PORT} ${LANDSCAPE_UI_DEBARCHIVE_SCHEME} ${LANDSCAPE_UI_DEBARCHIVE_HOST} ${LANDSCAPE_UI_DEBARCHIVE_PORT}' \
     < "$SNAP/nginx.conf.tmpl" > "$SNAP_COMMON/nginx.conf"
 
 exec nginx -c "$SNAP_COMMON/nginx.conf" -g "daemon off;"

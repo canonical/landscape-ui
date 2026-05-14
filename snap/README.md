@@ -189,10 +189,12 @@ Use `snap set` to configure the snap at runtime. Changes take effect immediately
 | Key                            | Default        | Description                  |
 | ------------------------------ | -------------- | ---------------------------- |
 | `landscape.ui.listen-port`     | `443`          | HTTPS listen port            |
-| `landscape.ui.backend-host`    | `localhost`    | Landscape API host           |
-| `landscape.ui.backend-port`    | `443`          | Landscape API port (haproxy) |
-| `landscape.ui.debarchive-host` | `localhost`    | Deb archive host             |
-| `landscape.ui.debarchive-port` | `443`          | Deb archive port (haproxy)   |
+| `landscape.ui.backend-host` | `localhost` | Landscape API host |
+| `landscape.ui.backend-port` | `443` | Landscape API port (haproxy) |
+| `landscape.ui.backend-scheme` | `https` | Landscape API scheme (`http` or `https`) |
+| `landscape.ui.debarchive-host` | `localhost` | Deb archive host |
+| `landscape.ui.debarchive-port` | `8000` | Deb archive port |
+| `landscape.ui.debarchive-scheme` | `http` | Deb archive scheme (`http` or `https`) |
 | `landscape.ui.cert-file`       | auto-generated | Path to TLS certificate      |
 | `landscape.ui.key-file`        | auto-generated | Path to TLS private key      |
 
