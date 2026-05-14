@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
         name: "exclude-msw",
         apply: "build",
         closeBundle() {
+          if (env.VITE_MSW_ENABLED === "true") return;
           const mswPath = path.resolve(__dirname, "dist/mockServiceWorker.js");
           if (fs.existsSync(mswPath)) {
             fs.unlinkSync(mswPath);
