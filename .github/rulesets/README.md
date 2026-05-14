@@ -14,7 +14,12 @@ auditable, reviewable via PR, and reproducible across environments.
 
 | File | Purpose |
 |---|---|
-| [protected-branches.json](protected-branches.json) | Pull-request, status-check, signed-commit, and force-push rules covering `main`, `release/*`, and `point/*`. Excludes `changeset-release/**` so the Changesets bot can push to its own branches. |
+| [protected-branches.json](protected-branches.json) | Pull-request, status-check, signed-commit, force-push, and Copilot-review rules covering `main`, `release/*`, and `point/*`. The `changeset-release/*` branches the Changesets bot pushes to don't match these patterns, so no exclude entry is needed. |
+
+The currently-deployed ruleset id is **`16386358`** (canonical/landscape-ui).
+The JSON in this directory is the canonical definition; it omits the
+server-assigned `id`, `source`, and `source_type` fields that GitHub adds
+when you `GET` a ruleset — keep them out when committing.
 
 ## Applying a ruleset
 
@@ -36,36 +41,56 @@ Note the `id` field in the response — you'll need it to update later.
 ### Update (after editing the JSON)
 
 ```bash
-RULESET_ID=<id from create response, or `gh api /repos/canonical/landscape-ui/rulesets` to list>
-
 gh api \
   --method PUT \
   -H "Accept: application/vnd.github+json" \
-  /repos/canonical/landscape-ui/rulesets/$RULESET_ID \
+  /repos/canonical/landscape-ui/rulesets/16386358 \
   --input .github/rulesets/protected-branches.json
 ```
+
+If the id ever changes (ruleset re-created), find the new one with
+`gh api /repos/canonical/landscape-ui/rulesets --jq '.[] | {id,name}'`.
 
 ### Inspect what's currently live
 
 ```bash
 gh api /repos/canonical/landscape-ui/rulesets
-gh api /repos/canonical/landscape-ui/rulesets/$RULESET_ID
+gh api /repos/canonical/landscape-ui/rulesets/16386358
 ```
+
+### Diff the committed JSON against what's live
+
+```bash
+diff <(gh api /repos/canonical/landscape-ui/rulesets/16386358 \
+       --jq 'del(.id, .source, .source_type, .created_at, .updated_at, .node_id, .current_user_can_bypass, .links)') \
+     <(jq . .github/rulesets/protected-branches.json)
+```
+
+A clean diff means the committed source matches reality — what you want
+before signing off an ISO 9001 audit cycle.
 
 ## Required status checks
 
-The `required_status_checks` list uses **job names** as they appear in the
-Checks tab on a PR. The current set maps to:
+The `required_status_checks` list uses **`<workflow name> / <job id>`** as
+the context (the fully-qualified form GitHub displays in the Checks tab).
+This makes the gate robust against another workflow defining a job with
+the same name. The current set maps to:
 
 | Context | Workflow | Job |
 |---|---|---|
-| `eslint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `eslint` |
-| `prettier` | [.github/workflows/lint.yml](../workflows/lint.yml) | `prettier` |
-| `stylelint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `stylelint` |
-| `unit-tests` | [.github/workflows/run-tests.yml](../workflows/run-tests.yml) | `unit-tests` |
-| `e2e-tests` | [.github/workflows/run-tests.yml](../workflows/run-tests.yml) | `e2e-tests` |
-| `verify` | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml) | `verify` |
+| `Lint & format / eslint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `eslint` |
+| `Lint & format / prettier` | [.github/workflows/lint.yml](../workflows/lint.yml) | `prettier` |
+| `Lint & format / stylelint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `stylelint` |
+| `Run tests / unit-tests` | [.github/workflows/run-tests.yml](../workflows/run-tests.yml) | `unit-tests` |
+| `Run tests / e2e-tests` | [.github/workflows/run-tests.yml](../workflows/run-tests.yml) | `e2e-tests` |
+| `Changeset check / verify` | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml) | `verify` |
 
-If a workflow or job is renamed, update both the workflow file **and** this
-ruleset in the same PR, otherwise the rename will silently bypass the gate
-until the ruleset catches up.
+If a workflow `name:` or job id is renamed, update both the workflow file
+**and** this ruleset in the same PR, otherwise the rename will silently
+bypass the gate until the ruleset catches up.
+
+## Copilot review
+
+`copilot_code_review` is enabled with `review_on_push: true`. This requires
+GitHub Copilot Enterprise on the org; if Copilot is ever turned off, drop
+that rule from the JSON and re-apply or the ruleset push will fail.

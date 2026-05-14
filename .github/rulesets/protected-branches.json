@@ -1,16 +1,14 @@
 {
-  "name": "Protected branches: main, release/*, point/*",
+  "name": "Protected release branches",
   "target": "branch",
   "enforcement": "active",
   "conditions": {
     "ref_name": {
+      "exclude": [],
       "include": [
         "refs/heads/main",
         "refs/heads/release/*",
         "refs/heads/point/*"
-      ],
-      "exclude": [
-        "refs/heads/changeset-release/**"
       ]
     }
   },
@@ -18,30 +16,39 @@
   "rules": [
     { "type": "deletion" },
     { "type": "non_fast_forward" },
-    { "type": "required_linear_history" },
-    { "type": "required_signatures" },
+    {
+      "type": "copilot_code_review",
+      "parameters": {
+        "review_on_push": true,
+        "review_draft_pull_requests": false
+      }
+    },
     {
       "type": "pull_request",
       "parameters": {
         "required_approving_review_count": 1,
         "dismiss_stale_reviews_on_push": true,
+        "required_reviewers": [],
         "require_code_owner_review": true,
         "require_last_push_approval": true,
-        "required_review_thread_resolution": true,
+        "required_review_thread_resolution": false,
         "allowed_merge_methods": ["squash", "rebase"]
       }
     },
+    { "type": "required_linear_history" },
+    { "type": "required_signatures" },
     {
       "type": "required_status_checks",
       "parameters": {
         "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": false,
         "required_status_checks": [
-          { "context": "eslint" },
-          { "context": "prettier" },
-          { "context": "stylelint" },
-          { "context": "unit-tests" },
-          { "context": "e2e-tests" },
-          { "context": "verify" }
+          { "context": "Lint & format / eslint" },
+          { "context": "Lint & format / prettier" },
+          { "context": "Lint & format / stylelint" },
+          { "context": "Run tests / unit-tests" },
+          { "context": "Run tests / e2e-tests" },
+          { "context": "Changeset check / verify" }
         ]
       }
     }
