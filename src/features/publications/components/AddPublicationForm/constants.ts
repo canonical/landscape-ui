@@ -29,7 +29,7 @@ export const INITIAL_VALUES: FormProps = {
   publication_target: "",
   prefix: "",
   uploader_distribution: "",
-  uploader_architectures: "",
+  uploader_architectures: [],
   signing_key: "",
   hash_indexing: false,
   automatic_installation: false,

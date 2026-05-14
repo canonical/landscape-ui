@@ -1,5 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import MultiSelectField from "@/components/form/MultiSelectField";
 import Blocks from "@/components/layout/Blocks";
 import { useGetLocalRepositories } from "@/features/local-repositories";
 import { useListMirrors } from "@/features/mirrors";
@@ -16,6 +17,7 @@ import {
   Select,
   Textarea,
   Tooltip,
+  type MultiSelectItem,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -139,17 +141,12 @@ const AddPublicationForm: FC = () => {
     [publicationTargets],
   );
 
-  const architectureOptions = useMemo(
-    () => [
-      {
-        label: "Select architecture",
-        value: "",
-      },
-      ...(selectedSource?.architectures ?? []).map((architecture) => ({
+  const architectureItems = useMemo(
+    () =>
+      (selectedSource?.architectures ?? []).map((architecture) => ({
         label: architecture,
         value: architecture,
       })),
-    ],
     [selectedSource],
   );
 
@@ -159,7 +156,7 @@ const AddPublicationForm: FC = () => {
     await formik.setFieldValue("source_type", event.target.value);
     await formik.setFieldValue("source", "");
     await formik.setFieldValue("uploader_distribution", "");
-    await formik.setFieldValue("uploader_architectures", "");
+    await formik.setFieldValue("uploader_architectures", []);
     await formik.setFieldValue("signing_key", "");
   };
 
@@ -176,14 +173,23 @@ const AddPublicationForm: FC = () => {
     );
 
     if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
-      await formik.setFieldValue("uploader_architectures", "");
+      await formik.setFieldValue("uploader_architectures", []);
       await formik.setFieldValue("signing_key", "");
 
       return;
     }
-
-    await formik.setFieldValue("uploader_architectures", "");
+    await formik.setFieldValue("uploader_architectures", []);
     await formik.setFieldValue("signing_key", "");
+  };
+
+  const handleArchitectureChange = async (
+    items: MultiSelectItem[],
+  ): Promise<void> => {
+    await formik.setFieldTouched("uploader_architectures", true);
+    await formik.setFieldValue(
+      "uploader_architectures",
+      items.map(({ value }) => String(value)),
+    );
   };
 
   return (
@@ -253,13 +259,18 @@ const AddPublicationForm: FC = () => {
           )}
 
           {!isLocalSourceType && (
-            <Select
+            <MultiSelectField
+              variant="condensed"
+              hasSelectedItemsFirst={false}
               label="Architectures"
               required
               disabled={!formik.values.source}
-              options={architectureOptions}
+              items={architectureItems}
+              selectedItems={architectureItems.filter(({ value }) =>
+                formik.values.uploader_architectures.includes(value),
+              )}
+              onItemsUpdate={handleArchitectureChange}
               error={getFormikError(formik, "uploader_architectures")}
-              {...formik.getFieldProps("uploader_architectures")}
             />
           )}
         </Blocks.Item>
