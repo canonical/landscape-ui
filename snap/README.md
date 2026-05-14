@@ -23,8 +23,6 @@ The VM is named `landscape-ui-build`. The script mounts the project directory in
 
 ### Linux
 
-Run the build directly — no VM required.
-
 **Prerequisites:**
 
 ```sh
@@ -188,15 +186,15 @@ sudo snap install --devmode snap/landscape-ui_*.snap
 
 Use `snap set` to configure the snap at runtime. Changes take effect immediately (the service restarts automatically).
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `landscape.ui.listen-port` | `443` | HTTPS listen port |
-| `landscape.ui.backend-host` | `localhost` | Landscape API host |
-| `landscape.ui.backend-port` | `443` | Landscape API port (haproxy) |
-| `landscape.ui.debarchive-host` | `localhost` | Deb archive host |
-| `landscape.ui.debarchive-port` | `443` | Deb archive port (haproxy) |
-| `landscape.ui.cert-file` | auto-generated | Path to TLS certificate |
-| `landscape.ui.key-file` | auto-generated | Path to TLS private key |
+| Key                            | Default        | Description                  |
+| ------------------------------ | -------------- | ---------------------------- |
+| `landscape.ui.listen-port`     | `443`          | HTTPS listen port            |
+| `landscape.ui.backend-host`    | `localhost`    | Landscape API host           |
+| `landscape.ui.backend-port`    | `443`          | Landscape API port (haproxy) |
+| `landscape.ui.debarchive-host` | `localhost`    | Deb archive host             |
+| `landscape.ui.debarchive-port` | `443`          | Deb archive port (haproxy)   |
+| `landscape.ui.cert-file`       | auto-generated | Path to TLS certificate      |
+| `landscape.ui.key-file`        | auto-generated | Path to TLS private key      |
 
 **Example — point to a running Landscape server:**
 
@@ -218,23 +216,23 @@ sudo snap set landscape-ui \
 
 ## Logs and data paths
 
-| Path | Contents |
-|------|----------|
-| `/var/snap/landscape-ui/common/nginx.conf` | Rendered nginx config (read-only reference) |
-| `/var/snap/landscape-ui/common/nginx-error.log` | nginx error log |
-| `/var/snap/landscape-ui/common/nginx-access.log` | nginx access log |
-| `/var/snap/landscape-ui/common/ssl/` | Auto-generated TLS certificate and key |
+| Path                                             | Contents                                    |
+| ------------------------------------------------ | ------------------------------------------- |
+| `/var/snap/landscape-ui/common/nginx.conf`       | Rendered nginx config (read-only reference) |
+| `/var/snap/landscape-ui/common/nginx-error.log`  | nginx error log                             |
+| `/var/snap/landscape-ui/common/nginx-access.log` | nginx access log                            |
+| `/var/snap/landscape-ui/common/ssl/`             | Auto-generated TLS certificate and key      |
 
 ---
 
 ## Snap files
 
-| File | Purpose |
-|------|---------|
-| `snap/snapcraft.yaml` | Snap definition |
+| File                               | Purpose                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| `snap/snapcraft.yaml`              | Snap definition                                                          |
 | `snap/local/start-landscape-ui.sh` | Service entrypoint — reads snap config, renders nginx.conf, starts nginx |
-| `snap/local/nginx.conf.tmpl` | nginx config template (envsubst) |
-| `snap/local/generate-cert.sh` | Self-signed cert generation (idempotent) |
-| `snap/hooks/configure` | Restarts service on `snap set` |
-| `snap/build-snap.sh` | macOS build script (Multipass) |
-| `snap/build-snap-linux.sh` | Linux build script (native) |
+| `snap/local/nginx.conf.tmpl`       | nginx config template (envsubst)                                         |
+| `snap/local/generate-cert.sh`      | Self-signed cert generation (idempotent)                                 |
+| `snap/hooks/configure`             | Restarts service on `snap set`                                           |
+| `snap/build-snap.sh`               | macOS build script (Multipass)                                           |
+| `snap/build-snap-linux.sh`         | Linux build script (native)                                              |
