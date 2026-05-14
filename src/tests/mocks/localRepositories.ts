@@ -30,3 +30,7 @@ export const paginatedPackages = Array.from(
   { length: 25 },
   (_, i) => `package-${i + 1}`,
 );
+
+export const sortedPackages = paginatedPackages.sort((a, b) =>
+  a.localeCompare(b),
+);

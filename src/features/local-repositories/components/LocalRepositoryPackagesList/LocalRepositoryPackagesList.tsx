@@ -16,9 +16,13 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const formattedPackages: LocalPackage[] = packages
-    .map((name) => ({ name }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const formattedPackages = useMemo<LocalPackage[]>(
+    () =>
+      packages
+        .map((name) => ({ name }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [packages],
+  );
   const pagedPackages = useMemo(
     () =>
       formattedPackages.slice(
