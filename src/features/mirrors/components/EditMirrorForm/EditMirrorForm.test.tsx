@@ -13,6 +13,10 @@ import {
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
 import usePageParams from "@/hooks/usePageParams";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { MirrorWritable } from "@canonical/landscape-openapi";
 
 const TestComponent = () => {
   const { lastSidePathSegment } = usePageParams();
@@ -60,6 +64,17 @@ describe("EditMirrorForm", () => {
 
     assert(mirror);
 
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.patch(
+        `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`,
+        async ({ request }) => {
+          capturedBody = (await request.json()) as Partial<MirrorWritable>;
+          return HttpResponse.json({});
+        },
+      ),
+    );
+
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <TestComponent />
@@ -82,6 +97,7 @@ describe("EditMirrorForm", () => {
         `You have successfully edited ${mirror.displayName}.`,
       ),
     ).toBeInTheDocument();
+    expect(capturedBody).toMatchObject({ gpgKey: { armor: "ABCDEF" } });
   });
 
   it("preserves existing GPG key when checkbox is checked", async () => {
@@ -93,6 +109,17 @@ describe("EditMirrorForm", () => {
     );
 
     assert(mirror);
+
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.patch(
+        `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`,
+        async ({ request }) => {
+          capturedBody = (await request.json()) as Partial<MirrorWritable>;
+          return HttpResponse.json({});
+        },
+      ),
+    );
 
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
@@ -118,6 +145,7 @@ describe("EditMirrorForm", () => {
         `You have successfully edited ${mirror.displayName}.`,
       ),
     ).toBeInTheDocument();
+    expect(capturedBody).not.toHaveProperty("gpgKey");
   });
 
   it("shows preserve signatures as disabled", async () => {
@@ -172,6 +200,17 @@ describe("EditMirrorForm", () => {
 
     assert(mirror);
 
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.patch(
+        `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`,
+        async ({ request }) => {
+          capturedBody = (await request.json()) as Partial<MirrorWritable>;
+          return HttpResponse.json({});
+        },
+      ),
+    );
+
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <TestComponent />
@@ -193,5 +232,10 @@ describe("EditMirrorForm", () => {
         `You have successfully edited ${mirror.displayName}.`,
       ),
     ).toBeInTheDocument();
+    expect(capturedBody).toMatchObject({
+      downloadUdebs: !mirror.downloadUdebs,
+      downloadSources: !mirror.downloadSources,
+      downloadInstaller: !mirror.downloadInstaller,
+    });
   });
 });

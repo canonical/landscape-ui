@@ -8,7 +8,15 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { UBUNTU_ARCHIVE_HOST } from "../../constants";
+import {
+  UBUNTU_ARCHIVE_HOST,
+  UBUNTU_PRO_HOST,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { MirrorWritable } from "@canonical/landscape-openapi";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
@@ -44,6 +52,14 @@ describe("AddMirrorForm", () => {
   it("submits an ubuntu archive mirror pointed at a custom CDN", async () => {
     const cdnUrl = "https://eu.archive.ubuntu.com/ubuntu/";
 
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+        capturedBody = (await request.json()) as Partial<MirrorWritable>;
+        return HttpResponse.json({});
+      }),
+    );
+
     const sourceUrlField = screen.getByLabelText("Source URL");
     await user.clear(sourceUrlField);
     await user.type(sourceUrlField, cdnUrl);
@@ -53,6 +69,7 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
+    expect(capturedBody).toMatchObject({ archiveRoot: cdnUrl });
   });
 
   it("rejects an http source URL with an HTTPS validation error", async () => {
@@ -74,6 +91,14 @@ describe("AddMirrorForm", () => {
   it("submits an ubuntu snapshot mirror", async () => {
     const date = "2026-04-15";
 
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+        capturedBody = (await request.json()) as Partial<MirrorWritable>;
+        return HttpResponse.json({});
+      }),
+    );
+
     await user.selectOptions(
       screen.getByLabelText("Source type"),
       "Ubuntu snapshots",
@@ -88,10 +113,21 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
+    expect(capturedBody).toMatchObject({
+      archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
+    });
   });
 
   it("submits an ubuntu pro mirror", async () => {
     const token = "ABCDEFG";
+
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+        capturedBody = (await request.json()) as Partial<MirrorWritable>;
+        return HttpResponse.json({});
+      }),
+    );
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -104,6 +140,9 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
+    expect(capturedBody).toMatchObject({
+      archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
+    });
   });
 
   it("submits a mirror with preserve signatures enabled", async () => {
@@ -142,6 +181,14 @@ describe("AddMirrorForm", () => {
       gpgKey: { armor: "ABCDEFG" },
     };
 
+    let capturedBody: Partial<MirrorWritable> | undefined;
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+        capturedBody = (await request.json()) as Partial<MirrorWritable>;
+        return HttpResponse.json({});
+      }),
+    );
+
     await user.selectOptions(
       screen.getByLabelText("Source type"),
       "Third party",
@@ -167,6 +214,7 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
+    expect(capturedBody).toMatchObject(params);
   });
 });
 

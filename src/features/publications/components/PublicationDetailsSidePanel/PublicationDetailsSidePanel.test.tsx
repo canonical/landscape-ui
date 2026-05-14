@@ -1,9 +1,12 @@
 import { publications } from "@/tests/mocks/publications";
-import { setEndpointStatus } from "@/tests/controllers/controller";
+import { mirrors } from "@/tests/mocks/mirrors";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationDetailsSidePanel from "./PublicationDetailsSidePanel";
+import server from "@/tests/server";
+import { http, delay } from "msw";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 const [publication] = publications;
 const publicationId = publication?.publicationId;
@@ -17,7 +20,14 @@ const renderPanel = () =>
 
 describe("PublicationDetailsSidePanel", () => {
   it("shows a loading state while the publication is being fetched", () => {
-    setEndpointStatus({ status: "loading", path: "publications" });
+    server.use(
+      http.get(
+        `${API_URL_DEB_ARCHIVE}publications/:publicationName`,
+        async () => {
+          await delay("infinite");
+        },
+      ),
+    );
 
     renderPanel();
 
@@ -31,15 +41,18 @@ describe("PublicationDetailsSidePanel", () => {
       await screen.findByRole("heading", { name: publication.displayName }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(publication.architectures!.join(", ")),
+      screen.getByText((publication.architectures ?? []).join(", ")),
     ).toBeInTheDocument();
   });
 
-  it("renders the source name in the details panel", async () => {
+  it("renders the resolved mirror display name as the source name", async () => {
+    const mirrorDisplayName = mirrors.find(
+      (m) => m.name === publication?.source,
+    )?.displayName;
+    assert(mirrorDisplayName);
+
     renderPanel();
 
-    await screen.findByRole("heading", { name: publication.displayName });
-
-    expect(screen.getByText("Mirror")).toBeInTheDocument();
+    expect(await screen.findByText(mirrorDisplayName)).toBeInTheDocument();
   });
 });

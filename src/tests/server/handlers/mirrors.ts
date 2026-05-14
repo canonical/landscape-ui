@@ -22,6 +22,11 @@ import {
 
 const mirrors = [...(mockMirrors as Mirror[])];
 
+export const resetMirrors = (): void => {
+  mirrors.length = 0;
+  mirrors.push(...(mockMirrors as Mirror[]));
+};
+
 const getMirrorsResponse = (requestUrl: string) => {
   const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
