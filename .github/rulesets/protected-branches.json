@@ -1,0 +1,49 @@
+{
+  "name": "Protected branches: main, release/*, point/*",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": [
+        "refs/heads/main",
+        "refs/heads/release/*",
+        "refs/heads/point/*"
+      ],
+      "exclude": [
+        "refs/heads/changeset-release/**"
+      ]
+    }
+  },
+  "bypass_actors": [],
+  "rules": [
+    { "type": "deletion" },
+    { "type": "non_fast_forward" },
+    { "type": "required_linear_history" },
+    { "type": "required_signatures" },
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": true,
+        "require_last_push_approval": true,
+        "required_review_thread_resolution": true,
+        "allowed_merge_methods": ["squash", "rebase"]
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "required_status_checks": [
+          { "context": "eslint" },
+          { "context": "prettier" },
+          { "context": "stylelint" },
+          { "context": "unit-tests" },
+          { "context": "e2e-tests" },
+          { "context": "verify" }
+        ]
+      }
+    }
+  ]
+}

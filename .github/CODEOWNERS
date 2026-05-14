@@ -1,0 +1,9 @@
+# Code owners for landscape-ui.
+#
+# Approvals from listed owners are required to merge to protected branches
+# (see .github/rulesets/protected-branches.json). The last matching pattern
+# wins, so put narrower rules below broader ones.
+#
+# Docs: https://docs.github.com/articles/about-code-owners
+
+*   @canonical/landscape-ui
