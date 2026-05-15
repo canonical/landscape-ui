@@ -46,8 +46,8 @@
           { "context": "Lint & format / eslint" },
           { "context": "Lint & format / prettier" },
           { "context": "Lint & format / stylelint" },
-          { "context": "Run tests / unit-tests" },
-          { "context": "Run tests / e2e-tests" },
+          { "context": "Tests + TICS on PRs / unit-tests" },
+          { "context": "Tests + TICS on PRs / e2e-tests" },
           { "context": "Changeset check / verify" }
         ]
       }
