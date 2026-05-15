@@ -2,7 +2,7 @@ import type { FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { ActivityCommon } from "../../types";
-import { pluralize, pluralizeArray } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { ConfirmationButton } from "@canonical/react-components";
 import {
   useApproveActivities,
@@ -22,19 +22,17 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
   const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const selectedIds = selected.map((activity) => activity.id);
-  const quantifiedActivity = pluralizeArray(
-    selected,
-    () => "an activity",
-    `activities`,
-  );
-  const pluralizedActivity = pluralize(selected.length, "activity", { pluralForm: "activities" });
+  const title = pluralize(selected.length, "activity", {
+    pluralForm: "activities",
+    showCount: "exact",
+  });
 
   const handleApproveActivities = async () => {
     try {
       await approveActivities({ query: `id:${selectedIds.join(" OR id:")}` });
 
       notify.success({
-        title: `You have successfully approved ${quantifiedActivity}.`,
+        title: `You have successfully approved ${title}.`,
         message: `${pluralize(selected.length, "This activity", { pluralForm: "These activities" })} will be delivered the next time the Landscape server connects with the client.`,
       });
     } catch (error) {
@@ -47,7 +45,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
       await cancelActivities({ query: `id:${selectedIds.join(" OR id:")}` });
 
       notify.success({
-        title: `You have successfully canceled ${quantifiedActivity}.`,
+        title: `You have successfully canceled ${title}.`,
         message: `${pluralize(selected.length, "This activity", { pluralForm: "These activities" })} won't be delivered to the client and will not run.`,
       });
     } catch (error) {
@@ -60,7 +58,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
       await redoActivities({ activity_ids: selectedIds });
 
       notify.success({
-        title: `You have successfully redone ${quantifiedActivity}.`,
+        title: `You have successfully redone ${title}.`,
         message: `${pluralize(selected.length, "An activity has been queued to re-run this activity.", { pluralForm: "Activities have been queued to re-run these activities." })}`,
       });
     } catch (error) {
@@ -80,12 +78,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             selected.some((activity) => !activity.actions?.approvable)
           }
           confirmationModalProps={{
-            title: `Approve ${pluralizedActivity}`,
-            children: (
-              <p>
-                Are you sure you want to approve selected {pluralizedActivity}?
-              </p>
-            ),
+            title: `Approve ${title}`,
+            children: <p>Are you sure you want to approve {title}?</p>,
             confirmButtonLabel: "Approve",
             confirmButtonAppearance: "positive",
             confirmButtonDisabled: isApprovingActivities,
@@ -104,12 +98,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             selected.some((activity) => !activity.actions?.cancelable)
           }
           confirmationModalProps={{
-            title: `Cancel ${pluralizedActivity}`,
-            children: (
-              <p>
-                Are you sure you want to cancel selected {pluralizedActivity}?
-              </p>
-            ),
+            title: `Cancel ${title}`,
+            children: <p>Are you sure you want to cancel {title}?</p>,
             confirmButtonLabel: "Confirm",
             confirmButtonAppearance: "negative",
             confirmButtonDisabled: isCancelingActivities,
@@ -128,12 +118,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
             selected.some((activity) => !activity.actions?.reappliable)
           }
           confirmationModalProps={{
-            title: `Redo ${pluralizedActivity}`,
-            children: (
-              <p>
-                Are you sure you want to redo selected {pluralizedActivity}?
-              </p>
-            ),
+            title: `Redo ${title}`,
+            children: <p>Are you sure you want to redo {title}?</p>,
             confirmButtonLabel: "Redo",
             confirmButtonAppearance: "positive",
             confirmButtonDisabled: isRedoingActivities,

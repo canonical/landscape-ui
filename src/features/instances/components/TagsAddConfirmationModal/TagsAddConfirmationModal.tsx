@@ -4,7 +4,7 @@ import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import { pluralize, pluralizeArray } from "@/utils/_helpers";
+import { pluralize, getSelectionLabel } from "@/utils/_helpers";
 import {
   ConfirmationModal,
   Icon,
@@ -81,7 +81,11 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           Cell: ({
             row: { original: profileChange },
           }: CellProps<ProfileChange>) => {
-            const label = pluralize(profileChange.profile.current_associated_instances, "instance", { showCount: "exact" });
+            const label = pluralize(
+              profileChange.profile.current_associated_instances,
+              "instance",
+              { showCount: "exact" },
+            );
 
             return profileChange.profile.will_exceed_limit ? (
               <Tooltip
@@ -105,11 +109,11 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
   return (
     <ConfirmationModal
-      title={`Add ${pluralizeArray(
+      title={`Add ${getSelectionLabel(
         tags,
         (tag) => `"${tag}" tag`,
         `tags`,
-      )} to ${pluralizeArray(
+      )} to ${getSelectionLabel(
         instances,
         (instance) => `"${instance.title}"`,
         `instances`,
@@ -122,9 +126,11 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
       <p>
         Adding{" "}
-        {pluralize(tags.length, `the ${tags[0]} tag`, { pluralForm: `these ${tags.length} tags` })}{" "}
+        {pluralize(tags.length, `the ${tags[0]} tag`, {
+          pluralForm: `these ${tags.length} tags`,
+        })}{" "}
         to{" "}
-        {pluralizeArray(
+        {getSelectionLabel(
           instances,
           (instance) => `the ${instance.title} instance`,
           `instances`,

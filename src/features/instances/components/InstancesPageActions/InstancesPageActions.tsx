@@ -6,7 +6,7 @@ import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, pluralizeArray, pluralize } from "@/utils/_helpers";
+import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -143,7 +143,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}`,
+      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, `instances`)}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,

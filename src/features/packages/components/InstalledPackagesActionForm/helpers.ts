@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
-import { pluralize, pluralizeArray } from "@/utils/_helpers";
+import { pluralize, getSelectionLabel } from "@/utils/_helpers";
 import {
   randomizationValidationSchema,
   deliveryValidationSchema,
@@ -22,7 +22,7 @@ export const getActionInfo = (
   packages: InstancePackage[],
   action: "hold" | "unhold",
 ) => {
-  const title = pluralizeArray(
+  const title = getSelectionLabel(
     packages,
     (pkg) => `${pkg.name} package`,
     "selected packages",
@@ -37,7 +37,7 @@ export const getActionSuccessNotificationProps = (
   packages: InstancePackage[],
   version: string,
 ) => {
-  const itemTitle = pluralizeArray(
+  const itemTitle = getSelectionLabel(
     packages,
     (pkg) => `${pkg.name} package`,
     "selected packages",

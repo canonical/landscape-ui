@@ -5,7 +5,7 @@ import {
   handleParams,
   hasOneItem,
   pluralize,
-  pluralizeArray,
+  getSelectionLabel,
 } from "./_helpers";
 import { API_VERSION } from "@/constants";
 
@@ -229,7 +229,7 @@ describe("pluralize", () => {
 
     expect(result).toEqual("plural");
   });
- 
+
   it("uses singular form with exact count", () => {
     const result = pluralize(1, "singular", { showCount: "exact" });
 
@@ -256,7 +256,7 @@ describe("pluralizeArray", () => {
   it("uses singular form", () => {
     const array = ["first"];
 
-    const result = pluralizeArray(array, (item) => item, "count");
+    const result = getSelectionLabel(array, (item) => item, "count");
 
     expect(result).toEqual("first");
   });
@@ -264,13 +264,13 @@ describe("pluralizeArray", () => {
   it("uses plural form for multiple items", () => {
     const array = ["first", "second"];
 
-    const result = pluralizeArray(array, () => "singular", "plural");
+    const result = getSelectionLabel(array, () => "singular", "plural");
 
     expect(result).toEqual("2 plural");
   });
 
   it("uses plural form for empty array", () => {
-    const result = pluralizeArray([], (item) => item, "plural");
+    const result = getSelectionLabel([], (item) => item, "plural");
 
     expect(result).toEqual("0 plural");
   });
