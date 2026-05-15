@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import { useGetInstances } from "@/features/instances";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 import type { AccessGroup } from "../../types";
 
@@ -47,13 +47,9 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
     limit: 1,
   });
 
-  const instancesCountText = pluralizeWithCount(instancesCount, "instance");
-  const itOrThem = pluralize(instancesCount, "it", "them");
-  const thisOrTheseInstances = pluralize(
-    instancesCount,
-    "this instance",
-    "these instances",
-  );
+  const instancesCountText = pluralize(instancesCount, "instance", { showCount: "exact" });
+  const itOrThem = pluralize(instancesCount, "it", { pluralForm: "them" });
+  const thisOrTheseInstances = pluralize(instancesCount, "this instance", { pluralForm: "these instances" });
 
   return (
     <TextConfirmationModal

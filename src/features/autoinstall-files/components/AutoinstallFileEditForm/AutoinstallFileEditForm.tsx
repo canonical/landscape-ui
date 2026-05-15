@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useGetAutoinstallFile, useUpdateAutoinstallFile } from "../../api";
@@ -33,16 +33,10 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
         autoinstallFileWithMetadata.version && (
         <Notification title="Edit history limit reached:" severity="caution">
           You&apos;ve reached the limit of{" "}
-          {pluralizeWithCount(
-            autoinstallFileWithMetadata.metadata.max_versions,
-            "saved edit",
-          )}
+          {pluralize(autoinstallFileWithMetadata.metadata.max_versions, "saved edit", { showCount: "exact" })}
           . To save your new change, the oldest version will be automatically
           removed, keeping the most recent{" "}
-          {pluralizeWithCount(
-            autoinstallFileWithMetadata.metadata.max_versions,
-            "version",
-          )}{" "}
+          {pluralize(autoinstallFileWithMetadata.metadata.max_versions, "version", { showCount: "exact" })}{" "}
           in history.
         </Notification>
       )}

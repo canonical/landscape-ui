@@ -2,7 +2,7 @@ import {
   deliveryValidationSchema,
   randomizationValidationSchema,
 } from "@/components/form/DeliveryScheduling";
-import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import moment from "moment";
 import * as Yup from "yup";
 import { EditSnapType, getSnapUpgradeCounts } from "../../helpers";
@@ -137,5 +137,5 @@ export const getSuccessMessage = (snapCount: number, action: EditSnapType) => {
       break;
   }
 
-  return `You queued ${pluralizeWithCount(snapCount, "snap")} to be ${verb}.`;
+  return `You queued ${pluralize(snapCount, "snap", { showCount: "exact" })} to be ${verb}.`;
 };

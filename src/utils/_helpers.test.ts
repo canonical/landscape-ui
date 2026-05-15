@@ -6,7 +6,6 @@ import {
   hasOneItem,
   pluralize,
   pluralizeArray,
-  pluralizeWithCount,
 } from "./_helpers";
 import { API_VERSION } from "@/constants";
 
@@ -226,27 +225,28 @@ describe("pluralize", () => {
   });
 
   it("uses given plural form", () => {
-    const result = pluralize(0, "singular", "plural");
+    const result = pluralize(0, "singular", { pluralForm: "plural" });
 
     expect(result).toEqual("plural");
   });
-});
-
-describe("pluralizeWithCount", () => {
-  it("uses singular form", () => {
-    const result = pluralizeWithCount(1, "singular");
+ 
+  it("uses singular form with exact count", () => {
+    const result = pluralize(1, "singular", { showCount: "exact" });
 
     expect(result).toEqual("1 singular");
   });
 
-  it("uses default plural form", () => {
-    const result = pluralizeWithCount(2, "singular");
+  it("uses default plural form with exact count", () => {
+    const result = pluralize(2, "singular", { showCount: "exact" });
 
     expect(result).toEqual("2 singulars");
   });
 
-  it("uses given plural form", () => {
-    const result = pluralizeWithCount(0, "singular", "plural");
+  it("uses given plural form with exact count", () => {
+    const result = pluralize(0, "singular", {
+      pluralForm: "plural",
+      showCount: "exact",
+    });
 
     expect(result).toEqual("0 plural");
   });

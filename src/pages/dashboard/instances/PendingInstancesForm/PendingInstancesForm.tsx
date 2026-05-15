@@ -10,7 +10,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList";
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -63,8 +63,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${pluralizeWithCount(instanceIds.length, "pending instance has", "pending instances have")} been rejected to add to your ${userOrganisation} organization.`,
-        title: `You have rejected ${pluralizeWithCount(instanceIds.length, "pending instance")}`,
+        message: `${pluralize(instanceIds.length, "pending instance has", { pluralForm: "pending instances have", showCount: "exact" })} been rejected to add to your ${userOrganisation} organization.`,
+        title: `You have rejected ${pluralize(instanceIds.length, "pending instance", { showCount: "exact" })}`,
       });
     } catch (error) {
       debug(error);
@@ -81,8 +81,8 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
       closeSidePanel();
 
       notify.success({
-        message: `${pluralizeWithCount(instanceIds.length, "pending instance has", "pending instances have")} been successfully added to your ${userOrganisation} organization.`,
-        title: `You have approved ${pluralizeWithCount(instanceIds.length, "pending instance")}`,
+        message: `${pluralize(instanceIds.length, "pending instance has", { pluralForm: "pending instances have", showCount: "exact" })} been successfully added to your ${userOrganisation} organization.`,
+        title: `You have approved ${pluralize(instanceIds.length, "pending instance", { showCount: "exact" })}`,
       });
     } catch (error) {
       debug(error);
@@ -158,10 +158,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                 children: (
                   <p>
                     This will approve{" "}
-                    {pluralizeWithCount(
-                      instanceIds.length,
-                      "selected instance",
-                    )}{" "}
+                    {pluralize(instanceIds.length, "selected instance", { showCount: "exact" })}{" "}
                     to add to your {userOrganisation} organization.
                   </p>
                 ),
@@ -187,10 +184,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                 children: (
                   <p>
                     This will reject{" "}
-                    {pluralizeWithCount(
-                      instanceIds.length,
-                      "selected instance",
-                    )}{" "}
+                    {pluralize(instanceIds.length, "selected instance", { showCount: "exact" })}{" "}
                     to add to your {userOrganisation} organization.
                   </p>
                 ),

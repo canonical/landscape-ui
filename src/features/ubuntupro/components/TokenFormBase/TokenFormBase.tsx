@@ -175,11 +175,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
               <p>
                 Your Ubuntu Pro token can&apos;t be attached to the selected{" "}
                 {pluralize(selectedInstances.length, "instance")} because{" "}
-                {pluralize(
-                  selectedInstances.length,
-                  "it doesn't",
-                  "they don't",
-                )}{" "}
+                {pluralize(selectedInstances.length, "it doesn't", { pluralForm: "they don't" })}{" "}
                 support this feature. This could be because the Landscape Client
                 is out of date.
               </p>
@@ -213,7 +209,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
                     count={withToken}
                     singular="instance"
                   />{" "}
-                  will override {pluralize(withToken, "its", "their")} existing
+                  will override {pluralize(withToken, "its", { pluralForm: "their" })} existing
                   token
                 </li>
               )}
@@ -223,7 +219,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
                   singular="instance"
                 />{" "}
                 will be skipped as{" "}
-                {pluralize(invalidInstanceIds.length, "it does", "they do")} not
+                {pluralize(invalidInstanceIds.length, "it does", { pluralForm: "they do" })} not
                 support Ubuntu Pro management
               </li>
             </ul>

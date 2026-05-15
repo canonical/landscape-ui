@@ -50,7 +50,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
 
       notify.success({
         title: `You queued packages to be upgraded`,
-        message: `Affected packages for ${pluralize(usns.length, `"${usns[0]}" security issue`, `${usns.length} selected security issues`)} will be upgraded and are queued in Activities`,
+        message: `Affected packages for ${pluralize(usns.length, `"${usns[0]}" security issue`, { pluralForm: `${usns.length} selected security issues` })} will be upgraded and are queued in Activities`,
         actions: [
           {
             label: "View details",
@@ -77,11 +77,7 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
                 children: (
                   <p>
                     This will upgrade affected packages for{" "}
-                    {pluralize(
-                      usns.length,
-                      `"${usns[0]}" security issue`,
-                      `${usns.length} selected security issues`,
-                    )}
+                    {pluralize(usns.length, `"${usns[0]}" security issue`, { pluralForm: `${usns.length} selected security issues` })}
                     .
                   </p>
                 ),

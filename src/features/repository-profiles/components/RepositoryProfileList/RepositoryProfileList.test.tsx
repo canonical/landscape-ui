@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 vi.mock("@/hooks/useRoles", () => ({
   default: vi.fn(() => ({
@@ -59,7 +59,7 @@ describe("RepositoryProfileList", () => {
 
     expect(
       await within(row).findByText(
-        pluralizeWithCount(firstProfile.applied_count ?? 0, "instance"),
+        pluralize(firstProfile.applied_count ?? 0, "instance", { showCount: "exact" }),
       ),
     ).toBeInTheDocument();
   });

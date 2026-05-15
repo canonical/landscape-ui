@@ -33,11 +33,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
     return;
   }
 
-  const title = pluralize(
-    instances.length,
-    instance.name,
-    `${instances.length} instances`,
-  );
+  const title = pluralize(instances.length, instance.name, { pluralForm: `${instances.length} instances` });
 
   const uninstall = async () => {
     try {
@@ -48,11 +44,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
 
       notify.success({
         title: `You have successfully marked ${title} to be uninstalled.`,
-        message: pluralize(
-          instances.length,
-          "An activity has been queued to uninstall it.",
-          "Activities have been queued to uninstall them.",
-        ),
+        message: pluralize(instances.length, "An activity has been queued to uninstall it.", { pluralForm: "Activities have been queued to uninstall them." }),
       });
 
       onSuccess?.();
@@ -76,11 +68,7 @@ const WslInstanceUninstallModal: FC<WslInstanceUninstallModalProps> = ({
       onConfirm={uninstall}
     >
       <p>
-        {pluralize(
-          instances.length,
-          "This will permanently uninstall this instance from the Windows host machine and remove it from Landscape.",
-          "This will permanently uninstall the selected instances from the Windows host machine and remove them from Landscape.",
-        )}
+        {pluralize(instances.length, "This will permanently uninstall this instance from the Windows host machine and remove it from Landscape.", { pluralForm: "This will permanently uninstall the selected instances from the Windows host machine and remove them from Landscape." })}
       </p>
     </TextConfirmationModal>
   );

@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { useGetInstances } from "@/features/instances";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { type FC } from "react";
 import { Link } from "react-router";
 import type { AccessGroupWithInstancesCount } from "../../types/AccessGroup";
@@ -27,7 +27,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   if (instancesCount) {
     return (
       <Link to={ROUTES.instances.root({ accessGroups: [accessGroup.name] })}>
-        {pluralizeWithCount(instancesCount, "instance")}
+        {pluralize(instancesCount, "instance", { showCount: "exact" })}
       </Link>
     );
   }

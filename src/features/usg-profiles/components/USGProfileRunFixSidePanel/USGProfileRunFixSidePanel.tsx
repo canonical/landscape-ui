@@ -5,7 +5,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import type { FC, SyntheticEvent } from "react";
 import { useNavigate } from "react-router";
@@ -99,10 +99,7 @@ const USGProfileRunFixSidePanel: FC = () => {
                       value={
                         profile.restart_deliver_delay === 0
                           ? "As soon as possible"
-                          : `Delayed by ${pluralizeWithCount(
-                              profile.restart_deliver_delay,
-                              "hour",
-                            )}`
+                          : `Delayed by ${pluralize(profile.restart_deliver_delay, "hour", { showCount: "exact" })}`
                       }
                     />
 
@@ -111,10 +108,7 @@ const USGProfileRunFixSidePanel: FC = () => {
                       large
                       value={
                         profile.restart_deliver_delay_window
-                          ? `Yes, over ${pluralizeWithCount(
-                              profile.restart_deliver_delay_window,
-                              "minute",
-                            )}`
+                          ? `Yes, over ${pluralize(profile.restart_deliver_delay_window, "minute", { showCount: "exact" })}`
                           : "No"
                       }
                     />

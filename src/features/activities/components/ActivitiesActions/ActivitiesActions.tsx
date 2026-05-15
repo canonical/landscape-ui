@@ -27,11 +27,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
     () => "an activity",
     `activities`,
   );
-  const pluralizedActivity = pluralize(
-    selected.length,
-    "activity",
-    "activities",
-  );
+  const pluralizedActivity = pluralize(selected.length, "activity", { pluralForm: "activities" });
 
   const handleApproveActivities = async () => {
     try {
@@ -39,7 +35,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
 
       notify.success({
         title: `You have successfully approved ${quantifiedActivity}.`,
-        message: `${pluralize(selected.length, "This activity", "These activities")} will be delivered the next time the Landscape server connects with the client.`,
+        message: `${pluralize(selected.length, "This activity", { pluralForm: "These activities" })} will be delivered the next time the Landscape server connects with the client.`,
       });
     } catch (error) {
       debug(error);
@@ -52,7 +48,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
 
       notify.success({
         title: `You have successfully canceled ${quantifiedActivity}.`,
-        message: `${pluralize(selected.length, "This activity", "These activities")} won't be delivered to the client and will not run.`,
+        message: `${pluralize(selected.length, "This activity", { pluralForm: "These activities" })} won't be delivered to the client and will not run.`,
       });
     } catch (error) {
       debug(error);
@@ -65,11 +61,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
 
       notify.success({
         title: `You have successfully redone ${quantifiedActivity}.`,
-        message: `${pluralize(
-          selected.length,
-          "An activity has been queued to re-run this activity.",
-          "Activities have been queued to re-run these activities.",
-        )}`,
+        message: `${pluralize(selected.length, "An activity has been queued to re-run this activity.", { pluralForm: "Activities have been queued to re-run these activities." })}`,
       });
     } catch (error) {
       debug(error);

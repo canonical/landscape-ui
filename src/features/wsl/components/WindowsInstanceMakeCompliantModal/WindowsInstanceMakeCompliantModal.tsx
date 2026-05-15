@@ -26,11 +26,7 @@ const WindowsInstanceMakeCompliantModal: FC<
     return;
   }
 
-  const title = pluralize(
-    instances.length,
-    instance.title,
-    `${instances.length} instances`,
-  );
+  const title = pluralize(instances.length, instance.title, { pluralForm: `${instances.length} instances` });
 
   const makeCompliant = async () => {
     try {
@@ -40,11 +36,7 @@ const WindowsInstanceMakeCompliantModal: FC<
 
       notify.success({
         title: `You have successfully marked ${title} to be compliant.`,
-        message: pluralize(
-          instances.length,
-          "An activity has been queued to uninstall, install or reinstall all non-compliant child instances.",
-          "Activities have been queued to uninstall, install or reinstall all non-compliant child instances.",
-        ),
+        message: pluralize(instances.length, "An activity has been queued to uninstall, install or reinstall all non-compliant child instances.", { pluralForm: "Activities have been queued to uninstall, install or reinstall all non-compliant child instances." }),
       });
     } catch (error) {
       debug(error);

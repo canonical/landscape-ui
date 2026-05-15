@@ -1,6 +1,6 @@
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 interface UpgradeConfirmationModalProps {
   readonly onClose: () => void;
@@ -18,10 +18,7 @@ const UpgradeConfirmationModal: FC<UpgradeConfirmationModalProps> = ({
   return (
     <ConfirmationModal
       close={onClose}
-      title={`Upgrade ${pluralize(eligibleCount, "distribution")} for ${pluralizeWithCount(
-        eligibleCount,
-        "instance",
-      )}`}
+      title={`Upgrade ${pluralize(eligibleCount, "distribution")} for ${pluralize(eligibleCount, "instance", { showCount: "exact" })}`}
       confirmButtonLabel="Confirm"
       confirmButtonProps={{ type: "button" }}
       onConfirm={onConfirm}

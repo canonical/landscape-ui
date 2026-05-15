@@ -41,7 +41,7 @@ const PackagesInstallForm: FC = () => {
 
       notify.success({
         title: `You queued ${pluralizeArray(selected, (pkg) => `package ${pkg.name}`, `packages`)} to be installed.`,
-        message: `${pluralizeArray(selected, (pkg) => `${pkg.name} package`, `selected packages`)} will be installed and ${pluralize(selected.length, "is", "are")} queued in Activities.`,
+        message: `${pluralizeArray(selected, (pkg) => `${pkg.name} package`, `selected packages`)} will be installed and ${pluralize(selected.length, "is", { pluralForm: "are" })} queued in Activities.`,
         actions: [
           {
             label: "Details",

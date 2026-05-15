@@ -36,7 +36,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         computer_id: instanceId,
       });
       notify.success({
-        message: `${pluralize(selectedPids.length, "Process", "Processes")} successfully ended.`,
+        message: `${pluralize(selectedPids.length, "Process", { pluralForm: "Processes" })} successfully ended.`,
       });
       handleClearSelection();
     } catch (error) {
@@ -51,7 +51,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         computer_id: instanceId,
       });
       notify.success({
-        message: `${pluralize(selectedPids.length, "Process", "Processes")} successfully killed.`,
+        message: `${pluralize(selectedPids.length, "Process", { pluralForm: "Processes" })} successfully killed.`,
       });
       handleClearSelection();
     } catch (error) {

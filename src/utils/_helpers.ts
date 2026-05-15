@@ -84,22 +84,6 @@ export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
 };
 
 export const pluralize = (
-  count: number,
-  singularForm: string,
-  pluralForm?: string,
-) => {
-  return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
-};
-
-export const pluralizeWithCount = (
-  count: number,
-  singularForm: string,
-  pluralForm?: string,
-) => {
-  return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
-};
-
-export const pluralizeNew = (
   count = 0,
   singularForm: string,
   options: { pluralForm?: string; showCount?: "exact" | "limited" } = {},

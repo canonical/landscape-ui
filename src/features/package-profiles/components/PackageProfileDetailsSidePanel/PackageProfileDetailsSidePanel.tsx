@@ -3,7 +3,7 @@ import InfoGrid from "@/components/layout/InfoGrid";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -101,18 +101,12 @@ const PackageProfileDetailsSidePanel: FC = () => {
 
           <InfoGrid.Item
             label="Pending on"
-            value={pluralizeWithCount(
-              profile.computers.pending.length,
-              "instance",
-            )}
+            value={pluralize(profile.computers.pending.length, "instance", { showCount: "exact" })}
           />
 
           <InfoGrid.Item
             label="Not compliant on"
-            value={pluralizeWithCount(
-              profile.computers["non-compliant"].length,
-              "instance",
-            )}
+            value={pluralize(profile.computers["non-compliant"].length, "instance", { showCount: "exact" })}
           />
         </InfoGrid>
 

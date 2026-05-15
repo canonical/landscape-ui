@@ -3,7 +3,7 @@ import CloseContext from "@/components/layout/SidePanel/CloseContext";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useContext, type FC } from "react";
@@ -45,7 +45,7 @@ const PackageProfileConstraintsAddForm: FC<
       popSidePath();
 
       notify.success({
-        message: `${pluralizeWithCount(constraints.length, "package profile constraint")} added successfully`,
+        message: `${pluralize(constraints.length, "package profile constraint", { showCount: "exact" })} added successfully`,
         title: "Package profile constraints added",
       });
     } catch (error) {

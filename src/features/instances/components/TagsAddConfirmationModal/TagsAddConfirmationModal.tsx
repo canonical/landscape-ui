@@ -4,11 +4,7 @@ import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import {
-  pluralize,
-  pluralizeArray,
-  pluralizeWithCount,
-} from "@/utils/_helpers";
+import { pluralize, pluralizeArray } from "@/utils/_helpers";
 import {
   ConfirmationModal,
   Icon,
@@ -85,14 +81,11 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           Cell: ({
             row: { original: profileChange },
           }: CellProps<ProfileChange>) => {
-            const label = pluralizeWithCount(
-              profileChange.profile.current_associated_instances,
-              "instance",
-            );
+            const label = pluralize(profileChange.profile.current_associated_instances, "instance", { showCount: "exact" });
 
             return profileChange.profile.will_exceed_limit ? (
               <Tooltip
-                message={`Adding ${pluralize(instances.length, "this instance", "these instances")} will exceed the instance limit.`}
+                message={`Adding ${pluralize(instances.length, "this instance", { pluralForm: "these instances" })} will exceed the instance limit.`}
               >
                 <Icon name="warning" />
                 {label}
@@ -129,11 +122,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
       <p>
         Adding{" "}
-        {pluralize(
-          tags.length,
-          `the ${tags[0]} tag`,
-          `these ${tags.length} tags`,
-        )}{" "}
+        {pluralize(tags.length, `the ${tags[0]} tag`, { pluralForm: `these ${tags.length} tags` })}{" "}
         to{" "}
         {pluralizeArray(
           instances,
