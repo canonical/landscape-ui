@@ -1,7 +1,7 @@
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
@@ -154,21 +154,31 @@ describe("RepositoryProfileEditForm", () => {
   });
 
   it("submitting edit-source form replaces the source in the list", async () => {
+    const localUser = userEvent.setup();
     renderEditForm("view,edit");
 
     const [firstSource] = aptSources;
     await screen.findByText(firstSource.name);
 
-    await user.click(
-      screen.getByRole("button", { name: `Edit ${firstSource.name}` }),
+    const sourceRow = screen.getByRole("row", {
+      name: new RegExp(firstSource.name, "i"),
+    });
+    await localUser.click(
+      within(sourceRow).getByRole("button", {
+        name: `Edit ${firstSource.name}`,
+      }),
     );
 
-    const nameInput = await screen.findByRole("textbox", {
-      name: /source name/i,
+    await waitFor(() => {
+      expect(screen.getByTestId("location")).toHaveTextContent("edit-source");
     });
-    await user.clear(nameInput);
-    await user.type(nameInput, "updated-source");
-    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    const nameInput = await screen.findByLabelText(/source name/i);
+    await localUser.clear(nameInput);
+    await localUser.type(nameInput, "updated-source");
+    await localUser.click(
+      screen.getByRole("button", { name: /save changes/i }),
+    );
 
     expect(await screen.findByText("updated-source")).toBeInTheDocument();
     expect(screen.queryByText(firstSource.name)).not.toBeInTheDocument();
