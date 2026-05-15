@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { expectLoadingState } from "@/tests/helpers";
-import { expect } from "vitest";
+import { afterEach, expect } from "vitest";
 import { EditMirrorForm } from "../..";
 import { mirrors } from "@/tests/mocks/mirrors";
 import {
@@ -17,6 +17,7 @@ import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type { MirrorWritable } from "@canonical/landscape-openapi";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const TestComponent = () => {
   const { lastSidePathSegment } = usePageParams();
@@ -28,6 +29,10 @@ const TestComponent = () => {
 
 describe("EditMirrorForm", () => {
   const user = userEvent.setup();
+
+  afterEach(() => {
+    setEndpointStatus("default");
+  });
 
   it("edits an ubuntu archive mirror", async () => {
     const mirror = mirrors.find(
@@ -190,6 +195,77 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText("This field is required."),
+    ).toBeInTheDocument();
+  });
+
+  it("enables filter dependencies when a package filter is provided", async () => {
+    const mirror = mirrors.find(
+      ({ archiveRoot, preserveSignatures }) =>
+        new URL(archiveRoot).host === UBUNTU_ARCHIVE_HOST &&
+        !preserveSignatures,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    const dependenciesCheckbox = screen.getByLabelText(
+      "Include dependencies in filter",
+    );
+    expect(dependenciesCheckbox).toBeDisabled();
+
+    await user.type(screen.getByLabelText("Filter"), "main");
+    expect(dependenciesCheckbox).toBeEnabled();
+
+    await user.click(dependenciesCheckbox);
+    expect(dependenciesCheckbox).toBeChecked();
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}.`,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("clears GPG key when checkbox is unchecked and field is empty", async () => {
+    const mirror = mirrors.find(
+      (m) =>
+        ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
+          new URL(m.archiveRoot).host,
+        ) && "gpgKey" in m,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(screen.getByLabelText("Keep current GPG key"));
+    await user.clear(screen.getByLabelText("Verification GPG key"));
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}.`,
+      ),
     ).toBeInTheDocument();
   });
 

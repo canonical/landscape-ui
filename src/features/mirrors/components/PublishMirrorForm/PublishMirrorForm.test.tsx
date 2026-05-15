@@ -6,6 +6,7 @@ import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import userEvent from "@testing-library/user-event";
 import { screen, waitFor } from "@testing-library/react";
 import { publications } from "@/tests/mocks/publications";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const mockPublicationName = "publications/publication";
 
@@ -21,7 +22,9 @@ vi.mock("../../api", async () => {
   const actual = await vi.importActual("../../api");
   return {
     ...actual,
-    useGetMirror: () => ({ data: { data: mirrors[0] } }),
+    useGetMirror: (name: string) => ({
+      data: { data: mirrors.find((m) => m.name === name) ?? mirrors[0] },
+    }),
     useListPublicationTargets: () => ({
       data: { data: { publicationTargets } },
     }),
@@ -52,6 +55,8 @@ vi.mock("@/features/publications", async () => {
     }),
   };
 });
+
+const preserveSignaturesMirror = mirrors.find(({ preserveSignatures }) => preserveSignatures);
 
 describe("PublishMirrorForm", () => {
   const user = userEvent.setup();
@@ -85,6 +90,30 @@ describe("PublishMirrorForm", () => {
         }),
       );
     });
+  });
+
+  it("locks signing key field if source preserves signatures", async () => {
+    assert(preserveSignaturesMirror);
+
+    renderWithProviders(
+      <PublishMirrorForm />,
+      undefined,
+      `?name=${preserveSignaturesMirror.name}`,
+    );
+
+    expect(
+      screen.queryByRole("textbox", { name: "Signing GPG key" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Signing GPG key")).toBeInTheDocument();
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
+
+    await user.hover(screen.getByText(NO_DATA_TEXT));
+
+    expect(
+      await screen.findByRole("tooltip", {
+        name: "This mirror is preserving the upstream signing key",
+      }),
+    ).toBeInTheDocument();
   });
 
   it("publishes to an existing publication", async () => {

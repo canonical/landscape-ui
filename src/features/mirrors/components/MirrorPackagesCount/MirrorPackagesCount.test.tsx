@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import MirrorPackagesCount from "./MirrorPackagesCount";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { screen } from "@testing-library/react";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const useListMirrorPackages = vi.hoisted(() => vi.fn());
 
@@ -44,5 +45,15 @@ describe("MirrorPackagesCount", () => {
     renderWithProviders(<MirrorPackagesCount mirrorName={mirrors[0].name} />);
 
     expect(screen.getByText("3+ packages")).toBeInTheDocument();
+  });
+
+  it("shows no data fallback", () => {
+    useListMirrorPackages.mockReturnValueOnce({
+      data: undefined,
+    });
+
+    renderWithProviders(<MirrorPackagesCount mirrorName={mirrors[0].name} />);
+
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 });

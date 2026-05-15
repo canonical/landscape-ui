@@ -113,6 +113,23 @@ export default [
     `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`,
     async ({ params }) => {
       await delay();
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "error" &&
+        endpointStatus.path === "mirrors/:mirrorId/packages"
+      ) {
+        return ENDPOINT_STATUS_API_ERROR;
+      }
+
+      if (
+        endpointStatus.status === "empty" &&
+        endpointStatus.path === "mirrors/:mirrorId/packages"
+      ) {
+        return HttpResponse.json<ListMirrorPackagesResponse>({
+          mirrorPackages: [],
+        });
+      }
 
       const mirror = mirrors.find(
         ({ mirrorId }) => mirrorId === params.mirrorId,
@@ -132,6 +149,15 @@ export default [
     `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`,
     async ({ params, request }) => {
       await delay();
+
+      const endpointStatus = getEndpointStatus();
+
+      if (
+        endpointStatus.status === "error" &&
+        endpointStatus.path === "mirrors/:mirrorId"
+      ) {
+        return ENDPOINT_STATUS_API_ERROR;
+      }
 
       const mirrorIndex = mirrors.findIndex(
         ({ mirrorId }) => mirrorId === params.mirrorId,
