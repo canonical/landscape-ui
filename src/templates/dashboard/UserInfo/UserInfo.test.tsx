@@ -25,6 +25,7 @@ const mockAuth: AuthContextProps = {
 };
 
 const labels = ["Unknown user", "Alerts", "Sign out"];
+const versionText = `v${APP_VERSION ?? ""} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`;
 
 describe("UserInfo", () => {
   beforeEach(() => {
@@ -35,9 +36,7 @@ describe("UserInfo", () => {
     renderWithProviders(<UserInfo />);
 
     expect(
-      screen.getByText(
-        `v${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`,
-      ),
+      screen.getByText(versionText),
     ).toBeInTheDocument();
     labels.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
@@ -88,7 +87,6 @@ describe("UserInfo", () => {
 
   it("renders version info", () => {
     renderWithProviders(<UserInfo />);
-    const versionText = `v${APP_VERSION} (${APP_COMMIT ? APP_COMMIT.slice(0, 7) : "unknown"})`;
     expect(screen.getByText(versionText)).toBeInTheDocument();
   });
 

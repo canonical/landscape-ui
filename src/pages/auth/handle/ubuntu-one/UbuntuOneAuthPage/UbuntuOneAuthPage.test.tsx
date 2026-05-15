@@ -187,6 +187,7 @@ describe("UbuntuOneAuthPage", () => {
 
     it("should redirect to no-access when user has no accounts and GENERIC_DOMAIN does not match hostname", async () => {
       vi.resetModules();
+      vi.doUnmock("@/constants");
       vi.doMock("@/constants", async (importOriginal) => ({
         ...(await importOriginal()),
         GENERIC_DOMAIN: "example.com",

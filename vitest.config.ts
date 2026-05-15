@@ -34,14 +34,6 @@ export default defineConfig({
         replacement: resolve(__dirname, "src"),
       },
     ],
-    deps: {
-      optimizer: {
-        client: {
-          enabled: true,
-          include: ["@canonical/react-components"],
-        },
-      },
-    },
     pool: "threads",
     testTimeout: 30000,
     coverage: {
