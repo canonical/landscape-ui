@@ -84,7 +84,7 @@ export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
 };
 
 export const pluralize = (
-  count = 0,
+  count: number,
   singularForm: string,
   {
     pluralForm = `${singularForm}s`,
