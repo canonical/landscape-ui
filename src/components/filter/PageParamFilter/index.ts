@@ -1,1 +1,1 @@
-export { default } from "./PageParamFilter";
+export { default } from "./PageParamFilter2";
