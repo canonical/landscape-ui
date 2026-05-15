@@ -81,13 +81,14 @@ the same name. The current set maps to:
 | `Lint & format / eslint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `eslint` |
 | `Lint & format / prettier` | [.github/workflows/lint.yml](../workflows/lint.yml) | `prettier` |
 | `Lint & format / stylelint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `stylelint` |
-| `Run tests / unit-tests` | [.github/workflows/run-tests.yml](../workflows/run-tests.yml) | `unit-tests` |
-| `Run tests / e2e-tests` | [.github/workflows/run-tests.yml](../workflows/run-tests.yml) | `e2e-tests` |
+| `Tests + TICS on PRs / unit-tests` | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `unit-tests` |
+| `Tests + TICS on PRs / e2e-tests` | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `e2e-tests` |
 | `Changeset check / verify` | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml) | `verify` |
 
-If a workflow `name:` or job id is renamed, update both the workflow file
-**and** this ruleset in the same PR, otherwise the rename will silently
-bypass the gate until the ruleset catches up.
+If a workflow `name:` or job id is renamed, update the workflow file,
+`protected-branches.json`, and this table in the same PR, otherwise the
+required-check configuration will drift from the checks GitHub actually
+produces for protected pull requests.
 
 ## Copilot review
 
