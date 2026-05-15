@@ -1,1 +1,1 @@
-export type { Local, LocalPackage } from "./LocalRepository";
+export type { LocalPackage } from "./LocalRepository";
