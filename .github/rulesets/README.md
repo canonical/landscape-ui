@@ -2,19 +2,19 @@
 
 This directory holds GitHub **ruleset definitions** as version-controlled JSON.
 The files here are the source of truth for branch-protection policy and serve
-as the *documented information* required by ISO 9001 §7.5 and the change-control
+as the _documented information_ required by ISO 9001 §7.5 and the change-control
 controls in ISO/IEC 27001 A.8.32. Committing the JSON makes the policy
 auditable, reviewable via PR, and reproducible across environments.
 
-> ⚠️  These files **do not** apply themselves. After a change is merged, a repo
+> ⚠️ These files **do not** apply themselves. After a change is merged, a repo
 > admin must push the ruleset to GitHub using the steps below. CI does not do
 > this automatically (yet).
 
 ## Files
 
-| File | Purpose |
-|---|---|
-| [protected-branches.json](protected-branches.json) | Pull-request, status-check, signed-commit, force-push, and Copilot-review rules covering `main`, `release/*`, and `point/*`. The `changeset-release/*` branches the Changesets bot pushes to don't match these patterns, so no exclude entry is needed. |
+| File                                               | Purpose                                                                                          |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| [protected-branches.json](protected-branches.json) | Pull-request, status-check, signed-commit, force-push, and Copilot-review rules covering `main`. |
 
 The currently-deployed ruleset id is **`16386358`** (canonical/landscape-ui).
 The JSON in this directory is the canonical definition; it omits the
@@ -76,14 +76,14 @@ the context (the fully-qualified form GitHub displays in the Checks tab).
 This makes the gate robust against another workflow defining a job with
 the same name. The current set maps to:
 
-| Context | Workflow | Job |
-|---|---|---|
-| `Lint & format / eslint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `eslint` |
-| `Lint & format / prettier` | [.github/workflows/lint.yml](../workflows/lint.yml) | `prettier` |
-| `Lint & format / stylelint` | [.github/workflows/lint.yml](../workflows/lint.yml) | `stylelint` |
+| Context                            | Workflow                                                                        | Job          |
+| ---------------------------------- | ------------------------------------------------------------------------------- | ------------ |
+| `Lint & format / eslint`           | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `eslint`     |
+| `Lint & format / prettier`         | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `prettier`   |
+| `Lint & format / stylelint`        | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `stylelint`  |
 | `Tests + TICS on PRs / unit-tests` | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `unit-tests` |
-| `Tests + TICS on PRs / e2e-tests` | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `e2e-tests` |
-| `Changeset check / verify` | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml) | `verify` |
+| `Tests + TICS on PRs / e2e-tests`  | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `e2e-tests`  |
+| `Changeset check / verify`         | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml)       | `verify`     |
 
 If a workflow `name:` or job id is renamed, update the workflow file,
 `protected-branches.json`, and this table in the same PR, otherwise the
