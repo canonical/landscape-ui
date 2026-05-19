@@ -5,6 +5,10 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
   FleetHealthWidget,
+  FleetTopIssues,
+  HealthByGroup,
+  RemediationPile,
+  TopDetractors,
   useFleetHealthSummary,
   useFleetTopDetractors,
 } from "@/features/health";
@@ -16,37 +20,62 @@ import {
 import useAuth from "@/hooks/useAuth";
 import classes from "./OverviewPage.module.scss";
 
-const FleetHealth: FC = () => {
+// LA061 Phase 1.8: three-row dashboard layout when the health flag is on.
+//   Row 1: 2fr Fleet health (gauge + bands) | 1fr Top issues now
+//   Row 2: 3 remediation cards (3 × 1fr, side by side inside RemediationPile)
+//   Row 3: 1fr Health by group | 1fr Top detractors
+const HealthDashboard: FC = () => {
   const summaryQuery = useFleetHealthSummary();
   const detractorsQuery = useFleetTopDetractors();
+  const onRetry = () => {
+    void summaryQuery.refetch();
+    void detractorsQuery.refetch();
+  };
   return (
-    <FleetHealthWidget
-      summary={summaryQuery.data?.data}
-      topDetractors={detractorsQuery.data?.data.results}
-      isLoading={summaryQuery.isLoading}
-      isError={summaryQuery.isError}
-      onRetry={() => {
-        void summaryQuery.refetch();
-        void detractorsQuery.refetch();
-      }}
-      isRetrying={summaryQuery.isFetching || detractorsQuery.isFetching}
-    />
+    <div className={classes.healthDashboard}>
+      <div className={classes.heroRow}>
+        <FleetHealthWidget
+          summary={summaryQuery.data?.data}
+          isLoading={summaryQuery.isLoading}
+          isError={summaryQuery.isError}
+          onRetry={onRetry}
+          isRetrying={summaryQuery.isFetching}
+          hideTopDetractors
+        />
+        <FleetTopIssues
+          detractors={detractorsQuery.data?.data.results}
+          isLoading={detractorsQuery.isLoading}
+        />
+      </div>
+      <RemediationPile />
+      <div className={classes.splitRow}>
+        <HealthByGroup />
+        <TopDetractors />
+      </div>
+    </div>
   );
 };
 
 const OverviewPage: FC = () => {
   const { isFeatureEnabled } = useAuth();
   const healthEnabled = isFeatureEnabled("health");
+  if (healthEnabled) {
+    return (
+      <PageMain>
+        <PageHeader title="Overview" />
+        <PageContent>
+          <HealthDashboard />
+          <InfoTablesContainer />
+        </PageContent>
+      </PageMain>
+    );
+  }
   return (
     <PageMain>
       <PageHeader title="Overview" />
       <PageContent>
-        <div
-          className={classNames(classes.container, {
-            [classes.healthContainer]: healthEnabled,
-          })}
-        >
-          {healthEnabled ? <FleetHealth /> : <ChartContainer />}
+        <div className={classNames(classes.container)}>
+          <ChartContainer />
           <AlertsContainer />
         </div>
         <InfoTablesContainer />

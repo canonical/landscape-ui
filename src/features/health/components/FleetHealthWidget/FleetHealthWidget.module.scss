@@ -5,18 +5,30 @@ $band-critical: $color-negative;
 $band-warning: $color-caution;
 $band-healthy: $color-positive;
 
+/* LA061 Phase 1.8: when the hero has no content to render (`isError` or
+ * `summary === undefined`), the widget falls back to this plain bordered
+ * container rather than the 3-column grid. Keeps `EmptyState` filling the
+ * card instead of squeezing into the first grid cell. */
+.rootFallback {
+  background: $colors--theme--background-default;
+  border: 1px solid $colors--theme--border-default;
+  padding: $sp-medium;
+  width: 100%;
+}
+
+/* LA061 Phase 1.8: card frame matches the flat-bordered look used by
+ * `InfoTablesContainer.tableContainer` and the new Overview widgets. No
+ * corner radius, no shadow — consistent with the rest of the page. */
 .root {
   background: $colors--theme--background-default;
-  border: 1px solid $colors--theme--border-low-contrast;
-  border-radius: 0.5rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.04);
+  border: 1px solid $colors--theme--border-default;
   display: grid;
   gap: $sph--large;
   grid-template-areas:
     "gauge middle detractors"
     "footer footer footer";
   grid-template-columns: minmax(12rem, 1fr) minmax(0, 2fr) minmax(0, 1.4fr);
-  padding: $spv--large $sph--large;
+  padding: $sp-medium;
   width: 100%;
 
   @media (max-width: 64rem) {
@@ -37,7 +49,31 @@ $band-healthy: $color-positive;
   }
 }
 
-// ── Gauge ──
+/* LA061 Phase 1.8: compact mode used by the new Overview layout. The
+ * detractor column is rendered as a separate sibling card, so this widget
+ * is just gauge + middle in a 1/1 split, which lets the gauge breathe. */
+.rootCompact {
+  grid-template-areas:
+    "gauge middle"
+    "footer footer";
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+  @media (max-width: 40rem) {
+    grid-template-areas:
+      "gauge"
+      "middle"
+      "footer";
+    grid-template-columns: 1fr;
+  }
+
+  .gauge,
+  .gaugeSkeleton {
+    height: 15rem;
+    width: 15rem;
+  }
+}
+
+/* ── Gauge ── */
 .gaugeColumn {
   align-items: center;
   display: flex;
@@ -113,7 +149,7 @@ $band-healthy: $color-positive;
   width: 12rem;
 }
 
-// ── Middle column ──
+/* ── Middle column ── */
 .middleColumn {
   align-self: center;
   display: flex;
@@ -228,13 +264,25 @@ $band-healthy: $color-positive;
   }
 }
 
+/* LA061 Phase 1.8: Unmeasured fourth-row tint. Muted gray rather than a
+ * band colour because the engine has nothing to say about these instances
+ * — they're Windows / WSL host / no distribution. */
+.band_unmeasured {
+  color: $colors--theme--text-muted;
+
+  .bandSwatch,
+  .bandFill {
+    background: rgba($color-mid-light, 0.65);
+  }
+}
+
 .barSkeleton {
   border-radius: 0.25rem;
   height: 4.5rem;
   width: 100%;
 }
 
-// ── Detractor column ──
+/* ── Detractor column ── */
 .detractorColumn {
   display: flex;
   flex-direction: column;
@@ -334,7 +382,7 @@ $band-healthy: $color-positive;
   width: 100%;
 }
 
-// ── Footer ──
+/* ── Footer ── */
 .footer {
   align-items: center;
   border-top: 1px solid $colors--theme--border-low-contrast;
@@ -347,7 +395,7 @@ $band-healthy: $color-positive;
   padding-top: $spv--small;
 }
 
-// ── States ──
+/* ── States ── */
 .error {
   color: $color-negative;
   grid-column: 1 / -1;
@@ -364,7 +412,7 @@ $band-healthy: $color-positive;
   padding: $spv--large;
 }
 
-// ── Shared skeleton shimmer ──
+/* ── Shared skeleton shimmer ── */
 .shimmer {
   background: linear-gradient(
     90deg,

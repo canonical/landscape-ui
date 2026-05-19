@@ -11,13 +11,36 @@
   }
 }
 
-/* Grid layout reserved for the LA061 hero widget: give it ~60% of
- * the row and let the AlertsContainer ride along at ~40%. The
- * legacy ChartContainer was designed for the 50/50 flex layout, so
- * keep it on the default `.container` rules above. */
-.healthContainer {
-  @media (width >= 1300px) {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+/* LA061 Phase 1.8: three-row dashboard when the health feature is on.
+ *   Row 1 — 2fr hero (Fleet health gauge + bands) | 1fr Top issues now
+ *   Row 2 — RemediationPile (3 cards side by side, governed by the
+ *           widget's own grid)
+ *   Row 3 — 1fr Health by group | 1fr Top detractors
+ * Each row stacks to a single column on narrower viewports. */
+.healthDashboard {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-medium;
+}
+
+.heroRow {
+  display: grid;
+  gap: $sp-medium;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  align-items: start;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.splitRow {
+  display: grid;
+  gap: $sp-medium;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
   }
 }

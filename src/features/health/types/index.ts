@@ -39,8 +39,34 @@ export interface FleetHealthSummary {
   // computed health row. Non-Ubuntu / WSL host instances aren't measurable
   // and don't contribute. Optional for backward compatibility.
   measurable_count?: number;
+  // LA061 Phase 1.8: count of instances the engine can't score (Windows /
+  // WSL host / no distribution). Sum with `measurable_count` equals the
+  // account's full instance count.
+  unmeasurable_count?: number;
+  // LA061 Phase 1.8: optional grouped breakdown when the caller passed
+  // `?group_by=tag|distribution|account`. Top-N + an "other" rollup.
+  groups?: HealthGroupSummary[];
+  // LA061 Phase 1.8: number of pending kernel USNs the Livepatch waiver is
+  // currently suppressing in the account. Drives the Pro/Livepatch
+  // differentiator badge on the Remediation Pile.
+  kernel_usns_waived_count?: number;
   updated_at: string | null;
 }
+
+// LA061 Phase 1.8: one row of the grouped `/health/summary?group_by=...`
+// breakdown. Backs the `HealthByGroup` widget on the Overview.
+export interface HealthGroupSummary {
+  group: string;
+  band_critical_count: number;
+  band_warning_count: number;
+  band_healthy_count: number;
+  total_count: number;
+}
+
+// LA061 Phase 1.8: dimensions the `HealthByGroup` widget can pivot over.
+// Mirrors the server's `_VALID_GROUP_BY` set in
+// `canonical/landscape/api/health/summary.py`.
+export type HealthGroupBy = "tag" | "distribution" | "account";
 
 // Fleet-wide top detractor: a single rule and the count of instances it's
 // currently dragging down. Backs the "Top issues now" panel on the Overview.
@@ -88,4 +114,32 @@ export interface HealthActionResult {
   // "View activity" link in that case.
   activity_id: number | null;
   enqueued_at: string;
+}
+
+// LA061 Phase 1.8: bulk-action response. HTTP status is 207 Multi-Status so
+// success is per-row, not all-or-nothing. The UI surfaces `success_count` and
+// `failure_count` in the toast and inspects `results` only when failures
+// exist.
+export type HealthBulkActionOutcomeStatus =
+  | "enqueued"
+  | "forbidden"
+  | "conflict"
+  | "not_implemented"
+  | "unknown_computer"
+  | "error";
+
+export interface HealthBulkActionOutcome {
+  computer_id: number;
+  status: HealthBulkActionOutcomeStatus;
+  activity_id?: number | null;
+  error_code?: string | null;
+  message?: string | null;
+}
+
+export interface HealthBulkActionResult {
+  action: HealthActionKind;
+  enqueued_at: string;
+  results: HealthBulkActionOutcome[];
+  success_count: number;
+  failure_count: number;
 }

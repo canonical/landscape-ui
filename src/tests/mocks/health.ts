@@ -31,6 +31,14 @@ export interface ComputerHealth {
   updated_at: string | null;
 }
 
+export interface FleetHealthSummaryGroupRow {
+  group: string;
+  band_critical_count: number;
+  band_warning_count: number;
+  band_healthy_count: number;
+  total_count: number;
+}
+
 export interface FleetHealthSummary {
   account_id: number;
   band_critical_count: number;
@@ -39,6 +47,14 @@ export interface FleetHealthSummary {
   total_count: number;
   average_score?: number;
   measurable_count?: number;
+  // LA061 Phase 1.8: count of `computer` rows the engine can't score
+  // (Windows / WSL host / no distribution). Sum with `measurable_count`
+  // equals the account's full instance count.
+  unmeasurable_count?: number;
+  // LA061 Phase 1.8 fields. Optional so existing fixtures don't need to
+  // populate them.
+  groups?: FleetHealthSummaryGroupRow[];
+  kernel_usns_waived_count?: number;
   updated_at: string | null;
 }
 
@@ -266,6 +282,11 @@ function summarise(computers: ComputerHealth[]): FleetHealthSummary {
       ? Math.round(total / computers.length)
       : 0,
     measurable_count: computers.length,
+    // LA061 Phase 1.8: each demo fleet has a couple of synthetic Windows /
+    // WSL host instances that the engine can't score. The Overview surfaces
+    // them as an "Unmeasured" 4th row so the gauge's denominator stays
+    // honest. Default to a small handful so the row actually renders.
+    unmeasurable_count: 3,
     updated_at: NOW,
   };
 }

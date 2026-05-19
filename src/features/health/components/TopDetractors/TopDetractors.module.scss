@@ -1,0 +1,71 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* LA061 Phase 1.8: flat-bordered card to match InfoTables / other widgets. */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-medium;
+  padding: $sp-medium;
+  border: 1px solid $colors--theme--border-default;
+  background: $colors--theme--background-default;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: $sph--small;
+}
+
+.title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.subtitle {
+  color: $colors--theme--text-muted;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  row-gap: 6px;
+  column-gap: $sph--large;
+  align-items: center;
+}
+
+.scoreBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.scoreCritical { background: rgba(199, 22, 43, 0.18); }
+.scoreWarning  { background: rgba(249, 155, 17, 0.20); }
+.scoreHealthy  { background: rgba(14, 132, 32, 0.18); }
+
+.nameCell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.factor {
+  color: $colors--theme--text-muted;
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+.empty {
+  padding: $sph--large 0;
+  color: $colors--theme--text-muted;
+  text-align: center;
+}

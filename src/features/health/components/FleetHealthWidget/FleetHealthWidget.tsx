@@ -68,13 +68,31 @@ interface FleetHealthWidgetProps {
   readonly isRetrying?: boolean;
   readonly heading?: string;
   readonly description?: string;
+  // LA061 Phase 1.8: in the new dashboard layout the "Top issues now" column
+  // moves out into its own card (`FleetTopIssues`), so the hero widget only
+  // renders gauge + band distribution. Default false preserves the original
+  // three-column layout for any consumer that doesn't opt in.
+  readonly hideTopDetractors?: boolean;
 }
 
-interface BandRow {
-  band: HealthBand;
-  label: string;
-  count: number;
-}
+// LA061 Phase 1.8: the band list shows the three score bands plus an
+// "Unmeasured" 4th row when the account has computers the engine can't
+// score (Windows / WSL host / no distribution). The 4th row is intentionally
+// not a `HealthBand` — it doesn't have a filter target on the instance list,
+// so we model it as a `kind: "unmeasured"` discriminant alongside the three
+// score-band rows.
+type BandRow =
+  | {
+      kind: "score";
+      band: HealthBand;
+      label: string;
+      count: number;
+    }
+  | {
+      kind: "unmeasured";
+      label: string;
+      count: number;
+    };
 
 const computeAverage = (summary: FleetHealthSummary): number => {
   if (typeof summary.average_score === "number") {
@@ -103,22 +121,47 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
   isRetrying,
   heading = "Fleet health",
   description = "Average score across measurable instances and the issues dragging it down.",
+  hideTopDetractors = false,
 }) => {
   const titleId = useId();
   const descId = useId();
 
   const rows = useMemo<BandRow[]>(() => {
     if (!summary) return [];
-    return [
-      { band: "critical", label: "Critical", count: summary.band_critical_count },
-      { band: "warning", label: "Warning", count: summary.band_warning_count },
-      { band: "healthy", label: "Healthy", count: summary.band_healthy_count },
+    const baseRows: BandRow[] = [
+      { kind: "score", band: "critical", label: "Critical", count: summary.band_critical_count },
+      { kind: "score", band: "warning", label: "Warning", count: summary.band_warning_count },
+      { kind: "score", band: "healthy", label: "Healthy", count: summary.band_healthy_count },
     ];
+    // LA061 Phase 1.8: append a muted Unmeasured row when the account has
+    // computers the engine can't score (Windows / WSL host / no
+    // distribution). Hidden when zero so the band list doesn't carry an
+    // always-empty fourth row.
+    const unmeasured =
+      summary.unmeasurable_count
+      ?? Math.max(
+        0,
+        summary.total_count - (summary.measurable_count ?? summary.total_count),
+      );
+    if (unmeasured > 0) {
+      baseRows.push({
+        kind: "unmeasured",
+        label: "Unmeasured",
+        count: unmeasured,
+      });
+    }
+    return baseRows;
   }, [summary]);
 
   if (isLoading || (!summary && !isError)) {
     return (
-      <section className={classes.root} aria-busy="true" aria-label="Loading fleet health">
+      <section
+        className={classNames(classes.root, {
+          [classes.rootCompact]: hideTopDetractors,
+        })}
+        aria-busy="true"
+        aria-label="Loading fleet health"
+      >
         <div className={classes.gaugeColumn}>
           <div className={classNames(classes.gaugeSkeleton, classes.shimmer)} />
         </div>
@@ -127,21 +170,26 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
           <p className={classes.description}>{description}</p>
           <div className={classNames(classes.barSkeleton, classes.shimmer)} />
         </div>
-        <div className={classes.detractorColumn}>
-          <h3 className={classes.subheading}>Top issues now</h3>
-          <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
-          <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
-          <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
-        </div>
+        {!hideTopDetractors && (
+          <div className={classes.detractorColumn}>
+            <h3 className={classes.subheading}>Top issues now</h3>
+            <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+            <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+            <div className={classNames(classes.detractorSkeleton, classes.shimmer)} />
+          </div>
+        )}
       </section>
     );
   }
 
   if (isError || !summary) {
     // The whole widget has no content to render — use EmptyState rather
-    // than an inline Notification.
+    // than an inline Notification. The fallback container drops the
+    // 3-column grid (no gauge / bands / detractors to place) so the
+    // EmptyState spans the full card naturally instead of squeezing into
+    // the gauge column.
     return (
-      <section className={classes.root}>
+      <section className={classes.rootFallback}>
         <EmptyState
           title="Fleet health unavailable"
           icon="error"
@@ -189,8 +237,19 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
     );
   }
 
+  // LA061 Phase 1.8: `measurable_count` is the denominator for the band
+  // percentages. `total_count` from the server now equals the count of
+  // measured rows in `computer_health_state`, so `measurable_count` and
+  // `total_count` agree. We surface `unmeasurable_count` separately as the
+  // count of computers the engine couldn't score.
   const measurable = summary.measurable_count ?? total;
-  const unmeasurable = Math.max(0, total - measurable);
+  // Backwards-compatible: when the server hasn't shipped
+  // `unmeasurable_count` (older API) infer it from the legacy
+  // `total - measurable` derivation. Older clients that fed the widget a
+  // single `total` keep working.
+  const unmeasurable =
+    summary.unmeasurable_count ?? Math.max(0, total - measurable);
+  const fleetTotal = measurable + unmeasurable;
   const score = computeAverage(summary);
   const scoreBand = bandForScore(score);
   const gaugeProgress = (Math.max(0, Math.min(100, score)) / PERCENT_BASE) *
@@ -203,7 +262,9 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
 
   return (
     <section
-      className={classes.root}
+      className={classNames(classes.root, {
+        [classes.rootCompact]: hideTopDetractors,
+      })}
       aria-labelledby={titleId}
       aria-describedby={descId}
     >
@@ -269,33 +330,71 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
 
       {/* ── Heading + distribution ── */}
       <div className={classes.middleColumn}>
-        <h2 id={titleId} className={classes.heading}>
+        <p
+          id={titleId}
+          className={classNames("p-heading--5 u-no-margin--bottom", classes.heading)}
+        >
           {heading}
-        </h2>
+        </p>
         <p id={descId} className={classes.description}>
           {description}
         </p>
         <ul className={classes.bandList}>
-          {rows.map(({ band, label, count }) => {
-            const pct = measurable > 0 ? (count / measurable) * PERCENT_BASE : 0;
+          {rows.map((row) => {
+            // Unmeasured uses the fleet-wide denominator so its percentage
+            // is honest ("3 of 18 instances aren't measurable"). The score
+            // bands keep the measurable-only denominator so the three
+            // percentages sum to 100%.
+            const denominator =
+              row.kind === "unmeasured" ? fleetTotal : measurable;
+            const pct = denominator > 0
+              ? (row.count / denominator) * PERCENT_BASE
+              : 0;
+            const accessibleLabel =
+              row.kind === "unmeasured"
+                ? `${row.count} unmeasured instances, ${ROUND(pct)} percent of the fleet`
+                : `${row.count} ${row.label.toLowerCase()} instances, ${ROUND(pct)} percent of the measurable fleet`;
+            const rowClass = classNames(
+              classes.bandRow,
+              row.kind === "score"
+                ? classes[`band_${row.band}`]
+                : classes.band_unmeasured,
+            );
+            const content = (
+              <>
+                <span className={classes.bandSwatch} aria-hidden="true" />
+                <span className={classes.bandLabel}>{row.label}</span>
+                <span className={classes.bandTrack} aria-hidden="true">
+                  <span
+                    className={classes.bandFill}
+                    style={{ width: `${pct}%` }}
+                  />
+                </span>
+                <span className={classes.bandCount}>{row.count}</span>
+                <span className={classes.bandPct}>{ROUND(pct)}%</span>
+              </>
+            );
+            if (row.kind === "score") {
+              return (
+                <li key={row.band}>
+                  <Link
+                    to={ROUTES.instances.root({ healthBand: [row.band] })}
+                    className={rowClass}
+                    aria-label={accessibleLabel}
+                  >
+                    {content}
+                  </Link>
+                </li>
+              );
+            }
+            // Unmeasured row is informational; no deep-link target on the
+            // instance list maps to "the engine can't score these," so we
+            // render it as a static row rather than a Link.
             return (
-              <li key={band}>
-                <Link
-                  to={ROUTES.instances.root({ healthBand: [band] })}
-                  className={classNames(classes.bandRow, classes[`band_${band}`])}
-                  aria-label={`${count} ${label.toLowerCase()} instances, ${ROUND(pct)} percent of the measurable fleet`}
-                >
-                  <span className={classes.bandSwatch} aria-hidden="true" />
-                  <span className={classes.bandLabel}>{label}</span>
-                  <span className={classes.bandTrack} aria-hidden="true">
-                    <span
-                      className={classes.bandFill}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </span>
-                  <span className={classes.bandCount}>{count}</span>
-                  <span className={classes.bandPct}>{ROUND(pct)}%</span>
-                </Link>
+              <li key="unmeasured">
+                <div className={rowClass} aria-label={accessibleLabel}>
+                  {content}
+                </div>
               </li>
             );
           })}
@@ -303,54 +402,56 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
       </div>
 
       {/* ── Top detractors ── */}
-      <div className={classes.detractorColumn}>
-        <h3 className={classes.subheading}>Top issues now</h3>
-        {detractors.length === 0 ? (
-          <p className={classes.detractorEmpty}>
-            <Icon name="success" /> No factors are dragging the fleet down.
-          </p>
-        ) : (
-          <ul className={classes.detractorList}>
-            {detractors.map((d) => (
-              <li key={d.rule_id}>
-                <Link
-                  to={ROUTES.instances.root({
-                    healthBand:
-                      d.weight >= HEALTHY_FLOOR
-                        ? ["critical"]
-                        : ["critical", "warning"],
-                  })}
-                  className={classes.detractorRow}
-                >
-                  <span
-                    className={classNames(
-                      classes.detractorIcon,
-                      d.weight >= HEALTHY_FLOOR && classes.detractorIconCritical,
-                    )}
-                    aria-hidden="true"
+      {!hideTopDetractors && (
+        <div className={classes.detractorColumn}>
+          <h3 className={classes.subheading}>Top issues now</h3>
+          {detractors.length === 0 ? (
+            <p className={classes.detractorEmpty}>
+              <Icon name="success" /> No factors are dragging the fleet down.
+            </p>
+          ) : (
+            <ul className={classes.detractorList}>
+              {detractors.map((d) => (
+                <li key={d.rule_id}>
+                  <Link
+                    to={ROUTES.instances.root({
+                      healthBand:
+                        d.weight >= HEALTHY_FLOOR
+                          ? ["critical"]
+                          : ["critical", "warning"],
+                    })}
+                    className={classes.detractorRow}
                   >
-                    <Icon name={d.weight >= HEALTHY_FLOOR ? "error" : "warning"} />
-                  </span>
-                  <span className={classes.detractorBody}>
-                    <span className={classes.detractorCount}>
-                      {d.computer_count} {d.computer_count === 1 ? "instance" : "instances"}
+                    <span
+                      className={classNames(
+                        classes.detractorIcon,
+                        d.weight >= HEALTHY_FLOOR && classes.detractorIconCritical,
+                      )}
+                      aria-hidden="true"
+                    >
+                      <Icon name={d.weight >= HEALTHY_FLOOR ? "error" : "warning"} />
                     </span>
-                    <span className={classes.detractorText}>
-                      {d.description}
+                    <span className={classes.detractorBody}>
+                      <span className={classes.detractorCount}>
+                        {d.computer_count} {d.computer_count === 1 ? "instance" : "instances"}
+                      </span>
+                      <span className={classes.detractorText}>
+                        {d.description}
+                      </span>
                     </span>
-                  </span>
-                  <Icon name="chevron-right" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                    <Icon name="chevron-right" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <footer className={classes.footer}>
         <Icon name="information" />
         <span>
-          {measurable} of {total} instances measured
+          {measurable} of {fleetTotal} instances measured
           {unmeasurable > 0 ? (
             <>
               {" · "}

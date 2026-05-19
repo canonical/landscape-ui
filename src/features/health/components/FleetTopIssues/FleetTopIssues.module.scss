@@ -1,0 +1,101 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* LA061 Phase 1.8: flat-bordered card to match InfoTables / other widgets. */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-medium;
+  padding: $sp-medium;
+  border: 1px solid $colors--theme--border-default;
+  background: $colors--theme--background-default;
+}
+
+.heading {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: $colors--theme--text-muted;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $sph--x-small;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  gap: $sph--small;
+  padding: $sph--x-small $sph--small;
+  border-radius: 0.25rem;
+  background: $colors--theme--background-alt;
+  color: $colors--theme--text-default;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba($color-mid-light, 0.28);
+    outline: none;
+    text-decoration: none;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 999rem;
+  background: rgba($color-caution, 0.18);
+  color: darken($color-caution, 6%);
+}
+
+.iconCritical {
+  background: rgba($color-negative, 0.14);
+  color: $color-negative;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.count {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.detail {
+  color: $colors--theme--text-muted;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  gap: $sph--small;
+  padding: $sph--small;
+  border-radius: 0.25rem;
+  color: $color-positive;
+  background: rgba($color-positive, 0.14);
+}
+
+.viewAll {
+  align-self: flex-start;
+  font-size: 0.8125rem;
+}
