@@ -72,10 +72,7 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
     if (event.key === "Escape" && showDropdown) {
       event.stopPropagation();
       closeDropdown();
-      if (
-        inputRef.current &&
-        document.activeElement !== inputRef.current
-      ) {
+      if (inputRef.current && document.activeElement !== inputRef.current) {
         suppressFocusOpenRef.current = true;
         inputRef.current.focus();
       }
