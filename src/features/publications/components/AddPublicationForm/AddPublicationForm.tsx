@@ -178,7 +178,14 @@ const AddPublicationForm: FC = () => {
       "uploader_distribution",
       source?.distribution ?? "",
     );
-
+    await formik.setFieldValue(
+      "preserve_mirror_signing_key",
+      INITIAL_VALUES.preserve_mirror_signing_key,
+    );
+    await formik.setFieldValue(
+      "mirror_signing_key",
+      INITIAL_VALUES.mirror_signing_key,
+    );
     await formik.setFieldValue("uploader_architectures", []);
   };
 
