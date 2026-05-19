@@ -1,4 +1,5 @@
 import Blocks from "@/components/layout/Blocks";
+import EmptyState from "@/components/layout/EmptyState";
 import HeaderActions from "@/components/layout/HeaderActions";
 import LoadingState from "@/components/layout/LoadingState";
 import {
@@ -18,7 +19,7 @@ import type {
 import useNotify from "@/hooks/useNotify";
 import { ROUTES } from "@/libs/routes";
 import type { Instance } from "@/types/Instance";
-import { Icon } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
@@ -47,28 +48,31 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
   const { notify } = useNotify();
 
   if (!measurable) {
+    // Phase 1.7 also gates the tab away from non-Ubuntu instances in
+    // SingleInstanceTabs/helpers.tsx, but keep the guard here so direct deep
+    // links still render a useful page instead of a crash.
     return (
-      <section className={classes.notMeasurable}>
-        <Icon name="information" />
-        <div>
-          <h2 className={classes.notMeasurableTitle}>
-            Health isn&apos;t measured for this instance
-          </h2>
-          <p>
-            The Instance Health Engine relies on signals reported by the
-            Landscape client, which only runs on Ubuntu (server, desktop,
-            and Core). This instance reports{" "}
-            <strong>
-              {instance.distribution_info?.distributor ?? "no distribution"}
-            </strong>
-            , so there&apos;s no score to surface.
-          </p>
-          <p>
-            Status, activities, and other signals remain available via the
-            other tabs.
-          </p>
-        </div>
-      </section>
+      <EmptyState
+        title="Health isn’t measured for this instance"
+        icon="information"
+        body={
+          <>
+            <p>
+              The Instance Health Engine relies on signals reported by the
+              Landscape client, which only runs on Ubuntu (server, desktop,
+              and Core). This instance reports{" "}
+              <strong>
+                {instance.distribution_info?.distributor ?? "no distribution"}
+              </strong>
+              , so there&apos;s no score to surface.
+            </p>
+            <p>
+              Status, activities, and other signals remain available via the
+              other tabs.
+            </p>
+          </>
+        }
+      />
     );
   }
 
@@ -77,14 +81,34 @@ const HealthPanel: FC<HealthPanelProps> = ({ instance }) => {
   }
 
   if (query.isError || !query.data?.data) {
+    // LA061 Phase 1.7: the whole tab is unrenderable when health can't load,
+    // so surface a proper EmptyState rather than an inline Notification.
+    // Notification-style banners are reserved for partial-content failures.
     return (
-      <section className={classes.errorState} role="alert">
-        <Icon name="error" />
-        <span>
-          Couldn&apos;t load health for this instance. Try again in a
-          moment.
-        </span>
-      </section>
+      <EmptyState
+        title="Health unavailable"
+        icon="error"
+        body={
+          <p>
+            We couldn&apos;t load the health details for this instance.
+            This is usually transient — check back in a moment, or refresh
+            to retry.
+          </p>
+        }
+        cta={[
+          <Button
+            type="button"
+            key="retry"
+            appearance="positive"
+            onClick={() => {
+              void query.refetch();
+            }}
+            disabled={query.isFetching}
+          >
+            {query.isFetching ? "Retrying…" : "Retry"}
+          </Button>,
+        ]}
+      />
     );
   }
 

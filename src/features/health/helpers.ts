@@ -1,5 +1,10 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import type { HealthFactor, HealthActionKind, HealthBand } from "./types";
+import type {
+  ComputerHealth,
+  HealthFactor,
+  HealthActionKind,
+  HealthBand,
+} from "./types";
 
 // Health is computed from signals the Landscape client reports. The client
 // only runs on Ubuntu (server / desktop / core / WSL), so anything else —
@@ -63,9 +68,25 @@ export const recommendedActionsFor = (
     }
   }
   // The diagnostic script is always offered — useful when the score is fine
-  // and the operator just wants to gather facts.
+  // and the operator just wants to gather facts. Phase 1.7 keeps this in
+  // the fallback path only; production responses come from the server's
+  // `recommended_actions` field which omits diagnostic-script for now.
   seen.add("run-diagnostic-script");
   return Array.from(seen);
+};
+
+// LA061 Phase 1.7: prefer the server's `recommended_actions` field when
+// present. An explicit empty array is meaningful ("nothing to do") and
+// must not fall back. Undefined means "field not present on the response"
+// — older server, cached payload, or MSW handler that hasn't been updated
+// — and falls back to the local helper for graceful degradation.
+export const effectiveRecommendedActions = (
+  health: Pick<ComputerHealth, "factors" | "recommended_actions">,
+): HealthActionKind[] => {
+  if (health.recommended_actions !== undefined) {
+    return health.recommended_actions;
+  }
+  return recommendedActionsFor(health.factors);
 };
 
 interface HealthActionMeta {

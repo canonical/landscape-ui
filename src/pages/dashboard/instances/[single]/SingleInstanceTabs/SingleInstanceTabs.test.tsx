@@ -85,9 +85,10 @@ describe("SingleInstanceTabs", () => {
     });
 
     it("should use the correct tabs for windows", () => {
+      // LA061 Phase 1.7: Health tab is hidden for non-Ubuntu instances because
+      // the Landscape client doesn't run there — no signals to score.
       validateTabs(windowsInstance, [
         "Info",
-        "Health",
         "WSL",
         "Activities",
         "Ubuntu Pro",
@@ -95,9 +96,9 @@ describe("SingleInstanceTabs", () => {
     });
 
     it("should use the correct tabs for other linux", () => {
+      // LA061 Phase 1.7: Health tab is hidden for non-Ubuntu instances.
       validateTabs(debianInstance, [
         "Info",
-        "Health",
         "Activities",
         "Snaps",
         "Processes",

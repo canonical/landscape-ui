@@ -6,11 +6,16 @@
   flex-direction: column;
   gap: $sp-large;
 
-  // Side-by-side on wide screens: the LA061 hero widget is the
-  // primary focus, so give it ~60% of the row and let the
-  // AlertsContainer ride along at ~40%. Without this the two
-  // children split 50/50 and the alert cards waste a lot of
-  // horizontal space at 1440+ widths.
+  @media (width >= 1300px) {
+    flex-direction: row;
+  }
+}
+
+/* Grid layout reserved for the LA061 hero widget: give it ~60% of
+ * the row and let the AlertsContainer ride along at ~40%. The
+ * legacy ChartContainer was designed for the 50/50 flex layout, so
+ * keep it on the default `.container` rules above. */
+.healthContainer {
   @media (width >= 1300px) {
     display: grid;
     grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);

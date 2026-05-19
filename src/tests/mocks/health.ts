@@ -10,6 +10,16 @@ export interface HealthFactor {
   points: number;
 }
 
+// LA061 Phase 1.7: kept aligned with `src/features/health/types`. The MSW
+// handler enriches each fixture with a server-derived `recommended_actions`
+// list at response time, so the field is optional here.
+export type HealthActionKind =
+  | "run-security-updates"
+  | "reboot"
+  | "refresh-facts"
+  | "attach-ubuntu-pro"
+  | "run-diagnostic-script";
+
 export interface ComputerHealth {
   computer_id: number;
   account_id: number;
@@ -17,6 +27,7 @@ export interface ComputerHealth {
   band: Band;
   critical_factor_count: number;
   factors: HealthFactor[];
+  recommended_actions?: HealthActionKind[];
   updated_at: string | null;
 }
 

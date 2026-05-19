@@ -43,13 +43,13 @@ describe("seededRules", () => {
 
   it("uses the spec weights", () => {
     const byKey = Object.fromEntries(seededRules.map((r) => [r.rule_key, r]));
-    expect(byKey["usn.critical"].weight).toBe(100);
-    expect(byKey["usn.high"].weight).toBe(W_USN_HIGH);
-    expect(byKey["usn.medium"].weight).toBe(5);
-    expect(byKey["usn.low"].weight).toBe(1);
-    expect(byKey.reboot_required.weight).toBe(10);
-    expect(byKey["instance.offline"].weight).toBe(W_OFFLINE);
-    expect(byKey["package.updates_available"].weight).toBe(1);
+    expect(byKey["usn.critical"]!.weight).toBe(100);
+    expect(byKey["usn.high"]!.weight).toBe(W_USN_HIGH);
+    expect(byKey["usn.medium"]!.weight).toBe(5);
+    expect(byKey["usn.low"]!.weight).toBe(1);
+    expect(byKey.reboot_required!.weight).toBe(10);
+    expect(byKey["instance.offline"]!.weight).toBe(W_OFFLINE);
+    expect(byKey["package.updates_available"]!.weight).toBe(1);
   });
 
   it("flags every seed row as a system default", () => {
@@ -103,7 +103,10 @@ describe("manyFactorsComputer", () => {
 describe("livepatchWaiverFleet", () => {
   it("includes one Pro/Livepatched and one non-Pro computer", () => {
     expect(livepatchWaiverFleet.computers).toHaveLength(2);
-    const [pro, nonPro] = livepatchWaiverFleet.computers;
+    const [pro, nonPro] = livepatchWaiverFleet.computers as [
+      (typeof livepatchWaiverFleet.computers)[number],
+      (typeof livepatchWaiverFleet.computers)[number],
+    ];
     // Pro: kernel USN waived, only reboot remains → stays healthy.
     expect(pro.band).toBe("healthy");
     expect(pro.factors.some((f) => f.rule_key === "usn.critical")).toBe(false);

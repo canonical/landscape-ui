@@ -9,9 +9,15 @@ interface Variables {
   action: HealthActionKind;
 }
 
-// Fires a stub remediation action. The server-side endpoint enqueues an
-// activity equivalent to the user clicking the matching button on the Info
-// tab; full plumbing lands with the real remediation work.
+// LA061 Phase 1.7: dispatches a smart action against the computer's health
+// state. The server enqueues a real activity (`reboot`,
+// `run-security-updates`) or marks the computer dirty server-side
+// (`refresh-facts`). On success the per-computer health query is
+// invalidated so the panel re-fetches the freshly-updated state.
+//
+// Error toasts are surfaced by the caller (see HealthDetailsPanel) — this
+// hook propagates the AxiosError verbatim so the call site can branch on
+// 403 / 409 / 501.
 export default function useHealthAction() {
   const authFetch = useFetch();
   const queryClient = useQueryClient();

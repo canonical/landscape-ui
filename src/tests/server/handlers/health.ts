@@ -11,6 +11,7 @@ import {
   type ComputerHealth,
   type FleetHealthSummary,
   type FleetTopDetractor,
+  type HealthActionKind,
   type HealthRule,
   getFleetTopDetractors,
   getHealthFixture,
@@ -19,6 +20,36 @@ import {
 } from "@/tests/mocks/health";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
+
+// LA061 Phase 1.7: the production server returns a `recommended_actions`
+// list per `ComputerHealth`, derived from the factor list. The MSW handler
+// does the same derivation here so dev demos behave like prod. The mapping
+// is duplicated from `src/features/health/helpers.ts:ACTION_BY_RULE_KEY` —
+// `src/tests/server/handlers/` is forbidden from importing `src/features/*`
+// by the project's lint rules, so the duplication is deliberate.
+// Keep this map in sync if rule keys change.
+const ACTION_BY_RULE_KEY: Record<string, HealthActionKind> = {
+  "usn.critical": "run-security-updates",
+  "usn.high": "run-security-updates",
+  "usn.medium": "run-security-updates",
+  "usn.low": "run-security-updates",
+  reboot_required: "reboot",
+  "instance.offline": "refresh-facts",
+  "package.updates_available": "run-security-updates",
+};
+
+const enrichWithRecommendedActions = (
+  health: ComputerHealth,
+): ComputerHealth => {
+  const seen = new Set<HealthActionKind>();
+  for (const factor of health.factors) {
+    const action = ACTION_BY_RULE_KEY[factor.rule_key];
+    if (action) {
+      seen.add(action);
+    }
+  }
+  return { ...health, recommended_actions: Array.from(seen) };
+};
 
 // Stub action endpoint payload — matches `HealthActionResult` in the
 // frontend types. The action kinds the UI dispatches are a fixed
@@ -30,7 +61,9 @@ interface HealthActionBody {
 interface HealthActionResponse {
   action: string;
   computer_id: number;
-  activity_id: number;
+  // LA061 Phase 1.7: null for `refresh-facts` (no agent-side activity is
+  // enqueued — the action just marks the computer dirty server-side).
+  activity_id: number | null;
   enqueued_at: string;
 }
 
@@ -104,7 +137,11 @@ export default [
   ),
 
   // PUT /api/v2/health/rules/:id
-  http.put<{ id: string }, UpdateRuleBody, HealthRule>(
+  http.put<
+    { id: string },
+    UpdateRuleBody,
+    HealthRule | { error: string; message: string }
+  >(
     `${API_URL}health/rules/:id`,
     async ({ params, request }) => {
       const id = Number(params.id);
@@ -157,11 +194,13 @@ export default [
       const id = Number(params.computer_id);
       const { computers } = getHealthFixture();
       if (id === manyFactorsComputer.computer_id) {
-        return HttpResponse.json(manyFactorsComputer);
+        return HttpResponse.json(
+          enrichWithRecommendedActions(manyFactorsComputer),
+        );
       }
       const found = computers.find((c) => c.computer_id === id);
       if (found) {
-        return HttpResponse.json(found);
+        return HttpResponse.json(enrichWithRecommendedActions(found));
       }
       // No state yet — server returns the 100-score placeholder per the spec.
       return HttpResponse.json({
@@ -171,6 +210,7 @@ export default [
         band: "healthy" as const,
         critical_factor_count: 0,
         factors: [],
+        recommended_actions: [],
         updated_at: null,
       });
     },
@@ -211,29 +251,44 @@ export default [
     },
   ),
 
-  // POST /api/v2/computers/:computer_id/health/actions — stub remediation
-  // dispatch. The action shim enqueues an activity equivalent to the user
-  // clicking the matching button on the Info tab; here we just echo a
-  // believable activity_id so the UI can show a success toast and the
-  // mutation can invalidate the per-computer health row.
-  http.post<{ computer_id: string }, HealthActionBody, HealthActionResponse>(
-    `${API_URL}computers/:computer_id/health/actions`,
-    async ({ params, request }) => {
-      const endpointStatus = getEndpointStatus();
-      if (endpointStatus.status === "error") {
-        throw createEndpointStatusError();
-      }
-      const computerId = Number(params.computer_id);
-      const body = (await request.json()) as HealthActionBody;
+  // POST /api/v2/computers/:computer_id/health/actions — LA061 Phase 1.7
+  // mirrors the real server: 202 for the three wired actions (reboot,
+  // run-security-updates, refresh-facts); 501 for the two deferred ones
+  // (attach-ubuntu-pro, run-diagnostic-script); refresh-facts returns
+  // `activity_id: null` because it marks dirty server-side without
+  // touching the agent.
+  http.post<
+    { computer_id: string },
+    HealthActionBody,
+    HealthActionResponse | { error: string; message: string }
+  >(`${API_URL}computers/:computer_id/health/actions`, async ({ params, request }) => {
+    const endpointStatus = getEndpointStatus();
+    if (endpointStatus.status === "error") {
+      throw createEndpointStatusError();
+    }
+    const computerId = Number(params.computer_id);
+    const body = (await request.json()) as HealthActionBody;
+    if (
+      body.action === "attach-ubuntu-pro" ||
+      body.action === "run-diagnostic-script"
+    ) {
       return HttpResponse.json(
         {
-          action: body.action,
-          computer_id: computerId,
-          activity_id: nextActivityId++,
-          enqueued_at: NOW(),
+          error: "HealthActionNotImplementedError",
+          message: `Health action '${body.action}' is not implemented yet.`,
         },
-        { status: 202 },
+        { status: 501 },
       );
-    },
-  ),
+    }
+    return HttpResponse.json(
+      {
+        action: body.action,
+        computer_id: computerId,
+        activity_id:
+          body.action === "refresh-facts" ? null : nextActivityId++,
+        enqueued_at: NOW(),
+      },
+      { status: 202 },
+    );
+  }),
 ];

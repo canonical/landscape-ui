@@ -129,8 +129,9 @@ describe("FleetHealthWidget", () => {
 
   it("shows the error state when isError is true", () => {
     renderWithProviders(<FleetHealthWidget summary={undefined} isError />);
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      /Couldn't load fleet health/,
-    );
+    expect(screen.getByText(/Fleet health unavailable/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/couldn't load the fleet health summary/i),
+    ).toBeInTheDocument();
   });
 });

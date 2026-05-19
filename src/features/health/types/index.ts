@@ -16,6 +16,12 @@ export interface ComputerHealth {
   band: HealthBand;
   critical_factor_count: number;
   factors: HealthFactor[];
+  // LA061 Phase 1.7: server-derived list of recommended actions for this
+  // computer's current factors. Optional for backwards compatibility — the
+  // UI's `recommendedActionsFor(factors)` helper covers the case where the
+  // server omits the field. An explicitly empty array means "nothing
+  // recommended" and must NOT fall back to the helper.
+  recommended_actions?: HealthActionKind[];
   updated_at: string | null;
 }
 
@@ -59,11 +65,14 @@ export interface HealthRule {
   is_system_default: boolean;
 }
 
-// Stub action kinds the UI can dispatch from the Health tab. The server-side
-// counterpart is a thin shim that enqueues the corresponding existing
-// activity (e.g. UbuntuProAttach, ScriptExecution) — full plumbing lands
-// with the real remediation work. Keep this list in sync with the MSW
-// handler and the Python stub.
+// LA061 Phase 1.7: action kinds the UI can dispatch from the Health tab.
+// `reboot`, `run-security-updates`, and `refresh-facts` are fully wired
+// server-side. `attach-ubuntu-pro` and `run-diagnostic-script` return 501 —
+// the server omits them from `recommended_actions` so they never reach the
+// UI's button row in production, but the UI's local fallback can still
+// render them in dev when the MSW handler omits the field. Keep this list
+// in sync with `canonical/landscape/health/actions.py:HealthActionKind`
+// (server) and the MSW handler.
 export type HealthActionKind =
   | "run-security-updates"
   | "reboot"
@@ -74,6 +83,9 @@ export type HealthActionKind =
 export interface HealthActionResult {
   action: HealthActionKind;
   computer_id: number;
-  activity_id: number;
+  // Null for `refresh-facts` — that action marks the computer dirty
+  // server-side and doesn't enqueue an activity. The UI toast hides the
+  // "View activity" link in that case.
+  activity_id: number | null;
   enqueued_at: string;
 }

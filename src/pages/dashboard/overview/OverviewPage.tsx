@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import type { FC } from "react";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
@@ -24,6 +25,11 @@ const FleetHealth: FC = () => {
       topDetractors={detractorsQuery.data?.data.results}
       isLoading={summaryQuery.isLoading}
       isError={summaryQuery.isError}
+      onRetry={() => {
+        void summaryQuery.refetch();
+        void detractorsQuery.refetch();
+      }}
+      isRetrying={summaryQuery.isFetching || detractorsQuery.isFetching}
     />
   );
 };
@@ -35,7 +41,11 @@ const OverviewPage: FC = () => {
     <PageMain>
       <PageHeader title="Overview" />
       <PageContent>
-        <div className={classes.container}>
+        <div
+          className={classNames(classes.container, {
+            [classes.healthContainer]: healthEnabled,
+          })}
+        >
           {healthEnabled ? <FleetHealth /> : <ChartContainer />}
           <AlertsContainer />
         </div>

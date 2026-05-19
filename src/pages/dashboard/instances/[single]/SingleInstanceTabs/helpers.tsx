@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { HealthScoreBadge } from "@/features/health";
+import { HealthScoreBadge, isHealthMeasurable } from "@/features/health";
 import type { HealthBand } from "@/features/health";
 import { getFeatures } from "@/features/instances";
 import useAuth from "@/hooks/useAuth";
@@ -134,11 +134,12 @@ export const getTabLinks = ({
     {
       label: "Health",
       id: "tab-link-health",
-      // LA061: gated by the same feature flag as the Fleet Health widget
-      // and the table column. Lives second so it's the natural follow-up
-      // after Info — the score and remediation actions sit next to the
-      // identifying metadata.
-      included: isFeatureEnabled("health"),
+      // LA061: gated by the feature flag AND by whether the instance is
+      // measurable. Non-Ubuntu instances (Windows hosts, "other Linux") and
+      // anything without the Landscape client running have no signals to
+      // score, so the tab would only show the score-100 placeholder — drop
+      // it instead. Lives second so it's the natural follow-up after Info.
+      included: isFeatureEnabled("health") && isHealthMeasurable(instance),
     },
     {
       label: "WSL",

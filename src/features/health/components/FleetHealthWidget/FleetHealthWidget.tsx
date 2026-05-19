@@ -1,5 +1,6 @@
+import EmptyState from "@/components/layout/EmptyState";
 import { ROUTES } from "@/libs/routes";
-import { Icon } from "@canonical/react-components";
+import { Button, Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useId, useMemo } from "react";
@@ -60,6 +61,11 @@ interface FleetHealthWidgetProps {
   readonly topDetractors?: FleetTopDetractor[];
   readonly isLoading?: boolean;
   readonly isError?: boolean;
+  // Optional retry callback wired by the OverviewPage container. When the
+  // widget can't load, an EmptyState surfaces a Retry button if a callback
+  // is provided.
+  readonly onRetry?: () => void;
+  readonly isRetrying?: boolean;
   readonly heading?: string;
   readonly description?: string;
 }
@@ -93,6 +99,8 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
   topDetractors,
   isLoading,
   isError,
+  onRetry,
+  isRetrying,
   heading = "Fleet health",
   description = "Average score across measurable instances and the issues dragging it down.",
 }) => {
@@ -130,11 +138,35 @@ const FleetHealthWidget: FC<FleetHealthWidgetProps> = ({
   }
 
   if (isError || !summary) {
+    // The whole widget has no content to render — use EmptyState rather
+    // than an inline Notification.
     return (
       <section className={classes.root}>
-        <div className={classes.error} role="alert">
-          Couldn&apos;t load fleet health. Try again in a moment.
-        </div>
+        <EmptyState
+          title="Fleet health unavailable"
+          icon="error"
+          body={
+            <p>
+              We couldn&apos;t load the fleet health summary. This is
+              usually transient — check back in a moment.
+            </p>
+          }
+          cta={
+            onRetry
+              ? [
+                  <Button
+                    type="button"
+                    key="retry"
+                    appearance="positive"
+                    onClick={onRetry}
+                    disabled={isRetrying}
+                  >
+                    {isRetrying ? "Retrying…" : "Retry"}
+                  </Button>,
+                ]
+              : []
+          }
+        />
       </section>
     );
   }

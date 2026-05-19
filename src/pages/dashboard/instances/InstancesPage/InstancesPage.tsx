@@ -69,6 +69,9 @@ const InstancesPage: FC = () => {
     with_alerts: true,
     with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+    // LA061 Phase 1.7: fold the health snapshot into the list response so
+    // HealthCell can render without firing one HTTP request per row.
+    with_health: true,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     // LA061: categorical health-band filter. Omitted when the array is empty
