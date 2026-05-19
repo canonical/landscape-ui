@@ -31,7 +31,9 @@ describe("MirrorPackagesList", () => {
       await screen.findByRole("columnheader", { name: "Package name" }),
     ).toBeInTheDocument();
 
-    expect(await screen.findByText("No packages associated with this mirror.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("No packages associated with this mirror."),
+    ).toBeInTheDocument();
   });
 
   it("renders error state", async () => {

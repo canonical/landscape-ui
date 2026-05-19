@@ -56,7 +56,9 @@ vi.mock("@/features/publications", async () => {
   };
 });
 
-const preserveSignaturesMirror = mirrors.find(({ preserveSignatures }) => preserveSignatures);
+const preserveSignaturesMirror = mirrors.find(
+  ({ preserveSignatures }) => preserveSignatures,
+);
 
 describe("PublishMirrorForm", () => {
   const user = userEvent.setup();
