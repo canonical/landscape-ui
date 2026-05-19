@@ -35,7 +35,7 @@ describe("ProfilesHeader", () => {
 
     const passRateFromInput = screen.getByRole("spinbutton", { name: "From" });
     await userEvent.type(passRateFromInput, "50{enter}");
-    expect(screen.getByText("From pass rate: 50%")).toBeInTheDocument();
+    expect(await screen.findByText("From pass rate: 50%")).toBeInTheDocument();
   });
 
   it("renders only search chips for non-archivable profile types", async () => {
