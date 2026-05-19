@@ -136,14 +136,8 @@ describe("DonutChart", () => {
   it("uses light-mode default colors by default", () => {
     const { container } = renderChart();
     const arcs = getArcs(container);
-    expect(arcs[0]).toHaveAttribute(
-      "stroke",
-      colorMap.green.light.default,
-    );
-    expect(arcs[1]).toHaveAttribute(
-      "stroke",
-      colorMap.orange.light.default,
-    );
+    expect(arcs[0]).toHaveAttribute("stroke", colorMap.green.light.default);
+    expect(arcs[1]).toHaveAttribute("stroke", colorMap.orange.light.default);
     expect(arcs[2]).toHaveAttribute("stroke", colorMap.red.light.default);
   });
 
@@ -151,14 +145,8 @@ describe("DonutChart", () => {
     localStorage.setItem("_landscape_dark_theme", "true");
     const { container } = renderChart();
     const arcs = getArcs(container);
-    expect(arcs[0]).toHaveAttribute(
-      "stroke",
-      colorMap.green.dark.default,
-    );
-    expect(arcs[2]).toHaveAttribute(
-      "stroke",
-      colorMap.red.dark.default,
-    );
+    expect(arcs[0]).toHaveAttribute("stroke", colorMap.green.dark.default);
+    expect(arcs[2]).toHaveAttribute("stroke", colorMap.red.dark.default);
   });
 
   it("keeps default colors on every ring when one is hovered (dim via CSS opacity, not palette swap)", async () => {
@@ -168,14 +156,8 @@ describe("DonutChart", () => {
     await user.hover(getRingGroup(0));
 
     const arcs = getArcs(container);
-    expect(arcs[0]).toHaveAttribute(
-      "stroke",
-      colorMap.green.light.default,
-    );
-    expect(arcs[1]).toHaveAttribute(
-      "stroke",
-      colorMap.orange.light.default,
-    );
+    expect(arcs[0]).toHaveAttribute("stroke", colorMap.green.light.default);
+    expect(arcs[1]).toHaveAttribute("stroke", colorMap.orange.light.default);
     expect(arcs[2]).toHaveAttribute("stroke", colorMap.red.light.default);
   });
 
@@ -185,9 +167,7 @@ describe("DonutChart", () => {
 
     await user.hover(getRingGroup(0));
 
-    expect(getRingGroup(0).getAttribute("class") ?? "").toMatch(
-      /ring--active/,
-    );
+    expect(getRingGroup(0).getAttribute("class") ?? "").toMatch(/ring--active/);
     expect(getRingGroup(0).getAttribute("class") ?? "").not.toMatch(
       /ring--inactive/,
     );
@@ -211,9 +191,7 @@ describe("DonutChart", () => {
     expect(getRingGroup(1).getAttribute("class") ?? "").toMatch(
       /ring--inactive/,
     );
-    expect(getRingGroup(2).getAttribute("class") ?? "").toMatch(
-      /ring--active/,
-    );
+    expect(getRingGroup(2).getAttribute("class") ?? "").toMatch(/ring--active/);
   });
 
   it("resets state when the inner container loses pointer", async () => {
@@ -228,7 +206,9 @@ describe("DonutChart", () => {
     ) as HTMLElement;
     fireEvent.mouseLeave(inner);
 
-    expect(getRingGroup(0).getAttribute("class") ?? "").not.toMatch(/ring--active/);
+    expect(getRingGroup(0).getAttribute("class") ?? "").not.toMatch(
+      /ring--active/,
+    );
   });
 
   it("activates a ring on keyboard focus and clears on blur", () => {
@@ -291,9 +271,7 @@ describe("DonutChart", () => {
       ],
     });
 
-    expect(screen.getByTestId("donut-center-number").textContent).toBe(
-      "12.3K",
-    );
+    expect(screen.getByTestId("donut-center-number").textContent).toBe("12.3K");
   });
 
   it("formats compactly when a large ring is hovered", async () => {
@@ -309,9 +287,7 @@ describe("DonutChart", () => {
 
     await user.hover(getRingGroup(0));
 
-    expect(screen.getByTestId("donut-center-number").textContent).toBe(
-      "87.4K",
-    );
+    expect(screen.getByTestId("donut-center-number").textContent).toBe("87.4K");
     expect(screen.getByTestId("donut-center-sublabel").textContent).toBe(
       "of 100K",
     );
@@ -319,9 +295,7 @@ describe("DonutChart", () => {
 
   it("renders a track circle behind each ring with the track class", () => {
     const { container } = renderChart();
-    const tracks = container.querySelectorAll(
-      `circle[class*='track']`,
-    );
+    const tracks = container.querySelectorAll(`circle[class*='track']`);
     expect(tracks).toHaveLength(3);
   });
 });
