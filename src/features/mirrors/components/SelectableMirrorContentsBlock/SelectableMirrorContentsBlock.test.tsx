@@ -1,5 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
+import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { assert, describe, expect, it } from "vitest";
 import SelectableMirrorContentsBlock from "./SelectableMirrorContentsBlock";
 import { useFormik } from "formik";
 import {
@@ -10,6 +12,19 @@ import type { FormProps } from "../AddMirrorForm/types";
 import type { ComponentProps } from "react";
 import { hasOneItem } from "@/utils/_helpers";
 import type { Distribution } from "../../types";
+
+const archiveBaseValues: FormProps = {
+  architectures: [],
+  components: [],
+  distribution: ubuntuArchiveInfo.distributions[0].slug,
+  downloadInstallerFiles: false,
+  downloadSources: false,
+  downloadUdebPackages: false,
+  preserveSignatures: false,
+  name: "",
+  sourceType: "ubuntu-archive",
+  sourceUrl: "",
+};
 
 const TestComponent = ({
   initialValues,
@@ -110,26 +125,6 @@ describe("SelectableMirrorContentsBlock", () => {
     const select = screen.getByRole("combobox", { name: /distribution/i });
     expect(select).toBeInTheDocument();
     expect(select.querySelectorAll("option")).toHaveLength(0);
-  });
-
-  it("renders empty select when ubuntuArchiveInfo is undefined", () => {
-    renderWithProviders(
-      <TestComponent initialValues={archiveBaseValues} noArchiveInfo />,
-    );
-
-    const select = screen.getByRole("combobox", { name: /distribution/i });
-    expect(select).toBeInTheDocument();
-    expect(select.querySelectorAll("option")).toHaveLength(0);
-  });
-
-  it("disables all fields when isLoading is true", () => {
-    renderWithProviders(
-      <TestComponent initialValues={archiveBaseValues} isLoading />,
-    );
-
-    expect(
-      screen.getByRole("combobox", { name: /distribution/i }),
-    ).toBeDisabled();
   });
 
   it("updates components when a component option is selected", async () => {

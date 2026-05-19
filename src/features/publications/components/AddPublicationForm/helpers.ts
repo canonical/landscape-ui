@@ -24,7 +24,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
       then: (schema) => schema,
       otherwise: (schema) => schema.min(1, REQUIRED_FIELD_MESSAGE),
     }),
-  signing_key: Yup.string(),
+  mirror_signing_key: Yup.string(),
   hash_indexing: Yup.boolean(),
   automatic_installation: Yup.boolean(),
   automatic_upgrades: Yup.boolean(),
@@ -78,8 +78,8 @@ export const getPublicationPayload = (values: FormProps) => {
       butAutomaticUpgrades: values.automatic_upgrades,
       skipBz2: values.skip_bz2,
       skipContents: values.skip_content_indexing,
-      gpgKey: values.signing_key.trim()
-        ? { armor: values.signing_key.trim() }
+      gpgKey: values.mirror_signing_key?.trim()
+        ? { armor: values.mirror_signing_key.trim() }
         : undefined,
     },
   };

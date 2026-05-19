@@ -279,8 +279,8 @@ const AddPublicationForm: FC = () => {
           selectedSource.preserveSignatures === false && (
             <Blocks.Item title="Signing GPG Key">
               <Textarea
-                {...formik.getFieldProps("signing_key")}
-                error={getFormikError(formik, "signing_key")}
+                {...formik.getFieldProps("mirror_signing_key")}
+                error={getFormikError(formik, "mirror_signing_key")}
               />
             </Blocks.Item>
           )}
