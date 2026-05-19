@@ -74,7 +74,10 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
   const modalMessage = isMultiple ? (
     <p>
       Detaching the Ubuntu Pro token will disconnect{" "}
-      {pluralize(count, "instance from its", { pluralForm: "instances from their", showCount: "exact" })}{" "}
+      {pluralize(count, "instance from its", {
+        pluralForm: "instances from their",
+        showCount: "exact",
+      })}{" "}
       subscription and pause any enabled Pro services.
     </p>
   ) : (

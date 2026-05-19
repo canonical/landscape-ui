@@ -87,7 +87,10 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
                 <br />
                 <strong>
                   This will affect{" "}
-                  {pluralize(role.persons.length, "administrator", { showCount: "exact" })}.
+                  {pluralize(role.persons.length, "administrator", {
+                    showCount: "exact",
+                  })}
+                  .
                 </strong>
               </>
             )}

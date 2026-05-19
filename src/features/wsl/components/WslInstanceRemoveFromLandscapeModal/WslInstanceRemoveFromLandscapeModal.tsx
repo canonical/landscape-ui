@@ -28,7 +28,9 @@ const WslInstanceRemoveFromLandscapeModal: FC<
     return;
   }
 
-  const title = pluralize(instances.length, instance.name, { pluralForm: `${instances.length} instances` });
+  const title = pluralize(instances.length, instance.name, {
+    pluralForm: `${instances.length} instances`,
+  });
 
   const removeFromLandscape = async () => {
     try {
@@ -66,7 +68,14 @@ const WslInstanceRemoveFromLandscapeModal: FC<
       onConfirm={removeFromLandscape}
     >
       <p>
-        {pluralize(instances.length, "This will delete all associated data and free up one license slot for another computer to be registered. It will remain on the parent machine. You can re-register it to Landscape at any time.", { pluralForm: "This will delete all associated data and free up license slots for other computers to be registered. They will remain on the parent machine. You can re-register them to Landscape at any time." })}
+        {pluralize(
+          instances.length,
+          "This will delete all associated data and free up one license slot for another computer to be registered. It will remain on the parent machine. You can re-register it to Landscape at any time.",
+          {
+            pluralForm:
+              "This will delete all associated data and free up license slots for other computers to be registered. They will remain on the parent machine. You can re-register them to Landscape at any time.",
+          },
+        )}
       </p>
     </TextConfirmationModal>
   );

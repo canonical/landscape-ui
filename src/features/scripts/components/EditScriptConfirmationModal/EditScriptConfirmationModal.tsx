@@ -79,7 +79,9 @@ const EditScriptConfirmationModal: FC<EditScriptConfirmationModalProps> = ({
                     })}
                     target="_blank"
                   >
-                    {pluralize(associatedComputers, "instance", { showCount: "exact" })}
+                    {pluralize(associatedComputers, "instance", {
+                      showCount: "exact",
+                    })}
                   </Link>
                 ) : (
                   <NoData />

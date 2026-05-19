@@ -51,7 +51,10 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
             className="u-no-margin u-no-padding"
             onClick={handlePendingInstancesReview}
           >
-            {pluralize(pendingInstances.length, "pending computer needs", { pluralForm: "pending computers need", showCount: "exact" })}{" "}
+            {pluralize(pendingInstances.length, "pending computer needs", {
+              pluralForm: "pending computers need",
+              showCount: "exact",
+            })}{" "}
             authorization
           </Button>
         ) : (

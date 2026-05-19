@@ -89,7 +89,11 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
               <InfoGrid.Item
                 label="Delivery delay window"
                 large
-                value={pluralize(Number(profile.deliver_delay_window), "minute", { showCount: "exact" })}
+                value={pluralize(
+                  Number(profile.deliver_delay_window),
+                  "minute",
+                  { showCount: "exact" },
+                )}
               />
             </InfoGrid>
           </Blocks.Item>

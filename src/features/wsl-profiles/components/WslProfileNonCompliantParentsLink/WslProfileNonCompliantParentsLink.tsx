@@ -27,7 +27,9 @@ const WslProfileNonCompliantParentsLink: FC<
       appearance="link"
       onClick={openNonCompliantInstancesList}
     >
-      {pluralize(wslProfile.computers["non-compliant"].length, "instance", { showCount: "exact" })}
+      {pluralize(wslProfile.computers["non-compliant"].length, "instance", {
+        showCount: "exact",
+      })}
     </Button>
   );
 };

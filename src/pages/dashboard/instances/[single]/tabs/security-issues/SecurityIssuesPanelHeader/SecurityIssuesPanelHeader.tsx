@@ -77,7 +77,9 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
                 children: (
                   <p>
                     This will upgrade affected packages for{" "}
-                    {pluralize(usns.length, `"${usns[0]}" security issue`, { pluralForm: `${usns.length} selected security issues` })}
+                    {pluralize(usns.length, `"${usns[0]}" security issue`, {
+                      pluralForm: `${usns.length} selected security issues`,
+                    })}
                     .
                   </p>
                 ),

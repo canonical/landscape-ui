@@ -39,7 +39,10 @@ const ExpandableTableFooter: FC<ExpandableTableFooterProps> = ({
         {actualTotalCount > 0 && (
           <span className="p-text--small u-text--muted">
             Showing {Math.min(actualTotalCount, itemCount)} of{" "}
-            {pluralize(actualTotalCount, itemNames.singular, { pluralForm: itemNames.plural, showCount: "exact" })}
+            {pluralize(actualTotalCount, itemNames.singular, {
+              pluralForm: itemNames.plural,
+              showCount: "exact",
+            })}
             .
           </span>
         )}

@@ -33,7 +33,9 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
     return;
   }
 
-  const title = pluralize(instances.length, instance.name, { pluralForm: `${instances.length} instances` });
+  const title = pluralize(instances.length, instance.name, {
+    pluralForm: `${instances.length} instances`,
+  });
 
   const reinstall = async () => {
     try {
@@ -48,7 +50,11 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
 
       notify.success({
         title: `You have successfully marked ${title} to be reinstalled.`,
-        message: pluralize(instances.length, "An activity has been queued to reinstall it.", { pluralForm: "Activities have been queued to reinstall them." }),
+        message: pluralize(
+          instances.length,
+          "An activity has been queued to reinstall it.",
+          { pluralForm: "Activities have been queued to reinstall them." },
+        ),
       });
     } catch (error) {
       debug(error);
@@ -70,7 +76,14 @@ const WslInstanceReinstallModal: FC<WslInstanceReinstallModalProps> = ({
       onConfirm={reinstall}
     >
       <p>
-        {pluralize(instances.length, "This will uninstall this instance and create a new one with the same name that is compliant with its profiles.", { pluralForm: "This will uninstall the selected instances and create new ones with the same names that are compliant with their profiles." })}
+        {pluralize(
+          instances.length,
+          "This will uninstall this instance and create a new one with the same name that is compliant with its profiles.",
+          {
+            pluralForm:
+              "This will uninstall the selected instances and create new ones with the same names that are compliant with their profiles.",
+          },
+        )}
       </p>
     </TextConfirmationModal>
   );

@@ -148,13 +148,17 @@ const getUpgradesFromUpgrades = (
     regular: upgrades.regular
       ? {
           icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color,
-          label: pluralize(upgrades.regular, "regular upgrade", { showCount: "exact" }),
+          label: pluralize(upgrades.regular, "regular upgrade", {
+            showCount: "exact",
+          }),
         }
       : false,
     security: upgrades.security
       ? {
           icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color,
-          label: pluralize(upgrades.security, "security upgrade", { showCount: "exact" }),
+          label: pluralize(upgrades.security, "security upgrade", {
+            showCount: "exact",
+          }),
         }
       : false,
   };

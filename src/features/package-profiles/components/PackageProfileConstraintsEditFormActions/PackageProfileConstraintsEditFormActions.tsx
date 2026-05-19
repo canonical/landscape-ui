@@ -92,7 +92,10 @@ const PackageProfileConstraintsEditFormActions: FC<
           children: (
             <p>
               This will remove{" "}
-              {pluralize(selectedIds.length, "constraint", { showCount: "exact" })}.
+              {pluralize(selectedIds.length, "constraint", {
+                showCount: "exact",
+              })}
+              .
             </p>
           ),
           confirmButtonLabel: "Remove",

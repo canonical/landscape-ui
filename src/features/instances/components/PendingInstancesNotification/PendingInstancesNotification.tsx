@@ -42,7 +42,9 @@ const PendingInstancesNotification: FC = () => {
     >
       <span>
         You currently have{" "}
-        {pluralize(pendingInstances.length, "pending instance", { showCount: "exact" })}{" "}
+        {pluralize(pendingInstances.length, "pending instance", {
+          showCount: "exact",
+        })}{" "}
         awaiting your review and approval.{" "}
       </span>
       <Button

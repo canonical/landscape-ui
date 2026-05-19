@@ -158,7 +158,9 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                 children: (
                   <p>
                     This will approve{" "}
-                    {pluralize(instanceIds.length, "selected instance", { showCount: "exact" })}{" "}
+                    {pluralize(instanceIds.length, "selected instance", {
+                      showCount: "exact",
+                    })}{" "}
                     to add to your {userOrganisation} organization.
                   </p>
                 ),
@@ -184,7 +186,9 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
                 children: (
                   <p>
                     This will reject{" "}
-                    {pluralize(instanceIds.length, "selected instance", { showCount: "exact" })}{" "}
+                    {pluralize(instanceIds.length, "selected instance", {
+                      showCount: "exact",
+                    })}{" "}
                     to add to your {userOrganisation} organization.
                   </p>
                 ),
