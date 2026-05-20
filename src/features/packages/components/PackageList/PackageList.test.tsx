@@ -6,6 +6,7 @@ import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageList from "./PackageList";
 import type { InstancePackage } from "../../types";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
@@ -196,7 +197,7 @@ describe("PackageList", () => {
     expect(within(row).getByText("8.0")).toBeInTheDocument();
   });
 
-  it("shows --- when available version matches current version", () => {
+  it(`shows ${NO_DATA_TEXT} when available version matches current version`, () => {
     const packageWithSameVersion: InstancePackage = {
       id: 101,
       name: "wget",
@@ -212,10 +213,10 @@ describe("PackageList", () => {
 
     const row = screen.getByText(packageWithSameVersion.name).closest("tr");
     assert(row);
-    expect(within(row).getByText("---")).toBeInTheDocument();
+    expect(within(row).getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
-  it("shows --- when available version is missing", () => {
+  it(`shows ${NO_DATA_TEXT} when available version is missing`, () => {
     const packageWithoutAvailableVersion: InstancePackage = {
       id: 102,
       name: "nano",
@@ -233,7 +234,7 @@ describe("PackageList", () => {
       .getByText(packageWithoutAvailableVersion.name)
       .closest("tr");
     assert(row);
-    expect(within(row).getByText("---")).toBeInTheDocument();
+    expect(within(row).getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("shows Installed status when installed packages have no available version", () => {
