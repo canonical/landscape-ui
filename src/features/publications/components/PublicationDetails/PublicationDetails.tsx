@@ -106,6 +106,14 @@ const PublicationDetails = ({
 
         <Blocks.Item title="Contents">
           <InfoGrid>
+            {publication.distribution && (
+              <InfoGrid.Item
+                label="Distribution"
+                large
+                value={publication.distribution}
+              />
+            )}
+
             <InfoGrid.Item
               label="Architectures"
               large
@@ -122,8 +130,8 @@ const PublicationDetails = ({
             />
 
             <InfoGrid.Item
-              label="Automatic installation"
-              value={boolToLabel(!publication.notAutomatic)}
+              label="Limit automatic install"
+              value={boolToLabel(publication.notAutomatic)}
             />
 
             <InfoGrid.Item

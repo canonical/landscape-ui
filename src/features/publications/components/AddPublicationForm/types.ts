@@ -1,17 +1,17 @@
 export interface FormProps {
   name: string;
-  source_type: string;
+  sourceType: string;
   source: string;
-  publication_target: string;
+  publicationTarget: string;
   prefix: string;
-  uploader_distribution: string;
-  uploader_architectures: string[];
-  signing_key: string;
-  hash_indexing: boolean;
-  automatic_installation: boolean;
-  automatic_upgrades: boolean;
-  skip_bz2: boolean;
-  skip_content_indexing: boolean;
+  uploaderDistribution: string;
+  uploaderArchitectures: string[];
+  signingKey: string;
+  hashIndexing: boolean;
+  limitAutomaticInstallation: boolean;
+  automaticUpgrades: boolean;
+  skipBz2: boolean;
+  skipContentIndexing: boolean;
 }
 
 export interface SelectableSource {
@@ -19,6 +19,7 @@ export interface SelectableSource {
   value: string;
   sourceType: string;
   distribution?: string;
+  components: string[];
   architectures: string[];
   preserveSignatures?: boolean;
 }

@@ -10,4 +10,5 @@ export { default as AddPublicationForm } from "./components/AddPublicationForm";
 export { default as PublicationDetails } from "./components/PublicationDetails";
 export { default as PublicationDetailsSidePanel } from "./components/PublicationDetailsSidePanel";
 export { default as AssociatedPublicationsList } from "./components/AssociatedPublicationsList";
+export { default as PublicationSettingsBlock } from "./components/PublicationSettingsBlock";
 export { getSourceName, getSourceType } from "./helpers";

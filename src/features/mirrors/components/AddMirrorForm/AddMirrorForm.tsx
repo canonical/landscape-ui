@@ -136,8 +136,8 @@ const AddMirrorForm: FC = () => {
 
   useEffect(() => {
     if (formik.values.preserveSignatures) {
-      void formik.setFieldValue("packageFilter", "");
-      void formik.setFieldValue("includeDependencies", false);
+      formik.setFieldValue("packageFilter", "");
+      formik.setFieldValue("includeDependencies", false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values.preserveSignatures]);
