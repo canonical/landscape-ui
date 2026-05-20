@@ -37,7 +37,12 @@
  * Test 3 deletes the mirror via the UI. afterAll performs a best-effort API
  * cleanup in case test 3 did not run (e.g. earlier failure).
  */
-import { expect, test, type Page, type APIRequestContext } from "@playwright/test";
+import {
+  expect,
+  test,
+  type Page,
+  type APIRequestContext,
+} from "@playwright/test";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -68,18 +73,14 @@ interface DebarchiveMirrorList {
 }
 
 /** Suppress the first-run welcome modal that otherwise intercepts page clicks. */
-async function dismissWelcomePopup(
-  page: Page,
-): Promise<void> {
+async function dismissWelcomePopup(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
   });
 }
 
 /** Fetch the landscape v2 JWT for authenticated API calls. */
-async function getAuthToken(
-  request: APIRequestContext,
-): Promise<string> {
+async function getAuthToken(request: APIRequestContext): Promise<string> {
   const res = await request.get("/api/v2/me");
   expect(res.ok(), `GET /api/v2/me failed: ${res.status()}`).toBe(true);
   const body = (await res.json()) as AuthUser;
@@ -131,9 +132,9 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     await page.waitForLoadState("networkidle");
 
     // Confirm the page loaded correctly.
-    await expect(
-      page.getByRole("heading", { name: /mirrors/i }),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /mirrors/i })).toBeVisible({
+      timeout: 15_000,
+    });
 
     // Open the Add mirror side panel.
     await page.getByRole("button", { name: "Add mirror" }).click();
@@ -156,10 +157,7 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     // Do not change them.
 
     // Submit the form.
-    await page
-      .getByRole("button", { name: "Add mirror" })
-      .last()
-      .click();
+    await page.getByRole("button", { name: "Add mirror" }).last().click();
 
     // Wait for the side panel to close.
     await expect(
@@ -177,9 +175,14 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     const listRes = await request.get("/v1beta1/mirrors", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    expect(listRes.ok(), `GET /v1beta1/mirrors failed: ${listRes.status()}`).toBe(true);
+    expect(
+      listRes.ok(),
+      `GET /v1beta1/mirrors failed: ${listRes.status()}`,
+    ).toBe(true);
     const body = (await listRes.json()) as DebarchiveMirrorList;
-    const created = body.results?.find((m) => m.displayName === mirrorDisplayName);
+    const created = body.results?.find(
+      (m) => m.displayName === mirrorDisplayName,
+    );
     if (created?.name) {
       mirrorName = created.name;
     }
@@ -206,21 +209,28 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     await page.getByRole("menuitem", { name: "Edit" }).click();
 
     // Wait for the Edit side panel to open.
-    await expect(
-      page.getByRole("heading", { name: /edit/i }),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /edit/i })).toBeVisible({
+      timeout: 15_000,
+    });
 
     // Update the display name.
-    const nameInput = page.getByRole("complementary", { name: "Side panel" }).getByLabel("Name");
+    const nameInput = page
+      .getByRole("complementary", { name: "Side panel" })
+      .getByLabel("Name");
     await nameInput.fill(updatedDisplayName);
     // Confirm Formik has processed the change before submitting.
     await expect(nameInput).toHaveValue(updatedDisplayName);
 
     // Submit.
-    await page.getByRole("complementary", { name: "Side panel" }).getByRole("button", { name: "Save changes" }).click();
+    await page
+      .getByRole("complementary", { name: "Side panel" })
+      .getByRole("button", { name: "Save changes" })
+      .click();
 
     // Wait for the side panel to close.
-    await expect(page.getByRole("complementary", { name: "Side panel" })).not.toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.getByRole("complementary", { name: "Side panel" }),
+    ).not.toBeVisible({ timeout: 15_000 });
 
     // The updated name should appear in the table.
     await expect(
@@ -250,14 +260,10 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     await page.getByRole("menuitem", { name: "Remove" }).click();
 
     // Wait for the confirmation modal.
-    await expect(
-      page.getByRole("dialog"),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 15_000 });
 
     // Type the confirmation text.
-    await page
-      .getByRole("textbox")
-      .fill(`remove ${mirrorDisplayName}`);
+    await page.getByRole("textbox").fill(`remove ${mirrorDisplayName}`);
 
     // Confirm deletion.
     await page.getByRole("button", { name: "Remove mirror" }).click();

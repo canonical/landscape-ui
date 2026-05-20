@@ -49,7 +49,9 @@ test.describe("Local Repositories API Contract", () => {
       validateLocalShape(body.locals[0]);
     }
 
-    const found = body.locals.find((repo: Local) => repo.name === createdRepoName);
+    const found = body.locals.find(
+      (repo: Local) => repo.name === createdRepoName,
+    );
     expect(found).toBeDefined();
   });
 });

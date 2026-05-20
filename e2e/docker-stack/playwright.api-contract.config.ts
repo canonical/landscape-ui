@@ -13,7 +13,13 @@ export default defineConfig({
 
   globalSetup: "./global-setup.ts",
 
-  reporter: [["html", { open: "never", outputFolder: "../../playwright-api-contract-report" }], ["list"]],
+  reporter: [
+    [
+      "html",
+      { open: "never", outputFolder: "../../playwright-api-contract-report" },
+    ],
+    ["list"],
+  ],
 
   // Starts Vite in e2e.selfHosted mode → loads .env.e2e.selfHosted to proxy
   // requests so tests can share the exact same UI session cookie natively.

@@ -22,9 +22,7 @@ test.describe("login (real backend)", () => {
   }) => {
     await page.goto("/login");
 
-    await expect(
-      page.getByRole("heading", { name: /sign in/i }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /sign in/i })).toBeVisible();
 
     await page.locator('input[name="identifier"]').fill(email());
     await page.locator('input[name="password"]').fill(password());

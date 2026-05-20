@@ -37,7 +37,12 @@
  * Test 3 deletes the target via the UI. afterAll performs a best-effort API
  * cleanup in case test 3 did not run (e.g. earlier failure).
  */
-import { expect, test, type Page, type APIRequestContext } from "@playwright/test";
+import {
+  expect,
+  test,
+  type Page,
+  type APIRequestContext,
+} from "@playwright/test";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -68,18 +73,14 @@ interface PublicationTargetListResponse {
 }
 
 /** Suppress the first-run welcome modal that otherwise intercepts page clicks. */
-async function dismissWelcomePopup(
-  page: Page,
-): Promise<void> {
+async function dismissWelcomePopup(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
   });
 }
 
 /** Fetch the landscape v2 JWT for authenticated API calls. */
-async function getAuthToken(
-  request: APIRequestContext,
-): Promise<string> {
+async function getAuthToken(request: APIRequestContext): Promise<string> {
   const res = await request.get("/api/v2/me");
   expect(res.ok(), `GET /api/v2/me failed: ${res.status()}`).toBe(true);
   const body = (await res.json()) as AuthUser;
@@ -153,10 +154,13 @@ test.describe("publication targets CRUD (real debarchive)", () => {
     await page.getByLabel(/region/i).fill("us-east-1");
     await page.getByLabel(/bucket name/i).fill("ci-test-bucket");
     await page.getByLabel(/aws access key id/i).fill("AKIAIOSFODNN7EXAMPLE");
-    await page.getByLabel(/aws secret access key/i).fill("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
+    await page
+      .getByLabel(/aws secret access key/i)
+      .fill("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
 
     // Submit the form. Scope to the aside to avoid hitting the page-level button.
-    await page.getByRole("complementary", { name: "Side panel" })
+    await page
+      .getByRole("complementary", { name: "Side panel" })
       .getByRole("button", { name: /add publication target/i })
       .click();
 
@@ -219,7 +223,9 @@ test.describe("publication targets CRUD (real debarchive)", () => {
     // Wait for the Edit side panel to open.
     // Panel heading is "Edit {displayName}".
     await expect(
-      page.getByRole("heading", { name: new RegExp(`Edit ${targetDisplayName}`, "i") }),
+      page.getByRole("heading", {
+        name: new RegExp(`Edit ${targetDisplayName}`, "i"),
+      }),
     ).toBeVisible({ timeout: 15_000 });
 
     // Update the display name.
@@ -229,9 +235,14 @@ test.describe("publication targets CRUD (real debarchive)", () => {
     await expect(nameInput).toHaveValue(updatedDisplayName);
 
     // Submit.
-    await page.getByRole("complementary", { name: "Side panel" }).getByRole("button", { name: /save changes/i }).click();
+    await page
+      .getByRole("complementary", { name: "Side panel" })
+      .getByRole("button", { name: /save changes/i })
+      .click();
 
-    await expect(page.getByRole("complementary", { name: "Side panel" })).not.toBeVisible({ timeout: 15_000 });
+    await expect(
+      page.getByRole("complementary", { name: "Side panel" }),
+    ).not.toBeVisible({ timeout: 15_000 });
 
     // The updated name should appear in the table.
     await expect(
@@ -267,9 +278,7 @@ test.describe("publication targets CRUD (real debarchive)", () => {
     await expect(page.getByRole("dialog")).toBeVisible({ timeout: 15_000 });
 
     // Type the required confirmation text: "remove {displayName}".
-    await page
-      .getByRole("textbox")
-      .fill(`remove ${targetDisplayName}`);
+    await page.getByRole("textbox").fill(`remove ${targetDisplayName}`);
 
     // Confirm deletion.
     await page.getByRole("button", { name: /remove target/i }).click();

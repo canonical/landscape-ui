@@ -15,7 +15,13 @@ export default defineConfig({
   globalSetup: "./global-setup.ts",
 
   reporter: [
-    ["html", { open: "never", outputFolder: "../../playwright-integration-saas-report" }],
+    [
+      "html",
+      {
+        open: "never",
+        outputFolder: "../../playwright-integration-saas-report",
+      },
+    ],
     ["list"],
   ],
 

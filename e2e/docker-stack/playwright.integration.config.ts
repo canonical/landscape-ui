@@ -18,7 +18,13 @@ export default defineConfig({
 
   globalSetup: "./global-setup.ts",
 
-  reporter: [["html", { open: "never", outputFolder: "../../playwright-integration-report" }], ["list"]],
+  reporter: [
+    [
+      "html",
+      { open: "never", outputFolder: "../../playwright-integration-report" },
+    ],
+    ["list"],
+  ],
 
   // Playwright manages the dev server lifecycle.
   // No build step required — the Vite dev proxy routes /api → localhost:9091

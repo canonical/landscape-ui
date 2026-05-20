@@ -31,22 +31,22 @@ A single workflow, **Integration Tests** (`.github/workflows/integration-tests.y
 
 **Triggers:**
 
-| Event | Behaviour |
-|-------|-----------|
-| PR → `dev` | Runs on code changes (docs/markdown/debian paths ignored) |
-| Push → `main` | Runs on code changes (same path filter) |
-| Nightly 02:00 UTC | Always runs — catches upstream backend regressions |
-| `workflow_dispatch` | Manual; accepts `packaging_ref` input |
+| Event               | Behaviour                                                 |
+| ------------------- | --------------------------------------------------------- |
+| PR → `dev`          | Runs on code changes (docs/markdown/debian paths ignored) |
+| Push → `main`       | Runs on code changes (same path filter)                   |
+| Nightly 02:00 UTC   | Always runs — catches upstream backend regressions        |
+| `workflow_dispatch` | Manual; accepts `packaging_ref` input                     |
 
 **Concurrency:** PRs cancel superseded runs on the same branch. Push and nightly runs always complete.
 
 ## Credentials
 
-| Secret / Variable | Type | Purpose |
-|-------------------|------|---------|
-| `vars.LANDSCAPE_PACKAGER_APP_ID` | Repository variable | GitHub App ID |
-| `secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY` | Secret | GitHub App private key (PEM) |
-| `secrets.LANDSCAPE_PROTO_PAT` | Secret | Fine-grained PAT — `Contents: Read` on `canonical/landscape-proto` only |
+| Secret / Variable                        | Type                | Purpose                                                                 |
+| ---------------------------------------- | ------------------- | ----------------------------------------------------------------------- |
+| `vars.LANDSCAPE_PACKAGER_APP_ID`         | Repository variable | GitHub App ID                                                           |
+| `secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY` | Secret              | GitHub App private key (PEM)                                            |
+| `secrets.LANDSCAPE_PROTO_PAT`            | Secret              | Fine-grained PAT — `Contents: Read` on `canonical/landscape-proto` only |
 
 The GitHub App must be installed on `canonical/landscape-packaging`, `canonical/landscape-go`, and `canonical/landscape-server`.
 
@@ -68,15 +68,15 @@ Since `landscape-go` and `landscape-server` are submodules of `landscape-packagi
 
 ## Cold-start time (GitHub-hosted `ubuntu-latest`)
 
-| Step | Duration |
-|------|----------|
-| Initialise submodules | 10 s |
+| Step                                              | Duration       |
+| ------------------------------------------------- | -------------- |
+| Initialise submodules                             | 10 s           |
 | **Start backend stack** (cold Docker image build) | **4 min 32 s** |
-| Wait for API ready (after builder exits) | 10 s |
-| Seed admin account | 4 s |
-| Install Playwright browsers | 2 min 49 s |
-| Run integration tests | ~30 s |
-| **Total** | **~8 min** |
+| Wait for API ready (after builder exits)          | 10 s           |
+| Seed admin account                                | 4 s            |
+| Install Playwright browsers                       | 2 min 49 s     |
+| Run integration tests                             | ~30 s          |
+| **Total**                                         | **~8 min**     |
 
 The dominant cost is the cold Docker image build. A self-hosted runner with cached images would reduce this to seconds.
 
@@ -136,18 +136,18 @@ Reports are written to `playwright-integration-report/` and `playwright-integrat
 
 ## Key design decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| Separate `playwright.integration.config.ts` | Avoids conflicts with MSW-backed `playwright.config.ts` (`webServer`, `testDir`, `baseURL`) |
-| `workers: 1` | Shared mutable backend; tests must not race against each other |
-| `globalSetup` writes `storageState` | Individual tests reuse the authenticated session; login is tested once explicitly |
-| **`vite --mode e2e` (dev server, not `vite preview`)** | The dev server activates Vite's proxy (`/api` → `localhost:9091`), making all API calls same-origin. Required for session cookie auth: `GET /api/v2/me` uses `publicFetch` (no `withCredentials`), so cookies are only sent when the request is same-origin. `vite preview` serves cross-origin, breaking authentication silently. |
-| `*.saas.integration.spec.ts` naming | Excluded from self-hosted config via `testIgnore`; picked up only by `playwright.integration.saas.config.ts`. The naming convention is self-documenting and requires no per-test config. |
-| Relative API URLs in `.env.e2e` | `/api/v2/`, `/api/`, `/v1beta1/` route through the Vite proxy. `VITE_API_PROXY_TARGET` and `VITE_API_DEBARCHIVE_PROXY_TARGET` configure the targets. |
-| Explicit service list in `docker compose up` | Starts only services needed for standalone mode; avoids building debarchive unless explicitly included. |
-| GitHub App token instead of PAT | Short-lived (≤1 h), scoped to specific repos, no human credentials. SSH submodule URLs rewritten to HTTPS via `url.insteadOf` after checkout. |
-| `docker wait landscape-builder` (not `docker compose wait`) | `docker compose wait` resolves the project by file path and fails when the working directory differs between steps. `docker wait` operates on the container name directly. |
-| `landscape-go` vendor directory generated in CI | `vendor/` is gitignored in landscape-go. Regenerated via `GOPRIVATE=... go mod vendor` using `LANDSCAPE_PROTO_PAT`. See [debarchive-feature-context.md](debarchive-feature-context.md). |
+| Decision                                                    | Rationale                                                                                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Separate `playwright.integration.config.ts`                 | Avoids conflicts with MSW-backed `playwright.config.ts` (`webServer`, `testDir`, `baseURL`)                                                                                                                                                                                                                                        |
+| `workers: 1`                                                | Shared mutable backend; tests must not race against each other                                                                                                                                                                                                                                                                     |
+| `globalSetup` writes `storageState`                         | Individual tests reuse the authenticated session; login is tested once explicitly                                                                                                                                                                                                                                                  |
+| **`vite --mode e2e` (dev server, not `vite preview`)**      | The dev server activates Vite's proxy (`/api` → `localhost:9091`), making all API calls same-origin. Required for session cookie auth: `GET /api/v2/me` uses `publicFetch` (no `withCredentials`), so cookies are only sent when the request is same-origin. `vite preview` serves cross-origin, breaking authentication silently. |
+| `*.saas.integration.spec.ts` naming                         | Excluded from self-hosted config via `testIgnore`; picked up only by `playwright.integration.saas.config.ts`. The naming convention is self-documenting and requires no per-test config.                                                                                                                                           |
+| Relative API URLs in `.env.e2e`                             | `/api/v2/`, `/api/`, `/v1beta1/` route through the Vite proxy. `VITE_API_PROXY_TARGET` and `VITE_API_DEBARCHIVE_PROXY_TARGET` configure the targets.                                                                                                                                                                               |
+| Explicit service list in `docker compose up`                | Starts only services needed for standalone mode; avoids building debarchive unless explicitly included.                                                                                                                                                                                                                            |
+| GitHub App token instead of PAT                             | Short-lived (≤1 h), scoped to specific repos, no human credentials. SSH submodule URLs rewritten to HTTPS via `url.insteadOf` after checkout.                                                                                                                                                                                      |
+| `docker wait landscape-builder` (not `docker compose wait`) | `docker compose wait` resolves the project by file path and fails when the working directory differs between steps. `docker wait` operates on the container name directly.                                                                                                                                                         |
+| `landscape-go` vendor directory generated in CI             | `vendor/` is gitignored in landscape-go. Regenerated via `GOPRIVATE=... go mod vendor` using `LANDSCAPE_PROTO_PAT`. See [debarchive-feature-context.md](debarchive-feature-context.md).                                                                                                                                            |
 
 ## Phase 2 — complete ✅
 
@@ -165,6 +165,7 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
 - **Per-PR branch matching.** Probe `landscape-packaging` for a branch matching the UI PR's
   head ref; fall back to `main` if absent. The `packaging_ref` manual override already covers
   the urgent case. Implementation uses `git ls-remote` with the App token:
+
   ```yaml
   - name: Resolve backend branch
     id: backend-branch
@@ -178,6 +179,7 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
         echo "ref=main" >> $GITHUB_OUTPUT
       fi
   ```
+
   The App token scope already covers `landscape-packaging`; no credential changes needed.
 
 - **Standalone `compose.ci.yaml`** owned by this repo. The current `compose.ci-override.yaml`
@@ -214,21 +216,22 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
 
   **What is needed:**
 
-  *Runner:* An ARM64 or AMD64 Linux machine (or VM) with:
+  _Runner:_ An ARM64 or AMD64 Linux machine (or VM) with:
   - Docker Engine (not Docker Desktop) with BuildKit enabled
   - At least 4 CPU cores and 8 GB RAM (the Go build is the bottleneck)
   - 20 GB of free disk for Docker layer cache
   - Persistent storage across jobs (the cache is only useful if it survives between runs)
   - Outbound HTTPS access to `github.com`, `ghcr.io`, `proxy.golang.org`
 
-  *Registration:*
+  _Registration:_
   - Create a runner group in the `marqode/landscape-ui` repository settings
     (**Settings → Actions → Runners → New self-hosted runner**)
   - Install the GitHub Actions runner agent; configure as a service so it survives reboots
   - Label the runner (e.g. `self-hosted`, `Linux`, `landscape-ci`) — labels must match the
     `runs-on:` array in the workflow job
 
-  *Workflow change (two lines):*
+  _Workflow change (two lines):_
+
   ```yaml
   # Before
   runs-on: ubuntu-latest
@@ -236,19 +239,16 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
   runs-on: [self-hosted, Linux, landscape-ci]
   ```
 
-  *Validation:* After switching, verify:
+  _Validation:_ After switching, verify:
   1. First run (cold cache): total time should match or beat `ubuntu-latest`
   2. Second run (warm cache): debarchive build step should complete in under 30 s
   3. Docker layer cache is persisting — check `docker buildx du` on the runner machine
      between runs
 
-  *Security note:* Self-hosted runners on public repositories can execute arbitrary code
+  _Security note:_ Self-hosted runners on public repositories can execute arbitrary code
   from fork PRs unless pull-request workflows are restricted to approved contributors.
   Since this workflow requires organisation secrets (`LANDSCAPE_PACKAGER_PRIVATE_KEY`,
   `LANDSCAPE_PROTO_PAT`), it is already protected — the secrets are only available on
   the `pull_request` trigger from non-fork branches, and the `workflow_dispatch`/`push`
   triggers require write access. Confirm this holds before enabling the runner on any
   fork-accessible workflow.
-
-
-

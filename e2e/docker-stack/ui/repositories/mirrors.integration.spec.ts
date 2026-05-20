@@ -42,9 +42,9 @@ test.describe("mirrors page (self-hosted, real debarchive)", () => {
 
     // Confirm the route resolved correctly — not redirected to env-error.
     await expect(page).not.toHaveURL(/\/env-error/);
-    await expect(
-      page.getByRole("heading", { name: /mirrors/i }),
-    ).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: /mirrors/i })).toBeVisible({
+      timeout: 15_000,
+    });
   });
 
   test("sidebar shows Repositories section in self-hosted mode", async ({

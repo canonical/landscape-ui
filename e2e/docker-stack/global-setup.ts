@@ -51,7 +51,10 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     await page.goto("/login");
 
     const form = page.locator('input[name="identifier"]');
-    const formVisible = await form.waitFor({ state: "visible", timeout: 10_000 }).then(() => true).catch(() => false);
+    const formVisible = await form
+      .waitFor({ state: "visible", timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
     if (!formVisible) {
       await page.screenshot({ path: "e2e/docker-stack/.auth/login-debug.png" });
       throw new Error(
@@ -75,7 +78,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     // AddMirrorForm Distribution select is never still-loading when tests run.
     const meRes = await context.request.get(`${API_URL}me`);
     if (meRes.ok()) {
-      const meBody = await meRes.json() as { token?: string };
+      const meBody = (await meRes.json()) as { token?: string };
       if (meBody.token) {
         const bearer = `Bearer ${meBody.token}`;
         const deadline = Date.now() + ARCHIVE_WARM_TIMEOUT_MS;
@@ -84,23 +87,30 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
           while (Date.now() < deadline) {
             const res = await context.request.get(
               `${API_URL}repository/ubuntu-archive-info`,
-              { params: { archive_type: archiveType }, headers: { Authorization: bearer } },
+              {
+                params: { archive_type: archiveType },
+                headers: { Authorization: bearer },
+              },
             );
             if (res.ok()) {
-              const body = await res.json() as { distributions?: unknown[] };
-              if (Array.isArray(body.distributions) && body.distributions.length > 0) {
+              const body = (await res.json()) as { distributions?: unknown[] };
+              if (
+                Array.isArray(body.distributions) &&
+                body.distributions.length > 0
+              ) {
                 return;
               }
             }
-            await new Promise((resolve) => setTimeout(resolve, ARCHIVE_WARM_POLL_MS));
+            await new Promise((resolve) =>
+              setTimeout(resolve, ARCHIVE_WARM_POLL_MS),
+            );
           }
-          console.warn(`[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s — tests may see a disabled Distribution select`);
+          console.warn(
+            `[global-setup] archive-info (${archiveType}) did not return distributions within ${ARCHIVE_WARM_TIMEOUT_MS / 1000}s — tests may see a disabled Distribution select`,
+          );
         };
 
-        await Promise.all([
-          pollUntilReady("archive"),
-          pollUntilReady("ESM"),
-        ]);
+        await Promise.all([pollUntilReady("archive"), pollUntilReady("ESM")]);
       }
     }
   } finally {
