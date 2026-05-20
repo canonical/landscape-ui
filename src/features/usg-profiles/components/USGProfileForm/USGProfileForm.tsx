@@ -73,7 +73,6 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
           hasBackButton
           onBackButtonPress={goBack}
           onSubmit={finishSubmit}
-          submitButtonDisabled={!!step.isLoading || submitting}
           submitButtonLoading={step.isLoading || submitting}
           submitButtonText={submitButtonText}
           onCancel={popSidePathUntilClear}
@@ -96,7 +95,6 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
 
       <SidePanelFormButtons
         onSubmit={startSubmit}
-        submitButtonDisabled={!formik.isValid || submitting}
         submitButtonLoading={steps.some((step) => step.isLoading) || submitting}
         submitButtonText={submitButtonText}
         onCancel={popSidePathUntilClear}

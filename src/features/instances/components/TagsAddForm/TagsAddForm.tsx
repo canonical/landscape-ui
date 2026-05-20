@@ -96,6 +96,14 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   };
 
   const submit = async () => {
+    if (!selectedTags.length) {
+      notify.error({
+        title: "No tags selected",
+        message: "Select at least one tag to assign.",
+      });
+      return;
+    }
+
     const getProfileChangesResponse = await refetchProfileChanges();
 
     if (!getProfileChangesResponse.isSuccess) {
@@ -231,7 +239,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       <SidePanelFormButtons
         onSubmit={submit}
-        submitButtonDisabled={!selectedTags.length}
         submitButtonLoading={
           isAddingTagsToInstances || isFetchingProfileChanges
         }

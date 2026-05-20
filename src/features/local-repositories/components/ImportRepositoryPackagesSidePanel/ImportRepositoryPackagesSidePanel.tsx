@@ -61,7 +61,20 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const validationTask = getTaskStatus();
 
+  const canImport =
+    validationTask?.error?.code === 4 ||
+    (validationTask?.status === "succeeded" && !!validationTask.count);
+
   const handleSubmit = async (values: { source: string }) => {
+    if (!canImport) {
+      notify.error({
+        title: "Validation required",
+        message:
+          "Fetch packages and resolve validation results before importing.",
+      });
+      return;
+    }
+
     try {
       await importRepositoryPackages({
         name: repositoryName,
@@ -108,10 +121,6 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     }
   };
 
-  const canImport =
-    validationTask?.error?.code === 4 ||
-    (validationTask?.status === "succeeded" && !!validationTask.count);
-
   const packagesCount =
     validationTask && validationTask.count > 0
       ? pluralizeWithCount(validationTask.count, "package")
@@ -156,7 +165,6 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
           )}
 
           <SidePanelFormButtons
-            submitButtonDisabled={!canImport}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}

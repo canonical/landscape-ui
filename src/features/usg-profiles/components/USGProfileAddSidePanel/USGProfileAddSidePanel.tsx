@@ -99,9 +99,6 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
           hasBackButton={step > 0}
           onBackButtonPress={step > 0 ? goBack : undefined}
           onSubmit={submit}
-          submitButtonDisabled={
-            steps[step].isLoading || !steps[step].isValid || isUsgProfileAdding
-          }
           submitButtonLoading={steps[step].isLoading || isUsgProfileAdding}
           submitButtonText={steps[step].submitButtonText}
           onCancel={closeSidePanel}

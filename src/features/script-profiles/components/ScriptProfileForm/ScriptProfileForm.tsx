@@ -371,10 +371,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          submitting || isAssociationLimitReached || isGettingInstances
-        }
-        submitButtonLoading={submitting}
+        submitButtonLoading={submitting || isGettingInstances}
         submitButtonText={submitButtonText}
         onCancel={popSidePathUntilClear}
       />

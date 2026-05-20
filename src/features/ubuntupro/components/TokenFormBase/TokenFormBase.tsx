@@ -150,7 +150,6 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
 
         <SidePanelFormButtons
           submitButtonText={submitButtonText}
-          submitButtonDisabled={!formik.isValid || !formik.dirty}
           submitButtonLoading={formik.isSubmitting || isAttachingToken}
           onCancel={closeSidePanel}
         />

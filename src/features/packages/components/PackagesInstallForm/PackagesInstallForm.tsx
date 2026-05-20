@@ -30,6 +30,14 @@ const PackagesInstallForm: FC = () => {
   } = packagesActionQuery;
 
   const handleSubmit = async () => {
+    if (selected.length === 0) {
+      notify.error({
+        title: "No packages selected",
+        message: "Select at least one package to install.",
+      });
+      return;
+    }
+
     try {
       const { data: activity } = await installPackages({
         action: "install",
@@ -65,9 +73,7 @@ const PackagesInstallForm: FC = () => {
         }}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={
-          installPackagesQueryLoading || selected.length === 0
-        }
+        submitButtonLoading={installPackagesQueryLoading}
         submitButtonText="Install packages"
         submitButtonAppearance="positive"
         onSubmit={handleSubmit}

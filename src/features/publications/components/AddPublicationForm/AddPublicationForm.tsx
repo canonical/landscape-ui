@@ -364,7 +364,7 @@ const AddPublicationForm: FC = () => {
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting || isCreatingPublication}
+        submitButtonLoading={formik.isSubmitting || isCreatingPublication}
         submitButtonText="Add publication"
         onCancel={closeSidePanel}
       />

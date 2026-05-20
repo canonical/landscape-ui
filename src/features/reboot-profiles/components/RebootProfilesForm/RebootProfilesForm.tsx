@@ -233,7 +233,7 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
 
         <SidePanelFormButtons
           submitButtonText={CTA_LABELS[props.action]}
-          submitButtonDisabled={
+          submitButtonLoading={
             formik.isSubmitting ||
             isCreatingRebootProfile ||
             isEditingRebootProfile

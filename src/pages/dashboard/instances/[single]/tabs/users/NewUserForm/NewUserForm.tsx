@@ -152,7 +152,7 @@ const NewUserForm: FC = () => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Add user"
       />
     </Form>

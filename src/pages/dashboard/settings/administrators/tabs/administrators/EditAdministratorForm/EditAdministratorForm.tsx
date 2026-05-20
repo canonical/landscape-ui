@@ -70,6 +70,18 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   };
 
   const handleSubmit = async (values: { roles: string[] }) => {
+    const isUnchanged =
+      values.roles.length === currentAdministrator.roles.length &&
+      values.roles.every((role) => currentAdministrator.roles.includes(role));
+
+    if (isUnchanged) {
+      notify.info({
+        title: "No changes to save",
+        message: "Update the administrator roles before saving.",
+      });
+      return;
+    }
+
     try {
       await editAdministrator({ id: administrator.id, roles: values.roles });
 
@@ -149,13 +161,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          formik.isSubmitting ||
-          (formik.values.roles.length === currentAdministrator.roles.length &&
-            formik.values.roles.every((role) =>
-              currentAdministrator.roles.includes(role),
-            ))
-        }
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

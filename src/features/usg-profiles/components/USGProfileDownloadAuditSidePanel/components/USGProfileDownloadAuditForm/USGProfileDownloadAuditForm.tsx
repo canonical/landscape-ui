@@ -306,7 +306,6 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
         onSubmit={() => {
           formik.handleSubmit();
         }}
-        submitButtonDisabled={!formik.isValid || isUsgProfileReportLoading}
         submitButtonLoading={isUsgProfileReportLoading}
         submitButtonText="Generate CSV"
         onCancel={popSidePathUntilClear}

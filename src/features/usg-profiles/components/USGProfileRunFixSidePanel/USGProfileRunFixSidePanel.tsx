@@ -134,7 +134,6 @@ const USGProfileRunFixSidePanel: FC = () => {
             )}
           />
           <SidePanelFormButtons
-            submitButtonDisabled={false}
             submitButtonText="Run"
             onCancel={popSidePathUntilClear}
           />

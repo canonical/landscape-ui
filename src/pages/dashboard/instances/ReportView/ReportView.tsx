@@ -161,7 +161,6 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
         </div>
       )}
       <SidePanelFormButtons
-        submitButtonDisabled={false}
         submitButtonText="Download as CSV"
         onSubmit={handleDownloadDialog}
       />

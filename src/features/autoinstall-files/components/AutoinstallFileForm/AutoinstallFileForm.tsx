@@ -28,11 +28,7 @@ import {
 import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
-import {
-  areTextsIdentical,
-  isAutoinstallOverrideWarning,
-  parseFields,
-} from "./helpers";
+import { isAutoinstallOverrideWarning, parseFields } from "./helpers";
 import type { FormikProps } from "./types";
 
 interface AutoinstallFileFormProps {
@@ -214,11 +210,6 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          areTextsIdentical(formik.values.contents, initialFile.contents) ||
-          formik.isSubmitting ||
-          isAutoinstallFileValidating
-        }
         submitButtonLoading={isAutoinstallFileValidating || formik.isSubmitting}
         submitButtonText={buttonText}
       />
