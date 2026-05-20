@@ -30,7 +30,6 @@ export const INITIAL_VALUES: FormProps = {
   prefix: "",
   uploader_distribution: "",
   uploader_architectures: [],
-  preserve_mirror_signing_key: true,
   mirror_signing_key: "",
   hash_indexing: false,
   automatic_installation: false,

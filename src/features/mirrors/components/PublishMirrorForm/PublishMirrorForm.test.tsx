@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { afterEach, describe, expect } from "vitest";
+import { afterEach, describe, expect, assert } from "vitest";
 import PublishMirrorForm from "./PublishMirrorForm";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";

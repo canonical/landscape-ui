@@ -1,6 +1,6 @@
 import { useMemo, useState, type FC } from "react";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import type { Column, CellProps } from "react-table";
+import type { Column, CellProps, Row } from "react-table";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { LocalPackage } from "../../types";
 
@@ -37,7 +37,8 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
       {
         Header: header,
         meta: {
-          ariaLabel: ({ name }: LocalPackage) => `${header}: ${name}`,
+          ariaLabel: (row: Row<LocalPackage>) =>
+            `${header}: ${row.original.name}`,
         },
         Cell: ({
           row: {
