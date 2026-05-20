@@ -198,7 +198,8 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   });
 
   const isAssociationLimitReached =
-    (instancesCount ?? 0) >= (scriptProfileLimits?.max_num_computers ?? Infinity);
+    (instancesCount ?? 0) >=
+    (scriptProfileLimits?.max_num_computers ?? Infinity);
 
   isAssociationLimitReachedRef.current = isAssociationLimitReached;
 
