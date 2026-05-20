@@ -247,6 +247,12 @@ describe("pluralize", () => {
 
     expect(result).toEqual("0 plural");
   });
+
+  it("uses a limited count", () => {
+    const result = pluralize(5, ["item"], "limited");
+
+    expect(result).toEqual("5+ items");
+  });
 });
 
 describe("pluralizeArray", () => {
