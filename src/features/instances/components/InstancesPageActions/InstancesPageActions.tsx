@@ -171,7 +171,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, "instance", { showCount: "exact" })}`,
+      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
         <AttachTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
@@ -180,7 +180,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, "instance", { showCount: "exact" })}`,
+      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
         <ReplaceTokenForm selectedInstances={selectedInstances} />
       </Suspense>,

@@ -45,7 +45,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
 
     const title = singleSnap
       ? `${action} ${singleSnap.snap.name}${action === EditSnapType.Switch ? "'s channel" : ""}`
-      : `${action} ${pluralize(getCount(), "snap", { showCount: "exact" })}`;
+      : `${action} ${pluralize(getCount(), ["snap"], "exact")}`;
 
     setSidePanelContent(
       title,

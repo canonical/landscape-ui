@@ -225,7 +225,7 @@ const InfoTablesContainer: FC = () => {
                 (row.original.upgrades?.security ?? 0) +
                 (row.original.upgrades?.regular ?? 0);
 
-              return pluralize(packageCount, "package", { showCount: "exact" });
+              return pluralize(packageCount, ["package"], "exact");
             },
             className: classes.lastCol,
           },
@@ -240,9 +240,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>): ReactNode =>
-              pluralize(row.original.computers.length, "instance", {
-                showCount: "exact",
-              }),
+              pluralize(row.original.computers.length, ["instance"], "exact"),
             className: classes.lastCol,
           },
         ];
@@ -256,9 +254,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers_count",
             Cell: ({ row }: CellProps<Usn>): ReactNode =>
-              pluralize(row.original.computers_count, "instance", {
-                showCount: "exact",
-              }),
+              pluralize(row.original.computers_count, ["instance"], "exact"),
             className: classes.lastCol,
           },
         ];

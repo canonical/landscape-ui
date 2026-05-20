@@ -30,9 +30,11 @@ const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
         search: `?query=${encodeURIComponent(`source:${mirrorName}`)}`,
       }}
     >
-      {pluralize(data.data.publications.length, "publication", {
-        showCount: data.data.nextPageToken ? "limited" : "exact",
-      })}
+      {pluralize(
+        data.data.publications.length,
+        ["publication"],
+        data.data.nextPageToken ? "limited" : "exact",
+      )}
     </StaticLink>
   );
 };

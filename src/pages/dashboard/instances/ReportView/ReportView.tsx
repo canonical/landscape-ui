@@ -72,7 +72,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
         ? securityUpgradesInstanceCount[period]
         : instanceIds.length - securityUpgradesInstanceCount[period];
 
-    return `${pluralize(count, "instance has", { pluralForm: "instances have", showCount: "exact" })} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
+    return `${pluralize(count, ["instance has", "instances have"], "exact")} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
   };
 
   const handleDownloadDialog = () => {
@@ -97,8 +97,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
                 currentCount={
                   instanceIds.length - securityUpgradesInstanceCount.pending
                 }
-                negativeDescription={`${pluralize(securityUpgradesInstanceCount.pending, "instance is", { pluralForm: "instances are", showCount: "exact" })} not yet patched.`}
-                positiveDescription={`${pluralize(instanceIds.length - securityUpgradesInstanceCount.pending, "instance is", { pluralForm: "instances are", showCount: "exact" })} securely patched.`}
+                negativeDescription={`${pluralize(securityUpgradesInstanceCount.pending, ["instance is", "instances are"], "exact")} not yet patched.`}
+                positiveDescription={`${pluralize(instanceIds.length - securityUpgradesInstanceCount.pending, ["instance is", "instances are"], "exact")} securely patched.`}
                 title="Securely patched"
                 totalCount={instanceIds.length}
               />
@@ -108,8 +108,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getInstancesNotUpgradedLoading && (
               <ReportWidget
                 currentCount={upgradedInstanceCount}
-                negativeDescription={`${pluralize(Number(getInstancesNotUpgradedResult?.data.length ?? 0), "instance is", { pluralForm: "instances are", showCount: "exact" })} not covered by upgrade profiles.`}
-                positiveDescription={`${pluralize(upgradedInstanceCount, "instance is", { pluralForm: "instances are", showCount: "exact" })} covered by upgrade profiles.`}
+                negativeDescription={`${pluralize(Number(getInstancesNotUpgradedResult?.data.length ?? 0), ["instance is", "instances are"], "exact")} not covered by upgrade profiles.`}
+                positiveDescription={`${pluralize(upgradedInstanceCount, ["instance is", "instances are"], "exact")} covered by upgrade profiles.`}
                 title="Upgrade profiles"
                 totalCount={instanceIds.length}
               />
@@ -119,8 +119,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getNotPingingInstancesLoading && (
               <ReportWidget
                 currentCount={pingingInstancesCount}
-                negativeDescription={`${pluralize(Number(getNotPingingInstancesResult?.data.length ?? 0), "instance has", { pluralForm: "instances have", showCount: "exact" })} not contacted the server within the last 5 minutes.`}
-                positiveDescription={`${pluralize(pingingInstancesCount, "instance has", { pluralForm: "instances have", showCount: "exact" })} contacted the server within the last 5 minutes.`}
+                negativeDescription={`${pluralize(Number(getNotPingingInstancesResult?.data.length ?? 0), ["instance has", "instances have"], "exact")} not contacted the server within the last 5 minutes.`}
+                positiveDescription={`${pluralize(pingingInstancesCount, ["instance has", "instances have"], "exact")} contacted the server within the last 5 minutes.`}
                 title="Contacted"
                 totalCount={instanceIds.length}
               />

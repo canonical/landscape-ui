@@ -45,7 +45,7 @@ const PackageProfileConstraintsAddForm: FC<
       popSidePath();
 
       notify.success({
-        message: `${pluralize(constraints.length, "package profile constraint", { showCount: "exact" })} added successfully`,
+        message: `${pluralize(constraints.length, ["package profile constraint"], "exact")} added successfully`,
         title: "Package profile constraints added",
       });
     } catch (error) {
@@ -68,8 +68,8 @@ const PackageProfileConstraintsAddForm: FC<
       <SidePanelFormButtons
         submitButtonDisabled={!formik.isValid || formik.isValidating}
         submitButtonLoading={formik.isSubmitting}
-        submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
-        submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
+        submitButtonText={`Add ${pluralize(formik.values.constraints.length, ["constraint"])}`}
+        submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, ["constraint"])} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
         onCancel={cancel}
       />

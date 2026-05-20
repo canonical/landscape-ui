@@ -73,14 +73,14 @@ const Legend: FC<LegendProps> = ({
             </div>
             {item.count === 0 ? (
               <span className="u-no-margin u-no-padding">
-                {pluralize(item.count, "instance", { showCount: "exact" })}
+                {pluralize(item.count, ["instance"], "exact")}
               </span>
             ) : (
               <Link
                 to={ROUTES.instances.root({ status: statusItem.filterValue })}
                 className="u-no-margin u-no-padding"
               >
-                {pluralize(item.count, "instance", { showCount: "exact" })}
+                {pluralize(item.count, ["instance"], "exact")}
               </Link>
             )}
           </div>

@@ -27,7 +27,7 @@ export const getActionInfo = (
     (pkg) => `${pkg.name} package`,
     "selected packages",
   );
-  const itOrThey = pluralize(packages.length, "It", { pluralForm: "They" });
+  const itOrThey = pluralize(packages.length, ["It", "They"]);
 
   return `This will ${action === "hold" ? "disable" : "enable"} upgrades for the ${title}. ${itOrThey} will ${action === "hold" ? "not " : ""}be eligible to upgrade to the latest available version.`;
 };

@@ -114,7 +114,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const packagesCount =
     validationTask && validationTask.count > 0
-      ? pluralize(validationTask.count, "package", { showCount: "exact" })
+      ? pluralize(validationTask.count, ["package"], "exact")
       : "packages";
 
   return (

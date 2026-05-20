@@ -34,7 +34,7 @@ export default function useUsgProfileFormNameStep<
       return "Infinite";
     }
 
-    return pluralize(auditRetentionPeriod, "day", { showCount: "exact" });
+    return pluralize(auditRetentionPeriod, ["day"], "exact");
   };
 
   return {

@@ -52,7 +52,7 @@ const ProfileAssociatedInstancesLink: FC<
   const text =
     isGeneralAssociation && profile.all_computers
       ? "All instances"
-      : pluralize(count, "instance", { showCount: "exact" });
+      : pluralize(count, ["instance"], "exact");
 
   const getPackageComplianceIds = () => {
     if (isPackageProfile(profile) && !isGeneralAssociation) {

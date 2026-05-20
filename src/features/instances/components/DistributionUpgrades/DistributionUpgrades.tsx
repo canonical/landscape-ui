@@ -84,8 +84,8 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} queued`,
-        message: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} for ${pluralize(finalEligibleIds.length, "instance has", { pluralForm: "instances have", showCount: "exact" })} been queued in Activities.`,
+        title: `Distribution ${pluralize(finalEligibleIds.length, ["upgrade"])} queued`,
+        message: `Distribution ${pluralize(finalEligibleIds.length, ["upgrade"])} for ${pluralize(finalEligibleIds.length, ["instance has", "instances have"], "exact")} been queued in Activities.`,
         actions: [
           {
             label: "View details",
@@ -164,7 +164,7 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
               });
             }}
           >
-            {pluralize(row.original.count, "instance", { showCount: "exact" })}
+            {pluralize(row.original.count, ["instance"], "exact")}
           </Button>
         ),
       },

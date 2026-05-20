@@ -83,13 +83,13 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           }: CellProps<ProfileChange>) => {
             const label = pluralize(
               profileChange.profile.current_associated_instances,
-              "instance",
-              { showCount: "exact" },
+              ["instance"],
+              "exact",
             );
 
             return profileChange.profile.will_exceed_limit ? (
               <Tooltip
-                message={`Adding ${pluralize(instances.length, "this instance", { pluralForm: "these instances" })} will exceed the instance limit.`}
+                message={`Adding ${pluralize(instances.length, ["this instance", "these instances"])} will exceed the instance limit.`}
               >
                 <Icon name="warning" />
                 {label}
@@ -126,16 +126,17 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
       <p>
         Adding{" "}
-        {pluralize(tags.length, `the ${tags[0]} tag`, {
-          pluralForm: `these ${tags.length} tags`,
-        })}{" "}
+        {pluralize(tags.length, [
+          `the ${tags[0]} tag`,
+          `these ${tags.length} tags`,
+        ])}{" "}
         to{" "}
         {getSelectionLabel(
           instances,
           (instance) => `the ${instance.title} instance`,
           `instances`,
         )}{" "}
-        will associate the {pluralize(instances.length, "instance")} with the
+        will associate the {pluralize(instances.length, ["instance"])} with the
         following profiles.
       </p>
 

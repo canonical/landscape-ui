@@ -85,22 +85,21 @@ export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
 
 export const pluralize = (
   count: number,
-  singularForm: string,
-  {
-    pluralForm = `${singularForm}s`,
-    showCount,
-  }: { pluralForm?: string; showCount?: "exact" | "limited" } = {},
+  [singularForm, pluralForm = `${singularForm}s`]: [
+    singular: string,
+    plural?: string,
+  ],
+  countType: "none" | "exact" | "limited" = "none",
 ) => {
   const form = count === 1 ? singularForm : pluralForm;
 
-  if (!showCount) {
-    return form;
-  }
-
-  if (showCount === "limited") {
-    return `${count.toLocaleString()}+ ${form}`;
-  } else {
-    return `${count.toLocaleString()} ${form}`;
+  switch (countType) {
+    case "none":
+      return form;
+    case "exact":
+      return `${count.toLocaleString()} ${form}`;
+    case "limited":
+      return `${count.toLocaleString()}+ ${form}`;
   }
 };
 

@@ -22,10 +22,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
   const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const selectedIds = selected.map((activity) => activity.id);
-  const title = pluralize(selected.length, "activity", {
-    pluralForm: "activities",
-    showCount: "exact",
-  });
+  const title = pluralize(selected.length, ["activity", "activities"], "exact");
 
   const handleApproveActivities = async () => {
     try {
@@ -33,7 +30,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
 
       notify.success({
         title: `You have successfully approved ${title}.`,
-        message: `${pluralize(selected.length, "This activity", { pluralForm: "These activities" })} will be delivered the next time the Landscape server connects with the client.`,
+        message: `${pluralize(selected.length, ["This activity", "These activities"])} will be delivered the next time the Landscape server connects with the client.`,
       });
     } catch (error) {
       debug(error);
@@ -46,7 +43,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
 
       notify.success({
         title: `You have successfully canceled ${title}.`,
-        message: `${pluralize(selected.length, "This activity", { pluralForm: "These activities" })} won't be delivered to the client and will not run.`,
+        message: `${pluralize(selected.length, ["This activity", "These activities"])} won't be delivered to the client and will not run.`,
       });
     } catch (error) {
       debug(error);
@@ -59,7 +56,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
 
       notify.success({
         title: `You have successfully redone ${title}.`,
-        message: `${pluralize(selected.length, "An activity has been queued to re-run this activity.", { pluralForm: "Activities have been queued to re-run these activities." })}`,
+        message: `${pluralize(selected.length, ["An activity has been queued to re-run this activity.", "Activities have been queued to re-run these activities."])}`,
       });
     } catch (error) {
       debug(error);

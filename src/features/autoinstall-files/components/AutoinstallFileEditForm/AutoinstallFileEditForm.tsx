@@ -35,15 +35,15 @@ const AutoinstallFileEditForm: FC<AutoinstallFileEditFormProps> = ({
           You&apos;ve reached the limit of{" "}
           {pluralize(
             autoinstallFileWithMetadata.metadata.max_versions,
-            "saved edit",
-            { showCount: "exact" },
+            ["saved edit"],
+            "exact",
           )}
           . To save your new change, the oldest version will be automatically
           removed, keeping the most recent{" "}
           {pluralize(
             autoinstallFileWithMetadata.metadata.max_versions,
-            "version",
-            { showCount: "exact" },
+            ["version"],
+            "exact",
           )}{" "}
           in history.
         </Notification>

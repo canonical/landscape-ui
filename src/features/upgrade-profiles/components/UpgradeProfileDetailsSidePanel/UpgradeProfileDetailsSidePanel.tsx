@@ -91,8 +91,8 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
                 large
                 value={pluralize(
                   Number(profile.deliver_delay_window),
-                  "minute",
-                  { showCount: "exact" },
+                  ["minute"],
+                  "exact",
                 )}
               />
             </InfoGrid>

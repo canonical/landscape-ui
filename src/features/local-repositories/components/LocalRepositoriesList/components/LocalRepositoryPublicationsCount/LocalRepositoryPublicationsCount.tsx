@@ -31,7 +31,7 @@ const LocalRepositoryPublicationsCount: FC<
         query: `source:${repository.name}`,
       })}
     >
-      {pluralize(publications.length, "publication", { showCount: "exact" })}
+      {pluralize(publications.length, ["publication"], "exact")}
     </StaticLink>
   );
 };

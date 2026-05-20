@@ -26,7 +26,7 @@ export const getScheduleInfo = (profile: UpgradeProfile) => {
   const atMinute = parseInt(profile.at_minute);
 
   if (every === "hour") {
-    scheduleMessage += `hour at ${pluralize(atMinute, "minute", { showCount: "exact" })}`;
+    scheduleMessage += `hour at ${pluralize(atMinute, ["minute"], "exact")}`;
 
     if (on_days) {
       scheduleMessage += ` on ${getScheduledDays(on_days)}`;

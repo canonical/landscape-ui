@@ -137,5 +137,5 @@ export const getSuccessMessage = (snapCount: number, action: EditSnapType) => {
       break;
   }
 
-  return `You queued ${pluralize(snapCount, "snap", { showCount: "exact" })} to be ${verb}.`;
+  return `You queued ${pluralize(snapCount, ["snap"], "exact")} to be ${verb}.`;
 };

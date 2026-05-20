@@ -26,7 +26,7 @@ const ProfileAssociatedInstancesLink: FC<
 
   return (
     <StaticLink to={ROUTES.instances.root({ query: `profile:${query}` })}>
-      {pluralize(count, "instance", { showCount: "exact" })}
+      {pluralize(count, ["instance"], "exact")}
     </StaticLink>
   );
 };

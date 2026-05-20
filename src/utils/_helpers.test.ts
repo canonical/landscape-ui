@@ -213,40 +213,37 @@ describe("hasOneItem", () => {
 
 describe("pluralize", () => {
   it("uses singular form", () => {
-    const result = pluralize(1, "singular");
+    const result = pluralize(1, ["singular"]);
 
     expect(result).toEqual("singular");
   });
 
   it("uses default plural form", () => {
-    const result = pluralize(2, "singular");
+    const result = pluralize(2, ["singular"]);
 
     expect(result).toEqual("singulars");
   });
 
   it("uses given plural form", () => {
-    const result = pluralize(0, "singular", { pluralForm: "plural" });
+    const result = pluralize(0, ["singular", "plural"]);
 
     expect(result).toEqual("plural");
   });
 
   it("uses singular form with exact count", () => {
-    const result = pluralize(1, "singular", { showCount: "exact" });
+    const result = pluralize(1, ["singular"], "exact");
 
     expect(result).toEqual("1 singular");
   });
 
   it("uses default plural form with exact count", () => {
-    const result = pluralize(2, "singular", { showCount: "exact" });
+    const result = pluralize(2, ["singular"], "exact");
 
     expect(result).toEqual("2 singulars");
   });
 
   it("uses given plural form with exact count", () => {
-    const result = pluralize(0, "singular", {
-      pluralForm: "plural",
-      showCount: "exact",
-    });
+    const result = pluralize(0, ["singular", "plural"], "exact");
 
     expect(result).toEqual("0 plural");
   });

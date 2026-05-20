@@ -21,7 +21,7 @@ const SelectAllButton: FC<SelectAllButtonProps> = ({
   return (
     <div>
       <Icon name="information" />
-      <span className="u-text--muted">{` Selected ${pluralize(count, singular, { pluralForm: plural, showCount: "exact" })} currently. `}</span>
+      <span className="u-text--muted">{` Selected ${pluralize(count, [singular, plural], "exact")} currently. `}</span>
       <Button
         type="button"
         appearance="link"

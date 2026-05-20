@@ -74,9 +74,11 @@ const RemovalProfileDetails: FC = () => {
               <InfoGrid.Item
                 label="Removal timeframe"
                 large
-                value={pluralize(profile.days_without_exchange, "day", {
-                  showCount: "exact",
-                })}
+                value={pluralize(
+                  profile.days_without_exchange,
+                  ["day"],
+                  "exact",
+                )}
               />
             </InfoGrid>
           </Blocks.Item>

@@ -53,7 +53,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
         {isUpgradeProfile(profile) && (
           <InfoGrid.Item
             label="Delivery delay window"
-            value={`${pluralize(Number(profile.deliver_delay_window), "minute", { showCount: "exact" })}`}
+            value={`${pluralize(Number(profile.deliver_delay_window), ["minute"], "exact")}`}
           />
         )}
 
@@ -74,11 +74,11 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
             large
             value={`${
               profile.restart_deliver_delay
-                ? `Delayed by ${pluralize(profile.restart_deliver_delay, "hour", { showCount: "exact" })}`
+                ? `Delayed by ${pluralize(profile.restart_deliver_delay, ["hour"], "exact")}`
                 : "As soon as possible"
             }${
               profile.restart_deliver_delay_window
-                ? `, randomize delivery over ${pluralize(profile.restart_deliver_delay_window, "minute", { showCount: "exact" })}`
+                ? `, randomize delivery over ${pluralize(profile.restart_deliver_delay_window, ["minute"], "exact")}`
                 : ""
             }`}
           />

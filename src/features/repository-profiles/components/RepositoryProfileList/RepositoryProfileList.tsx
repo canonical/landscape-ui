@@ -113,11 +113,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile applied machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>
-            {pluralize(original.applied_count ?? 0, "instance", {
-              showCount: "exact",
-            })}
-          </>
+          <>{pluralize(original.applied_count ?? 0, ["instance"], "exact")}</>
         ),
       },
       {
@@ -129,11 +125,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile pending machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>
-            {pluralize(original.pending_count ?? 0, "instance", {
-              showCount: "exact",
-            })}
-          </>
+          <>{pluralize(original.pending_count ?? 0, ["instance"], "exact")}</>
         ),
       },
       {

@@ -27,7 +27,7 @@ const AccessGroupInstanceCountCell: FC<AccessGroupInstanceCountCellProps> = ({
   if (instancesCount) {
     return (
       <Link to={ROUTES.instances.root({ accessGroups: [accessGroup.name] })}>
-        {pluralize(instancesCount, "instance", { showCount: "exact" })}
+        {pluralize(instancesCount, ["instance"], "exact")}
       </Link>
     );
   }

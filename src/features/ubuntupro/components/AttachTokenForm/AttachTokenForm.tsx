@@ -43,23 +43,20 @@ const AttachTokenForm: FC<AttachTokenFormProps> = ({ selectedInstances }) => {
       {hasMixedTokens && (
         <p>
           You&apos;re attaching a token to{" "}
-          {pluralize(selectedInstances.length, "instance", {
-            showCount: "exact",
-          })}
-          . If they already have a token it will be overriden.
+          {pluralize(selectedInstances.length, ["instance"], "exact")}. If they
+          already have a token it will be overriden.
         </p>
       )}
 
       {hasMixedTokens && (
         <ul>
           <li>
-            {pluralize(withoutToken, "instance", { showCount: "exact" })} will
-            be attached to this token
+            {pluralize(withoutToken, ["instance"], "exact")} will be attached to
+            this token
           </li>
           <li>
-            {pluralize(withToken, "instance", { showCount: "exact" })} will
-            override {pluralize(withToken, "its", { pluralForm: "their" })}{" "}
-            existing token
+            {pluralize(withToken, ["instance"], "exact")} will override{" "}
+            {pluralize(withToken, ["its", "their"])} existing token
           </li>
         </ul>
       )}

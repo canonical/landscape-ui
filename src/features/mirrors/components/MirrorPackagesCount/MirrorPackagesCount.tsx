@@ -20,9 +20,11 @@ const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
   if (isLoading) return <Spinner />;
   if (isError || !data?.data.mirrorPackages) return <NoData />;
 
-  return pluralize(data.data.mirrorPackages.length, "package", {
-    showCount: data.data.nextPageToken ? "limited" : "exact",
-  });
+  return pluralize(
+    data.data.mirrorPackages.length,
+    ["package"],
+    data.data.nextPageToken ? "limited" : "exact",
+  );
 };
 
 export default MirrorPackagesCount;

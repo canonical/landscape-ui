@@ -19,7 +19,7 @@ const LocalRepositoryPackagesCount: FC<LocalRepositoryPackagesCountProps> = ({
     return <LoadingState inline />;
   }
 
-  return pluralize(packages.length, "package", { showCount: "exact" });
+  return pluralize(packages.length, ["package"], "exact");
 };
 
 export default LocalRepositoryPackagesCount;

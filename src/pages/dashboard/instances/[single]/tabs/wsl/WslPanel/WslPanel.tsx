@@ -37,9 +37,11 @@ const WslPanel: FC<WslPanelProps> = ({ instance }) => {
         {wslInstances.length >= windowsInstanceChildLimit && (
           <Notification inline title="Limit reached:" severity="caution">
             You&apos;ve reached the limit of{" "}
-            {pluralize(windowsInstanceChildLimit, "active WSL child instance", {
-              showCount: "exact",
-            })}
+            {pluralize(
+              windowsInstanceChildLimit,
+              ["active WSL child instance"],
+              "exact",
+            )}
             . This may be due to too many associated profiles or manually
             created instances.
           </Notification>

@@ -42,9 +42,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
         search: `?query=${encodeURIComponent(`publicationTargetId:${publicationTargetId}`)}`,
       }}
     >
-      {pluralize(publications.length, "publication", {
-        showCount: "exact",
-      })}
+      {pluralize(publications.length, ["publication"], "exact")}
     </StaticLink>
   );
 };

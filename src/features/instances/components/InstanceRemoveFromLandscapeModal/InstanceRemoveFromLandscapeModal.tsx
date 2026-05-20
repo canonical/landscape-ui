@@ -67,13 +67,10 @@ const InstanceRemoveFromLandscapeModal: FC<
       onConfirm={removeFromLandscape}
     >
       <p>
-        {pluralize(
-          instances.length,
+        {pluralize(instances.length, [
           "This will delete all associated data and free up one license slot for another computer to be registered. You can re-register it to Landscape at any time.",
-          {
-            pluralForm: `This will delete all associated data and free up ${instances.length} license slots for other computers to be registered. You can re-register them to Landscape at any time.`,
-          },
-        )}
+          `This will delete all associated data and free up ${instances.length} license slots for other computers to be registered. You can re-register them to Landscape at any time.`,
+        ])}
       </p>
     </TextConfirmationModal>
   );

@@ -41,7 +41,7 @@ const PackagesInstallForm: FC = () => {
 
       notify.success({
         title: `You queued ${getSelectionLabel(selected, (pkg) => `package ${pkg.name}`, `packages`)} to be installed.`,
-        message: `${getSelectionLabel(selected, (pkg) => `${pkg.name} package`, `selected packages`)} will be installed and ${pluralize(selected.length, "is", { pluralForm: "are" })} queued in Activities.`,
+        message: `${getSelectionLabel(selected, (pkg) => `${pkg.name} package`, `selected packages`)} will be installed and ${pluralize(selected.length, ["is", "are"])} queued in Activities.`,
         actions: [
           {
             label: "Details",

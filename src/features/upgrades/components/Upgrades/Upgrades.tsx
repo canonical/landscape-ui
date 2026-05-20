@@ -64,7 +64,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
       notify.success({
         title: "You queued packages to be upgraded",
-        message: `Packages on ${pluralize(selectedInstances.length, "instance", { showCount: "exact" })} will be upgraded and are queued in Activities`,
+        message: `Packages on ${pluralize(selectedInstances.length, ["instance"], "exact")} will be upgraded and are queued in Activities`,
       });
     } catch (error) {
       debug(error);

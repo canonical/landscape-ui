@@ -24,6 +24,6 @@ export const getAttachFormNotification = (
 
   return {
     title: `You queued token attachment for ${selectedInstancesLength} instances.`,
-    message: `The token will be added to ${pluralize(withoutToken, "instance", { showCount: "exact" })} and replace the existing one on ${pluralize(withToken, "instance", { showCount: "exact" })}. You can track progress in Activities.`,
+    message: `The token will be added to ${pluralize(withoutToken, ["instance"], "exact")} and replace the existing one on ${pluralize(withToken, ["instance"], "exact")}. You can track progress in Activities.`,
   };
 };

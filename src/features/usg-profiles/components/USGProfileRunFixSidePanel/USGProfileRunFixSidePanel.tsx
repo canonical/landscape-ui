@@ -99,7 +99,7 @@ const USGProfileRunFixSidePanel: FC = () => {
                       value={
                         profile.restart_deliver_delay === 0
                           ? "As soon as possible"
-                          : `Delayed by ${pluralize(profile.restart_deliver_delay, "hour", { showCount: "exact" })}`
+                          : `Delayed by ${pluralize(profile.restart_deliver_delay, ["hour"], "exact")}`
                       }
                     />
 
@@ -108,7 +108,7 @@ const USGProfileRunFixSidePanel: FC = () => {
                       large
                       value={
                         profile.restart_deliver_delay_window
-                          ? `Yes, over ${pluralize(profile.restart_deliver_delay_window, "minute", { showCount: "exact" })}`
+                          ? `Yes, over ${pluralize(profile.restart_deliver_delay_window, ["minute"], "exact")}`
                           : "No"
                       }
                     />

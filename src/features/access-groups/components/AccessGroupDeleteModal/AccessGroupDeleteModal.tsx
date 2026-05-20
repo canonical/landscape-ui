@@ -47,13 +47,12 @@ const AccessGroupDeleteModal: FC<AccessGroupDeleteModalProps> = ({
     limit: 1,
   });
 
-  const instancesCountText = pluralize(instancesCount, "instance", {
-    showCount: "exact",
-  });
-  const itOrThem = pluralize(instancesCount, "it", { pluralForm: "them" });
-  const thisOrTheseInstances = pluralize(instancesCount, "this instance", {
-    pluralForm: "these instances",
-  });
+  const instancesCountText = pluralize(instancesCount, ["instance"], "exact");
+  const itOrThem = pluralize(instancesCount, ["it", "them"]);
+  const thisOrTheseInstances = pluralize(instancesCount, [
+    "this instance",
+    "these instances",
+  ]);
 
   return (
     <TextConfirmationModal

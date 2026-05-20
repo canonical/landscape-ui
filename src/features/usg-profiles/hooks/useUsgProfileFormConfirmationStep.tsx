@@ -58,7 +58,7 @@ export default function useUsgProfileFormConfirmationStep<
                       value={
                         formik.values.delivery_time === "asap"
                           ? "As soon as possible"
-                          : `Delayed by ${pluralize(formik.values.restart_deliver_delay, "hour", { showCount: "exact" })}`
+                          : `Delayed by ${pluralize(formik.values.restart_deliver_delay, ["hour"], "exact")}`
                       }
                     />
 
@@ -67,7 +67,7 @@ export default function useUsgProfileFormConfirmationStep<
                       large
                       value={
                         formik.values.randomize_delivery === true
-                          ? `Yes, over ${pluralize(formik.values.deliver_delay_window, "minute", { showCount: "exact" })}`
+                          ? `Yes, over ${pluralize(formik.values.deliver_delay_window, ["minute"], "exact")}`
                           : "No"
                       }
                     />

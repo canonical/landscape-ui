@@ -40,10 +40,10 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
 
       const title = instanceTitle
         ? `You queued detachment of Ubuntu Pro token for instance ${instanceTitle}.`
-        : `You queued detachment of Ubuntu Pro token for ${pluralize(count, "instance", { showCount: "exact" })}.`;
+        : `You queued detachment of Ubuntu Pro token for ${pluralize(count, ["instance"], "exact")}.`;
 
       const message = isMultiple
-        ? `This will disconnect the ${pluralize(count, "instance from its", { pluralForm: "instances from their" })} subscription and pause any enabled Pro services.`
+        ? `This will disconnect the ${pluralize(count, ["instance from its", "instances from their"])} subscription and pause any enabled Pro services.`
         : "This will disconnect the instance from its subscription and pause any enabled Pro services.";
 
       notify.success({
@@ -74,10 +74,7 @@ const DetachTokenModal: FC<DetachTokenModalProps> = ({
   const modalMessage = isMultiple ? (
     <p>
       Detaching the Ubuntu Pro token will disconnect{" "}
-      {pluralize(count, "instance from its", {
-        pluralForm: "instances from their",
-        showCount: "exact",
-      })}{" "}
+      {pluralize(count, ["instance from its", "instances from their"], "exact")}{" "}
       subscription and pause any enabled Pro services.
     </p>
   ) : (

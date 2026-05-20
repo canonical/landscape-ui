@@ -286,7 +286,7 @@ describe("InstancesPageActions", () => {
       );
 
       const dialog = screen.getByRole("dialog", {
-        name: `Shut down ${pluralize(selected.length, "instance", { showCount: "exact" })}`,
+        name: `Shut down ${pluralize(selected.length, ["instance"], "exact")}`,
       });
 
       expect(dialog).toBeInTheDocument();
@@ -296,7 +296,7 @@ describe("InstancesPageActions", () => {
       );
 
       screen.getByText(
-        `You queued ${pluralize(selected.length, "instance", { showCount: "exact" })} to be shut down.`,
+        `You queued ${pluralize(selected.length, ["instance"], "exact")} to be shut down.`,
       );
 
       expect(dialog).not.toBeInTheDocument();
@@ -309,7 +309,7 @@ describe("InstancesPageActions", () => {
       await userEvent.click(screen.getByRole("menuitem", { name: /restart/i }));
 
       const dialog = screen.getByRole("dialog", {
-        name: `Restart ${pluralize(selected.length, "instance", { showCount: "exact" })}`,
+        name: `Restart ${pluralize(selected.length, ["instance"], "exact")}`,
       });
 
       expect(dialog).toBeInTheDocument();
@@ -319,7 +319,7 @@ describe("InstancesPageActions", () => {
       );
 
       screen.getByText(
-        `You queued ${pluralize(selected.length, "instance", { showCount: "exact" })} to be restarted.`,
+        `You queued ${pluralize(selected.length, ["instance"], "exact")} to be restarted.`,
       );
 
       expect(dialog).not.toBeInTheDocument();
