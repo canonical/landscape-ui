@@ -255,7 +255,7 @@ describe("pluralize", () => {
   });
 });
 
-describe("pluralizeArray", () => {
+describe("getSelectionLabel", () => {
   it("uses singular form", () => {
     const array = ["first"];
 
