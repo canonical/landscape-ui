@@ -2,7 +2,7 @@ name: Run tests and TICS report
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "release/*", "point/*"]
 
 jobs:
   e2e-tests:

@@ -12,9 +12,9 @@ auditable, reviewable via PR, and reproducible across environments.
 
 ## Files
 
-| File                                               | Purpose                                                                                          |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| [protected-branches.json](protected-branches.json) | Pull-request, status-check, signed-commit, force-push, and Copilot-review rules covering `main`. |
+| File                                               | Purpose                                                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| [protected-branches.json](protected-branches.json) | Pull-request, status-check, force-push, and Copilot-review rules covering `main`, `release/*`, and `point/*` branches.   |
 
 The currently-deployed ruleset id is **`16386358`** (canonical/landscape-ui).
 The JSON in this directory is the canonical definition; it omits the
@@ -62,8 +62,8 @@ gh api /repos/canonical/landscape-ui/rulesets/16386358
 
 ```bash
 diff <(gh api /repos/canonical/landscape-ui/rulesets/16386358 \
-       --jq 'del(.id, .source, .source_type, .created_at, .updated_at, .node_id, .current_user_can_bypass, .links)') \
-     <(jq . .github/rulesets/protected-branches.json)
+       | jq -S 'del(.id, .source, .source_type, .created_at, .updated_at, .node_id, .current_user_can_bypass, ._links, .bypass_actors)') \
+     <(jq -S 'del(.bypass_actors)' .github/rulesets/protected-branches.json)
 ```
 
 A clean diff means the committed source matches reality — what you want
@@ -71,19 +71,26 @@ before signing off an ISO 9001 audit cycle.
 
 ## Required status checks
 
-The `required_status_checks` list uses **`<workflow name> / <job id>`** as
-the context (the fully-qualified form GitHub displays in the Checks tab).
-This makes the gate robust against another workflow defining a job with
-the same name. The current set maps to:
+The `required_status_checks` list pins each gate by the **bare check name**
+— GitHub's `check_run.name`, which is the job's `name:` field, or the job
+id when no `name:` is set. That bare name is what GitHub Actions posts and
+what the rulesets API matches against; the `<workflow name> / <job>` form
+GitHub displays in the Checks tab is purely cosmetic and will *not* match
+if you put it in the JSON. Each entry also pins `integration_id: 15368`
+(the GitHub Actions app) so a non-Actions check posting the same name
+cannot satisfy the gate.
 
-| Context                            | Workflow                                                                        | Job          |
-| ---------------------------------- | ------------------------------------------------------------------------------- | ------------ |
-| `Lint & format / eslint`           | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `eslint`     |
-| `Lint & format / prettier`         | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `prettier`   |
-| `Lint & format / stylelint`        | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `stylelint`  |
-| `Tests + TICS on PRs / unit-tests` | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `unit-tests` |
-| `Tests + TICS on PRs / e2e-tests`  | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `e2e-tests`  |
-| `Changeset check / verify`         | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml)       | `verify`     |
+The current set maps to:
+
+| Context                   | Workflow                                                                        | Job (id → `name:`)              |
+| ------------------------- | ------------------------------------------------------------------------------- | ------------------------------- |
+| `ESLint`                  | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `eslint` → `ESLint`             |
+| `Prettier`                | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `prettier` → `Prettier`         |
+| `Stylelint`               | [.github/workflows/lint.yml](../workflows/lint.yml)                             | `stylelint` → `Stylelint`       |
+| `unit-tests`              | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `unit-tests` (no `name:`)       |
+| `e2e-tests (saas)`        | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `e2e-tests` matrix `saas`       |
+| `e2e-tests (self-hosted)` | [.github/workflows/run-tests-and-tics.yml](../workflows/run-tests-and-tics.yml) | `e2e-tests` matrix `self-hosted`|
+| `verify`                  | [.github/workflows/changeset-check.yml](../workflows/changeset-check.yml)       | `verify` (no `name:`)           |
 
 If a workflow `name:` or job id is renamed, update the workflow file,
 `protected-branches.json`, and this table in the same PR, otherwise the

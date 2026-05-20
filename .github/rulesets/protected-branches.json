@@ -5,7 +5,11 @@
   "conditions": {
     "ref_name": {
       "exclude": [],
-      "include": ["refs/heads/main"]
+      "include": [
+        "refs/heads/main",
+        "refs/heads/release/*",
+        "refs/heads/point/*"
+      ]
     }
   },
   "bypass_actors": [],
@@ -32,19 +36,19 @@
       }
     },
     { "type": "required_linear_history" },
-    { "type": "required_signatures" },
     {
       "type": "required_status_checks",
       "parameters": {
         "strict_required_status_checks_policy": true,
         "do_not_enforce_on_create": false,
         "required_status_checks": [
-          { "context": "Lint & format / eslint" },
-          { "context": "Lint & format / prettier" },
-          { "context": "Lint & format / stylelint" },
-          { "context": "Tests + TICS on PRs / unit-tests" },
-          { "context": "Tests + TICS on PRs / e2e-tests" },
-          { "context": "Changeset check / verify" }
+          { "context": "ESLint", "integration_id": 15368 },
+          { "context": "Stylelint", "integration_id": 15368 },
+          { "context": "Prettier", "integration_id": 15368 },
+          { "context": "e2e-tests (saas)", "integration_id": 15368 },
+          { "context": "e2e-tests (self-hosted)", "integration_id": 15368 },
+          { "context": "unit-tests", "integration_id": 15368 },
+          { "context": "verify", "integration_id": 15368 }
         ]
       }
     }

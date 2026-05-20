@@ -6,7 +6,7 @@ name: Changeset check
 
 on:
   pull_request:
-    branches: [main, "release/**"]
+    branches: [main, "release/*", "point/*"]
 
 jobs:
   verify:
