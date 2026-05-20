@@ -190,7 +190,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
       {(action !== "downgrade" || downgradeOptions.length > 1) && (
         <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
+          submitButtonLoading={formik.isSubmitting}
           submitButtonText={INSTALLED_PACKAGE_ACTIONS[action].label}
           submitButtonAppearance={INSTALLED_PACKAGE_ACTIONS[action].appearance}
         />

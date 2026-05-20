@@ -185,7 +185,6 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={formik.isSubmitting || isPublishingPublication}
         submitButtonText="Publish mirror"
         onCancel={popSidePathUntilClear}

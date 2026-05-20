@@ -151,7 +151,6 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
           mode === "create" ? "Add saved search" : "Save changes"
         }
         submitButtonLoading={formik.isSubmitting}
-        submitButtonDisabled={formik.isSubmitting}
         hasBackButton={Boolean(onBackButtonPress)}
         onBackButtonPress={onBackButtonPress}
       />

@@ -204,7 +204,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
         submitButtonAppearance={
           type === EditSnapType.Uninstall ? "negative" : "positive"
         }
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );

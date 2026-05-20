@@ -4,7 +4,6 @@ import type { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
 import classes from "./SidePanelFormButtons.module.scss";
 
 interface SidePanelFormButtonsProps {
-  readonly submitButtonDisabled?: boolean;
   readonly submitButtonText?: string;
   readonly submitButtonAppearance?: "positive" | "negative" | "secondary";
   readonly submitButtonAriaLabel?: string;
@@ -25,7 +24,6 @@ interface SidePanelFormButtonsProps {
 const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   hasActionButtons = true,
   hasBackButton,
-  submitButtonDisabled,
   submitButtonLoading = false,
   submitButtonText,
   submitButtonAriaLabel,
@@ -79,7 +77,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
             type={onSubmit ? "button" : "submit"}
             onClick={onSubmit}
             appearance={submitButtonAppearance}
-            disabled={submitButtonDisabled || submitButtonLoading}
+            disabled={submitButtonLoading}
             aria-label={submitButtonAriaLabel}
             loading={submitButtonLoading}
           >
