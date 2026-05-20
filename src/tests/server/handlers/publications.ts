@@ -7,7 +7,7 @@ import {
   getDebArchivePaginatedResponse,
   getDebArchivePaginationParams,
 } from "./_helpers";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import type {
   Publication,
   PublishPublicationResponse,
@@ -137,7 +137,7 @@ export default [
       endpointStatus.status === "error" &&
       matchesPublicationsPath(endpointStatus.path)
     ) {
-      return ENDPOINT_STATUS_API_ERROR;
+      throw createEndpointStatusError();
     }
 
     if (
@@ -160,7 +160,7 @@ export default [
       endpointStatus.status === "error" &&
       matchesPublicationsPath(endpointStatus.path)
     ) {
-      return ENDPOINT_STATUS_API_ERROR;
+      throw createEndpointStatusError();
     }
 
     return getCreatePublicationResponse(request);
@@ -175,7 +175,7 @@ export default [
         endpointStatus.status === "error" &&
         matchesPublicationsPath(endpointStatus.path)
       ) {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
 
       return getPublicationDetailsResponse(params.publicationName as string);
@@ -189,7 +189,7 @@ export default [
       endpointStatus.status === "error" &&
       matchesPublicationsPath(endpointStatus.path)
     ) {
-      return ENDPOINT_STATUS_API_ERROR;
+      throw createEndpointStatusError();
     }
 
     return getDeletePublicationResponse();
@@ -202,7 +202,7 @@ export default [
       endpointStatus.status === "error" &&
       matchesPublicationsPath(endpointStatus.path)
     ) {
-      return ENDPOINT_STATUS_API_ERROR;
+      throw createEndpointStatusError();
     }
 
     return getPublishPublicationResponse();

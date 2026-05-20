@@ -3,7 +3,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { mirrors as mockMirrors } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import type {
   DeleteMirrorResponse,
   ListMirrorPackagesResponse,
@@ -66,7 +66,7 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "mirrors"
     ) {
-      return ENDPOINT_STATUS_API_ERROR;
+      throw createEndpointStatusError();
     }
 
     if (
@@ -119,7 +119,7 @@ export default [
         endpointStatus.status === "error" &&
         endpointStatus.path === "mirrors/:mirrorId/packages"
       ) {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
 
       if (
@@ -156,7 +156,7 @@ export default [
         endpointStatus.status === "error" &&
         endpointStatus.path === "mirrors/:mirrorId"
       ) {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
 
       const mirrorIndex = mirrors.findIndex(

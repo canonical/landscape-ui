@@ -6,7 +6,7 @@ import type {
   BatchGetPublicationTargetsResponse,
 } from "@canonical/landscape-openapi";
 import { http, HttpResponse, type StrictResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import {
   getDebArchivePaginatedResponse,
   getDebArchivePaginationParams,
@@ -108,7 +108,7 @@ export default [
       endpointStatus.status === "error" &&
       endpointStatus.path === "publicationTargets"
     ) {
-      return ENDPOINT_STATUS_API_ERROR;
+      throw createEndpointStatusError();
     }
 
     if (
