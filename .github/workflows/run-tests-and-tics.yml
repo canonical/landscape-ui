@@ -18,11 +18,9 @@ jobs:
           - target: saas
             self_hosted_env: "false"
             msw_enabled: "false"
-            build_script: "build:e2e.saas"
           - target: self-hosted
             self_hosted_env: "true"
             msw_enabled: "false"
-            build_script: "build:e2e.selfHosted"
     env:
       VITE_API_URL: ${{ vars.API_URL }}
       VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
@@ -58,7 +56,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build the project
-        run: pnpm run ${{ matrix.build_script }}
+        run: pnpm run build:e2e
         env:
           VITE_ROOT_PATH: /
           VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
