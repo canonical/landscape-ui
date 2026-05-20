@@ -63,6 +63,11 @@ describe("EditAdministratorForm", () => {
 
     await user.click(saveButton);
 
+    expect(await screen.findByText(/no changes to save/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/update the administrator roles before saving\./i),
+    ).toBeInTheDocument();
+
     expect(
       screen.queryByText(/permission changes have been queued/i),
     ).not.toBeInTheDocument();

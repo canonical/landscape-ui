@@ -1,4 +1,3 @@
-import { setEndpointStatus } from "@/tests/controllers/controller";
 import { packageProfiles } from "@/tests/mocks/package-profiles";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
@@ -61,18 +60,15 @@ describe("PackageProfileConstraintsAddForm", () => {
   });
 
   it("shows errors", async () => {
-    setEndpointStatus("error");
-
     renderForm();
 
     const submitButton = screen.getByRole("button", {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
 
-    await fillValidConstraint();
     expect(submitButton).toBeEnabled();
     await user.click(submitButton);
 
-    // Removed assertion on API error notification to match contract
+    expect(await screen.findAllByText("Required.")).toHaveLength(2);
   });
 });

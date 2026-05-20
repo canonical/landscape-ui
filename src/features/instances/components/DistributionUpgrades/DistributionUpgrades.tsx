@@ -193,7 +193,13 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   }
 
   return (
-    <Form noValidate onSubmit={openModal}>
+    <Form
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleOpenModal();
+      }}
+    >
       <Notification severity="caution" title="Warning">
         When upgrading distributions, misbehaved packages may require user input
         which can cause the upgrade to fail. Test the upgrade on a test system

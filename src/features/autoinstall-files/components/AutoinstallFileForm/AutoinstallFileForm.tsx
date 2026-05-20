@@ -91,6 +91,21 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (file) => {
+      if (!IS_CREATING) {
+        const isUnchanged =
+          file.contents === formik.initialValues.contents &&
+          file.filename === formik.initialValues.filename &&
+          file.is_default === formik.initialValues.is_default;
+
+        if (isUnchanged) {
+          notify.info({
+            title: "No changes to save",
+            message: "Update the file before saving.",
+          });
+          return;
+        }
+      }
+
       try {
         await validateAutoinstallFile({
           contents: file.contents,

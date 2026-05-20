@@ -7,6 +7,7 @@ import { INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstances } from "@/features/instances";
 import { ScriptDropdown } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
+import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
@@ -20,7 +21,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { type ComponentProps, type FC } from "react";
+import { type ComponentProps, type FC, useRef } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -63,9 +64,12 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   submitting = false,
 }) => {
   const debug = useDebug();
+  const { notify } = useNotify();
   const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
+
+  const isAssociationLimitReachedRef = useRef(false);
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -110,6 +114,14 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
 
     onSubmit: async (values) => {
       if (!values.trigger_type || values.script_id == undefined) {
+        return;
+      }
+
+      if (isAssociationLimitReachedRef.current) {
+        notify.error({
+          title: "Association limit reached",
+          message: `Decrease the number of associated instances below the limit of ${scriptProfileLimits?.max_num_computers} before saving.`,
+        });
         return;
       }
 
@@ -185,6 +197,11 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     limit: 1,
   });
 
+  const isAssociationLimitReached =
+    (instancesCount ?? 0) >= (scriptProfileLimits?.max_num_computers ?? Infinity);
+
+  isAssociationLimitReachedRef.current = isAssociationLimitReached;
+
   if (isGettingScriptProfileLimits) {
     return <LoadingState />;
   }
@@ -192,9 +209,6 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   if (!scriptProfileLimits) {
     return;
   }
-
-  const isAssociationLimitReached =
-    (instancesCount ?? 0) >= scriptProfileLimits.max_num_computers;
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
