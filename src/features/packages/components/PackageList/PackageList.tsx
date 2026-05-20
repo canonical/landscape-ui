@@ -19,6 +19,7 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const PackageDetails = lazy(async () => import("../PackageDetails"));
 
@@ -189,19 +190,20 @@ const PackageList: FC<PackageListProps> = ({
         Header: "Current version",
       },
       {
+        accessor: "available_version",
+        Header: "Available version",
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
+          original.available_version &&
+          original.available_version !== original.current_version
+            ? original.available_version
+            : NO_DATA_TEXT,
+      },
+      {
         accessor: "summary",
         className: classes.details,
         Header: "Details",
         Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
-          original.available_version ? (
-            <>
-              <span>{original.summary}</span>
-              <br />
-              <span>{`available version: ${original.available_version}`}</span>
-            </>
-          ) : (
-            original.summary
-          ),
+          original.summary,
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
