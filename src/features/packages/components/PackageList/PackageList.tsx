@@ -202,6 +202,8 @@ const PackageList: FC<PackageListProps> = ({
       {
         accessor: "current_version",
         Header: "Current version",
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
+          original.current_version || NO_DATA_TEXT,
       },
       {
         accessor: "available_version",
