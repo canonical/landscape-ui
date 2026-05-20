@@ -132,4 +132,79 @@ test.describe("preferences mutation round-trip (real backend)", () => {
       { timeout: 15_000 },
     );
   });
+
+  test("switches organization from sidebar and sends selected account identifier", async ({
+    page,
+  }) => {
+    await page.goto("/settings/general");
+    await expect(page.getByRole("main")).toBeVisible();
+
+    const organizationSelect = page.getByRole("combobox", {
+      name: /organization/i,
+    });
+
+    // Navigation can render collapsed on smaller widths; open it when needed.
+    if (!(await organizationSelect.isVisible())) {
+      await page.getByRole("button", { name: "Menu" }).click();
+    }
+
+    await expect(organizationSelect).toBeVisible();
+
+    const options = organizationSelect.locator("option");
+    const optionCount = await options.count();
+    expect(
+      optionCount,
+      "Need at least two organizations/accounts to verify switching behavior",
+    ).toBeGreaterThan(1);
+
+    const currentValue = await organizationSelect.inputValue();
+    let nextValue = "";
+
+    for (let index = 0; index < optionCount; index += 1) {
+      const candidate = await options.nth(index).getAttribute("value");
+      if (candidate && candidate !== currentValue) {
+        nextValue = candidate;
+        break;
+      }
+    }
+
+    expect(
+      nextValue,
+      "Could not determine an alternate organization/account option",
+    ).not.toBe("");
+
+    const switchAccountRequestPromise = page.waitForRequest(
+      (request) =>
+        request.method() === "POST" &&
+        request.url().includes("/api/v2/switch-account"),
+    );
+
+    await organizationSelect.selectOption(nextValue);
+
+    await expect(organizationSelect).toHaveValue(nextValue);
+
+    const switchAccountRequest = await switchAccountRequestPromise;
+
+    let payload: Record<string, unknown> = {};
+    try {
+      payload = switchAccountRequest.postDataJSON() as Record<string, unknown>;
+    } catch {
+      payload = JSON.parse(switchAccountRequest.postData() ?? "{}") as Record<
+        string,
+        unknown
+      >;
+    }
+
+    const selectedIdentifier =
+      payload.account_name ??
+      payload.accountName ??
+      payload.account ??
+      payload.organization ??
+      payload.organisation;
+
+    expect(
+      selectedIdentifier,
+      "Switch-account payload must include the selected organization/account identifier",
+    ).toBe(nextValue);
+  });
 });

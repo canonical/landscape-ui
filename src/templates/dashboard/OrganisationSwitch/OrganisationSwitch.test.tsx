@@ -88,7 +88,6 @@ describe("OrganisationSwitch", () => {
       expect(select).toHaveValue(defaultAccounts.currentAccount.name);
     });
 
-    // only tests function call, TODO check UI change after account switch as well
     it("should change the organisation and close side panel", async () => {
       await userEvent.selectOptions(
         screen.getByRole("combobox"),
