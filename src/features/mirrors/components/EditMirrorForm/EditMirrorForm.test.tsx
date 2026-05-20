@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { expectLoadingState } from "@/tests/helpers";
-import { afterEach, expect } from "vitest";
+import { afterEach, assert, expect } from "vitest";
 import { EditMirrorForm } from "../..";
 import { mirrors } from "@/tests/mocks/mirrors";
 import {

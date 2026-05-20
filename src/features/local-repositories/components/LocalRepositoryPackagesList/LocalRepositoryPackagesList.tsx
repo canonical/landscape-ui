@@ -37,7 +37,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
       {
         Header: header,
         meta: {
-          ariaLabel: header,
+          ariaLabel: ({ name }: LocalPackage) => `${header}: ${name}`,
         },
         Cell: ({
           row: {
