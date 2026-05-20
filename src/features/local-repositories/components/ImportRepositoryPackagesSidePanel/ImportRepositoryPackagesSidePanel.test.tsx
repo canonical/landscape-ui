@@ -45,7 +45,16 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = await screen.findByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).toBeEnabled();
+
+    await user.click(importButton);
+
+    expect(
+      await screen.findByText(/this field is required/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/you have marked .* to import packages/i),
+    ).not.toBeInTheDocument();
   });
 
   it("enables Fetch packages button when source URL is provided", async () => {
@@ -116,7 +125,14 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).toBeEnabled();
+
+    await user.click(importButton);
+    expect(
+      await screen.findByText(
+        /fetch packages and resolve validation results before importing/i,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("shows negative notification when no packages are available", async () => {
@@ -137,7 +153,14 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).toBeEnabled();
+
+    await user.click(importButton);
+    expect(
+      await screen.findByText(
+        /fetch packages and resolve validation results before importing/i,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("submits the form and shows success notification", async () => {
