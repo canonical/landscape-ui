@@ -1,27 +1,34 @@
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import LocalRepositoryPackagesList from "./LocalRepositoryPackagesList";
-import { paginatedPackages } from "@/tests/mocks/localRepositories";
+import {
+  paginatedPackages,
+  sortedPackages,
+} from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-const singlePagePackages = paginatedPackages.slice(0, 10);
-
 describe("LocalRepositoryPackagesList", () => {
-  it("renders table with default column header", async () => {
+  it("renders table with default column header and paginated data", async () => {
     renderWithProviders(
-      <LocalRepositoryPackagesList packages={singlePagePackages} />,
+      <LocalRepositoryPackagesList packages={paginatedPackages} />,
     );
 
     expect(
       await screen.findByRole("columnheader", { name: "Package name" }),
     ).toBeInTheDocument();
+
+    for (const pkg of sortedPackages.slice(0, 10)) {
+      expect(await screen.findByText(pkg)).toBeInTheDocument();
+    }
+
+    expect(await screen.findByText(/page 1 of 3/i)).toBeInTheDocument();
   });
 
   it("renders custom header when provided", async () => {
     renderWithProviders(
       <LocalRepositoryPackagesList
-        packages={singlePagePackages}
+        packages={paginatedPackages}
         header="Packages to import"
       />,
     );
@@ -29,15 +36,6 @@ describe("LocalRepositoryPackagesList", () => {
     expect(
       await screen.findByRole("columnheader", { name: "Packages to import" }),
     ).toBeInTheDocument();
-  });
-
-  it("renders package names in table rows", async () => {
-    renderWithProviders(
-      <LocalRepositoryPackagesList packages={singlePagePackages} />,
-    );
-
-    expect(await screen.findByText("package-1")).toBeInTheDocument();
-    expect(screen.getByText("package-2")).toBeInTheDocument();
   });
 
   it("renders empty message when no packages", async () => {
@@ -48,28 +46,22 @@ describe("LocalRepositoryPackagesList", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders pagination info if more than 1 page", async () => {
-    renderWithProviders(
-      <LocalRepositoryPackagesList packages={paginatedPackages} />,
-    );
-
-    expect(await screen.findByText(/page 1 of 3/i)).toBeInTheDocument();
-  });
-
   it("navigates to next page on click", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <LocalRepositoryPackagesList packages={paginatedPackages} />,
     );
 
-    await screen.findByText("package-1");
-    expect(screen.queryByText("package-11")).not.toBeInTheDocument();
+    assert(sortedPackages[0]);
+    assert(sortedPackages[10]);
+    await screen.findByText(sortedPackages[0]);
+    expect(screen.queryByText(sortedPackages[10])).not.toBeInTheDocument();
 
     const nextButton = screen.getByRole("button", { name: /next/i });
     await user.click(nextButton);
 
-    expect(screen.getByText("package-11")).toBeInTheDocument();
-    expect(screen.queryByText("package-1")).not.toBeInTheDocument();
+    expect(screen.getByText(sortedPackages[10])).toBeInTheDocument();
+    expect(screen.queryByText(sortedPackages[0])).not.toBeInTheDocument();
   });
 
   it("navigates to previous page on click", async () => {
@@ -78,16 +70,18 @@ describe("LocalRepositoryPackagesList", () => {
       <LocalRepositoryPackagesList packages={paginatedPackages} />,
     );
 
-    await screen.findByText("package-1");
+    assert(sortedPackages[0]);
+    assert(sortedPackages[10]);
+    await screen.findByText(sortedPackages[0]);
 
     const nextButton = screen.getByRole("button", { name: /next/i });
     await user.click(nextButton);
 
-    expect(screen.getByText("package-11")).toBeInTheDocument();
+    expect(screen.getByText(sortedPackages[10])).toBeInTheDocument();
 
     const prevButton = screen.getByRole("button", { name: /previous/i });
     await user.click(prevButton);
 
-    expect(screen.getByText("package-1")).toBeInTheDocument();
+    expect(screen.getByText(sortedPackages[0])).toBeInTheDocument();
   });
 });
