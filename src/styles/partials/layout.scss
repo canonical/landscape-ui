@@ -23,6 +23,10 @@
   }
 }
 
+.l-application {
+  overflow-x: hidden;
+}
+
 .l-navigation-bar {
   @media (width >= 620px) {
     width: 3rem;
