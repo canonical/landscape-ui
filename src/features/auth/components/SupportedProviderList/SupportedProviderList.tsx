@@ -1,28 +1,23 @@
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { useAuthHandle } from "../../hooks";
 import type { SupportedIdentityProvider } from "../../types";
 import classes from "./SupportedProviderList.module.scss";
 import { getProviderIcon } from "../../helpers";
 
-const ProviderForm = lazy(async () => import("../ProviderForm"));
-
 const SupportedProviderList: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { sidePath, setPageParams } = usePageParams();
   const { getSupportedProvidersQuery } = useAuthHandle();
 
   const { data: globalProviderList, isLoading } = getSupportedProvidersQuery();
 
   const handleIdentityProviderAdd = (provider: SupportedIdentityProvider) => {
-    setSidePanelContent(
-      `Add ${provider.provider_label} identity provider`,
-      <Suspense fallback={<LoadingState />}>
-        <ProviderForm action="add" provider={provider} />
-      </Suspense>,
-    );
+    setPageParams({
+      sidePath: [...sidePath, "add"],
+      name: provider.provider_slug,
+    });
   };
 
   return (

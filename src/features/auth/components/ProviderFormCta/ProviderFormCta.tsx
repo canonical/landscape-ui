@@ -1,27 +1,14 @@
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { Button, Icon } from "@canonical/react-components";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import classes from "./ProviderFormCta.module.scss";
-
-const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
 
 interface ProviderFormCtaProps {
   readonly action: "add" | "edit";
 }
 
 const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action }) => {
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
-
-  const handleBack = () => {
-    setSidePanelContent(
-      "Choose an identity provider",
-      <Suspense fallback={<LoadingState />}>
-        <SupportedProviderList />
-      </Suspense>,
-    );
-  };
+  const { popSidePathUntilClear } = usePageParams();
 
   return (
     <div className={classes.container}>
@@ -29,7 +16,7 @@ const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action }) => {
         <Button
           type="button"
           hasIcon
-          onClick={handleBack}
+          onClick={popSidePathUntilClear}
           className={classes.backButton}
         >
           <Icon name="chevron-up" className={classes.chevronIcon} />
@@ -39,7 +26,7 @@ const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action }) => {
 
       <Button
         type="button"
-        onClick={closeSidePanel}
+        onClick={popSidePathUntilClear}
         appearance="base"
         className="u-no-margin--bottom"
       >

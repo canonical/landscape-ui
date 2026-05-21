@@ -1,16 +1,12 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import { ConfirmationModal, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useAuthHandle } from "../../hooks";
 import type { IdentityProvider } from "../../types";
-
-const ProviderForm = lazy(async () => import("../ProviderForm"));
 
 interface ProviderListActionsProps {
   readonly canBeDisabled: boolean;
@@ -18,10 +14,9 @@ interface ProviderListActionsProps {
 }
 
 const ProviderListActions: FC<ProviderListActionsProps> = ({
-  canBeDisabled,
   provider,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const debug = useDebug();
 
   const { deleteProviderQuery } = useAuthHandle();
@@ -36,16 +31,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
     deleteProviderQuery;
 
   const handleIdentityProviderEdit = () => {
-    setSidePanelContent(
-      `Edit ${provider.name} provider`,
-      <Suspense fallback={<LoadingState />}>
-        <ProviderForm
-          action="edit"
-          canBeDisabled={canBeDisabled}
-          provider={provider}
-        />
-      </Suspense>,
-    );
+    setPageParams({ sidePath: ["edit"], name: String(provider.id) });
   };
 
   const handleProviderDelete = async () => {

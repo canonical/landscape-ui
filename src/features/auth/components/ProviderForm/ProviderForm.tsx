@@ -1,6 +1,6 @@
 import CheckboxGroup from "@/components/form/CheckboxGroup";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import {
   Button,
   Form,
@@ -43,7 +43,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
 
   const [, copy] = useCopyToClipboard();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const {
     getSingleProviderQuery,
     addProviderQuery,

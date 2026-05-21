@@ -1,23 +1,10 @@
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
-
-const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
+import usePageParams from "@/hooks/usePageParams";
 
 const ProvidersEmptyState: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
-
-  const handleIdentityProviderAdd = () => {
-    setSidePanelContent(
-      "Choose an identity provider",
-      <Suspense fallback={<LoadingState />}>
-        <SupportedProviderList />
-      </Suspense>,
-    );
-  };
+  const { createSidePathPusher } = usePageParams();
 
   return (
     <EmptyState
@@ -39,7 +26,7 @@ const ProvidersEmptyState: FC = () => {
         <Button
           appearance="positive"
           key="table-add-new-mirror"
-          onClick={handleIdentityProviderAdd}
+          onClick={createSidePathPusher("choose")}
           type="button"
         >
           Add identity provider
