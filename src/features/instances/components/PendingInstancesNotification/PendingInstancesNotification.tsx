@@ -1,19 +1,14 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useGetPendingInstances } from "../../api";
 import classes from "./PendingInstancesNotification.module.scss";
 
-const PendingInstanceList = lazy(
-  async () => import("@/pages/dashboard/instances/PendingInstancesForm"),
-);
-
 const PendingInstancesNotification: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const { pendingInstances } = useGetPendingInstances();
 
@@ -23,15 +18,7 @@ const PendingInstancesNotification: FC = () => {
     return null;
   }
 
-  const handlePendingInstancesReview = () => {
-    setSidePanelContent(
-      "Review Pending Instances",
-      <Suspense fallback={<LoadingState />}>
-        <PendingInstanceList instances={pendingInstances} />
-      </Suspense>,
-      "large",
-    );
-  };
+  const handlePendingInstancesReview = createSidePathPusher("review-pending-instances");
 
   return (
     <Notification

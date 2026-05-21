@@ -3,7 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { useGetProfileChanges, useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { pluralizeArray } from "@/utils/_helpers";
 import {
@@ -45,9 +45,9 @@ export const computeNewTags = (
 };
 
 const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
-  const debug = useDebug();
+  const { popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const debug = useDebug();
 
   const { addTagsToInstances, isAddingTagsToInstances } =
     useAddTagsToInstances();
@@ -80,7 +80,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
         tags: selectedTags,
       });
 
-      closeSidePanel();
+      popSidePathUntilClear();
 
       notify.success({
         title: "Tags assigned",

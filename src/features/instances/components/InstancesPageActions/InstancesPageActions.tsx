@@ -1,10 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
-import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import {
   hasOneItem,
@@ -12,34 +11,13 @@ import {
   pluralizeWithCount,
 } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
-import { lazy, memo, Suspense } from "react";
+import { memo } from "react";
 import { useBoolean } from "usehooks-ts";
 import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-
-const RunInstanceScriptForm = lazy(
-  async () => import("@/features/scripts/components/RunInstanceScriptForm"),
-);
-const Upgrades = lazy(
-  async () => import("@/features/upgrades/components/Upgrades"),
-);
-const ReportView = lazy(
-  async () => import("@/pages/dashboard/instances/ReportView"),
-);
-const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
-const DistributionUpgrades = lazy(
-  async () => import("../DistributionUpgrades"),
-);
-const TagsAddForm = lazy(async () => import("../TagsAddForm"));
-const AttachTokenForm = lazy(
-  async () => import("@/features/ubuntupro/components/AttachTokenForm"),
-);
-const ReplaceTokenForm = lazy(
-  async () => import("@/features/ubuntupro/components/ReplaceTokenForm"),
-);
 
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
@@ -51,7 +29,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   selectedInstances,
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const {
     value: rebootModalOpen,
@@ -77,119 +55,14 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setFalse: closeRemoveModal,
   } = useBoolean();
 
-  const createInstanceCountString = (instances: Instance[]) => {
-    return (
-      <PluralizeWithBoldCount count={instances.length} singular="instance" />
-    );
-  };
-
-  const handleRunScript = async () => {
-    setSidePanelContent(
-      "Run script",
-      <Suspense fallback={<LoadingState />}>
-        {selectedInstances.some(
-          (instance) => !getFeatures(instance).scripts,
-        ) ? (
-          <div className={classes.warning}>
-            <p>
-              You selected {selectedInstances.length} instances. This script
-              will:
-            </p>
-
-            <ul>
-              <li>
-                run on{" "}
-                {createInstanceCountString(
-                  selectedInstances.filter(
-                    (instance) => getFeatures(instance).scripts,
-                  ),
-                )}
-              </li>
-              <li>
-                not run on{" "}
-                {createInstanceCountString(
-                  selectedInstances.filter(
-                    (instance) => !getFeatures(instance).scripts,
-                  ),
-                )}
-              </li>
-            </ul>
-          </div>
-        ) : null}
-        <RunInstanceScriptForm
-          query={selectedInstances.map(({ id }) => `id:${id}`).join(" OR ")}
-        />
-      </Suspense>,
-    );
-  };
-
-  const handleUpgradesRequest = () => {
-    setSidePanelContent(
-      "Upgrades",
-      <Suspense fallback={<LoadingState />}>
-        <Upgrades selectedInstances={selectedInstances} />
-      </Suspense>,
-      "large",
-    );
-  };
-
-  const handleDistributionUpgradesRequest = () => {
-    setSidePanelContent(
-      "Upgrade distributions",
-      <Suspense fallback={<LoadingState />}>
-        <DistributionUpgrades
-          selectedInstances={selectedInstances.map(({ id }) => id)}
-        />
-      </Suspense>,
-      "medium",
-    );
-  };
-
-  const handleReportView = () => {
-    setSidePanelContent(
-      `Report for ${pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}`,
-      <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
-      </Suspense>,
-      "medium",
-    );
-  };
-
-  const handleAccessGroupChange = () => {
-    setSidePanelContent(
-      "Assign access group",
-      <Suspense fallback={<LoadingState />}>
-        <AccessGroupChange selected={selectedInstances} />
-      </Suspense>,
-    );
-  };
-
-  const handleTagsAssign = () => {
-    setSidePanelContent(
-      "Assign tags",
-      <Suspense fallback={<LoadingState />}>
-        <TagsAddForm selected={selectedInstances} />
-      </Suspense>,
-    );
-  };
-
-  const handleAttachToken = () => {
-    setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralizeWithCount(selectedInstances.length, "instance")}`,
-      <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={selectedInstances} />
-      </Suspense>,
-    );
-  };
-
-  const handleReplaceToken = () => {
-    setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralizeWithCount(selectedInstances.length, "instance")}`,
-      <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={selectedInstances} />
-      </Suspense>,
-    );
-  };
+  const handleRunScript = createSidePathPusher("run-script");
+  const handleUpgradesRequest = createSidePathPusher("upgrades");
+  const handleDistributionUpgradesRequest = createSidePathPusher("distribution-upgrades");
+  const handleReportView = createSidePathPusher("report-view");
+  const handleAccessGroupChange = createSidePathPusher("access-group-change");
+  const handleTagsAssign = createSidePathPusher("tags-assign");
+  const handleAttachToken = createSidePathPusher("attach-token");
+  const handleReplaceToken = createSidePathPusher("replace-token");
 
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>

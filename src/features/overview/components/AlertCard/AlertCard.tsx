@@ -4,7 +4,7 @@ import {
   useGetPendingInstances,
   type Status,
 } from "@/features/instances";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -25,7 +25,7 @@ const AlertCard: FC<Status> = ({
   label,
   query,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const isPendingComputersAlert = alertType === "PendingComputersAlert";
 
@@ -63,15 +63,7 @@ const AlertCard: FC<Status> = ({
     ? pendingInstancesError
     : isErrorInstancesWithAlert;
 
-  const handlePendingInstancesReview = () => {
-    setSidePanelContent(
-      "Review Pending Instances",
-      <Suspense fallback={<LoadingState />}>
-        <PendingInstancesForm instances={pendingInstances} />
-      </Suspense>,
-      "large",
-    );
-  };
+  const handlePendingInstancesReview = createSidePathPusher("review-pending-instances");
 
   return (
     <div className={classes.container}>

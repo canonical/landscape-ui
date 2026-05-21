@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { PendingInstance } from "@/types/Instance";
 import { pluralizeWithCount } from "@/utils/_helpers";
@@ -25,17 +25,9 @@ const AlertNotificationsList: FC<AlertNotificationsListProps> = ({
   alerts,
   pendingInstances,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
-  const handlePendingInstancesReview = () => {
-    setSidePanelContent(
-      "Review Pending Instances",
-      <Suspense fallback={<LoadingState />}>
-        <PendingInstancesForm instances={pendingInstances} />
-      </Suspense>,
-      "large",
-    );
-  };
+  const handlePendingInstancesReview = createSidePathPusher("review-pending-instances");
 
   const listItems = alerts.map((alert, index) => {
     const alertStatus = getAlertStatus(alert.alert_type);

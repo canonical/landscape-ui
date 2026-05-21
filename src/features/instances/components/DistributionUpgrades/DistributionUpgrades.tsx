@@ -3,7 +3,7 @@ import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { useCreateDistributionUpgrades } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
 import {
   Button,
@@ -32,26 +32,25 @@ export interface DistributionUpgradesProps {
 const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   selectedInstances,
 }) => {
+  const { popSidePathUntilClear } = usePageParams();
+  const { notify } = useNotify();
+  const debug = useDebug();
+  const openActivityDetails = useOpenActivityDetailsPanel();
   const {
     value: showConfirmModal,
     setTrue: openModal,
     setFalse: closeModal,
   } = useBoolean(false);
 
+  const [deselectedDistributions, setDeselectedDistributions] = useState<
+    string[]
+  >([]);
+
   const [viewedCategory, setViewedCategory] = useState<{
     title: string;
     instances: InstanceModalRow[];
     isIneligibleCategory: boolean;
   } | null>(null);
-
-  const [deselectedDistributions, setDeselectedDistributions] = useState<
-    string[]
-  >([]);
-
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
-  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { isGettingDistributionUpgradeTargets, eligibleIds, tableData } =
     useDistributionUpgradesTableData(selectedInstances);
@@ -81,7 +80,7 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
       });
 
       closeModal();
-      closeSidePanel();
+      popSidePathUntilClear();
 
       notify.success({
         title: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} queued`,
@@ -118,9 +117,9 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
           return (
             <div
               className={classNames(classes.statusCell, {
-                [classes.parentStatusCell]: isParent,
-                [classes.childStatusCell]: !isParent && !distributionKey,
-                [classes.childStatusCheckboxCell]: !isParent && distributionKey,
+                [classes.parentStatusCell as string]: isParent,
+                [classes.childStatusCell as string]: !isParent && !distributionKey,
+                [classes.childStatusCheckboxCell as string]: !isParent && distributionKey,
               })}
             >
               {isParent && row.original.iconClass && (

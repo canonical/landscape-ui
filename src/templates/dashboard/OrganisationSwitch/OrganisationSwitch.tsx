@@ -2,7 +2,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import { useAuthHandle } from "@/features/auth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { ChangeEvent } from "react";
@@ -12,7 +12,7 @@ const OrganisationSwitch = () => {
   const { isOnSubdomain, options, handleAccountSwitch, currentAccount } =
     useAuthAccounts();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePathUntilClear } = usePageParams();
   const { switchAccountQuery } = useAuthHandle();
 
   if (isOnSubdomain || options.length === 1) {
@@ -39,7 +39,7 @@ const OrganisationSwitch = () => {
 
       handleAccountSwitch(data.token, account_name);
 
-      closeSidePanel();
+      popSidePathUntilClear();
     } catch (error) {
       debug(error);
     }
