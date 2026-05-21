@@ -6,7 +6,15 @@ import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Link, useParams } from "react-router";
 import type { CellProps, Column } from "react-table";
 import type { InstancePackage } from "../../types";
@@ -19,6 +27,7 @@ import {
   isUbuntuProRequired,
 } from "./helpers";
 import classes from "./PackageList.module.scss";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const PackageDetails = lazy(async () => import("../PackageDetails"));
 
@@ -39,7 +48,7 @@ const PackageList: FC<PackageListProps> = ({
   selectedPackages,
   selectAll,
 }) => {
-  const [selectedByTabState, setSelectedByTabState] = useState(false);
+  const selectedByTabRef = useRef(false);
   const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
   const { instanceId, childInstanceId } = useParams<UrlParams>();
@@ -53,39 +62,45 @@ const PackageList: FC<PackageListProps> = ({
     return [LOADING_PACKAGE];
   }, [packages, packagesLoading]);
 
-  const handleSelectPackage = (pkg: InstancePackage) => {
-    onPackagesSelect(
-      selectedPackages.some(({ name }) => name === pkg.name)
-        ? selectedPackages.filter(({ name }) => name !== pkg.name)
-        : [...selectedPackages, pkg],
-    );
-  };
+  const handleSelectPackage = useCallback(
+    (pkg: InstancePackage) => {
+      onPackagesSelect(
+        selectedPackages.some(({ name }) => name === pkg.name)
+          ? selectedPackages.filter(({ name }) => name !== pkg.name)
+          : [...selectedPackages, pkg],
+      );
+    },
+    [onPackagesSelect, selectedPackages],
+  );
 
-  const handleToggleAllPackages = () => {
+  const handleToggleAllPackages = useCallback(() => {
     onPackagesSelect(
       selectedPackages.length > 0
         ? []
         : packages.filter((pkg) => !isUbuntuProRequired(pkg)),
     );
-  };
+  }, [onPackagesSelect, packages, selectedPackages.length]);
 
   useEffect(() => {
-    if (!selectAll || selectedByTabState || !packages.length) {
+    if (!selectAll || selectedByTabRef.current || !packages.length) {
       return;
     }
 
     handleToggleAllPackages();
-    setSelectedByTabState(true);
-  }, [selectAll, packages]);
+    selectedByTabRef.current = true;
+  }, [selectAll, packages.length, handleToggleAllPackages]);
 
-  const handlePackageClick = (singlePackage: InstancePackage) => {
-    setSidePanelContent(
-      "Package details",
-      <Suspense fallback={<LoadingState />}>
-        <PackageDetails singlePackage={singlePackage} />
-      </Suspense>,
-    );
-  };
+  const handlePackageClick = useCallback(
+    (singlePackage: InstancePackage) => {
+      setSidePanelContent(
+        "Package details",
+        <Suspense fallback={<LoadingState />}>
+          <PackageDetails singlePackage={singlePackage} />
+        </Suspense>,
+      );
+    },
+    [setSidePanelContent],
+  );
 
   const columns = useMemo<Column<InstancePackage>[]>(
     () => [
@@ -187,21 +202,24 @@ const PackageList: FC<PackageListProps> = ({
       {
         accessor: "current_version",
         Header: "Current version",
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
+          original.current_version || NO_DATA_TEXT,
+      },
+      {
+        accessor: "available_version",
+        Header: "Available version",
+        Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
+          original.available_version &&
+          original.available_version !== original.current_version
+            ? original.available_version
+            : NO_DATA_TEXT,
       },
       {
         accessor: "summary",
         className: classes.details,
         Header: "Details",
         Cell: ({ row: { original } }: CellProps<InstancePackage>) =>
-          original.available_version ? (
-            <>
-              <span>{original.summary}</span>
-              <br />
-              <span>{`available version: ${original.available_version}`}</span>
-            </>
-          ) : (
-            original.summary
-          ),
+          original.summary,
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
@@ -210,7 +228,15 @@ const PackageList: FC<PackageListProps> = ({
         ),
       },
     ],
-    [packages, selectedPackages.length],
+    [
+      childInstanceId,
+      handlePackageClick,
+      handleSelectPackage,
+      handleToggleAllPackages,
+      instanceId,
+      packages,
+      selectedPackages,
+    ],
   );
 
   return (
@@ -225,7 +251,9 @@ const PackageList: FC<PackageListProps> = ({
       <ResponsiveTable
         columns={columns}
         data={packagesToShow}
-        getCellProps={handleCellProps}
+        getCellProps={(cell) => {
+          return handleCellProps(cell, columns.length);
+        }}
         emptyMsg={emptyMsg}
       />
     </>
