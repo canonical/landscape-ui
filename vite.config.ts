@@ -60,17 +60,13 @@ export default defineConfig(({ mode }) => {
                 secure: false,
                 rewrite: (path) => path.replace(/^\/debarchive/, ""),
               },
-              ...(debArchivePath
-                ? {
-                    [debArchivePath]: {
-                      target:
-                        env.VITE_API_DEBARCHIVE_PROXY_TARGET ||
-                        "http://localhost:8000",
-                      changeOrigin: true,
-                      secure: false,
-                    },
-                  }
-                : {}),
+              [debArchivePath]: {
+                target:
+                  env.VITE_API_DEBARCHIVE_PROXY_TARGET ||
+                  "http://localhost:8000",
+                changeOrigin: true,
+                secure: false,
+              },
             };
           })()),
       },
