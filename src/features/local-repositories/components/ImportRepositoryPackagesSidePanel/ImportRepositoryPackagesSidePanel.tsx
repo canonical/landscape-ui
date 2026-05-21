@@ -68,7 +68,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const handleSubmit = async (values: { source: string }) => {
     if (!canImport) {
       notify.error({
-        title: "Validation required",
+        title: "Cannot import packages",
         message:
           "Fetch packages and resolve validation results before importing.",
       });
@@ -165,6 +165,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
           )}
 
           <SidePanelFormButtons
+            submitButtonDisabled={isImportingRepositoryPackages || !canImport}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}
