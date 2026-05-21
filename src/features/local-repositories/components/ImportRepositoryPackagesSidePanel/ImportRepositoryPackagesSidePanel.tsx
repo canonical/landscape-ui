@@ -121,6 +121,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     validationTask.error?.code === 4 || // timeout: allow
     (!validationTask.error && validationTask.count > 0); // no error and has packages
 
+  const shouldDisableImportButton =
+    !!validationTask?.error &&
+    validationTask.error.code !== 4 &&
+    validationTask?.count === 0;
+
   const handleImportClick = () => {
     if (!canImport && validationTask?.done) {
       if (validationTask.error && validationTask.error.code !== 4) {
@@ -183,7 +188,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
           )}
 
           <SidePanelFormButtons
-            submitButtonDisabled={!canImport}
+            submitButtonDisabled={shouldDisableImportButton}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}

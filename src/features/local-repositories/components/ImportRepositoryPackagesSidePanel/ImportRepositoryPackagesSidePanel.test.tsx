@@ -146,13 +146,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
-
-    // Verify clicking Import doesn't submit when validation failed
-    await user.click(importButton);
-    expect(
-      screen.queryByText(/you have marked .* to import packages/i),
-    ).not.toBeInTheDocument();
+    expect(importButton).toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows negative notification when no packages are available and blocks submission", async () => {
