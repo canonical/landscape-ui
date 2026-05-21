@@ -40,7 +40,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const fetchButton = await screen.findByRole("button", {
       name: /fetch packages/i,
     });
-    expect(fetchButton).toBeEnabled();
+    expect(fetchButton).toHaveAttribute("aria-disabled", "true");
 
     const importButton = await screen.findByRole("button", {
       name: /import packages/i,
