@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import { assert, describe, expect, it } from "vitest";
 import PublicationDetailsSidePanel from "./PublicationDetailsSidePanel";
 import server from "@/tests/server";
-import { http, delay } from "msw";
+import { http } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 const [publication] = publications;
@@ -20,11 +20,15 @@ const renderPanel = () =>
 
 describe("PublicationDetailsSidePanel", () => {
   it("shows a loading state while the publication is being fetched", () => {
+    const pendingRequest = new Promise<void>((resolve) => {
+      void resolve;
+    });
+
     server.use(
       http.get(
         `${API_URL_DEB_ARCHIVE}publications/:publicationName`,
         async () => {
-          await delay("infinite");
+          await pendingRequest;
         },
       ),
     );
