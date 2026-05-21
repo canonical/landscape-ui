@@ -1,4 +1,4 @@
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC, ReactElement, ReactNode, SyntheticEvent } from "react";
 import classes from "./SidePanelFormButtons.module.scss";
@@ -38,7 +38,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   submitButtonAppearance = "positive",
   cancelButtonDisabled = false,
 }): ReactElement<Element> => {
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePathUntilClear } = usePageParams();
   return (
     <div className={classes.buttons}>
       {hasBackButton && (
@@ -59,7 +59,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
             className="u-no-margin--bottom"
             type="button"
             appearance="base"
-            onClick={onCancel ?? closeSidePanel}
+            onClick={onCancel ?? popSidePathUntilClear}
             disabled={cancelButtonDisabled}
           >
             Cancel

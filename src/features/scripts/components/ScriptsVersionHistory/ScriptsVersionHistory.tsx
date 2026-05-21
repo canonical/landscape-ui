@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { Button, ModularTable } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
@@ -11,23 +11,18 @@ import { getAuthorInfo } from "../../helpers";
 import type { SingleScript, TruncatedScriptVersion } from "../../types";
 import classes from "./ScriptsVersionHistory.module.scss";
 
-const ScriptVersionHistoryDetails = lazy(
-  async () => import("../ScriptVersionHistoryDetails"),
-);
-
 interface ScriptsVersionHistoryProps {
   readonly script: SingleScript;
-  readonly viewVersionHistory: () => void;
 }
 
 const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
   script,
-  viewVersionHistory,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
 
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
+
   const { versions, isVersionsLoading, count } = useGetScriptVersions({
     scriptId: script.id,
     limit: pageSize,
@@ -43,17 +38,7 @@ const ScriptsVersionHistory: FC<ScriptsVersionHistoryProps> = ({
   };
 
   const openVersionPanel = (scriptVersion: TruncatedScriptVersion): void => {
-    setSidePanelContent(
-      scriptVersion.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptVersionHistoryDetails
-          scriptId={script.id}
-          scriptVersion={scriptVersion}
-          goBack={viewVersionHistory}
-          isArchived={script.status === "ARCHIVED"}
-        />
-      </Suspense>,
-    );
+    setPageParams({ sidePath: ["view", "version"], version: scriptVersion.version_number.toString(), name: script.id.toString() });
   };
 
   const columns = useMemo<Column<TruncatedScriptVersion>[]>(

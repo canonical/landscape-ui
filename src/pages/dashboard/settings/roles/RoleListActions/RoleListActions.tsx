@@ -1,14 +1,12 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Role } from "@/types/Role";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
-import { Suspense, type FC } from "react";
+import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
-import EditRoleForm from "../EditRoleForm";
 
 interface RoleListActionsProps {
   readonly role: Role;
@@ -16,7 +14,7 @@ interface RoleListActionsProps {
 
 const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   const debug = useDebug();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   const { removeRoleQuery } = useRoles();
 
@@ -39,12 +37,7 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
   };
 
   const edit = () => {
-    setSidePanelContent(
-      `Edit "${role.name}" role`,
-      <Suspense fallback={<LoadingState />}>
-        <EditRoleForm role={role} />
-      </Suspense>,
-    );
+    setPageParams({ sidePath: [...sidePath, "edit"], name: role.name });
   };
 
   return (

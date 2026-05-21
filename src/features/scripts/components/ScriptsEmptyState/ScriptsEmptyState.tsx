@@ -1,23 +1,12 @@
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
-import useSidePanel from "@/hooks/useSidePanel";
-import LoadingState from "@/components/layout/LoadingState";
-
-const CreateScriptForm = lazy(async () => import("../CreateScriptForm"));
+import usePageParams from "@/hooks/usePageParams";
 
 const ScriptsEmptyState: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
-  const handleScriptCreate = () => {
-    setSidePanelContent(
-      "Add script",
-      <Suspense fallback={<LoadingState />}>
-        <CreateScriptForm />
-      </Suspense>,
-    );
-  };
+  const handleScriptCreate = createSidePathPusher("create");
 
   return (
     <EmptyState

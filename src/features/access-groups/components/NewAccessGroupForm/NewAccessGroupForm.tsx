@@ -1,18 +1,18 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import type { FormProps } from "./types";
-import { getFormikError } from "@/utils/formikErrors";
 
 const NewAccessGroupForm: FC = () => {
   const { createAccessGroupQuery, getAccessGroupQuery } = useRoles();
   const { mutateAsync } = createAccessGroupQuery;
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePathUntilClear } = usePageParams();
   const { data: accessGroupsResponse, isLoading: isGettingAccessGroups } =
     getAccessGroupQuery();
 
@@ -30,7 +30,7 @@ const NewAccessGroupForm: FC = () => {
     onSubmit: async (values) => {
       try {
         await mutateAsync(values);
-        closeSidePanel();
+        popSidePathUntilClear();
       } catch (error) {
         debug(error);
       }
@@ -55,6 +55,7 @@ const NewAccessGroupForm: FC = () => {
         {...formik.getFieldProps("parent")}
       />
       <SidePanelFormButtons
+        onCancel={popSidePathUntilClear}
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add access group"
       />

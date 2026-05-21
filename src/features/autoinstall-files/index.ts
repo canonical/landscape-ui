@@ -1,4 +1,4 @@
-export { useAddAutoinstallFile, useGetAutoinstallFiles } from "./api";
+export { useAddAutoinstallFile, useGetAutoinstallFiles, useGetAutoinstallFile } from "./api";
 export type {
   AddAutoinstallFileParams,
   DeleteAutoinstallFileParams,
@@ -11,4 +11,4 @@ export type {
 export { default as AutoinstallFileForm } from "./components/AutoinstallFileForm";
 export { default as AutoinstallFilesHeader } from "./components/AutoinstallFilesHeader";
 export { default as AutoinstallFilesList } from "./components/AutoinstallFilesList";
-export type { AutoinstallFile } from "./types";
+export type { AutoinstallFile, WithMetadata } from "./types";

@@ -1,5 +1,4 @@
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsPanel from "@/pages/dashboard/settings/administrators/tabs/administrators";
 import InvitesPanel from "@/pages/dashboard/settings/administrators/tabs/invites";
 import { Tabs } from "@canonical/react-components";
@@ -19,8 +18,6 @@ const tabLinks = [
 ];
 
 const AdministratorsTabs: FC = () => {
-  const { closeSidePanel } = useSidePanel();
-
   const [currentTabLinkId, setCurrentTabLinkId] = useState(
     "tab-link-administrators",
   );
@@ -36,7 +33,6 @@ const AdministratorsTabs: FC = () => {
           active: id === currentTabLinkId,
           onClick: () => {
             setCurrentTabLinkId(id);
-            closeSidePanel();
           },
         }))}
       />

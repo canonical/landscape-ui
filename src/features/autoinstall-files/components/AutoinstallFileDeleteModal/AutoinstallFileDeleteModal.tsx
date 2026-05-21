@@ -1,5 +1,5 @@
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
 import { useDeleteAutoinstallFile } from "../../api";
@@ -15,7 +15,7 @@ const AutoinstallFileDeleteModal: FC<AutoinstallFileDeleteModalProps> = ({
   close,
 }) => {
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
 
   const { deleteAutoinstallFile, isAutoinstallFileDeleting } =
     useDeleteAutoinstallFile();

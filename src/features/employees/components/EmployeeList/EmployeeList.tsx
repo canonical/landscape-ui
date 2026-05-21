@@ -1,14 +1,13 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { ExpandedCell } from "@/types/ExpandedCell";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useOnClickOutside } from "usehooks-ts";
@@ -17,14 +16,12 @@ import type { Employee } from "../../types";
 import EmployeeListActions from "../EmployeeListActions";
 import { getTableRows, handleCellProps, handleRowProps } from "./helpers";
 
-const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
-
 interface EmployeeListProps {
   readonly employees: Employee[];
 }
 
 const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   const [expandedCell, setExpandedCell] = useState<ExpandedCell>(null);
 
@@ -68,13 +65,10 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
 
   const columns = useMemo<Column<Employee>[]>(() => {
     const handleShowEmployeeDetails = (employee: Employee) => {
-      setSidePanelContent(
-        "Employee details",
-        <Suspense fallback={<LoadingState />}>
-          <EmployeeDetails employee={employee} />
-        </Suspense>,
-        "medium",
-      );
+      setPageParams({
+        sidePath: [...sidePath, "view"],
+        name: String(employee.id),
+      });
     };
 
     return [
@@ -146,7 +140,7 @@ const EmployeeList: FC<EmployeeListProps> = ({ employees }) => {
         ),
       },
     ];
-  }, [expandedCell, setSidePanelContent]);
+  }, [expandedCell, setPageParams, sidePath]);
 
   return (
     <ResponsiveTable

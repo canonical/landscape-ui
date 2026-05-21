@@ -7,7 +7,7 @@ import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import { getValidationSchema } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
@@ -29,7 +29,7 @@ const InviteAdministratorForm: FC = () => {
   const { notify } = useNotify();
   const { getInvitationsQuery, inviteAdministratorQuery } = useAdministrators();
   const { getRolesQuery } = useRoles();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
 
   const { data: getInvitationsQueryResult } = getInvitationsQuery();
 
@@ -106,6 +106,7 @@ const InviteAdministratorForm: FC = () => {
       />
 
       <SidePanelFormButtons
+        onCancel={popSidePathUntilClear}
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Send invite"
       />

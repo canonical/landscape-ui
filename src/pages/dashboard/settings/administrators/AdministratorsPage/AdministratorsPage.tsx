@@ -1,29 +1,32 @@
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
-import useSidePanel from "@/hooks/useSidePanel";
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import useAdministrators from "@/hooks/useAdministrators";
+import usePageParams from "@/hooks/usePageParams";
 import AdministratorsTabs from "@/pages/dashboard/settings/administrators/AdministratorsTabs";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 
 const InviteAdministratorForm = lazy(
   () =>
     import("@/pages/dashboard/settings/administrators/tabs/administrators/InviteAdministratorForm"),
 );
 
-const AdministratorsPage: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+const EditAdministratorForm = lazy(
+  () =>
+    import("@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm"),
+);
 
-  const handleInviteAdministrator = () => {
-    setSidePanelContent(
-      "Invite administrator",
-      <Suspense fallback={<LoadingState />}>
-        <InviteAdministratorForm />
-      </Suspense>,
-    );
-  };
+const AdministratorsPage: FC = () => {
+  useSetDynamicFilterValidation("sidePath", ["invite", "edit"]);
+  const { lastSidePathSegment, name, popSidePathUntilClear, createSidePathPusher } = usePageParams();
+  const { getAdministratorsQuery } = useAdministrators();
+  const { data: getAdministratorsQueryResult } = getAdministratorsQuery();
+  const administrators = getAdministratorsQueryResult?.data ?? [];
+  const viewAdministrator = administrators.find((a) => a.email === name);
 
   return (
     <PageMain>
@@ -33,7 +36,7 @@ const AdministratorsPage: FC = () => {
           <Button
             appearance="positive"
             key="invite-administrator"
-            onClick={handleInviteAdministrator}
+            onClick={createSidePathPusher("invite")}
             type="button"
           >
             Invite administrator
@@ -43,6 +46,32 @@ const AdministratorsPage: FC = () => {
       <PageContent hasTable>
         <AdministratorsTabs />
       </PageContent>
+
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={
+          lastSidePathSegment === "invite" ||
+          (lastSidePathSegment === "edit" && !!viewAdministrator)
+        }
+      >
+        {lastSidePathSegment === "invite" && (
+          <SidePanel.Suspense key="invite">
+            <SidePanel.Header>Invite administrator</SidePanel.Header>
+            <SidePanel.Content>
+              <InviteAdministratorForm />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && viewAdministrator && (
+          <SidePanel.Suspense key="edit">
+            <SidePanel.Header>{viewAdministrator.name}</SidePanel.Header>
+            <SidePanel.Content>
+              <EditAdministratorForm administrator={viewAdministrator} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

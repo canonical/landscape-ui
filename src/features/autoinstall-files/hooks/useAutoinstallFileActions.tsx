@@ -1,16 +1,12 @@
-import LoadingState from "@/components/layout/LoadingState";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
-import { Suspense } from "react";
+import usePageParams from "@/hooks/usePageParams";
 import { useUpdateAutoinstallFile } from "../api";
-import AutoinstallFileEditForm from "../components/AutoinstallFileEditForm";
-import AutoinstallFileSidePanelTitle from "../components/AutoinstallFileSidePanelTitle";
 import type { AutoinstallFile, AutoinstallFileTabId } from "../types";
 import useOpenAutoinstallFileDetails from "./useOpenAutoinstallFileDetails";
 
 const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
   const { notify } = useNotify();
-  const { closeSidePanel, setSidePanelContent } = useSidePanel();
+  const { closeSidePanel, setPageParams, sidePath } = usePageParams();
 
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
 
@@ -22,12 +18,10 @@ const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
     },
 
     openAutoinstallFileEditForm: () => {
-      setSidePanelContent(
-        <AutoinstallFileSidePanelTitle file={autoinstallFile} title="Edit" />,
-        <Suspense fallback={<LoadingState />}>
-          <AutoinstallFileEditForm autoinstallFile={autoinstallFile} />
-        </Suspense>,
-      );
+      setPageParams({
+        sidePath: [...sidePath, "edit-file"],
+        name: String(autoinstallFile.id),
+      });
     },
 
     setAutoinstallFileAsDefault: async () => {

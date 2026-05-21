@@ -1,32 +1,20 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
+import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import AccessGroupHeader from "../AccessGroupHeader";
 import AccessGroupList from "../AccessGroupList";
-import { Button } from "@canonical/react-components";
-import useSidePanel from "@/hooks/useSidePanel";
-
-const NewAccessGroupForm = lazy(() => import("../NewAccessGroupForm"));
 
 const AccessGroupsContainer: FC = () => {
   const { getAccessGroupQuery } = useRoles();
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const { data: accessGroupResponse, isPending: isLoadingAccessGroups } =
     getAccessGroupQuery();
 
   const accessGroups = accessGroupResponse?.data || [];
-
-  const handleAddAccessGroup = () => {
-    setSidePanelContent(
-      "Add access group",
-      <Suspense fallback={<LoadingState />}>
-        <NewAccessGroupForm />
-      </Suspense>,
-    );
-  };
 
   return (
     <>
@@ -53,7 +41,7 @@ const AccessGroupsContainer: FC = () => {
             <Button
               key="add-access-group"
               appearance="positive"
-              onClick={handleAddAccessGroup}
+              onClick={createSidePathPusher("add")}
               type="button"
               className="u-no-margin--right"
             >

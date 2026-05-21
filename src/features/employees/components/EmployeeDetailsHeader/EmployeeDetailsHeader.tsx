@@ -1,4 +1,4 @@
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import { useState, type FC } from "react";
 import type { Employee } from "../../types";
@@ -12,7 +12,7 @@ const EmployeeDetailsHeader: FC<EmployeeDetailsHeaderProps> = ({
   employee,
 }) => {
   const [open, setOpen] = useState(false);
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
 
   const handleOpen = (): void => {
     setOpen(true);

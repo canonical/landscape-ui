@@ -1,7 +1,6 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import classes from "@/pages/dashboard/instances/[single]/SingleInstanceTabs/SingleInstanceTabs.module.scss";
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
@@ -14,8 +13,7 @@ const ScriptProfilesTab = lazy(
 );
 
 const ScriptsTabs: FC = () => {
-  const { tab, setPageParams } = usePageParams();
-  const { closeSidePanel } = useSidePanel();
+  const { tab, setPageParams, closeSidePanel } = usePageParams();
 
   const currentTab = tab ? `tab-link-${tab}` : TABS[0].id;
 

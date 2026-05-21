@@ -5,7 +5,7 @@ import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Administrator } from "@/types/Administrator";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
@@ -17,7 +17,6 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 interface EditAdministratorFormProps {
@@ -27,16 +26,9 @@ interface EditAdministratorFormProps {
 const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   administrator,
 }) => {
-  const [currentAdministrator, setCurrentAdministrator] =
-    useState(administrator);
-
-  useEffect(() => {
-    setCurrentAdministrator(administrator);
-  }, [administrator]);
-
   const { notify } = useNotify();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { disableAdministratorQuery, editAdministratorQuery } =
     useAdministrators();
   const { getRolesQuery } = useRoles();
@@ -56,7 +48,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   const handleDisableAdministrator = async () => {
     try {
-      await disableAdministrator({ email: currentAdministrator.email });
+      await disableAdministrator({ email: administrator.email });
 
       notify.success({
         title: "Administrator removed",
@@ -69,34 +61,28 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
     }
   };
 
-  const handleSubmit = async (values: { roles: string[] }) => {
-    try {
-      await editAdministrator({ id: administrator.id, roles: values.roles });
-
-      setCurrentAdministrator((prev) => ({ ...prev, roles: values.roles }));
-
-      notify.success({
-        title: "Permission changes have been queued",
-        message: `You changed ${currentAdministrator.name}'s roles`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   const formik = useFormik({
-    initialValues: { roles: [] as string[] },
+    initialValues: { roles: administrator.roles },
+    enableReinitialize: true,
     validationSchema: Yup.object().shape({
       roles: Yup.array()
         .of(Yup.string())
         .min(1, "At least one role is required"),
     }),
-    onSubmit: handleSubmit,
-  });
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        await editAdministrator({ id: administrator.id, roles: values.roles });
+        resetForm({ values });
 
-  useEffect(() => {
-    formik.setValues({ roles: currentAdministrator.roles });
-  }, [currentAdministrator]);
+        notify.success({
+          title: "Permission changes have been queued",
+          message: `You changed ${administrator.name}'s roles`,
+        });
+      } catch (error) {
+        debug(error);
+      }
+    },
+  });
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -123,8 +109,8 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       </ConfirmationButton>
 
       <InfoGrid spaced>
-        <InfoGrid.Item label="Name" value={currentAdministrator.name} />
-        <InfoGrid.Item label="Email" value={currentAdministrator.email} />
+        <InfoGrid.Item label="Name" value={administrator.name} />
+        <InfoGrid.Item label="Email" value={administrator.email} />
 
         <InfoGrid.Item label="Timezone" large value={null} />
 
@@ -149,11 +135,12 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       />
 
       <SidePanelFormButtons
+        onCancel={popSidePathUntilClear}
         submitButtonDisabled={
           formik.isSubmitting ||
-          (formik.values.roles.length === currentAdministrator.roles.length &&
+          (formik.values.roles.length === administrator.roles.length &&
             formik.values.roles.every((role) =>
-              currentAdministrator.roles.includes(role),
+              administrator.roles.includes(role),
             ))
         }
         submitButtonText="Save changes"

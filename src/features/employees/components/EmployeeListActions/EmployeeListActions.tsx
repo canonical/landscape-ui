@@ -1,22 +1,18 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import type { Employee } from "../../types";
 import ActivateEmployeeModal from "../ActivateEmployeeModal";
 import DeactivateEmployeeModal from "../DeactivateEmployeeModal";
-
-const EmployeeDetails = lazy(async () => import("../EmployeeDetails"));
 
 interface EmployeeDetailsActionsProps {
   readonly employee: Employee;
 }
 
 const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   const {
     value: isActivateModalOpen,
@@ -31,13 +27,10 @@ const EmployeeListActions: FC<EmployeeDetailsActionsProps> = ({ employee }) => {
   } = useBoolean();
 
   const handleViewDetails = () => {
-    setSidePanelContent(
-      "Employee details",
-      <Suspense fallback={<LoadingState />}>
-        <EmployeeDetails employee={employee} />
-      </Suspense>,
-      "medium",
-    );
+    setPageParams({
+      sidePath: [...sidePath, "view"],
+      name: String(employee.id),
+    });
   };
 
   const actions: Action[] = [

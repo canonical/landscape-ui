@@ -1,13 +1,11 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorRolesCell from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorRolesCell";
-import EditAdministratorForm from "@/pages/dashboard/settings/administrators/tabs/administrators/EditAdministratorForm";
 import type { Administrator } from "@/types/Administrator";
 import type { Role } from "@/types/Role";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import type { CellProps, Column } from "react-table";
 import AdministratorListActions from "../AdministratorListActions";
 import classes from "./AdministratorList.module.scss";
@@ -24,8 +22,7 @@ const AdministratorList: FC<AdministratorListProps> = ({
   administrators,
   roles,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
-  const { search } = usePageParams();
+  const { search, sidePath, setPageParams } = usePageParams();
   const emptyMessage = search.trim()
     ? `No administrators found with the search: "${search.trim()}".`
     : "You have no administrators on your Landscape organization.";
@@ -41,12 +38,15 @@ const AdministratorList: FC<AdministratorListProps> = ({
     [roles],
   );
 
-  const handleAdministratorClick = (administrator: Administrator) => {
-    setSidePanelContent(
-      administrator.name,
-      <EditAdministratorForm administrator={administrator} />,
-    );
-  };
+  const handleAdministratorClick = useCallback(
+    (administrator: Administrator) => {
+      setPageParams({
+        sidePath: [...sidePath, "edit"],
+        name: administrator.email,
+      });
+    },
+    [setPageParams, sidePath],
+  );
 
   const columns = useMemo<Column<Administrator>[]>(
     () => [
@@ -88,7 +88,7 @@ const AdministratorList: FC<AdministratorListProps> = ({
         ),
       },
     ],
-    [administratorsData, roleOptions],
+    [roleOptions, handleAdministratorClick],
   );
 
   return (

@@ -5,7 +5,7 @@ import * as Yup from "yup";
 import { Form } from "@canonical/react-components";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import {
   getAccessGroupOptions,
@@ -36,7 +36,7 @@ interface EditRoleFormProps {
 const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const {
     addPermissionsToRoleQuery,
     addAccessGroupsToRoleQuery,
@@ -156,6 +156,7 @@ const EditRoleForm: FC<EditRoleFormProps> = ({ role }) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );
