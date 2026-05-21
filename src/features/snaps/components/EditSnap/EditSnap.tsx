@@ -39,7 +39,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const { data: snapInfoData } = getAvailableSnapInfo(
     {
       instance_id: instanceId,
-      name: installedSnaps[0]!.snap.name,
+      name: installedSnaps[0]?.snap.name ?? "",
     },
     {
       enabled: type === EditSnapType.Switch,
@@ -77,15 +77,29 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
     },
     validationSchema: Yup.object().shape(validationSchema),
     onSubmit: async (values) => {
+      let actionValue = type.toLowerCase();
+      if (type === EditSnapType.Uninstall) {
+        actionValue = "remove";
+      } else if (type === EditSnapType.Switch) {
+        actionValue = "refresh";
+      }
+
+      let snapHoldTime: string | undefined;
+      if (values.hold === "forever") {
+        snapHoldTime = "forever";
+      } else if (values.hold_until) {
+        snapHoldTime = moment(values.hold_until).format();
+      }
+
+      let deliverAfter: string | undefined;
+      if (!values.deliver_immediately && values.deliver_after) {
+        deliverAfter = moment(values.deliver_after).format();
+      }
+
       try {
         snapsActionMutation({
           computer_ids: [instanceId],
-          action:
-            type === EditSnapType.Uninstall
-              ? "remove"
-              : type === EditSnapType.Switch
-                ? "refresh"
-                : type.toLowerCase(),
+          action: actionValue,
           snaps: installedSnaps.map((currentInstalledSnap) => ({
             name: currentInstalledSnap.snap.name,
             channel: values.release
@@ -102,18 +116,9 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
                   values.release,
               )
               ?.revision.toString(),
-            time:
-              values.hold === "forever"
-                ? "forever"
-                : values.hold_until
-                  ? moment(values.hold_until).format()
-                  : undefined,
+            time: snapHoldTime,
           })),
-          deliver_after: values.deliver_immediately
-            ? undefined
-            : values.deliver_after
-              ? moment(values.deliver_after).format()
-              : undefined,
+          deliver_after: deliverAfter,
           deliver_after_window: !values.randomize_delivery
             ? undefined
             : values.deliver_delay_window,
@@ -121,12 +126,14 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
 
         closeSidePanel();
 
-        const actionVerb =
-          type === EditSnapType.Hold
-            ? "held"
-            : type === EditSnapType.Unhold
-              ? "unheld"
-              : `${type.toLowerCase()}ed`;
+        let actionVerb = "";
+        if (type === EditSnapType.Hold) {
+          actionVerb = "held";
+        } else if (type === EditSnapType.Unhold) {
+          actionVerb = "unheld";
+        } else {
+          actionVerb = `${type.toLowerCase()}ed`;
+        }
 
         notify.success({
           message: `You queued ${installedSnap ? installedSnap.snap.name : `${installedSnaps.length} snaps`} to be ${actionVerb}.`,

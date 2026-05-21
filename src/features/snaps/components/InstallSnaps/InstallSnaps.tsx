@@ -27,10 +27,6 @@ const InstallSnaps: FC = () => {
 
   const handleSubmit = async () => {
     if (selectedSnaps.length === 0) {
-      notify.error({
-        title: "No snaps selected",
-        message: "Select at least one snap to install.",
-      });
       return;
     }
 

@@ -40,12 +40,12 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const fetchButton = await screen.findByRole("button", {
       name: /fetch packages/i,
     });
-    expect(fetchButton).toHaveAttribute("aria-disabled", "true");
+    expect(fetchButton).toBeEnabled();
 
     const importButton = await screen.findByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).toBeEnabled();
   });
 
   it("enables Fetch packages button when source URL is provided", async () => {
@@ -137,7 +137,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).toBeEnabled();
   });
 
   it("submits the form and shows success notification", async () => {

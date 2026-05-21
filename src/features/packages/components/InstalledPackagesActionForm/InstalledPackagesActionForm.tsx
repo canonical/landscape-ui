@@ -50,11 +50,13 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
+  const [firstPackage] = packages;
+
   const { data: getDowngradePackageVersionsQueryResult } =
     getDowngradePackageVersionsQuery(
       {
         instanceId,
-        packageName: packages[0]!.name,
+        packageName: firstPackage?.name ?? "",
       },
       {
         enabled: action === "downgrade",
@@ -105,7 +107,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
     } else if (action === "downgrade") {
       promise = downgradePackageVersion({
         instanceId,
-        package_name: packages[0]!.name,
+        package_name: firstPackage?.name ?? "",
         package_version: values.version,
       });
     } else {
@@ -151,7 +153,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           <Col size={6}>
             <InfoItem
               label="Current version"
-              value={packages[0]!.current_version}
+              value={firstPackage?.current_version ?? ""}
             />
           </Col>
           <Col size={6}>

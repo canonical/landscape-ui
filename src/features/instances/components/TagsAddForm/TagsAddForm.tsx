@@ -198,7 +198,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
         },
       },
     ],
-    [selectedTags, filteredTags, toggleTag],
+    [selectedTags, filteredTags, toggleTag, selected, toggleAll],
   );
 
   if (isGettingTags) {

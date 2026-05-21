@@ -29,7 +29,7 @@ describe("PackageProfileAddSidePanel", () => {
       screen.getByRole("combobox", { name: "Package constraints" }),
       "instance",
     );
-    // Only interact with tags if the field is present
+
     const tagsInput = screen.queryByLabelText("Search and add tags");
     if (tagsInput) {
       await user.click(tagsInput);
