@@ -105,7 +105,7 @@ const PublicationDetails = ({
         </Blocks.Item>
 
         <Blocks.Item title="Contents">
-          <InfoGrid>
+          <InfoGrid dense>
             {publication.distribution && (
               <InfoGrid.Item
                 label="Distribution"
@@ -123,7 +123,7 @@ const PublicationDetails = ({
         </Blocks.Item>
 
         <Blocks.Item title="Settings">
-          <InfoGrid>
+          <InfoGrid dense>
             <InfoGrid.Item
               label="Hash indexing"
               value={boolToLabel(Boolean(publication.acquireByHash))}

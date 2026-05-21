@@ -1,17 +1,10 @@
-export interface FormProps {
-  name: string;
+import type { PublishNewFormValues } from "../../types";
+
+export interface FormProps extends PublishNewFormValues {
   sourceType: string;
   source: string;
-  publicationTarget: string;
-  prefix: string;
-  uploaderDistribution: string;
-  uploaderArchitectures: string[];
-  signingKey: string;
-  hashIndexing: boolean;
-  limitAutomaticInstallation: boolean;
-  automaticUpgrades: boolean;
-  skipBz2: boolean;
-  skipContentIndexing: boolean;
+  distribution: string;
+  architectures: string[];
 }
 
 export interface SelectableSource {

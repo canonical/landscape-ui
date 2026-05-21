@@ -1,4 +1,3 @@
-import * as Yup from "yup";
 import type { FormProps } from "./types";
 import type { PublicationWritable } from "@canonical/landscape-openapi";
 import { SOURCE_TYPE_LOCAL_REPOSITORY } from "./constants";
@@ -7,30 +6,6 @@ export interface CreatePublicationPayload {
   publicationId?: string;
   body: PublicationWritable;
 }
-
-const REQUIRED_FIELD_MESSAGE = "This field is required";
-
-export const VALIDATION_SCHEMA = Yup.object().shape({
-  name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  sourceType: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  source: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  publicationTarget: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  prefix: Yup.string(),
-  uploaderDistribution: Yup.string().required(REQUIRED_FIELD_MESSAGE),
-  uploaderArchitectures: Yup.array()
-    .of(Yup.string())
-    .when("sourceType", {
-      is: SOURCE_TYPE_LOCAL_REPOSITORY,
-      then: (schema) => schema,
-      otherwise: (schema) => schema.min(1, REQUIRED_FIELD_MESSAGE),
-    }),
-  signingKey: Yup.string(),
-  hashIndexing: Yup.boolean(),
-  limitAutomaticInstallation: Yup.boolean(),
-  automaticUpgrades: Yup.boolean(),
-  skipBz2: Yup.boolean(),
-  skipContentIndexing: Yup.boolean(),
-});
 
 export const getPreviewValue = (value?: string): string => {
   return value?.trim() || "-";
@@ -57,7 +32,7 @@ export const getPublicationPayload = (values: FormProps) => {
   const architectures =
     values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY
       ? []
-      : values.uploaderArchitectures;
+      : values.architectures;
 
   return {
     publicationId,
@@ -68,8 +43,7 @@ export const getPublicationPayload = (values: FormProps) => {
         "publicationTargets/",
       ),
       source: prependResourcePrefix(values.source, sourcePrefix),
-      distribution: values.uploaderDistribution.trim() || undefined,
-      label: values.prefix.trim() || undefined,
+      distribution: values.distribution.trim() || undefined,
       architectures: architectures.length > 0 ? architectures : undefined,
       acquireByHash: values.hashIndexing,
       notAutomatic: values.limitAutomaticInstallation,

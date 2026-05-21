@@ -6,10 +6,6 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
-import {
-  type PublishRepositoryNewFormValues,
-  VALIDATION_SCHEMA_NEW,
-} from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
@@ -18,8 +14,10 @@ import {
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
+  VALIDATION_SCHEMA_NEW,
 } from "@/features/publications";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
+import type { PublishNewFormValues } from "@/features/publications";
 
 interface PublishRepositoryNewFormProps {
   readonly repository: Local;
@@ -37,7 +35,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
-  const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
+  const handleSubmit = async (values: PublishNewFormValues) => {
     const valuesforCreation = {
       displayName: values.name,
       publicationTarget: values.publicationTarget,
@@ -83,7 +81,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     [publicationTargets],
   );
 
-  const initialValues: PublishRepositoryNewFormValues = {
+  const initialValues: PublishNewFormValues = {
     name: "",
     publicationTarget: publicationTargetOptions[0]?.value || "",
     signingKey: "",

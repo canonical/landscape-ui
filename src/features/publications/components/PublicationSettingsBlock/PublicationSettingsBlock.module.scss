@@ -10,5 +10,7 @@
 }
 
 .subCheckbox {
-  margin-left: $sp-unit * 4;
+  border-left: 1px solid $colors--theme--border-default;
+  margin-left: $sph--small;
+  padding-left: $sph--large;
 }

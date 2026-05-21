@@ -26,14 +26,14 @@ import {
   SOURCE_TYPE_LOCAL_REPOSITORY,
   SOURCE_TYPE_MIRROR,
   SOURCE_TYPE_OPTIONS,
+  VALIDATION_SCHEMA,
 } from "./constants";
 import {
   getPublicationPayload,
   stripResourcePrefix,
-  VALIDATION_SCHEMA,
 } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
-import { PublicationSettingsBlock } from "../..";
+import PublicationSettingsBlock from "../../components/PublicationSettingsBlock";
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
@@ -154,8 +154,8 @@ const AddPublicationForm: FC = () => {
   ): Promise<void> => {
     await formik.setFieldValue("sourceType", event.target.value);
     await formik.setFieldValue("source", "");
-    await formik.setFieldValue("uploaderDistribution", "");
-    await formik.setFieldValue("uploaderArchitectures", []);
+    await formik.setFieldValue("distribution", "");
+    await formik.setFieldValue("architectures", []);
     await formik.setFieldValue("signingKey", "");
   };
 
@@ -167,26 +167,26 @@ const AddPublicationForm: FC = () => {
 
     await formik.setFieldValue("source", sourceValue);
     await formik.setFieldValue(
-      "uploaderDistribution",
+      "distribution",
       source?.distribution ?? "",
     );
 
     if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
-      await formik.setFieldValue("uploaderArchitectures", []);
+      await formik.setFieldValue("architectures", []);
       await formik.setFieldValue("signingKey", "");
 
       return;
     }
-    await formik.setFieldValue("uploaderArchitectures", []);
+    await formik.setFieldValue("architectures", []);
     await formik.setFieldValue("signingKey", "");
   };
 
   const handleArchitectureChange = async (
     items: MultiSelectItem[],
   ): Promise<void> => {
-    await formik.setFieldTouched("uploaderArchitectures", true);
+    await formik.setFieldTouched("architectures", true);
     await formik.setFieldValue(
-      "uploaderArchitectures",
+      "architectures",
       items.map(({ value }) => String(value)),
     );
   };
@@ -231,13 +231,6 @@ const AddPublicationForm: FC = () => {
             {...formik.getFieldProps("publicationTarget")}
           />
 
-          <Input
-            type="text"
-            label="Directory prefix"
-            error={getFormikError(formik, "prefix")}
-            {...formik.getFieldProps("prefix")}
-          />
-
           {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
             selectedSource.preserveSignatures === false && (
               <Textarea
@@ -253,7 +246,7 @@ const AddPublicationForm: FC = () => {
           {isLocalSourceType || selectedSource?.preserveSignatures ? (
             <ReadOnlyField
               label="Distribution"
-              value={formik.values.uploaderDistribution}
+              value={formik.values.distribution}
               tooltipMessage="The distribution is defined by the selected source."
             />
           ) : (
@@ -261,8 +254,8 @@ const AddPublicationForm: FC = () => {
               type="text"
               label="Distribution"
               required
-              error={getFormikError(formik, "uploaderDistribution")}
-              {...formik.getFieldProps("uploaderDistribution")}
+              error={getFormikError(formik, "distribution")}
+              {...formik.getFieldProps("distribution")}
             />
           )}
 
@@ -281,10 +274,10 @@ const AddPublicationForm: FC = () => {
               disabled={!formik.values.source}
               items={architectureItems}
               selectedItems={architectureItems.filter(({ value }) =>
-                formik.values.uploaderArchitectures.includes(value),
+                formik.values.architectures.includes(value),
               )}
               onItemsUpdate={handleArchitectureChange}
-              error={getFormikError(formik, "uploaderArchitectures")}
+              error={getFormikError(formik, "architectures")}
             />
           )}
         </Blocks.Item>

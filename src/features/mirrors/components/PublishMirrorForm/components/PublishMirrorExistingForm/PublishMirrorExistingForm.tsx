@@ -11,11 +11,11 @@ import type { SelectOption } from "@/types/SelectOption";
 import {
   PublicationSettingsBlock,
   usePublishPublication,
+  VALIDATION_SCHEMA_EXISTING
 } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, Publication } from "@canonical/landscape-openapi";
-import * as Yup from "yup";
 
 interface PublishMirrorExistingFormProps {
   readonly mirror: Mirror;
@@ -34,12 +34,12 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
     usePublishPublication();
 
   const formik = useFormik({
-    initialValues: { publicationName: publications[0]?.name ?? "" },
+    initialValues: { name: publications[0]?.name ?? "" },
 
     onSubmit: async (values) => {
       try {
         await publishPublication({
-          publicationName: values.publicationName,
+          publicationName: values.name,
           body: { forceOverwrite: true },
         });
 
@@ -55,9 +55,8 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
       }
     },
 
-    validationSchema: Yup.object().shape({
-      publicationName: Yup.string().required("This field is required."),
-    }),
+    validationSchema: VALIDATION_SCHEMA_EXISTING,
+    validateOnMount: true,
   });
 
   const publicationOptions: SelectOption[] = publications.map(
@@ -69,7 +68,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
   );
 
   const publication = publications.find(
-    ({ name }) => name === formik.values.publicationName,
+    ({ name }) => name === formik.values.name,
   );
 
   return (
@@ -80,28 +79,27 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
             label="Publication"
             required
             options={publicationOptions}
-            error={getFormikError(formik, "publicationName")}
-            {...formik.getFieldProps("publicationName")}
+            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("name")}
           />
 
           <ReadOnlyField
             label="Publication target"
             value={publication?.publicationTarget}
-            tooltipMessage={
+            tooltipMessage=
               "The publication target is defined by the publication."
-            }
           />
 
           <ReadOnlyField
             label="Signing GPG key"
             value={publication?.gpgKey?.armor}
-            tooltipMessage={"The GPG key is defined by the publication."}
+            tooltipMessage="The GPG key is defined by the publication."
           />
         </Blocks.Item>
 
         <PublishMirrorContentsBlock mirror={mirror} />
 
-        <PublicationSettingsBlock formik={formik} disabled />
+        <PublicationSettingsBlock publication={publication} />
       </Blocks>
 
       <SidePanelFormButtons

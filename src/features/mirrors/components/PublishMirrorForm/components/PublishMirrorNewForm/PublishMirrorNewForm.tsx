@@ -15,8 +15,8 @@ import {
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
-import * as Yup from "yup";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import { VALIDATION_SCHEMA_NEW } from "@/features/publications";
 
 interface PublishMirrorNewFormProps {
   readonly mirror: Mirror;
@@ -37,7 +37,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 
   const formik = useFormik({
     initialValues: {
-      publicationName: "",
+      name: "",
       publicationTarget: publicationTargets[0]?.name ?? "",
       signingKey: "",
       hashIndexing: false,
@@ -51,7 +51,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       try {
         const { data: publication } = await createPublication({
           body: {
-            displayName: values.publicationName,
+            displayName: values.name,
             publicationTarget: values.publicationTarget,
             source: mirror.name ?? "",
             distribution: mirror.distribution,
@@ -85,16 +85,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       }
     },
 
-    validationSchema: Yup.object().shape({
-      publicationName: Yup.string().required("This field is required."),
-      publicationTarget: Yup.string().required("This field is required."),
-      signingKey: Yup.string(),
-      hashIndexing: Yup.boolean(),
-      limitAutomaticInstallation: Yup.boolean(),
-      automaticUpgrades: Yup.boolean(),
-      skipBz2: Yup.boolean(),
-      skipContentIndexing: Yup.boolean(),
-    }),
+    validationSchema: VALIDATION_SCHEMA_NEW,
+    validateOnMount: true,
   });
 
   const publicationTargetOptions: SelectOption[] = publicationTargets.map(
@@ -113,8 +105,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
             type="text"
             label="Publication name"
             required
-            error={getFormikError(formik, "publicationName")}
-            {...formik.getFieldProps("publicationName")}
+            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("name")}
           />
 
           <Select

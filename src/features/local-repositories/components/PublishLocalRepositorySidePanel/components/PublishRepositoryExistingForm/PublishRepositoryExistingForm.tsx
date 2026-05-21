@@ -6,13 +6,13 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
-import { VALIDATION_SCHEMA_EXISTING } from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Local, Publication } from "@canonical/landscape-openapi";
 import {
   PublicationSettingsBlock,
   usePublishPublication,
+  VALIDATION_SCHEMA_EXISTING,
 } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
@@ -101,7 +101,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
         <PublishRepositoryContentsBlock repository={repository} />
 
-        <PublicationSettingsBlock formik={formik} disabled />
+        <PublicationSettingsBlock publication={publication} />
       </Blocks>
 
       <SidePanelFormButtons
