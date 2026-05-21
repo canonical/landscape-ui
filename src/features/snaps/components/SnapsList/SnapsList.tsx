@@ -2,14 +2,13 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column, Row } from "react-table";
 import type { InstalledSnap } from "../../types";
-import SnapDetails from "../SnapDetails";
 import classes from "./SnapsList.module.scss";
 import { handleCellProps } from "./helpers";
 
@@ -26,7 +25,7 @@ const SnapsList: FC<SnapsListProps> = ({
   isSnapsLoading,
   setSelectedSnapIds,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { sidePath, setPageParams } = usePageParams();
 
   const handleSelectionChange = (row: Row<InstalledSnap>) => {
     if (selectedSnapIds.includes(row.original.snap.id)) {
@@ -47,12 +46,10 @@ const SnapsList: FC<SnapsListProps> = ({
   };
 
   const handleShowSnapDetails = (snap: InstalledSnap) => {
-    setSidePanelContent(
-      `${snap.snap.name} details`,
-      <Suspense fallback={<LoadingState />}>
-        <SnapDetails installedSnap={snap} />
-      </Suspense>,
-    );
+    setPageParams({
+      sidePath: [...sidePath, "edit"],
+      name: snap.snap.name,
+    });
   };
 
   const columns = useMemo<Column<InstalledSnap>[]>(

@@ -8,30 +8,30 @@ import {
 } from "@canonical/react-components";
 import { useState, type FC } from "react";
 import { useEditScript, useGetScriptVersion } from "../../api";
-import type { ScriptFormValues, TruncatedScriptVersion } from "../../types";
+import type { ScriptFormValues } from "../../types";
 import useDebug from "@/hooks/useDebug";
+import usePageParams from "@/hooks/usePageParams";
 import { getAuthorInfo, getCode, getEditScriptParams } from "../../helpers";
 
 interface ScriptVersionHistoryDetailsProps {
   readonly isArchived: boolean;
   readonly scriptId: number;
-  readonly scriptVersion: TruncatedScriptVersion;
-  readonly goBack: () => void;
+  readonly versionId?: string;
 }
 
 const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
   scriptId,
-  scriptVersion,
-  goBack,
   isArchived,
+  versionId,
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
+  const { popSidePath } = usePageParams();
 
   const debug = useDebug();
 
   const { version, isVersionLoading } = useGetScriptVersion({
     scriptId: scriptId,
-    versionId: scriptVersion.version_number,
+    versionId: Number(versionId),
   });
 
   const { editScript, isEditing } = useEditScript();
@@ -64,7 +64,7 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
 
         await editScript(params);
 
-        goBack();
+        popSidePath();
       }
     } catch (error) {
       setModalOpen(false);
@@ -77,8 +77,8 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
       <InfoItem
         label="author"
         value={getAuthorInfo({
-          author: scriptVersion.created_by.name,
-          date: scriptVersion.created_at,
+          author: version?.creator_name ?? "",
+          date: version?.created_at ?? "",
         })}
       />
 
@@ -99,16 +99,17 @@ const ScriptVersionHistoryDetails: FC<ScriptVersionHistoryDetailsProps> = ({
 
       <SidePanelFormButtons
         hasActionButtons={!isArchived}
+        hasBackButton={true}
+        onBackButtonPress={popSidePath}
         submitButtonAppearance="secondary"
         submitButtonText="Use as new version"
         onSubmit={handleOpenModal}
-        hasBackButton
-        onBackButtonPress={goBack}
+        onCancel={popSidePath}
       />
 
       {modalOpen && (
         <ConfirmationModal
-          title={`Submit new version of ${scriptVersion.title}`}
+          title={`Submit new version of ${version?.title}`}
           confirmButtonLabel="Submit new version"
           close={handleCloseModal}
           confirmButtonAppearance="positive"

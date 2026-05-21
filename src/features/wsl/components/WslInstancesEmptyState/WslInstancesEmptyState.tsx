@@ -1,23 +1,10 @@
 import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-
-const WslInstanceInstallForm = lazy(() => import("../WslInstanceInstallForm"));
 
 const WslInstancesEmptyState: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
-
-  const handleWslInstanceInstall = () => {
-    setSidePanelContent(
-      "Create new WSL instance",
-      <Suspense fallback={<LoadingState />}>
-        <WslInstanceInstallForm />
-      </Suspense>,
-    );
-  };
+  const { createSidePathPusher } = usePageParams();
 
   return (
     <EmptyState
@@ -42,7 +29,7 @@ const WslInstancesEmptyState: FC = () => {
           key="install-new-instance-button"
           appearance="positive"
           type="button"
-          onClick={handleWslInstanceInstall}
+          onClick={createSidePathPusher("install-wsl")}
         >
           Create new WSL instance
         </Button>,

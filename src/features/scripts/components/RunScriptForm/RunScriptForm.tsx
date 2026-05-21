@@ -7,7 +7,7 @@ import { getFeatures, useGetInstances } from "@/features/instances";
 import { useGetTags } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import type { MultiSelectItem } from "@canonical/react-components";
 import {
@@ -38,13 +38,11 @@ import { pluralize } from "@/utils/_helpers";
 interface RunScriptFormProps {
   readonly script: Script;
   readonly submittedCode?: string;
-  readonly onBack?: () => void;
 }
 
 const RunScriptForm: FC<RunScriptFormProps> = ({
   script,
   submittedCode,
-  onBack,
 }) => {
   const {
     value: isRunConfirmVisible,
@@ -60,7 +58,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
 
   const { runScript } = useRunScript();
   const { editScript } = useEditScript();
@@ -347,13 +345,9 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
 
         <DeliveryBlock formik={formik} />
 
-        <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
-          onBackButtonPress={onBack}
-          hasBackButton={!!onBack}
-          submitButtonText={codeChanged ? "Save and run" : "Run script"}
-          onSubmit={formik.submitForm}
-        />
+        <SidePanelFormButtons submitButtonDisabled={formik.isSubmitting}
+        submitButtonText={codeChanged ? "Save and run" : "Run script"}
+        onSubmit={formik.submitForm} onCancel={popSidePathUntilClear} />
       </Form>
 
       {isEditConfirmVisible && (

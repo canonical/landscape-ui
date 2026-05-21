@@ -8,7 +8,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useAuth from "@/hooks/useAuth";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
@@ -30,7 +30,7 @@ interface ScriptListProps {
 }
 
 const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams } = usePageParams();
   const { isFeatureEnabled } = useAuth();
   const { getAccessGroupQuery } = useRoles();
   const { data: accessGroupsResponse } = getAccessGroupQuery();
@@ -38,12 +38,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
     useExpandableRow();
 
   const openViewPanel = (script: Script) => {
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
-      </Suspense>,
-    );
+    setPageParams({ sidePath: ["view"], name: script.id.toString() });
   };
 
   useOpenScriptDetails((profile) => {

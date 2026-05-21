@@ -2,7 +2,7 @@ import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -30,10 +30,9 @@ import {
 
 interface EditScriptFormProps {
   readonly script: Script;
-  readonly onBack?: () => void;
 }
 
-const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
+const EditScriptForm: FC<EditScriptFormProps> = ({ script }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
     value: showConfirmationModal,
@@ -41,7 +40,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
     setFalse: closeModal,
   } = useBoolean();
 
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const debug = useDebug();
   const { notify } = useNotify();
 
@@ -195,8 +194,7 @@ const EditScriptForm: FC<EditScriptFormProps> = ({ script, onBack }) => {
 
       <SidePanelFormButtons
         onSubmit={showModal}
-        hasBackButton={!!onBack}
-        onBackButtonPress={onBack}
+        onCancel={popSidePathUntilClear}
         submitButtonText="Submit new version"
       />
 

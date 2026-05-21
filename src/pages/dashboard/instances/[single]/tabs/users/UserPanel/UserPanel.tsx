@@ -1,8 +1,9 @@
+import SidePanel from "@/components/layout/SidePanel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import useSortByUrlParams from "@/hooks/useSortByUrlParams";
 import useUsers from "@/hooks/useUsers";
 import UserPanelHeader from "@/pages/dashboard/instances/[single]/tabs/users/UserPanelHeader";
@@ -10,24 +11,36 @@ import type { UrlParams } from "@/types/UrlParams";
 import type { User } from "@/types/User";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
-import { useMemo, useState } from "react";
+import { lazy, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { SORT_FUNCTIONS } from "../constants";
-import NewUserForm from "../NewUserForm";
 import UserList from "../UserList";
 import { getFilteredUsers } from "./helpers";
 import { MAX_USERS_LIMIT } from "./constants";
 import { ROUTES } from "@/libs/routes";
 
+const NewUserForm = lazy(() => import("../NewUserForm"));
+const EditUserForm = lazy(() => import("../EditUserForm"));
+const UserDetails = lazy(() => import("../UserDetails"));
+
 const UserPanel: FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
-  const { search, currentPage, pageSize } = usePageParams();
-  const { setSidePanelContent } = useSidePanel();
+  const {
+    search,
+    currentPage,
+    pageSize,
+    lastSidePathSegment,
+    name,
+    popSidePathUntilClear,
+    createSidePathPusher,
+  } = usePageParams();
   const { getUsersQuery } = useUsers();
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
+
+  useSetDynamicFilterValidation("sidePath", ["add", "view", "edit"]);
 
   const { data: userResponse, isLoading } = getUsersQuery({
     computer_id: instanceId,
@@ -56,31 +69,47 @@ const UserPanel: FC = () => {
     setSelected([]);
   };
 
-  const handleEmptyStateAddUser = () => {
-    setSidePanelContent("Add new user", <NewUserForm />);
-  };
+  const handleEmptyStateAddUser = createSidePathPusher("add");
 
   if (!search && isLoading) {
     return <LoadingState />;
   }
 
+  const selectedUser = allUsers.find((u) => String(u.uid) === name);
+
   if (!search && (!userResponse || userResponse.data.results.length === 0)) {
     return (
-      <EmptyState
-        title="No users found"
-        body="Add new users by clicking the button below."
-        icon="connected"
-        cta={[
-          <Button
-            type="button"
-            key="empty-state-add-new-user"
-            appearance="positive"
-            onClick={handleEmptyStateAddUser}
-          >
-            Add user
-          </Button>,
-        ]}
-      />
+      <>
+        <EmptyState
+          title="No users found"
+          body="Add new users by clicking the button below."
+          icon="connected"
+          cta={[
+            <Button
+              type="button"
+              key="empty-state-add-new-user"
+              appearance="positive"
+              onClick={handleEmptyStateAddUser}
+            >
+              Add user
+            </Button>,
+          ]}
+        />
+        <SidePanel
+          onClose={popSidePathUntilClear}
+          isOpen={lastSidePathSegment === "add"}
+          size="small"
+        >
+          {lastSidePathSegment === "add" && (
+            <SidePanel.Suspense key="add">
+              <SidePanel.Header>Add new user</SidePanel.Header>
+              <SidePanel.Content>
+                <NewUserForm />
+              </SidePanel.Content>
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
+      </>
     );
   }
 
@@ -116,6 +145,41 @@ const UserPanel: FC = () => {
         totalItems={filteredUsers.length}
         currentItemCount={users.length}
       />
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={
+          lastSidePathSegment === "add" ||
+          (!!lastSidePathSegment && !!selectedUser)
+        }
+        size="small"
+      >
+        {lastSidePathSegment === "add" && (
+          <SidePanel.Suspense key="add">
+            <SidePanel.Header>Add new user</SidePanel.Header>
+            <SidePanel.Content>
+              <NewUserForm />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && selectedUser && (
+          <SidePanel.Suspense key="view">
+            <SidePanel.Header>User details</SidePanel.Header>
+            <SidePanel.Content>
+              <UserDetails user={selectedUser} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && selectedUser && (
+          <SidePanel.Suspense key="edit">
+            <SidePanel.Header>Edit user</SidePanel.Header>
+            <SidePanel.Content>
+              <EditUserForm user={selectedUser} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </>
   );
 };

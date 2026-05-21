@@ -3,6 +3,7 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import SidePanel from "@/components/layout/SidePanel";
 import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -175,57 +176,62 @@ const WslProfileNonCompliantInstancesList: FC<
 
   return (
     <>
-      <div className={classes.header}>
-        <SearchBox
-          className={classNames("u-no-margin--bottom", classes.search)}
-          externallyControlled
-          value={inputValue}
-          onChange={setInputValue}
-          onClear={clear}
-          onSearch={setSearch}
-          autoComplete="off"
+      <SidePanel.Header>
+        Instances not compliant with {wslProfile.title}
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <div className={classes.header}>
+          <SearchBox
+            className={classNames("u-no-margin--bottom", classes.search)}
+            externallyControlled
+            value={inputValue}
+            onChange={setInputValue}
+            onClear={clear}
+            onSearch={setSearch}
+            autoComplete="off"
+          />
+
+          <Button
+            type="button"
+            className="u-no-margin"
+            hasIcon
+            onClick={openMakeCompliantModal}
+            disabled={!selectedInstances.length}
+          >
+            <Icon name="security-tick" />
+            <span>Make compliant</span>
+          </Button>
+        </div>
+
+        <SidePanelTableFilterChips
+          filters={[
+            {
+              label: "Search",
+              item: search || undefined,
+              clear,
+            },
+          ]}
         />
 
-        <Button
-          type="button"
-          className="u-no-margin"
-          hasIcon
-          onClick={openMakeCompliantModal}
-          disabled={!selectedInstances.length}
-        >
-          <Icon name="security-tick" />
-          <span>Make compliant</span>
-        </Button>
-      </div>
+        {isGettingInstances ? (
+          <LoadingState />
+        ) : (
+          <ResponsiveTable
+            ref={getTableRowsRef}
+            columns={columns}
+            data={instances as WindowsInstance[]}
+            emptyMsg="No Windows instances found according to your search parameters."
+            getCellProps={getCellProps(expandedRowIndex)}
+            getRowProps={getRowProps(expandedRowIndex)}
+          />
+        )}
 
-      <SidePanelTableFilterChips
-        filters={[
-          {
-            label: "Search",
-            item: search || undefined,
-            clear,
-          },
-        ]}
-      />
-
-      {isGettingInstances ? (
-        <LoadingState />
-      ) : (
-        <ResponsiveTable
-          ref={getTableRowsRef}
-          columns={columns}
-          data={instances as WindowsInstance[]}
-          emptyMsg="No Windows instances found according to your search parameters."
-          getCellProps={getCellProps(expandedRowIndex)}
-          getRowProps={getRowProps(expandedRowIndex)}
+        <WindowsInstanceMakeCompliantModal
+          close={closeMakeCompliantModal}
+          instances={selectedInstances as WindowsInstance[]}
+          isOpen={isMakeCompliantModalOpen}
         />
-      )}
-
-      <WindowsInstanceMakeCompliantModal
-        close={closeMakeCompliantModal}
-        instances={selectedInstances as WindowsInstance[]}
-        isOpen={isMakeCompliantModalOpen}
-      />
+      </SidePanel.Content>
     </>
   );
 };

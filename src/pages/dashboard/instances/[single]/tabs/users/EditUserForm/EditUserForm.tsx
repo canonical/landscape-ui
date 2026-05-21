@@ -6,7 +6,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import useUsers from "@/hooks/useUsers";
 import type { User } from "@/types/User";
 import { useParams } from "react-router";
@@ -33,7 +33,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const {
     editUserQuery,
     getGroupsQuery,
@@ -224,6 +224,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

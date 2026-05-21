@@ -3,7 +3,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
@@ -25,7 +25,7 @@ interface FormProps {
 const WslInstanceInstallForm: FC = () => {
   const { instanceId } = useParams<UrlParams>();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const openActivityDetails = useOpenActivityDetailsPanel();
 
@@ -96,7 +96,7 @@ const WslInstanceInstallForm: FC = () => {
           cloud_init: strippedCloudInit,
         });
 
-        closeSidePanel();
+        popSidePathUntilClear();
 
         notify.success({
           title: `You have successfully marked ${values.instanceName} to be installed.`,

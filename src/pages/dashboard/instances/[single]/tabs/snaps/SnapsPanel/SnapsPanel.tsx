@@ -1,28 +1,60 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { TablePagination } from "@/components/layout/TablePagination";
 import {
-  InstallSnaps,
+  EditSnapType,
   SnapsHeader,
   SnapsList,
+  getSelectedSnaps,
   useSnaps,
 } from "@/features/snaps";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { useMemo, useState } from "react";
+import { lazy, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
+import { pluralizeWithCount } from "@/utils/_helpers";
+
+const InstallSnapsForm = lazy(
+  async () => import("@/features/snaps/components/InstallSnaps"),
+);
+
+const EditSnapForm = lazy(
+  async () => import("@/features/snaps/components/EditSnap"),
+);
+
+const SnapDetailsView = lazy(
+  async () => import("@/features/snaps/components/SnapDetails"),
+);
 
 const SnapsPanel: FC = () => {
   const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
-  const { search, currentPage, pageSize } = usePageParams();
+  const {
+    search,
+    currentPage,
+    pageSize,
+    lastSidePathSegment,
+    name,
+    popSidePathUntilClear,
+    createSidePathPusher,
+  } = usePageParams();
   const { getSnapsQuery } = useSnaps();
-  const { setSidePanelContent } = useSidePanel();
+
+  useSetDynamicFilterValidation("sidePath", [
+    "install",
+    "edit",
+    "switch",
+    "uninstall",
+    "hold",
+    "unhold",
+    "refresh",
+  ]);
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
@@ -33,9 +65,7 @@ const SnapsPanel: FC = () => {
     search: search,
   });
 
-  const handleEmptyStateInstall = () => {
-    setSidePanelContent("Install snaps", <InstallSnaps />);
-  };
+  const handleEmptyStateInstall = createSidePathPusher("install");
 
   const installedSnaps = useMemo(
     () => getSnapsQueryResult?.data?.results ?? [],
@@ -45,6 +75,27 @@ const SnapsPanel: FC = () => {
   const handleClearSelection = () => {
     setSelectedSnapIds([]);
   };
+
+  const selectedSnapsToEdit = useMemo(
+    () => getSelectedSnaps(installedSnaps, selectedSnapIds),
+    [installedSnaps, selectedSnapIds],
+  );
+
+  const viewSnap = useMemo(
+    () => installedSnaps.find((s) => s.snap.name === name),
+    [installedSnaps, name],
+  );
+
+  const isBulkAction =
+    lastSidePathSegment &&
+    ["switch", "uninstall", "hold", "unhold", "refresh"].includes(
+      lastSidePathSegment,
+    );
+
+  const bulkActionType = lastSidePathSegment
+    ? (lastSidePathSegment.charAt(0).toUpperCase() +
+        lastSidePathSegment.slice(1)) as EditSnapType
+    : null;
 
   return (
     <>
@@ -96,6 +147,55 @@ const SnapsPanel: FC = () => {
         totalItems={getSnapsQueryResult?.data?.count}
         currentItemCount={getSnapsQueryResult?.data?.results.length}
       />
+
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={Boolean(
+          lastSidePathSegment === "install" ||
+            (lastSidePathSegment === "edit" && !!viewSnap) ||
+            (isBulkAction && selectedSnapsToEdit.length > 0),
+        )}
+        size="small"
+      >
+        {lastSidePathSegment === "install" && (
+          <SidePanel.Suspense key="install">
+            <SidePanel.Header>Install snaps</SidePanel.Header>
+            <SidePanel.Content>
+              <InstallSnapsForm />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "edit" && viewSnap && (
+          <SidePanel.Suspense key="edit">
+            <SidePanel.Header>{viewSnap.snap.name} details</SidePanel.Header>
+            <SidePanel.Content>
+              <SnapDetailsView installedSnap={viewSnap} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {isBulkAction && bulkActionType && selectedSnapsToEdit.length > 0 && (
+          <SidePanel.Suspense key={lastSidePathSegment}>
+            <SidePanel.Header>
+              {selectedSnapsToEdit.length === 1
+                ? `${bulkActionType} ${selectedSnapsToEdit[0]?.snap.name}${
+                    bulkActionType === EditSnapType.Switch ? "'s channel" : ""
+                  }`
+                : `${bulkActionType} ${pluralizeWithCount(
+                    selectedSnapsToEdit.length,
+                    "snap",
+                  )}`}
+            </SidePanel.Header>
+            <SidePanel.Content>
+              <EditSnapForm
+                type={bulkActionType}
+                installedSnaps={selectedSnapsToEdit}
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </>
   );
 };

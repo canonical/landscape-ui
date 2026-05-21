@@ -1,10 +1,9 @@
 import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import LoadingState from "@/components/layout/LoadingState";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type {
   InstanceChild,
   WindowsInstanceWithoutRelation,
@@ -12,16 +11,11 @@ import type {
 import { pluralizeArray } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import WindowsInstanceMakeCompliantModal from "../WindowsInstanceMakeCompliantModal";
 import WslInstanceReinstallModal from "../WslInstanceReinstallModal";
 import WslInstanceUninstallModal from "../WslInstanceUninstallModal";
 import classes from "./WslInstancesHeader.module.scss";
-
-const WslInstanceInstallForm = lazy(
-  async () => import("../WslInstanceInstallForm"),
-);
 
 interface WslInstancesHeaderProps {
   readonly windowsInstance: WindowsInstanceWithoutRelation;
@@ -36,7 +30,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const { reapplyWslProfile } = useReapplyWslProfile();
 
@@ -78,14 +72,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
     }
   };
 
-  const openInstallForm = () => {
-    setSidePanelContent(
-      "Create new WSL instance",
-      <Suspense fallback={<LoadingState />}>
-        <WslInstanceInstallForm />
-      </Suspense>,
-    );
-  };
+  const openInstallForm = createSidePathPusher("install-wsl");
 
   const hasWslProfiles = wslInstances.some(
     (instanceChild) => instanceChild.profile,

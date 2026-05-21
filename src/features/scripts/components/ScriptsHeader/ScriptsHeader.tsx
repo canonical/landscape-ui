@@ -1,25 +1,15 @@
 import { PageParamFilter, TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
-import { type FC, lazy, Suspense } from "react";
+import { type FC } from "react";
 import classes from "./ScriptsHeader.module.scss";
 import { STATUS_OPTIONS } from "./constants";
 
-const CreateScriptForm = lazy(async () => import("../CreateScriptForm"));
-
 const ScriptsHeader: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
-  const handleScriptCreate = () => {
-    setSidePanelContent(
-      "Add script",
-      <Suspense fallback={<LoadingState />}>
-        <CreateScriptForm />
-      </Suspense>,
-    );
-  };
+  const handleScriptCreate = createSidePathPusher("create");
 
   return (
     <>

@@ -1,7 +1,7 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -18,7 +18,7 @@ interface ScriptListActionsProps {
 }
 
 const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher, setPageParams } = usePageParams();
 
   const {
     value: archiveModalOpen,
@@ -57,31 +57,16 @@ const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
   const { is_executable, is_redactable, is_editable } = script;
 
   const handleScriptRun = (): void => {
-    setSidePanelContent(
-      `Run "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} />
-      </Suspense>,
-    );
-  };
+      setPageParams({ sidePath: ["run"], name: script.id.toString() });
+    };;
 
   const handleViewScriptDetails = () => {
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
-      </Suspense>,
-    );
-  };
+      setPageParams({ sidePath: ["view"], name: script.id.toString() });
+    };;
 
   const handleEditScript = (): void => {
-    setSidePanelContent(
-      `Edit "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <EditScriptForm script={script} />
-      </Suspense>,
-    );
-  };
+      setPageParams({ sidePath: ["edit"], name: script.id.toString() });
+    };;
 
   const nondestructiveActions: Action[] = [
     {

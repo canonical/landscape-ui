@@ -1,5 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { TablePagination } from "@/components/layout/TablePagination";
 import type { KernelOverviewInfo } from "@/features/kernel";
 import {
@@ -8,12 +9,23 @@ import {
   KernelTableList,
   useKernel,
 } from "@/features/kernel";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import moment from "moment";
 import type { FC } from "react";
-import { useMemo } from "react";
+import { lazy, useMemo } from "react";
 import { useParams } from "react-router";
+
+const DowngradeKernelForm = lazy(
+  async () => import("@/features/kernel/components/DowngradeKernelForm"),
+);
+const UpgradeKernelForm = lazy(
+  async () => import("@/features/kernel/components/UpgradeKernelForm"),
+);
+const RestartInstanceForm = lazy(
+  async () => import("@/features/kernel/components/RestartInstanceForm"),
+);
 
 interface KernelPanelProps {
   readonly instanceTitle: string;
@@ -22,8 +34,15 @@ interface KernelPanelProps {
 const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
 
-  const { pageSize, currentPage } = usePageParams();
+  const { pageSize, currentPage, lastSidePathSegment, popSidePathUntilClear } =
+    usePageParams();
   const { getKernelQuery, getLivepatchInfoQuery } = useKernel();
+
+  useSetDynamicFilterValidation("sidePath", [
+    "downgrade",
+    "upgrade",
+    "restart",
+  ]);
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
@@ -64,6 +83,11 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
     status: kernelStatuses?.data.smart_status ?? "",
   };
 
+  const currentKernelVersion =
+    kernelStatuses?.data.installed?.version_rounded ?? "";
+  const downgradeKernelVersions = kernelStatuses?.data.downgrades ?? [];
+  const upgradeKernelVersions = kernelStatuses?.data.upgrades ?? [];
+
   return (
     <>
       {isLoadingKernelStatuses && <LoadingState />}
@@ -90,6 +114,54 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
           />
         </>
       )}
+
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={
+          lastSidePathSegment === "downgrade" ||
+          lastSidePathSegment === "upgrade" ||
+          lastSidePathSegment === "restart"
+        }
+      >
+        {lastSidePathSegment === "downgrade" && (
+          <SidePanel.Suspense key="downgrade">
+            <SidePanel.Header>Downgrade kernel</SidePanel.Header>
+            <SidePanel.Content>
+              <DowngradeKernelForm
+                instanceName={instanceTitle}
+                currentKernelVersion={currentKernelVersion}
+                downgradeKernelVersions={downgradeKernelVersions}
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "upgrade" && (
+          <SidePanel.Suspense key="upgrade">
+            <SidePanel.Header>Upgrade kernel</SidePanel.Header>
+            <SidePanel.Content>
+              <UpgradeKernelForm
+                instanceName={instanceTitle}
+                currentKernelVersion={currentKernelVersion}
+                upgradeKernelVersions={upgradeKernelVersions}
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "restart" && (
+          <SidePanel.Suspense key="restart">
+            <SidePanel.Header>Restart {instanceTitle}</SidePanel.Header>
+            <SidePanel.Content>
+              <RestartInstanceForm
+                instanceName={instanceTitle}
+                showNotification={livepatchFixes.length > 0}
+                newKernelVersionId={upgradeKernelVersions[0]?.id}
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </>
   );
 };

@@ -2,7 +2,7 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
@@ -37,7 +37,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     setFalse: closeDeleteModal,
   } = useBoolean();
 
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher, setPageParams } = usePageParams();
 
   const { script } = useGetSingleScript(scriptId);
 
@@ -63,43 +63,16 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     afterSuccess: closeDeleteModal,
   });
 
-  const viewVersionHistory = (): void => {
-    if (!script) {
-      return;
-    }
 
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} initialTabId="version-history" />
-      </Suspense>,
-    );
-  };
 
-  const handleBackToDetails = (): void => {
-    if (!script) {
-      return;
-    }
 
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
-      </Suspense>,
-    );
-  };
 
   const handleEditScript = (): void => {
     if (!script) {
       return;
     }
 
-    setSidePanelContent(
-      `Edit "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <EditScriptForm script={script} onBack={handleBackToDetails} />
-      </Suspense>,
-    );
+    createSidePathPusher("edit")();
   };
 
   const handleRunScript = (): void => {
@@ -107,12 +80,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
       return;
     }
 
-    setSidePanelContent(
-      `Run "${script.title}" script`,
-      <Suspense fallback={<LoadingState />}>
-        <RunScriptForm script={script} onBack={handleBackToDetails} />
-      </Suspense>,
-    );
+    createSidePathPusher("run")();
   };
 
   if (script?.status === "REDACTED") {
@@ -190,7 +158,6 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         <Suspense fallback={<LoadingState />}>
           <ScriptDetailsTabs
             script={script}
-            viewVersionHistory={viewVersionHistory}
             initialTabId={initialTabId}
           />
         </Suspense>

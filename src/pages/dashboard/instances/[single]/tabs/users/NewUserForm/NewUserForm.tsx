@@ -4,7 +4,7 @@ import type { FC } from "react";
 import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import useUsers from "@/hooks/useUsers";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
@@ -25,7 +25,7 @@ interface FormProps {
 const NewUserForm: FC = () => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { createUserQuery, getGroupsQuery } = useUsers();
 
   const instanceId = Number(urlInstanceId);
@@ -154,6 +154,7 @@ const NewUserForm: FC = () => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Add user"
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

@@ -3,7 +3,7 @@ import type { Script } from "@/features/scripts";
 import { ScriptDropdown } from "@/features/scripts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Col, Form, Input, Row } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -24,7 +24,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
 
   const { runScript } = useRunScript();
 
@@ -102,10 +102,8 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
 
       <DeliveryBlock formik={formik} />
 
-      <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
-        submitButtonText="Run script"
-      />
+      <SidePanelFormButtons submitButtonDisabled={formik.isSubmitting}
+      submitButtonText="Run script" onCancel={popSidePathUntilClear} />
     </Form>
   );
 };

@@ -1,18 +1,14 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
-import useSidePanel from "@/hooks/useSidePanel";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
-import { Suspense } from "react";
 import {
   EditSnapType,
   getSelectedSnaps,
   getSnapUpgradeCounts,
 } from "../../helpers";
 import type { InstalledSnap } from "../../types";
-import EditSnap from "../EditSnap";
-import InstallSnaps from "../InstallSnaps";
 import classes from "./SnapActions.module.scss";
 
 interface SnapsActionProps {
@@ -26,38 +22,20 @@ const SnapsActions: FC<SnapsActionProps> = ({
   installedSnaps,
   sidePanel = false,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath, createSidePathPusher } = usePageParams();
 
   const singleSnap = installedSnaps.length === 1 ? installedSnaps[0] : null;
   const selectedSnaps = getSelectedSnaps(installedSnaps, selectedSnapIds);
   const { held, unheld } = getSnapUpgradeCounts(selectedSnaps);
 
   const handleEditSnap = (action: EditSnapType) => {
-    const getCount = () => {
-      if (action === EditSnapType.Unhold) {
-        return held;
-      }
-      if (action === EditSnapType.Hold) {
-        return unheld;
-      }
-      return selectedSnapIds.length;
-    };
-
-    const title = singleSnap
-      ? `${action} ${singleSnap.snap.name}${action === EditSnapType.Switch ? "'s channel" : ""}`
-      : `${action} ${pluralizeWithCount(getCount(), "snap")}`;
-
-    setSidePanelContent(
-      title,
-      <Suspense fallback={<LoadingState />}>
-        <EditSnap installedSnaps={selectedSnaps} type={action} />
-      </Suspense>,
-    );
+    setPageParams({
+      sidePath: [...sidePath, action.toLowerCase()],
+      ...(singleSnap ? { name: singleSnap.snap.name } : {}),
+    });
   };
 
-  const handleInstallSnap = () => {
-    setSidePanelContent("Install snaps", <InstallSnaps />);
-  };
+  const handleInstallSnap = createSidePathPusher("install");
 
   return (
     <div className={classes.container}>

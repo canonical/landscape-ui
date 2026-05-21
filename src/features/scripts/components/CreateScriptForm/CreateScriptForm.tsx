@@ -2,7 +2,7 @@ import CodeEditor from "@/components/form/CodeEditor";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Icon, Input, Select } from "@canonical/react-components";
@@ -24,7 +24,7 @@ import { getValidationSchema } from "./helpers";
 const CreateScript: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const debug = useDebug();
   const { getAccessGroupQuery } = useRoles();
 
@@ -166,10 +166,8 @@ const CreateScript: FC = () => {
         }
       />
 
-      <SidePanelFormButtons
-        submitButtonText="Add script"
-        submitButtonDisabled={formik.isSubmitting}
-      />
+      <SidePanelFormButtons submitButtonText="Add script"
+      submitButtonDisabled={formik.isSubmitting} onCancel={popSidePathUntilClear} />
     </Form>
   );
 };

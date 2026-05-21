@@ -4,22 +4,13 @@ import ListActions, {
 import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { User } from "@/types/User";
 import { Button, CheckboxInput, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import classes from "./UserList.module.scss";
-
-const EditUserForm = lazy(
-  async () =>
-    import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
-);
-const UserDetails = lazy(
-  async () =>
-    import("@/pages/dashboard/instances/[single]/tabs/users/UserDetails"),
-);
 
 interface UserListProps {
   readonly users: User[];
@@ -28,24 +19,14 @@ interface UserListProps {
 }
 
 const UserList: FC<UserListProps> = ({ users, selected, setSelected }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createPageParamsSetter } = usePageParams();
 
   const handleEditUser = (user: User) => {
-    setSidePanelContent(
-      "Edit user",
-      <Suspense fallback={<LoadingState />}>
-        <EditUserForm user={user} />
-      </Suspense>,
-    );
+    createPageParamsSetter({ sidePath: ["edit"], name: String(user.uid) })();
   };
 
   const handleShowUserDetails = (user: User) => {
-    setSidePanelContent(
-      "User details",
-      <Suspense fallback={<LoadingState />}>
-        <UserDetails user={user} />
-      </Suspense>,
-    );
+    createPageParamsSetter({ sidePath: ["view"], name: String(user.uid) })();
   };
 
   const toggleAll = () => {

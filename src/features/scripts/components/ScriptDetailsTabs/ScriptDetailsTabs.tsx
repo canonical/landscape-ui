@@ -17,14 +17,12 @@ const ScriptsVersionHistory = lazy(
 
 interface ScriptDetailsTabsProps {
   readonly script: SingleScript;
-  readonly viewVersionHistory: () => void;
   readonly initialTabId?: ScriptTabId;
 }
 
 const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
   script,
   initialTabId = "info",
-  viewVersionHistory,
 }) => {
   const [tabId, setTabId] = useState(initialTabId);
   const links = SCRIPT_TABS.map(({ label, id }) => ({
@@ -61,7 +59,6 @@ const ScriptDetailsTabs: FC<ScriptDetailsTabsProps> = ({
         <Suspense fallback={<LoadingState />}>
           <ScriptsVersionHistory
             script={script}
-            viewVersionHistory={viewVersionHistory}
           />
         </Suspense>
       )}

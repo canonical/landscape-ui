@@ -1,7 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import { pluralizeArray } from "@/utils/_helpers";
 import type { FC } from "react";
@@ -17,7 +17,7 @@ const InstallSnaps: FC = () => {
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { snapsActionQuery } = useSnaps();
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
 
@@ -65,6 +65,7 @@ const InstallSnaps: FC = () => {
         submitButtonText="Install snaps"
         submitButtonAppearance="positive"
         onSubmit={handleSubmit}
+        onCancel={popSidePathUntilClear}
       />
     </>
   );

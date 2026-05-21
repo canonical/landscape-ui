@@ -7,28 +7,21 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import useUsers from "@/hooks/useUsers";
 import type { User } from "@/types/User";
-import NewUserForm from "../NewUserForm";
 import {
   getSelectedUsernames,
   getUserLockStatusCounts,
   renderModalBody,
   UserAction,
 } from "./helpers";
-import LoadingState from "@/components/layout/LoadingState";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
 import { ResponsiveButtons } from "@/components/ui";
-
-const EditUserForm = lazy(
-  async () =>
-    import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
-);
 
 interface UserPanelActionButtonsProps {
   readonly selectedUsers: User[];
@@ -47,7 +40,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
+  const { closeSidePanel, createSidePathPusher, createPageParamsSetter } = usePageParams();
   const { removeUserQuery, lockUserQuery, unlockUserQuery } = useUsers();
   const [lockOpen, setLockOpen] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
@@ -101,17 +94,10 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     await performUserAction(removeUserMutation, "removed");
   };
 
-  const handleAddUser = () => {
-    setSidePanelContent("Add new user", <NewUserForm />);
-  };
+  const handleAddUser = createSidePathPusher("add");
 
   const handleEditUser = (currentUser: User) => {
-    setSidePanelContent(
-      "Edit user",
-      <Suspense fallback={<LoadingState />}>
-        <EditUserForm user={currentUser} />
-      </Suspense>,
-    );
+    createPageParamsSetter({ sidePath: ["edit"], name: String(currentUser.uid) })();
   };
 
   const handleToggleDeleteUserHomeFolders = () => {

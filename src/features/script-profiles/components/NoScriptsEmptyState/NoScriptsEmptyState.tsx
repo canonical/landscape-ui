@@ -1,6 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -10,16 +10,9 @@ const CreateScriptForm = lazy(
 );
 
 const NoScriptsEmptyState: FC = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
-  const addScript = () => {
-    setSidePanelContent(
-      "Add script",
-      <Suspense fallback={<LoadingState />}>
-        <CreateScriptForm />
-      </Suspense>,
-    );
-  };
+  const addScript = createSidePathPusher("create");;
 
   return (
     <EmptyState

@@ -5,7 +5,7 @@ import {
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
@@ -31,7 +31,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { snapsActionQuery, getAvailableSnapInfo } = useSnaps();
 
   const instanceId = Number(urlInstanceId);
@@ -205,6 +205,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           type === EditSnapType.Uninstall ? "negative" : "positive"
         }
         submitButtonDisabled={formik.isSubmitting}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );
