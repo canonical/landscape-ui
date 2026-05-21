@@ -2,7 +2,7 @@
 
 Integration tests run Playwright against a real Landscape backend stack (landscape-server + landscape-go) running in Docker containers. They complement the existing MSW-backed Vitest tests by verifying real API contract fidelity.
 
-See [e2e/docker-stack/ui/README.md](../e2e/docker-stack/README.md) for a quick-start guide (triggering, running locally, adding tests).
+See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-start guide (triggering, running locally, adding tests).
 
 ## What they test
 
@@ -126,10 +126,10 @@ pnpm exec playwright install chromium
 
 ```bash
 # Self-hosted mode (requires live backend)
-pnpm exec playwright test --config playwright.integration.config.ts
+pnpm exec playwright test --config e2e/docker-stack/playwright.integration.config.ts
 
 # SaaS mode (same backend, VITE_SELF_HOSTED_ENV=false)
-pnpm exec playwright test --config playwright.integration.saas.config.ts
+pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.config.ts
 ```
 
 Reports are written to `playwright-integration-report/` and `playwright-integration-saas-report/`.
