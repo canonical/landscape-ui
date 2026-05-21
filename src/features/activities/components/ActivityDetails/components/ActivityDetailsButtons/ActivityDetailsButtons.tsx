@@ -6,7 +6,7 @@ import {
 } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ConfirmationButton } from "@canonical/react-components";
 import type { FC } from "react";
 
@@ -19,7 +19,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();

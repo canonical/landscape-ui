@@ -1,5 +1,6 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiError } from "@/types/api/ApiError";
+import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { AutoinstallFile, WithMetadata } from "../types";
@@ -16,10 +17,16 @@ export type GetAutoinstallFileResult<T extends GetAutoinstallFileParams> =
       ? WithMetadata<AutoinstallFile>
       : object);
 
-export const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
-  id,
-  ...params
-}: T): {
+export const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>(
+  { id, ...params }: T,
+  options: Omit<
+    UseQueryOptions<
+      AxiosResponse<GetAutoinstallFileResult<T>>,
+      AxiosError<ApiError>
+    >,
+    "queryKey" | "queryFn"
+  > = {}
+): {
   autoinstallFile: GetAutoinstallFileResult<T> | undefined;
   isAutoinstallFileLoading: boolean;
 } => {
@@ -34,6 +41,7 @@ export const useGetAutoinstallFile = <T extends GetAutoinstallFileParams>({
       authFetch.get(`autoinstall/${id}`, {
         params,
       }),
+    ...options,
   });
 
   return {

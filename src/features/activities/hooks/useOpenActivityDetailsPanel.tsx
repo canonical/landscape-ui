@@ -1,25 +1,18 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { ActivityCommon } from "../types";
-import { lazy, Suspense, useCallback } from "react";
-
-const ActivityDetails = lazy(
-  async () => import("../components/ActivityDetails"),
-);
+import { useCallback } from "react";
 
 const useOpenActivityDetailsPanel = () => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   return useCallback(
     (activity: ActivityCommon) => {
-      setSidePanelContent(
-        activity.summary,
-        <Suspense fallback={<LoadingState />}>
-          <ActivityDetails activityId={activity.id} />
-        </Suspense>,
-      );
+      setPageParams({
+        sidePath: [...sidePath, "view"],
+        name: String(activity.id),
+      });
     },
-    [setSidePanelContent],
+    [setPageParams, sidePath],
   );
 };
 
