@@ -1,15 +1,9 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import type { KernelManagementInfo } from "../../types";
 import classes from "./KernelHeader.module.scss";
 import { ResponsiveButtons } from "@/components/ui";
-
-const DowngradeKernelForm = lazy(async () => import("../DowngradeKernelForm"));
-const UpgradeKernelForm = lazy(async () => import("../UpgradeKernelForm"));
-const RestartInstanceForm = lazy(async () => import("../RestartInstanceForm"));
 
 interface KernelHeaderProps {
   readonly instanceName: string;
@@ -22,50 +16,14 @@ const KernelHeader: FC<KernelHeaderProps> = ({
   hasTableData,
   kernelStatuses,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
-  const currentKernelVersion = kernelStatuses?.installed?.version_rounded ?? "";
   const downgradeKernelVersions = kernelStatuses?.downgrades ?? [];
   const upgradeKernelVersions = kernelStatuses?.upgrades ?? [];
 
-  const handleDowngradeKernel = () => {
-    setSidePanelContent(
-      "Downgrade kernel",
-      <Suspense fallback={<LoadingState />}>
-        <DowngradeKernelForm
-          instanceName={instanceName}
-          currentKernelVersion={currentKernelVersion}
-          downgradeKernelVersions={downgradeKernelVersions}
-        />
-      </Suspense>,
-    );
-  };
-
-  const handleUpgradeKernel = () => {
-    setSidePanelContent(
-      "Upgrade kernel",
-      <Suspense fallback={<LoadingState />}>
-        <UpgradeKernelForm
-          instanceName={instanceName}
-          currentKernelVersion={currentKernelVersion}
-          upgradeKernelVersions={upgradeKernelVersions}
-        />
-      </Suspense>,
-    );
-  };
-
-  const handleRestartInstance = () => {
-    setSidePanelContent(
-      `Restart ${instanceName}`,
-      <Suspense fallback={<LoadingState />}>
-        <RestartInstanceForm
-          instanceName={instanceName}
-          showNotification={hasTableData}
-          newKernelVersionId={upgradeKernelVersions[0]?.id}
-        />
-      </Suspense>,
-    );
-  };
+  const handleDowngradeKernel = createSidePathPusher("downgrade");
+  const handleUpgradeKernel = createSidePathPusher("upgrade");
+  const handleRestartInstance = createSidePathPusher("restart");
 
   return (
     <div className={classes.container}>

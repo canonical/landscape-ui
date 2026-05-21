@@ -2,7 +2,7 @@ import { useOpenActivityDetailsPanel } from "@/features/activities";
 import { useRestartInstance } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import {
   Button,
@@ -39,7 +39,7 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
 }) => {
   const debug = useDebug();
   const { instanceId } = useParams<UrlParams>();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const { upgradeKernelQuery } = useKernel();
   const openActivityDetails = useOpenActivityDetailsPanel();
@@ -127,7 +127,7 @@ const RestartInstanceForm: FC<RestartInstanceFormProps> = ({
       <RandomizationBlock formik={formik} />
 
       <div className="form-buttons">
-        <Button type="button" appearance="base" onClick={closeSidePanel}>
+        <Button type="button" appearance="base" onClick={popSidePathUntilClear}>
           Cancel
         </Button>
         {showNotification && newKernelVersionId && (

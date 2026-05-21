@@ -3,7 +3,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -21,7 +21,7 @@ interface AccessGroupChangeProps {
 const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const { getAccessGroupQuery, changeComputersAccessGroupQuery } = useRoles();
 
   const { data: getAccessGroupQueryResult, isLoading } = getAccessGroupQuery();

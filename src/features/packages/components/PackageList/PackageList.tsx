@@ -1,14 +1,12 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import type { FC } from "react";
 import {
-  lazy,
-  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -28,8 +26,6 @@ import {
 } from "./helpers";
 import classes from "./PackageList.module.scss";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-
-const PackageDetails = lazy(async () => import("../PackageDetails"));
 
 interface PackageListProps {
   readonly emptyMsg: string;
@@ -52,7 +48,7 @@ const PackageList: FC<PackageListProps> = ({
   const [hideUbuntuProInfo, setHideUbuntuProInfo] = useState(false);
 
   const { instanceId, childInstanceId } = useParams<UrlParams>();
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   const packagesToShow = useMemo(() => {
     if (!packagesLoading) {
@@ -92,14 +88,12 @@ const PackageList: FC<PackageListProps> = ({
 
   const handlePackageClick = useCallback(
     (singlePackage: InstancePackage) => {
-      setSidePanelContent(
-        "Package details",
-        <Suspense fallback={<LoadingState />}>
-          <PackageDetails singlePackage={singlePackage} />
-        </Suspense>,
-      );
+      setPageParams({
+        sidePath: [...sidePath, "view"],
+        name: singlePackage.name,
+      });
     },
-    [setSidePanelContent],
+    [setPageParams, sidePath],
   );
 
   const columns = useMemo<Column<InstancePackage>[]>(

@@ -8,7 +8,7 @@ import type { Activity } from "@/features/activities";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import { Col, Form, Row, Select } from "@canonical/react-components";
 import type { AxiosResponse } from "axios";
@@ -40,7 +40,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const openActivityDetails = useOpenActivityDetailsPanel();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const {
     downgradePackageVersionQuery,
     getDowngradePackageVersionsQuery,
@@ -193,6 +193,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           submitButtonDisabled={formik.isSubmitting}
           submitButtonText={INSTALLED_PACKAGE_ACTIONS[action].label}
           submitButtonAppearance={INSTALLED_PACKAGE_ACTIONS[action].appearance}
+          onCancel={popSidePathUntilClear}
         />
       )}
     </Form>

@@ -6,7 +6,7 @@ import InfoGrid from "@/components/layout/InfoGrid";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { SelectOption } from "@/types/SelectOption";
 import type { UrlParams } from "@/types/UrlParams";
 import { hasOneItem } from "@/utils/_helpers";
@@ -43,7 +43,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
 }) => {
   const debug = useDebug();
   const { instanceId } = useParams<UrlParams>();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const { downgradeKernelQuery } = useKernel();
   const openActivityDetails = useOpenActivityDetailsPanel();
@@ -145,7 +145,7 @@ const DowngradeKernelForm: FC<DowngradeKernelFormProps> = ({
       <RandomizationBlock formik={formik} />
 
       <div className="form-buttons">
-        <Button type="button" appearance="base" onClick={closeSidePanel}>
+        <Button type="button" appearance="base" onClick={popSidePathUntilClear}>
           Cancel
         </Button>
         <ConfirmationButton

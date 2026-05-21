@@ -2,7 +2,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import PasswordConstraints from "@/components/form/PasswordConstraints";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Form, Input, PasswordToggle } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -18,7 +18,7 @@ interface FormProps {
 const ChangePasswordForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const { changePassword } = useUserGeneralSettings();
   const { mutateAsync: changePasswordMutation } = changePassword;
 
@@ -79,6 +79,7 @@ const ChangePasswordForm: FC = () => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText="Save changes"
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

@@ -5,7 +5,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { usePackages } from "../../hooks";
 import type { InstancePackage } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
@@ -19,7 +19,7 @@ const PackagesInstallForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { packagesActionQuery } = usePackages();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
   const openActivityDetails = useOpenActivityDetailsPanel();
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
@@ -71,6 +71,7 @@ const PackagesInstallForm: FC = () => {
         submitButtonText="Install packages"
         submitButtonAppearance="positive"
         onSubmit={handleSubmit}
+        onCancel={popSidePathUntilClear}
       />
     </>
   );

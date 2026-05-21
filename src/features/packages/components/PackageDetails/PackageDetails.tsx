@@ -1,34 +1,24 @@
 import InfoGrid from "@/components/layout/InfoGrid";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { Fragment, lazy, Suspense } from "react";
+import { Fragment } from "react";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
 import { highlightVersionsDifference } from "./helpers";
-
-const InstalledPackagesActionForm = lazy(
-  () => import("../InstalledPackagesActionForm"),
-);
 
 interface PackageDetailsProps {
   readonly singlePackage: InstancePackage;
 }
 
 const PackageDetails: FC<PackageDetailsProps> = ({ singlePackage }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   const handleExistingPackages = (action: InstalledPackageAction) => {
-    setSidePanelContent(
-      `${INSTALLED_PACKAGE_ACTIONS[action].label} ${singlePackage.name}`,
-      <Suspense fallback={<LoadingState />}>
-        <InstalledPackagesActionForm
-          action={action}
-          packages={[singlePackage]}
-        />
-      </Suspense>,
-    );
+    setPageParams({
+      sidePath: [...sidePath, action],
+      name: singlePackage.name,
+    });
   };
 
   const buttonRenderCondition: Record<InstalledPackageAction, boolean> = {

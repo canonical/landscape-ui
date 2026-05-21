@@ -5,12 +5,11 @@ import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useDebug from "@/hooks/useDebug";
 import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useUserGeneralSettings } from "../../hooks";
 import type { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
@@ -18,8 +17,6 @@ import classes from "./EditUserForm.module.scss";
 import { getAccountOptions } from "./helpers";
 import type { EditUserFormValues } from "./types";
 import { MASKED_VALUE } from "@/constants";
-
-const ChangePasswordForm = lazy(async () => import("../ChangePasswordForm"));
 
 interface EditUserFormProps {
   readonly userDetails: UserDetails;
@@ -29,7 +26,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { isSaas, isSelfHosted } = useEnv();
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
   const { user, setUser } = useAuth();
   const { isOnSubdomain, options } = useAuthAccounts();
   const { editUserDetails } = useUserGeneralSettings();
@@ -75,14 +72,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
     },
   });
 
-  const handleChangePassword = () => {
-    setSidePanelContent(
-      "Change password",
-      <Suspense fallback={<LoadingState />}>
-        <ChangePasswordForm />
-      </Suspense>,
-    );
-  };
+  const handleChangePassword = createSidePathPusher("change-password");
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>

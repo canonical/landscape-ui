@@ -1,45 +1,18 @@
-import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
-import useSidePanel from "@/hooks/useSidePanel";
-import { pluralizeArray } from "@/utils/_helpers";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
 import PackagesInstallButton from "../PackagesInstallButton";
 import classes from "./PackageActions.module.scss";
-
-const InstalledPackagesActionForm = lazy(
-  async () => import("../InstalledPackagesActionForm"),
-);
 
 interface PackageActionsProps {
   readonly selectedPackages: InstancePackage[];
 }
 
 const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
-  const { setSidePanelContent } = useSidePanel();
-
-  const handleExistingPackages = (
-    action: Exclude<InstalledPackageAction, "downgrade">,
-  ) => {
-    const titleEnding = pluralizeArray(
-      selectedPackages,
-      (pkg) => pkg.name,
-      `selected packages`,
-    );
-
-    setSidePanelContent(
-      `${INSTALLED_PACKAGE_ACTIONS[action].label} ${titleEnding}`,
-      <Suspense fallback={<LoadingState />}>
-        <InstalledPackagesActionForm
-          action={action}
-          packages={selectedPackages}
-        />
-      </Suspense>,
-    );
-  };
+  const { createSidePathPusher } = usePageParams();
 
   const actionDisabledCondition: Record<
     Exclude<InstalledPackageAction, "downgrade">,
@@ -79,7 +52,7 @@ const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
               className="p-segmented-control__button has-icon u-no-margin--bottom"
               disabled={actionDisabledCondition[packageAction]}
               onClick={() => {
-                handleExistingPackages(packageAction);
+                createSidePathPusher(packageAction)();
               }}
               hasIcon
             >

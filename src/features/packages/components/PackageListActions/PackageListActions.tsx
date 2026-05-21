@@ -1,22 +1,16 @@
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { INSTALLED_PACKAGE_ACTIONS } from "../../constants";
 import type { InstalledPackageAction, InstancePackage } from "../../types";
-
-const InstalledPackagesActionForm = lazy(
-  async () => import("../InstalledPackagesActionForm"),
-);
 
 interface PackageListActionsProps {
   readonly pkg: InstancePackage;
 }
 
 const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath } = usePageParams();
 
   const buttonRenderCondition: Record<InstalledPackageAction, boolean> = {
     remove: true,
@@ -28,12 +22,10 @@ const PackageListActions: FC<PackageListActionsProps> = ({ pkg }) => {
   };
 
   const handlePackageAction = (action: InstalledPackageAction) => {
-    setSidePanelContent(
-      `${INSTALLED_PACKAGE_ACTIONS[action].label} ${pkg.name}`,
-      <Suspense fallback={<LoadingState />}>
-        <InstalledPackagesActionForm action={action} packages={[pkg]} />
-      </Suspense>,
-    );
+    setPageParams({
+      sidePath: [...sidePath, action],
+      name: pkg.name,
+    });
   };
 
   const actions: Action[] = Object.keys(INSTALLED_PACKAGE_ACTIONS)
