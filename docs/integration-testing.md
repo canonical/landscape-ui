@@ -2,7 +2,7 @@
 
 Integration tests run Playwright against a real Landscape backend stack (landscape-server + landscape-go) running in Docker containers. They complement the existing MSW-backed Vitest tests by verifying real API contract fidelity.
 
-See [e2e/docker-stack/ui/README.md](../e2e/docker-stack/ui/README.md) for a quick-start guide (triggering, running locally, adding tests).
+See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-start guide (triggering, running locally, adding tests).
 
 ## What they test
 
@@ -46,11 +46,11 @@ A single workflow, **Integration Tests** (`.github/workflows/integration-tests.y
 | ---------------------------------------- | ------------------- | ----------------------------------------------------------------------- |
 | `vars.LANDSCAPE_PACKAGER_APP_ID`         | Repository variable | GitHub App ID                                                           |
 | `secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY` | Secret              | GitHub App private key (PEM)                                            |
-| `secrets.LANDSCAPE_PROTO_PAT`            | Secret              | Fine-grained PAT — `Contents: Read` on `canonical/landscape-proto` only |
+| `secrets.LANDSCAPE_PROTO_TOKEN`          | Secret              | Fine-grained PAT — `Contents: Read` on `canonical/landscape-proto` only |
 
 The GitHub App must be installed on `canonical/landscape-packaging`, `canonical/landscape-go`, and `canonical/landscape-server`.
 
-> **`LANDSCAPE_PROTO_PAT` migration path:** `landscape-proto` is not yet covered by the App
+> **`LANDSCAPE_PROTO_TOKEN` migration path:** `landscape-proto` is not yet covered by the App
 > installation. A fine-grained PAT is used as a temporary workaround. Once the App is
 > installed on `landscape-proto`, add it to the `repositories:` list in the
 > `create-github-app-token` step and remove the `git config url.insteadOf` line (~4 lines).

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 // This test intentionally re-exercises the login flow with a fresh context.
-// It does NOT use storageState. See e2e/docker-stack/ui/global-setup.ts which
+// It does NOT use storageState. See e2e/docker-stack/global-setup.ts which
 // performs the same login once to produce storageState for other tests.
 
 const email = (): string => {
