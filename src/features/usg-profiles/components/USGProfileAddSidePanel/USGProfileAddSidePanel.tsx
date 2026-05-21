@@ -76,7 +76,40 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
     }
   };
 
-  const submit = () => {
+  const touchStepFields = async () => {
+    if (step === 0) {
+      await formik.setFieldTouched("title", true, false);
+      return;
+    }
+
+    if (step === 1) {
+      await Promise.all([
+        formik.setFieldTouched("benchmark", true, false),
+        formik.setFieldTouched("mode", true, false),
+      ]);
+      return;
+    }
+
+    if (step === 2) {
+      await Promise.all([
+        formik.setFieldTouched("start_type", true, false),
+        formik.setFieldTouched("start_date", true, false),
+        formik.setFieldTouched("every", true, false),
+        formik.setFieldTouched("end_date", true, false),
+        formik.setFieldTouched("deliver_delay_window", true, false),
+        formik.setFieldTouched("restart_deliver_delay", true, false),
+      ]);
+    }
+  };
+
+  const submit = async () => {
+    await formik.validateForm();
+
+    if (!steps[step].isValid) {
+      await touchStepFields();
+      return;
+    }
+
     if (step < steps.length - 1) {
       setStep((step + 1) as StepIndex);
     } else {
