@@ -13,7 +13,7 @@ import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackag
 import { useGetOperation } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type {
   OperationStatus,
   PackagesValidationState,
@@ -114,7 +114,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const packagesCount =
     validationTask && validationTask.count > 0
-      ? pluralizeWithCount(validationTask.count, "package")
+      ? pluralize(validationTask.count, ["package"], "exact")
       : "packages";
 
   return (

@@ -1,5 +1,5 @@
 import NoData from "@/components/layout/NoData";
-import { pluralizeNew } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Spinner } from "@canonical/react-components";
 import type { FC } from "react";
 import { useListMirrorPackages } from "../../api";
@@ -18,11 +18,13 @@ const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
   );
 
   if (isLoading) return <Spinner />;
-  if (isError || !data) return <NoData />;
+  if (isError || !data?.data.mirrorPackages) return <NoData />;
 
-  return pluralizeNew(data.data.mirrorPackages?.length, "package", {
-    showCount: data.data.nextPageToken ? "limited" : "exact",
-  });
+  return pluralize(
+    data.data.mirrorPackages.length,
+    ["package"],
+    data.data.nextPageToken ? "limited" : "exact",
+  );
 };
 
 export default MirrorPackagesCount;

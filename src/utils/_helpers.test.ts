@@ -5,8 +5,7 @@ import {
   handleParams,
   hasOneItem,
   pluralize,
-  pluralizeArray,
-  pluralizeWithCount,
+  getSelectionLabel,
 } from "./_helpers";
 import { API_VERSION } from "@/constants";
 
@@ -214,49 +213,53 @@ describe("hasOneItem", () => {
 
 describe("pluralize", () => {
   it("uses singular form", () => {
-    const result = pluralize(1, "singular");
+    const result = pluralize(1, ["singular"]);
 
     expect(result).toEqual("singular");
   });
 
   it("uses default plural form", () => {
-    const result = pluralize(2, "singular");
+    const result = pluralize(2, ["singular"]);
 
     expect(result).toEqual("singulars");
   });
 
   it("uses given plural form", () => {
-    const result = pluralize(0, "singular", "plural");
+    const result = pluralize(0, ["singular", "plural"]);
 
     expect(result).toEqual("plural");
   });
-});
 
-describe("pluralizeWithCount", () => {
-  it("uses singular form", () => {
-    const result = pluralizeWithCount(1, "singular");
+  it("uses singular form with exact count", () => {
+    const result = pluralize(1, ["singular"], "exact");
 
     expect(result).toEqual("1 singular");
   });
 
-  it("uses default plural form", () => {
-    const result = pluralizeWithCount(2, "singular");
+  it("uses default plural form with exact count", () => {
+    const result = pluralize(2, ["singular"], "exact");
 
     expect(result).toEqual("2 singulars");
   });
 
-  it("uses given plural form", () => {
-    const result = pluralizeWithCount(0, "singular", "plural");
+  it("uses given plural form with exact count", () => {
+    const result = pluralize(0, ["singular", "plural"], "exact");
 
     expect(result).toEqual("0 plural");
   });
+
+  it("uses a limited count", () => {
+    const result = pluralize(5, ["item"], "limited");
+
+    expect(result).toEqual("5+ items");
+  });
 });
 
-describe("pluralizeArray", () => {
+describe("getSelectionLabel", () => {
   it("uses singular form", () => {
     const array = ["first"];
 
-    const result = pluralizeArray(array, (item) => item, "count");
+    const result = getSelectionLabel(array, (item) => item, "count");
 
     expect(result).toEqual("first");
   });
@@ -264,13 +267,13 @@ describe("pluralizeArray", () => {
   it("uses plural form for multiple items", () => {
     const array = ["first", "second"];
 
-    const result = pluralizeArray(array, () => "singular", "plural");
+    const result = getSelectionLabel(array, () => "singular", "plural");
 
     expect(result).toEqual("2 plural");
   });
 
   it("uses plural form for empty array", () => {
-    const result = pluralizeArray([], (item) => item, "plural");
+    const result = getSelectionLabel([], (item) => item, "plural");
 
     expect(result).toEqual("0 plural");
   });

@@ -409,7 +409,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
           <p>
             This script will run on the following instances, which are
             associated with the selected{" "}
-            {pluralize(formik.values.tags.length, "tag")}.
+            {pluralize(formik.values.tags.length, ["tag"])}.
           </p>
           <RunScriptFormInstanceList
             instances={taggedInstancesWithScriptsFeature}
