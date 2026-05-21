@@ -118,17 +118,20 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     }
   };
 
-  const filteredTags =
-    tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase())) ??
-    [];
+  const filteredTags = useMemo(
+    () =>
+      tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase())) ??
+      [],
+    [tags, search],
+  );
 
-  const toggleAll = () => {
+  const toggleAll = useCallback(() => {
     if (filteredTags.every((tag) => selectedTags.includes(tag))) {
       setSelectedTags([]);
     } else {
       setSelectedTags(filteredTags);
     }
-  };
+  }, [filteredTags, selectedTags]);
 
   const toggleTag = useCallback(
     (tag: string) => {

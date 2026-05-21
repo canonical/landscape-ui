@@ -76,6 +76,10 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
 
   const handleOpenModal = () => {
     if (finalEligibleIds.length === 0) {
+      notify.error({
+        title: "No eligible instances",
+        message: "Select at least one eligible instance to upgrade.",
+      });
       return;
     }
 

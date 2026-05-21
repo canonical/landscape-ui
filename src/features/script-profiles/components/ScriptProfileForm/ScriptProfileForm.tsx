@@ -21,7 +21,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { type ComponentProps, type FC, useRef } from "react";
+import { type ComponentProps, type FC, useEffect, useRef } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -201,7 +201,9 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     (instancesCount ?? 0) >=
     (scriptProfileLimits?.max_num_computers ?? Infinity);
 
-  isAssociationLimitReachedRef.current = isAssociationLimitReached;
+  useEffect(() => {
+    isAssociationLimitReachedRef.current = isAssociationLimitReached;
+  }, [isAssociationLimitReached]);
 
   if (isGettingScriptProfileLimits) {
     return <LoadingState />;
