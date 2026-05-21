@@ -21,23 +21,30 @@ test.describe("Instances API Contract", () => {
     expect(listRes.ok()).toBeTruthy();
     const listBody = await listRes.json();
 
-    if (listBody.results && listBody.results.length > 0) {
-      const instanceId = listBody.results[0].id;
-      const originalTitle = listBody.results[0].title;
-      const newTitle = `Updated ${Date.now()}`;
+    expect(
+      Array.isArray(listBody.results),
+      "GET /api/v2/computers should return a results array",
+    ).toBe(true);
+    expect(
+      listBody.results.length,
+      "Expected at least one seeded computer; empty list indicates broken seed/setup",
+    ).toBeGreaterThan(0);
 
-      const putRes = await request.put(`/api/v2/computers/${instanceId}`, {
-        data: { title: newTitle },
-      });
-      expect(
-        putRes.ok(),
-        `PUT failed: ${putRes.status()} ${await putRes.text()}`,
-      ).toBeTruthy();
+    const instanceId = listBody.results[0].id;
+    const originalTitle = listBody.results[0].title;
+    const newTitle = `Updated ${Date.now()}`;
 
-      // Restore
-      await request.put(`/api/v2/computers/${instanceId}`, {
-        data: { title: originalTitle },
-      });
-    }
+    const putRes = await request.put(`/api/v2/computers/${instanceId}`, {
+      data: { title: newTitle },
+    });
+    expect(
+      putRes.ok(),
+      `PUT failed: ${putRes.status()} ${await putRes.text()}`,
+    ).toBeTruthy();
+
+    // Restore
+    await request.put(`/api/v2/computers/${instanceId}`, {
+      data: { title: originalTitle },
+    });
   });
 });

@@ -2,7 +2,7 @@
 
 Integration tests run Playwright against a real Landscape backend stack (landscape-server + landscape-go) running in Docker containers. They complement the existing MSW-backed Vitest tests by verifying real API contract fidelity.
 
-See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-start guide (triggering, running locally, adding tests).
+See [e2e/docker-stack/ui/README.md](../e2e/docker-stack/README.md) for a quick-start guide (triggering, running locally, adding tests).
 
 ## What they test
 

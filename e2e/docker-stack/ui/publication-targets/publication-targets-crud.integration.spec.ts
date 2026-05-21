@@ -46,14 +46,6 @@ import {
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
-// ─── shared state ────────────────────────────────────────────────────────────
-
-/** The display name shown in the UI table. Updated by the edit test. */
-let targetDisplayName = "";
-
-/** The full resource name assigned by debarchive on creation, e.g. "publicationTargets/uuid". */
-let targetResourceName = "";
-
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 interface AuthUser {
@@ -120,175 +112,154 @@ async function cleanupTarget(
 // ─── tests ───────────────────────────────────────────────────────────────────
 
 test.describe("publication targets CRUD (real debarchive)", () => {
-  test.afterAll(async ({ request }) => {
-    // Best-effort cleanup in case test 3 did not run.
-    await cleanupTarget(request, targetResourceName);
-  });
-
-  test("creates a new S3 publication target via the UI", async ({ page }) => {
-    await dismissWelcomePopup(page);
-    const uniqueDisplayName = `CI Test Target ${Date.now()}`;
-    targetDisplayName = uniqueDisplayName;
-
-    await page.goto("/repositories/publication-targets");
-    await page.waitForLoadState("networkidle");
-
-    // Confirm the page loaded correctly.
-    await expect(
-      page.getByRole("heading", { name: /publication targets/i }),
-    ).toBeVisible({ timeout: 15_000 });
-
-    // Open the Add publication target side panel.
-    await page.getByRole("button", { name: /add publication target/i }).click();
-
-    // Wait for the side panel heading to appear.
-    await expect(
-      page.getByRole("heading", { name: /add publication target/i }),
-    ).toBeVisible({ timeout: 15_000 });
-
-    // Fill in the display name. Type defaults to S3 — leave it.
-    // Use name attribute to disambiguate from "Bucket name" which also matches /name/i.
-    await page.locator('[name="displayName"]').fill(uniqueDisplayName);
-
-    // Fill in required S3 fields with placeholder values.
-    await page.getByLabel(/region/i).fill("us-east-1");
-    await page.getByLabel(/bucket name/i).fill("ci-test-bucket");
-    await page.getByLabel(/aws access key id/i).fill("AKIAIOSFODNN7EXAMPLE");
-    await page
-      .getByLabel(/aws secret access key/i)
-      .fill("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
-
-    // Submit the form. Scope to the aside to avoid hitting the page-level button.
-    await page
-      .getByRole("complementary", { name: "Side panel" })
-      .getByRole("button", { name: /add publication target/i })
-      .click();
-
-    // Wait for the side panel to close.
-    await expect(
-      page.getByRole("heading", { name: /add publication target/i }),
-    ).not.toBeVisible({ timeout: 15_000 });
-
-    // The new target should appear in the table.
-    await expect(
-      page.getByRole("row").filter({ hasText: uniqueDisplayName }),
-    ).toBeVisible({ timeout: 15_000 });
-  });
-
-  test("captures the target resource name for afterAll cleanup", async ({
+  test("create, edit, and delete a publication target", async ({
+    page,
     request,
   }) => {
-    const token = await getAuthToken(request);
-    const listRes = await request.get("/v1beta1/publicationTargets", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(
-      listRes.ok(),
-      `GET /v1beta1/publicationTargets failed: ${listRes.status()}`,
-    ).toBe(true);
-    const body = (await listRes.json()) as PublicationTargetListResponse;
-    const created = (body.publicationTargets ?? []).find(
-      (t) => t.displayName === targetDisplayName,
-    );
-    if (created?.name) {
-      targetResourceName = created.name;
-    }
-  });
-
-  test("edits the created target display name", async ({ page }) => {
     await dismissWelcomePopup(page);
+
+    const createdDisplayName = `CI Test Target ${Date.now()}`;
     const updatedDisplayName = "CI Test Target Updated";
+    let currentDisplayName = createdDisplayName;
+    let targetResourceName = "";
 
-    await page.goto("/repositories/publication-targets");
-    await page.waitForLoadState("networkidle");
+    try {
+      await test.step("create target via UI", async () => {
+        await page.goto("/repositories/publication-targets");
+        await page.waitForLoadState("networkidle");
 
-    // Find the row for our target.
-    const targetRow = page
-      .getByRole("row")
-      .filter({ hasText: targetDisplayName });
-    await expect(targetRow).toBeVisible({ timeout: 15_000 });
+        await expect(
+          page.getByRole("heading", { name: /publication targets/i }),
+        ).toBeVisible({ timeout: 15_000 });
 
-    // Open the actions menu for this row.
-    // The toggle button has aria-label "{displayName} actions".
-    await page
-      .getByRole("button", { name: `${targetDisplayName} actions` })
-      .click();
+        await page
+          .getByRole("button", { name: /add publication target/i })
+          .click();
 
-    // Click "Edit" in the dropdown.
-    // ContextualMenu items render with role="menuitem" — use that role.
-    await page
-      .getByRole("menuitem", { name: `Edit ${targetDisplayName}` })
-      .click();
+        await expect(
+          page.getByRole("heading", { name: /add publication target/i }),
+        ).toBeVisible({ timeout: 15_000 });
 
-    // Wait for the Edit side panel to open.
-    // Panel heading is "Edit {displayName}".
-    await expect(
-      page.getByRole("heading", {
-        name: new RegExp(`Edit ${targetDisplayName}`, "i"),
-      }),
-    ).toBeVisible({ timeout: 15_000 });
+        await page.locator('[name="displayName"]').fill(createdDisplayName);
+        await page.getByLabel(/region/i).fill("us-east-1");
+        await page.getByLabel(/bucket name/i).fill("ci-test-bucket");
+        await page
+          .getByLabel(/aws access key id/i)
+          .fill("AKIAIOSFODNN7EXAMPLE");
+        await page
+          .getByLabel(/aws secret access key/i)
+          .fill("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
 
-    // Update the display name.
-    // Use name attribute to disambiguate from other /name/i fields in the form.
-    const nameInput = page.locator('[name="displayName"]');
-    await nameInput.fill(updatedDisplayName);
-    await expect(nameInput).toHaveValue(updatedDisplayName);
+        await page
+          .getByRole("complementary", { name: "Side panel" })
+          .getByRole("button", { name: /add publication target/i })
+          .click();
 
-    // Submit.
-    await page
-      .getByRole("complementary", { name: "Side panel" })
-      .getByRole("button", { name: /save changes/i })
-      .click();
+        await expect(
+          page.getByRole("heading", { name: /add publication target/i }),
+        ).not.toBeVisible({ timeout: 15_000 });
 
-    await expect(
-      page.getByRole("complementary", { name: "Side panel" }),
-    ).not.toBeVisible({ timeout: 15_000 });
+        await expect(
+          page.getByRole("row").filter({ hasText: createdDisplayName }),
+        ).toBeVisible({ timeout: 15_000 });
+      });
 
-    // The updated name should appear in the table.
-    await expect(
-      page.getByRole("row").filter({ hasText: updatedDisplayName }),
-    ).toBeVisible({ timeout: 15_000 });
+      await test.step("capture resource name for cleanup", async () => {
+        const token = await getAuthToken(request);
+        const listRes = await request.get("/v1beta1/publicationTargets", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-    // Update shared state for the next test.
-    targetDisplayName = updatedDisplayName;
-  });
+        expect(
+          listRes.ok(),
+          `GET /v1beta1/publicationTargets failed: ${listRes.status()}`,
+        ).toBe(true);
 
-  test("deletes the created target", async ({ page }) => {
-    await dismissWelcomePopup(page);
-    await page.goto("/repositories/publication-targets");
-    await page.waitForLoadState("networkidle");
+        const body = (await listRes.json()) as PublicationTargetListResponse;
+        const created = (body.publicationTargets ?? []).find(
+          (t) => t.displayName === createdDisplayName,
+        );
 
-    // Find the row for our (now-renamed) target.
-    const targetRow = page
-      .getByRole("row")
-      .filter({ hasText: targetDisplayName });
-    await expect(targetRow).toBeVisible({ timeout: 15_000 });
+        expect(
+          created?.name,
+          "Created publication target was not found in API list",
+        ).toBeTruthy();
 
-    // Open the actions menu.
-    await page
-      .getByRole("button", { name: `${targetDisplayName} actions` })
-      .click();
+        targetResourceName = created?.name ?? "";
+      });
 
-    // Click "Remove" in the dropdown.
-    await page
-      .getByRole("menuitem", { name: `Remove ${targetDisplayName}` })
-      .click();
+      await test.step("edit target via UI", async () => {
+        await page.goto("/repositories/publication-targets");
+        await page.waitForLoadState("networkidle");
 
-    // Wait for the confirmation modal.
-    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 15_000 });
+        const targetRow = page
+          .getByRole("row")
+          .filter({ hasText: currentDisplayName });
+        await expect(targetRow).toBeVisible({ timeout: 15_000 });
 
-    // Type the required confirmation text: "remove {displayName}".
-    await page.getByRole("textbox").fill(`remove ${targetDisplayName}`);
+        await page
+          .getByRole("button", { name: `${currentDisplayName} actions` })
+          .click();
+        await page
+          .getByRole("menuitem", { name: `Edit ${currentDisplayName}` })
+          .click();
 
-    // Confirm deletion.
-    await page.getByRole("button", { name: /remove target/i }).click();
+        await expect(
+          page.getByRole("heading", {
+            name: new RegExp(`Edit ${currentDisplayName}`, "i"),
+          }),
+        ).toBeVisible({ timeout: 15_000 });
 
-    // The row should disappear.
-    await expect(
-      page.getByRole("row").filter({ hasText: targetDisplayName }),
-    ).not.toBeVisible({ timeout: 15_000 });
+        const nameInput = page.locator('[name="displayName"]');
+        await nameInput.fill(updatedDisplayName);
+        await expect(nameInput).toHaveValue(updatedDisplayName);
 
-    // Mark as cleaned up so afterAll is a no-op.
-    targetResourceName = "";
+        await page
+          .getByRole("complementary", { name: "Side panel" })
+          .getByRole("button", { name: /save changes/i })
+          .click();
+
+        await expect(
+          page.getByRole("complementary", { name: "Side panel" }),
+        ).not.toBeVisible({ timeout: 15_000 });
+
+        await expect(
+          page.getByRole("row").filter({ hasText: updatedDisplayName }),
+        ).toBeVisible({ timeout: 15_000 });
+
+        currentDisplayName = updatedDisplayName;
+      });
+
+      await test.step("delete target via UI", async () => {
+        await page.goto("/repositories/publication-targets");
+        await page.waitForLoadState("networkidle");
+
+        const targetRow = page
+          .getByRole("row")
+          .filter({ hasText: currentDisplayName });
+        await expect(targetRow).toBeVisible({ timeout: 15_000 });
+
+        await page
+          .getByRole("button", { name: `${currentDisplayName} actions` })
+          .click();
+        await page
+          .getByRole("menuitem", { name: `Remove ${currentDisplayName}` })
+          .click();
+
+        await expect(page.getByRole("dialog")).toBeVisible({ timeout: 15_000 });
+
+        await page.getByRole("textbox").fill(`remove ${currentDisplayName}`);
+        await page.getByRole("button", { name: /remove target/i }).click();
+
+        await expect(
+          page.getByRole("row").filter({ hasText: currentDisplayName }),
+        ).not.toBeVisible({ timeout: 15_000 });
+
+        targetResourceName = "";
+      });
+    } finally {
+      // Best-effort cleanup in case delete step did not complete.
+      await cleanupTarget(request, targetResourceName);
+    }
   });
 });
