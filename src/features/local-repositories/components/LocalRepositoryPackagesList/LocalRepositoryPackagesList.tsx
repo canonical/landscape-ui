@@ -1,8 +1,9 @@
 import { useMemo, useState, type FC } from "react";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import type { Column, CellProps, Row } from "react-table";
+import type { CellProps, Column, Row } from "react-table";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import type { LocalPackage } from "../../types";
+import { getCellProps } from "./helpers";
 
 interface LocalRepositoryPackagesListProps {
   readonly packages: string[];
@@ -57,6 +58,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
       <ResponsiveTable
         columns={columns}
         data={pagedPackages}
+        getCellProps={getCellProps}
         emptyMsg={"No packages associated with this local repository."}
         minWidth={320}
       />
