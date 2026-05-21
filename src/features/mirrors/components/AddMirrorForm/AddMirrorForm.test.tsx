@@ -20,6 +20,19 @@ import type { MirrorWritable } from "@canonical/landscape-openapi";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
+const captureCreateMirrorRequestBody = () => {
+  const captured: { body?: Partial<MirrorWritable> } = {};
+
+  server.use(
+    http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
+      captured.body = (await request.json()) as Partial<MirrorWritable>;
+      return HttpResponse.json({});
+    }),
+  );
+
+  return captured;
+};
+
 describe("AddMirrorForm", () => {
   const user = userEvent.setup();
 
@@ -52,13 +65,7 @@ describe("AddMirrorForm", () => {
   it("submits an ubuntu archive mirror pointed at a custom CDN", async () => {
     const cdnUrl = "https://eu.archive.ubuntu.com/ubuntu/";
 
-    let capturedBody: Partial<MirrorWritable> | undefined;
-    server.use(
-      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
-        capturedBody = (await request.json()) as Partial<MirrorWritable>;
-        return HttpResponse.json({});
-      }),
-    );
+    const captured = captureCreateMirrorRequestBody();
 
     const sourceUrlField = screen.getByLabelText("Source URL");
     await user.clear(sourceUrlField);
@@ -69,7 +76,7 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
-    expect(capturedBody).toMatchObject({ archiveRoot: cdnUrl });
+    expect(captured.body).toMatchObject({ archiveRoot: cdnUrl });
   });
 
   it("rejects an http source URL with an HTTPS validation error", async () => {
@@ -91,13 +98,7 @@ describe("AddMirrorForm", () => {
   it("submits an ubuntu snapshot mirror", async () => {
     const date = "2026-04-15";
 
-    let capturedBody: Partial<MirrorWritable> | undefined;
-    server.use(
-      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
-        capturedBody = (await request.json()) as Partial<MirrorWritable>;
-        return HttpResponse.json({});
-      }),
-    );
+    const captured = captureCreateMirrorRequestBody();
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -113,7 +114,7 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
-    expect(capturedBody).toMatchObject({
+    expect(captured.body).toMatchObject({
       archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
     });
   });
@@ -121,13 +122,7 @@ describe("AddMirrorForm", () => {
   it("submits an ubuntu pro mirror", async () => {
     const token = "ABCDEFG";
 
-    let capturedBody: Partial<MirrorWritable> | undefined;
-    server.use(
-      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
-        capturedBody = (await request.json()) as Partial<MirrorWritable>;
-        return HttpResponse.json({});
-      }),
-    );
+    const captured = captureCreateMirrorRequestBody();
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -140,7 +135,7 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
-    expect(capturedBody).toMatchObject({
+    expect(captured.body).toMatchObject({
       archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
     });
   });
@@ -181,13 +176,7 @@ describe("AddMirrorForm", () => {
       gpgKey: { armor: "ABCDEFG" },
     };
 
-    let capturedBody: Partial<MirrorWritable> | undefined;
-    server.use(
-      http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
-        capturedBody = (await request.json()) as Partial<MirrorWritable>;
-        return HttpResponse.json({});
-      }),
-    );
+    const captured = captureCreateMirrorRequestBody();
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -214,7 +203,7 @@ describe("AddMirrorForm", () => {
     expect(
       await screen.findByText("You have successfully added Name."),
     ).toBeInTheDocument();
-    expect(capturedBody).toMatchObject(params);
+    expect(captured.body).toMatchObject(params);
   });
 });
 
