@@ -1,3 +1,5 @@
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import ImportRepositoryPackagesSidePanel from "./ImportRepositoryPackagesSidePanel";
@@ -5,6 +7,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { expectLoadingState } from "@/tests/helpers";
+import { http, HttpResponse } from "msw";
 
 const ROUTE_PATH = `/?name=${repositories[0].localId}`;
 
@@ -62,7 +65,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "succeeded");
+    await user.type(input, "https://example.com/succeeded");
 
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
@@ -81,7 +84,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "timeout");
+    await user.type(input, "https://example.com/timeout");
 
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
@@ -98,11 +101,38 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     expect(importButton).toBeEnabled();
   });
 
-  it("shows error notification when validation fails", async () => {
+  it("allows import after timeout and shows success notification", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "failed");
+    await user.type(input, "https://example.com/timeout");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/fetching packages timed out/i),
+      ).toBeInTheDocument();
+    });
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    await user.click(importButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/you have marked .* to import packages/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("shows error notification when validation fails and blocks submission", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/failed");
 
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
@@ -116,14 +146,20 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).toBeEnabled();
+
+    // Verify clicking Import doesn't submit when validation failed
+    await user.click(importButton);
+    expect(
+      screen.queryByText(/you have marked .* to import packages/i),
+    ).not.toBeInTheDocument();
   });
 
-  it("shows negative notification when no packages are available", async () => {
+  it("shows negative notification when no packages are available and blocks submission", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "empty");
+    await user.type(input, "https://example.com/empty");
 
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
@@ -138,13 +174,19 @@ describe("ImportRepositoryPackagesSidePanel", () => {
       name: /import packages/i,
     });
     expect(importButton).toBeEnabled();
+
+    // Verify clicking Import doesn't submit when no packages available
+    await user.click(importButton);
+    expect(
+      screen.queryByText(/you have marked .* to import packages/i),
+    ).not.toBeInTheDocument();
   });
 
   it("submits the form and shows success notification", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "succeeded");
+    await user.type(input, "https://example.com/succeeded");
 
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
@@ -165,6 +207,60 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     });
   });
 
+  it("keeps Import button enabled even with invalid URL", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "not a url");
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    expect(importButton).toBeEnabled();
+  });
+
+  it("shows validation error when clicking Import with invalid URL without submitting form", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "not a url");
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    await user.click(importButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid url/i)).toBeInTheDocument();
+    });
+
+    // Verify form was not submitted (no success notification)
+    expect(
+      screen.queryByText(/you have marked .* to import packages/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("enables Import button when source URL becomes valid", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "not a url");
+
+    let importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    expect(importButton).toBeEnabled();
+
+    // Clear and type valid URL
+    await user.clear(input);
+    await user.type(input, "https://example.com/packages");
+
+    importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    expect(importButton).toBeEnabled();
+  });
+
   it("shows validation error when source URL is touched and left empty", async () => {
     renderComponent();
 
@@ -174,6 +270,223 @@ describe("ImportRepositoryPackagesSidePanel", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/this field is required/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows validation error when source URL is not a valid URL", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "not a url");
+    await user.tab();
+
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid url/i)).toBeInTheDocument();
+    });
+  });
+
+  it("does not submit when Enter is pressed in Source URL input", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/succeeded");
+    await user.keyboard("{Enter}");
+
+    expect(screen.queryByText(/packages to import/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/you have marked .* to import packages/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows debug notification when fetch validation request fails", async () => {
+    server.use(
+      http.post(
+        `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
+        async ({ request }) => {
+          const body = (await request.json()) as { validateOnly?: boolean };
+          if (body.validateOnly) {
+            return HttpResponse.json(
+              { message: "validate failed" },
+              { status: 500 },
+            );
+          }
+          return HttpResponse.json({ name: "operations/ssss-cccc-dddd" });
+        },
+      ),
+    );
+
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/succeeded");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/validate failed/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows debug notification when import submit request fails", async () => {
+    server.use(
+      http.post(
+        `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
+        () => HttpResponse.json({ message: "import failed" }, { status: 500 }),
+      ),
+    );
+
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/succeeded");
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    await user.click(importButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/import failed/i)).toBeInTheDocument();
+    });
+  });
+
+  it("allows import submission while validation is still in progress", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/in/progress");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    expect(importButton).toBeEnabled();
+
+    await user.click(importButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/you have marked .* to import packages/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("uses fallback values when operation omits done and status", async () => {
+    server.use(
+      http.post(
+        `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
+        async ({ request }) => {
+          const body = (await request.json()) as { validateOnly?: boolean };
+          if (body.validateOnly) {
+            return HttpResponse.json({ name: "operations/fallback-state" });
+          }
+          return HttpResponse.json({ name: "operations/ssss-cccc-dddd" });
+        },
+      ),
+      http.get(`${API_URL_DEB_ARCHIVE}operations/fallback-state`, () =>
+        HttpResponse.json({
+          metadata: {
+            operationId: "fallback-state",
+          },
+          response: {
+            output:
+              "Would add: package1-0.2.1\nTotal packages that would be added: 1\n",
+          },
+        }),
+      ),
+    );
+
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/succeeded");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /import 1 package/i }),
+      ).toBeEnabled();
+    });
+
+    expect(screen.queryByText(/packages to import/i)).not.toBeInTheDocument();
+  });
+
+  it("keeps fetch button in loading state when status falls back to idle", async () => {
+    server.use(
+      http.post(
+        `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
+        async ({ request }) => {
+          const body = (await request.json()) as { validateOnly?: boolean };
+          if (body.validateOnly) {
+            return HttpResponse.json({ name: "operations/idle-fallback" });
+          }
+          return HttpResponse.json({ name: "operations/ssss-cccc-dddd" });
+        },
+      ),
+      http.get(`${API_URL_DEB_ARCHIVE}operations/idle-fallback`, () =>
+        HttpResponse.json({
+          done: false,
+          response: { output: "" },
+        }),
+      ),
+    );
+
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/succeeded");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: /fetch packages/i }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("handles missing operation name from validate response", async () => {
+    server.use(
+      http.post(
+        `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
+        async ({ request }) => {
+          const body = (await request.json()) as { validateOnly?: boolean };
+          if (body.validateOnly) {
+            return HttpResponse.json({});
+          }
+
+          return HttpResponse.json({ name: "operations/ssss-cccc-dddd" });
+        },
+      ),
+    );
+
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "https://example.com/succeeded");
+
+    const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
+    await user.click(fetchButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/packages to import/i)).not.toBeInTheDocument();
+    });
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    await user.click(importButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/you have marked .* to import packages/i),
+      ).toBeInTheDocument();
     });
   });
 });

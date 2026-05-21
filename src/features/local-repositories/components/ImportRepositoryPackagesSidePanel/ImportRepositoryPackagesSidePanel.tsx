@@ -84,7 +84,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     initialValues: { source: "" },
     onSubmit: handleSubmit,
     validationSchema: Yup.object().shape({
-      source: Yup.string().required("This field is required."),
+      source: Yup.string()
+        .required("This field is required.")
+        .url("Please enter a valid URL."),
     }),
   });
 
@@ -113,6 +115,30 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       ? pluralizeWithCount(validationTask.count, "package")
       : "packages";
 
+  const canImport =
+    !validationTask || // no validation attempted
+    !validationTask.done || // still fetching
+    validationTask.error?.code === 4 || // timeout: allow
+    (!validationTask.error && validationTask.count > 0); // no error and has packages
+
+  const handleImportClick = () => {
+    if (!canImport && validationTask?.done) {
+      if (validationTask.error && validationTask.error.code !== 4) {
+        notify.error({
+          title: "Validation failed",
+          message: "The operation failed unexpectedly. Please try again.",
+        });
+      } else if (validationTask.count === 0) {
+        notify.error({
+          title: "No packages available",
+          message: "No packages available from the URL provided.",
+        });
+      }
+      return;
+    }
+    formik.handleSubmit();
+  };
+
   return (
     <>
       <SidePanel.Header>
@@ -129,6 +155,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               help={
                 "In order to upload packages, provide a URL for Landscape to fetch the packages from."
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                }
+              }}
             />
 
             <Button
@@ -152,10 +183,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
           )}
 
           <SidePanelFormButtons
-            submitButtonDisabled={!!validationTask?.error}
+            submitButtonDisabled={!canImport}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}
+            onSubmit={handleImportClick}
           />
         </Form>
       </SidePanel.Content>
