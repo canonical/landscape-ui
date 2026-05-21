@@ -34,7 +34,29 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
     formik.handleSubmit();
   };
 
-  const startSubmit = () => {
+  const touchValidationFields = async () => {
+    await Promise.all([
+      formik.setFieldTouched("title", true, false),
+      formik.setFieldTouched("benchmark", true, false),
+      formik.setFieldTouched("mode", true, false),
+      formik.setFieldTouched("start_type", true, false),
+      formik.setFieldTouched("start_date", true, false),
+      formik.setFieldTouched("every", true, false),
+      formik.setFieldTouched("end_date", true, false),
+      formik.setFieldTouched("deliver_delay_window", true, false),
+      formik.setFieldTouched("restart_deliver_delay", true, false),
+    ]);
+  };
+
+  const startSubmit = async () => {
+    await formik.validateForm();
+
+    const hasInvalidStep = steps.slice(0, -1).some((step) => !step.isValid);
+    if (hasInvalidStep) {
+      await touchValidationFields();
+      return;
+    }
+
     if (getConfirmationStepDisabled(formik.values)) {
       finishSubmit();
       return;
