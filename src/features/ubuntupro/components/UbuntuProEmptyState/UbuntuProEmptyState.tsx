@@ -1,27 +1,17 @@
 import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
 import { Button } from "@canonical/react-components";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { lazy, Suspense, type FC } from "react";
-
-const AttachTokenForm = lazy(async () => import("../AttachTokenForm"));
+import type { FC } from "react";
 
 interface UbuntuProEmptyStateProps {
   readonly instance: Instance;
 }
 
 const UbuntuProEmptyState: FC<UbuntuProEmptyStateProps> = ({ instance }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
-  const handleAttachToken = () => {
-    setSidePanelContent(
-      "Attach Ubuntu Pro token",
-      <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={[instance]} />
-      </Suspense>,
-    );
-  };
+  const handleAttachToken = createSidePathPusher("attach-token");
   return (
     <EmptyState
       title="No Ubuntu Pro entitlement"

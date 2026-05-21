@@ -4,6 +4,9 @@ import Chip from "@/components/layout/Chip";
 import HeaderActions from "@/components/layout/HeaderActions";
 import InfoGrid from "@/components/layout/InfoGrid";
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
+import usePageParams from "@/hooks/usePageParams";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
 import {
@@ -32,7 +35,6 @@ import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type {
   Instance,
@@ -73,6 +75,10 @@ const AssignEmployeeToInstanceForm = lazy(
 
 const ProfilesList = lazy(async () => import("../ProfilesList"));
 
+const ActivityDetails = lazy(
+  async () => import("@/features/activities/components/ActivityDetails"),
+);
+
 interface InfoPanelProps {
   readonly instance: Instance;
 }
@@ -82,7 +88,15 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
   const debug = useDebug();
   const navigate = useNavigate();
   const { notify } = useNotify();
-  const { setSidePanelContent } = useSidePanel();
+  const { lastSidePathSegment, name, popSidePathUntilClear, createSidePathPusher } = usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", [
+    "edit",
+    "run-script",
+    "associate-employee",
+    "profiles",
+    "view",
+  ]);
 
   const openActivityDetails = useOpenActivityDetailsPanel();
   const { employee, isGettingEmployee } = useGetEmployee(
@@ -196,45 +210,10 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
     }
   };
 
-  const openEditForm = () => {
-    setSidePanelContent(
-      "Edit instance",
-      <Suspense fallback={<LoadingState />}>
-        <EditInstance instance={instance} />
-      </Suspense>,
-    );
-  };
-
-  const openRunScriptForm = () => {
-    setSidePanelContent(
-      "Run script",
-      <Suspense fallback={<LoadingState />}>
-        <RunInstanceScriptForm
-          parentAccessGroup={instance.access_group}
-          query={`id:${instance.id}`}
-        />
-      </Suspense>,
-    );
-  };
-
-  const openAssociateEmployeeForm = () => {
-    setSidePanelContent(
-      `Associate employee with ${instance.title}`,
-      <Suspense fallback={<LoadingState />}>
-        <AssignEmployeeToInstanceForm instanceTitle={instance.title} />
-      </Suspense>,
-    );
-  };
-
-  const openProfilesList = () => {
-    setSidePanelContent(
-      `Active profiles associated with ${instance.title}`,
-      <Suspense fallback={<LoadingState />}>
-        <ProfilesList instance={instance} />
-      </Suspense>,
-      "medium",
-    );
-  };
+  const openEditForm = createSidePathPusher("edit");
+  const openRunScriptForm = createSidePathPusher("run-script");
+  const openAssociateEmployeeForm = createSidePathPusher("associate-employee");
+  const openProfilesList = createSidePathPusher("profiles");
 
   const handleDisassociateEmployee = async () => {
     try {
@@ -651,6 +630,70 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           onClose={closeRegenerateRecoveryKeyModal}
         />
       )}
+
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={
+          lastSidePathSegment === "edit" ||
+          lastSidePathSegment === "run-script" ||
+          lastSidePathSegment === "associate-employee" ||
+          lastSidePathSegment === "profiles" ||
+          (lastSidePathSegment === "view" && !!name)
+        }
+        size={lastSidePathSegment === "profiles" ? "medium" : "small"}
+      >
+        {lastSidePathSegment === "edit" && (
+          <SidePanel.Suspense key="edit">
+            <SidePanel.Header>Edit instance</SidePanel.Header>
+            <SidePanel.Content>
+              <EditInstance instance={instance} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "run-script" && (
+          <SidePanel.Suspense key="run-script">
+            <SidePanel.Header>Run script</SidePanel.Header>
+            <SidePanel.Content>
+              <RunInstanceScriptForm
+                parentAccessGroup={instance.access_group}
+                query={`id:${instance.id}`}
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "associate-employee" && (
+          <SidePanel.Suspense key="associate-employee">
+            <SidePanel.Header>
+              Associate employee with {instance.title}
+            </SidePanel.Header>
+            <SidePanel.Content>
+              <AssignEmployeeToInstanceForm instanceTitle={instance.title} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "profiles" && (
+          <SidePanel.Suspense key="profiles">
+            <SidePanel.Header>
+              Active profiles associated with {instance.title}
+            </SidePanel.Header>
+            <SidePanel.Content>
+              <ProfilesList instance={instance} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "view" && !!name && (
+          <SidePanel.Suspense key="view">
+            <SidePanel.Header>Activity details</SidePanel.Header>
+            <SidePanel.Content>
+              <ActivityDetails activityId={Number(name)} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </>
   );
 };

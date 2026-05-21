@@ -17,7 +17,14 @@ const EmployeeDetails = lazy(
 const EmployeesPage: FC = () => {
   const { lastSidePathSegment, name, popSidePathUntilClear } = usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", ["view"]);
+  useSetDynamicFilterValidation("sidePath", [
+    "view",
+    "add-file",
+    "view-file",
+    "edit-file",
+    "view-versions",
+    "view-version",
+  ]);
 
   const { employee, isGettingEmployee } = useGetEmployee(
     { id: Number(name) },

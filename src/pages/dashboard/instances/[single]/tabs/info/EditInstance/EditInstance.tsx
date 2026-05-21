@@ -7,8 +7,8 @@ import {
 import { useGetProfileChanges } from "@/features/tags";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { InstanceWithoutRelation } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
@@ -25,7 +25,7 @@ interface EditInstanceProps {
 }
 
 const EditInstance: FC<EditInstanceProps> = ({ instance }) => {
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const debug = useDebug();
   const { notify } = useNotify();
 

@@ -1,7 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useReports from "@/hooks/useReports";
-import useSidePanel from "@/hooks/useSidePanel";
-import ReportForm from "@/pages/dashboard/instances/ReportForm";
+import usePageParams from "@/hooks/usePageParams";
 import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Col, Row } from "@canonical/react-components";
@@ -14,7 +13,7 @@ interface ReportViewProps {
 }
 
 const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
   const { getNotPingingInstances, getInstancesNotUpgraded, getUsnTimeToFix } =
     useReports();
 
@@ -75,12 +74,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     return `${pluralizeWithCount(count, "instance has", "instances have")} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
   };
 
-  const handleDownloadDialog = () => {
-    setSidePanelContent(
-      "Download report as CSV",
-      <ReportForm instanceIds={instanceIds} />,
-    );
-  };
+  const handleDownloadDialog = createSidePathPusher("download-report");
 
   return (
     <>

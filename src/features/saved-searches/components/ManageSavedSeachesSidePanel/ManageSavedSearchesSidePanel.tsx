@@ -1,11 +1,9 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
-import useSidePanel from "@/hooks/useSidePanel";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import type { FC } from "react";
-import { Suspense, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useGetSavedSearches } from "../../api";
-import { SIDEPANEL_SIZE } from "../../constants";
 import CreateSavedSearchButton from "../CreateSavedSearchButton";
 import SavedSearchesSidePanelList from "../SavedSearchesSidePanelList";
 
@@ -13,8 +11,6 @@ const ManageSavedSearchesSidePanel: FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(DEFAULT_PAGE_SIZE);
   const { savedSearches, isLoadingSavedSearches } = useGetSavedSearches();
-
-  const { setSidePanelContent } = useSidePanel();
 
   const paginatedSavedSearches = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -28,17 +24,7 @@ const ManageSavedSearchesSidePanel: FC = () => {
 
   return (
     <div>
-      <CreateSavedSearchButton
-        onBackButtonPress={() => {
-          setSidePanelContent(
-            "Manage saved searches",
-            <Suspense fallback={<LoadingState />}>
-              <ManageSavedSearchesSidePanel />
-            </Suspense>,
-            SIDEPANEL_SIZE,
-          );
-        }}
-      />
+      <CreateSavedSearchButton isInSidePanel={true} />
       <SavedSearchesSidePanelList savedSearches={paginatedSavedSearches} />
       <SidePanelTablePagination
         currentPage={currentPage}

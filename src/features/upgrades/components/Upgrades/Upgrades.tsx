@@ -6,7 +6,7 @@ import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Form, Tabs } from "@canonical/react-components";
@@ -37,7 +37,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const { upgradeInstancesPackagesQuery } = usePackages();
   const { upgradeUsnsQuery } = useUsns();
 

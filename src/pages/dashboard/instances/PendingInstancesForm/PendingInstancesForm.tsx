@@ -6,7 +6,7 @@ import useAuth from "@/hooks/useAuth";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import PendingInstanceList from "@/pages/dashboard/instances/PendingInstanceList";
 import type { PendingInstance } from "@/types/Instance";
 import type { SelectOption } from "@/types/SelectOption";
@@ -34,7 +34,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
   const debug = useDebug();
   const { user } = useAuth();
   const { notify } = useNotify();
-  const { closeSidePanel, changeSidePanelSize } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
   const { getAccessGroupQuery } = useRoles();
 
   const userOrganisation = user?.accounts.find(
@@ -43,12 +43,10 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
 
   const handleApproving = () => {
     setIsApproving(true);
-    changeSidePanelSize("small");
   };
 
   const handleBackClick = () => {
     setIsApproving(false);
-    changeSidePanelSize("large");
   };
 
   const { acceptPendingInstances, isAcceptingPendingInstances } =

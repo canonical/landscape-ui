@@ -1,14 +1,21 @@
 import LoadingState from "@/components/layout/LoadingState";
+import SidePanel from "@/components/layout/SidePanel";
 import { useGetInstanceChildren } from "@/features/instances";
 import {
   useGetWslLimits,
   WslInstanceList,
   WslInstancesEmptyState,
 } from "@/features/wsl";
+import usePageParams from "@/hooks/usePageParams";
 import type { WindowsInstance } from "@/types/Instance";
 import { pluralizeWithCount } from "@/utils/_helpers";
 import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
+import { lazy } from "react";
+
+const WslInstanceInstallForm = lazy(
+  async () => import("@/features/wsl/components/WslInstanceInstallForm"),
+);
 
 interface WslPanelProps {
   readonly instance: WindowsInstance;
@@ -22,13 +29,29 @@ const WslPanel: FC<WslPanelProps> = ({ instance }) => {
   } = useGetInstanceChildren({ computer_id: instance.id });
 
   const { isGettingWslLimits, windowsInstanceChildLimit } = useGetWslLimits();
+  const { lastSidePathSegment, popSidePathUntilClear } = usePageParams();
 
   if (isLoadingWslInstances) {
     return <LoadingState />;
   } else if (!wslInstances) {
     throw new Error(wslInstancesError?.message);
   } else if (!wslInstances.length) {
-    return <WslInstancesEmptyState />;
+    return (
+      <>
+        <WslInstancesEmptyState />
+        <SidePanel
+          isOpen={lastSidePathSegment === "install-wsl"}
+          onClose={popSidePathUntilClear}
+        >
+          <SidePanel.Header>Create new WSL instance</SidePanel.Header>
+          <SidePanel.Content>
+            <SidePanel.Suspense>
+              <WslInstanceInstallForm />
+            </SidePanel.Suspense>
+          </SidePanel.Content>
+        </SidePanel>
+      </>
+    );
   } else if (isGettingWslLimits) {
     return <LoadingState />;
   } else {
@@ -50,6 +73,17 @@ const WslPanel: FC<WslPanelProps> = ({ instance }) => {
           wslInstances={wslInstances}
           windowsInstance={instance}
         />
+        <SidePanel
+          isOpen={lastSidePathSegment === "install-wsl"}
+          onClose={popSidePathUntilClear}
+        >
+          <SidePanel.Header>Create new WSL instance</SidePanel.Header>
+          <SidePanel.Content>
+            <SidePanel.Suspense>
+              <WslInstanceInstallForm />
+            </SidePanel.Suspense>
+          </SidePanel.Content>
+        </SidePanel>
       </>
     );
   }

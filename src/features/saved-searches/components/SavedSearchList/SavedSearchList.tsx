@@ -1,13 +1,10 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Col, Row, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
-import { Suspense, useEffect, type FC } from "react";
+import { useEffect, type FC } from "react";
 import type { SavedSearch } from "../../types";
-import ManageSavedSearchesSidePanel from "../ManageSavedSeachesSidePanel";
 import classes from "./SavedSearchList.module.scss";
 import SavedSearchActions from "../SavedSearchActions";
-import { SIDEPANEL_SIZE } from "../../constants";
 import { useMediaQuery } from "usehooks-ts";
 import { BREAKPOINT_PX } from "@/constants";
 
@@ -28,7 +25,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
   activeIndex = null,
   itemIdPrefix,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
   const isLargeScreen = useMediaQuery(`(min-width: ${BREAKPOINT_PX["lg"]}px)`);
 
   // aria-activedescendant doesn't move DOM focus, so scroll the active item ourselves.
@@ -48,13 +45,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
 
   const handleManageSavedSearches = () => {
     onManageSearches();
-    setSidePanelContent(
-      "Manage saved searches",
-      <Suspense fallback={<LoadingState />}>
-        <ManageSavedSearchesSidePanel />
-      </Suspense>,
-      SIDEPANEL_SIZE,
-    );
+    createSidePathPusher("manage-saved-searches")();
   };
 
   return (

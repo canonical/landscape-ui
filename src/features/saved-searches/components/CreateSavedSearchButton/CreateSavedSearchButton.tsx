@@ -1,14 +1,6 @@
-import LoadingState from "@/components/layout/LoadingState";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
-import { lazy, Suspense, type FC } from "react";
-import { useCreateSavedSearch } from "../../api";
-import type { FormProps } from "../SavedSearchForm";
-import { SIDEPANEL_SIZE } from "../../constants";
-
-const SavedSearchForm = lazy(async () => import("../SavedSearchForm"));
+import type { FC } from "react";
 
 interface CreateSavedSearchButtonProps {
   readonly afterCreate?: () => void;
@@ -16,6 +8,7 @@ interface CreateSavedSearchButtonProps {
   readonly className?: string;
   readonly buttonLabel?: string;
   readonly search?: string;
+  readonly isInSidePanel?: boolean;
   readonly onBackButtonPress?: () => void;
 }
 
@@ -25,62 +18,18 @@ const CreateSavedSearchButton: FC<CreateSavedSearchButtonProps> = ({
   buttonLabel = "Add saved search",
   search = "",
   className,
-  onBackButtonPress,
+  isInSidePanel = false,
 }) => {
-  const { createSavedSearch } = useCreateSavedSearch();
-  const { notify } = useNotify();
-  const debug = useDebug();
-  const { setSidePanelContent, closeSidePanel } = useSidePanel();
-
-  const isInSidePanel = Boolean(onBackButtonPress);
-
-  const handleSubmit = async (values: FormProps) => {
-    try {
-      await createSavedSearch({
-        title: values.title,
-        search: values.search,
-      });
-
-      closeSidePanel();
-
-      if (afterCreate) {
-        afterCreate();
-      }
-
-      notify.success({
-        title: "Saved search created",
-        message: `The saved search "${values.title}" has been created successfully.`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
-  const handleCreateClick = () => {
-    const sidePanelSize = onBackButtonPress && SIDEPANEL_SIZE;
-
-    setSidePanelContent(
-      "Add saved search",
-      <Suspense fallback={<LoadingState />}>
-        <SavedSearchForm
-          mode="create"
-          initialValues={{
-            title: "",
-            search,
-          }}
-          onSubmit={handleSubmit}
-          onBackButtonPress={onBackButtonPress}
-        />
-      </Suspense>,
-      sidePanelSize,
-    );
-  };
+  const { setPageParams, sidePath } = usePageParams();
 
   return (
     <Button
       type="button"
       appearance={appearance}
-      onClick={handleCreateClick}
+      onClick={() => {
+        setPageParams({ sidePath: [...sidePath, "create-saved-search"], query: search });
+        afterCreate?.();
+      }}
       className={className}
       hasIcon={isInSidePanel}
     >

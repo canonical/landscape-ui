@@ -5,7 +5,7 @@ import {
 } from "@/features/employees";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import type { UrlParams } from "@/types/UrlParams";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -25,7 +25,7 @@ const AssignEmployeeToInstanceForm: FC<AssignEmployeeToInstanceFormProps> = ({
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = useSidePanel();
+  const { closeSidePanel } = usePageParams();
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 

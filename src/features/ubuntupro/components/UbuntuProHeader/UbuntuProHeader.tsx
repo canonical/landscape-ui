@@ -1,17 +1,14 @@
 import HeaderActions from "@/components/layout/HeaderActions";
+import usePageParams from "@/hooks/usePageParams";
 import useAuth from "@/hooks/useAuth";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { FC } from "react";
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import { useBoolean } from "usehooks-ts";
 import DetachTokenModal from "../DetachTokenModal";
-import LoadingState from "@/components/layout/LoadingState";
 import { getComputerIdFromParams } from "../../helpers";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
 import type { Instance } from "@/types/Instance";
-
-const ReplaceTokenForm = lazy(() => import("../ReplaceTokenForm"));
 
 interface UbuntuProHeaderProps {
   readonly instance: Instance;
@@ -20,7 +17,7 @@ interface UbuntuProHeaderProps {
 const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ instance }) => {
   const { instanceId, childInstanceId } = useParams<UrlParams>();
   const { isFeatureEnabled } = useAuth();
-  const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const {
     value: showDetachModal,
@@ -28,14 +25,7 @@ const UbuntuProHeader: FC<UbuntuProHeaderProps> = ({ instance }) => {
     setFalse: closeDetachModal,
   } = useBoolean(false);
 
-  const handleEditToken = () => {
-    setSidePanelContent(
-      "Replace Ubuntu Pro Token",
-      <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={[instance]} />
-      </Suspense>,
-    );
-  };
+  const handleEditToken = createSidePathPusher("replace-token");
 
   return (
     <>

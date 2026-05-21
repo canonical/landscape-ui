@@ -1,7 +1,6 @@
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
-import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance, WindowsInstance } from "@/types/Instance";
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
@@ -63,8 +62,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   kernelCount,
   kernelLoading,
 }) => {
-  const { closeSidePanel } = useSidePanel();
-  const { tab, setPageParams } = usePageParams();
+  const { tab, setPageParams, popSidePathUntilClear } = usePageParams();
 
   const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-info";
 
@@ -73,7 +71,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
     instance,
     onActiveTabChange: (tabId) => {
       setPageParams({ tab: tabId.replace("tab-link-", "") });
-      closeSidePanel();
+      popSidePathUntilClear();
     },
     packageCount,
     packagesLoading,

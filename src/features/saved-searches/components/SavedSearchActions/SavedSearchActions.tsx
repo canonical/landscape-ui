@@ -7,20 +7,15 @@ import classes from "./SavedSearchActions.module.scss";
 interface SavedSearchActionsProps {
   readonly savedSearch: SavedSearch;
   readonly onSavedSearchRemove?: () => void;
-  readonly onBackButtonPress?: () => void;
 }
 
 const SavedSearchActions: FC<SavedSearchActionsProps> = ({
   savedSearch,
   onSavedSearchRemove,
-  onBackButtonPress,
 }) => {
   return (
     <div className={classes.actions}>
-      <EditSavedSearchButton
-        savedSearch={savedSearch}
-        onBackButtonPress={onBackButtonPress}
-      />
+      <EditSavedSearchButton savedSearch={savedSearch} />
       <RemoveSavedSearchButton
         savedSearch={savedSearch}
         onSavedSearchRemove={onSavedSearchRemove}
