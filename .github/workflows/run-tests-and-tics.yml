@@ -55,12 +55,50 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Debug e2e environment
+        run: |
+          echo "CI=$CI"
+          echo "target=${{ matrix.target }}"
+          echo "VITE_API_URL='${VITE_API_URL}'"
+          echo "VITE_API_URL_OLD='${VITE_API_URL_OLD}'"
+          echo "VITE_API_URL_DEB_ARCHIVE='${VITE_API_URL_DEB_ARCHIVE}'"
+          echo "VITE_API_PROXY_TARGET='${VITE_API_PROXY_TARGET}'"
+          echo "VITE_SELF_HOSTED_ENV='${VITE_SELF_HOSTED_ENV}'"
+          echo "VITE_MSW_ENABLED='${VITE_MSW_ENABLED}'"
+
+          if [ -z "${VITE_API_URL}" ]; then
+            echo "::error::VITE_API_URL is empty. Browser API calls may resolve to app origin and return index.html."
+            exit 1
+          fi
+
+          case "${VITE_API_URL}" in
+            http://*|https://*)
+              echo "VITE_API_URL is absolute."
+              ;;
+            /*)
+              echo "::warning::VITE_API_URL is relative (${VITE_API_URL}). With 'pnpm preview' there is no Vite dev proxy, so API paths can resolve to app origin and return HTML."
+              ;;
+            *)
+              echo "::warning::VITE_API_URL has unexpected format (${VITE_API_URL})."
+              ;;
+          esac
+
       - name: Build the project
         run: pnpm run build:e2e
         env:
           VITE_ROOT_PATH: /
           VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
           VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
+
+      - name: Debug built assets for API strings
+        run: |
+          if [ ! -d dist/assets ]; then
+            echo "::error::dist/assets not found after build"
+            exit 1
+          fi
+
+          echo "Searching built assets for API URL fragments"
+          grep -R -n -m 20 -E "/api/v2/|/api/|/v1beta1/|http://|https://" dist/assets || true
 
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
