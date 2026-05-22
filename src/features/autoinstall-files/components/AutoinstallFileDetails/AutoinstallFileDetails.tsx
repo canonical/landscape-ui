@@ -19,13 +19,16 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
     setTrue: openDeleteModal,
     setFalse: closeDeleteModal,
   } = useBoolean();
-  const { createSidePathPusher, popSidePath, lastSidePathSegment } = usePageParams();
-  const { setAutoinstallFileAsDefault } = useAutoinstallFileActions(autoinstallFile);
+  const { createSidePathPusher, popSidePath, lastSidePathSegment } =
+    usePageParams();
+  const { setAutoinstallFileAsDefault } =
+    useAutoinstallFileActions(autoinstallFile);
 
   const openEdit = createSidePathPusher("edit-file");
   const viewVersionHistory = createSidePathPusher("view-versions");
 
-  const goToInfo = lastSidePathSegment === "view-versions" ? popSidePath : () => {};
+  const goToInfo =
+    lastSidePathSegment === "view-versions" ? popSidePath : () => {};
   const activeTabId: AutoinstallFileTabId =
     lastSidePathSegment === "view-versions" ? "version-history" : "info";
 
@@ -70,7 +73,6 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
       <AutoinstallFileTabs
         activeTabId={activeTabId}
         file={autoinstallFile}
-        onInfoTabClick={goToInfo}
         viewVersionHistory={viewVersionHistory}
       />
 

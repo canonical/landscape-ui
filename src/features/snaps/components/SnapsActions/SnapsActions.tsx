@@ -1,4 +1,3 @@
-import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
@@ -22,17 +21,21 @@ const SnapsActions: FC<SnapsActionProps> = ({
   installedSnaps,
   sidePanel = false,
 }) => {
-  const { setPageParams, sidePath, createSidePathPusher } = usePageParams();
+  const { setPageParams, createSidePathPusher } = usePageParams();
 
   const singleSnap = installedSnaps.length === 1 ? installedSnaps[0] : null;
   const selectedSnaps = getSelectedSnaps(installedSnaps, selectedSnapIds);
   const { held, unheld } = getSnapUpgradeCounts(selectedSnaps);
 
   const handleEditSnap = (action: EditSnapType) => {
-    setPageParams({
-      sidePath: [...sidePath, action.toLowerCase()],
-      ...(singleSnap ? { name: singleSnap.snap.name } : {}),
-    });
+    if (sidePanel) {
+      createSidePathPusher(action.toLowerCase())();
+    } else {
+      setPageParams({
+        sidePath: [action.toLowerCase()],
+        ...(singleSnap ? { name: singleSnap.snap.name } : {}),
+      });
+    }
   };
 
   const handleInstallSnap = createSidePathPusher("install");

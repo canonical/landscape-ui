@@ -48,7 +48,7 @@ const SnapsPanel: FC = () => {
 
   useSetDynamicFilterValidation("sidePath", [
     "install",
-    "edit",
+    "view",
     "switch",
     "uninstall",
     "hold",
@@ -96,6 +96,13 @@ const SnapsPanel: FC = () => {
     ? (lastSidePathSegment.charAt(0).toUpperCase() +
         lastSidePathSegment.slice(1)) as EditSnapType
     : null;
+
+  const snapsToEdit =
+    selectedSnapsToEdit.length > 0
+      ? selectedSnapsToEdit
+      : viewSnap
+        ? [viewSnap]
+        : [];
 
   return (
     <>
@@ -152,8 +159,8 @@ const SnapsPanel: FC = () => {
         onClose={popSidePathUntilClear}
         isOpen={Boolean(
           lastSidePathSegment === "install" ||
-            (lastSidePathSegment === "edit" && !!viewSnap) ||
-            (isBulkAction && selectedSnapsToEdit.length > 0),
+            (lastSidePathSegment === "view" && !!viewSnap) ||
+            (isBulkAction && snapsToEdit.length > 0),
         )}
         size="small"
       >
@@ -166,8 +173,8 @@ const SnapsPanel: FC = () => {
           </SidePanel.Suspense>
         )}
 
-        {lastSidePathSegment === "edit" && viewSnap && (
-          <SidePanel.Suspense key="edit">
+        {lastSidePathSegment === "view" && viewSnap && (
+          <SidePanel.Suspense key="view">
             <SidePanel.Header>{viewSnap.snap.name} details</SidePanel.Header>
             <SidePanel.Content>
               <SnapDetailsView installedSnap={viewSnap} />
@@ -175,22 +182,22 @@ const SnapsPanel: FC = () => {
           </SidePanel.Suspense>
         )}
 
-        {isBulkAction && bulkActionType && selectedSnapsToEdit.length > 0 && (
+        {isBulkAction && bulkActionType && snapsToEdit.length > 0 && (
           <SidePanel.Suspense key={lastSidePathSegment}>
             <SidePanel.Header>
-              {selectedSnapsToEdit.length === 1
-                ? `${bulkActionType} ${selectedSnapsToEdit[0]?.snap.name}${
+              {snapsToEdit.length === 1
+                ? `${bulkActionType} ${snapsToEdit[0]?.snap.name}${
                     bulkActionType === EditSnapType.Switch ? "'s channel" : ""
                   }`
                 : `${bulkActionType} ${pluralizeWithCount(
-                    selectedSnapsToEdit.length,
+                    snapsToEdit.length,
                     "snap",
                   )}`}
             </SidePanel.Header>
             <SidePanel.Content>
               <EditSnapForm
                 type={bulkActionType}
-                installedSnaps={selectedSnapsToEdit}
+                installedSnaps={snapsToEdit}
               />
             </SidePanel.Content>
           </SidePanel.Suspense>

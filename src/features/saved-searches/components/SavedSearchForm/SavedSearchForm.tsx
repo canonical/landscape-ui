@@ -153,6 +153,7 @@ const SavedSearchForm: FC<SavedSearchFormProps> = ({
         submitButtonLoading={formik.isSubmitting}
         submitButtonDisabled={formik.isSubmitting}
         hasBackButton={Boolean(onBackButtonPress)}
+        onBackButtonPress={onBackButtonPress}
       />
     </Form>
   );

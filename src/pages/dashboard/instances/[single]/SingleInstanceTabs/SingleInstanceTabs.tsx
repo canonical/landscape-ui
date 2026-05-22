@@ -62,7 +62,7 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
   kernelCount,
   kernelLoading,
 }) => {
-  const { tab, setPageParams, popSidePathUntilClear } = usePageParams();
+  const { tab, setPageParams } = usePageParams();
 
   const currentTabLinkId = tab ? `tab-link-${tab}` : "tab-link-info";
 
@@ -71,7 +71,6 @@ const SingleInstanceTabs: FC<SingleInstanceTabsProps> = ({
     instance,
     onActiveTabChange: (tabId) => {
       setPageParams({ tab: tabId.replace("tab-link-", "") });
-      popSidePathUntilClear();
     },
     packageCount,
     packagesLoading,

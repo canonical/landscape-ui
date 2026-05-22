@@ -12,7 +12,7 @@ import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
 import type { ChangeEvent, FC } from "react";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router";
 import * as Yup from "yup";
 import { EditSnapType } from "../../helpers";
@@ -27,29 +27,54 @@ interface EditSnapProps {
   readonly installedSnaps: InstalledSnap[];
 }
 
+const getSnapAction = (type: EditSnapType) => {
+  if (type === EditSnapType.Uninstall) {
+    return "remove";
+  }
+
+  if (type === EditSnapType.Switch) {
+    return "refresh";
+  }
+
+  return type.toLowerCase();
+};
+
+const getActionVerb = (type: EditSnapType) => {
+  if (type === EditSnapType.Hold) {
+    return "held";
+  }
+
+  if (type === EditSnapType.Unhold) {
+    return "unheld";
+  }
+
+  return `${type.toLowerCase()}ed`;
+};
+
 const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, popSidePathUntilClear } = usePageParams();
+  const { closeSidePanel, popSidePath } = usePageParams();
   const { snapsActionQuery, getAvailableSnapInfo } = useSnaps();
 
   const instanceId = Number(urlInstanceId);
+  const selectedSnapName = installedSnaps[0]?.snap.name;
   const { mutateAsync: snapsActionMutation } = snapsActionQuery;
   const { data: snapInfoData } = getAvailableSnapInfo(
     {
       instance_id: instanceId,
-      name: installedSnaps[0]!.snap.name,
+      name: selectedSnapName ?? "",
     },
     {
-      enabled: type === EditSnapType.Switch,
+      enabled: type === EditSnapType.Switch && Boolean(selectedSnapName),
     },
   );
 
   const SNAP_CHANNEL_OPTIONS = useMemo(() => {
     return (
-      snapInfoData?.data["channel-map"]
-        .sort((a, b) =>
+      snapInfoData?.data?.["channel-map"]
+        ?.sort((a, b) =>
           a.channel.architecture.localeCompare(b.channel.architecture),
         )
         .map((channel) => ({
@@ -62,12 +87,16 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const validationSchema = getEditSnapValidationSchema(type);
   const installedSnap = installedSnaps.length === 1 ? installedSnaps[0] : null;
   const initialSnap = installedSnap
-    ? snapInfoData?.data["channel-map"][0]
+    ? snapInfoData?.data?.["channel-map"]?.[0]
     : null;
+  const initialRelease =
+    initialSnap && type === EditSnapType.Switch
+      ? `${initialSnap.channel.name} - ${initialSnap.channel.architecture}`
+      : undefined;
 
   const formik = useFormik<SnapFormProps>({
     initialValues: {
-      release: undefined,
+      release: initialRelease,
       hold: type === EditSnapType.Hold ? "forever" : undefined,
       hold_until: type === EditSnapType.Hold ? "" : undefined,
       deliver_immediately: true,
@@ -75,45 +104,42 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
       deliver_delay_window: 0,
       deliver_after: "",
     },
+    enableReinitialize: true,
     validationSchema: Yup.object().shape(validationSchema),
     onSubmit: async (values) => {
       try {
+        const selectedChannel = values.release
+          ? snapInfoData?.data?.["channel-map"]?.find(
+              (channel) =>
+                `${channel.channel.name} - ${channel.channel.architecture}` ===
+                values.release,
+            )
+          : undefined;
+
+        let holdTime: string | undefined;
+
+        if (values.hold === "forever") {
+          holdTime = "forever";
+        } else if (values.hold_until) {
+          holdTime = moment(values.hold_until).format();
+        }
+
+        let deliverAfter: string | undefined;
+
+        if (!values.deliver_immediately && values.deliver_after) {
+          deliverAfter = moment(values.deliver_after).format();
+        }
+
         snapsActionMutation({
           computer_ids: [instanceId],
-          action:
-            type === EditSnapType.Uninstall
-              ? "remove"
-              : type === EditSnapType.Switch
-                ? "refresh"
-                : type.toLowerCase(),
+          action: getSnapAction(type),
           snaps: installedSnaps.map((currentInstalledSnap) => ({
             name: currentInstalledSnap.snap.name,
-            channel: values.release
-              ? snapInfoData?.data["channel-map"].find(
-                  (channel) =>
-                    `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    values.release,
-                )?.channel.name
-              : undefined,
-            revision: snapInfoData?.data["channel-map"]
-              .find(
-                (channel) =>
-                  `${channel.channel.name} - ${channel.channel.architecture}` ===
-                  values.release,
-              )
-              ?.revision.toString(),
-            time:
-              values.hold === "forever"
-                ? "forever"
-                : values.hold_until
-                  ? moment(values.hold_until).format()
-                  : undefined,
+            channel: selectedChannel?.channel.name,
+            revision: selectedChannel?.revision.toString(),
+            time: holdTime,
           })),
-          deliver_after: values.deliver_immediately
-            ? undefined
-            : values.deliver_after
-              ? moment(values.deliver_after).format()
-              : undefined,
+          deliver_after: deliverAfter,
           deliver_after_window: !values.randomize_delivery
             ? undefined
             : values.deliver_delay_window,
@@ -121,12 +147,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
 
         closeSidePanel();
 
-        const actionVerb =
-          type === EditSnapType.Hold
-            ? "held"
-            : type === EditSnapType.Unhold
-              ? "unheld"
-              : `${type.toLowerCase()}ed`;
+        const actionVerb = getActionVerb(type);
 
         notify.success({
           message: `You queued ${installedSnap ? installedSnap.snap.name : `${installedSnaps.length} snaps`} to be ${actionVerb}.`,
@@ -136,15 +157,6 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
       }
     },
   });
-
-  useEffect(() => {
-    if (initialSnap && type === EditSnapType.Switch && !formik.values.release) {
-      formik.setFieldValue(
-        "release",
-        `${initialSnap.channel.name} - ${initialSnap.channel.architecture}`,
-      );
-    }
-  }, [initialSnap]);
 
   const handleHoldSelectionChange = (event: ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue("hold", event.currentTarget.value);
@@ -205,7 +217,7 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           type === EditSnapType.Uninstall ? "negative" : "positive"
         }
         submitButtonDisabled={formik.isSubmitting}
-        onCancel={popSidePathUntilClear}
+        onCancel={popSidePath}
       />
     </Form>
   );

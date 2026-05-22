@@ -1,3 +1,4 @@
+import SidePanel from "@/components/layout/SidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import type { ActivityCommon } from "@/features/activities";
 import {
@@ -5,9 +6,15 @@ import {
   ActivitiesEmptyState,
   useGetActivities,
 } from "@/features/activities";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
+import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
-import type { FC } from "react";
+import { lazy, type FC } from "react";
+
+const ActivityDetails = lazy(
+  async () => import("@/features/activities/components/ActivityDetails"),
+);
 
 interface ActivityPanelProps {
   readonly instanceId?: number;
@@ -35,6 +42,9 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
     setSelectedItems: setSelectedActivities,
   } = useSelection<ActivityCommon>(activities, isGettingActivities);
 
+  const { lastSidePathSegment, name, popSidePathUntilClear } = usePageParams();
+  useSetDynamicFilterValidation("sidePath", ["view"]);
+
   if (isGettingUnfilteredActivities) {
     return <LoadingState />;
   }
@@ -44,14 +54,31 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
   }
 
   return (
-    <Activities
-      activities={activities}
-      activitiesCount={activitiesCount}
-      isGettingActivities={isGettingActivities}
-      instanceId={instanceId}
-      selectedActivities={selectedActivities}
-      setSelectedActivities={setSelectedActivities}
-    />
+    <>
+      <Activities
+        activities={activities}
+        activitiesCount={activitiesCount}
+        isGettingActivities={isGettingActivities}
+        instanceId={instanceId}
+        selectedActivities={selectedActivities}
+        setSelectedActivities={setSelectedActivities}
+      />
+
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={lastSidePathSegment === "view" && !!name}
+        size="small"
+      >
+        {lastSidePathSegment === "view" && !!name && (
+          <SidePanel.Suspense key="view">
+            <SidePanel.Header>Activity details</SidePanel.Header>
+            <SidePanel.Content>
+              <ActivityDetails activityId={Number(name)} />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+    </>
   );
 };
 

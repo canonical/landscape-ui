@@ -25,7 +25,7 @@ const SnapsList: FC<SnapsListProps> = ({
   isSnapsLoading,
   setSelectedSnapIds,
 }) => {
-  const { sidePath, setPageParams } = usePageParams();
+  const { setPageParams } = usePageParams();
 
   const handleSelectionChange = (row: Row<InstalledSnap>) => {
     if (selectedSnapIds.includes(row.original.snap.id)) {
@@ -47,7 +47,7 @@ const SnapsList: FC<SnapsListProps> = ({
 
   const handleShowSnapDetails = (snap: InstalledSnap) => {
     setPageParams({
-      sidePath: [...sidePath, "edit"],
+      sidePath: ["view"],
       name: snap.snap.name,
     });
   };
