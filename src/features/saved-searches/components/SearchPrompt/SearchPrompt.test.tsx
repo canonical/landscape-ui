@@ -6,7 +6,6 @@ import SearchPrompt from "./SearchPrompt";
 
 describe("SearchPrompt", () => {
   const defaultProps: ComponentProps<typeof SearchPrompt> = {
-    onSearchSave: vi.fn(),
     search: "status:running",
   };
 

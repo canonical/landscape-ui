@@ -53,7 +53,7 @@ import {
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
-import { Fragment, lazy, Suspense } from "react";
+import { Fragment, lazy } from "react";
 import { useNavigate } from "react-router";
 import { useBoolean } from "usehooks-ts";
 import ProfileLink from "../ProfileLink";

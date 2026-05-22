@@ -251,7 +251,7 @@ describe("EditUserForm", () => {
       })[0];
       expect(changePasswordButton).toBeInTheDocument();
 
-      await userEvent.click(changePasswordButton);
+      await userEvent.click(changePasswordButton!);
 
       // The button calls `handleChangePassword` which is `createSidePathPusher("change-password")`.
       // We know from previous domain fixes that it changes the URL sidePath, which can be verified by

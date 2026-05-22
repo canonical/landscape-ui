@@ -13,9 +13,6 @@ import { useBoolean } from "usehooks-ts";
 
 const ScriptDetailsTabs = lazy(async () => import("../ScriptDetailsTabs"));
 
-const EditScriptForm = lazy(async () => import("../EditScriptForm"));
-const RunScriptForm = lazy(async () => import("../RunScriptForm"));
-
 interface ScriptDetailsProps {
   readonly scriptId: number;
   readonly initialTabId?: ScriptTabId;
@@ -37,7 +34,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
     setFalse: closeDeleteModal,
   } = useBoolean();
 
-  const { createSidePathPusher, setPageParams } = usePageParams();
+  const { createSidePathPusher } = usePageParams();
 
   const { script } = useGetSingleScript(scriptId);
 

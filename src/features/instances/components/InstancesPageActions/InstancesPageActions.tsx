@@ -1,11 +1,10 @@
-import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import { hasOneItem } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { memo } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -50,12 +49,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setTrue: openRemoveModal,
     setFalse: closeRemoveModal,
   } = useBoolean();
-
-  const createInstanceCountString = (instances: Instance[]) => {
-    return (
-      <PluralizeWithBoldCount count={instances.length} singular="instance" />
-    );
-  };
 
   const handleRunScript = createSidePathPusher("run-script");
   const handleUpgradesRequest = createSidePathPusher("upgrades");

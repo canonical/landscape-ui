@@ -1,24 +1,18 @@
 import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import ListActions from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import type { Action } from "@/types/Action";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
 import type { Script } from "../../types";
-
-const EditScriptForm = lazy(async () => import("../EditScriptForm"));
-const RunScriptForm = lazy(async () => import("../RunScriptForm"));
-const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
 interface ScriptListActionsProps {
   readonly script: Script;
 }
 
 const ScriptListActions: FC<ScriptListActionsProps> = ({ script }) => {
-  const { createSidePathPusher, setPageParams } = usePageParams();
+  const { setPageParams } = usePageParams();
 
   const {
     value: archiveModalOpen,

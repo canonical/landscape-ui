@@ -7,15 +7,10 @@ import {
 import usePageParams from "@/hooks/usePageParams";
 import { Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import classes from "./AlertCard.module.scss";
 import AlertLink from "./components/AlertLink";
 import EmptyAlertCount from "./components/EmptyAlertCount";
 import { ROUTES } from "@/libs/routes";
-
-const PendingInstancesForm = lazy(
-  () => import("@/pages/dashboard/instances/PendingInstancesForm"),
-);
 
 const AlertCard: FC<Status> = ({
   alertType,

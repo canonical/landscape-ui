@@ -1,5 +1,4 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
@@ -14,7 +13,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactElement } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { formatTitleCase } from "../../helpers";
 import { useOpenScriptDetails } from "../../hooks";
@@ -22,8 +21,6 @@ import type { Script } from "../../types";
 import ScriptListActions from "../ScriptListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./ScriptList.module.scss";
-
-const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
 interface ScriptListProps {
   readonly scripts: Script[];

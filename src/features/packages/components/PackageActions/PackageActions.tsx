@@ -1,5 +1,4 @@
 import { ResponsiveButtons } from "@/components/ui";
-import { getSelectionLabel } from "@/utils/_helpers";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
@@ -13,25 +12,6 @@ interface PackageActionsProps {
 }
 
 const PackageActions: FC<PackageActionsProps> = ({ selectedPackages }) => {
-  const handleExistingPackages = (
-    action: Exclude<InstalledPackageAction, "downgrade">,
-  ) => {
-    const titleEnding = getSelectionLabel(
-      selectedPackages,
-      (pkg) => pkg.name,
-      `selected packages`,
-    );
-
-    setSidePanelContent(
-      `${INSTALLED_PACKAGE_ACTIONS[action].label} ${titleEnding}`,
-      <Suspense fallback={<LoadingState />}>
-        <InstalledPackagesActionForm
-          action={action}
-          packages={selectedPackages}
-        />
-      </Suspense>,
-    );
-  };
   const { createSidePathPusher } = usePageParams();
 
   const actionDisabledCondition: Record<

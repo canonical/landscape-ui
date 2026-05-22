@@ -12,8 +12,6 @@ interface KernelHeaderProps {
 }
 
 const KernelHeader: FC<KernelHeaderProps> = ({
-  instanceName,
-  hasTableData,
   kernelStatuses,
 }) => {
   const { createSidePathPusher } = usePageParams();

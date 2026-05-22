@@ -5,15 +5,13 @@ import SidePanel from "@/components/layout/SidePanel";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances, useGetPendingInstances } from "@/features/instances";
-import { getFeatures } from "@/features/instances/helpers";
+import { InstancesPageActions, useGetInstances, useGetPendingInstances, getFeatures } from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { pluralizeArray, pluralizeWithCount } from "@/utils/_helpers";
+import { getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { lazy, useCallback, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
 import { getQuery } from "./helpers";
-import classes from "@/features/instances/components/InstancesPageActions/InstancesPageActions.module.scss";
 
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
@@ -158,7 +156,7 @@ const InstancesPage: FC = () => {
             <SidePanel.Header>Run script</SidePanel.Header>
             <SidePanel.Content>
               {selectedInstances.some((instance) => !getFeatures(instance).scripts) ? (
-                <div className={classes.warning}>
+                <div className="p-notification--caution">
                   <p>You selected {selectedInstances.length} instances. This script will:</p>
                   <ul>
                     <li>
@@ -204,7 +202,7 @@ const InstancesPage: FC = () => {
         {lastSidePathSegment === "report-view" && (
           <SidePanel.Suspense key="report-view">
             <SidePanel.Header>
-              Report for {pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}
+              Report for {getSelectionLabel(selectedInstances, (instance) => instance.title, `instances`)}
             </SidePanel.Header>
             <SidePanel.Content>
               <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
@@ -233,7 +231,7 @@ const InstancesPage: FC = () => {
         {lastSidePathSegment === "attach-token" && (
           <SidePanel.Suspense key="attach-token">
             <SidePanel.Header>
-              Attach Ubuntu Pro token to {pluralizeWithCount(selectedInstances.length, "instance")}
+              Attach Ubuntu Pro token to {pluralize(selectedInstances.length, ["instance"], "exact")}
             </SidePanel.Header>
             <SidePanel.Content>
               <AttachTokenForm selectedInstances={selectedInstances} />
@@ -244,7 +242,7 @@ const InstancesPage: FC = () => {
         {lastSidePathSegment === "replace-token" && (
           <SidePanel.Suspense key="replace-token">
             <SidePanel.Header>
-              Replace Ubuntu Pro token for {pluralizeWithCount(selectedInstances.length, "instance")}
+              Replace Ubuntu Pro token for {pluralize(selectedInstances.length, ["instance"], "exact")}
             </SidePanel.Header>
             <SidePanel.Content>
               <ReplaceTokenForm selectedInstances={selectedInstances} />

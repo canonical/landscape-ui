@@ -8,7 +8,7 @@ interface UbuntuProEmptyStateProps {
   readonly instance: Instance;
 }
 
-const UbuntuProEmptyState: FC<UbuntuProEmptyStateProps> = ({ instance }) => {
+const UbuntuProEmptyState: FC<UbuntuProEmptyStateProps> = ({ instance: _instance }) => {
   const { createSidePathPusher } = usePageParams();
 
   const handleAttachToken = createSidePathPusher("attach-token");

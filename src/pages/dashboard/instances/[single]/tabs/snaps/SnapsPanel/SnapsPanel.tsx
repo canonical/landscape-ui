@@ -17,7 +17,7 @@ import type { FC } from "react";
 import { lazy, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 const InstallSnapsForm = lazy(
   async () => import("@/features/snaps/components/InstallSnaps"),
@@ -189,10 +189,7 @@ const SnapsPanel: FC = () => {
                 ? `${bulkActionType} ${snapsToEdit[0]?.snap.name}${
                     bulkActionType === EditSnapType.Switch ? "'s channel" : ""
                   }`
-                : `${bulkActionType} ${pluralizeWithCount(
-                    snapsToEdit.length,
-                    "snap",
-                  )}`}
+                : `${bulkActionType} ${pluralize(snapsToEdit.length, ["snap"], "exact")}`}
             </SidePanel.Header>
             <SidePanel.Content>
               <EditSnapForm

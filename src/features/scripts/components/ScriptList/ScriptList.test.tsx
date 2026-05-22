@@ -34,7 +34,7 @@ const authContextValuesWithoutFeatureFlag: AuthContextProps = {
 };
 
 describe("ScriptList", () => {
-  const user = userEvent.setup();
+  userEvent.setup();
   assert(activeScript);
   assert(inactiveScript);
 

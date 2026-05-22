@@ -1,4 +1,3 @@
-import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";

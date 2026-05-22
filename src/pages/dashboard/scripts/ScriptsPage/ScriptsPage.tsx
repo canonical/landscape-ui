@@ -133,7 +133,7 @@ const ScriptsPage: FC = () => {
 
         {lastSidePathSegment === "edit" && script && (
           <SidePanel.Suspense key="edit">
-            <SidePanel.Header>Edit "{script.title}" script</SidePanel.Header>
+            <SidePanel.Header>Edit &quot;{script.title}&quot; script</SidePanel.Header>
             <SidePanel.Content>
               <EditScriptForm script={script} />
             </SidePanel.Content>
@@ -142,7 +142,7 @@ const ScriptsPage: FC = () => {
 
         {lastSidePathSegment === "run" && script && (
           <SidePanel.Suspense key="run">
-            <SidePanel.Header>Run "{script.title}" script</SidePanel.Header>
+            <SidePanel.Header>Run &quot;{script.title}&quot; script</SidePanel.Header>
             <SidePanel.Content>
               <RunScriptForm script={script} />
             </SidePanel.Content>

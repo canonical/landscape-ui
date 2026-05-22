@@ -1,7 +1,6 @@
 import ListActions, {
   LIST_ACTIONS_COLUMN_PROPS,
 } from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import usePageParams from "@/hooks/usePageParams";

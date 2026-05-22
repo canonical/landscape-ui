@@ -52,7 +52,7 @@ const WslProfilesPage: FC = () => {
     setRemoveProfile,
     setIsRemovingProfile,
   } = useProfiles();
-  const { sidePath, lastSidePathSegment, popSidePathUntilClear, setPageParams } =
+  const { sidePath, lastSidePathSegment, setPageParams } =
     usePageParams();
 
   const { wslProfile } = useGetPageWslProfile();

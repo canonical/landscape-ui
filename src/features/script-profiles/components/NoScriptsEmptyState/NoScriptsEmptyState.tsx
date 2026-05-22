@@ -1,13 +1,7 @@
 import EmptyState from "@/components/layout/EmptyState";
-import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
-
-const CreateScriptForm = lazy(
-  async () => import("@/features/scripts/components/CreateScriptForm"),
-);
 
 const NoScriptsEmptyState: FC = () => {
   const { createSidePathPusher } = usePageParams();

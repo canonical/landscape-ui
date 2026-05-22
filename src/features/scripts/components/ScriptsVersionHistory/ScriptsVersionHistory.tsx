@@ -4,7 +4,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 import { Button, ModularTable } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetScriptVersions } from "../../api";
 import { getAuthorInfo } from "../../helpers";

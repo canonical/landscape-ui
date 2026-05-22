@@ -1,4 +1,3 @@
-import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import type { PendingInstance } from "@/types/Instance";
@@ -6,15 +5,11 @@ import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, List } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { lazy, Suspense } from "react";
 import { Link } from "react-router";
 import type { AlertSummary } from "../../types";
 import classes from "./AlertNotificationsList.module.scss";
 import { getAlertStatus, getRouteParams } from "./helpers";
 
-const PendingInstancesForm = lazy(
-  () => import("@/pages/dashboard/instances/PendingInstancesForm"),
-);
 
 interface AlertNotificationsListProps {
   readonly alerts: AlertSummary[];

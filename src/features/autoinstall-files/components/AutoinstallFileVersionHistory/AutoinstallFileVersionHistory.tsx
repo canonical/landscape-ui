@@ -19,7 +19,7 @@ interface AutoinstallFileVersionHistoryProps {
 
 const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   file,
-  viewVersionHistory,
+  viewVersionHistory: _viewVersionHistory,
 }) => {
   const { setPageParams, sidePath: parsedSidePath } = usePageParams();
 
