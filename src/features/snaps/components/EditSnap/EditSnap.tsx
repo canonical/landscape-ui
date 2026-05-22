@@ -78,11 +78,14 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
     },
     validationSchema: Yup.object().shape(validationSchema),
     onSubmit: async (values) => {
-      let actionValue = type.toLowerCase();
-      if (type === EditSnapType.Uninstall) {
-        actionValue = "remove";
-      } else if (type === EditSnapType.Switch) {
-        actionValue = "refresh";
+      const getActionValue = () => {
+        if (type === EditSnapType.Uninstall) {
+          return "remove";
+        }
+        if (type === EditSnapType.Switch) {
+          return "refresh";
+        }
+        return type.toLowerCase();
       }
 
       let snapHoldTime: string | undefined;
