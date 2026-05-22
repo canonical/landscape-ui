@@ -21,7 +21,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { type ComponentProps, type FC } from "react";
+import { useEffect, useRef, type ComponentProps, type FC } from "react";
 import * as Yup from "yup";
 import { useGetScriptProfileLimits } from "../../api";
 import type { ScriptProfile } from "../../types";
@@ -68,7 +68,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
-  let isAssociationLimitReached = false;
+  const associationLimitReachedRef = useRef(false);
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -116,7 +116,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
         return;
       }
 
-      if (isAssociationLimitReached) {
+      if (associationLimitReachedRef.current) {
         notify.error({
           title: "Association limit reached",
           message: `Decrease the number of associated instances below the limit of ${scriptProfileLimits?.max_num_computers} before saving.`,
@@ -196,9 +196,13 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     limit: 1,
   });
 
-  isAssociationLimitReached =
+  const isAssociationLimitReached =
     (instancesCount ?? 0) >=
     (scriptProfileLimits?.max_num_computers ?? Infinity);
+
+  useEffect(() => {
+    associationLimitReachedRef.current = isAssociationLimitReached;
+  }, [isAssociationLimitReached]);
 
   if (isGettingScriptProfileLimits) {
     return <LoadingState />;

@@ -67,13 +67,20 @@ const useUsgProfileForm = ({
       every: Yup.number().when("start_type", ([start_type], schema) =>
         start_type == "recurring"
           ? schema
+              .transform((value, originalValue) =>
+                originalValue === "" ? undefined : value,
+              )
+              .typeError("This field is required.")
               .required("This field is required.")
               .positive("Enter a positive number.")
               .integer("Enter an integer.")
-              .when("unit_of_time", ([unit_of_time]) =>
+              .when("unit_of_time", ([unit_of_time], recurringSchema) =>
                 unit_of_time === "DAILY"
-                  ? schema.min(7, "Enter an interval of at least 7 days.")
-                  : schema,
+                  ? recurringSchema.min(
+                      7,
+                      "Enter an interval of at least 7 days.",
+                    )
+                  : recurringSchema,
               )
           : schema,
       ),

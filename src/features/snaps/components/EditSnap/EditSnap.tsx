@@ -86,24 +86,29 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           return "refresh";
         }
         return type.toLowerCase();
-      }
+      };
 
-      let snapHoldTime: string | undefined;
-      if (values.hold === "forever") {
-        snapHoldTime = "forever";
-      } else if (values.hold_until) {
-        snapHoldTime = moment(values.hold_until).format();
-      }
+      const snapHoldTime = () => {
+        if (values.hold === "forever") {
+          return "forever";
+        }
+        if (values.hold_until) {
+          return moment(values.hold_until).format();
+        }
+        return undefined;
+      };
 
-      let deliverAfter: string | undefined;
-      if (!values.deliver_immediately && values.deliver_after) {
-        deliverAfter = moment(values.deliver_after).format();
-      }
+      const deliverAfter = () => {
+        if (!values.deliver_immediately && values.deliver_after) {
+          return moment(values.deliver_after).format();
+        }
+        return undefined;
+      };
 
       try {
         snapsActionMutation({
           computer_ids: [instanceId],
-          action: actionValue,
+          action: getActionValue(),
           snaps: installedSnaps.map((currentInstalledSnap) => ({
             name: currentInstalledSnap.snap.name,
             channel: values.release
@@ -120,9 +125,9 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
                   values.release,
               )
               ?.revision.toString(),
-            time: snapHoldTime,
+            time: snapHoldTime(),
           })),
-          deliver_after: deliverAfter,
+          deliver_after: deliverAfter(),
           deliver_after_window: !values.randomize_delivery
             ? undefined
             : values.deliver_delay_window,

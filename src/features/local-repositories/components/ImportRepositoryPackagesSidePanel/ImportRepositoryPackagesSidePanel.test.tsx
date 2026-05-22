@@ -279,6 +279,28 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     });
   });
 
+  it("accepts local file URLs as a valid source", async () => {
+    renderComponent();
+
+    const input = await screen.findByLabelText(/source url/i);
+    await user.type(input, "file:///home/packages");
+
+    const importButton = screen.getByRole("button", {
+      name: /import packages/i,
+    });
+    await user.click(importButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/you have marked .* to import packages/i),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      screen.queryByText(/please enter a valid url/i),
+    ).not.toBeInTheDocument();
+  });
+
   it("does not submit when Enter is pressed in Source URL input", async () => {
     renderComponent();
 

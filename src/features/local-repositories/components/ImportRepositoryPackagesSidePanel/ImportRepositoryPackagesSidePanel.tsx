@@ -86,7 +86,18 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     validationSchema: Yup.object().shape({
       source: Yup.string()
         .required("This field is required.")
-        .url("Please enter a valid URL."),
+        .test("url-or-file", "Please enter a valid URL.", (value) => {
+          if (!value) {
+            return true;
+          }
+
+          try {
+            const parsedUrl = new URL(value);
+            return ["http:", "https:", "file:"].includes(parsedUrl.protocol);
+          } catch {
+            return false;
+          }
+        }),
     }),
   });
 
