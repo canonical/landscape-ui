@@ -874,7 +874,7 @@ export const instances = [
     employee_id: null,
     archived: false,
     registered_at: "2023-11-29T18:29:25Z",
-    has_release_upgrades: false,
+    has_release_upgrades: true,
   } as Instance,
   {
     id: 8,
