@@ -14,6 +14,7 @@ afterEach(() => {
 });
 
 const closeSidePanel = vi.fn();
+const setSidePanelContent = vi.fn();
 
 const renderForm = () =>
   renderWithProviders(
@@ -26,8 +27,10 @@ const renderForm = () =>
 describe("WslInstanceInstallForm", () => {
   beforeEach(() => {
     closeSidePanel.mockReset();
+    setSidePanelContent.mockReset();
     vi.mocked(useSidePanel, { partial: true }).mockReturnValue({
       closeSidePanel,
+      setSidePanelContent,
     });
   });
 
