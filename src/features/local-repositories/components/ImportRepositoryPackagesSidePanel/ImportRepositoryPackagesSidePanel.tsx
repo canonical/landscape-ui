@@ -106,6 +106,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   }
 
   const handleValidate = async () => {
+    if (!formik.values.source || formik.errors.source) {
+      formik.setFieldTouched("source", true);
+      return;
+    }
+
     try {
       setOperationName("");
 
@@ -126,34 +131,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       ? pluralizeWithCount(validationTask.count, "package")
       : "packages";
 
-  const canImport =
-    !validationTask || // no validation attempted
-    !validationTask.done || // still fetching
-    validationTask.error?.code === 4 || // timeout: allow
-    (!validationTask.error && validationTask.count > 0); // no error and has packages
-
   const shouldDisableImportButton =
-    !!validationTask?.error &&
-    validationTask.error.code !== 4 &&
-    validationTask?.count === 0;
-
-  const handleImportClick = () => {
-    if (!canImport && validationTask?.done) {
-      if (validationTask.error && validationTask.error.code !== 4) {
-        notify.error({
-          title: "Validation failed",
-          message: "The operation failed unexpectedly. Please try again.",
-        });
-      } else if (validationTask.count === 0) {
-        notify.error({
-          title: "No packages available",
-          message: "No packages available from the URL provided.",
-        });
-      }
-      return;
-    }
-    formik.handleSubmit();
-  };
+    (!!validationTask?.error && validationTask.error.code !== 4) ||
+    (validationTask?.done && validationTask?.count === 0);
 
   return (
     <>
@@ -179,7 +159,6 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             />
 
             <Button
-              disabled={!formik.values.source}
               onClick={handleValidate}
               type="button"
               className={classes.button}
@@ -203,7 +182,6 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}
-            onSubmit={handleImportClick}
           />
         </Form>
       </SidePanel.Content>
