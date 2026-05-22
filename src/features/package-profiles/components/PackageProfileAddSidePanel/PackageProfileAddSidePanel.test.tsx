@@ -2,7 +2,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { tags } from "@/tests/mocks/tag";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import PackageProfileAddSidePanel from "./PackageProfileAddSidePanel";
@@ -29,6 +29,36 @@ describe("PackageProfileAddSidePanel", () => {
       screen.getByRole("combobox", { name: "Package constraints" }),
       "instance",
     );
+
+    const instanceSelect = screen.getByRole("combobox", { name: "Instance" });
+    const availableInstanceOption = within(instanceSelect)
+      .getAllByRole("option")
+      .find((option) => option.getAttribute("value"));
+
+    if (availableInstanceOption?.getAttribute("value")) {
+      await user.selectOptions(
+        instanceSelect,
+        availableInstanceOption.getAttribute("value") as string,
+      );
+    } else {
+      await user.selectOptions(
+        screen.getByRole("combobox", { name: "Package constraints" }),
+        "manual",
+      );
+      await user.selectOptions(
+        screen.getByRole("combobox", {
+          name: "Constraint",
+        }),
+        "conflicts",
+      );
+      await user.type(
+        screen.getByRole("textbox", {
+          name: "Package name",
+        }),
+        "package",
+      );
+      await user.tab();
+    }
 
     const tagsInput = screen.queryByLabelText("Search and add tags");
     if (tagsInput) {
@@ -66,6 +96,7 @@ describe("PackageProfileAddSidePanel", () => {
       });
       expect(submitButton).toBeEnabled();
       await user.click(submitButton);
+      expect(await screen.findByText(/profile added/i)).toBeInTheDocument();
     };
 
     it("submits with all computers", async () => {

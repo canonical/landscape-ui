@@ -8,7 +8,7 @@ import type { UrlParams } from "@/types/UrlParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
+import { useEffect, type FC } from "react";
 import { useParams } from "react-router";
 import * as Yup from "yup";
 import { useCreateWslInstance, useGetWslInstanceTypes } from "../../api";
@@ -28,6 +28,15 @@ const WslInstanceInstallForm: FC = () => {
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const openActivityDetails = useOpenActivityDetailsPanel();
+  const parsedInstanceId = Number(instanceId);
+  const hasValidInstanceId =
+    Number.isInteger(parsedInstanceId) && parsedInstanceId > 0;
+
+  useEffect(() => {
+    if (!hasValidInstanceId) {
+      closeSidePanel();
+    }
+  }, [closeSidePanel, hasValidInstanceId]);
 
   const { isGettingWslInstanceTypes, wslInstanceTypes } =
     useGetWslInstanceTypes();
@@ -86,7 +95,7 @@ const WslInstanceInstallForm: FC = () => {
           : undefined;
 
         const { data: activity } = await createWslInstance({
-          parent_id: parseInt(instanceId!),
+          parent_id: parsedInstanceId,
           computer_name:
             values.instanceType === "custom"
               ? values.instanceName
@@ -135,6 +144,10 @@ const WslInstanceInstallForm: FC = () => {
   const handleRemoveFile = async () => {
     await formik.setFieldValue("cloudInit", null);
   };
+
+  if (!hasValidInstanceId) {
+    return null;
+  }
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

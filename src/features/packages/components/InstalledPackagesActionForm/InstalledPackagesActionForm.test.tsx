@@ -80,7 +80,7 @@ describe("InstalledPackagesActionForm", () => {
     await user.click(submitButton);
 
     expect(
-      await screen.findByText(/choose a version to proceed/i),
+      await screen.findByText(/this field is required/i),
     ).toBeInTheDocument();
   });
 

@@ -68,10 +68,7 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
   const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { scriptProfileLimits, isGettingScriptProfileLimits } =
     useGetScriptProfileLimits();
-
-  let handleSubmit: (
-    values: ScriptProfileFormValues,
-  ) => Promise<void> = async () => Promise.resolve();
+  let isAssociationLimitReached = false;
 
   const formik = useFormik<ScriptProfileFormValues>({
     initialValues,
@@ -114,7 +111,82 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
       username: Yup.string().required("This field is required"),
     }),
 
-    onSubmit: (values) => handleSubmit(values),
+    onSubmit: async (values) => {
+      if (!values.trigger_type || values.script_id == undefined) {
+        return;
+      }
+
+      if (isAssociationLimitReached) {
+        notify.error({
+          title: "Association limit reached",
+          message: `Decrease the number of associated instances below the limit of ${scriptProfileLimits?.max_num_computers} before saving.`,
+        });
+        return;
+      }
+
+      try {
+        switch (values.trigger_type) {
+          case "event": {
+            await onSubmit({
+              ...values,
+              script_id: values.script_id,
+              trigger: {
+                trigger_type: "event",
+                event_type: "post_enrollment",
+              },
+            });
+
+            break;
+          }
+
+          case "one_time": {
+            if (!values.timestamp) {
+              return;
+            }
+
+            await onSubmit({
+              ...values,
+              script_id: values.script_id,
+              trigger: {
+                trigger_type: "one_time",
+                timestamp: values.timestamp,
+                last_run: "",
+                next_run: "",
+              },
+            });
+
+            break;
+          }
+
+          case "recurring": {
+            if (!values.interval || !values.start_after) {
+              return;
+            }
+
+            await onSubmit({
+              ...values,
+              script_id: values.script_id,
+              trigger: {
+                trigger_type: "recurring",
+                interval: values.interval,
+                start_after: values.start_after,
+                last_run: "",
+                next_run: "",
+              },
+            });
+
+            break;
+          }
+        }
+      } catch (error) {
+        debug(error);
+        return;
+      }
+
+      closeSidePanel();
+
+      onSuccess(values);
+    },
   });
 
   const { instancesCount, isGettingInstances } = useGetInstances({
@@ -124,86 +196,9 @@ const ScriptProfileForm: FC<ScriptProfileFormProps> = ({
     limit: 1,
   });
 
-  const isAssociationLimitReached =
+  isAssociationLimitReached =
     (instancesCount ?? 0) >=
     (scriptProfileLimits?.max_num_computers ?? Infinity);
-
-  handleSubmit = async (values: ScriptProfileFormValues) => {
-    if (!values.trigger_type || values.script_id == undefined) {
-      return;
-    }
-
-    if (isAssociationLimitReached) {
-      notify.error({
-        title: "Association limit reached",
-        message: `Decrease the number of associated instances below the limit of ${scriptProfileLimits?.max_num_computers} before saving.`,
-      });
-      return;
-    }
-
-    try {
-      switch (values.trigger_type) {
-        case "event": {
-          await onSubmit({
-            ...values,
-            script_id: values.script_id,
-            trigger: {
-              trigger_type: "event",
-              event_type: "post_enrollment",
-            },
-          });
-
-          break;
-        }
-
-        case "one_time": {
-          if (!values.timestamp) {
-            return;
-          }
-
-          await onSubmit({
-            ...values,
-            script_id: values.script_id,
-            trigger: {
-              trigger_type: "one_time",
-              timestamp: values.timestamp,
-              last_run: "",
-              next_run: "",
-            },
-          });
-
-          break;
-        }
-
-        case "recurring": {
-          if (!values.interval || !values.start_after) {
-            return;
-          }
-
-          await onSubmit({
-            ...values,
-            script_id: values.script_id,
-            trigger: {
-              trigger_type: "recurring",
-              interval: values.interval,
-              start_after: values.start_after,
-              last_run: "",
-              next_run: "",
-            },
-          });
-
-          break;
-        }
-      }
-    } catch (error) {
-      debug(error);
-      return;
-    }
-
-    closeSidePanel();
-
-    onSuccess(values);
-  };
 
   if (isGettingScriptProfileLimits) {
     return <LoadingState />;
