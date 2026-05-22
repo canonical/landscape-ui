@@ -1,1 +1,0 @@
-var e={tabPanel:`_tabPanel_1p9so_1`};export{e as t};

@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-jRWAZmH_.js";import{Qt as t,l as n}from"./index-CzuHCFkM.js";var r=e(t(),1);function i(){let e=(0,r.useContext)(n);if(!e)throw Error(`useFetchDebArchive must be used within FetchDebArchiveProvider`);return e}export{i as t};

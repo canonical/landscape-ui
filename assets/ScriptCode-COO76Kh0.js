@@ -1,0 +1,1 @@
+import{Ht as e,Yt as t}from"./index-CzuHCFkM.js";var n=e(),r=t(),i=({code:e})=>(0,r.jsx)(n.CodeSnippet,{blocks:[{title:`Code preview`,code:e,wrapLines:!0,appearance:`numbered`}]});export{i as default};
