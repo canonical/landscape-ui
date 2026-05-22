@@ -1,4 +1,5 @@
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { employees } from "@/tests/mocks/employees";
 import { instances } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
@@ -91,7 +92,12 @@ describe("EmployeeList", () => {
   });
 
   it("opens the side panel when an employee name is clicked", async () => {
-    renderWithProviders(<EmployeeList employees={employees} />);
+    renderWithProviders(
+      <>
+        <EmployeeList employees={employees} />
+        <LocationDisplay />
+      </>,
+    );
 
     const [employee] = employees;
     await user.click(
@@ -100,8 +106,7 @@ describe("EmployeeList", () => {
       }),
     );
 
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("sidePath=view");
   });
 
   it("toggles expansion for the associated instances truncated cell", async () => {

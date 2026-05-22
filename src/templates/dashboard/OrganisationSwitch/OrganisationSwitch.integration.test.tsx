@@ -1,23 +1,14 @@
 import { API_URL } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
 import { authResponse } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
-import { beforeEach } from "vitest";
 import OrganisationSwitch from "./OrganisationSwitch";
-
-vi.mock("@/hooks/useSidePanel");
-const closeSidePanel = vi.fn();
 
 describe("OrganisationSwitch (integration)", () => {
   beforeEach(() => {
-    vi.mocked(useSidePanel, { partial: true }).mockReturnValue({
-      closeSidePanel,
-    });
-
     server.use(http.get(`${API_URL}me`, () => HttpResponse.json(authResponse)));
   });
 

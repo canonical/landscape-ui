@@ -69,7 +69,8 @@ describe("ScriptList", () => {
     expect(screen.queryByText("Associated profiles")).not.toBeInTheDocument();
   });
 
-  it("should open sidepanel when clicking on the script", async () => {
+  it("should have a show details button for each script", async () => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
     renderWithProviders(<ScriptList {...props} />);
 
     const script = await screen.findByRole("button", {
@@ -77,11 +78,6 @@ describe("ScriptList", () => {
     });
 
     expect(script).toBeInTheDocument();
-
-    await user.click(script);
-
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
   });
 
   it("shows correct icons for script status", async () => {

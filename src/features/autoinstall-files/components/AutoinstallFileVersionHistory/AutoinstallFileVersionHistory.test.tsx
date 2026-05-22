@@ -4,6 +4,7 @@ import {
   autoinstallFiles,
   autoinstallFileVersions,
 } from "@/tests/mocks/autoinstallFiles";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -87,10 +88,13 @@ describe("AutoinstallFileVersionHistory", () => {
       },
     });
     renderWithProviders(
-      <AutoinstallFileVersionHistory
-        file={file}
-        viewVersionHistory={vi.fn()}
-      />,
+      <>
+        <AutoinstallFileVersionHistory
+          file={file}
+          viewVersionHistory={vi.fn()}
+        />
+        <LocationDisplay />
+      </>,
     );
     await expectLoadingState();
     const versionButton = await screen.findByRole("button", {
@@ -98,7 +102,7 @@ describe("AutoinstallFileVersionHistory", () => {
     });
     await user.click(versionButton);
     await waitFor(() => {
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("view-version");
     });
   });
 });

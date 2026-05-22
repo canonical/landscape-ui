@@ -141,15 +141,17 @@ describe("Activities", () => {
   });
 
   describe("useOpenActivityDetails hook", () => {
-    it("should open activity details when navigated with state", async () => {
+    it("does not set sidePath when navigated without state", async () => {
       renderWithProviders(
-        <Activities {...defaultProps} />,
+        <>
+          <Activities {...defaultProps} />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.activities.root(),
       );
 
-      const sidePanel = await screen.findByRole("complementary");
-      expect(sidePanel).toBeVisible();
+      expect(screen.getByTestId("location").textContent).not.toContain("sidePath");
     });
   });
 

@@ -7,7 +7,6 @@ import { AppProviders } from "@/providers/AppProviders";
 import { NotifyContext } from "@/context/notify";
 import AppNotification from "@/components/layout/AppNotification";
 import AuthProvider from "@/context/auth";
-import SidePanelProvider from "@/context/sidePanel";
 
 interface WrapperProps {
   readonly children: ReactNode;
@@ -48,22 +47,20 @@ export const renderWithProviders = (
     return (
       <MemoryRouter initialEntries={initialEntries}>
         <AppProviders>
-          <SidePanelProvider>
-            <NotifyContext.Consumer>
-              {({ notify }) => (
-                <>
-                  <AppNotification notify={notify} />
-                  {routePattern ? (
-                    <Routes>
-                      <Route path={routePattern} element={children} />
-                    </Routes>
-                  ) : (
-                    children
-                  )}
-                </>
-              )}
-            </NotifyContext.Consumer>
-          </SidePanelProvider>
+          <NotifyContext.Consumer>
+            {({ notify }) => (
+              <>
+                <AppNotification notify={notify} />
+                {routePattern ? (
+                  <Routes>
+                    <Route path={routePattern} element={children} />
+                  </Routes>
+                ) : (
+                  children
+                )}
+              </>
+            )}
+          </NotifyContext.Consumer>
         </AppProviders>
       </MemoryRouter>
     );

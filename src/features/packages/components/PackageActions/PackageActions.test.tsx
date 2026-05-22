@@ -1,4 +1,5 @@
 import { setScreenSize } from "@/tests/helpers";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -141,19 +142,24 @@ describe("PackageActions", () => {
   describe("Action triggers", () => {
     it("opens upgrade form when upgrade button is clicked", async () => {
       renderWithProviders(
-        <PackageActions selectedPackages={[packageWithUpgrade]} />,
+        <>
+          <PackageActions selectedPackages={[packageWithUpgrade]} />
+          <LocationDisplay />
+        </>,
       );
 
       const upgradeButton = screen.getByRole("button", { name: /upgrade/i });
       await user.click(upgradeButton);
 
-      const form = await screen.findByRole("complementary");
-      expect(form).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("sidePath=upgrade");
     });
 
     it("opens remove form when uninstall button is clicked", async () => {
       renderWithProviders(
-        <PackageActions selectedPackages={[installedPackage]} />,
+        <>
+          <PackageActions selectedPackages={[installedPackage]} />
+          <LocationDisplay />
+        </>,
       );
 
       const uninstallButton = screen.getByRole("button", {
@@ -161,30 +167,35 @@ describe("PackageActions", () => {
       });
       await user.click(uninstallButton);
 
-      const form = await screen.findByRole("complementary");
-      expect(form).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("sidePath=remove");
     });
 
     it("opens hold form when hold button is clicked", async () => {
       renderWithProviders(
-        <PackageActions selectedPackages={[installedPackage]} />,
+        <>
+          <PackageActions selectedPackages={[installedPackage]} />
+          <LocationDisplay />
+        </>,
       );
 
       const holdButton = screen.getByRole("button", { name: "Hold" });
       await user.click(holdButton);
 
-      const form = await screen.findByRole("complementary");
-      expect(form).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("sidePath=hold");
     });
 
     it("opens unhold form when unhold button is clicked", async () => {
-      renderWithProviders(<PackageActions selectedPackages={[heldPackage]} />);
+      renderWithProviders(
+        <>
+          <PackageActions selectedPackages={[heldPackage]} />
+          <LocationDisplay />
+        </>,
+      );
 
       const unholdButton = screen.getByRole("button", { name: /unhold/i });
       await user.click(unholdButton);
 
-      const form = await screen.findByRole("complementary");
-      expect(form).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("sidePath=unhold");
     });
   });
 });

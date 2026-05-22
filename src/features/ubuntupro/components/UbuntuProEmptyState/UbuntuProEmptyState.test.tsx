@@ -1,4 +1,5 @@
 import { instances } from "@/tests/mocks/instance";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -87,12 +88,16 @@ describe("UbuntuProEmptyState", () => {
   });
 
   it("lazy loads the attach token form", async () => {
-    renderWithProviders(<UbuntuProEmptyState {...props} />);
+    renderWithProviders(
+      <>
+        <UbuntuProEmptyState {...props} />
+        <LocationDisplay />
+      </>,
+    );
 
     const button = screen.getByRole("button", { name: "Attach Ubuntu Pro" });
     await userEvent.click(button);
 
-    const sidePanel = screen.getByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("sidePath=attach-token");
   });
 });

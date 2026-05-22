@@ -58,10 +58,15 @@ describe("AutoinstallFileDetails", () => {
 
   it("opens edit form side panel when clicking the edit button", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<AutoinstallFileDetails {...defaultProps} />);
+    renderWithProviders(
+      <>
+        <AutoinstallFileDetails {...defaultProps} />
+        <LocationDisplay />
+      </>,
+    );
     await user.click(screen.getByRole("button", { name: /edit/i }));
     await waitFor(() => {
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("sidePath=edit-file");
     });
   });
 
