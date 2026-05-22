@@ -3,11 +3,10 @@ import CreateSavedSearchButton from "../CreateSavedSearchButton";
 import classes from "./SearchPrompt.module.scss";
 
 interface SearchPromptProps {
-  readonly onSearchSave: () => void;
   readonly search: string;
 }
 
-const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
+const SearchPrompt: FC<SearchPromptProps> = ({ search }) => {
   return (
     <>
       {search && (
@@ -22,7 +21,6 @@ const SearchPrompt: FC<SearchPromptProps> = ({ onSearchSave, search }) => {
             buttonLabel="Save search"
             appearance="link"
             className={classes.saveButton}
-            afterCreate={onSearchSave}
             search={search}
           />
         </div>

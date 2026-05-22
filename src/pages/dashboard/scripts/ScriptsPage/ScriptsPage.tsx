@@ -52,7 +52,7 @@ const ScriptsPage: FC = () => {
     "version",
   ]);
 
-  const { script } = useGetSingleScript(Number(name));
+  const { script } = useGetSingleScript(Number(name), { enabled: !!name });
 
   return (
     <PageMain>
@@ -95,7 +95,12 @@ const ScriptsPage: FC = () => {
         onClose={popSidePathUntilClear}
         isOpen={
           lastSidePathSegment === "create" ||
-          (!!lastSidePathSegment && !!script)
+          ((lastSidePathSegment === "view" ||
+            lastSidePathSegment === "edit" ||
+            lastSidePathSegment === "run" ||
+            lastSidePathSegment === "version-history" ||
+            lastSidePathSegment === "version") &&
+            !!script)
         }
         size={lastSidePathSegment === "run" ? "large" : "small"}
       >

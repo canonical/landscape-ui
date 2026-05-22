@@ -5,7 +5,6 @@ import type { SavedSearch } from "../../types";
 
 interface EditSavedSearchButtonProps {
   readonly savedSearch: SavedSearch;
-  readonly onBackButtonPress?: () => void;
 }
 
 const EditSavedSearchButton: FC<EditSavedSearchButtonProps> = ({

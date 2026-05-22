@@ -4,7 +4,7 @@ import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import CreateSavedSearchButton from "./CreateSavedSearchButton";
 
 describe("CreateSavedSearchButton", () => {
@@ -77,13 +77,11 @@ describe("CreateSavedSearchButton", () => {
     expect(button).toHaveClass("has-icon");
   });
 
-  it("should update URL with search param and call afterCreate on click", async () => {
-    const afterCreate = vi.fn();
+  it("should update URL with search param when clicked", async () => {
     renderWithProviders(
       <>
         <CreateSavedSearchButton
           {...defaultProps}
-          afterCreate={afterCreate}
           search="alert:package-upgrades"
         />
         <LocationDisplay />
@@ -95,6 +93,5 @@ describe("CreateSavedSearchButton", () => {
 
     expect(screen.getByTestId("location")).toHaveTextContent("sidePath=create-saved-search");
     expect(screen.getByTestId("location")).toHaveTextContent("query=alert%3Apackage-upgrades");
-    expect(afterCreate).toHaveBeenCalled();
   });
 });

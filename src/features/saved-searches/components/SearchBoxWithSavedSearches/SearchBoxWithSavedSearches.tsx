@@ -260,9 +260,6 @@ const SearchBoxWithSavedSearches: FC<SearchBoxWithSavedSearchesProps> = ({
           className="p-search-and-filter__panel"
         >
           <SearchPrompt
-            onSearchSave={() => {
-              setInputText("");
-            }}
             search={inputText.trim()}
           />
 

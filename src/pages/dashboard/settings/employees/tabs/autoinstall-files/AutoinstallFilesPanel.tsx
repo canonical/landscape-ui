@@ -112,10 +112,10 @@ const AutoinstallFilesPanel: FC = () => {
       lastSidePathSegment === "view-versions" ||
       lastSidePathSegment === "view-version");
 
-  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
-    id: shouldFetch ? Number(name) : 0,
-    with_metadata: true,
-  });
+  const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile(
+    { id: Number(name), with_metadata: true },
+    { enabled: shouldFetch },
+  );
 
   const openAddForm = (): void => {
     setPageParams({

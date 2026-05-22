@@ -2,11 +2,15 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import PublicationsContainer from "./PublicationsContainer";
 import { expectLoadingState } from "@/tests/helpers";
 
 describe("PublicationsContainer", () => {
+  afterEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("renders publications list data", async () => {
     renderWithProviders(<PublicationsContainer />);
 
@@ -58,6 +62,5 @@ describe("PublicationsContainer", () => {
     expect(
       screen.queryByRole("button", { name: "Add publication" }),
     ).not.toBeInTheDocument();
-    screen.debug();
   });
 });
