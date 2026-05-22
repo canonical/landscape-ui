@@ -141,8 +141,8 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
-    urlParam: "sidePath",
+    urlParam: "version",
     shouldResetPage: false,
-    defaultValue: DEFAULT_EMPTY_ARRAY,
+    defaultValue: DEFAULT_EMPTY_STRING,
   },
 ];
