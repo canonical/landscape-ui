@@ -8,7 +8,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "dev:host": "vite --host",
     "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
     "build:e2e": "pnpm run build --mode e2e",
     "lint": "eslint --fix src e2e",

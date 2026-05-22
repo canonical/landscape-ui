@@ -6,4 +6,4 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-    command: pnpm dev:host
+    command: pnpm vite --host
