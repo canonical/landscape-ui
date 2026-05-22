@@ -12,10 +12,12 @@
 set -e
 
 MOCK=false
+CLEAN_FRONTEND=false
 
 for arg in "$@"; do
     case "$arg" in
         --mock) MOCK=true ;;
+        --clean) CLEAN_FRONTEND=true ;;
         *) echo "Unknown argument: $arg" >&2; exit 1 ;;
     esac
 done
@@ -28,6 +30,7 @@ CLEANUP=false
 if [ "$MOCK" = true ]; then
     printf 'VITE_MSW_ENABLED=true\nVITE_MSW_ENDPOINTS_TO_INTERCEPT=/\n' > "$ENV_OVERRIDE"
     CLEANUP=true
+    CLEAN_FRONTEND=true
     echo "MSW mock mode enabled — writing .env.production.local"
 fi
 
@@ -38,9 +41,11 @@ trap cleanup EXIT
 
 cd "$PROJECT_DIR"
 
-# Always clean the frontend part so env changes (e.g. VITE_MSW_ENABLED)
-# are picked up — snapcraft does not track .env files as source inputs.
-snapcraft clean frontend --destructive-mode
+if [ "$CLEAN_FRONTEND" = true ]; then
+    # Clean frontend when explicitly requested or when mock mode is used.
+    # This ensures env overrides like VITE_MSW_ENABLED are picked up.
+    snapcraft clean frontend --destructive-mode
+fi
 
 mkdir -p snap/output
 snapcraft pack --destructive-mode --output snap/output 2>&1

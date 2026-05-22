@@ -6,10 +6,12 @@ VM_CPUS="4"
 VM_MEMORY="8G"
 VM_DISK="40G"
 MOCK=false
+CLEAN_FRONTEND=false
 
 for arg in "$@"; do
     case "$arg" in
         --mock) MOCK=true ;;
+        --clean) CLEAN_FRONTEND=true ;;
         --vm=*) VM_NAME="${arg#--vm=}" ;;
         *) echo "Unknown argument: $arg" >&2; exit 1 ;;
     esac
@@ -23,6 +25,7 @@ CLEANUP=false
 if [ "$MOCK" = true ]; then
     printf 'VITE_MSW_ENABLED=true\nVITE_MSW_ENDPOINTS_TO_INTERCEPT=/\n' > "$ENV_OVERRIDE"
     CLEANUP=true
+    CLEAN_FRONTEND=true
     echo "MSW mock mode enabled — writing .env.production.local"
 fi
 
@@ -63,7 +66,12 @@ multipass exec "$VM_NAME" -- sudo rsync -a --delete \
     /build/ /root/landscape-ui-src/
 
 echo "Building snap in VM '$VM_NAME'..."
-multipass exec "$VM_NAME" -- sudo -H sh -c 'set -e; cd /root/landscape-ui-src; snapcraft clean frontend --destructive-mode; mkdir -p /tmp/snap-output; snapcraft pack --destructive-mode --output /tmp/snap-output'
+if [ "$CLEAN_FRONTEND" = true ]; then
+    echo "Cleaning frontend part before build..."
+    multipass exec "$VM_NAME" -- sudo -H sh -c 'set -e; cd /root/landscape-ui-src; snapcraft clean frontend --destructive-mode; mkdir -p /tmp/snap-output; snapcraft pack --destructive-mode --output /tmp/snap-output'
+else
+    multipass exec "$VM_NAME" -- sudo -H sh -c 'set -e; cd /root/landscape-ui-src; mkdir -p /tmp/snap-output; snapcraft pack --destructive-mode --output /tmp/snap-output'
+fi
 
 echo "Copying snap to host..."
 multipass exec "$VM_NAME" -- sudo sh -c 'cp /tmp/snap-output/*.snap /build/snap/'
