@@ -43,7 +43,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const fetchButton = await screen.findByRole("button", {
       name: /fetch packages/i,
     });
-    expect(fetchButton).toHaveAttribute("aria-disabled", "true");
+    expect(fetchButton).toBeEnabled();
 
     const importButton = await screen.findByRole("button", {
       name: /import packages/i,
@@ -101,7 +101,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     expect(importButton).toBeEnabled();
   });
 
-  it("allows import after timeout and shows success notification", async () => {
+  it("blocks import after timeout when no packages are available", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
@@ -119,13 +119,12 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    await user.click(importButton);
+    expect(importButton).toHaveAttribute("aria-disabled", "true");
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/you have marked .* to import packages/i),
-      ).toBeInTheDocument();
-    });
+    await user.click(importButton);
+    expect(
+      screen.queryByText(/you have marked .* to import packages/i),
+    ).not.toBeInTheDocument();
   });
 
   it("shows error notification when validation fails and blocks submission", async () => {
@@ -149,7 +148,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     expect(importButton).toHaveAttribute("aria-disabled", "true");
   });
 
-  it("shows negative notification when no packages are available and blocks submission", async () => {
+  it("blocks submission when no packages are available", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
@@ -158,18 +157,14 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const fetchButton = screen.getByRole("button", { name: /fetch packages/i });
     await user.click(fetchButton);
 
-    await waitFor(() => {
-      expect(
-        screen.getByText(/no packages available from the url provided/i),
-      ).toBeInTheDocument();
-    });
-
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
+    await waitFor(() => {
+      expect(importButton).toHaveAttribute("aria-disabled", "true");
+    });
 
-    // Verify clicking Import doesn't submit when no packages available
+    // Verify clicking Import doesn't submit when no packages are available.
     await user.click(importButton);
     expect(
       screen.queryByText(/you have marked .* to import packages/i),

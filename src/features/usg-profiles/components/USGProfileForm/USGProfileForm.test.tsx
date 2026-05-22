@@ -126,8 +126,9 @@ describe("USGProfileForm", () => {
     );
 
     expect(mutate).not.toHaveBeenCalled();
-    expect(
-      await screen.findByText("This field is required."),
-    ).toBeInTheDocument();
+    const requiredErrors = await screen.findAllByText(
+      "This field is required.",
+    );
+    expect(requiredErrors.length).toBeGreaterThan(0);
   });
 });
