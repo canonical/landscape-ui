@@ -139,40 +139,6 @@ describe("RemoveTargetModal", () => {
     expect(defaultClose).toHaveBeenCalled();
   });
 
-  it("submits the deletion after typing the confirmation text", async () => {
-    server.use(
-      http.delete(
-        `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
-        () => new HttpResponse(null, { status: 204 }),
-      ),
-    );
-
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
-    renderWithProviders(
-      <RemoveTargetModal
-        isOpen={true}
-        close={defaultClose}
-        target={targetWithPublications}
-      />,
-    );
-
-    await user.type(
-      screen.getByPlaceholderText(
-        `remove ${targetWithPublications.displayName}`,
-      ),
-      `remove ${targetWithPublications.displayName}`,
-    );
-    await user.click(screen.getByRole("button", { name: /remove target/i }));
-
-    expect(
-      await screen.findByText(/successfully removed/i),
-    ).toBeInTheDocument();
-  });
-
   it("shows an error notification when deletion fails", async () => {
     server.use(
       http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>

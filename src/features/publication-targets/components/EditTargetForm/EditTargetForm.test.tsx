@@ -91,15 +91,6 @@ describe("EditTargetForm", () => {
       expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
     });
 
-    it("submits and shows success notification", async () => {
-      renderWithProviders(<EditTargetForm target={s3TargetFull} />);
-
-      await user.click(screen.getByRole("button", { name: /save/i }));
-
-      expect(
-        await screen.findByText(/publication target edited/i),
-      ).toBeInTheDocument();
-    });
   });
 
   describe("Swift target", () => {

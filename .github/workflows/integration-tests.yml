@@ -1,0 +1,372 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches: [dev]
+    paths-ignore:
+      - "docs/**"
+      - "feature-plans/**"
+      - "debian/**"
+      - "**.md"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "feature-plans/**"
+      - "debian/**"
+      - "**.md"
+  schedule:
+    # Nightly at 02:00 UTC — catches upstream backend regressions
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      packaging_ref:
+        description: "landscape-packaging branch/tag/SHA to test against. Defaults to main. Controls which pinned versions of landscape-go and landscape-server are used."
+        default: "main"
+        required: false
+
+permissions:
+  contents: read
+
+# PRs: cancel superseded runs on the same branch.
+# Push to main and nightly schedule: never cancel — let them complete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      LANDSCAPE_DEPLOYMENT_MODE: standalone
+      CI_ADMIN_EMAIL: john@example.com
+      CI_ADMIN_PASSWORD: pwd
+
+    steps:
+      # Current repo checkout uses the implicit GITHUB_TOKEN — no App token needed.
+      # Runs first so subsequent checkouts cannot interfere with the SSH rewrite order.
+      - name: Checkout landscape-ui
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      # Mints a short-lived installation token (≤1 h) scoped to the Canonical repos
+      # this job needs. Requires LANDSCAPE_PACKAGER_APP_ID (var) and
+      # LANDSCAPE_PACKAGER_PRIVATE_KEY (secret) to be set on this repo.
+      - name: Generate App Token
+        id: get_token
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
+        with:
+          app-id: ${{ vars.LANDSCAPE_PACKAGER_APP_ID }}
+          private-key: ${{ secrets.LANDSCAPE_PACKAGER_PRIVATE_KEY }}
+          owner: canonical
+          repositories: "landscape-packaging,landscape-go,landscape-server"
+
+      # Checks out top-level only — submodule auth is handled below via url.insteadOf.
+      # actions/checkout only injects HTTPS credentials; landscape-packaging submodules
+      # use SSH URLs so the credential would be silently ignored. persist-credentials:
+      # false avoids a stale credential interfering with the rewrite step.
+      - name: Checkout landscape-packaging (top-level only)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: canonical/landscape-packaging
+          token: ${{ steps.get_token.outputs.token }}
+          ref: ${{ inputs.packaging_ref || 'main' }}
+          submodules: false
+          persist-credentials: false
+          path: .landscape-packaging
+
+      # Must run AFTER all actions/checkout steps (checkout resets git config)
+      # and BEFORE submodule init. Token via env: to avoid interpolating it
+      # into the shell command string.
+      - name: Rewrite SSH submodule URLs to authenticated HTTPS
+        env:
+          TOKEN: ${{ steps.get_token.outputs.token }}
+        run: |
+          git config --global \
+            url."https://x-access-token:${TOKEN}@github.com/".insteadOf \
+            "git@github.com:"
+
+      - name: Initialise landscape-packaging submodules
+        working-directory: .landscape-packaging
+        run: git submodule update --init --recursive
+
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version-file: .landscape-packaging/landscape-go/go.mod
+          cache: false
+
+      # landscape-go does not commit vendor/ (it is gitignored). vendor/ must be
+      # generated here so the debarchive Docker build has all dependencies available.
+      #
+      # landscape-proto (private) requires its own credential: the landscape-packager
+      # App is not installed on that repo. A fine-grained PAT scoped to
+      # canonical/landscape-proto with Contents:read is stored as LANDSCAPE_PROTO_TOKEN.
+      #
+      # Git picks the longest matching insteadOf prefix, so the PAT rewrite below
+      # takes precedence over the general App-token rewrite set earlier.
+      #
+      # Migration to App install: add "landscape-proto" to the repositories list in
+      # the Generate App Token step above, then remove the PAT rewrite line here.
+      - name: Vendor landscape-go dependencies
+        env:
+          PROTO_TOKEN: ${{ secrets.LANDSCAPE_PROTO_TOKEN }}
+        run: |
+          git config --global \
+            url."https://x-access-token:${PROTO_TOKEN}@github.com/canonical/landscape-proto".insteadOf \
+            "https://github.com/canonical/landscape-proto"
+          cd .landscape-packaging/landscape-go
+          GOPRIVATE="github.com/canonical/*" go mod vendor
+          echo "Vendored $(find vendor -name '*.go' | wc -l) Go source files"
+
+      - name: Create landscape-server bind-mount directories
+        run: |
+          mkdir -p \
+            .landscape-packaging/landscape-server/.venv \
+            .landscape-packaging/landscape-server/build \
+            .landscape-packaging/landscape-server/var/log
+
+      # Ensures docker compose wait and full schema validation are available.
+      # Installs to ~/.docker/cli-plugins to avoid permission issues on the runner.
+      - name: Install Docker Compose v2.36+
+        run: |
+          COMPOSE_VERSION="v2.36.0"
+          mkdir -p ~/.docker/cli-plugins
+          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" \
+            -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          docker compose version
+
+      # initial_sync is a Docker Desktop-only extension not in the open-source schema.
+      # The landscape-ui service is not started in CI so removing it has no effect.
+      - name: Patch compose.yaml for CI compatibility
+        run: |
+          sed -i '/initial_sync:/d' .landscape-packaging/docker/ui-dev/compose.yaml
+
+          # Write a compose override that points debarchive at the pre-built CI image
+          # (landscape-debarchive:ci, built in the next step) instead of the dev image.
+          # This avoids the upstream air+dlv command (requires ptrace, blocked in GHA)
+          # and eliminates runtime Go compilation (~2 min cold → ~10 s startup).
+          # GO_DOTENV and GOFLAGS are cleared — the binary is already compiled and the
+          # dotenv file would override DB settings to wrong dev defaults.
+          cat > .landscape-packaging/docker/ui-dev/compose.ci-override.yaml << 'EOF'
+          services:
+            debarchive:
+              image: landscape-debarchive:ci
+              pull_policy: never
+              command: ["/root/server"]
+              working_dir: /root
+              environment:
+                - GO_DOTENV=
+                - GOFLAGS=
+                - DEB_ARCHIVE_DATABASE_HOST=postgresql
+                - DEB_ARCHIVE_DATABASE_NAME=landscape-debarchive
+                - DEB_ARCHIVE_DATABASE_USER=postgres
+                - DEB_ARCHIVE_DATABASE_PASSWORD=postgres
+              healthcheck:
+                test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8000' 2>/dev/null"]
+                interval: 10s
+                timeout: 5s
+                retries: 12
+                start_period: 30s
+          EOF
+          echo "=== compose.ci-override.yaml ==="
+          cat .landscape-packaging/docker/ui-dev/compose.ci-override.yaml
+
+      # Builds a production-like debarchive image from debarchive/docker/Dockerfile.e2e
+      # (multi-stage: golang:1.26 builder → debian:bookworm-slim runtime).
+      # No air, no dlv, no ptrace. The binary is at /root/server; CMD ["./server"].
+      # vendor/modules.txt was patched above so the COPY . . layer is already correct.
+      - name: Build debarchive CI image
+        run: |
+          docker build \
+            -f .landscape-packaging/landscape-go/debarchive/docker/Dockerfile.e2e \
+            .landscape-packaging/landscape-go \
+            -t landscape-debarchive:ci
+          echo "debarchive CI image built successfully"
+
+      # Two-phase startup: bring up postgresql first so we can create the debarchive
+      # database before debarchive itself starts (debarchive does not create the DB).
+      - name: Start database services
+        working-directory: .landscape-packaging/docker/ui-dev
+        run: |
+          _uid=$(id -u)
+          _gid=$(id -g)
+          _uname=$(whoami)
+          env UID="$_uid" GID="$_gid" UNAME="$_uname" \
+            docker compose \
+              -p "ls-integration-${{ github.run_id }}" \
+              -f compose.yaml -f compose.ci-override.yaml \
+              up -d \
+              postgresql rabbitmq rsyslog
+
+      - name: Create debarchive database
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          timeout 60 bash -c \
+            'until docker exec landscape-postgres pg_isready -U postgres -q; do sleep 2; done'
+          docker exec landscape-postgres createdb -U postgres landscape-debarchive || true
+          echo "landscape-debarchive database ready"
+
+      - name: Start backend stack
+        working-directory: .landscape-packaging/docker/ui-dev
+        run: |
+          _uid=$(id -u)
+          _gid=$(id -g)
+          _uname=$(whoami)
+          env UID="$_uid" GID="$_gid" UNAME="$_uname" \
+            LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" \
+            docker compose \
+              -p "ls-integration-${{ github.run_id }}" \
+              -f compose.yaml -f compose.ci-override.yaml \
+              up -d \
+              postgresql rabbitmq rsyslog builder \
+              package-search api appserver fake-openid \
+              debarchive
+
+      # The builder runs schema patches then exits. The api container passes its
+      # Docker healthcheck before the DB schema is ready, so wait for the builder
+      # to exit cleanly before probing HTTP endpoints.
+      # Uses docker wait (not docker compose wait) to avoid project-lookup issues
+      # when the working directory differs from the up step.
+      - name: Wait for builder to finish schema migrations
+        run: |
+          echo "Waiting for builder container to appear..."
+          until docker inspect landscape-builder &>/dev/null; do sleep 2; done
+          echo "Waiting for builder to finish schema migrations..."
+          EXIT=$(docker wait landscape-builder)
+          if [ "$EXIT" != "0" ]; then
+            echo "Builder failed with exit code $EXIT"
+            docker logs landscape-builder --tail=100
+            exit 1
+          fi
+          echo "Builder finished successfully"
+
+      # debarchive uses a pre-built CI image (no runtime Go compilation), so it
+      # starts in ~10 s. The seeder is started here (not in the main up step) so
+      # that docker compose doesn't block on the debarchive health dependency chain.
+      - name: Wait for debarchive to be ready and seeded
+        working-directory: .landscape-packaging/docker/ui-dev
+        run: |
+          echo "Waiting for debarchive to respond (pre-built CI image, ~10-30s expected)..."
+          timeout 120 bash -c \
+            'until curl -s -o /dev/null --max-time 5 http://localhost:8000/; do
+               echo "$(date): debarchive not ready yet, retrying in 10s..."
+               docker inspect --format="status={{.State.Status}} health={{.State.Health.Status}}" landscape-debarchive 2>/dev/null || true
+               sleep 10
+             done' || {
+            echo "=== Debarchive failed to become healthy ==="
+            echo "--- Container state ---"
+            docker inspect landscape-debarchive --format='{{json .State}}' 2>/dev/null | python3 -m json.tool || true
+            echo "--- Last 100 log lines ---"
+            docker logs landscape-debarchive --tail=100
+            exit 1
+          }
+          echo "Debarchive is healthy. Starting seeder..."
+
+          _uid=$(id -u)
+          _gid=$(id -g)
+          _uname=$(whoami)
+          env UID="$_uid" GID="$_gid" UNAME="$_uname" \
+            docker compose \
+              -p "ls-integration-${{ github.run_id }}" \
+              -f compose.yaml -f compose.ci-override.yaml \
+              up -d debarchive-seeder
+
+          echo "Waiting for debarchive-seeder to finish..."
+          until docker inspect landscape-debarchive-seeder &>/dev/null; do sleep 2; done
+          EXIT=$(docker wait landscape-debarchive-seeder)
+          if [ "$EXIT" != "0" ]; then
+            echo "::warning::Debarchive seeder exited with code $EXIT (non-blocking — seeder may have partial data or use an older API version)"
+            docker logs landscape-debarchive-seeder --tail=50
+          fi
+          echo "Debarchive seeder finished (exit $EXIT)"
+
+      # /api/v2/ root may 404; login/methods is always 200 when the API is serving.
+      # 120 s is sufficient once the builder has exited.
+      - name: Wait for API and appserver to be ready
+        run: |
+          timeout 120 bash -c \
+            'until curl -sf --max-time 5 http://localhost:9091/api/v2/login/methods && \
+                   curl -sf --max-time 5 http://localhost:8080/; \
+             do sleep 5; done' || {
+            echo "=== Timed out. Container states ==="
+            docker compose -p "ls-integration-${{ github.run_id }}" \
+              -f .landscape-packaging/docker/ui-dev/compose.yaml \
+              -f .landscape-packaging/docker/ui-dev/compose.ci-override.yaml ps
+            echo "=== API logs (last 50 lines) ==="
+            docker compose -p "ls-integration-${{ github.run_id }}" \
+              -f .landscape-packaging/docker/ui-dev/compose.yaml \
+              -f .landscape-packaging/docker/ui-dev/compose.ci-override.yaml \
+              logs --tail=50 api
+            exit 1
+          }
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run API Contract tests
+        run: pnpm exec playwright test --config e2e/docker-stack/playwright.api-contract.config.ts
+        env:
+          CI_ADMIN_EMAIL: ${{ env.CI_ADMIN_EMAIL }}
+          CI_ADMIN_PASSWORD: ${{ env.CI_ADMIN_PASSWORD }}
+
+      - name: Run e2e selfHosted tests
+        run: pnpm exec playwright test --config e2e/docker-stack/playwright.integration.config.ts
+        env:
+          CI_ADMIN_EMAIL: ${{ env.CI_ADMIN_EMAIL }}
+          CI_ADMIN_PASSWORD: ${{ env.CI_ADMIN_PASSWORD }}
+
+      - name: Run e2e Saas tests
+        run: pnpm exec playwright test --config e2e/docker-stack/playwright.integration.saas.config.ts
+        env:
+          CI_ADMIN_EMAIL: ${{ env.CI_ADMIN_EMAIL }}
+          CI_ADMIN_PASSWORD: ${{ env.CI_ADMIN_PASSWORD }}
+
+      - name: Upload API Contract test report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-api-contract-report
+          path: playwright-api-contract-report
+          retention-days: 14
+
+      - name: Upload self-hosted test report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-integration-report
+          path: playwright-integration-report
+          retention-days: 14
+
+      - name: Upload SaaS test report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: playwright-integration-saas-report
+          path: playwright-integration-saas-report
+          retention-days: 14
+
+      - name: Teardown backend stack
+        if: always()
+        run: |
+          docker compose \
+            -p "ls-integration-${{ github.run_id }}" \
+            -f .landscape-packaging/docker/ui-dev/compose.yaml \
+            -f .landscape-packaging/docker/ui-dev/compose.ci-override.yaml \
+            down --remove-orphans --volumes

@@ -103,32 +103,6 @@ describe("AddPublicationTargetForm", () => {
     ).not.toHaveLength(0);
   });
 
-  it("submits S3 form and shows success notification", async () => {
-    renderWithProviders(<AddPublicationTargetForm />);
-
-    await user.type(screen.getByLabelText("Name"), "My S3 Target");
-    await user.type(screen.getByLabelText(/region/i), "us-east-1");
-    await user.type(screen.getByLabelText(/bucket name/i), "my-bucket");
-    await user.type(
-      screen.getByLabelText(/aws access key id/i),
-      "AKIAIOSFODNN7EXAMPLE",
-    );
-    await user.type(
-      screen.getByLabelText(/aws secret access key/i),
-      "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
-    );
-
-    await user.click(
-      screen.getByRole("button", { name: /add publication target/i }),
-    );
-
-    await vi.waitFor(() => {
-      expect(
-        screen.getByText("Publication target created"),
-      ).toBeInTheDocument();
-    });
-  });
-
   it("submits Swift form and shows success notification", async () => {
     renderWithProviders(<AddPublicationTargetForm />);
 

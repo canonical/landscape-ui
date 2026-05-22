@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "pnpm run lint && pnpm run tcm:run && tsc && vite build",
-    "build:e2e": "pnpm run build --mode e2e",
+    "build:e2e.selfHosted": "pnpm run build --mode e2e.selfHosted",
+    "build:e2e.saas": "pnpm run build --mode e2e.saas",
     "lint": "eslint --fix src e2e",
     "preview": "vite preview",
     "test": "pnpm exec playwright test",
