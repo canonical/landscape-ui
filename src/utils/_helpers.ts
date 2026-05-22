@@ -58,7 +58,7 @@ export const handleParams = ({
 
             default:
               throw new Error(
-                `Unsupported array item type. Provided: ${data} for ${paramName}`,
+                `Unsupported array item type. Provided: ${typeof data} for ${paramName}`,
               );
           }
         }
@@ -104,7 +104,7 @@ export const handleParams = ({
 
         default:
           throw new Error(
-            `Unsupported argument type. Provided: ${value} for ${param}`,
+            `Unsupported argument type. Provided: ${typeof value} for ${param}`,
           );
       }
     }
