@@ -1,25 +1,25 @@
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { useUpdateAutoinstallFile } from "../api";
-import type { AutoinstallFile, AutoinstallFileTabId } from "../types";
+import type { AutoinstallFile } from "../types";
 import useOpenAutoinstallFileDetails from "./useOpenAutoinstallFileDetails";
 
 const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
   const { notify } = useNotify();
-  const { closeSidePanel, setPageParams, sidePath } = usePageParams();
+  const { closeSidePanel, setPageParams } = usePageParams();
 
   const { updateAutoinstallFile } = useUpdateAutoinstallFile();
 
   const openAutoinstallFileDetails = useOpenAutoinstallFileDetails();
 
   return {
-    openAutoinstallFileDetails: (initialTabId?: AutoinstallFileTabId) => {
-      openAutoinstallFileDetails(autoinstallFile, initialTabId);
+    openAutoinstallFileDetails: () => {
+      openAutoinstallFileDetails(autoinstallFile);
     },
 
     openAutoinstallFileEditForm: () => {
       setPageParams({
-        sidePath: [...sidePath, "edit-file"],
+        sidePath: ["edit-file"],
         name: String(autoinstallFile.id),
       });
     },

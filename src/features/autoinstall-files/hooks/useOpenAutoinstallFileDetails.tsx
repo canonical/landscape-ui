@@ -1,17 +1,13 @@
 import usePageParams from "@/hooks/usePageParams";
-import type { AutoinstallFile, AutoinstallFileTabId } from "../types";
+import type { AutoinstallFile } from "../types";
 
 const useOpenAutoinstallFileDetails = () => {
-  const { setPageParams, sidePath } = usePageParams();
+  const { setPageParams } = usePageParams();
 
-  return (
-    autoinstallFile: AutoinstallFile,
-    initialTabId?: AutoinstallFileTabId,
-  ): void => {
+  return (autoinstallFile: AutoinstallFile): void => {
     setPageParams({
-      sidePath: [...sidePath, "view-file"],
+      sidePath: ["view-file"],
       name: String(autoinstallFile.id),
-      ...(initialTabId ? { tab: initialTabId } : {}),
     });
   };
 };

@@ -1,6 +1,5 @@
 import { Tabs } from "@canonical/react-components";
 import type { FC } from "react";
-import { useState } from "react";
 import type { AutoinstallFileTabId } from "../../types";
 import type { AutoinstallFile } from "../../types/AutoinstallFile";
 import AutoinstallFileInfo from "../AutoinstallFileInfo";
@@ -11,22 +10,26 @@ import { AUTOINSTALL_FILE_TABS } from "./constants";
 interface AutoinstallFileTabsProps {
   readonly file: AutoinstallFile;
   readonly viewVersionHistory: () => void;
-  readonly initialTabId?: AutoinstallFileTabId;
+  readonly onInfoTabClick: () => void;
+  readonly activeTabId?: AutoinstallFileTabId;
 }
 
 const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
   file,
   viewVersionHistory,
-  initialTabId = "info",
+  onInfoTabClick,
+  activeTabId = "info",
 }) => {
-  const [tabId, setTabId] = useState(initialTabId);
-
   const links = AUTOINSTALL_FILE_TABS.map(({ label, id }) => ({
     label,
-    active: id === tabId,
+    active: id === activeTabId,
     role: "tab",
     onClick: (): void => {
-      setTabId(id);
+      if (id === "version-history") {
+        viewVersionHistory();
+      } else {
+        onInfoTabClick();
+      }
     },
   }));
 
@@ -34,9 +37,9 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
     <>
       <Tabs listClassName={classes.tabs} links={links} />
 
-      {tabId === "info" && <AutoinstallFileInfo file={file} />}
+      {activeTabId === "info" && <AutoinstallFileInfo file={file} />}
 
-      {tabId === "version-history" && (
+      {activeTabId === "version-history" && (
         <AutoinstallFileVersionHistory
           file={file}
           viewVersionHistory={viewVersionHistory}
@@ -47,3 +50,21 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
 };
 
 export default AutoinstallFileTabs;
+
+//   return (
+//     <>
+//       <Tabs listClassName={classes.tabs} links={links} />
+
+//       {tabId === "info" && <AutoinstallFileInfo file={file} />}
+
+//       {tabId === "version-history" && (
+//         <AutoinstallFileVersionHistory
+//           file={file}
+//           viewVersionHistory={viewVersionHistory}
+//         />
+//       )}
+//     </>
+//   );
+// };
+
+// export default AutoinstallFileTabs;

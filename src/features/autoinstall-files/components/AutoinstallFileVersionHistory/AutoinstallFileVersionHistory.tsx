@@ -1,21 +1,16 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { SidePanelTablePagination } from "@/components/layout/TablePagination";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { Button, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
-import { lazy, Suspense, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
 import { useGetAutoinstallFile } from "../../api";
 import type { AutoinstallFile } from "../../types";
 import type { AutoinstallFileVersionInfo } from "../../types/AutoinstallFile";
-import AutoinstallFileSidePanelTitle from "../AutoinstallFileSidePanelTitle";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
-
-const AutoinstallFileVersion = lazy(
-  async () => import("../AutoinstallFileVersion"),
-);
 
 interface AutoinstallFileVersionHistoryProps {
   readonly file: AutoinstallFile;
@@ -26,7 +21,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
   file,
   viewVersionHistory,
 }) => {
-  const { setSidePanelContent } = useSidePanel();
+  const { setPageParams, sidePath: parsedSidePath } = usePageParams();
 
   const { autoinstallFile, isAutoinstallFileLoading } = useGetAutoinstallFile({
     id: file.id,
@@ -52,19 +47,10 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
           row: { original: versionInfo },
         }: CellProps<AutoinstallFileVersionInfo>): ReactNode => {
           const openVersionPanel = (): void => {
-            setSidePanelContent(
-              <AutoinstallFileSidePanelTitle
-                file={file}
-                version={versionInfo.version}
-              />,
-              <Suspense fallback={<LoadingState />}>
-                <AutoinstallFileVersion
-                  file={file}
-                  goBack={viewVersionHistory}
-                  versionInfo={versionInfo}
-                />
-              </Suspense>,
-            );
+            setPageParams({
+              sidePath: [...parsedSidePath, "view-version"],
+              version: String(versionInfo.version),
+            });
           };
 
           return (
@@ -93,7 +79,7 @@ const AutoinstallFileVersionHistory: FC<AutoinstallFileVersionHistoryProps> = ({
         ),
       },
     ],
-    [],
+    [setPageParams, parsedSidePath],
   );
 
   if (isAutoinstallFileLoading) {

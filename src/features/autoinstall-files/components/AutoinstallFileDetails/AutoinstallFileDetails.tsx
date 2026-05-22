@@ -1,3 +1,4 @@
+import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -8,27 +9,25 @@ import AutoinstallFileTabs from "../AutoinstallFileTabs";
 
 interface AutoinstallFileDetailsProps {
   readonly autoinstallFile: AutoinstallFile;
-  readonly initialTabId?: AutoinstallFileTabId;
 }
 
 const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
   autoinstallFile,
-  initialTabId,
 }) => {
   const {
     value: isDeleteModalVisible,
     setTrue: openDeleteModal,
     setFalse: closeDeleteModal,
   } = useBoolean();
-  const {
-    openAutoinstallFileDetails,
-    openAutoinstallFileEditForm,
-    setAutoinstallFileAsDefault,
-  } = useAutoinstallFileActions(autoinstallFile);
+  const { createSidePathPusher, popSidePath, lastSidePathSegment } = usePageParams();
+  const { setAutoinstallFileAsDefault } = useAutoinstallFileActions(autoinstallFile);
 
-  const viewVersionHistory = () => {
-    openAutoinstallFileDetails("version-history");
-  };
+  const openEdit = createSidePathPusher("edit-file");
+  const viewVersionHistory = createSidePathPusher("view-versions");
+
+  const goToInfo = lastSidePathSegment === "view-versions" ? popSidePath : () => {};
+  const activeTabId: AutoinstallFileTabId =
+    lastSidePathSegment === "view-versions" ? "version-history" : "info";
 
   return (
     <>
@@ -37,7 +36,7 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
           <Button
             type="button"
             className="p-segmented-control__button"
-            onClick={openAutoinstallFileEditForm}
+            onClick={openEdit}
             hasIcon
           >
             <Icon name="edit" />
@@ -69,8 +68,9 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
       </div>
 
       <AutoinstallFileTabs
-        initialTabId={initialTabId}
+        activeTabId={activeTabId}
         file={autoinstallFile}
+        onInfoTabClick={goToInfo}
         viewVersionHistory={viewVersionHistory}
       />
 
