@@ -1,4 +1,5 @@
 import { ResponsiveButtons } from "@/components/ui";
+import { pluralize } from "@/utils/_helpers";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";

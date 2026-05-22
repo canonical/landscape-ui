@@ -1,6 +1,6 @@
 import { ConfirmationModal } from "@canonical/react-components";
 import type { FC } from "react";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 interface UpgradeConfirmationModalProps {
   readonly onClose: () => void;
@@ -18,10 +18,7 @@ const UpgradeConfirmationModal: FC<UpgradeConfirmationModalProps> = ({
   return (
     <ConfirmationModal
       close={onClose}
-      title={`Upgrade ${pluralize(eligibleCount, "distribution")} for ${pluralizeWithCount(
-        eligibleCount,
-        "instance",
-      )}`}
+      title={`Upgrade ${pluralize(eligibleCount, ["distribution"])} for ${pluralize(eligibleCount, ["instance"], "exact")}`}
       confirmButtonLabel="Confirm"
       confirmButtonProps={{ type: "button" }}
       onConfirm={onConfirm}
@@ -31,7 +28,7 @@ const UpgradeConfirmationModal: FC<UpgradeConfirmationModalProps> = ({
     >
       <p>
         A reboot is required to complete this action. There is a risk that the{" "}
-        {pluralize(eligibleCount, "instance")} will not be able to contact
+        {pluralize(eligibleCount, ["instance"])} will not be able to contact
         Landscape.
       </p>
     </ConfirmationModal>

@@ -11,7 +11,7 @@ import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
 
@@ -290,7 +290,7 @@ describe("InstancesPageActions", () => {
       );
 
       const dialog = screen.getByRole("dialog", {
-        name: `Shut down ${pluralizeWithCount(selected.length, "instance")}`,
+        name: `Shut down ${pluralize(selected.length, ["instance"], "exact")}`,
       });
 
       expect(dialog).toBeInTheDocument();
@@ -300,7 +300,7 @@ describe("InstancesPageActions", () => {
       );
 
       screen.getByText(
-        `You queued ${pluralizeWithCount(selected.length, "instance")} to be shut down.`,
+        `You queued ${pluralize(selected.length, ["instance"], "exact")} to be shut down.`,
       );
 
       expect(dialog).not.toBeInTheDocument();
@@ -313,7 +313,7 @@ describe("InstancesPageActions", () => {
       await userEvent.click(screen.getByRole("menuitem", { name: /restart/i }));
 
       const dialog = screen.getByRole("dialog", {
-        name: `Restart ${pluralizeWithCount(selected.length, "instance")}`,
+        name: `Restart ${pluralize(selected.length, ["instance"], "exact")}`,
       });
 
       expect(dialog).toBeInTheDocument();
@@ -323,7 +323,7 @@ describe("InstancesPageActions", () => {
       );
 
       screen.getByText(
-        `You queued ${pluralizeWithCount(selected.length, "instance")} to be restarted.`,
+        `You queued ${pluralize(selected.length, ["instance"], "exact")} to be restarted.`,
       );
 
       expect(dialog).not.toBeInTheDocument();

@@ -8,7 +8,7 @@ import type {
   InstanceChild,
   WindowsInstanceWithoutRelation,
 } from "@/types/Instance";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -64,7 +64,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       );
 
       notify.success({
-        title: `You have successfully queued ${pluralizeArray(selectedWslInstances, (instance) => `"${instance.name}"`, `instances`)} to be installed.`,
+        title: `You have successfully queued ${getSelectionLabel(selectedWslInstances, (instance) => `"${instance.name}"`, `instances`)} to be installed.`,
         message: "An activity has been queued to install it.",
       });
     } catch (error) {

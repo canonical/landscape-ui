@@ -1,7 +1,7 @@
 import LoadingState from "@/components/layout/LoadingState";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import type { Profile } from "../../types";
@@ -51,7 +51,7 @@ const ProfileAssociatedInstancesLink: FC<
   const text =
     isGeneralAssociation && profile.all_computers
       ? "All instances"
-      : pluralizeWithCount(count, "instance");
+      : pluralize(count, ["instance"], "exact");
 
   const getPackageComplianceIds = () => {
     if (isPackageProfile(profile) && !isGeneralAssociation) {

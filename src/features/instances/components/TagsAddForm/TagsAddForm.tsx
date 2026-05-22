@@ -5,7 +5,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import {
   CheckboxInput,
   ModularTable,
@@ -84,7 +84,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       notify.success({
         title: "Tags assigned",
-        message: `Tags successfully assigned to ${pluralizeArray(
+        message: `Tags successfully assigned to ${getSelectionLabel(
           selected,
           (instance) => `"${instance.title}" instance`,
           `instances`,

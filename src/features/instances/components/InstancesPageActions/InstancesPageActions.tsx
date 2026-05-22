@@ -5,11 +5,7 @@ import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import {
-  hasOneItem,
-  pluralizeArray,
-  pluralizeWithCount,
-} from "@/utils/_helpers";
+import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { memo } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -55,9 +51,17 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setFalse: closeRemoveModal,
   } = useBoolean();
 
+  const createInstanceCountString = (instances: Instance[]) => {
+    return (
+      <PluralizeWithBoldCount count={instances.length} singular="instance" />
+    );
+  };
+
   const handleRunScript = createSidePathPusher("run-script");
   const handleUpgradesRequest = createSidePathPusher("upgrades");
-  const handleDistributionUpgradesRequest = createSidePathPusher("distribution-upgrades");
+  const handleDistributionUpgradesRequest = createSidePathPusher(
+    "distribution-upgrades",
+  );
   const handleReportView = createSidePathPusher("report-view");
   const handleAccessGroupChange = createSidePathPusher("access-group-change");
   const handleTagsAssign = createSidePathPusher("tags-assign");

@@ -12,7 +12,7 @@ import type { PublicationTarget } from "@canonical/landscape-openapi";
 import PublicationTargetListActions from "../PublicationTargetListActions";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
-import { pluralizeNew } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface PublicationTargetListProps {
@@ -42,9 +42,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
         search: `?query=${encodeURIComponent(`publicationTargetId:${publicationTargetId}`)}`,
       }}
     >
-      {pluralizeNew(publications.length, "publication", {
-        showCount: "exact",
-      })}
+      {pluralize(publications.length, ["publication"], "exact")}
     </StaticLink>
   );
 };

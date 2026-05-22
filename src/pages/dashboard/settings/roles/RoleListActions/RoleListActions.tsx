@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useRoles from "@/hooks/useRoles";
 import usePageParams from "@/hooks/usePageParams";
 import type { Role } from "@/types/Role";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { ConfirmationModal } from "@canonical/react-components";
 import { type FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -80,7 +80,7 @@ const RoleListActions: FC<RoleListActionsProps> = ({ role }) => {
                 <br />
                 <strong>
                   This will affect{" "}
-                  {pluralizeWithCount(role.persons.length, "administrator")}.
+                  {pluralize(role.persons.length, ["administrator"], "exact")}.
                 </strong>
               </>
             )}

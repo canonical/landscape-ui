@@ -14,7 +14,7 @@ import Blocks from "@/components/layout/Blocks";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { getLastRunData, getNextRunData, getScheduleMessage } from "./helpers";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 interface ViewProfileScheduleBlockProps {
   readonly profile: Profile;
@@ -53,10 +53,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
         {isUpgradeProfile(profile) && (
           <InfoGrid.Item
             label="Delivery delay window"
-            value={`${pluralizeWithCount(
-              Number(profile.deliver_delay_window),
-              "minute",
-            )}`}
+            value={`${pluralize(Number(profile.deliver_delay_window), ["minute"], "exact")}`}
           />
         )}
 
@@ -77,11 +74,11 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
             large
             value={`${
               profile.restart_deliver_delay
-                ? `Delayed by ${pluralizeWithCount(profile.restart_deliver_delay, "hour")}`
+                ? `Delayed by ${pluralize(profile.restart_deliver_delay, ["hour"], "exact")}`
                 : "As soon as possible"
             }${
               profile.restart_deliver_delay_window
-                ? `, randomize delivery over ${pluralizeWithCount(profile.restart_deliver_delay_window, "minute")}`
+                ? `, randomize delivery over ${pluralize(profile.restart_deliver_delay_window, ["minute"], "exact")}`
                 : ""
             }`}
           />

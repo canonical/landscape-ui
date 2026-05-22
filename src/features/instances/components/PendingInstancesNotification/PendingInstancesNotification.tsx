@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -18,7 +18,9 @@ const PendingInstancesNotification: FC = () => {
     return null;
   }
 
-  const handlePendingInstancesReview = createSidePathPusher("review-pending-instances");
+  const handlePendingInstancesReview = createSidePathPusher(
+    "review-pending-instances",
+  );
 
   return (
     <Notification
@@ -29,7 +31,7 @@ const PendingInstancesNotification: FC = () => {
     >
       <span>
         You currently have{" "}
-        {pluralizeWithCount(pendingInstances.length, "pending instance")}{" "}
+        {pluralize(pendingInstances.length, ["pending instance"], "exact")}{" "}
         awaiting your review and approval.{" "}
       </span>
       <Button

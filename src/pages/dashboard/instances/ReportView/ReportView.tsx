@@ -2,7 +2,7 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useReports from "@/hooks/useReports";
 import usePageParams from "@/hooks/usePageParams";
 import ReportWidget from "@/pages/dashboard/instances/ReportWidget";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Col, Row } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -71,7 +71,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
         ? securityUpgradesInstanceCount[period]
         : instanceIds.length - securityUpgradesInstanceCount[period];
 
-    return `${pluralizeWithCount(count, "instance has", "instances have")} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
+    return `${pluralize(count, ["instance has", "instances have"], "exact")} ${type === "negative" ? " not" : ""} applied USNs in ${periodToDays[period]} days or less.`;
   };
 
   const handleDownloadDialog = createSidePathPusher("download-report");
@@ -91,8 +91,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
                 currentCount={
                   instanceIds.length - securityUpgradesInstanceCount.pending
                 }
-                negativeDescription={`${pluralizeWithCount(securityUpgradesInstanceCount.pending, "instance is", "instances are")} not yet patched.`}
-                positiveDescription={`${pluralizeWithCount(instanceIds.length - securityUpgradesInstanceCount.pending, "instance is", "instances are")} securely patched.`}
+                negativeDescription={`${pluralize(securityUpgradesInstanceCount.pending, ["instance is", "instances are"], "exact")} not yet patched.`}
+                positiveDescription={`${pluralize(instanceIds.length - securityUpgradesInstanceCount.pending, ["instance is", "instances are"], "exact")} securely patched.`}
                 title="Securely patched"
                 totalCount={instanceIds.length}
               />
@@ -102,8 +102,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getInstancesNotUpgradedLoading && (
               <ReportWidget
                 currentCount={upgradedInstanceCount}
-                negativeDescription={`${pluralizeWithCount(Number(getInstancesNotUpgradedResult?.data.length ?? 0), "instance is", "instances are")} not covered by upgrade profiles.`}
-                positiveDescription={`${pluralizeWithCount(upgradedInstanceCount, "instance is", "instances are")} covered by upgrade profiles.`}
+                negativeDescription={`${pluralize(Number(getInstancesNotUpgradedResult?.data.length ?? 0), ["instance is", "instances are"], "exact")} not covered by upgrade profiles.`}
+                positiveDescription={`${pluralize(upgradedInstanceCount, ["instance is", "instances are"], "exact")} covered by upgrade profiles.`}
                 title="Upgrade profiles"
                 totalCount={instanceIds.length}
               />
@@ -113,8 +113,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
             {!getNotPingingInstancesLoading && (
               <ReportWidget
                 currentCount={pingingInstancesCount}
-                negativeDescription={`${pluralizeWithCount(Number(getNotPingingInstancesResult?.data.length ?? 0), "instance has", "instances have")} not contacted the server within the last 5 minutes.`}
-                positiveDescription={`${pluralizeWithCount(pingingInstancesCount, "instance has", "instances have")} contacted the server within the last 5 minutes.`}
+                negativeDescription={`${pluralize(Number(getNotPingingInstancesResult?.data.length ?? 0), ["instance has", "instances have"], "exact")} not contacted the server within the last 5 minutes.`}
+                positiveDescription={`${pluralize(pingingInstancesCount, ["instance has", "instances have"], "exact")} contacted the server within the last 5 minutes.`}
                 title="Contacted"
                 totalCount={instanceIds.length}
               />

@@ -4,7 +4,7 @@ import { useCreateDistributionUpgrades } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   CheckboxInput,
@@ -83,12 +83,8 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
       popSidePathUntilClear();
 
       notify.success({
-        title: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} queued`,
-        message: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} for ${pluralizeWithCount(
-          finalEligibleIds.length,
-          "instance has",
-          "instances have",
-        )} been queued in Activities.`,
+        title: `Distribution ${pluralize(finalEligibleIds.length, ["upgrade"])} queued`,
+        message: `Distribution ${pluralize(finalEligibleIds.length, ["upgrade"])} for ${pluralize(finalEligibleIds.length, ["instance has", "instances have"], "exact")} been queued in Activities.`,
         actions: [
           {
             label: "View details",
@@ -118,8 +114,10 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
             <div
               className={classNames(classes.statusCell, {
                 [classes.parentStatusCell as string]: isParent,
-                [classes.childStatusCell as string]: !isParent && !distributionKey,
-                [classes.childStatusCheckboxCell as string]: !isParent && distributionKey,
+                [classes.childStatusCell as string]:
+                  !isParent && !distributionKey,
+                [classes.childStatusCheckboxCell as string]:
+                  !isParent && distributionKey,
               })}
             >
               {isParent && row.original.iconClass && (
@@ -167,7 +165,7 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
               });
             }}
           >
-            {pluralizeWithCount(row.original.count, "instance")}
+            {pluralize(row.original.count, ["instance"], "exact")}
           </Button>
         ),
       },

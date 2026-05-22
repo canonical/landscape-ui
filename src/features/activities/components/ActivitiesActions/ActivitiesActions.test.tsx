@@ -69,11 +69,9 @@ describe("ActivitiesActions", () => {
       await userEvent.click(screen.getByRole("button", { name: "Approve" }));
 
       const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Approve activity")).toBeInTheDocument();
+      expect(within(modal).getByText("Approve 1 activity")).toBeInTheDocument();
       expect(
-        within(modal).getByText(
-          "Are you sure you want to approve selected activity?",
-        ),
+        within(modal).getByText("Are you sure you want to approve 1 activity?"),
       ).toBeInTheDocument();
 
       await userEvent.click(
@@ -81,7 +79,7 @@ describe("ActivitiesActions", () => {
       );
 
       expect(
-        await screen.findByText("You have successfully approved an activity."),
+        await screen.findByText("You have successfully approved 1 activity."),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
@@ -96,10 +94,12 @@ describe("ActivitiesActions", () => {
       await userEvent.click(screen.getByRole("button", { name: "Approve" }));
 
       const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Approve activities")).toBeInTheDocument();
+      expect(
+        within(modal).getByText("Approve 2 activities"),
+      ).toBeInTheDocument();
       expect(
         within(modal).getByText(
-          "Are you sure you want to approve selected activities?",
+          "Are you sure you want to approve 2 activities?",
         ),
       ).toBeInTheDocument();
 
@@ -161,11 +161,9 @@ describe("ActivitiesActions", () => {
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
       const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Cancel activity")).toBeInTheDocument();
+      expect(within(modal).getByText("Cancel 1 activity")).toBeInTheDocument();
       expect(
-        within(modal).getByText(
-          "Are you sure you want to cancel selected activity?",
-        ),
+        within(modal).getByText("Are you sure you want to cancel 1 activity?"),
       ).toBeInTheDocument();
 
       await userEvent.click(
@@ -173,7 +171,7 @@ describe("ActivitiesActions", () => {
       );
 
       expect(
-        await screen.findByText("You have successfully canceled an activity."),
+        await screen.findByText("You have successfully canceled 1 activity."),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
@@ -188,10 +186,12 @@ describe("ActivitiesActions", () => {
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
       const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Cancel activities")).toBeInTheDocument();
+      expect(
+        within(modal).getByText("Cancel 2 activities"),
+      ).toBeInTheDocument();
       expect(
         within(modal).getByText(
-          "Are you sure you want to cancel selected activities?",
+          "Are you sure you want to cancel 2 activities?",
         ),
       ).toBeInTheDocument();
 
@@ -253,11 +253,9 @@ describe("ActivitiesActions", () => {
       await userEvent.click(screen.getByRole("button", { name: "Redo" }));
 
       const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Redo activity")).toBeInTheDocument();
+      expect(within(modal).getByText("Redo 1 activity")).toBeInTheDocument();
       expect(
-        within(modal).getByText(
-          "Are you sure you want to redo selected activity?",
-        ),
+        within(modal).getByText("Are you sure you want to redo 1 activity?"),
       ).toBeInTheDocument();
 
       await userEvent.click(
@@ -265,7 +263,7 @@ describe("ActivitiesActions", () => {
       );
 
       expect(
-        await screen.findByText("You have successfully redone an activity."),
+        await screen.findByText("You have successfully redone 1 activity."),
       ).toBeInTheDocument();
       expect(
         screen.getByText(
@@ -280,11 +278,9 @@ describe("ActivitiesActions", () => {
       await userEvent.click(screen.getByRole("button", { name: "Redo" }));
 
       const modal = screen.getByRole("dialog");
-      expect(within(modal).getByText("Redo activities")).toBeInTheDocument();
+      expect(within(modal).getByText("Redo 2 activities")).toBeInTheDocument();
       expect(
-        within(modal).getByText(
-          "Are you sure you want to redo selected activities?",
-        ),
+        within(modal).getByText("Are you sure you want to redo 2 activities?"),
       ).toBeInTheDocument();
 
       await userEvent.click(
