@@ -7,15 +7,32 @@ import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
 import { useState } from "react";
+import type { FormikErrors } from "formik";
 import { useAddUsgProfile } from "../../api";
 import { notifyCreation } from "../../helpers";
 import useUsgProfileForm from "../../hooks/useUsgProfileForm";
 import classes from "./USGProfileAddSidePanel.module.scss";
 import type { StepIndex } from "./types";
+import type { USGProfileFormValues } from "../../types/USGProfileAddFormValues";
 
 interface USGProfileAddSidePanelProps {
   readonly showRetentionNotification: () => void;
 }
+
+const STEP_FIELDS: Record<StepIndex, (keyof USGProfileFormValues)[]> = {
+  0: ["title"],
+  1: ["benchmark", "mode"],
+  2: [
+    "start_type",
+    "start_date",
+    "every",
+    "end_date",
+    "deliver_delay_window",
+    "restart_deliver_delay",
+  ],
+  3: [],
+  4: [],
+};
 
 const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
   showRetentionNotification,
@@ -77,35 +94,23 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
   };
 
   const touchStepFields = async () => {
-    if (step === 0) {
-      await formik.setFieldTouched("title", true, false);
-      return;
-    }
+    await Promise.all(
+      STEP_FIELDS[step].map((field) =>
+        formik.setFieldTouched(field, true, false),
+      ),
+    );
+  };
 
-    if (step === 1) {
-      await Promise.all([
-        formik.setFieldTouched("benchmark", true, false),
-        formik.setFieldTouched("mode", true, false),
-      ]);
-      return;
-    }
-
-    if (step === 2) {
-      await Promise.all([
-        formik.setFieldTouched("start_type", true, false),
-        formik.setFieldTouched("start_date", true, false),
-        formik.setFieldTouched("every", true, false),
-        formik.setFieldTouched("end_date", true, false),
-        formik.setFieldTouched("deliver_delay_window", true, false),
-        formik.setFieldTouched("restart_deliver_delay", true, false),
-      ]);
-    }
+  const stepHasValidationErrors = (
+    errors: FormikErrors<USGProfileFormValues>,
+  ) => {
+    return STEP_FIELDS[step].some((field) => !!errors[field]);
   };
 
   const submit = async () => {
-    await formik.validateForm();
+    const errors = await formik.validateForm();
 
-    if (!steps[step].isValid) {
+    if (stepHasValidationErrors(errors)) {
       await touchStepFields();
       return;
     }

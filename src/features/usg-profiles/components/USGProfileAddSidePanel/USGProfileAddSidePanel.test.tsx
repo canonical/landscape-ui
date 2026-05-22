@@ -41,4 +41,26 @@ describe("USGProfileAddSidePanel", () => {
       screen.queryByRole("button", { name: "Back" }),
     ).not.toBeInTheDocument();
   });
+
+  it("should block on step 2 when benchmark fields are missing", async () => {
+    renderWithProviders(
+      <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
+    );
+
+    await userEvent.type(
+      screen.getByRole("textbox", { name: "Title" }),
+      "Name",
+    );
+
+    await userEvent.click(await screen.findByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 2 of 5")).toBeInTheDocument();
+    expect(
+      screen.queryByText(/configure delivery settings/i),
+    ).not.toBeInTheDocument();
+  });
 });

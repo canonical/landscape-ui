@@ -104,4 +104,30 @@ describe("USGProfileForm", () => {
 
     expect(mutate).not.toHaveBeenCalled();
   });
+
+  it("should block submit when required fields are invalid", async () => {
+    const mutate = vi.fn();
+
+    renderWithProviders(
+      <USGProfileForm
+        {...props}
+        mutate={mutate}
+        initialValues={{
+          ...props.initialValues,
+          title: "",
+          benchmark: undefined,
+          mode: undefined,
+        }}
+      />,
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: props.submitButtonText }),
+    );
+
+    expect(mutate).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText("This field is required."),
+    ).toBeInTheDocument();
+  });
 });

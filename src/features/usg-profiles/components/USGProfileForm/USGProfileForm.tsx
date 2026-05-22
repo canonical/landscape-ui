@@ -1,5 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import usePageParams from "@/hooks/usePageParams";
+import type { FormikErrors } from "formik";
 import type { ReactNode } from "react";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
@@ -16,6 +17,18 @@ interface USGProfileFormProps extends UseUSGProfileFormProps {
   readonly submitButtonText?: string;
   readonly submitting?: boolean;
 }
+
+const VALIDATION_FIELDS: (keyof USGProfileFormValues)[] = [
+  "title",
+  "benchmark",
+  "mode",
+  "start_type",
+  "start_date",
+  "every",
+  "end_date",
+  "deliver_delay_window",
+  "restart_deliver_delay",
+];
 
 const USGProfileForm: FC<USGProfileFormProps> = ({
   getConfirmationStepDisabled = () => false,
@@ -35,24 +48,21 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
   };
 
   const touchValidationFields = async () => {
-    await Promise.all([
-      formik.setFieldTouched("title", true, false),
-      formik.setFieldTouched("benchmark", true, false),
-      formik.setFieldTouched("mode", true, false),
-      formik.setFieldTouched("start_type", true, false),
-      formik.setFieldTouched("start_date", true, false),
-      formik.setFieldTouched("every", true, false),
-      formik.setFieldTouched("end_date", true, false),
-      formik.setFieldTouched("deliver_delay_window", true, false),
-      formik.setFieldTouched("restart_deliver_delay", true, false),
-    ]);
+    await Promise.all(
+      VALIDATION_FIELDS.map((field) =>
+        formik.setFieldTouched(field, true, false),
+      ),
+    );
+  };
+
+  const hasValidationErrors = (errors: FormikErrors<USGProfileFormValues>) => {
+    return VALIDATION_FIELDS.some((field) => !!errors[field]);
   };
 
   const startSubmit = async () => {
-    await formik.validateForm();
+    const errors = await formik.validateForm();
 
-    const hasInvalidStep = steps.slice(0, -1).some((step) => !step.isValid);
-    if (hasInvalidStep) {
+    if (hasValidationErrors(errors)) {
       await touchValidationFields();
       return;
     }
