@@ -384,7 +384,7 @@ const AddMirrorForm: FC = () => {
                 <MirrorFilterHelpButton />
               </div>
               <CheckboxInput
-                label="Include dependencies in filter"
+                label="Include dependencies in filter "
                 {...formik.getFieldProps("includeDependencies")}
                 checked={
                   !!formik.values.packageFilter &&
@@ -396,6 +396,12 @@ const AddMirrorForm: FC = () => {
                 }
                 inline
               />
+              <Tooltip
+                position="right"
+                message="Includes dependencies of the packages that match the filter, even if they don't match the filter themselves"
+              >
+                <Icon name={ICONS.help} />
+              </Tooltip>
               <p className={classes.heading}>Download options:</p>
               <CheckboxInput
                 label="Download .udeb packages "
