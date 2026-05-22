@@ -1,7 +1,8 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { expectLoadingState } from "@/tests/helpers";
 import { detailedScriptsData } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, it } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -137,71 +138,55 @@ describe("ScriptDetails", () => {
     expect(modalTitle).toBeInTheDocument();
   });
 
-  it("opens the edit script form when clicking Edit button", async () => {
-    renderWithProviders(<ScriptDetails scriptId={activeScriptId} />);
+  it("updates sidePath when clicking Edit button", async () => {
+    renderWithProviders(
+      <>
+        <ScriptDetails scriptId={activeScriptId} />
+        <LocationDisplay />
+      </>
+    );
 
     await expectLoadingState();
 
     const editButton = screen.getByRole("button", { name: /^edit$/i });
     await user.click(editButton);
 
-    expect(await screen.findByLabelText(/^title$/i)).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("sidePath=edit");
   });
 
-  it("opens the run script form when clicking Run button", async () => {
-    renderWithProviders(<ScriptDetails scriptId={activeScriptId} />);
+  it("updates sidePath when clicking Run button", async () => {
+    renderWithProviders(
+      <>
+        <ScriptDetails scriptId={activeScriptId} />
+        <LocationDisplay />
+      </>
+    );
 
     await expectLoadingState();
 
     const runButton = screen.getByRole("button", { name: /^run$/i });
     await user.click(runButton);
 
-    expect(
-      await screen.findByText(/run as user/i, {}, { timeout: 3000 }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("sidePath=run");
   });
 
-  it("should navigate back from edit form to script details", async () => {
-    renderWithProviders(<ScriptDetails scriptId={activeScriptId} />);
-
-    await expectLoadingState();
-
-    const editButton = screen.getByRole("button", { name: /^edit$/i });
-    await user.click(editButton);
-
-    expect(await screen.findByLabelText(/^title$/i)).toBeInTheDocument();
-
-    const backButton = screen.getByRole("button", { name: /^back$/i });
-    await user.click(backButton);
-
-    await waitFor(() => {
-      expect(screen.queryByLabelText(/^title$/i)).not.toBeInTheDocument();
-    });
-  });
-
-  it("should navigate back from version history details", async () => {
+  it("updates sidePath when clicking a version button", async () => {
     renderWithProviders(
-      <ScriptDetails
-        scriptId={activeScriptId}
-        initialTabId="version-history"
-      />,
+      <>
+        <ScriptDetails
+          scriptId={activeScriptId}
+          initialTabId="version-history"
+        />
+        <LocationDisplay />
+      </>
     );
 
     const versionButton = await screen.findByRole("button", { name: "1" });
     await user.click(versionButton);
 
-    const useAsNewVersionButton = await screen.findByRole("button", {
-      name: /use as new version/i,
-    });
-    expect(useAsNewVersionButton).toBeInTheDocument();
-
-    const backButton = screen.getByRole("button", { name: /back/i });
-    await user.click(backButton);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("button", { name: /use as new version/i }),
-      ).not.toBeInTheDocument();
-    });
+    const locationText = decodeURIComponent(screen.getByTestId("location").textContent || "");
+    expect(locationText).toContain("sidePath=view,version");
+    expect(locationText).toContain("version=1");
+    expect(locationText).toContain(`name=${activeScriptId}`);
   });
 });

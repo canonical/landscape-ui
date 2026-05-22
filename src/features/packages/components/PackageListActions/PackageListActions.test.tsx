@@ -1,5 +1,6 @@
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -201,7 +202,12 @@ describe("PackageListActions", () => {
 
   describe("Side panel opening", () => {
     it("opens upgrade side panel when upgrade action is clicked", async () => {
-      renderWithProviders(<PackageListActions pkg={upgradablePackage} />);
+      renderWithProviders(
+        <>
+          <PackageListActions pkg={upgradablePackage} />
+          <LocationDisplay />
+        </>
+      );
 
       await user.click(
         screen.getByRole("button", {
@@ -215,16 +221,18 @@ describe("PackageListActions", () => {
         }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Upgrade ${upgradablePackage.name}`,
-        }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=upgrade&name=${upgradablePackage.name}`
+      );
     });
 
     it("opens hold side panel when hold action is clicked", async () => {
-      renderWithProviders(<PackageListActions pkg={regularPackage} />);
+      renderWithProviders(
+        <>
+          <PackageListActions pkg={regularPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       await user.click(
         screen.getByRole("button", {
@@ -238,16 +246,18 @@ describe("PackageListActions", () => {
         }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Hold ${regularPackage.name}`,
-        }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=hold&name=${regularPackage.name}`
+      );
     });
 
     it("opens unhold side panel when unhold action is clicked", async () => {
-      renderWithProviders(<PackageListActions pkg={heldPackage} />);
+      renderWithProviders(
+        <>
+          <PackageListActions pkg={heldPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       await user.click(
         screen.getByRole("button", {
@@ -261,16 +271,18 @@ describe("PackageListActions", () => {
         }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Unhold ${heldPackage.name}`,
-        }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=unhold&name=${heldPackage.name}`
+      );
     });
 
     it("opens downgrade side panel when downgrade action is clicked", async () => {
-      renderWithProviders(<PackageListActions pkg={regularPackage} />);
+      renderWithProviders(
+        <>
+          <PackageListActions pkg={regularPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       await user.click(
         screen.getByRole("button", {
@@ -284,16 +296,18 @@ describe("PackageListActions", () => {
         }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Downgrade ${regularPackage.name}`,
-        }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=downgrade&name=${regularPackage.name}`
+      );
     });
 
     it("opens uninstall side panel when uninstall action is clicked", async () => {
-      renderWithProviders(<PackageListActions pkg={regularPackage} />);
+      renderWithProviders(
+        <>
+          <PackageListActions pkg={regularPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       await user.click(
         screen.getByRole("button", {
@@ -307,12 +321,9 @@ describe("PackageListActions", () => {
         }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Uninstall ${regularPackage.name}`,
-        }),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=remove&name=${regularPackage.name}`
+      );
     });
   });
 });

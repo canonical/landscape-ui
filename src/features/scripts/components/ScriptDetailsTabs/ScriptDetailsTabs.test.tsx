@@ -9,7 +9,6 @@ import ScriptDetailsTabs from "./ScriptDetailsTabs";
 
 const props: ComponentProps<typeof ScriptDetailsTabs> = {
   script: scriptDetails,
-  viewVersionHistory: vi.fn(),
   initialTabId: SCRIPT_TABS[0].id,
 };
 

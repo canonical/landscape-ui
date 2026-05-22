@@ -9,6 +9,7 @@ import { vi, describe, it, expect, beforeEach } from "vitest";
 import { getInstanceWithUbuntuPro } from "../../helpers";
 import UbuntuProHeader from "./UbuntuProHeader";
 import type { AuthContextProps } from "@/context/auth";
+import LocationDisplay from "@/tests/LocationDisplay";
 
 vi.mock("@/hooks/useAuth");
 
@@ -72,8 +73,12 @@ describe("UbuntuProHeader", () => {
   });
 
   it("opens replace token side panel when Edit token is clicked", async () => {
+    // We check URL since side panel no longer renders with component
     renderWithProviders(
-      <UbuntuProHeader instance={instanceWithUbuntuPro} />,
+      <>
+        <UbuntuProHeader instance={instanceWithUbuntuPro} />
+        <LocationDisplay />
+      </>,
       undefined,
       `/instances/${instanceWithUbuntuPro.id}`,
       singleInstancePath,
@@ -81,7 +86,7 @@ describe("UbuntuProHeader", () => {
 
     await user.click(screen.getByRole("button", { name: /edit token/i }));
 
-    expect(screen.getByText("Replace Ubuntu Pro Token")).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("?sidePath=replace-token");
   });
 
   it("opens detach token modal when Detach token is clicked", async () => {

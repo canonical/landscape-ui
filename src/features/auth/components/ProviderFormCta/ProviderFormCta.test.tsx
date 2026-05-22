@@ -1,5 +1,6 @@
 import { beforeEach, describe } from "vitest";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import ProviderFormCta from "./ProviderFormCta";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -7,7 +8,12 @@ import userEvent from "@testing-library/user-event";
 describe("ProviderFormCta", () => {
   beforeEach(({ task: { id } }) => {
     renderWithProviders(
-      <ProviderFormCta action={id.endsWith("0") ? "edit" : "add"} />,
+      <>
+        <ProviderFormCta action={id.endsWith("0") ? "edit" : "add"} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=something"
     );
   });
 
@@ -30,13 +36,12 @@ describe("ProviderFormCta", () => {
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
   });
 
-  it("should call handleBack when back button is clicked", async () => {
-    expect(
-      screen.queryByText("Choose an identity provider"),
-    ).not.toBeInTheDocument();
+  it("should clear sidePath when back button is clicked", async () => {
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=something");
 
     await userEvent.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(screen.getByText("Choose an identity provider")).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("");
   });
 });
+

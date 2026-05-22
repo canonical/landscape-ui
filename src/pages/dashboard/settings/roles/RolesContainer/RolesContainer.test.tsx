@@ -1,6 +1,7 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import RolesContainer from "./RolesContainer";
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import userEvent from "@testing-library/user-event";
@@ -49,17 +50,19 @@ describe("RolesContainer", () => {
   it("opens the add role side panel when 'Add role' is clicked in empty state", async () => {
     setEndpointStatus("empty");
 
-    renderWithProviders(<RolesContainer />);
+    renderWithProviders(
+      <>
+        <RolesContainer />
+        <LocationDisplay />
+      </>,
+    );
 
     await expectLoadingState();
 
     await user.click(screen.getByRole("button", { name: /add role/i }));
 
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
-
-    expect(
-      within(sidePanel).getByRole("heading", { name: /add role/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=add",
+    );
   });
 });

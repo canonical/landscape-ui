@@ -1,5 +1,6 @@
 import { describe } from "vitest";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import SupportedProviderList from "./SupportedProviderList";
 import { screen } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";
@@ -32,17 +33,20 @@ describe("SupportedProviderList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("should open form to add provider on click", async () => {
-    renderWithProviders(<SupportedProviderList />);
+  it("should open form to add provider on click via sidePath", async () => {
+    renderWithProviders(
+      <>
+        <SupportedProviderList />
+        <LocationDisplay />
+      </>
+    );
 
     await expectLoadingState();
 
     await userEvent.click(await screen.findByRole("button", { name: "Okta" }));
 
-    expect(
-      await screen.findByRole("heading", {
-        name: "Add Okta identity provider",
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("name=okta");
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=add");
   });
 });
+

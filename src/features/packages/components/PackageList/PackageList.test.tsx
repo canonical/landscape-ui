@@ -1,12 +1,13 @@
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ComponentProps } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import PackageList from "./PackageList";
+import { assert, describe, expect, it, vi } from "vitest";
 import type { InstancePackage } from "../../types";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import PackageList from "./PackageList";
+import type { ComponentProps } from "react";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
@@ -57,7 +58,10 @@ describe("PackageList", () => {
 
   it("opens package details panel when package name is clicked", async () => {
     renderWithProviders(
-      <PackageList {...props} selectedPackages={packagesWithUpgrade} />,
+      <>
+        <PackageList {...props} selectedPackages={packagesWithUpgrade} />
+        <LocationDisplay />
+      </>
     );
 
     const [firstPackage] = packagesWithUpgrade;
@@ -68,7 +72,9 @@ describe("PackageList", () => {
 
     await user.click(packageButton);
 
-    expect(await screen.findByText("Package details")).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      `sidePath=view&name=${firstPackage.name}`
+    );
   });
 
   it("displays empty message when no packages are found", () => {

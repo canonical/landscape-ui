@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import "@/tests/matcher";
 import { PATHS, ROUTES } from "@/libs/routes";
@@ -60,10 +61,13 @@ describe("UserPanelActionButtons", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <UserPanelActionButtons
-          selectedUsers={getSelectedUsers(users, userData.empty)}
-          handleClearSelection={vi.fn()}
-        />,
+        <>
+          <UserPanelActionButtons
+            selectedUsers={getSelectedUsers(users, userData.empty)}
+            handleClearSelection={vi.fn()}
+          />
+          <LocationDisplay />
+        </>,
         undefined,
         routePath,
         routePattern,
@@ -71,9 +75,9 @@ describe("UserPanelActionButtons", () => {
 
       await user.click(screen.getByRole("button", { name: "Add user" }));
 
-      expect(
-        await screen.findByText("Require password reset"),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain(
+        "sidePath=add",
+      );
     });
 
     describe("Check button disabled statuses", () => {
@@ -224,11 +228,14 @@ describe("UserPanelActionButtons", () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <UserPanelActionButtons
-          selectedUsers={getSelectedUsers(users, [userData.single.lockedUser])}
-          handleClearSelection={vi.fn()}
-          sidePanel
-        />,
+        <>
+          <UserPanelActionButtons
+            selectedUsers={getSelectedUsers(users, [userData.single.lockedUser])}
+            handleClearSelection={vi.fn()}
+            sidePanel
+          />
+          <LocationDisplay />
+        </>,
         undefined,
         routePath,
         routePattern,
@@ -236,8 +243,9 @@ describe("UserPanelActionButtons", () => {
 
       await user.click(screen.getByRole("button", { name: "Edit" }));
 
-      expect(await screen.findByRole("form")).toBeInTheDocument();
-      expect(screen.getByText("Confirm password")).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain(
+        "sidePath=edit",
+      );
     });
 
     it("opens lock confirmation and submits lock action", async () => {

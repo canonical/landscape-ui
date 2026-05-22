@@ -1,13 +1,15 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe } from "vitest";
+import { describe, expect, it } from "vitest";
 import UserPanel from "./UserPanel";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { users } from "@/tests/mocks/user";
 import { expectLoadingState } from "@/tests/helpers";
+import LocationDisplay from "@/tests/LocationDisplay";
 
-describe("UserPanel", () => {
+describe("UserPanel", () =>
+ {
   it("renders UserPanel", async () => {
     renderWithProviders(<UserPanel />);
     await expectLoadingState();
@@ -29,7 +31,12 @@ describe("UserPanel", () => {
 
   it("opens form from empty state", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<UserPanel />);
+    renderWithProviders(
+      <>
+        <UserPanel />
+        <LocationDisplay />
+      </>
+    );
     await expectLoadingState();
 
     const addNewUserButton = await screen.findByRole("button", {
@@ -38,8 +45,7 @@ describe("UserPanel", () => {
     expect(addNewUserButton).toBeInTheDocument();
 
     await userEvent.click(addNewUserButton);
-    const form = await screen.findByRole("complementary");
-    expect(form).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=add");
   });
 
   it("renders filtered list of users", async () => {

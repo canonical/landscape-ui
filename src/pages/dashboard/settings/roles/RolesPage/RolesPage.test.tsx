@@ -19,7 +19,7 @@ describe("RolesPage", () => {
 
     await user.click(addRoleButton);
 
-    expect(screen.getByRole("complementary")).toBeInTheDocument();
+    expect(screen.getByLabelText("Side panel")).toBeInTheDocument();
   });
 
   it("checks that the roles page table is present", async () => {

@@ -1,6 +1,7 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
@@ -73,7 +74,10 @@ describe("RestartInstanceForm", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <RestartInstanceForm {...props} showNotification={false} />,
+      <>
+        <RestartInstanceForm {...props} showNotification={false} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -90,16 +94,17 @@ describe("RestartInstanceForm", () => {
 
     await user.click(screen.getByRole("button", { name: "View details" }));
 
-    expect(
-      await screen.findByRole("heading", { name: "Start instance Bionic WSL" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent("sidePath=view");
   });
 
   it("submits upgrade and restart and shows a success notification", async () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <RestartInstanceForm {...props} newKernelVersionId={123} />,
+      <>
+        <RestartInstanceForm {...props} newKernelVersionId={123} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -122,9 +127,7 @@ describe("RestartInstanceForm", () => {
 
     await user.click(screen.getByRole("button", { name: "View details" }));
 
-    expect(
-      await screen.findByRole("heading", { name: "Start instance Bionic WSL" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent("sidePath=view");
   });
 
   it("shows an error notification when restart fails", async () => {

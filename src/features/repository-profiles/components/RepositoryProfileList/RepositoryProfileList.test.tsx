@@ -1,9 +1,9 @@
 import { accessGroups } from "@/tests/mocks/accessGroup";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
 import { pluralizeWithCount } from "@/utils/_helpers";
@@ -13,11 +13,6 @@ vi.mock("@/hooks/useRoles", () => ({
     getAccessGroupQuery: vi.fn(() => ({ data: { data: accessGroups } })),
   })),
 }));
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("RepositoryProfileList", () => {
   const user = userEvent.setup();

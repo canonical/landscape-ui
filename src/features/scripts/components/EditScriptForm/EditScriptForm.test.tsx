@@ -18,7 +18,6 @@ const ASSOCIATED_PROFILE_ID = 12;
 
 const props: ComponentProps<typeof EditScriptForm> = {
   script,
-  onBack: vi.fn(),
 };
 
 describe("EditScriptForm", () => {

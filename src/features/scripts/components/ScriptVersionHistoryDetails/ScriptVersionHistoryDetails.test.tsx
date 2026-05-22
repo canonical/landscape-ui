@@ -3,17 +3,18 @@ import { scriptVersion } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ComponentProps } from "react";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { beforeEach, describe, expect, it } from "vitest";
 import { getAuthorInfo } from "../../helpers";
 import ScriptVersionHistoryDetails from "./ScriptVersionHistoryDetails";
 
-const props: ComponentProps<typeof ScriptVersionHistoryDetails> = {
+const defaultProps = {
   scriptId: scriptVersion.id,
-  scriptVersion: scriptVersion,
   isArchived: false,
-  goBack: vi.fn(),
+  versionId: String(scriptVersion.version_number),
 };
+
+const routePath = `/?sidePath=history,detail&version=${scriptVersion.version_number}`;
 
 describe("Script Version History Details", () => {
   const user = userEvent.setup();
@@ -23,13 +24,17 @@ describe("Script Version History Details", () => {
   });
 
   it("should render script version history details", async () => {
-    renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
+    renderWithProviders(
+      <ScriptVersionHistoryDetails {...defaultProps} />,
+      undefined,
+      routePath,
+    );
 
     expect(
-      screen.getByText(
+      await screen.findByText(
         getAuthorInfo({
-          author: props.scriptVersion.created_by.name,
-          date: props.scriptVersion.created_at,
+          author: scriptVersion.creator_name,
+          date: scriptVersion.created_at,
         }),
       ),
     ).toBeInTheDocument();
@@ -38,9 +43,9 @@ describe("Script Version History Details", () => {
     expect(codeBlock).toBeInTheDocument();
 
     expect(
-      screen.getByText(`#!${props.scriptVersion.interpreter}`),
+      screen.getByText(`#!${scriptVersion.interpreter}`),
     ).toBeInTheDocument();
-    expect(screen.getByText(props.scriptVersion.code)).toBeInTheDocument();
+    expect(screen.getByText(scriptVersion.code)).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", { name: /use as new version/i }),
@@ -51,7 +56,9 @@ describe("Script Version History Details", () => {
 
   it("should not render edit button if archived", async () => {
     renderWithProviders(
-      <ScriptVersionHistoryDetails {...props} isArchived={true} />,
+      <ScriptVersionHistoryDetails {...defaultProps} isArchived={true} />,
+      undefined,
+      routePath,
     );
 
     expect(
@@ -61,9 +68,13 @@ describe("Script Version History Details", () => {
   });
 
   it("should open modal", async () => {
-    renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
+    renderWithProviders(
+      <ScriptVersionHistoryDetails {...defaultProps} />,
+      undefined,
+      routePath,
+    );
 
-    const actionButton = screen.getByRole("button", {
+    const actionButton = await screen.findByRole("button", {
       name: /use as new version/i,
     });
 
@@ -91,7 +102,14 @@ describe("Script Version History Details", () => {
   });
 
   it("should confirm and submit new version", async () => {
-    renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
+    renderWithProviders(
+      <>
+        <ScriptVersionHistoryDetails {...defaultProps} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      routePath,
+    );
 
     const actionButton = await screen.findByRole("button", {
       name: /use as new version/i,
@@ -104,26 +122,42 @@ describe("Script Version History Details", () => {
     });
     await user.click(confirmButton);
 
-    // After success, goBack should be called
+    await waitFor(() => {
+      expect(screen.getByTestId("location").textContent).not.toContain(
+        "detail",
+      );
+    });
   });
 
-  it("should call goBack when Back button is clicked", async () => {
-    const goBack = vi.fn();
+  it("should pop sidePath when Back button is clicked", async () => {
     renderWithProviders(
-      <ScriptVersionHistoryDetails {...props} goBack={goBack} />,
+      <>
+        <ScriptVersionHistoryDetails {...defaultProps} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      routePath,
     );
 
-    const backButton = screen.getByRole("button", { name: /back/i });
+    const backButton = await screen.findByRole("button", { name: /back/i });
     await user.click(backButton);
 
-    expect(goBack).toHaveBeenCalledOnce();
+    await waitFor(() => {
+      expect(screen.getByTestId("location").textContent).not.toContain(
+        "detail",
+      );
+    });
   });
 
-  it("should not call goBack when version is not loaded on submit", async () => {
+  it("should not navigate when version is not loaded on submit", async () => {
     setEndpointStatus({ status: "error", path: "scripts/versions/detail" });
-    const goBack = vi.fn();
     renderWithProviders(
-      <ScriptVersionHistoryDetails {...props} goBack={goBack} />,
+      <>
+        <ScriptVersionHistoryDetails {...defaultProps} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      routePath,
     );
 
     const actionButton = screen.getByRole("button", {
@@ -136,12 +170,16 @@ describe("Script Version History Details", () => {
     });
     await user.click(confirmButton);
 
-    expect(goBack).not.toHaveBeenCalled();
+    expect(screen.getByTestId("location").textContent).toContain("detail");
   });
 
   it("should handle error when submitting new version", async () => {
     setEndpointStatus({ status: "error", path: "EditScript" });
-    renderWithProviders(<ScriptVersionHistoryDetails {...props} />);
+    renderWithProviders(
+      <ScriptVersionHistoryDetails {...defaultProps} />,
+      undefined,
+      routePath,
+    );
 
     const actionButton = await screen.findByRole("button", {
       name: /use as new version/i,

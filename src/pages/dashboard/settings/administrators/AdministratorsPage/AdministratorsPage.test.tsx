@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import AdministratorsPage from "./AdministratorsPage";
@@ -31,11 +31,8 @@ describe("AdministratorsPage", () => {
     });
     await user.click(inviteButton);
 
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
-
     expect(
-      within(sidePanel).getByRole("heading", { name: /invite administrator/i }),
+      await screen.findByRole("heading", { name: /invite administrator/i }),
     ).toBeInTheDocument();
   });
 });

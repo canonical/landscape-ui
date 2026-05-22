@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { administrators } from "@/tests/mocks/administrators";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
@@ -62,7 +63,12 @@ describe("AdministratorList", () => {
   });
 
   it("should open sidepanel when clicking the administrator name", async () => {
-    renderWithProviders(<AdministratorList {...props} />);
+    renderWithProviders(
+      <>
+        <AdministratorList {...props} />
+        <LocationDisplay />
+      </>,
+    );
 
     const adminButton = screen.getByRole("button", {
       name: administrators[0].name,
@@ -72,12 +78,8 @@ describe("AdministratorList", () => {
 
     await user.click(adminButton);
 
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
-
-    const sidePanelHeader = await screen.findByRole("heading", {
-      name: administrators[0].name,
-    });
-    expect(sidePanelHeader).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=edit",
+    );
   });
 });

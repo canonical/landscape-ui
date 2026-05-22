@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import {
   scriptDetails,
   scriptVersionsWithPagination,
@@ -14,7 +15,6 @@ import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const props: ComponentProps<typeof ScriptsVersionHistory> = {
   script: scriptDetails,
-  viewVersionHistory: vi.fn(),
 };
 
 describe("Scripts Version History", () => {
@@ -62,7 +62,12 @@ describe("Scripts Version History", () => {
   });
 
   it("should open version details panel when clicking a version number", async () => {
-    renderWithProviders(<ScriptsVersionHistory {...props} />);
+    renderWithProviders(
+      <>
+        <ScriptsVersionHistory {...props} />
+        <LocationDisplay />
+      </>,
+    );
 
     const [firstVersion] = scriptVersionsWithPagination;
     assert(firstVersion);
@@ -72,10 +77,9 @@ describe("Scripts Version History", () => {
 
     await user.click(versionButton);
 
-    // The script is archived, so we see the author info and Back button
-    expect(
-      await screen.findByRole("button", { name: /back/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=view%2Cversion",
+    );
   });
 
   it("should navigate to next page when clicking Next page button", async () => {

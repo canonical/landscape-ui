@@ -2,6 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import LocationDisplay from "@/tests/LocationDisplay";
 import ProfileAssociatedInstancesLink from "./ProfileAssociatedInstancesLink";
 import { profiles } from "@/tests/mocks/profiles";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
@@ -147,17 +148,20 @@ describe("ProfileAssociatedInstancesLink", () => {
     };
 
     renderWithProviders(
-      <ProfileAssociatedInstancesLink
-        count={3}
-        profile={wslProfile}
-        query="wsl:1:noncompliant"
-      />,
+      <>
+        <ProfileAssociatedInstancesLink
+          count={3}
+          profile={wslProfile}
+          query="wsl:1:noncompliant"
+        />
+        <LocationDisplay />
+      </>
     );
 
     await userEvent.click(screen.getByRole("button", { name: "3 instances" }));
 
-    expect(
-      screen.getByText("Instances not compliant with Profile One"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "sidePath=noncompliant&name=profile-1"
+    );
   });
 });

@@ -427,6 +427,7 @@ export const scriptVersion = {
     name: "John Smith",
     id: 1,
   },
+  creator_name: "John Smith",
   created_at: "2023-10-01T00:00:00Z",
   version_number: 1,
   interpreter: "shell",

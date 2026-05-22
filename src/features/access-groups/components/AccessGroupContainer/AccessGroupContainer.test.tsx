@@ -1,6 +1,7 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { accessGroups } from "@/tests/mocks/accessGroup";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -31,15 +32,19 @@ describe("AccessGroupContainer", () => {
 
   it("opens side panel with form when Add access group button is clicked", async () => {
     setEndpointStatus("empty");
-    renderWithProviders(<AccessGroupContainer />);
+    renderWithProviders(
+      <>
+        <AccessGroupContainer />
+        <LocationDisplay />
+      </>
+    );
 
     await expectLoadingState();
 
     const addButton = screen.getByRole("button", { name: "Add access group" });
     await userEvent.click(addButton);
 
-    expect(
-      await screen.findByRole("heading", { name: "Add access group" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("?sidePath=add");
   });
 });
+

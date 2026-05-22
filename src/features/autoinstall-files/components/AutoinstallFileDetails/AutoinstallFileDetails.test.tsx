@@ -1,11 +1,11 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState } from "@/tests/helpers";
 import {
   autoinstallFiles,
   autoinstallFileVersions,
 } from "@/tests/mocks/autoinstallFiles";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
@@ -85,10 +85,9 @@ describe("AutoinstallFileDetails", () => {
 
   it("renders with an initial tab id", () => {
     renderWithProviders(
-      <AutoinstallFileDetails
-        {...defaultProps}
-        initialTabId="version-history"
-      />,
+      <AutoinstallFileDetails {...defaultProps} />,
+      undefined,
+      "/?sidePath=view%2Cview-versions",
     );
     expect(
       screen.getByRole("tab", { name: /version history/i }),
@@ -108,39 +107,22 @@ describe("AutoinstallFileDetails", () => {
     });
 
     renderWithProviders(
-      <AutoinstallFileDetails
-        {...defaultProps}
-        initialTabId="version-history"
-      />,
+      <>
+        <AutoinstallFileDetails {...defaultProps} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view-versions",
     );
 
-    // Wait for version history to load
-    await expectLoadingState();
-
-    // Click a version button to open the version detail side panel
     const versionButton = await screen.findByRole("button", {
       name: /version 1/i,
     });
     await user.click(versionButton);
 
-    // Wait for the side panel to open and load
-    const aside = await screen.findByRole("complementary");
-
-    // Wait for loading to finish inside the side panel
-    await waitFor(
-      () => {
-        expect(within(aside).queryByRole("status")).not.toBeInTheDocument();
-      },
-      { timeout: 5000 },
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=view-versions%2Cview-version",
     );
-
-    // Click the Back button in the version detail panel
-    const backButton = await screen.findByRole("button", { name: /back/i });
-    await user.click(backButton);
-
-    // Verify the version history is shown again (side panel updates)
-    await waitFor(() => {
-      expect(screen.getByRole("complementary")).toBeInTheDocument();
-    });
+    expect(screen.getByTestId("location").textContent).toContain("version=1");
   });
 });

@@ -1,14 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import RepositoryProfileAddButton from "./RepositoryProfileAddButton";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("RepositoryProfileAddButton", () => {
   it("sets sidePath=add in the URL when clicked", async () => {

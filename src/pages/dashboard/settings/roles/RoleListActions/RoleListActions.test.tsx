@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import RoleListActions from "./RoleListActions";
 import type { ComponentProps } from "react";
@@ -53,21 +54,29 @@ describe("RoleListActions", () => {
   });
 
   it("opens edit sidepanel on edit button click", async () => {
-    const editMenuItem = await screen.findByRole("menuitem", {
+    renderWithProviders(
+      <>
+        <RoleListActions {...props} />
+        <LocationDisplay />
+      </>,
+    );
+
+    const menuButton = screen.getAllByRole("button", {
+      name: `${props.role.name} role actions`,
+    })[1];
+    await user.click(menuButton!);
+
+    const editMenuItems = await screen.findAllByRole("menuitem", {
       name: `Edit "${props.role.name}" role`,
     });
+    const editMenuItem = editMenuItems[editMenuItems.length - 1]!;
     expect(editMenuItem).toBeInTheDocument();
 
     await user.click(editMenuItem);
 
-    const sidePanel = await screen.findByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
-
-    expect(
-      within(sidePanel).getByRole("heading", {
-        name: `Edit "${props.role.name}" role`,
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=edit",
+    );
   });
 
   it("confirms removal of a role", async () => {

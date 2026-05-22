@@ -1,4 +1,5 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -104,7 +105,10 @@ describe("UpgradeKernelForm", () => {
     };
 
     renderWithProviders(
-      <UpgradeKernelForm {...propsWithSingleVersion} />,
+      <>
+        <UpgradeKernelForm {...propsWithSingleVersion} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -127,7 +131,10 @@ describe("UpgradeKernelForm", () => {
     };
 
     renderWithProviders(
-      <UpgradeKernelForm {...propsWithSingleVersion} />,
+      <>
+        <UpgradeKernelForm {...propsWithSingleVersion} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -156,7 +163,10 @@ describe("UpgradeKernelForm", () => {
     };
 
     renderWithProviders(
-      <UpgradeKernelForm {...propsWithSingleVersion} />,
+      <>
+        <UpgradeKernelForm {...propsWithSingleVersion} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -208,7 +218,10 @@ describe("UpgradeKernelForm", () => {
     };
 
     renderWithProviders(
-      <UpgradeKernelForm {...propsWithSingleVersion} />,
+      <>
+        <UpgradeKernelForm {...propsWithSingleVersion} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -223,9 +236,8 @@ describe("UpgradeKernelForm", () => {
       await screen.findByRole("button", { name: "View details" }),
     );
 
-    expect(
-      await screen.findByRole("heading", { name: "Start instance Bionic WSL" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain("sidePath=view");
+    expect(screen.getByTestId("location").textContent).toContain("name=");
   });
 
   it("submits upgrade with scheduled delivery option", async () => {

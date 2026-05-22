@@ -1,5 +1,6 @@
 import { getInstancePackages } from "@/tests/mocks/packages";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -119,70 +120,86 @@ describe("PackageDetails", () => {
   describe("Action triggers", () => {
     it("opens upgrade form when upgrade button is clicked", async () => {
       renderWithProviders(
-        <PackageDetails singlePackage={packageWithUpgrade} />,
+        <>
+          <PackageDetails singlePackage={packageWithUpgrade} />
+          <LocationDisplay />
+        </>
       );
 
       const upgradeButton = screen.getByRole("button", { name: /upgrade/i });
       await user.click(upgradeButton);
 
-      expect(
-        screen.getByRole("button", { name: "Upgrade" }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(new RegExp(`upgrade ${packageWithUpgrade.name}`, "i")),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=upgrade&name=${packageWithUpgrade.name}`
+      );
     });
 
     it("opens hold form when hold button is clicked", async () => {
-      renderWithProviders(<PackageDetails singlePackage={installedPackage} />);
+      renderWithProviders(
+        <>
+          <PackageDetails singlePackage={installedPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       const holdButton = screen.getByRole("button", { name: "Hold" });
       await user.click(holdButton);
 
-      expect(screen.getByRole("button", { name: "Hold" })).toBeInTheDocument();
-      expect(
-        screen.getByText(new RegExp(`hold ${installedPackage.name}`, "i")),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=hold&name=${installedPackage.name}`
+      );
     });
 
     it("opens unhold form when unhold button is clicked", async () => {
-      renderWithProviders(<PackageDetails singlePackage={heldPackage} />);
+      renderWithProviders(
+        <>
+          <PackageDetails singlePackage={heldPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       const unholdButton = screen.getByRole("button", { name: /unhold/i });
       await user.click(unholdButton);
 
-      expect(
-        screen.getByRole("button", { name: "Unhold" }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=unhold&name=${heldPackage.name}`
+      );
     });
 
     it("opens uninstall form when uninstall button is clicked", async () => {
-      renderWithProviders(<PackageDetails singlePackage={installedPackage} />);
+      renderWithProviders(
+        <>
+          <PackageDetails singlePackage={installedPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       const uninstallButton = screen.getByRole("button", {
         name: /uninstall/i,
       });
       await user.click(uninstallButton);
 
-      expect(
-        screen.getByRole("button", { name: "Uninstall" }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(new RegExp(`uninstall ${installedPackage.name}`, "i")),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=remove&name=${installedPackage.name}`
+      );
     });
 
     it("opens downgrade form when downgrade button is clicked", async () => {
-      renderWithProviders(<PackageDetails singlePackage={installedPackage} />);
+      renderWithProviders(
+        <>
+          <PackageDetails singlePackage={installedPackage} />
+          <LocationDisplay />
+        </>
+      );
 
       const downgradeButton = screen.getByRole("button", {
         name: /downgrade/i,
       });
       await user.click(downgradeButton);
 
-      expect(
-        screen.getByRole("button", { name: "Downgrade" }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `sidePath=downgrade&name=${installedPackage.name}`
+      );
     });
   });
 });

@@ -1,7 +1,7 @@
 import type { AccountsContextProps } from "@/context/accounts";
 import type { Account } from "@/features/auth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { accountsDefault, accountsForSubdomain } from "@/tests/mocks/accounts";
 import { renderWithProviders } from "@/tests/render";
 import { mapTuple } from "@/utils/_helpers";
@@ -11,7 +11,7 @@ import { beforeEach } from "vitest";
 import OrganisationSwitch from "./OrganisationSwitch";
 
 vi.mock("@/hooks/useAuthAccounts");
-vi.mock("@/hooks/useSidePanel");
+vi.mock("@/hooks/usePageParams");
 
 const subdomainAccounts: AccountsContextProps = {
   currentAccount: accountsForSubdomain.find(
@@ -34,14 +34,14 @@ const defaultAccounts = {
   handleAccountSwitch: vi.fn(),
 } satisfies AccountsContextProps;
 
-const closeSidePanel = vi.fn();
+const popSidePathUntilClear = vi.fn();
 
 const SECOND_ACCOUNT_INDEX = 1;
 
 describe("OrganisationSwitch", () => {
   beforeEach(() => {
-    vi.mocked(useSidePanel, { partial: true }).mockReturnValue({
-      closeSidePanel,
+    vi.mocked(usePageParams, { partial: true }).mockReturnValue({
+      popSidePathUntilClear,
     });
   });
 
@@ -100,7 +100,7 @@ describe("OrganisationSwitch", () => {
         defaultAccounts.options[SECOND_ACCOUNT_INDEX].value,
       );
 
-      expect(closeSidePanel).toHaveBeenCalled();
+      expect(popSidePathUntilClear).toHaveBeenCalled();
     });
   });
 });

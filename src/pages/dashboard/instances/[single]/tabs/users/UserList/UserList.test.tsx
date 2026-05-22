@@ -1,14 +1,16 @@
 import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { setScreenSize } from "@/tests/helpers";
+import { setScreenSize, expectLoadingState } from "@/tests/helpers";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
 import type { User } from "@/types/User";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, vi } from "vitest";
+import { describe, expect, vi, beforeEach, it, assert } from "vitest";
 import UserList from "./UserList";
+import UserPanel from "../UserPanel";
 import { MASKED_VALUE } from "@/constants";
+import LocationDisplay from "@/tests/LocationDisplay";
 
 const userIds = users.map((user) => user.uid);
 const unlockedUser = users.find((user) => user.enabled);
@@ -114,17 +116,21 @@ describe("UserList", () => {
   describe("User details sidepanel", () => {
     beforeEach(() => {
       setScreenSize("lg");
-      renderWithProviders(<UserList {...props} />);
     });
-    it("should open side panel when user in table is clicked", async () => {
+    it("should update url when user in table is clicked", async () => {
+      renderWithProviders(
+        <>
+          <UserList {...props} />
+          <LocationDisplay />
+        </>
+      );
       const user = await screen.findByRole("button", {
         name: `Show details of user ${users[0].username}`,
       });
       await userEvent.click(user);
 
-      const form = await screen.findByRole("complementary");
-      const heading = within(form).getByText("User details");
-      expect(heading).toBeVisible();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
+      expect(screen.getByTestId("location")).toHaveTextContent(`name=${users[0].uid}`);
     });
 
     it("should show correct locked user side panel action buttons", async () => {
@@ -132,12 +138,10 @@ describe("UserList", () => {
       const user = lockedUser;
       const buttonNames = ["Unlock", "Edit", "Delete"];
 
-      const userTableButton = await screen.findByRole("button", {
-        name: `Show details of user ${user.username}`,
-      });
-      await userEvent.click(userTableButton);
+      renderWithProviders(<UserPanel />, undefined, `/?sidePath=view&name=${user.uid}`);
+      await expectLoadingState();
 
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByRole("complementary", { name: "Side panel" });
       await within(form).findByRole("button", { name: "Unlock" });
       buttonNames.forEach((buttonName) => {
         expect(
@@ -148,12 +152,10 @@ describe("UserList", () => {
 
     it("should show correct unlocked user side panel action buttons", async () => {
       assert(unlockedUser);
-      const userTableButton = await screen.findByRole("button", {
-        name: `Show details of user ${unlockedUser.username}`,
-      });
+      renderWithProviders(<UserPanel />, undefined, `/?sidePath=view&name=${unlockedUser.uid}`);
+      await expectLoadingState();
 
-      await userEvent.click(userTableButton);
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByRole("complementary", { name: "Side panel" });
       const buttonsNames = ["Lock", "Edit", "Delete"];
 
       await within(form).findByRole("button", { name: "Lock" });
@@ -168,12 +170,10 @@ describe("UserList", () => {
       assert(unlockedUser);
       const user = unlockedUser;
 
-      const tableUserButton = await screen.findByRole("button", {
-        name: `Show details of user ${user.username}`,
-      });
-      await userEvent.click(tableUserButton);
+      renderWithProviders(<UserPanel />, undefined, `/?sidePath=view&name=${user.uid}`);
+      await expectLoadingState();
 
-      const form = await screen.findByRole("complementary");
+      const form = await screen.findByRole("complementary", { name: "Side panel" });
       const primaryGroup =
         userGroups.find((group) => group.gid === user.primary_gid)?.name ?? "";
 
@@ -207,6 +207,13 @@ describe("UserList", () => {
       const [firstUser] = users;
       assert(firstUser);
 
+      renderWithProviders(
+        <>
+          <UserList {...props} />
+          <LocationDisplay />
+        </>
+      );
+
       const actionsToggle = await screen.findByRole("button", {
         name: `"${firstUser.name}" user actions`,
       });
@@ -214,8 +221,8 @@ describe("UserList", () => {
 
       await user.click(await screen.findByText("Edit"));
 
-      const sidePanel = await screen.findByRole("complementary");
-      expect(within(sidePanel).getByText("Edit user")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=edit");
+      expect(screen.getByTestId("location")).toHaveTextContent(`name=${firstUser.uid}`);
     });
   });
 
@@ -240,3 +247,4 @@ describe("UserList", () => {
     expect(within(row).getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 });
+

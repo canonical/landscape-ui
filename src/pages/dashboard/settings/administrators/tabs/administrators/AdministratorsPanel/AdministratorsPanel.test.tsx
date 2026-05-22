@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import AdministratorsPanel from "./AdministratorsPanel";
 import { screen } from "@testing-library/react";
@@ -39,7 +40,12 @@ describe("AdministratorsPanel", () => {
       status: "empty",
     });
 
-    renderWithProviders(<AdministratorsPanel />);
+    renderWithProviders(
+      <>
+        <AdministratorsPanel />
+        <LocationDisplay />
+      </>,
+    );
 
     await expectLoadingState();
 
@@ -55,12 +61,8 @@ describe("AdministratorsPanel", () => {
 
     await user.click(inviteButton);
 
-    const sidePanel = screen.getByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
-
-    const sidePanelTitle = screen.getByRole("heading", {
-      name: /invite administrator/i,
-    });
-    expect(sidePanelTitle).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=invite",
+    );
   });
 });

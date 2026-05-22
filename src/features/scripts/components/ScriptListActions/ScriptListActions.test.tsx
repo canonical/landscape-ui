@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
@@ -453,7 +454,12 @@ describe("Scripts List Contextual Menu", () => {
 
   describe("contextual menu side panels", () => {
     it("should open the details side panel when the view details button is clicked", async () => {
-      renderWithProviders(<ScriptListActions script={activeScript} />);
+      renderWithProviders(
+        <>
+          <ScriptListActions script={activeScript} />
+          <LocationDisplay />
+        </>,
+      );
       const contextualMenuButton = screen.getByRole("button", {
         name: `${activeScript.title} actions`,
       });
@@ -466,17 +472,18 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(viewDetailsMenuItem);
 
-      const sidePanel = screen.getByRole("complementary");
-      const header = screen.getByRole("heading", {
-        name: activeScript.title,
-      });
-
-      expect(header).toBeInTheDocument();
-      expect(sidePanel).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain(
+        "sidePath=view",
+      );
     });
 
     it("should open the edit side panel when the edit button is clicked", async () => {
-      renderWithProviders(<ScriptListActions script={activeScript} />);
+      renderWithProviders(
+        <>
+          <ScriptListActions script={activeScript} />
+          <LocationDisplay />
+        </>,
+      );
       const contextualMenuButton = screen.getByRole("button", {
         name: `${activeScript.title} actions`,
       });
@@ -489,17 +496,18 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(editMenuItem);
 
-      const sidePanel = screen.getByRole("complementary");
-      const header = screen.getByRole("heading", {
-        name: `Edit "${activeScript.title}" script`,
-      });
-
-      expect(header).toBeInTheDocument();
-      expect(sidePanel).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain(
+        "sidePath=edit",
+      );
     });
 
     it("should open the run side panel when the run button is clicked", async () => {
-      renderWithProviders(<ScriptListActions script={activeScript} />);
+      renderWithProviders(
+        <>
+          <ScriptListActions script={activeScript} />
+          <LocationDisplay />
+        </>,
+      );
       const contextualMenuButton = screen.getByRole("button", {
         name: `${activeScript.title} actions`,
       });
@@ -512,13 +520,9 @@ describe("Scripts List Contextual Menu", () => {
 
       await user.click(runMenuItem);
 
-      const sidePanel = screen.getByRole("complementary");
-      const header = screen.getByRole("heading", {
-        name: `Run "${activeScript.title}" script`,
-      });
-
-      expect(sidePanel).toBeInTheDocument();
-      expect(header).toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain(
+        "sidePath=run",
+      );
     });
   });
 });

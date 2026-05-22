@@ -2,6 +2,7 @@ import { ALERT_STATUSES } from "@/features/instances";
 import { ROUTES } from "@/libs/routes";
 import { alertsSummary } from "@/tests/mocks/alerts";
 import { pendingInstances } from "@/tests/mocks/instance";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -95,10 +96,13 @@ describe("AlertNotificationsList", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <AlertNotificationsList
-        alerts={alertsSummary}
-        pendingInstances={pendingInstances}
-      />,
+      <>
+        <AlertNotificationsList
+          alerts={alertsSummary}
+          pendingInstances={pendingInstances}
+        />
+        <LocationDisplay />
+      </>
     );
 
     const button = screen.getByRole("button", {
@@ -108,7 +112,9 @@ describe("AlertNotificationsList", () => {
     await user.click(button);
 
     await waitFor(() => {
-      expect(screen.getByText("Review Pending Instances")).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        "sidePath=review-pending-instances"
+      );
     });
   });
 

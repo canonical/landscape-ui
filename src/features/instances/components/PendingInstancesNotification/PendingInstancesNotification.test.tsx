@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { describe, expect } from "vitest";
+import LocationDisplay from "@/tests/LocationDisplay";
 import PendingInstancesNotification from "./PendingInstancesNotification";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { screen } from "@testing-library/react";
@@ -45,7 +46,12 @@ describe("PendingInstancesNotification", () => {
   });
 
   it("should open the side panel with pending instances when the button is clicked", async () => {
-    renderWithProviders(<PendingInstancesNotification />);
+    renderWithProviders(
+      <>
+        <PendingInstancesNotification />
+        <LocationDisplay />
+      </>
+    );
 
     const reviewButton = await screen.findByRole("button", {
       name: /review pending instances/i,
@@ -53,12 +59,7 @@ describe("PendingInstancesNotification", () => {
     expect(reviewButton).toBeInTheDocument();
 
     await user.click(reviewButton);
-    const sidePanel = screen.getByRole("complementary");
-    expect(sidePanel).toBeInTheDocument();
 
-    const sidePanelTitle = await screen.findByRole("heading", {
-      name: /review pending instances/i,
-    });
-    expect(sidePanelTitle).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=review");
   });
 });

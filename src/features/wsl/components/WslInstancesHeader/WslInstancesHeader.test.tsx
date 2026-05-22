@@ -11,6 +11,7 @@ import {
   uninstalledInstanceChild,
 } from "@/tests/mocks/wsl";
 import { windowsInstance } from "@/tests/mocks/instance";
+import LocationDisplay from "@/tests/LocationDisplay";
 
 describe("WslInstancesHeader", () => {
   it("renders the search box", () => {
@@ -102,11 +103,14 @@ describe("WslInstancesHeader", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <WslInstancesHeader
-        windowsInstance={windowsInstance}
-        selectedWslInstances={[]}
-        wslInstances={instanceChildren}
-      />,
+      <>
+        <WslInstancesHeader
+          windowsInstance={windowsInstance}
+          selectedWslInstances={[]}
+          wslInstances={instanceChildren}
+        />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(windowsInstance.id),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -116,9 +120,7 @@ describe("WslInstancesHeader", () => {
       screen.getByRole("button", { name: /create new instance/i }),
     );
 
-    expect(
-      await screen.findByRole("heading", { name: "Create new WSL instance" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("?sidePath=install-wsl");
   });
 
   it("opens reinstall modal for a noncompliant selection", async () => {

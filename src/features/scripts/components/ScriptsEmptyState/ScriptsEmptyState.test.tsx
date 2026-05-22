@@ -1,3 +1,4 @@
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -12,7 +13,7 @@ describe("Scripts Empty State", () => {
 
     const emptyStateTitle = screen.getByText(/No scripts found/i);
     const emptyStateBody = screen.getByText(
-      /You haven’t added any scripts yet/i,
+      /You haven['’]t added any scripts yet/i,
     );
     const emptyStateLink = screen.getByRole("link", {
       name: /How to manage instances in Landscape/i,
@@ -32,7 +33,12 @@ describe("Scripts Empty State", () => {
   });
 
   it("should open side panel when button is clicked", async () => {
-    renderWithProviders(<ScriptsEmptyState />);
+    renderWithProviders(
+      <>
+        <ScriptsEmptyState />
+        <LocationDisplay />
+      </>,
+    );
 
     const emptyStateButton = screen.getByRole("button", {
       name: /Add script/i,
@@ -40,9 +46,8 @@ describe("Scripts Empty State", () => {
 
     await user.click(emptyStateButton);
 
-    const sidePanelTitle = screen.getByRole("heading", {
-      name: /Add script/i,
-    });
-    expect(sidePanelTitle).toBeInTheDocument();
+    expect(screen.getByTestId("location").textContent).toContain(
+      "sidePath=create",
+    );
   });
 });

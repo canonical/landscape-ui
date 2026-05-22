@@ -17,6 +17,7 @@ import {
   instanceWithHardware,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import type { FeatureKey } from "@/types/FeatureKey";
 import type { Instance } from "@/types/Instance";
 import { screen, within } from "@testing-library/react";
@@ -599,7 +600,12 @@ describe("InfoPanel", () => {
     });
 
     it("successfully sanitizes instance when text is confirmed", async () => {
-      renderWithProviders(<InfoPanel instance={instances[0]} />);
+      renderWithProviders(
+        <>
+          <InfoPanel instance={instances[0]} />
+          <LocationDisplay />
+        </>,
+      );
       await expectLoadingState();
 
       await user.click(screen.getByRole("button", { name: "More actions" }));
@@ -625,9 +631,8 @@ describe("InfoPanel", () => {
 
       await user.click(screen.getByRole("button", { name: /view details/i }));
 
-      expect(
-        screen.queryByText(/you have successfully marked.*to be sanitized/i),
-      ).not.toBeInTheDocument();
+      expect(screen.getByTestId("location").textContent).toContain("sidePath=view");
+      expect(screen.getByTestId("location").textContent).toContain("name=");
     });
   });
 

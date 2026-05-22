@@ -1,4 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -58,42 +59,20 @@ describe("ManageSavedSearchesSidePanel", () => {
     expect(screen.getByText("Search Query")).toBeInTheDocument();
   });
 
-  it("should open the create form side panel when Add saved search is clicked", async () => {
-    renderWithProviders(<ManageSavedSearchesSidePanel />);
+  it("should update URL sidePath when Add saved search is clicked", async () => {
+    renderWithProviders(
+      <>
+        <ManageSavedSearchesSidePanel />
+        <LocationDisplay />
+      </>
+    );
 
     const createButton = await screen.findByRole("button", {
       name: "Add saved search",
     });
     await userEvent.click(createButton);
 
-    expect(
-      await screen.findByRole("heading", { name: "Add saved search" }),
-    ).toBeInTheDocument();
-  });
-
-  it("should navigate back to manage panel when back button is clicked in create form", async () => {
-    renderWithProviders(<ManageSavedSearchesSidePanel />);
-
-    const createButton = await screen.findByRole("button", {
-      name: "Add saved search",
-    });
-    await userEvent.click(createButton);
-
-    await screen.findByRole(
-      "heading",
-      { name: "Add saved search" },
-      { timeout: 5000 },
-    );
-    const backButton = await screen.findByRole(
-      "button",
-      { name: /back/i },
-      { timeout: 5000 },
-    );
-    await userEvent.click(backButton);
-
-    expect(
-      await screen.findByRole("heading", { name: "Manage saved searches" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=create-saved-search");
   });
 
   it("should show pagination controls and support page navigation when many saved searches exist", async () => {
@@ -123,3 +102,4 @@ describe("ManageSavedSearchesSidePanel", () => {
     expect(pageSizeSelect).toHaveValue("50");
   });
 });
+

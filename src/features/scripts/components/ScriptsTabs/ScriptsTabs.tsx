@@ -13,7 +13,7 @@ const ScriptProfilesTab = lazy(
 );
 
 const ScriptsTabs: FC = () => {
-  const { tab, setPageParams, closeSidePanel } = usePageParams();
+  const { tab, setPageParams } = usePageParams();
 
   const currentTab = tab ? `tab-link-${tab}` : TABS[0].id;
 
@@ -26,7 +26,6 @@ const ScriptsTabs: FC = () => {
           active: item.id === currentTab,
           onClick: () => {
             setPageParams({ tab: item.id.replace("tab-link-", "") });
-            closeSidePanel();
           },
         }))}
       />

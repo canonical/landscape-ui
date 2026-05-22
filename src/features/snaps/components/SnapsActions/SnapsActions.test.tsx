@@ -1,4 +1,5 @@
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
+import LocationDisplay from "@/tests/LocationDisplay";
 import "@/tests/matcher";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
@@ -59,10 +60,13 @@ describe("SnapsActions", () => {
   describe("Snap buttons in table", () => {
     it("renders table buttons", () => {
       const { container } = renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
           selectedSnapIds={snapData.empty}
-        />,
+        />
+          <LocationDisplay />
+        </>,
       );
 
       expect(container).toHaveTexts(tableSnapButtons);
@@ -71,10 +75,13 @@ describe("SnapsActions", () => {
     describe("Check button disabled statuses", () => {
       it("renders disabled buttons when no snaps selected", () => {
         renderWithProviders(
+          <>
           <SnapsActions
             installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
             selectedSnapIds={snapData.empty}
-          />,
+          />
+          <LocationDisplay />
+        </>,
         );
 
         for (const button of tableSnapButtons) {
@@ -90,13 +97,16 @@ describe("SnapsActions", () => {
 
       it("Unhold button disabled when only unheld snaps are selected", () => {
         renderWithProviders(
+          <>
           <SnapsActions
             installedSnaps={getSelectedSnaps(
               installedSnaps,
               snapData.multiple.unheldSnaps,
             )}
             selectedSnapIds={snapData.multiple.unheldSnaps}
-          />,
+          />
+          <LocationDisplay />
+        </>,
         );
         const unholdButton = screen.getByRole("button", { name: "Unhold" });
         expect(unholdButton).toHaveAttribute("aria-disabled");
@@ -104,13 +114,16 @@ describe("SnapsActions", () => {
 
       it("Hold button disabled when only held snaps are selected", () => {
         renderWithProviders(
+          <>
           <SnapsActions
             installedSnaps={getSelectedSnaps(
               installedSnaps,
               snapData.multiple.heldSnaps,
             )}
             selectedSnapIds={snapData.multiple.heldSnaps}
-          />,
+          />
+          <LocationDisplay />
+        </>,
         );
         const holdButton = screen.getByRole("button", { name: "Hold" });
         expect(holdButton).toHaveAttribute("aria-disabled");
@@ -118,13 +131,16 @@ describe("SnapsActions", () => {
 
       it("Hold and Unhold enabled when only held and unheld snaps are selected", () => {
         renderWithProviders(
+          <>
           <SnapsActions
             installedSnaps={getSelectedSnaps(
               installedSnaps,
               mixedSelectedSnapIds,
             )}
             selectedSnapIds={mixedSelectedSnapIds}
-          />,
+          />
+          <LocationDisplay />
+        </>,
         );
         const holdButton = screen.getByRole("button", { name: "Hold" });
         const unholdButton = screen.getByRole("button", { name: "Unhold" });
@@ -139,13 +155,16 @@ describe("SnapsActions", () => {
   describe("Snap buttons in sidepanel", () => {
     it("renders correct buttons for held snap in sidepanel", () => {
       const { container } = renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(installedSnaps, [
             snapData.single.heldSnap,
           ])}
           selectedSnapIds={[snapData.single.heldSnap]}
           sidePanel={true}
-        />,
+        />
+          <LocationDisplay />
+        </>,
       );
 
       expect(container).toHaveTexts(formHeldSnapButtons);
@@ -153,13 +172,16 @@ describe("SnapsActions", () => {
 
     it("renders correct buttons for unheld snap in sidepanel", () => {
       const { container } = renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(installedSnaps, [
             snapData.single.unheldSnap,
           ])}
           selectedSnapIds={[snapData.single.unheldSnap]}
           sidePanel={true}
-        />,
+        />
+          <LocationDisplay />
+        </>,
       );
 
       expect(container).toHaveTexts(formUnheldSnapButtons);
@@ -167,14 +189,17 @@ describe("SnapsActions", () => {
 
     it("does not render switch channel button for multiple snaps in sidepanel", () => {
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(
             installedSnaps,
             mixedSelectedSnapIds,
           )}
           selectedSnapIds={mixedSelectedSnapIds}
           sidePanel={true}
-        />,
+        />
+          <LocationDisplay />
+        </>,
       );
 
       expect(
@@ -185,29 +210,33 @@ describe("SnapsActions", () => {
     it("opens install snaps side panel from table actions", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(installedSnaps, snapData.empty)}
           selectedSnapIds={snapData.empty}
-        />,
+        />
+          <LocationDisplay />
+        </>,
       );
 
       await user.click(screen.getByRole("button", { name: "Install" }));
 
-      expect(
-        await screen.findByRole("heading", { name: "Install snaps" }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=install");
     });
 
     it("opens hold side panel for selected snaps", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(
             installedSnaps,
             snapData.multiple.unheldSnaps,
           )}
           selectedSnapIds={snapData.multiple.unheldSnaps}
-        />,
+        />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.instances.details.single(INSTANCE_ID),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -215,22 +244,23 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Hold" }));
 
-      expect(
-        await screen.findByRole("heading", { name: /Hold \d+ snaps/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=hold");
     });
 
     it("opens uninstall side panel for selected snaps", async () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(
             installedSnaps,
             snapData.multiple.unheldSnaps,
           )}
           selectedSnapIds={snapData.multiple.unheldSnaps}
-        />,
+        />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.instances.details.single(INSTANCE_ID),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -238,22 +268,23 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Uninstall" }));
 
-      expect(
-        await screen.findByRole("heading", { name: /Uninstall \d+ snaps/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=uninstall");
     });
 
     it("opens unhold side panel using held snap count", async () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(
             installedSnaps,
             mixedSelectedSnapIds,
           )}
           selectedSnapIds={mixedSelectedSnapIds}
-        />,
+        />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.instances.details.single(INSTANCE_ID),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -261,27 +292,23 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Unhold" }));
 
-      expect(
-        await screen.findByRole("heading", {
-          name: new RegExp(
-            `Unhold ${snapData.multiple.heldSnaps.length} snaps`,
-            "i",
-          ),
-        }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=unhold");
     });
 
     it("opens refresh side panel for selected snaps", async () => {
       const user = userEvent.setup();
 
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={getSelectedSnaps(
             installedSnaps,
             snapData.multiple.unheldSnaps,
           )}
           selectedSnapIds={snapData.multiple.unheldSnaps}
-        />,
+        />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.instances.details.single(INSTANCE_ID),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -289,9 +316,7 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Refresh" }));
 
-      expect(
-        await screen.findByRole("heading", { name: /Refresh \d+ snaps/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=refresh");
     });
 
     it("opens switch channel side panel for held snap in sidepanel mode", async () => {
@@ -300,11 +325,14 @@ describe("SnapsActions", () => {
       assert(heldSnap);
 
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={[heldSnap]}
           selectedSnapIds={[heldSnap.snap.id]}
           sidePanel={true}
-        />,
+        />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.instances.details.single(INSTANCE_ID),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -312,9 +340,7 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Switch channel" }));
 
-      expect(
-        await screen.findByRole("heading", { name: /Switch .*'s channel/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=switch");
     });
 
     it("opens uninstall side panel with single snap title in sidepanel mode", async () => {
@@ -323,11 +349,14 @@ describe("SnapsActions", () => {
       assert(heldSnap);
 
       renderWithProviders(
-        <SnapsActions
+        <>
+          <SnapsActions
           installedSnaps={[heldSnap]}
           selectedSnapIds={[heldSnap.snap.id]}
           sidePanel={true}
-        />,
+        />
+          <LocationDisplay />
+        </>,
         undefined,
         ROUTES.instances.details.single(INSTANCE_ID),
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -335,11 +364,7 @@ describe("SnapsActions", () => {
 
       await user.click(screen.getByRole("button", { name: "Uninstall" }));
 
-      expect(
-        await screen.findByRole("heading", {
-          name: `Uninstall ${heldSnap.snap.name}`,
-        }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=uninstall");
     });
   });
 });

@@ -1,4 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
@@ -92,14 +93,19 @@ describe("KernelHeader", () => {
   });
 
   it("clicking Restart instance button opens the restart side panel", async () => {
-    renderWithProviders(<KernelHeader {...props} />);
+    renderWithProviders(
+      <>
+        <KernelHeader {...props} />
+        <LocationDisplay />
+      </>,
+    );
     const restartButton = screen.getByRole("button", {
       name: /restart instance/i,
     });
     await user.click(restartButton);
-    expect(
-      screen.getByRole("button", { name: /restart/i }),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      "sidePath=restart",
+    );
   });
 
   it("clicking Downgrade kernel button opens the downgrade side panel", async () => {
@@ -110,12 +116,19 @@ describe("KernelHeader", () => {
         downgrades: [kernelVersion],
       },
     };
-    renderWithProviders(<KernelHeader {...propsWithDowngrades} />);
+    renderWithProviders(
+      <>
+        <KernelHeader {...propsWithDowngrades} />
+        <LocationDisplay />
+      </>,
+    );
     const downgradeButton = screen.getByRole("button", {
       name: /downgrade kernel/i,
     });
     await user.click(downgradeButton);
-    expect(await screen.findByText(/security warning/i)).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      "sidePath=downgrade",
+    );
   });
 
   it("clicking Upgrade kernel button opens the upgrade side panel", async () => {
@@ -126,12 +139,19 @@ describe("KernelHeader", () => {
         upgrades: [kernelVersion],
       },
     };
-    renderWithProviders(<KernelHeader {...propsWithUpgrades} />);
+    renderWithProviders(
+      <>
+        <KernelHeader {...propsWithUpgrades} />
+        <LocationDisplay />
+      </>,
+    );
     const upgradeButton = screen.getByRole("button", {
       name: /upgrade kernel/i,
     });
     await user.click(upgradeButton);
-    expect(await screen.findByText(/restart recommended/i)).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      "sidePath=upgrade",
+    );
   });
 
   it("renders with null installed kernel version gracefully", () => {
@@ -190,13 +210,18 @@ describe("KernelHeader", () => {
         upgrades: [kernelVersion],
       },
     };
-    renderWithProviders(<KernelHeader {...propsWithUpgrades} />);
+    renderWithProviders(
+      <>
+        <KernelHeader {...propsWithUpgrades} />
+        <LocationDisplay />
+      </>,
+    );
     const restartButton = screen.getByRole("button", {
       name: /restart instance/i,
     });
     await user.click(restartButton);
-    expect(
-      await screen.findByRole("button", { name: /upgrade and restart/i }),
-    ).toBeInTheDocument();
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      "sidePath=restart",
+    );
   });
 });

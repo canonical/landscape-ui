@@ -1,5 +1,6 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
@@ -252,7 +253,10 @@ describe("DowngradeKernelForm", () => {
     };
 
     renderWithProviders(
-      <DowngradeKernelForm {...propsWithSingleVersion} />,
+      <>
+        <DowngradeKernelForm {...propsWithSingleVersion} />
+        <LocationDisplay />
+      </>,
       undefined,
       ROUTES.instances.details.single(INSTANCE_ID),
       `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -267,9 +271,7 @@ describe("DowngradeKernelForm", () => {
       await screen.findByRole("button", { name: "View details" }),
     );
 
-    expect(
-      await screen.findByRole("heading", { name: "Start instance Bionic WSL" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
   });
 
   it("submits downgrade with scheduled delivery option", async () => {

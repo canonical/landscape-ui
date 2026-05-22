@@ -1,9 +1,9 @@
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { publications } from "@/tests/mocks/publications";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";
 import TargetDetails from "./TargetDetails";
@@ -55,11 +55,6 @@ const filesystemTarget = filesystemMock.filesystem;
 const s3WithPubs = targetWithPublications.s3;
 const s3WithoutPubs = targetWithoutPublications.s3;
 const firstPubName = firstPublication.displayName;
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("TargetDetails", () => {
   const user = userEvent.setup();

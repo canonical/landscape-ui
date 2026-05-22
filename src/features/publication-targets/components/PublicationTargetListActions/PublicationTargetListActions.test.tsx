@@ -1,10 +1,10 @@
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";
-import { useLocation } from "react-router";
 import PublicationTargetListActions from "./PublicationTargetListActions";
 
 vi.mock("../../api/useGetPublicationsByTarget", () => ({
@@ -21,11 +21,6 @@ vi.mock("../../api/useRemovePublicationTarget", () => ({
 }));
 
 import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 const targetWithDisplayName = publicationTargets[0]!;
 

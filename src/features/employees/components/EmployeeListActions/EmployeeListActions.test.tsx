@@ -1,10 +1,10 @@
-import { expectLoadingState } from "@/tests/helpers";
 import { employees } from "@/tests/mocks/employees";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import EmployeeListActions from "./EmployeeListActions";
+import LocationDisplay from "@/tests/LocationDisplay";
 
 const activeEmployee = employees.find((employee) => employee.is_active);
 const inactiveEmployee = employees.find((employee) => !employee.is_active);
@@ -51,14 +51,21 @@ describe("EmployeeListContextualMenu", () => {
   });
 
   it("opens the side panel when 'View details' is clicked", async () => {
-    renderWithProviders(<EmployeeListActions employee={activeEmployee} />);
+    renderWithProviders(
+      <>
+        <EmployeeListActions employee={activeEmployee} />
+        <LocationDisplay />
+      </>
+    );
 
     await user.click(screen.getByLabelText(`${activeEmployee.name} actions`));
     await user.click(
       screen.getByLabelText(`View ${activeEmployee.name} employee details`),
     );
 
-    await expectLoadingState();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      `?sidePath=view&name=${activeEmployee.id}`
+    );
   });
 
   it("opens the EmployeeActivationStatusModal when the activation link is clicked for active employee", async () => {

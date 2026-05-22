@@ -3,6 +3,7 @@ import {
   activities,
   INVALID_ACTIVITY_SEARCH_QUERY,
 } from "@/tests/mocks/activity";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -94,16 +95,23 @@ describe("Activities", () => {
 
   describe("Activity details", () => {
     it("should open activity details side panel when description is clicked", async () => {
-      renderWithProviders(<Activities {...defaultProps} />);
+      const user = userEvent.setup();
+      renderWithProviders(
+        <>
+          <Activities {...defaultProps} />
+          <LocationDisplay />
+        </>
+      );
 
       const activityButton = screen.getByRole("button", {
         name: activities[0].summary,
       });
       await user.click(activityButton);
 
-      expect(
-        screen.getByRole("heading", { name: activities[0].summary }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `name=${activities[0].id}`,
+      );
     });
   });
 

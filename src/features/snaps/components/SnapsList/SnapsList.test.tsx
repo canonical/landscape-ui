@@ -2,11 +2,13 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import LocationDisplay from "@/tests/LocationDisplay";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import { describe, expect, vi } from "vitest";
 import SnapsList from "./SnapsList";
+import SnapDetailsView from "../SnapDetails/SnapDetails";
 import { setScreenSize } from "@/tests/helpers";
 
 async function findSnapByName(name: string) {
@@ -124,29 +126,33 @@ describe("SnapsList", () => {
 
     beforeEach(async () => {
       setScreenSize("xl");
-      renderWithProviders(<SnapsList {...props} />);
-      await clickSnapOnTable(selectedSnap.snap.name);
     });
 
     it("should open side panel when snap in table is clicked", async () => {
-      const form = await screen.findByRole("complementary");
-      const heading = within(form).getByText(
-        `${selectedSnap.snap.name} details`,
+      renderWithProviders(
+        <>
+          <SnapsList {...props} />
+          <LocationDisplay />
+        </>
       );
-      expect(heading).toBeVisible();
+      await clickSnapOnTable(selectedSnap.snap.name);
+      
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
+      expect(screen.getByTestId("location")).toHaveTextContent(`name=${selectedSnap.snap.name.replace(" ", "+")}`);
     });
 
     it("should show side panel action buttons", async () => {
+      renderWithProviders(<SnapDetailsView installedSnap={selectedSnap} />);
       const buttonsNames = ["Switch channel", "Uninstall", "Hold", "Refresh"];
-      const form = await screen.findByRole("complementary");
 
-      buttonsNames.forEach((buttonName) => {
-        const button = within(form).getByText(buttonName);
+      for (const buttonName of buttonsNames) {
+        const button = await screen.findByText(buttonName);
         expect(button).toBeInTheDocument();
-      });
+      }
     });
 
     it("should show correct side panel details for a snap", async () => {
+      renderWithProviders(<SnapDetailsView installedSnap={selectedSnap} />);
       const fieldsToCheck = [
         { label: "Name", value: selectedSnap.snap.name },
         { label: "Channel", value: selectedSnap.tracking_channel },
@@ -169,9 +175,8 @@ describe("SnapsList", () => {
           value: selectedSnap.snap.publisher.username,
         },
       ];
-      const form = await screen.findByRole("complementary");
       fieldsToCheck.forEach((field) => {
-        expect(form).toHaveInfoItem(field.label, field.value);
+        expect(document.body).toHaveInfoItem(field.label, field.value);
       });
     });
   });

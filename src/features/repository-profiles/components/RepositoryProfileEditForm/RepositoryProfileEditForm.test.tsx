@@ -1,9 +1,9 @@
 import { aptSources } from "@/tests/mocks/apt-sources";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileEditForm from "./RepositoryProfileEditForm";
 
@@ -12,11 +12,6 @@ vi.mock("../../api/useGetRepositoryProfile", () => ({
 }));
 
 const [profile] = repositoryProfiles;
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 const renderEditForm = (sidePath = "view,edit") =>
   renderWithProviders(

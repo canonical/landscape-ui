@@ -1,5 +1,6 @@
 import { beforeEach, describe, it, expect } from "vitest";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import ProviderListActions from "./ProviderListActions";
 import { identityProviders } from "@/tests/mocks/identityProviders";
 import { screen, waitFor } from "@testing-library/react";
@@ -9,10 +10,13 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 describe("ProviderListActions", () => {
   beforeEach(() => {
     renderWithProviders(
-      <ProviderListActions
-        canBeDisabled={false}
-        provider={identityProviders[0]}
-      />,
+      <>
+        <ProviderListActions
+          canBeDisabled={false}
+          provider={identityProviders[0]}
+        />
+        <LocationDisplay />
+      </>
     );
   });
 
@@ -35,7 +39,7 @@ describe("ProviderListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("should open edit dialog", async () => {
+  it("should open edit dialog via sidePath", async () => {
     await userEvent.click(screen.getByRole("button"));
 
     await userEvent.click(
@@ -44,11 +48,9 @@ describe("ProviderListActions", () => {
       }),
     );
 
-    expect(
-      screen.getByRole("heading", {
-        name: `Edit ${identityProviders[0].name} provider`,
-      }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      `sidePath=edit&name=${identityProviders[0].id}`
+    );
   });
 
   it("should open delete confirmation modal when Delete is clicked", async () => {
@@ -110,3 +112,4 @@ describe("ProviderListActions", () => {
     });
   });
 });
+

@@ -10,7 +10,7 @@ import { AUTOINSTALL_FILE_TABS } from "./constants";
 interface AutoinstallFileTabsProps {
   readonly file: AutoinstallFile;
   readonly viewVersionHistory: () => void;
-  readonly onInfoTabClick: () => void;
+  readonly onInfoTabClick?: () => void;
   readonly activeTabId?: AutoinstallFileTabId;
 }
 
@@ -28,7 +28,7 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
       if (id === "version-history") {
         viewVersionHistory();
       } else {
-        onInfoTabClick();
+        onInfoTabClick?.();
       }
     },
   }));
@@ -50,21 +50,3 @@ const AutoinstallFileTabs: FC<AutoinstallFileTabsProps> = ({
 };
 
 export default AutoinstallFileTabs;
-
-//   return (
-//     <>
-//       <Tabs listClassName={classes.tabs} links={links} />
-
-//       {tabId === "info" && <AutoinstallFileInfo file={file} />}
-
-//       {tabId === "version-history" && (
-//         <AutoinstallFileVersionHistory
-//           file={file}
-//           viewVersionHistory={viewVersionHistory}
-//         />
-//       )}
-//     </>
-//   );
-// };
-
-// export default AutoinstallFileTabs;

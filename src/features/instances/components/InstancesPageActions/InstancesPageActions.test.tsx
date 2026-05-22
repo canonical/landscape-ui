@@ -5,6 +5,7 @@ import {
   ubuntuInstance,
   windowsInstance,
 } from "@/tests/mocks/instance";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -270,10 +271,13 @@ describe("InstancesPageActions", () => {
   describe("should proper handle button clicks", () => {
     beforeEach(() => {
       renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={selected}
-        />,
+        <>
+          <InstancesPageActions
+            isGettingInstances={false}
+            selectedInstances={selected}
+          />
+          <LocationDisplay />
+        </>
       );
     });
 
@@ -333,9 +337,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /run script/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /run script/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=run-script");
     });
 
     it("'View report' menu item", async () => {
@@ -346,11 +348,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /view report/i }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Report for ${selected.length} instances`,
-        }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=report");
     });
 
     it("'Upgrade' menu item", async () => {
@@ -361,9 +359,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /^upgrade$/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /upgrades/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=upgrades");
     });
 
     it("'Upgrade distributions' menu item", async () => {
@@ -374,9 +370,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /upgrade distributions/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /upgrade distributions/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=distribution-upgrades");
     });
 
     it("'Remove from Landscape' menu item", async () => {
@@ -400,9 +394,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /assign access group/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /assign access group/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=access-group-change");
     });
 
     it("'Assign tags' menu item", async () => {
@@ -413,9 +405,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /assign tag/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /assign tags/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=tags-assign");
     });
 
     it("'Attach token' menu item", async () => {
@@ -426,9 +416,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /attach token/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /attach Ubuntu Pro token to .*/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location")).toHaveTextContent("sidePath=attach-token");
     });
 
     it("'Detach token' menu item", async () => {
@@ -447,15 +435,18 @@ describe("InstancesPageActions", () => {
 
   it("handles click for 'Replace token' menu item", async () => {
     renderWithProviders(
-      <InstancesPageActions
-        isGettingInstances={false}
-        selectedInstances={[
-          {
-            ...ubuntuInstance,
-            ubuntu_pro_info: ubuntuProInfo,
-          },
-        ]}
-      />,
+      <>
+        <InstancesPageActions
+          isGettingInstances={false}
+          selectedInstances={[
+            {
+              ...ubuntuInstance,
+              ubuntu_pro_info: ubuntuProInfo,
+            },
+          ]}
+        />
+        <LocationDisplay />
+      </>
     );
 
     await userEvent.click(
@@ -465,9 +456,7 @@ describe("InstancesPageActions", () => {
       screen.getByRole("menuitem", { name: /replace token/i }),
     );
 
-    expect(
-      screen.getByRole("heading", { name: /replace Ubuntu Pro token/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=replace-token");
   });
 
   describe("Run script form warning", () => {

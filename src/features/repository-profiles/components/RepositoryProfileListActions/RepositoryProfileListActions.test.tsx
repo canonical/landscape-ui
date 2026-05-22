@@ -1,17 +1,12 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
 import { describe, it, expect } from "vitest";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import RepositoryProfileListActions from "./RepositoryProfileListActions";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 const [profile] = repositoryProfiles;
 

@@ -4,10 +4,10 @@ import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";
 import ReportView from "./ReportView";
 import useReports from "@/hooks/useReports";
-import useSidePanel from "@/hooks/useSidePanel";
+import LocationDisplay from "@/tests/LocationDisplay";
+import userEvent from "@testing-library/user-event";
 
 vi.mock("@/hooks/useReports");
-vi.mock("@/hooks/useSidePanel");
 
 describe("ReportView", () => {
   const instanceIds = [1, 2, 3];
@@ -27,10 +27,6 @@ describe("ReportView", () => {
         isLoading: false,
       }),
     });
-
-    (useSidePanel as Mock).mockReturnValue({
-      setSidePanelContent: vi.fn(),
-    });
   });
 
   it("renders ReportView component", () => {
@@ -41,14 +37,18 @@ describe("ReportView", () => {
     expect(screen.getByText("Security upgrades")).toBeInTheDocument();
   });
 
-  it("handles download dialog", () => {
-    const { setSidePanelContent } = useSidePanel();
-    renderWithProviders(<ReportView instanceIds={instanceIds} />);
+  it("handles download dialog", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <>
+        <ReportView instanceIds={instanceIds} />
+        <LocationDisplay />
+      </>
+    );
     const downloadButton = screen.getByText("Download as CSV");
-    downloadButton.click();
-    expect(setSidePanelContent).toHaveBeenCalledWith(
-      "Download report as CSV",
-      expect.anything(),
+    await user.click(downloadButton);
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "sidePath=download-report"
     );
   });
 

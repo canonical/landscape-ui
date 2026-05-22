@@ -3,9 +3,10 @@ import { ALERT_STATUSES } from "@/features/instances";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectErrorNotification } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { ROUTES } from "@/libs/routes";
 import AlertCard from "./AlertCard";
 
@@ -72,16 +73,21 @@ describe("AlertCard", () => {
     const user = userEvent.setup();
     const pendingAlert = ALERT_STATUSES.PendingComputersAlert;
 
-    renderWithProviders(<AlertCard {...pendingAlert} />);
+    renderWithProviders(
+      <>
+        <AlertCard {...pendingAlert} />
+        <LocationDisplay />
+      </>,
+    );
 
     const reviewButton = await screen.findByRole("button", {
       name: /instance/i,
     });
     await user.click(reviewButton);
 
-    expect(
-      await screen.findByRole("heading", { name: "Review Pending Instances" }),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "sidePath=review-pending-instances",
+    );
   });
 
   it("renders zero-count state for pending alerts with no pending instances", async () => {

@@ -1,14 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router";
+import LocationDisplay from "@/tests/LocationDisplay";
 import { describe, expect, it } from "vitest";
 import PublicationTargetAddButton from "./PublicationTargetAddButton";
-
-const LocationDisplay = () => {
-  const { search } = useLocation();
-  return <div data-testid="location">{search}</div>;
-};
 
 describe("PublicationTargetAddButton", () => {
   const user = userEvent.setup();

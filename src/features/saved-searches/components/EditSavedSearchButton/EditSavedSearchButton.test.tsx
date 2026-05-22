@@ -1,9 +1,10 @@
 import { savedSearch } from "@/tests/mocks/savedSearches";
 import { renderWithProviders } from "@/tests/render";
-import { screen, waitFor } from "@testing-library/react";
+import LocationDisplay from "@/tests/LocationDisplay";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import EditSavedSearchButton from "./EditSavedSearchButton";
 
 describe("EditSavedSearchButton", () => {
@@ -22,59 +23,18 @@ describe("EditSavedSearchButton", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("should open side panel with form when clicked", async () => {
-    renderWithProviders(<EditSavedSearchButton {...defaultProps} />);
-
-    const button = screen.getByRole("button");
-    await user.click(button);
-
-    expect(
-      await screen.findByRole("heading", {
-        name: `Edit "${savedSearch.title}" saved search`,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("should open side panel with correct size when onBackButtonPress is provided", async () => {
-    const onBackButtonPress = vi.fn();
+  it("should update URL with sidePath and name when clicked", async () => {
     renderWithProviders(
-      <EditSavedSearchButton
-        {...defaultProps}
-        onBackButtonPress={onBackButtonPress}
-      />,
+      <>
+        <EditSavedSearchButton {...defaultProps} />
+        <LocationDisplay />
+      </>
     );
 
     const button = screen.getByRole("button");
     await user.click(button);
 
-    expect(
-      await screen.findByRole("heading", {
-        name: `Edit "${savedSearch.title}" saved search`,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("should successfully submit the edit form", async () => {
-    renderWithProviders(<EditSavedSearchButton {...defaultProps} />);
-
-    const button = screen.getByRole("button");
-    await user.click(button);
-
-    await screen.findByRole("heading", {
-      name: `Edit "${savedSearch.title}" saved search`,
-    });
-
-    const saveButton = await screen.findByRole("button", {
-      name: "Save changes",
-    });
-    await user.click(saveButton);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByRole("heading", {
-          name: `Edit "${savedSearch.title}" saved search`,
-        }),
-      ).not.toBeInTheDocument();
-    });
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=edit-saved-search");
+    expect(screen.getByTestId("location")).toHaveTextContent(`name=${savedSearch.name}`);
   });
 });

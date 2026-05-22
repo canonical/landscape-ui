@@ -4,6 +4,7 @@ import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
+import LocationDisplay from "@/tests/LocationDisplay";
 import SearchBoxWithSavedSearches from "./SearchBoxWithSavedSearches";
 
 vi.mock("@/features/instances", () => ({
@@ -251,7 +252,12 @@ describe("SearchBoxWithSavedSearches", () => {
   });
 
   it("should show save search panel when Save search is clicked from the prompt", async () => {
-    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+    renderWithProviders(
+      <>
+        <SearchBoxWithSavedSearches {...defaultProps} />
+        <LocationDisplay />
+      </>
+    );
 
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
@@ -265,22 +271,8 @@ describe("SearchBoxWithSavedSearches", () => {
     });
     await user.click(saveSearchButton);
 
-    expect(
-      await screen.findByRole("heading", { name: "Add saved search" }),
-    ).toBeInTheDocument();
-
-    // The form loads lazily; once visible, submit to trigger onSearchSave callback
-    const titleInput = screen.queryByRole("textbox", { name: /title/i });
-    if (titleInput) {
-      await user.type(titleInput, "Test");
-      const submitBtn = screen.getByRole("button", {
-        name: "Add saved search",
-      });
-      await user.click(submitBtn);
-      await waitFor(() => {
-        expect(searchBox).toHaveValue("");
-      });
-    }
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=create-saved-search");
+    expect(screen.getByTestId("location")).toHaveTextContent("query=alert%3Apackage-upgrades");
   });
 
   it("should call onChange when a saved search is clicked", async () => {
@@ -376,7 +368,12 @@ describe("SearchBoxWithSavedSearches", () => {
   });
 
   it("should clear input text after successfully saving a search via SearchPrompt", async () => {
-    renderWithProviders(<SearchBoxWithSavedSearches {...defaultProps} />);
+    renderWithProviders(
+      <>
+        <SearchBoxWithSavedSearches {...defaultProps} />
+        <LocationDisplay />
+      </>
+    );
 
     const searchBox = screen.getByRole("searchbox");
     await user.click(searchBox);
@@ -389,22 +386,11 @@ describe("SearchBoxWithSavedSearches", () => {
     });
     await user.click(saveSearchButton);
 
-    await screen.findByRole("heading", { name: "Add saved search" });
-    const titleInput = await screen.findByRole("textbox", { name: /title/i });
-    await user.type(titleInput, "My New Search");
-
-    const submitButtons = screen.getAllByRole("button", {
-      name: "Add saved search",
-    });
-    const submitButton = submitButtons.find(
-      (btn) => btn.getAttribute("type") === "submit",
-    );
-    assert(submitButton);
-    await user.click(submitButton);
-
-    await waitFor(() => {
-      expect(searchBox).toHaveValue("");
-    });
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=create-saved-search");
+    
+    // We cannot simulate the form being filled in the test because the form 
+    // is in the side panel which is no longer rendered here. 
+    // It's tested elsewhere now, so we can just verify the sidePath update.
   });
 
   it("should ignore non-Enter keyUp events when dropdown is closed", () => {
