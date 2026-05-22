@@ -10,6 +10,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
+import { getFormikError } from "@/utils/formikErrors";
 import { Col, Form, Row, Select } from "@canonical/react-components";
 import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
@@ -51,6 +52,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
   const [firstPackage] = packages;
+  const hasPackageForDowngrade = !!firstPackage;
 
   const { data: getDowngradePackageVersionsQueryResult } =
     getDowngradePackageVersionsQuery(
@@ -59,7 +61,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
         packageName: firstPackage?.name ?? "",
       },
       {
-        enabled: action === "downgrade",
+        enabled: action === "downgrade" && hasPackageForDowngrade,
       },
     );
 
@@ -105,9 +107,17 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
         query: `id:${instanceId}`,
       });
     } else if (action === "downgrade") {
+      if (!firstPackage) {
+        notify.error({
+          title: "No package selected",
+          message: "Select a package before attempting to downgrade.",
+        });
+        return;
+      }
+
       promise = downgradePackageVersion({
         instanceId,
-        package_name: firstPackage?.name ?? "",
+        package_name: firstPackage.name,
         package_version: values.version,
       });
     } else {
@@ -164,6 +174,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
                 labelClassName="p-text--small u-text--muted u-no-margin--bottom p-text--small-caps"
                 {...formik.getFieldProps("version")}
                 options={downgradeOptions}
+                error={getFormikError(formik, "version")}
               />
             ) : (
               <p>No downgrade versions</p>
