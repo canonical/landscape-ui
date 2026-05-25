@@ -4,18 +4,12 @@ import usePageParams from "@/hooks/usePageParams";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { useGetMirror, useUpdateMirror } from "../../api";
 import { useFormik } from "formik";
 import type { FormProps } from "./types";
 import Blocks from "@/components/layout/Blocks";
-import {
-  CheckboxInput,
-  Form,
-  Icon,
-  ICONS,
-  Input,
-  Tooltip,
-} from "@canonical/react-components";
+import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import GpgKeyField from "@/components/form/GpgKeyField";
 import { getFormikError } from "@/utils/formikErrors";
 import { getSourceType } from "../MirrorDetails/helpers";
@@ -112,22 +106,9 @@ const EditMirrorForm: FC = () => {
                 value={mirror.archiveRoot}
                 tooltipMessage="You can’t change the source URL after the mirror is created."
               />
-              <CheckboxInput
-                label={
-                  <span>
-                    <span className={classes.settingLabel}>
-                      Preserve upstream signing key
-                    </span>
-                    <Tooltip
-                      message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
-                      position="top-center"
-                      positionElementClassName={classes.tooltipPositionElement}
-                    >
-                      <Icon name={ICONS.help} aria-hidden />
-                      <span className="u-off-screen">Help</span>
-                    </Tooltip>
-                  </span>
-                }
+              <CheckboxInputWithHelp
+                label="Preserve upstream signing key"
+                tooltipMessage="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}
                 disabled
@@ -162,22 +143,9 @@ const EditMirrorForm: FC = () => {
                 </div>
                 <MirrorFilterHelpButton />
               </div>
-              <CheckboxInput
-                label={
-                  <span>
-                    <span className={classes.settingLabel}>
-                      Include dependencies in filter
-                    </span>
-                    <Tooltip
-                      message="Includes dependencies of the packages that match the filter, even if they don't match the filter themselves."
-                      position="top-center"
-                      positionElementClassName={classes.tooltipPositionElement}
-                    >
-                      <Icon name={ICONS.help} aria-hidden />
-                      <span className="u-off-screen">Help</span>
-                    </Tooltip>
-                  </span>
-                }
+              <CheckboxInputWithHelp
+                label="Include dependencies in filter"
+                tooltipMessage="Includes dependencies of the packages that match the filter, even if they don't match the filter themselves."
                 {...formik.getFieldProps("includeDependencies")}
                 checked={
                   !!formik.values.packageFilter &&
@@ -190,22 +158,9 @@ const EditMirrorForm: FC = () => {
                 inline
               />
               <p className={classes.heading}>Download options:</p>
-              <CheckboxInput
-                label={
-                  <span>
-                    <span className={classes.settingLabel}>
-                      Download .udeb packages
-                    </span>
-                    <Tooltip
-                      message="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
-                      position="top-center"
-                      positionElementClassName={classes.tooltipPositionElement}
-                    >
-                      <Icon name={ICONS.help} aria-hidden />
-                      <span className="u-off-screen">Help</span>
-                    </Tooltip>
-                  </span>
-                }
+              <CheckboxInputWithHelp
+                label="Download .udeb packages"
+                tooltipMessage="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
                 inline

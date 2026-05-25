@@ -1,6 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import MultiSelectField from "@/components/form/MultiSelectField";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import Blocks from "@/components/layout/Blocks";
 import { useGetLocalRepositories } from "@/features/local-repositories";
 import { useListMirrors } from "@/features/mirrors";
@@ -12,18 +13,15 @@ import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Form,
-  Icon,
   Input,
   Select,
   Textarea,
-  Tooltip,
   type MultiSelectItem,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { useCreatePublication } from "../../api";
-import classes from "./AddPublicationForm.module.scss";
 import {
   INITIAL_VALUES,
   SETTINGS_HELP_TEXT,
@@ -286,63 +284,23 @@ const AddPublicationForm: FC = () => {
           )}
 
         <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Hash based indexing"
+            tooltipMessage={SETTINGS_HELP_TEXT.hashIndexing}
             checked={formik.values.hash_indexing}
             {...formik.getFieldProps("hash_indexing")}
           />
 
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Automatic installation"
+            tooltipMessage={SETTINGS_HELP_TEXT.automaticInstallation}
             checked={formik.values.automatic_installation}
             {...formik.getFieldProps("automatic_installation")}
           />
 
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Automatic upgrades"
+            tooltipMessage={SETTINGS_HELP_TEXT.automaticUpgrades}
             checked={formik.values.automatic_upgrades}
             {...formik.getFieldProps("automatic_upgrades")}
           />

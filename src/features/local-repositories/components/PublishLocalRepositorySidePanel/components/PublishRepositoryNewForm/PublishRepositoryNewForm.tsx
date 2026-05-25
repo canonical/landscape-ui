@@ -3,23 +3,16 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Form,
-  Icon,
-  Input,
-  Select,
-  Textarea,
-  Tooltip,
-} from "@canonical/react-components";
+import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import {
   type PublishRepositoryNewFormValues,
   SETTINGS_HELP_TEXT,
   VALIDATION_SCHEMA_NEW,
 } from "../../constants";
 import useNotify from "@/hooks/useNotify";
-import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "@canonical/landscape-openapi";
@@ -141,63 +134,23 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
         <PublishRepositoryContentsBlock repository={repository} />
 
         <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.acquireByHash}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Hash based indexing"
+            tooltipMessage={SETTINGS_HELP_TEXT.acquireByHash}
             checked={formik.values.acquireByHash}
             {...formik.getFieldProps("acquireByHash")}
           />
 
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.notAutomatic}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Automatic installation"
+            tooltipMessage={SETTINGS_HELP_TEXT.notAutomatic}
             checked={formik.values.notAutomatic}
             {...formik.getFieldProps("notAutomatic")}
           />
 
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Automatic upgrades"
+            tooltipMessage={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
             checked={formik.values.butAutomaticUpgrades}
             {...formik.getFieldProps("butAutomaticUpgrades")}
           />

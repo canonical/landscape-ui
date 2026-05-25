@@ -3,19 +3,12 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Form,
-  Icon,
-  Input,
-  Select,
-  Textarea,
-  Tooltip,
-} from "@canonical/react-components";
+import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { SETTINGS_HELP_TEXT } from "../../constants";
 import useNotify from "@/hooks/useNotify";
-import classes from "../../PublishMirrorForm.module.scss";
 import {
   useCreatePublication,
   usePublishPublication,
@@ -153,63 +146,23 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
         <PublishMirrorContentsBlock mirror={mirror} />
 
         <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Hash based indexing"
+            tooltipMessage={SETTINGS_HELP_TEXT.hashIndexing}
             checked={formik.values.hashIndexing}
             {...formik.getFieldProps("hashIndexing")}
           />
 
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Automatic installation"
+            tooltipMessage={SETTINGS_HELP_TEXT.automaticInstallation}
             checked={formik.values.automaticInstallation}
             {...formik.getFieldProps("automaticInstallation")}
           />
 
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Automatic upgrades"
+            tooltipMessage={SETTINGS_HELP_TEXT.automaticUpgrades}
             checked={formik.values.automaticUpgrades}
             {...formik.getFieldProps("automaticUpgrades")}
           />

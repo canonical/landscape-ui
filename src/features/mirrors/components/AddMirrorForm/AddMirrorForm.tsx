@@ -5,18 +5,16 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
   Form,
-  Icon,
-  ICONS,
   Input,
   Select,
   Textarea,
-  Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type ComponentProps, type FC, useEffect, useRef } from "react";
 import type { FormProps } from "./types";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import Blocks from "@/components/layout/Blocks";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import {
   useCreateMirror,
   useGetUbuntuArchiveInfo,
@@ -268,22 +266,9 @@ const AddMirrorForm: FC = () => {
                   tooltipMessage="The source URL is set automatically by the source type."
                 />
               )}
-              <CheckboxInput
-                label={
-                  <span>
-                    <span className={classes.settingLabel}>
-                      Preserve upstream signing key
-                    </span>
-                    <Tooltip
-                      message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
-                      position="top-center"
-                      positionElementClassName={classes.tooltipPositionElement}
-                    >
-                      <Icon name={ICONS.help} aria-hidden />
-                      <span className="u-off-screen">Help</span>
-                    </Tooltip>
-                  </span>
-                }
+              <CheckboxInputWithHelp
+                label="Preserve upstream signing key"
+                tooltipMessage="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}
                 inline
@@ -391,22 +376,9 @@ const AddMirrorForm: FC = () => {
                 </div>
                 <MirrorFilterHelpButton />
               </div>
-              <CheckboxInput
-                label={
-                  <span>
-                    <span className={classes.settingLabel}>
-                      Include dependencies in filter
-                    </span>
-                    <Tooltip
-                      message="Includes dependencies of the packages that match the filter, even if they don't match the filter themselves."
-                      position="top-center"
-                      positionElementClassName={classes.tooltipPositionElement}
-                    >
-                      <Icon name={ICONS.help} aria-hidden />
-                      <span className="u-off-screen">Help</span>
-                    </Tooltip>
-                  </span>
-                }
+              <CheckboxInputWithHelp
+                label="Include dependencies in filter"
+                tooltipMessage="Includes dependencies of the packages that match the filter, even if they don't match the filter themselves."
                 {...formik.getFieldProps("includeDependencies")}
                 checked={
                   !!formik.values.packageFilter &&
@@ -419,22 +391,9 @@ const AddMirrorForm: FC = () => {
                 inline
               />
               <p className={classes.heading}>Download options:</p>
-              <CheckboxInput
-                label={
-                  <span>
-                    <span className={classes.settingLabel}>
-                      Download .udeb packages
-                    </span>
-                    <Tooltip
-                      message="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
-                      position="top-center"
-                      positionElementClassName={classes.tooltipPositionElement}
-                    >
-                      <Icon name={ICONS.help} aria-hidden />
-                      <span className="u-off-screen">Help</span>
-                    </Tooltip>
-                  </span>
-                }
+              <CheckboxInputWithHelp
+                label="Download .udeb packages"
+                tooltipMessage="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
                 inline

@@ -1,5 +1,3 @@
-@import "vanilla-framework/scss/settings_spacing";
-
 .wrapper {
   align-items: flex-start;
   display: flex;
@@ -12,12 +10,4 @@
 
 .heading {
   margin-top: 1.5rem;
-}
-
-.settingLabel {
-  margin-right: $sph--x-small;
-}
-
-.tooltipPositionElement {
-  display: inline !important;
 }
