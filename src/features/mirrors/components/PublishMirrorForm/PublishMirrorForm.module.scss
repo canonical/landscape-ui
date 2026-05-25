@@ -1,0 +1,32 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.settingLabel {
+  margin-right: $sph--x-small;
+}
+
+.tooltipPositionElement {
+  display: inline !important;
+}
+
+.distribution {
+  align-items: center;
+  background-color: $colors--theme--background-inputs;
+  display: flex;
+  justify-content: space-between;
+  padding: $spv--small $sph--small;
+}
+
+.radio {
+  align-items: end;
+  display: flex;
+  margin-bottom: $spv--large;
+
+  > label {
+    margin-right: $sph--x-large;
+  }
+
+  & span {
+    padding-left: $sph--x-large;
+  }
+}

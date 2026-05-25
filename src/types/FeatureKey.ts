@@ -1,9 +1,10 @@
 export type FeatureKey =
-  | "oidc-configuration"
-  | "spa-dashboard"
+  | "computer-soft-deletion"
   | "employee-management"
+  | "oidc-configuration"
   | "script-profiles"
-  | "usg-profiles"
+  | "spa-dashboard"
   | "support-provider-login"
-  | "wsl-child-instance-profiles"
-  | "ubuntu_pro_licensing";
+  | "ubuntu-pro-licensing"
+  | "usg-profiles"
+  | "wsl-child-instance-profiles";

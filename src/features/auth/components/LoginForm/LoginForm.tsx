@@ -16,7 +16,7 @@ import classes from "./LoginForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
 
 interface FormProps {
-  email: string;
+  identifier: string;
   password: string;
 }
 
@@ -28,7 +28,7 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
   const [searchParams] = useSearchParams();
 
   const debug = useDebug();
-  const { login: signInWithEmailAndPassword, isLoggingIn } = useLogin();
+  const { login, isLoggingIn } = useLogin();
 
   const { safeRedirect, setUser } = useAuth();
 
@@ -37,11 +37,11 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
     validationSchema: Yup.object().shape({
-      email: isIdentityAvailable
+      identifier: isIdentityAvailable
         ? Yup.string().required("This field is required")
         : Yup.string()
             .required("This field is required")
@@ -83,10 +83,11 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
     }),
     onSubmit: async (values) => {
       try {
-        const { data } = await signInWithEmailAndPassword({
-          email: values.email,
-          password: values.password,
-        });
+        const { identifier, password } = values;
+        const credentials = isIdentityAvailable
+          ? { identity: identifier, password }
+          : { email: identifier, password };
+        const { data } = await login(credentials);
 
         if ("current_account" in data) {
           setUser(data);
@@ -107,9 +108,9 @@ const LoginForm: FC<LoginFormProps> = ({ isIdentityAvailable }) => {
       <Input
         type="text"
         label={isIdentityAvailable ? "Identity" : "Email"}
-        error={getFormikError(formik, "email")}
-        {...formik.getFieldProps("email")}
-        data-testid="email"
+        error={getFormikError(formik, "identifier")}
+        {...formik.getFieldProps("identifier")}
+        data-testid="identifier"
       />
 
       <PasswordToggle

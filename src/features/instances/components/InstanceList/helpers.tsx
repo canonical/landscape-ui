@@ -3,7 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { getAlertStatus } from "@/features/alert-notifications";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import { hasOneItem, pluralizeWithCount } from "@/utils/_helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { Icon, Tooltip } from "@canonical/react-components";
 import type { HTMLProps, ReactNode } from "react";
 import type {
@@ -148,13 +148,13 @@ const getUpgradesFromUpgrades = (
     regular: upgrades.regular
       ? {
           icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color,
-          label: pluralizeWithCount(upgrades.regular, "regular upgrade"),
+          label: pluralize(upgrades.regular, ["regular upgrade"], "exact"),
         }
       : false,
     security: upgrades.security
       ? {
           icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color,
-          label: pluralizeWithCount(upgrades.security, "security upgrade"),
+          label: pluralize(upgrades.security, ["security upgrade"], "exact"),
         }
       : false,
   };

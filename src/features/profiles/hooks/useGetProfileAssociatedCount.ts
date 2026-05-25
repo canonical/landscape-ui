@@ -6,7 +6,7 @@ import {
   hasComplianceData,
   isRebootProfile,
   isRepositoryProfile,
-  isSecurityProfile,
+  isUsgProfile,
   hasAssociations,
 } from "../helpers";
 import type { Profile } from "../types";
@@ -38,7 +38,7 @@ export const useGetProfileAssociatedCount = (profile: Profile) => {
     if (isRebootProfile(profile)) {
       return profile.num_computers;
     }
-    if (isSecurityProfile(profile)) {
+    if (isUsgProfile(profile)) {
       return profile.associated_instances;
     }
     return instancesCount;

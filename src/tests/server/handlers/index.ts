@@ -5,31 +5,33 @@ import accessGroup from "./accessGroup";
 import activity from "./activity";
 import administrators from "./administrators";
 import alerts from "./alerts";
-import aptSource from "./aptSource";
 import auth from "./auth";
 import autoinstallFiles from "./autoinstallFiles";
 import availabilityZones from "./availabilityZones";
-import distributions from "./distributions";
 import employees from "./employees";
 import eventsLog from "./eventsLog";
 import features from "./features";
-import gpgKey from "./gpgKey";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
+import mirrors from "./mirrors";
+import localRepository from "./localRepository";
 import oidcIssuers from "./oidcIssuers";
+import operations from "./operations";
 import organisationPreferences from "./organisationPreferences";
 import packageProfile from "./packageProfile";
 import packages from "./packages";
 import pockets from "./pockets";
 import process from "./process";
+import publications from "./publications";
 import rebootProfiles from "./rebootProfiles";
 import removalProfiles from "./removalProfiles";
-import repo from "./repo";
+import reports from "./reports";
+import repository from "./repository";
 import repositoryProfiles from "./repositoryProfiles";
 import roles from "./roles";
 import scriptProfiles from "./scriptProfiles";
-import securityProfiles from "./securityProfiles";
+import usgProfiles from "./usgProfiles";
 import snap from "./snap";
 import standaloneAccount from "./standaloneAccount";
 import tag from "./tag";
@@ -38,6 +40,7 @@ import upgradeProfile from "./upgradeProfile";
 import user from "./user";
 import userSettings from "./userSettings";
 import usn from "./usn";
+import publicationTargets from "./publicationTargets";
 import wsl from "./wsl";
 import wslProfiles from "./wslProfiles";
 
@@ -48,29 +51,31 @@ export default [
   ...autoinstallFiles,
   ...activity,
   ...alerts,
-  ...aptSource,
   ...auth,
   ...oidcIssuers,
   ...availabilityZones,
-  ...distributions,
   ...employees,
   ...eventsLog,
-  ...gpgKey,
   ...instance,
   ...invitations,
   ...kernel,
+  ...mirrors,
+  ...localRepository,
+  ...operations,
   ...organisationPreferences,
   ...packageProfile,
   ...packages,
   ...pockets,
   ...process,
+  ...publications,
   ...rebootProfiles,
   ...removalProfiles,
-  ...repo,
+  ...reports,
+  ...repository,
   ...repositoryProfiles,
   ...roles,
   ...savedSearches,
-  ...securityProfiles,
+  ...usgProfiles,
   ...script,
   ...scriptProfiles,
   ...snap,
@@ -81,6 +86,7 @@ export default [
   ...user,
   ...userSettings,
   ...usn,
+  ...publicationTargets,
   ...wsl,
   ...wslProfiles,
   ...features,

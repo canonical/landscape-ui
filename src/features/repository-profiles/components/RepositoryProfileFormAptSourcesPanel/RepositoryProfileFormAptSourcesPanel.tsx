@@ -5,7 +5,7 @@ import { useState } from "react";
 import { CheckboxInput, Col, Row } from "@canonical/react-components";
 import RepositoryProfileFormSearch from "../RepositoryProfileFormSearch";
 import type { RepositoryProfileFormValues } from "../../types";
-import type { APTSource } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import { getFilteredAptSources } from "./helpers";
 import { getFormikError } from "@/utils/formikErrors";
 
@@ -53,29 +53,36 @@ const RepositoryProfileFormAptSourcesPanel: FC<
 
         {filteredAptSources.length > 0 && (
           <ul className="p-list--divided u-no-margin--bottom">
-            {filteredAptSources.map(({ id, line, name }) => (
-              <li key={name} className="p-list__item">
+            {filteredAptSources.map((aptSource) => (
+              <li key={aptSource.name} className="p-list__item">
                 <Row className="u-no-padding--left u-no-padding--right">
                   <Col small={1} medium={2} size={4}>
                     <CheckboxInput
-                      label={name}
+                      label={aptSource.name}
                       {...formik.getFieldProps("apt_sources")}
-                      checked={formik.values.apt_sources.includes(id)}
+                      checked={formik.values.apt_sources.some(
+                        ({ id }) => id === aptSource.id,
+                      )}
                       onChange={() =>
                         formik.setFieldValue(
                           "apt_sources",
-                          formik.values.apt_sources.includes(id)
+                          formik.values.apt_sources.some(
+                            ({ id }) => id === aptSource.id,
+                          )
                             ? formik.values.apt_sources.filter(
-                                (item) => item !== id,
+                                ({ id }) => id !== aptSource.id,
                               )
-                            : [...formik.values.apt_sources, id],
+                            : [...formik.values.apt_sources, aptSource],
                         )
                       }
                     />
                   </Col>
                   <Col small={3} medium={4} size={8}>
-                    <p className="u-no-margin--bottom u-truncate" title={line}>
-                      {line}
+                    <p
+                      className="u-no-margin--bottom u-truncate"
+                      title={aptSource.line}
+                    >
+                      {aptSource.line}
                     </p>
                   </Col>
                 </Row>

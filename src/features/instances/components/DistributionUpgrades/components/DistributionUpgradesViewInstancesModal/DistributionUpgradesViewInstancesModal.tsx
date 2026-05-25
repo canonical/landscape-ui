@@ -8,6 +8,7 @@ import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { InstanceModalRow } from "../../types";
 import type { DistributionCategory } from "./types";
 import { getModalTitle } from "./helpers";
+import { createPortal } from "react-dom";
 
 interface DistributionUpgradesViewInstancesModalProps {
   readonly category: DistributionCategory;
@@ -46,7 +47,7 @@ const DistributionUpgradesViewInstancesModal: FC<
 
   const modalTitle = getModalTitle(category);
 
-  return (
+  return createPortal(
     <Modal close={onClose} title={modalTitle}>
       <ModularTable
         className="u-no-margin--bottom"
@@ -61,7 +62,8 @@ const DistributionUpgradesViewInstancesModal: FC<
           onNext={incrementCurrentPage}
         />
       )}
-    </Modal>
+    </Modal>,
+    document.body,
   );
 };
 

@@ -1,51 +1,55 @@
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
-import { Form } from "@canonical/react-components";
+import { useEffect } from "react";
+import { Button, Form, Icon } from "@canonical/react-components";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import RepositoryProfileFormAptSourcesPanel from "../RepositoryProfileFormAptSourcesPanel";
+import AssociationBlock from "@/components/form/AssociationBlock";
 import RepositoryProfileFormDetailsPanel from "../RepositoryProfileFormDetailsPanel";
-import RepositoryProfileFormPocketsPanel from "../RepositoryProfileFormPocketsPanel";
-import RepositoryProfileFormTabs from "../RepositoryProfileFormTabs";
-import type { CreateRepositoryProfileParams } from "../../hooks";
-import { useRepositoryProfiles } from "../../hooks";
+import RepositoryProfileFormSourcesSection from "../RepositoryProfileFormSourcesSection";
+import type { CreateRepositoryProfileParams } from "../../api";
+import { useRepositoryProfiles } from "../../api";
 import type {
   RepositoryProfile,
   RepositoryProfileFormValues,
 } from "../../types";
-import { useAPTSources } from "@/features/apt-sources";
+import type { APTSource } from "../../types";
 import useDebug from "@/hooks/useDebug";
-import { useDistributions } from "@/features/mirrors";
+import useNotify from "@/hooks/useNotify";
 import useRoles from "@/hooks/useRoles";
 import { CTA_INFO, INITIAL_VALUES } from "./constants";
 import { getValidationSchema } from "./helpers";
+import { getFormikError } from "@/utils/formikErrors";
 import { AppErrorBoundary } from "@/components/layout/AppErrorBoundary";
+import Blocks from "@/components/layout/Blocks/Blocks";
+import classes from "./RepositoryProfileForm.module.scss";
 import usePageParams from "@/hooks/usePageParams";
 
 type RepositoryProfileFormProps =
   | {
       action: "add";
+      aptSources: APTSource[];
+      onAptSourcesChange: (sources: APTSource[]) => void;
+      onAddSourceClick: () => void;
+      onEditSourceClick: (source: APTSource) => void;
     }
   | {
       action: "edit";
       profile: RepositoryProfile;
+      aptSources: APTSource[];
+      onAptSourcesChange: (sources: APTSource[]) => void;
+      onAddSourceClick: () => void;
+      onEditSourceClick: (source: APTSource) => void;
     };
 
 const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
-  const [currentTab, setCurrentTab] = useState(0);
-
   const debug = useDebug();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
+  const { notify } = useNotify();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
 
-  const { getDistributionsQuery } = useDistributions();
   const { getAccessGroupQuery } = useRoles();
-  const { getAPTSourcesQuery } = useAPTSources();
   const { createRepositoryProfileQuery, editRepositoryProfileQuery } =
     useRepositoryProfiles();
 
-  const { data: getDistributionsResult } = getDistributionsQuery();
-  const { data: getAPTSourcesResult } = getAPTSourcesQuery();
   const { data: accessGroupsResult } = getAccessGroupQuery(
     {},
     { enabled: props.action === "add" },
@@ -57,30 +61,47 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
   const handleSubmit = async (values: RepositoryProfileFormValues) => {
     const valuesToSubmit: CreateRepositoryProfileParams = {
       all_computers: values.all_computers,
-      apt_sources: values.apt_sources,
       description: values.description,
-      pockets: values.pockets,
       title: values.title,
     };
 
-    if (!values.all_computers) {
-      valuesToSubmit.tags = values.tags;
-    }
-
     try {
       if (props.action === "add") {
+        if (!values.all_computers) {
+          valuesToSubmit.tags = values.tags;
+        }
         await createRepositoryProfile({
           access_group: values.access_group,
           ...valuesToSubmit,
+          apt_sources: values.apt_sources,
+        });
+        closeSidePanel();
+        notify.success({
+          title: "Repository profile created",
+          message: `Repository profile "${values.title}" created successfully`,
         });
       } else {
+        const originalSources = props.profile.apt_sources ?? [];
         await editRepositoryProfile({
           name: props.profile.name,
-          ...valuesToSubmit,
+          title: values.title,
+          description: values.description,
+          access_group: props.profile.access_group,
+          tags: values.all_computers ? [] : (values.tags ?? []),
+          all_computers: values.all_computers,
+          add_apt_sources: values.apt_sources.filter((s) => s.id === 0),
+          remove_apt_sources: originalSources
+            .filter(
+              (orig) => !values.apt_sources.some((cur) => cur.id === orig.id),
+            )
+            .map((s) => s.id),
+        });
+        closeSidePanel();
+        notify.success({
+          title: `You have successfully edited ${values.title}`,
+          message: `The repository profile details have been updated.`,
         });
       }
-
-      closeSidePanel();
     } catch (error) {
       debug(error);
     }
@@ -92,13 +113,7 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     validationSchema: getValidationSchema(props.action),
   });
 
-  useEffect(() => {
-    if (props.action !== "add" || !formik.errors || !formik.submitCount) {
-      return;
-    }
-
-    setCurrentTab(0);
-  }, [formik.submitCount, formik.errors, props.action]);
+  const profileName = props.action === "edit" ? props.profile.name : undefined;
 
   useEffect(() => {
     if (props.action !== "edit") {
@@ -108,68 +123,77 @@ const RepositoryProfileForm: FC<RepositoryProfileFormProps> = (props) => {
     formik.setValues({
       access_group: props.profile.access_group,
       all_computers: props.profile.all_computers,
-      apt_sources: props.profile.apt_sources,
-      description: props.profile.description ?? "",
-      pockets: props.profile.pockets.map(({ id }) => id),
-      tags: props.profile.tags,
+      apt_sources: props.aptSources,
+      description: props.profile.description || "",
+      tags: props.profile.tags ?? [],
       title: props.profile.title,
     });
-  }, [props]);
+    // Only re-initialize when the profile identity changes, not on every aptSources update.
+    // The separate effect below keeps apt_sources in sync with source list changes.
+  }, [profileName]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    formik.setFieldValue("apt_sources", props.aptSources);
+    // Including `formik` causes a rerender loop because Formik recreates it on updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.aptSources]);
+
+  const handleRemoveSource = (source: APTSource) => {
+    props.onAptSourcesChange(
+      props.aptSources.filter((s) =>
+        s.id !== 0 ? s.id !== source.id : s.name !== source.name,
+      ),
+    );
+  };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
-      <RepositoryProfileFormTabs
-        currentTab={currentTab}
-        onCurrentTabChange={(tab) => {
-          setCurrentTab(tab);
-        }}
-      />
-
       <AppErrorBoundary>
-        {0 === currentTab && (
-          <RepositoryProfileFormDetailsPanel
-            accessGroups={accessGroupsResult?.data ?? []}
-            isTitleRequired={props.action === "add"}
-            isAccessGroupDisabled={props.action === "edit"}
-            formik={formik}
-          />
-        )}
+        <Blocks>
+          <Blocks.Item title="Details">
+            <RepositoryProfileFormDetailsPanel
+              accessGroups={accessGroupsResult?.data ?? []}
+              isTitleRequired={props.action === "add"}
+              isAccessGroupDisabled={props.action === "edit"}
+              formik={formik}
+            />
+          </Blocks.Item>
 
-        {1 === currentTab && (
-          <>
-            {!getDistributionsResult?.data.length && (
-              <p>No distributions found.</p>
-            )}
-            {getDistributionsResult &&
-              getDistributionsResult.data.length > 0 && (
-                <RepositoryProfileFormPocketsPanel
-                  distributions={getDistributionsResult.data}
-                  formik={formik}
-                />
-              )}
-          </>
-        )}
+          <Blocks.Item>
+            <div className={classes.sourcesHeader}>
+              <h4 className="p-heading--5 u-no-margin--bottom p-text--small-caps">
+                Sources
+              </h4>
+              <Button
+                type="button"
+                hasIcon
+                dense
+                appearance="base"
+                onClick={props.onAddSourceClick}
+              >
+                <Icon name="plus" />
+                <span>Add source</span>
+              </Button>
+            </div>
+            <RepositoryProfileFormSourcesSection
+              sources={formik.values.apt_sources}
+              onRemoveSource={handleRemoveSource}
+              onEditSource={props.onEditSourceClick}
+              error={getFormikError(formik, "apt_sources")}
+            />
+          </Blocks.Item>
 
-        {2 === currentTab && (
-          <>
-            {!getAPTSourcesResult?.data.length && <p>No APT sources found.</p>}
-            {getAPTSourcesResult && getAPTSourcesResult.data.length > 0 && (
-              <RepositoryProfileFormAptSourcesPanel
-                aptSources={getAPTSourcesResult.data}
-                formik={formik}
-              />
-            )}
-          </>
-        )}
+          <Blocks.Item>
+            <AssociationBlock formik={formik} titleClass="p-text--small-caps" />
+          </Blocks.Item>
+        </Blocks>
       </AppErrorBoundary>
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_INFO[props.action].label}
         submitButtonAriaLabel={CTA_INFO[props.action].ariaLabel}
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

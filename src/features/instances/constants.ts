@@ -1,6 +1,8 @@
 import type { ListFilter } from "@/types/Filters";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Status } from "./types";
+import * as Yup from "yup";
+import moment from "moment";
 
 export const STATUS_FILTERS = {
   Online: {
@@ -227,3 +229,26 @@ export const FILTERS = {
     ],
   },
 } as const satisfies Record<FilterKey, ListFilter>;
+
+export const REBOOT_OR_SHUT_DOWN_INITIAL_VALUES = {
+  deliver_after: "",
+  deliverImmediately: true,
+};
+
+export const REBOOT_OR_SHUT_DOWN_VALIDATION_SCHEMA = Yup.object().shape({
+  deliver_after: Yup.string().when("deliverImmediately", {
+    is: false,
+    then: (schema) =>
+      schema
+        .required("This field is required")
+        .test({
+          message: "Invalid date",
+          test: (value) => moment(value).isValid(),
+        })
+        .test({
+          message: "Date must be in the future",
+          test: (value) => moment(value).isAfter(),
+        }),
+  }),
+  deliverImmediately: Yup.boolean(),
+});

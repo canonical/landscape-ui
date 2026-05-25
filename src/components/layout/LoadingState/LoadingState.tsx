@@ -17,11 +17,11 @@ const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline }) => {
   );
 
   if (inline) {
-    return <div role="status">{spinningElement}</div>;
+    return <span role="status">{spinningElement}</span>;
   }
 
   return (
-    <div className={classNames({ [classes.root]: centerOnScreen })}>
+    <div className={classNames({ [classes.root as string]: centerOnScreen })}>
       <div className="p-strip" role="status">
         <div className="u-align-text--center">{spinningElement}</div>
       </div>

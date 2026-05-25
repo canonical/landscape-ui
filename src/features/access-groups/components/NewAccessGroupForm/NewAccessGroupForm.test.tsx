@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
 import NewAccessGroupForm from "./NewAccessGroupForm";
 
 describe("NewAccessGroupForm", () => {
@@ -23,5 +24,28 @@ describe("NewAccessGroupForm", () => {
     expect(addAccessGroupButton).toBeInTheDocument();
     await userEvent.click(addAccessGroupButton);
     expect(screen.getByText("This field is required")).toBeInTheDocument();
+  });
+
+  it("submits the form successfully with valid data", async () => {
+    renderWithProviders(<NewAccessGroupForm />);
+
+    const parentSelect = await screen.findByRole("combobox", {
+      name: /parent/i,
+    });
+    await waitFor(() => {
+      expect(parentSelect).not.toBeDisabled();
+    });
+
+    const titleInput = screen.getByRole("textbox", { name: /title/i });
+    await userEvent.type(titleInput, "New Test Group");
+
+    const submitButton = screen.getByRole("button", {
+      name: /add access group/i,
+    });
+    await userEvent.click(submitButton);
+
+    expect(
+      screen.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
   });
 });

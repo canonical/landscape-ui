@@ -11,7 +11,7 @@ describe("ProfilesEmptyState", () => {
     [ProfileTypes.reboot],
     [ProfileTypes.removal],
     [ProfileTypes.script],
-    [ProfileTypes.security],
+    [ProfileTypes.usg],
     [ProfileTypes.upgrade],
     [ProfileTypes.wsl],
   ])("renders package message without external link", (type) => {

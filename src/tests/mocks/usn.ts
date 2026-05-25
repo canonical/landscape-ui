@@ -809,4 +809,20 @@ export const usnPackages: UsnPackage[] = [
     summary: "tool to make (or reverse) a hex dump",
     computer_ids: [usnPackageComputerId],
   },
+  {
+    name: "vim-doc",
+    current_version: "2:8.1.2269-1ubuntu5",
+    current_id: 90001,
+    new_version: "2:8.1.2269-1ubuntu5.21",
+    summary: "Vi IMproved - online documentation",
+    computer_ids: [usnPackageComputerId],
+  },
+  {
+    name: "vim-scripts",
+    current_version: "20210124.1",
+    current_id: 90002,
+    new_version: "20210124.2",
+    summary: "Plugins for vim, adding super powers to the beloved editor",
+    computer_ids: [usnPackageComputerId],
+  },
 ];

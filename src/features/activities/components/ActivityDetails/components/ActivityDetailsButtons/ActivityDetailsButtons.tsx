@@ -1,4 +1,9 @@
-import { useActivities, type Activity } from "@/features/activities";
+import {
+  useApproveActivities,
+  useCancelActivities,
+  useRedoActivities,
+  type Activity,
+} from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -15,23 +20,9 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const {
-    approveActivitiesQuery,
-    cancelActivitiesQuery,
-    redoActivitiesQuery,
-    undoActivitiesQuery,
-  } = useActivities();
-
-  const {
-    mutateAsync: approveActivities,
-    isPending: approveActivitiesLoading,
-  } = approveActivitiesQuery;
-  const { mutateAsync: cancelActivities, isPending: cancelActivitiesLoading } =
-    cancelActivitiesQuery;
-  const { mutateAsync: redoActivities, isPending: redoActivitiesLoading } =
-    redoActivitiesQuery;
-  const { mutateAsync: undoActivities, isPending: undoActivitiesLoading } =
-    undoActivitiesQuery;
+  const { approveActivities, isApprovingActivities } = useApproveActivities();
+  const { cancelActivities, isCancelingActivities } = useCancelActivities();
+  const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const handleApproveActivity = async (a: Activity) => {
     try {
@@ -80,22 +71,6 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
     }
   };
 
-  const handleUndoActivity = async (a: Activity) => {
-    try {
-      await undoActivities({ activity_ids: [a.id] });
-
-      closeSidePanel();
-
-      notify.success({
-        title: "You have successfully undone an activity.",
-        message:
-          "An activity has been queued to revert the changes delivered by this activity.",
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
-
   return (
     <div key="buttons" className="p-segmented-control">
       <div className="p-segmented-control__list">
@@ -103,7 +78,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
           <ConfirmationButton
             className="p-segmented-control__button u-no-margin"
             type="button"
-            disabled={approveActivitiesLoading}
+            disabled={isApprovingActivities}
             confirmationModalProps={{
               title: "Approve activity",
               children: (
@@ -113,8 +88,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
               ),
               confirmButtonLabel: "Approve",
               confirmButtonAppearance: "positive",
-              confirmButtonDisabled: approveActivitiesLoading,
-              confirmButtonLoading: approveActivitiesLoading,
+              confirmButtonDisabled: isApprovingActivities,
+              confirmButtonLoading: isApprovingActivities,
               onConfirm: async () => handleApproveActivity(activity),
             }}
           >
@@ -125,7 +100,7 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
           <ConfirmationButton
             className="p-segmented-control__button u-no-margin"
             type="button"
-            disabled={cancelActivitiesLoading}
+            disabled={isCancelingActivities}
             confirmationModalProps={{
               title: "Cancel activity",
               children: (
@@ -135,45 +110,21 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
               ),
               confirmButtonLabel: "Confirm",
               confirmButtonAppearance: "negative",
-              confirmButtonDisabled: cancelActivitiesLoading,
-              confirmButtonLoading: cancelActivitiesLoading,
+              confirmButtonDisabled: isCancelingActivities,
+              confirmButtonLoading: isCancelingActivities,
               onConfirm: async () => handleCancelActivity(activity),
             }}
           >
-            {!activity.actions?.approvable &&
-            !activity.actions?.reappliable &&
-            !activity.actions?.revertable
+            {!activity.actions?.approvable && !activity.actions?.reappliable
               ? "Cancel activity"
               : "Cancel"}
-          </ConfirmationButton>
-        )}
-        {activity.actions?.revertable && (
-          <ConfirmationButton
-            className="p-segmented-control__button u-no-margin"
-            type="button"
-            disabled={undoActivitiesLoading}
-            confirmationModalProps={{
-              title: "Undo activity",
-              children: (
-                <p>
-                  Are you sure you want to undo {activity.summary} activity?
-                </p>
-              ),
-              confirmButtonLabel: "Undo",
-              confirmButtonAppearance: "positive",
-              confirmButtonDisabled: undoActivitiesLoading,
-              confirmButtonLoading: undoActivitiesLoading,
-              onConfirm: async () => handleUndoActivity(activity),
-            }}
-          >
-            Undo
           </ConfirmationButton>
         )}
         {activity.actions?.reappliable && (
           <ConfirmationButton
             className="p-segmented-control__button u-no-margin"
             type="button"
-            disabled={redoActivitiesLoading}
+            disabled={isRedoingActivities}
             confirmationModalProps={{
               title: "Redo activity",
               children: (
@@ -183,8 +134,8 @@ const ActivityDetailsButtons: FC<ActivityDetailsButtonsProps> = ({
               ),
               confirmButtonLabel: "Redo",
               confirmButtonAppearance: "positive",
-              confirmButtonDisabled: redoActivitiesLoading,
-              confirmButtonLoading: redoActivitiesLoading,
+              confirmButtonDisabled: isRedoingActivities,
+              confirmButtonLoading: isRedoingActivities,
               onConfirm: async () => handleRedoActivity(activity),
             }}
           >

@@ -13,5 +13,5 @@ export type {
   CancelActivitiesParams,
   GetActivitiesParams,
   GetSingleActivityParams,
-  RedoUndoActivitiesParams,
+  RedoActivitiesParams,
 } from "./ActivityParams";

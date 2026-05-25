@@ -12,7 +12,7 @@ describe("RemovalProfileEditSidePanel", () => {
     renderWithProviders(
       <RemovalProfileEditSidePanel />,
       undefined,
-      `/?profile=${removalProfile.id}`,
+      `/?name=${removalProfile.id}`,
     );
 
     await expectLoadingState();

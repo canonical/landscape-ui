@@ -3,7 +3,7 @@ import CloseContext from "@/components/layout/SidePanel/CloseContext";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Form } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useContext, type FC } from "react";
@@ -23,7 +23,7 @@ const PackageProfileConstraintsAddForm: FC<
   const cancel = useContext(CloseContext);
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath } = usePageParams();
+  const { popSidePath } = usePageParams();
   const { addPackageProfileConstraintsQuery } = usePackageProfiles();
 
   const { mutateAsync: addConstraints } = addPackageProfileConstraintsQuery;
@@ -45,7 +45,7 @@ const PackageProfileConstraintsAddForm: FC<
       popSidePath();
 
       notify.success({
-        message: `${pluralizeWithCount(constraints.length, "package profile constraint")} added successfully`,
+        message: `${pluralize(constraints.length, ["package profile constraint"], "exact")} added successfully`,
         title: "Package profile constraints added",
       });
     } catch (error) {
@@ -68,11 +68,9 @@ const PackageProfileConstraintsAddForm: FC<
       <SidePanelFormButtons
         submitButtonDisabled={!formik.isValid || formik.isValidating}
         submitButtonLoading={formik.isSubmitting}
-        submitButtonText={`Add ${pluralize(formik.values.constraints.length, "constraint")}`}
-        submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, "constraint")} to "${profile.title}" profile`}
+        submitButtonText={`Add ${pluralize(formik.values.constraints.length, ["constraint"])}`}
+        submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, ["constraint"])} to "${profile.title}" profile`}
         cancelButtonDisabled={formik.isSubmitting}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
         onCancel={cancel}
       />
     </Form>

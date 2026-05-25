@@ -1,14 +1,14 @@
-import { useTheme } from "@/context/theme";
 import { ALERT_STATUSES, useGetInstances } from "@/features/instances";
 import type { FC } from "react";
-import { colorMap } from "../../constants";
-import type { Color } from "../../types";
-import PieChart from "../PieChart";
-import { getChartData } from "./helpers";
+import DonutChart from "../DonutChart";
+import type { DonutRing } from "../DonutChart/DonutChart";
+
+const labelFor = (key: keyof typeof ALERT_STATUSES): string => {
+  const status = ALERT_STATUSES[key];
+  return status.alternateLabel ?? status.label;
+};
 
 const ChartContainer: FC = () => {
-  const { isDarkMode } = useTheme();
-
   const { instancesCount: instancesWithSecurityUpgradesCount = 0 } =
     useGetInstances({
       query: "alert:security-upgrades",
@@ -26,48 +26,27 @@ const ChartContainer: FC = () => {
     limit: 1,
   });
 
-  const chartData = [
+  const total = upToDateInstancesCount + instancesWithPackageUpgradesCount;
+
+  const rings: DonutRing[] = [
     {
+      label: labelFor("UpToDate"),
       count: upToDateInstancesCount,
-      title:
-        ALERT_STATUSES["UpToDate"].alternateLabel ??
-        ALERT_STATUSES["UpToDate"].label,
       colorKey: "green",
     },
     {
+      label: labelFor("PackageUpgradesAlert"),
       count: instancesWithPackageUpgradesCount,
-      title:
-        ALERT_STATUSES["PackageUpgradesAlert"].alternateLabel ??
-        ALERT_STATUSES["PackageUpgradesAlert"].label,
       colorKey: "orange",
     },
     {
+      label: labelFor("SecurityUpgradesAlert"),
       count: instancesWithSecurityUpgradesCount,
-      title:
-        ALERT_STATUSES["SecurityUpgradesAlert"].alternateLabel ??
-        ALERT_STATUSES["SecurityUpgradesAlert"].label,
       colorKey: "red",
     },
   ];
 
-  const totalInstances =
-    upToDateInstancesCount + instancesWithPackageUpgradesCount;
-
-  const data = getChartData({
-    chartData: chartData.map((info) => {
-      return {
-        backgroundColors: [
-          colorMap[info.colorKey as Color][isDarkMode ? "dark" : "light"]
-            .default,
-          colorMap.background[isDarkMode ? "dark" : "light"].default,
-        ],
-        ...info,
-      };
-    }),
-    totalInstances: totalInstances,
-  });
-
-  return <PieChart data={data} />;
+  return <DonutChart title="Upgrades" total={total} rings={rings} />;
 };
 
 export default ChartContainer;

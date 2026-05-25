@@ -1,8 +1,9 @@
-type EndpointStatusType = "empty" | "error" | "default";
+type EndpointStatusType = "empty" | "error" | "default" | "loading" | "variant";
 
 interface EndpointStatus {
   status: EndpointStatusType;
   path?: string;
+  response?: Record<string, unknown> | unknown[];
 }
 
 let endpointStatus: EndpointStatus = {

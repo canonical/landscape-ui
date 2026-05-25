@@ -7,6 +7,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect } from "vitest";
 import PackageProfileAddSidePanel from "./PackageProfileAddSidePanel";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 describe("PackageProfileAddSidePanel", () => {
   const user = userEvent.setup();
@@ -26,7 +27,7 @@ describe("PackageProfileAddSidePanel", () => {
     );
     await user.type(
       screen.getByRole("textbox", { name: "Description" }),
-      "---",
+      NO_DATA_TEXT,
     );
     await user.selectOptions(
       screen.getByRole("combobox", { name: "Package constraints" }),

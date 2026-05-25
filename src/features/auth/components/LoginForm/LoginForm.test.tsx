@@ -66,7 +66,7 @@ describe("LoginForm", () => {
       renderWithProviders(<Component isIdentityAvailable={false} />);
 
       await userEvent.type(
-        screen.getByTestId("email"),
+        screen.getByTestId("identifier"),
         taskId > 0 ? user.email : user.email.slice(1),
       );
 
@@ -87,6 +87,39 @@ describe("LoginForm", () => {
 
     it("should sign in and redirect to default url", async () => {
       expect(loginSpy).toHaveBeenCalledWith(user);
+      expect(setUser).toHaveBeenCalledWith(authUser);
+      expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        external: false,
+        replace: true,
+      });
+    });
+  });
+
+  describe("with PAM auth (isIdentityAvailable)", () => {
+    beforeEach(async () => {
+      vi.doUnmock("react-router");
+      vi.doUnmock("@/hooks/useAuth");
+      vi.resetModules();
+      vi.clearAllMocks();
+
+      loginSpy.mockResolvedValue({ data: authUser });
+
+      mockTestParams();
+
+      const { default: Component } = await import("./LoginForm");
+
+      renderWithProviders(<Component isIdentityAvailable={true} />);
+
+      await userEvent.type(screen.getByTestId("identifier"), "john");
+      await userEvent.type(screen.getByTestId("password"), user.password);
+      await userEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    });
+
+    it("should sign in with identity field instead of email", async () => {
+      expect(loginSpy).toHaveBeenCalledWith({
+        identity: "john",
+        password: user.password,
+      });
       expect(setUser).toHaveBeenCalledWith(authUser);
       expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
         external: false,
@@ -121,7 +154,7 @@ describe("LoginForm", () => {
 
       renderWithProviders(<Component isIdentityAvailable={false} />);
 
-      await userEvent.type(screen.getByTestId("email"), user.email);
+      await userEvent.type(screen.getByTestId("identifier"), user.email);
 
       await userEvent.type(screen.getByTestId("password"), user.password);
 

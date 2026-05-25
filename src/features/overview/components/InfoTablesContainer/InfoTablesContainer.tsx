@@ -4,7 +4,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
-import { useActivities, useGetActivities } from "@/features/activities";
+import { useApproveActivities, useGetActivities } from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
 import type { Package } from "@/features/packages";
 import { usePackages } from "@/features/packages";
@@ -14,7 +14,7 @@ import useNotify from "@/hooks/useNotify";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { Instance } from "@/types/Instance";
 import type { Usn } from "@/types/Usn";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   Col,
@@ -52,12 +52,10 @@ const InfoTablesContainer: FC = () => {
   const { notify } = useNotify();
   const { getPackagesQuery, upgradePackagesQuery } = usePackages();
   const { getUsnsQuery } = useUsns();
-  const { approveActivitiesQuery } = useActivities();
 
   const { mutateAsync: upgradePackages, isPending: isUpgrading } =
     upgradePackagesQuery;
-  const { mutateAsync: approveActivities, isPending: isApproving } =
-    approveActivitiesQuery;
+  const { approveActivities, isApprovingActivities } = useApproveActivities();
 
   const [packagesLimit, setPackagesLimit] = useState(MAX_PACKAGE_COUNT);
   const [usnsLimit, setUsnsLimit] = useState(MAX_USN_COUNT);
@@ -227,7 +225,7 @@ const InfoTablesContainer: FC = () => {
                 (row.original.upgrades?.security ?? 0) +
                 (row.original.upgrades?.regular ?? 0);
 
-              return pluralizeWithCount(packageCount, "package");
+              return pluralize(packageCount, ["package"], "exact");
             },
             className: classes.lastCol,
           },
@@ -242,7 +240,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers",
             Cell: ({ row }: CellProps<Package>): ReactNode =>
-              pluralizeWithCount(row.original.computers.length, "instance"),
+              pluralize(row.original.computers.length, ["instance"], "exact"),
             className: classes.lastCol,
           },
         ];
@@ -256,7 +254,7 @@ const InfoTablesContainer: FC = () => {
             Header: "Affected Instances",
             accessor: "computers_count",
             Cell: ({ row }: CellProps<Usn>): ReactNode =>
-              pluralizeWithCount(row.original.computers_count, "instance"),
+              pluralize(row.original.computers_count, ["instance"], "exact"),
             className: classes.lastCol,
           },
         ];
@@ -541,8 +539,8 @@ const InfoTablesContainer: FC = () => {
                 ),
                 confirmButtonLabel: "Approve",
                 confirmButtonAppearance: "positive",
-                confirmButtonDisabled: isApproving,
-                confirmButtonLoading: isApproving,
+                confirmButtonDisabled: isApprovingActivities,
+                confirmButtonLoading: isApprovingActivities,
                 onConfirm: handleApproveActivities,
               }}
             >

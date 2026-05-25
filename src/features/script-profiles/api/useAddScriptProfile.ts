@@ -24,7 +24,13 @@ export const useAddScriptProfile = () => {
     AxiosError<ApiError>,
     AddScriptProfileParams
   >({
-    mutationFn: async (params) => authFetch.post("script-profiles", params),
+    mutationFn: async ({ tags, ...rest }) => {
+      const normalizedTags = tags ?? [];
+      return authFetch.post("script-profiles", {
+        ...rest,
+        tags: normalizedTags,
+      });
+    },
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["scriptProfiles"] }),
   });

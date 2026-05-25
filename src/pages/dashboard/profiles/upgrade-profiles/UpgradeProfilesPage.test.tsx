@@ -44,7 +44,7 @@ describe("UpgradeProfilesPage", () => {
     renderWithProviders(
       <UpgradeProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${selectedUpgradeProfile.id}`,
+      `/?sidePath=edit&name=${selectedUpgradeProfile.id}`,
     );
 
     await expectLoadingState();
@@ -59,7 +59,7 @@ describe("UpgradeProfilesPage", () => {
     renderWithProviders(
       <UpgradeProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${selectedUpgradeProfile.id}`,
+      `/?sidePath=view&name=${selectedUpgradeProfile.id}`,
     );
 
     await expectLoadingState();

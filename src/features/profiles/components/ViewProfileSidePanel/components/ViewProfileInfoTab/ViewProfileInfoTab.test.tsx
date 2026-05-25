@@ -26,7 +26,7 @@ const [profile] = profiles;
 describe("ViewProfileInfoTab", () => {
   it.each([
     [ProfileTypes.script],
-    [ProfileTypes.security],
+    [ProfileTypes.usg],
     [ProfileTypes.upgrade],
     [ProfileTypes.reboot],
   ])("renders schedule block for %s profile", async (type) => {

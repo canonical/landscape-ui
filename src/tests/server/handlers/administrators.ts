@@ -23,4 +23,12 @@ export default [
   http.put<never, never, Administrator>(`${API_URL}administrators/:id`, () => {
     return HttpResponse.json(administrators[0]);
   }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "DisableAdministrator")) {
+      return;
+    }
+
+    return new HttpResponse(null, { status: 200 });
+  }),
 ];

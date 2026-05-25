@@ -43,8 +43,8 @@ describe("ViewProfileScheduleBlock", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders last run for security profile", () => {
-    const securityProfile = {
+  it("renders last run for usg profile", () => {
+    const usgProfile = {
       ...baseProfile,
       benchmark: "cis_level1_server",
       mode: "audit-fix",
@@ -55,7 +55,7 @@ describe("ViewProfileScheduleBlock", () => {
       status: "active",
     };
 
-    renderWithProviders(<ViewProfileScheduleBlock profile={securityProfile} />);
+    renderWithProviders(<ViewProfileScheduleBlock profile={usgProfile} />);
 
     expect(
       screen.getByRole("heading", { name: /Running schedule/i }),
@@ -72,7 +72,7 @@ describe("ViewProfileScheduleBlock", () => {
   });
 
   it("renders restart schedule for audit-fix-restart security mode", () => {
-    const securityProfile = {
+    const usgProfile = {
       ...baseProfile,
       benchmark: "cis_level1_server",
       mode: "audit-fix-restart",
@@ -83,7 +83,7 @@ describe("ViewProfileScheduleBlock", () => {
       status: "active",
     };
 
-    renderWithProviders(<ViewProfileScheduleBlock profile={securityProfile} />);
+    renderWithProviders(<ViewProfileScheduleBlock profile={usgProfile} />);
 
     expect(screen.getByText(/Restart schedule/i)).toBeInTheDocument();
     expect(
@@ -94,7 +94,7 @@ describe("ViewProfileScheduleBlock", () => {
   });
 
   it("renders next restart for reboot profile", () => {
-    const securityProfile = {
+    const usgProfile = {
       ...baseProfile,
       next_run: "",
       schedule: "",
@@ -103,7 +103,7 @@ describe("ViewProfileScheduleBlock", () => {
       num_computers: 7,
     };
 
-    renderWithProviders(<ViewProfileScheduleBlock profile={securityProfile} />);
+    renderWithProviders(<ViewProfileScheduleBlock profile={usgProfile} />);
     expect(
       screen.getByRole("heading", { name: /Running schedule/i }),
     ).toBeInTheDocument();

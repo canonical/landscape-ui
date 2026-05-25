@@ -26,6 +26,8 @@ interface RadioGroupProps<
     onSelect?: () => Promise<void> | void;
   })[];
   readonly label?: ReactNode;
+  readonly labelHeading?: boolean;
+  readonly sideByside?: boolean;
 }
 
 const RadioGroup = <

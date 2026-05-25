@@ -119,15 +119,15 @@ describe("LoginMethodsLayout", () => {
     renderWithProviders(<LoginMethods methods={methods} />);
 
     const inputLabel = screen.getByText(/identity/i);
-    const emailInput = screen.getByRole("textbox", { name: /identity/i });
+    const identityInput = screen.getByRole("textbox", { name: /identity/i });
 
     expect(inputLabel).toBeInTheDocument();
-    expect(emailInput).toBeInTheDocument();
+    expect(identityInput).toBeInTheDocument();
 
-    await userEvent.type(emailInput, "testinputvalue");
+    await userEvent.type(identityInput, "testinputvalue");
 
     await waitFor(() => {
-      emailInput.blur();
+      identityInput.blur();
     });
 
     expect(

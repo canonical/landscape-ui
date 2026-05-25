@@ -1,0 +1,22 @@
+.nameColumn {
+  width: 25%;
+}
+
+.actionsColumn {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.debLine {
+  width: 35%;
+}
+
+.actionsCell {
+  display: flex;
+  gap: 0;
+  justify-content: flex-end;
+
+  button {
+    margin-right: 5px;
+  }
+}

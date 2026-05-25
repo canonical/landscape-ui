@@ -6,7 +6,6 @@ export const INITIAL_VALUES: RepositoryProfileFormValues = {
   all_computers: false,
   apt_sources: [],
   description: "",
-  pockets: [],
   tags: [],
   title: "",
 };
@@ -14,10 +13,10 @@ export const INITIAL_VALUES: RepositoryProfileFormValues = {
 export const CTA_INFO = {
   add: {
     ariaLabel: "Add a new repository profile",
-    label: "Add repository profile",
+    label: "Add profile",
   },
   edit: {
-    ariaLabel: "Edit repository profile",
+    ariaLabel: "Save changes to repository profile",
     label: "Save changes",
   },
 };

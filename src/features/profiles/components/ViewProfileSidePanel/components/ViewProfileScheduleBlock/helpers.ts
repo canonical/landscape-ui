@@ -1,15 +1,15 @@
-import { hasProperty, pluralizeWithCount } from "@/utils/_helpers";
+import { hasProperty, pluralize } from "@/utils/_helpers";
 import {
   getTriggerText,
   isRebootProfile,
   isScriptProfile,
-  isSecurityProfile,
+  isUsgProfile,
   isUpgradeProfile,
 } from "../../../../helpers";
 import type { Profile } from "../../../../types";
 import type { UpgradeProfile } from "@/features/upgrade-profiles";
 import type { RebootProfile } from "@/features/reboot-profiles";
-import { getSecuritySchedule } from "@/features/security-profiles";
+import { getUsgSchedule } from "@/features/usg-profiles";
 
 const WEEKDAY_MAP = {
   mo: "Monday",
@@ -40,7 +40,7 @@ const getUpgradeSchedule = (profile: UpgradeProfile) => {
   const atMinute = parseInt(profile.at_minute);
 
   if (every === "hour") {
-    scheduleMessage += `hour at ${pluralizeWithCount(atMinute, "minute")}`;
+    scheduleMessage += `hour at ${pluralize(atMinute, ["minute"], "exact")}`;
 
     if (on_days) {
       scheduleMessage += ` on ${getScheduledDays(on_days)}`;
@@ -101,8 +101,8 @@ export const getScheduleMessage = (profile: Profile) => {
   if (isUpgradeProfile(profile)) {
     return getUpgradeSchedule(profile);
   }
-  if (isSecurityProfile(profile)) {
-    return getSecuritySchedule(profile);
+  if (isUsgProfile(profile)) {
+    return getUsgSchedule(profile);
   }
   if (isScriptProfile(profile)) {
     return getTriggerText(profile, true);
@@ -113,7 +113,7 @@ export const getLastRunData = (profile: Profile) => {
   if (isScriptProfile(profile)) {
     return profile.activities.last_activity?.creation_time ?? null;
   }
-  if (isSecurityProfile(profile)) {
+  if (isUsgProfile(profile)) {
     return profile.last_run_results.timestamp;
   }
   return null;
@@ -123,7 +123,7 @@ export const getNextRunData = (profile: Profile) => {
   if (isScriptProfile(profile) && profile.trigger.trigger_type !== "event") {
     return profile.trigger.next_run;
   }
-  if (isSecurityProfile(profile)) {
+  if (isUsgProfile(profile)) {
     return profile.next_run_time;
   }
   if (isRebootProfile(profile) || isUpgradeProfile(profile)) {

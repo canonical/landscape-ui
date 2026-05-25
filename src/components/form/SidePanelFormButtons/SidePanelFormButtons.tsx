@@ -10,6 +10,7 @@ interface SidePanelFormButtonsProps {
   readonly submitButtonAriaLabel?: string;
   readonly submitButtonLoading?: boolean;
   readonly secondaryActionButtonTitle?: ReactNode;
+  readonly secondaryActionButtonDisabled?: boolean;
   readonly secondaryActionButtonSubmit?: (
     event: SyntheticEvent,
   ) => Promise<void> | void;
@@ -29,6 +30,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
   submitButtonText,
   submitButtonAriaLabel,
   secondaryActionButtonTitle,
+  secondaryActionButtonDisabled,
   secondaryActionButtonSubmit,
   onBackButtonPress,
   onCancel,
@@ -67,6 +69,7 @@ const SidePanelFormButtons: FC<SidePanelFormButtonsProps> = ({
               type="button"
               className="u-no-margin--bottom"
               onClick={secondaryActionButtonSubmit}
+              disabled={secondaryActionButtonDisabled}
             >
               <>{secondaryActionButtonTitle}</>
             </Button>

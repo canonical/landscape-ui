@@ -19,7 +19,7 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
     switch (type) {
       case ProfileTypes.script:
         return ["search", "status"];
-      case ProfileTypes.security:
+      case ProfileTypes.usg:
         return ["status", "search", "passRateFrom", "passRateTo"];
       default:
         return ["search"];
@@ -30,7 +30,7 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
     switch (type) {
       case ProfileTypes.script:
         return classes.actions;
-      case ProfileTypes.security:
+      case ProfileTypes.usg:
         return classes.filters;
       default:
         return undefined;

@@ -1,6 +1,7 @@
 import type { AuthStateResponse, AuthUser } from "@/features/auth";
 
 const testAccount = "test-account";
+const secondAccount = "second-account";
 
 export const authUser: AuthUser = {
   accounts: [
@@ -10,6 +11,13 @@ export const authUser: AuthUser = {
       name: testAccount,
       subdomain: null,
       title: "Test Account",
+    },
+    {
+      classic_dashboard_url: "",
+      default: false,
+      name: secondAccount,
+      subdomain: null,
+      title: "Second Account",
     },
   ],
   current_account: testAccount,

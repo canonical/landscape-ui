@@ -1,19 +1,28 @@
 import { renderWithProviders } from "@/tests/render";
+import { PATHS, ROUTES } from "@/libs/routes";
 import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
 import AssignEmployeeToInstanceForm from "./AssignEmployeeToInstanceForm";
 import userEvent from "@testing-library/user-event";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const props: ComponentProps<typeof AssignEmployeeToInstanceForm> = {
   instanceTitle: "Test Instance",
 };
 
+const routePattern = `/${PATHS.instances.root}/${PATHS.instances.single}`;
+
 describe("AssignEmployeeToInstanceForm", () => {
   const user = userEvent.setup();
 
   beforeEach(async () => {
-    renderWithProviders(<AssignEmployeeToInstanceForm {...props} />);
+    renderWithProviders(
+      <AssignEmployeeToInstanceForm {...props} />,
+      undefined,
+      ROUTES.instances.details.single(1),
+      routePattern,
+    );
   });
 
   it("renders form correctly", () => {
@@ -38,5 +47,57 @@ describe("AssignEmployeeToInstanceForm", () => {
 
     const errorMessage = screen.getByText(/This field is required./i);
     expect(errorMessage).toBeInTheDocument();
+  });
+
+  it("clears validation error after selecting an employee", async () => {
+    await user.click(screen.getByRole("button", { name: /Associate/i }));
+    expect(screen.getByText(/This field is required./i)).toBeInTheDocument();
+
+    const search = screen.getByRole("searchbox", {
+      name: /search for an employee/i,
+    });
+
+    await user.type(search, "John");
+    await user.click(await screen.findByTestId("dropdownElement"));
+
+    expect(
+      screen.queryByText(/This field is required./i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows success notification when associating an employee", async () => {
+    const search = screen.getByRole("searchbox", {
+      name: /search for an employee/i,
+    });
+
+    await user.type(search, "John");
+    await user.click(await screen.findByTestId("dropdownElement"));
+    await user.click(screen.getByRole("button", { name: /Associate/i }));
+
+    expect(
+      await screen.findByText(
+        "John Doe has been successfully associated with Test Instance.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("form")).not.toBeInTheDocument();
+  });
+
+  it("shows an error notification when association fails", async () => {
+    const search = screen.getByRole("searchbox", {
+      name: /search for an employee/i,
+    });
+
+    setEndpointStatus({
+      status: "error",
+      path: "associateEmployeeWithInstance",
+    });
+
+    await user.type(search, "John");
+    await user.click(await screen.findByTestId("dropdownElement"));
+    await user.click(screen.getByRole("button", { name: /Associate/i }));
+
+    expect(
+      await screen.findByText('The endpoint status is set to "error".'),
+    ).toBeInTheDocument();
   });
 });

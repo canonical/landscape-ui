@@ -43,11 +43,33 @@ The knowledge base lives under `docs/` plus established root documents such as `
 Package manager is `pnpm`. Do not use `npm` or `yarn`.
 
 ```
-pnpm dev          # start the Vite dev server
-pnpm vitest       # run unit and component tests (Vitest)
-pnpm run lint     # run ESLint with auto-fix
-pnpm build        # production build (lint + tsc + vite build)
-pnpm test         # run Playwright E2E tests (not unit tests)
+pnpm dev                        # start the Vite dev server
+pnpm vitest                     # run unit and component tests (Vitest)
+pnpm vitest MyComponent         # run tests matching a name pattern
+pnpm vitest --reporter=verbose  # run with detailed per-test output
+pnpm coverage                   # run Vitest with coverage report
+pnpm run lint                   # run ESLint with auto-fix
+pnpm build                      # production build (lint + tsc + vite build)
+pnpm test                       # run Playwright E2E tests (not unit tests)
+pnpm test:saas                  # run only SaaS-tagged E2E tests
+pnpm test:self-hosted           # run only self-hosted-tagged E2E tests
+pnpm changeset                  # create a changeset for changelog (required before merge)
 ```
 
 Note: `pnpm test` runs Playwright, not Vitest. Use `pnpm vitest` for unit and component test work.
+
+## Environment Setup
+
+Copy `.env.local.example` to `.env.local` and fill in values for your local Landscape instance. Required variables include `VITE_API_URL`, `VITE_API_URL_OLD`, and `VITE_ROOT_PATH`. Set `VITE_MSW_ENABLED=true` to use Mock Service Worker for offline development. See `.env.local.example` for the full list.
+
+Node.js ≥24 is required (`engines` in `package.json`).
+
+## Agent Failure Protocol
+
+**Stop and ask the user instead of retrying** when:
+
+- A file write (overwrite, truncation, replacement) appears to succeed (exit 0) but the file content does not change on re-read. This indicates VS Code workspace locking or a tool limitation — retrying the same approach will not help.
+- Two different tool strategies for the same operation both fail to produce the expected result.
+- A `replace_string_in_file` cannot find a unique anchor because the target content is duplicated or spans more than ~30 lines.
+
+In these cases: describe the exact manual action needed (file path, line numbers, what to delete/change) and wait for the user to confirm it is done before continuing.

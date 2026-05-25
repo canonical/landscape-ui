@@ -5,13 +5,8 @@ import { ScriptProfileActivityHistory } from "@/features/script-profiles";
 import { Tabs } from "@canonical/react-components";
 import ViewProfileInfoTab from "./components/ViewProfileInfoTab";
 import classes from "./ViewProfileSidePanel.module.scss";
-import {
-  isPackageProfile,
-  isRepositoryProfile,
-  isScriptProfile,
-} from "../../helpers";
+import { isPackageProfile, isScriptProfile } from "../../helpers";
 import { PackageProfileDetailsConstraints } from "@/features/package-profiles";
-import { ViewRepositoryProfileAptSourcesTab } from "@/features/repository-profiles";
 import { getTabs, type TabTypes } from "./helpers";
 import type { Profile } from "../../types";
 import type { ProfileTypes } from "../../helpers";
@@ -69,13 +64,6 @@ const ViewProfileSidePanel: FC<ViewProfileSidePanelProps> = ({
                 <PackageProfileDetailsConstraints
                   profile={profile}
                   key="package-constraints"
-                />
-              )}
-
-              {isRepositoryProfile(profile) && tabId === "apt-sources" && (
-                <ViewRepositoryProfileAptSourcesTab
-                  profile={profile}
-                  key="apt-sources"
                 />
               )}
             </Suspense>

@@ -5,7 +5,7 @@ import type { PackageProfile } from "../types";
 export const useGetPagePackageProfile = ():
   | { packageProfile: PackageProfile; isGettingPackageProfile: false }
   | { packageProfile: undefined; isGettingPackageProfile: true } => {
-  const { profile: packageProfileName } = usePageParams();
+  const { name: packageProfileName } = usePageParams();
 
   const { packageProfile, isGettingPackageProfile, packageProfileError } =
     useGetPackageProfile(packageProfileName, { enabled: !!packageProfileName });

@@ -1,0 +1,20 @@
+.truncated {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tooltipWrapper {
+  display: block !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tooltipMessage {
+  max-width: 20rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}

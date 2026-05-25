@@ -1,6 +1,7 @@
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 import { API_URL } from "@/constants";
 import {
   attachUbuntuProActivity,
@@ -11,27 +12,27 @@ export default [
   http.post(`${API_URL}attach-token`, () => {
     const endpointStatus = getEndpointStatus();
 
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("attach-token"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("attach-token")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
+    }
+    if (
+      endpointStatus.status === "variant" &&
+      endpointStatus.path === "attach-token"
+    ) {
+      return HttpResponse.json(endpointStatus.response);
     }
 
     return HttpResponse.json(attachUbuntuProActivity);
   }),
 
   http.post(`${API_URL}detach-token`, () => {
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      !endpointStatus.path ||
-      (endpointStatus.path && endpointStatus.path.includes("detach-token"))
-    ) {
-      if (endpointStatus.status === "error") {
-        throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("detach-token")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusError();
       }
     }
 

@@ -6,12 +6,7 @@ describe("Redirecting", () => {
     render(<Redirecting />);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
-
-    const labelSpans = screen.getAllByText("Redirecting...");
-
-    expect(labelSpans).toHaveLength(2);
-
-    expect(labelSpans[0]).toBeOffScreen();
-    expect(labelSpans[1]).not.toBeOffScreen();
+    expect(screen.getByText("Loading...")).toBeOffScreen();
+    expect(screen.getByText("Redirecting...")).not.toBeOffScreen();
   });
 });

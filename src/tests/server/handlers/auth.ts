@@ -16,6 +16,8 @@ import {
 import { allLoginMethods } from "@/tests/mocks/loginMethods";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { invitationState } from "./invitations";
+import { createEndpointStatusError } from "./_constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 
 interface SwitchAccountParams {
   account_name: string;
@@ -107,8 +109,34 @@ export default [
     return HttpResponse.json(createdAccount);
   }),
 
+  http.post(`${API_URL}logout`, () => {
+    if (shouldApplyEndpointStatus("logout")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return HttpResponse.json(
+          { error: "InternalServerError", message: "Logout failed" },
+          { status: 500 },
+        );
+      }
+    }
+    return new HttpResponse(null, { status: 200 });
+  }),
+
   http.get(`${API_URL}identity-providers`, () => {
     return HttpResponse.json(identityProviders);
+  }),
+
+  http.delete(`${API_URL}auth/oidc-providers/:id`, () => {
+    if (shouldApplyEndpointStatus("oidc-providers")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return HttpResponse.json(
+          { error: "InternalServerError", message: "Delete failed" },
+          { status: 500 },
+        );
+      }
+    }
+    return new HttpResponse(null, { status: 204 });
   }),
 
   http.get<{ id: string }, never, SingleIdentityProvider>(
@@ -157,10 +185,24 @@ export default [
     });
   }),
 
-  http.get(
+  http.get<{ attach_code: string }>(
     `${API_URL}ubuntu-installer-attach-sessions/code/:attach_code`,
-    () => {
+    ({ params }) => {
       const HOUR_S = 3600;
+
+      if (shouldApplyEndpointStatus("ubuntu-installer-attach-sessions/code")) {
+        const { status } = getEndpointStatus();
+        if (status === "error") {
+          throw createEndpointStatusError();
+        }
+      }
+
+      if (params.attach_code === "EXPIRE") {
+        return HttpResponse.json({
+          valid: false,
+          valid_until: null,
+        });
+      }
 
       return HttpResponse.json({
         valid: true,
@@ -369,7 +411,7 @@ export default [
 
       return HttpResponse.json({
         accounts: [createdAccount],
-        current_account: createdAccount ? createdAccount.account : "",
+        current_account: createdAccount.account,
         email: "new-user@example.com",
         has_password: false,
         name: "New Ubuntu One User",

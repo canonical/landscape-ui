@@ -108,6 +108,7 @@ const CreateScript: FC = () => {
         ref={inputRef}
         className="u-hide"
         type="file"
+        data-testid="create-script-upload-input"
         onChange={handleInputChange}
       />
 
@@ -163,12 +164,6 @@ const CreateScript: FC = () => {
             e.target.files?.[0] ?? null,
           )
         }
-        onInitialAttachmentDelete={(attachment: string) => {
-          formik.setFieldValue("attachmentsToRemove", [
-            ...formik.values.attachmentsToRemove,
-            attachment,
-          ]);
-        }}
       />
 
       <SidePanelFormButtons

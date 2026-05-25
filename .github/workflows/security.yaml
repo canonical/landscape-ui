@@ -1,18 +1,14 @@
 name: Vulnerability Scan
 
 on:
-  workflow_dispatch: # Allows manual triggering
-  schedule:
-    - cron: "0 2 * * 1" # Run weekly at 2 AM on Monday
-  pull_request:
-    paths:
-      - "Dockerfile"
-      - ".github/workflows/security.yaml"
+  workflow_dispatch:
+  push:
+    branches: ["release/**"]
+    paths-ignore:
+      - "security/sbom/**"
 
 permissions:
   contents: write
-  packages: write
-  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,37 +18,23 @@ jobs:
   build-image:
     name: Build Docker Image
     runs-on: ubuntu-latest
-    outputs:
-      image_name: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Log in to the GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          tags: type=sha,prefix=scan-
-
-      - name: Build and push Docker image
-        id: build
+      - name: Build image (no push)
         uses: docker/build-push-action@v5
         with:
           context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
+          load: true
+          tags: landscape-ui:scan
 
       - name: Save image to a tar file
-        run: docker save ${{ steps.meta.outputs.tags }} -o image.tar
+        run: docker save landscape-ui:scan -o image.tar
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
@@ -69,6 +51,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Download image artifact
         uses: actions/download-artifact@v4
@@ -80,104 +64,106 @@ jobs:
           sudo snap install canonical-secscan-client
           sudo snap connect canonical-secscan-client:home system:home
 
+      - name: Determine SSDLC metadata
+        id: meta
+        run: |
+          VERSION=$(node scripts/calculate-version.cjs)
+          BRANCH="${GITHUB_REF_NAME}"
+          if [[ "$BRANCH" =~ ^release/([0-9]{2}\.(04|10))$ ]]; then
+            CYCLE="${BASH_REMATCH[1]}"
+          else
+            # workflow_dispatch from a non-release branch: fall back to the
+            # current calendar cycle (same rule as calculate-version.cjs).
+            CYCLE=$(node -e "const m=new Date().getMonth()+1,y=new Date().getFullYear();console.log(m<=4?String(y).slice(-2)+'.04':m<=10?String(y).slice(-2)+'.10':String(y+1).slice(-2)+'.04')")
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "cycle=$CYCLE" >> "$GITHUB_OUTPUT"
+          echo "Submitting as version=$VERSION cycle=$CYCLE"
+
       - name: Run security scan
-        continue-on-error: true
         id: scan
         run: |
+          set +e
           secscan-client --batch submit \
             --ssdlc-product-name 'landscape-ui' \
-            --ssdlc-cycle '25.10' \
-            --ssdlc-product-version '1.17.0' \
+            --ssdlc-cycle '${{ steps.meta.outputs.cycle }}' \
+            --ssdlc-product-version '${{ steps.meta.outputs.version }}' \
             --ssdlc-product-channel 'edge' \
             --scanner trivy \
             --type container-image \
             --format oci \
             image.tar \
-            --wait-and-print > secscan-results.txt
+            --wait-and-print | tee secscan-results.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit "$EXIT_CODE"
 
-      - name: Analyze Scan Results and Determine Job Status
+      - name: Upload scan results
         if: always()
-        id: analysis
-        run: |
-          EXIT_CODE=${{ steps.scan.exit_code }}
-          echo "Scan step exited with code: $EXIT_CODE"
-
-          # Exit code 0 means a clean scan
-          if [ "$EXIT_CODE" == "0" ]; then
-            echo "Success: Scan completed and no vulnerabilities were found."
-            exit 0
-          fi
-
-          # Exit codes 100-199 mean CVEs were found
-          if [ "$EXIT_CODE" -ge 100 ] && [ "$EXIT_CODE" -lt 200 ]; then
-            echo "::error::Vulnerabilities were detected by the scan."
-            if grep -q -E 'CRITICAL|HIGH' secscan-results.txt; then
-              echo "::error::High or Critical vulnerabilities found."
-            else
-              echo "::warning::Medium or Low vulnerabilities found."
-            fi
-            exit 1 # Fail the job
-          fi
-
-          # Any other non-zero exit code is a processing error
-          echo "::error::The security scan failed to run properly. Exit code: $EXIT_CODE"
-          if [ -f secscan-results.txt ] && grep -q -i 'Scan has failed' secscan-results.txt; then
-            echo "::error::The secscan tool reported a failure in its output. See results for details."
-          fi
-          exit 1
-
-      - name: Upload Scan Results on Success
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: secscan-results
           path: secscan-results.txt
 
-      - name: Create Issue on Failure
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Vulnerability scan found high/critical issues or failed to run." > issue-body.txt
-          echo "" >> issue-body.txt
-          echo "Please check the workflow run logs for the 'Run security scan' step for details." >> issue-body.txt
-          echo "" >> issue-body.txt
-          echo "### Scan Output" >> issue-body.txt
-          echo '```' >> issue-body.txt
-          if [ -f secscan-results.txt ]; then 
-            cat secscan-results.txt
-          else
-            echo "Scan results file not found."
-          fi >> issue-body.txt
-          echo '```' >> issue-body.txt
-
-          gh issue create --title "High/Critical Vulnerabilities Detected in Landscape UI" --body-file issue-body.txt --label "security,bug"
-
-  generate-and-submit-sbom:
-    name: Generate and Submit SBOM
+  generate-and-commit-sbom:
+    name: Generate SBOM
     needs: build-image
     runs-on: ubuntu-latest
     steps:
-      - name: Log in to the GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Checkout repository
+        uses: actions/checkout@v5
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run Trivy to generate SBOM and submit to Dependency Graph
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: image-tar
+
+      - name: Generate SBOM via Trivy
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          image-ref: ${{ needs.build-image.outputs.image_name }}
+          input: image.tar
           format: "spdx-json"
           output: "dependency-results.sbom.json"
           github-pat: ${{ secrets.GITHUB_TOKEN }}
-          severity: "HIGH,CRITICAL"
-          scanners: "vuln"
 
-      - name: Upload SBOM as an Artifact
+      - name: Upload SBOM as artifact
         uses: actions/upload-artifact@v4
         with:
           name: sbom-report-json
           path: "dependency-results.sbom.json"
           retention-days: 30
+
+      - name: Commit SBOM to release branch
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
+        run: |
+          set -e
+          mkdir -p security/sbom
+          mv dependency-results.sbom.json security/sbom/release.spdx.json
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet -- security/sbom/release.spdx.json; then
+            echo "SBOM unchanged; nothing to commit."
+            exit 0
+          fi
+
+          VERSION=$(node scripts/calculate-version.cjs)
+          git add security/sbom/release.spdx.json
+          git commit -m "chore(sbom): refresh for ${VERSION} [skip ci]"
+
+          # Race protection: if another commit lands between scan and push,
+          # rebase and retry. The SBOM is a full overwrite, so rebases resolve
+          # cleanly without conflict markers.
+          for attempt in 1 2 3; do
+            if git push origin HEAD:"${GITHUB_REF_NAME}"; then
+              exit 0
+            fi
+            echo "Push attempt $attempt failed; rebasing and retrying."
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+          done
+          echo "Failed to push SBOM after 3 attempts" >&2
+          exit 1

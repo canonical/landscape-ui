@@ -14,7 +14,7 @@ vi.mock("@/hooks/useProfiles", () => ({
 const mockUseProfiles = vi.mocked(useProfiles);
 
 const props: ComponentProps<typeof ProfilesContainer> = {
-  type: ProfileTypes.security,
+  type: ProfileTypes.usg,
   profiles: profileList,
   isPending: false,
 };
@@ -55,7 +55,7 @@ describe("ProfilesContainer", () => {
 
     expect(
       screen.getByText(
-        "No security profiles found according to your search parameters.",
+        "No USG profiles found according to your search parameters.",
       ),
     ).toBeInTheDocument();
   });
@@ -79,7 +79,7 @@ describe("ProfilesContainer", () => {
     expect(screen.getByText("Showing 3 of 10 results")).toBeInTheDocument();
   });
 
-  it("shows security profile limit notification when limit is reached", () => {
+  it("shows usg profile limit notification when limit is reached", () => {
     mockUseProfiles.mockReturnValue({
       isProfileLimitReached: true,
       profileLimit: 5,
@@ -90,7 +90,7 @@ describe("ProfilesContainer", () => {
     expect(screen.getByText("Profile limit reached:")).toBeInTheDocument();
     expect(
       screen.getByText(
-        /You've reached the limit of 5 active security profiles\. You must archive/i,
+        /You've reached the limit of 5 active USG profiles\. You must archive/i,
       ),
     ).toBeInTheDocument();
   });

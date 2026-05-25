@@ -12,6 +12,7 @@ export default defineConfig(
     ignores: [
       "dist",
       "dist-ssr",
+      "assets",
       "node_modules",
       "playwright-report",
       "playwright",
@@ -65,7 +66,7 @@ export default defineConfig(
         ...globals.jest,
       },
 
-      ecmaVersion: 5,
+      ecmaVersion: "latest",
 
       parserOptions: {
         projectService: true,

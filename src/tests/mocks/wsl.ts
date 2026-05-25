@@ -43,7 +43,7 @@ export const uninstalledInstanceChild: InstanceChild = {
   default: null,
 };
 
-export const instanceChildren: InstanceChild[] = [
+export const instanceChildren = [
   compliantInstanceChild,
   uninstalledInstanceChild,
   {
@@ -102,4 +102,4 @@ export const instanceChildren: InstanceChild[] = [
     registered: true,
     default: false,
   },
-];
+] as const satisfies InstanceChild[];

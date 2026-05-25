@@ -43,7 +43,7 @@ describe("RemovalProfilesPage", () => {
     renderWithProviders(
       <RemovalProfilesPage />,
       undefined,
-      `/?sidePath=edit&profile=${removalProfiles[0].id}`,
+      `/?sidePath=edit&name=${removalProfiles[0].id}`,
     );
 
     await expectLoadingState();
@@ -58,7 +58,7 @@ describe("RemovalProfilesPage", () => {
     renderWithProviders(
       <RemovalProfilesPage />,
       undefined,
-      `/?sidePath=view&profile=${removalProfiles[0].id}`,
+      `/?sidePath=view&name=${removalProfiles[0].id}`,
     );
 
     await expectLoadingState();

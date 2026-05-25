@@ -8,7 +8,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Form, Tabs } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -64,7 +64,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
       notify.success({
         title: "You queued packages to be upgraded",
-        message: `Packages on ${pluralizeWithCount(selectedInstances.length, "instance")} will be upgraded and are queued in Activities`,
+        message: `Packages on ${pluralize(selectedInstances.length, ["instance"], "exact")} will be upgraded and are queued in Activities`,
       });
     } catch (error) {
       debug(error);
@@ -76,6 +76,10 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA,
   });
+
+  const handleExcludedPackagesChange = async (
+    newExcludedPackages: UpgradesFormProps["excludedPackages"],
+  ) => formik.setFieldValue("excludedPackages", newExcludedPackages);
 
   return (
     <Form onSubmit={formik.handleSubmit}>
@@ -98,9 +102,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.instances
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
-                onExcludedPackagesChange={async (newExcludedPackages) =>
-                  formik.setFieldValue("excludedPackages", newExcludedPackages)
-                }
+                onExcludedPackagesChange={handleExcludedPackagesChange}
               />
             </Suspense>
           )}
@@ -109,9 +111,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
               <TAB_PANELS.packages
                 excludedPackages={formik.values.excludedPackages}
                 instances={affectedInstances}
-                onExcludedPackagesChange={async (newExcludedPackages) =>
-                  formik.setFieldValue("excludedPackages", newExcludedPackages)
-                }
+                onExcludedPackagesChange={handleExcludedPackagesChange}
               />
             </Suspense>
           )}

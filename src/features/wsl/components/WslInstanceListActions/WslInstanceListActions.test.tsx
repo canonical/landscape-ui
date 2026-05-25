@@ -1,3 +1,4 @@
+import { PATHS } from "@/libs/routes";
 import { windowsInstance } from "@/tests/mocks/instance";
 import {
   compliantInstanceChild,
@@ -10,14 +11,43 @@ import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
 import WslInstanceListActions from "./WslInstanceListActions";
 
+const renderActions = (
+  wslInstance: Parameters<typeof WslInstanceListActions>[0]["wslInstance"],
+) =>
+  renderWithProviders(
+    <WslInstanceListActions
+      windowsInstance={windowsInstance}
+      wslInstance={wslInstance}
+    />,
+    {},
+    `/instances/${windowsInstance.id}`,
+    `/${PATHS.instances.root}/${PATHS.instances.single}`,
+  );
+
 describe("WslInstanceListActions", () => {
-  it("should allow you to install an uninstalled child", async () => {
-    renderWithProviders(
-      <WslInstanceListActions
-        windowsInstance={windowsInstance}
-        wslInstance={uninstalledInstanceChild}
-      />,
+  it("renders nothing when compliance is pending", () => {
+    const pendingInstance = {
+      ...compliantInstanceChild,
+      compliance: "pending",
+    } as const;
+    renderActions(pendingInstance);
+    expect(
+      screen.queryByLabelText(`${pendingInstance.name} instance actions`),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders only destructive actions when wslInstance is the default", async () => {
+    renderActions(compliantInstanceChild);
+    await userEvent.click(
+      screen.getByLabelText(`${compliantInstanceChild.name} instance actions`),
     );
+    expect(screen.queryByText("View details")).not.toBeInTheDocument();
+    expect(screen.queryByText("Set as default")).not.toBeInTheDocument();
+    expect(screen.getByText("Uninstall")).toBeInTheDocument();
+  });
+
+  it("should allow you to install an uninstalled child", async () => {
+    renderActions(uninstalledInstanceChild);
 
     await userEvent.click(
       screen.getByLabelText(
@@ -35,12 +65,7 @@ describe("WslInstanceListActions", () => {
   });
 
   it("should allow you to set a child as default", async () => {
-    renderWithProviders(
-      <WslInstanceListActions
-        windowsInstance={windowsInstance}
-        wslInstance={{ ...compliantInstanceChild, default: false }}
-      />,
-    );
+    renderActions({ ...compliantInstanceChild, default: false });
 
     await userEvent.click(
       screen.getByLabelText(`${compliantInstanceChild.name} instance actions`),
@@ -57,13 +82,17 @@ describe("WslInstanceListActions", () => {
     ).toBeInTheDocument();
   });
 
-  it("should all you to remove a child from Landscape", async () => {
-    renderWithProviders(
-      <WslInstanceListActions
-        windowsInstance={windowsInstance}
-        wslInstance={compliantInstanceChild}
-      />,
+  it("should allow you to navigate to view details", async () => {
+    renderActions({ ...compliantInstanceChild, default: false });
+
+    await userEvent.click(
+      screen.getByLabelText(`${compliantInstanceChild.name} instance actions`),
     );
+    await userEvent.click(screen.getByText("View details"));
+  });
+
+  it("should all you to remove a child from Landscape", async () => {
+    renderActions(compliantInstanceChild);
 
     await userEvent.click(
       screen.getByLabelText(`${compliantInstanceChild.name} instance actions`),
@@ -83,12 +112,7 @@ describe("WslInstanceListActions", () => {
   });
 
   it("should all you to reinstall a noncompliant child", async () => {
-    renderWithProviders(
-      <WslInstanceListActions
-        windowsInstance={windowsInstance}
-        wslInstance={noncompliantInstanceChild}
-      />,
-    );
+    renderActions(noncompliantInstanceChild);
 
     await userEvent.click(
       screen.getByLabelText(
@@ -110,12 +134,7 @@ describe("WslInstanceListActions", () => {
   });
 
   it("should all you to uninstall a child", async () => {
-    renderWithProviders(
-      <WslInstanceListActions
-        windowsInstance={windowsInstance}
-        wslInstance={compliantInstanceChild}
-      />,
-    );
+    renderActions(compliantInstanceChild);
 
     await userEvent.click(
       screen.getByLabelText(`${compliantInstanceChild.name} instance actions`),
@@ -132,5 +151,48 @@ describe("WslInstanceListActions", () => {
         `You have successfully marked ${compliantInstanceChild.name} to be uninstalled.`,
       ),
     ).toBeInTheDocument();
+  });
+
+  it("shows error when set as default fails", async () => {
+    const { setEndpointStatus } =
+      await import("@/tests/controllers/controller");
+
+    setEndpointStatus({
+      status: "error",
+      path: "SetDefaultChildComputer",
+    });
+
+    renderActions({ ...compliantInstanceChild, default: false });
+
+    await userEvent.click(
+      screen.getByLabelText(`${compliantInstanceChild.name} instance actions`),
+    );
+    await userEvent.click(screen.getByText("Set as default"));
+    await userEvent.click(
+      screen.getByRole("button", { name: "Set as default" }),
+    );
+
+    setEndpointStatus("default");
+  });
+
+  it("shows error notification when install fails", async () => {
+    const { setEndpointStatus } =
+      await import("@/tests/controllers/controller");
+
+    setEndpointStatus({
+      status: "error",
+      path: "child-instance-profiles/:name:reapply",
+    });
+
+    renderActions(uninstalledInstanceChild);
+
+    await userEvent.click(
+      screen.getByLabelText(
+        `${uninstalledInstanceChild.name} instance actions`,
+      ),
+    );
+    await userEvent.click(screen.getByText("Install"));
+
+    setEndpointStatus("default");
   });
 });

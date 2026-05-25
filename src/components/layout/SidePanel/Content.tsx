@@ -5,12 +5,15 @@ import classes from "./SidePanel.module.scss";
 
 const Content: FC<ComponentProps<typeof SidePanel.Content>> = ({
   className,
+  children,
   ...props
 }) => (
   <SidePanel.Content
     className={classNames(classes.content, className)}
     {...props}
-  />
+  >
+    <div className={classes.inner}>{children}</div>
+  </SidePanel.Content>
 );
 
 export default Content;

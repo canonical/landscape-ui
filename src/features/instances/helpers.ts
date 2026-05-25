@@ -1,5 +1,5 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import type { SecurityProfile } from "../security-profiles";
+import type { USGProfile } from "../usg-profiles";
 import type { RecoveryKeyActivityStatus } from "./types/RecoveryKey";
 
 export const isRecoveryKeyActivityFailedOrCanceled = (
@@ -56,6 +56,7 @@ export function getFeatures(instance: InstanceWithoutRelation) {
     power: isLinux,
     pro: !isNonUbuntuLinux,
     processes: isLinux,
+    recoveryKey: isLinux,
     sanitization: isLinux && !isUbuntuCore && !instance.is_wsl_instance,
     scripts: isLinux,
     snaps: isLinux,
@@ -85,7 +86,7 @@ export const hasUpgrades = (
 };
 
 export const instancesToAssignCount = (
-  profile: SecurityProfile,
+  profile: USGProfile,
   instances: Instance[],
 ) =>
   instances.filter((instance) =>
@@ -104,7 +105,7 @@ export const getProfileTypes = (featureFlags: {
   }
 
   if (featureFlags.isUsgProfilesEnabled) {
-    profileTypes.push("security");
+    profileTypes.push("usg");
   }
 
   profileTypes.push("upgrade");

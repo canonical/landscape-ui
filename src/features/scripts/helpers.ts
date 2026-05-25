@@ -4,7 +4,7 @@ import type { CreateScriptAttachmentParams } from "./api";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 
-const getEncodedCode = (code: string) => {
+export const getEncodedCode = (code: string) => {
   const escapedCode = JSON.parse(JSON.stringify(code).replace(/\\r/g, ""));
 
   return Buffer.from(escapedCode).toString("base64");

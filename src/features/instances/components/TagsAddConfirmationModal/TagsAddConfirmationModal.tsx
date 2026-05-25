@@ -4,11 +4,7 @@ import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { ProfileChange } from "@/features/tags";
 import { useGetProfileChanges } from "@/features/tags";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import {
-  pluralize,
-  pluralizeArray,
-  pluralizeWithCount,
-} from "@/utils/_helpers";
+import { pluralize, getSelectionLabel } from "@/utils/_helpers";
 import {
   ConfirmationModal,
   Icon,
@@ -77,7 +73,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
               RepositoryProfile: "Repository",
               ScriptProfile: "Script",
               UpgradeProfile: "Upgrade",
-              UsgProfile: "Security",
+              UsgProfile: "USG",
             })[profileChange.profile.profile_type],
         },
         {
@@ -85,14 +81,15 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
           Cell: ({
             row: { original: profileChange },
           }: CellProps<ProfileChange>) => {
-            const label = pluralizeWithCount(
+            const label = pluralize(
               profileChange.profile.current_associated_instances,
-              "instance",
+              ["instance"],
+              "exact",
             );
 
             return profileChange.profile.will_exceed_limit ? (
               <Tooltip
-                message={`Adding ${pluralize(instances.length, "this instance", "these instances")} will exceed the instance limit.`}
+                message={`Adding ${pluralize(instances.length, ["this instance", "these instances"])} will exceed the instance limit.`}
               >
                 <Icon name="warning" />
                 {label}
@@ -112,34 +109,34 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
 
   return (
     <ConfirmationModal
-      title={`Add ${pluralizeArray(
+      title={`Add ${getSelectionLabel(
         tags,
         (tag) => `"${tag}" tag`,
         `tags`,
-      )} to ${pluralizeArray(
+      )} to ${getSelectionLabel(
         instances,
         (instance) => `"${instance.title}"`,
         `instances`,
       )}`}
       confirmButtonLabel="Add tags"
       {...props}
+      renderInPortal
     >
       <p>Adding tags could trigger irreversible changes to your instances.</p>
 
       <p>
         Adding{" "}
-        {pluralize(
-          tags.length,
+        {pluralize(tags.length, [
           `the ${tags[0]} tag`,
           `these ${tags.length} tags`,
-        )}{" "}
+        ])}{" "}
         to{" "}
-        {pluralizeArray(
+        {getSelectionLabel(
           instances,
           (instance) => `the ${instance.title} instance`,
           `instances`,
         )}{" "}
-        will associate the {pluralize(instances.length, "instance")} with the
+        will associate the {pluralize(instances.length, ["instance"])} with the
         following profiles.
       </p>
 

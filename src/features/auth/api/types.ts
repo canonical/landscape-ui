@@ -36,10 +36,9 @@ export type AuthStateResponse =
       invitation_id: string | null;
     });
 
-export interface LoginRequestParams {
-  email: string;
-  password: string;
-}
+export type LoginRequestParams =
+  | { email: string; password: string }
+  | { identity: string; password: string };
 
 export interface GetUbuntuOneUrlParams {
   external?: boolean;

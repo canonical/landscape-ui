@@ -1,12 +1,33 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-.item:not(:first-child) {
-  border-top: 1px solid $colors--theme--border-low-contrast;
-  padding-top: $spv--large;
+.item {
+  padding-top: $spv--small;
+
+  &:not(:first-child) {
+    border-top: 1px solid $colors--theme--border-low-contrast;
+  }
+}
+
+:global(.p-panel__content) {
+  .item:first-child {
+    padding-top: 0;
+  }
 }
 
 .heading {
   margin: 0 0 $spv--large;
   padding: 0;
+}
+
+.spacedHeading {
+  margin-bottom: $sp-unit * 4;
+}
+
+.titleWithDescription {
+  margin-bottom: 0;
+}
+
+.description {
+  margin: 0;
 }

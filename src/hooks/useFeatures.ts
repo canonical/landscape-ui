@@ -24,15 +24,17 @@ export default function useFeatures(userEmail: string | null) {
       const match = features.find((feature) => feature.key === featureKey);
 
       if (!match) {
-        console.warn(
-          `Feature ${featureKey} not found in the features response.`,
-        );
+        if (!isLoading) {
+          console.warn(
+            `Feature ${featureKey} not found in the features response.`,
+          );
+        }
         return false;
       }
 
       return match.enabled;
     },
-    [features],
+    [features, isLoading],
   );
 
   return {

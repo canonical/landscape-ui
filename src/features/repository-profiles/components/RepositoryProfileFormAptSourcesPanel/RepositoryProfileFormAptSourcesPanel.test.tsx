@@ -46,7 +46,7 @@ describe("RepositoryProfileFormAptSourcesPanel", () => {
   });
 
   it("selects and deselects APT sources", async () => {
-    const { formik } = renderWrapper({ apt_sources: [2] });
+    const { formik } = renderWrapper({ apt_sources: [aptSources[1]] });
 
     const sourceCheckbox = screen.getByRole("checkbox", { name: "source1" });
     const selectedCheckbox = screen.getByRole("checkbox", { name: "source2" });
@@ -54,10 +54,15 @@ describe("RepositoryProfileFormAptSourcesPanel", () => {
     expect(selectedCheckbox).toBeChecked();
 
     await user.click(sourceCheckbox);
-    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [2, 1]);
+    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [
+      aptSources[1],
+      aptSources[0],
+    ]);
 
     await user.click(selectedCheckbox);
-    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [1]);
+    expect(formik.setFieldValue).toHaveBeenCalledWith("apt_sources", [
+      aptSources[0],
+    ]);
   });
 
   it("shows empty state when no APT sources match search", async () => {

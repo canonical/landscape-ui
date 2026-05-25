@@ -1,4 +1,4 @@
-import { useActivities } from "@/features/activities";
+import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Instance } from "@/types/Instance";
@@ -17,7 +17,7 @@ const GenerateRecoveryKeyModal: FC<GenerateRecoveryKeyModalProps> = ({
 }) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { openActivityDetails } = useActivities();
+  const openActivityDetails = useOpenActivityDetailsPanel();
 
   const { generateRecoveryKey, isGeneratingRecoveryKey } =
     useGenerateRecoveryKey();

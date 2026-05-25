@@ -1,10 +1,12 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
+import { getTitleByName } from "@/utils/_helpers";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -28,26 +30,24 @@ type SingleRemovalProfileFormProps =
 const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { createRemovalProfileQuery, editRemovalProfileQuery } =
     useRemovalProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery(
+  const { data: accessGroupsData } = getAccessGroupQuery(
     {},
     { enabled: props.action === "add" },
   );
 
   const accessGroupOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
+    accessGroupsData?.data.map(({ name, title }) => ({
       label: title,
       value: name,
     })) ?? [];
 
   const { mutateAsync: createRemovalProfile } = createRemovalProfileQuery;
   const { mutateAsync: editRemovalProfile } = editRemovalProfileQuery;
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateRemovalProfileParams = {
@@ -89,6 +89,7 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
     initialValues:
       props.action === "edit"
         ? {
+            access_group: props.profile.access_group,
             all_computers: props.profile.all_computers,
             days_without_exchange: props.profile.days_without_exchange,
             tags: props.profile.tags,
@@ -124,22 +125,27 @@ const SingleRemovalProfileForm: FC<SingleRemovalProfileFormProps> = (props) => {
         <span className={classes.inputDescription}>days</span>
       </div>
 
-      <Select
-        label="Access group"
-        options={accessGroupOptions}
-        disabled={props.action === "edit"}
-        {...formik.getFieldProps("access_group")}
-        error={getFormikError(formik, "access_group")}
-      />
+      {props.action === "edit" ? (
+        <ReadOnlyField
+          label="Access group"
+          value={getTitleByName(props.profile.access_group, accessGroupsData)}
+          tooltipMessage="You can't change the access group after the removal profile has been created"
+        />
+      ) : (
+        <Select
+          label="Access group"
+          options={accessGroupOptions}
+          {...formik.getFieldProps("access_group")}
+          error={getFormikError(formik, "access_group")}
+        />
+      )}
 
       <AssociationBlock formik={formik} />
 
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );

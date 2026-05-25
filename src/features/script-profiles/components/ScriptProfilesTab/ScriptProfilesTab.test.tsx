@@ -31,7 +31,7 @@ describe("ScriptProfilesTab", () => {
     renderWithProviders(
       <ScriptProfilesTab />,
       undefined,
-      `/?sidePath=edit&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=edit&name=${scriptProfiles[0].id}`,
     );
 
     await expectLoadingState();
@@ -46,7 +46,7 @@ describe("ScriptProfilesTab", () => {
     renderWithProviders(
       <ScriptProfilesTab />,
       undefined,
-      `/?sidePath=view&profile=${scriptProfiles[0].id}`,
+      `/?sidePath=view&name=${scriptProfiles[0].id}`,
     );
 
     await expectLoadingState();

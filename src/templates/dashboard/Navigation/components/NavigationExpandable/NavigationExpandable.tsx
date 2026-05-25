@@ -6,6 +6,9 @@ import { useLocation } from "react-router";
 import { getPathToExpand } from "@/templates/dashboard/Navigation/helpers";
 import NavigationRoute from "@/templates/dashboard/Navigation/components/NavigationRoute";
 import NavigationExpandableParent from "@/templates/dashboard/Navigation/components/NavigationExpandableParent";
+import { useMediaQuery } from "usehooks-ts";
+import classNames from "classnames";
+import classes from "../../Navigation.module.scss";
 
 interface NavigationExpandableProps {
   readonly item: MenuItem;
@@ -14,6 +17,7 @@ interface NavigationExpandableProps {
 const NavigationExpandable: FC<NavigationExpandableProps> = ({ item }) => {
   const [expanded, setExpanded] = useState("");
   const { pathname } = useLocation();
+  const isLargerScreen = useMediaQuery("(min-width: 620px)");
 
   useEffect(() => {
     const shouldBeExpandedPath = getPathToExpand(pathname);
@@ -22,6 +26,19 @@ const NavigationExpandable: FC<NavigationExpandableProps> = ({ item }) => {
       setExpanded(shouldBeExpandedPath);
     }
   }, [pathname]);
+
+  if (isLargerScreen && item.secondary) {
+    return (
+      <NavigationRoute
+        item={item}
+        className={classNames(
+          classes.accordionButton,
+          classes.collapsedAccordionButton,
+        )}
+        withLinkStyle={false}
+      />
+    );
+  }
 
   return (
     <>

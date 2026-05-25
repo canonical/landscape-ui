@@ -1,0 +1,39 @@
+name: Changeset check
+
+# Fail PRs to release-bearing branches if no changeset file is included.
+# Use `pnpm changeset` to add a regular entry, or `pnpm changeset --empty`
+# for changes that genuinely do not need a CHANGELOG line.
+
+on:
+  pull_request:
+    branches: [main, "release/**"]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+
+      - name: Verify changeset present
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git fetch origin "$BASE_REF" --depth=1
+
+          # Only look at *added* .md files under .changeset/, excluding the
+          # static README. Empty changesets count — they still create a file.
+          ADDED=$(git diff --name-only --diff-filter=A "origin/$BASE_REF"...HEAD \
+            -- '.changeset/*.md' \
+            | grep -vE '^\.changeset/README\.md$' || true)
+
+          if [ -z "$ADDED" ]; then
+            echo "::error::No changeset added under .changeset/. Run 'pnpm changeset' and commit the resulting file."
+            echo
+            echo "If your change genuinely does not warrant a CHANGELOG entry, add an empty changeset:"
+            echo "  pnpm changeset --empty"
+            exit 1
+          fi
+
+          echo "Changeset(s) added in this PR:"
+          echo "$ADDED"

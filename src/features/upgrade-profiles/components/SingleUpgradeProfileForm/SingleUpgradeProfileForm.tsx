@@ -1,10 +1,12 @@
 import AssociationBlock from "@/components/form/AssociationBlock";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
 import { getFormikError } from "@/utils/formikErrors";
+import { getTitleByName } from "@/utils/_helpers";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -27,26 +29,24 @@ type SingleUpgradeProfileFormProps =
 const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { sidePath, popSidePath, createPageParamsSetter } = usePageParams();
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { createUpgradeProfileQuery, editUpgradeProfileQuery } =
     useUpgradeProfiles();
   const { getAccessGroupQuery } = useRoles();
 
-  const { data: getAccessGroupQueryResult } = getAccessGroupQuery(
+  const { data: accessGroupsData } = getAccessGroupQuery(
     {},
     { enabled: props.action === "add" },
   );
 
   const accessGroupOptions =
-    getAccessGroupQueryResult?.data.map(({ name, title }) => ({
+    accessGroupsData?.data.map(({ name, title }) => ({
       label: title,
       value: name,
     })) ?? [];
 
   const { mutateAsync: createUpgradeProfile } = createUpgradeProfileQuery;
   const { mutateAsync: editUpgradeProfile } = editUpgradeProfileQuery;
-
-  const closeSidePanel = createPageParamsSetter({ sidePath: [], profile: "" });
 
   const handleSubmit = async (values: FormProps) => {
     const valuesToSubmit: CreateUpgradeProfileParams = {
@@ -111,6 +111,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
     initialValues:
       props.action === "edit"
         ? {
+            access_group: props.profile.access_group,
             all_computers: props.profile.all_computers,
             at_hour: props.profile.at_hour
               ? parseInt(props.profile.at_hour)
@@ -163,14 +164,21 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
         checked={formik.values.autoremove}
       />
 
-      <Select
-        label="Access group"
-        aria-label="Access group"
-        options={accessGroupOptions}
-        disabled={props.action === "edit"}
-        {...formik.getFieldProps("access_group")}
-        error={getFormikError(formik, "access_group")}
-      />
+      {props.action === "edit" ? (
+        <ReadOnlyField
+          label="Access group"
+          value={getTitleByName(props.profile.access_group, accessGroupsData)}
+          tooltipMessage="You can't change the access group after the upgrade profile has been created"
+        />
+      ) : (
+        <Select
+          label="Access group"
+          aria-label="Access group"
+          options={accessGroupOptions}
+          {...formik.getFieldProps("access_group")}
+          error={getFormikError(formik, "access_group")}
+        />
+      )}
 
       <UpgradeProfileScheduleBlock formik={formik} />
 
@@ -179,9 +187,7 @@ const SingleUpgradeProfileForm: FC<SingleUpgradeProfileFormProps> = (props) => {
       <SidePanelFormButtons
         submitButtonDisabled={formik.isSubmitting}
         submitButtonText={CTA_LABELS[props.action]}
-        onCancel={closeSidePanel}
-        hasBackButton={sidePath.length > 1}
-        onBackButtonPress={popSidePath}
+        onCancel={popSidePathUntilClear}
       />
     </Form>
   );
