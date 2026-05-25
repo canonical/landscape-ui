@@ -14,9 +14,7 @@ export const useGetPageUpgradeProfile = ():
   const { name: upgradeProfileId } = usePageParams();
 
   const { isGettingUpgradeProfile, upgradeProfile, upgradeProfileError } =
-    useGetUpgradeProfile(parseInt(upgradeProfileId), {
-      enabled: !!upgradeProfileId,
-    });
+    useGetUpgradeProfile(parseInt(upgradeProfileId));
 
   if (upgradeProfileError) {
     throw upgradeProfileError;
@@ -34,3 +32,5 @@ export const useGetPageUpgradeProfile = ():
     isGettingUpgradeProfile: false,
   };
 };
+
+export default useGetPageUpgradeProfile;

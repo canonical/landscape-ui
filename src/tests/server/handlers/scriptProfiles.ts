@@ -140,9 +140,12 @@ export default [
   }),
 
   http.post(`${API_URL}script-profiles/:profileId\\:archive`, () => {
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      throw ENDPOINT_STATUS_API_ERROR;
+    if (shouldApplyEndpointStatus("script-profiles/:profileId\\:archive")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
     }
     return HttpResponse.json();
   }),

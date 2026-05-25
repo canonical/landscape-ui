@@ -1,10 +1,9 @@
-import { getEndpointStatus } from "@/tests/controllers/controller";
 import { API_URL, API_URL_OLD } from "@/constants";
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import type { RepositoryProfile } from "@/features/repository-profiles";
 import type { APTSource } from "@/features/repository-profiles";
 import { http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import { getEndpointStatusApiError } from "./_constants";
 import {
   generatePaginatedResponse,
@@ -195,18 +194,5 @@ export default [
     }
 
     return HttpResponse.json({ id: 1 }, { status: 200 });
-  }),
-
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "RemoveRepositoryProfile")) {
-      return;
-    }
-
-    const endpointStatus = getEndpointStatus();
-    if (endpointStatus.status === "error") {
-      throw ENDPOINT_STATUS_API_ERROR;
-    }
-
-    return HttpResponse.json();
   }),
 ];
