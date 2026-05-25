@@ -27,6 +27,7 @@ const CheckboxInputWithHelp = ({
             positionElementClassName={classes.tooltipPositionElement}
           >
             <Icon name={ICONS.help} aria-hidden />
+            <span className="u-off-screen">Help</span>
           </Tooltip>
         </span>
       }
