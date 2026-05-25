@@ -28,10 +28,7 @@ import {
   SOURCE_TYPE_OPTIONS,
   VALIDATION_SCHEMA,
 } from "./constants";
-import {
-  getPublicationPayload,
-  stripResourcePrefix,
-} from "./helpers";
+import { getPublicationPayload, stripResourcePrefix } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
 import PublicationSettingsBlock from "../../components/PublicationSettingsBlock";
 
@@ -166,10 +163,7 @@ const AddPublicationForm: FC = () => {
     const source = selectableSources.find(({ value }) => value === sourceValue);
 
     await formik.setFieldValue("source", sourceValue);
-    await formik.setFieldValue(
-      "distribution",
-      source?.distribution ?? "",
-    );
+    await formik.setFieldValue("distribution", source?.distribution ?? "");
 
     if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
       await formik.setFieldValue("architectures", []);

@@ -96,7 +96,9 @@ describe("AddPublicationForm", () => {
     );
     await user.click(screen.getByRole("checkbox", { name: /Skip bz2/i }));
     await user.click(
-      screen.getByRole("checkbox", { name: /Skip generating content indexes/i }),
+      screen.getByRole("checkbox", {
+        name: /Skip generating content indexes/i,
+      }),
     );
     const archCombobox = screen.getByRole("combobox", {
       name: "Architectures",

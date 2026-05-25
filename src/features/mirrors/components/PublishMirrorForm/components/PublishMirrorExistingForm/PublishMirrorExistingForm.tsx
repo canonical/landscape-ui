@@ -11,7 +11,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import {
   PublicationSettingsBlock,
   usePublishPublication,
-  VALIDATION_SCHEMA_EXISTING
+  VALIDATION_SCHEMA_EXISTING,
 } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
@@ -86,8 +86,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
           <ReadOnlyField
             label="Publication target"
             value={publication?.publicationTarget}
-            tooltipMessage=
-              "The publication target is defined by the publication."
+            tooltipMessage="The publication target is defined by the publication."
           />
 
           <ReadOnlyField

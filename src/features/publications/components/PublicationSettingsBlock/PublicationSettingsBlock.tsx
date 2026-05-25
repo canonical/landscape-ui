@@ -7,10 +7,10 @@ import type { FormikContextType } from "formik";
 import type { PublishSettingsValues } from "../../types";
 import type { ChangeEvent, JSX } from "react";
 
-interface PublicationSettingsBlockProps<T extends PublishSettingsValues>{
+interface PublicationSettingsBlockProps<T extends PublishSettingsValues> {
   readonly formik?: FormikContextType<T>;
   readonly publication?: Publication;
-};
+}
 
 const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   formik,
@@ -62,7 +62,7 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
 
   const inputProps = getInputProps();
   const isLimitAutoInstallChecked = formik
-    ? formik.values.limitAutomaticInstallation 
+    ? formik.values.limitAutomaticInstallation
     : publication?.notAutomatic;
 
   return (
@@ -89,13 +89,9 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
         type="checkbox"
         label={
           <span>
-            <span className={classes.label}>
-              Limit automatic installation
-            </span>
+            <span className={classes.label}>Limit automatic installation</span>
             <Tooltip
-              message={
-                PUBLICATION_SETTINGS_HELP_TEXT.limitAutomaticInstall
-              }
+              message={PUBLICATION_SETTINGS_HELP_TEXT.limitAutomaticInstall}
               position="top-center"
               positionElementClassName={classes.tooltipPositionElement}
             >
@@ -108,29 +104,32 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
       />
 
       <div aria-live="polite" aria-relevant="all">
-        {isLimitAutoInstallChecked &&
+        {isLimitAutoInstallChecked && (
           <>
             <span className="u-off-screen">
-              Selecting &quot;Limit automatic installation&quot; has opened a new option
+              Selecting &quot;Limit automatic installation&quot; has opened a
+              new option
             </span>
             <Input
               type="checkbox"
               wrapperClassName={classes.subCheckbox}
-              label={<span>
-                <span className={classes.label}>Automatic upgrades</span>
-                <Tooltip
-                  message={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>}
+              label={
+                <span>
+                  <span className={classes.label}>Automatic upgrades</span>
+                  <Tooltip
+                    message={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
+                    position="top-center"
+                    positionElementClassName={classes.tooltipPositionElement}
+                  >
+                    <Icon name="help" aria-hidden />
+                    <span className="u-off-screen">Help</span>
+                  </Tooltip>
+                </span>
+              }
               {...inputProps.automaticUpgrades}
             />
           </>
-        }
+        )}
       </div>
 
       <Input
