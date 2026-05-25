@@ -44,9 +44,8 @@ describe("PublicationDetails", () => {
         value: publication.architectures.join(", "),
       },
       { label: "Hash indexing", value: "Yes" },
-      { label: "Automatic installation", value: "Yes" },
+      { label: "Limit automatic install", value: "No" },
       { label: "Automatic upgrades", value: "No" },
-      { label: "Multi dist", value: "No" },
       { label: "Skip bz2", value: "No" },
       { label: "Skip content indexing", value: "No" },
     ];

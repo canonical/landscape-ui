@@ -1,1 +1,1 @@
-export type { PublishNewFormValues } from "./PublishValues";
+export type { PublishNewFormValues, PublishSettingsValues } from "./PublishValues";
