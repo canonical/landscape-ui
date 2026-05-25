@@ -19,9 +19,13 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   const getInputProps = () => {
     if (formik) {
       return {
-        hashIndexing: formik.getFieldProps("hashIndexing"),
+        hashIndexing: {
+          ...formik.getFieldProps("hashIndexing"),
+          checked: formik.values.hashIndexing,
+        },
         limitAutoInstall: {
           ...formik.getFieldProps("limitAutomaticInstallation"),
+          checked: formik.values.limitAutomaticInstallation,
           onChange: (e: ChangeEvent<HTMLInputElement>) => {
             if (!e.target.checked) {
               formik.setFieldValue("automaticUpgrades", false);
@@ -29,9 +33,18 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
             formik.getFieldProps("limitAutomaticInstallation").onChange(e);
           },
         },
-        automaticUpgrades: formik.getFieldProps("automaticUpgrades"),
-        skipBz2: formik.getFieldProps("skipBz2"),
-        skipContents: formik.getFieldProps("skipContentIndexing"),
+        automaticUpgrades: {
+          ...formik.getFieldProps("automaticUpgrades"),
+          checked: formik.values.automaticUpgrades,
+        },
+        skipBz2: {
+          ...formik.getFieldProps("skipBz2"),
+          checked: formik.values.skipBz2,
+        },
+        skipContents: {
+          ...formik.getFieldProps("skipContentIndexing"),
+          checked: formik.values.skipContentIndexing,
+        },
       };
     }
 
