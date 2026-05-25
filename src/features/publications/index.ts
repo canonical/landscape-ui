@@ -11,3 +11,4 @@ export { default as PublicationDetails } from "./components/PublicationDetails";
 export { default as PublicationDetailsSidePanel } from "./components/PublicationDetailsSidePanel";
 export { default as AssociatedPublicationsList } from "./components/AssociatedPublicationsList";
 export { getSourceName, getSourceType } from "./helpers";
+export { SETTINGS_HELP_TEXT as PUBLICATION_SETTINGS_HELP_TEXT } from "./components/AddPublicationForm/constants";

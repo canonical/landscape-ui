@@ -9,7 +9,6 @@ import { useMemo, type FC } from "react";
 import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import {
   type PublishRepositoryNewFormValues,
-  SETTINGS_HELP_TEXT,
   VALIDATION_SCHEMA_NEW,
 } from "../../constants";
 import useNotify from "@/hooks/useNotify";
@@ -17,6 +16,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "@canonical/landscape-openapi";
 import {
+  PUBLICATION_SETTINGS_HELP_TEXT,
   useCreatePublication,
   usePublishPublication,
 } from "@/features/publications";
@@ -136,21 +136,23 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
         <Blocks.Item title="Settings">
           <CheckboxInputWithHelp
             label="Hash based indexing"
-            tooltipMessage={SETTINGS_HELP_TEXT.acquireByHash}
+            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
             checked={formik.values.acquireByHash}
             {...formik.getFieldProps("acquireByHash")}
           />
 
           <CheckboxInputWithHelp
             label="Automatic installation"
-            tooltipMessage={SETTINGS_HELP_TEXT.notAutomatic}
+            tooltipMessage={
+              PUBLICATION_SETTINGS_HELP_TEXT.automaticInstallation
+            }
             checked={formik.values.notAutomatic}
             {...formik.getFieldProps("notAutomatic")}
           />
 
           <CheckboxInputWithHelp
             label="Automatic upgrades"
-            tooltipMessage={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
+            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
             checked={formik.values.butAutomaticUpgrades}
             {...formik.getFieldProps("butAutomaticUpgrades")}
           />

@@ -14,6 +14,7 @@ import GpgKeyField from "@/components/form/GpgKeyField";
 import { getFormikError } from "@/utils/formikErrors";
 import { getSourceType } from "../MirrorDetails/helpers";
 import {
+  SETTINGS_HELP_TEXT,
   UBUNTU_ARCHIVE_HOST,
   UBUNTU_PRO_HOST,
   UBUNTU_SNAPSHOTS_HOST,
@@ -108,7 +109,7 @@ const EditMirrorForm: FC = () => {
               />
               <CheckboxInputWithHelp
                 label="Preserve upstream signing key"
-                tooltipMessage="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
+                tooltipMessage={SETTINGS_HELP_TEXT.preserveSignatures}
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}
                 disabled
@@ -145,7 +146,7 @@ const EditMirrorForm: FC = () => {
               </div>
               <CheckboxInputWithHelp
                 label="Include dependencies in filter"
-                tooltipMessage="Includes dependencies of the packages that match the filter, even if they don't match the filter themselves."
+                tooltipMessage={SETTINGS_HELP_TEXT.includeDependencies}
                 {...formik.getFieldProps("includeDependencies")}
                 checked={
                   !!formik.values.packageFilter &&
@@ -160,7 +161,7 @@ const EditMirrorForm: FC = () => {
               <p className={classes.heading}>Download options:</p>
               <CheckboxInputWithHelp
                 label="Download .udeb packages"
-                tooltipMessage="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
+                tooltipMessage={SETTINGS_HELP_TEXT.downloadUdebPackages}
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
                 inline

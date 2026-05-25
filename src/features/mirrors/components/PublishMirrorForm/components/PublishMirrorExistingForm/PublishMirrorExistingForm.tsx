@@ -7,10 +7,12 @@ import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { SETTINGS_HELP_TEXT } from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
-import { usePublishPublication } from "@/features/publications";
+import {
+  PUBLICATION_SETTINGS_HELP_TEXT,
+  usePublishPublication,
+} from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, Publication } from "@canonical/landscape-openapi";
@@ -103,21 +105,23 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
         <Blocks.Item title="Settings">
           <CheckboxInputWithHelp
             label="Hash based indexing"
-            tooltipMessage={SETTINGS_HELP_TEXT.hashIndexing}
+            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
             checked={publication?.acquireByHash ?? false}
             disabled
           />
 
           <CheckboxInputWithHelp
             label="Automatic installation"
-            tooltipMessage={SETTINGS_HELP_TEXT.automaticInstallation}
+            tooltipMessage={
+              PUBLICATION_SETTINGS_HELP_TEXT.automaticInstallation
+            }
             checked={!publication?.notAutomatic}
             disabled
           />
 
           <CheckboxInputWithHelp
             label="Automatic upgrades"
-            tooltipMessage={SETTINGS_HELP_TEXT.automaticUpgrades}
+            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
             checked={publication?.butAutomaticUpgrades ?? false}
             disabled
           />

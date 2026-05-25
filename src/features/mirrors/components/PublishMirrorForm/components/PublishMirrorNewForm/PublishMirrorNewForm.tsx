@@ -7,9 +7,9 @@ import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
-import { SETTINGS_HELP_TEXT } from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import {
+  PUBLICATION_SETTINGS_HELP_TEXT,
   useCreatePublication,
   usePublishPublication,
 } from "@/features/publications";
@@ -148,21 +148,23 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
         <Blocks.Item title="Settings">
           <CheckboxInputWithHelp
             label="Hash based indexing"
-            tooltipMessage={SETTINGS_HELP_TEXT.hashIndexing}
+            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
             checked={formik.values.hashIndexing}
             {...formik.getFieldProps("hashIndexing")}
           />
 
           <CheckboxInputWithHelp
             label="Automatic installation"
-            tooltipMessage={SETTINGS_HELP_TEXT.automaticInstallation}
+            tooltipMessage={
+              PUBLICATION_SETTINGS_HELP_TEXT.automaticInstallation
+            }
             checked={formik.values.automaticInstallation}
             {...formik.getFieldProps("automaticInstallation")}
           />
 
           <CheckboxInputWithHelp
             label="Automatic upgrades"
-            tooltipMessage={SETTINGS_HELP_TEXT.automaticUpgrades}
+            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
             checked={formik.values.automaticUpgrades}
             {...formik.getFieldProps("automaticUpgrades")}
           />
