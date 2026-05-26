@@ -33,7 +33,7 @@ jobs:
     needs: [eslint-check]
     runs-on: [self-hosted, Linux, large]
     container:
-      image: mcr.microsoft.com/playwright:v1.45.1
+      image: mcr.microsoft.com/playwright:v1.60.0
     environment: dev
     strategy:
       fail-fast: false
