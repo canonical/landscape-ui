@@ -197,7 +197,7 @@ describe("EditMirrorForm", () => {
     await expectLoadingState();
 
     await user.type(screen.getByRole("textbox", { name: "Filter" }), "abc");
-    await user.click(screen.getByLabelText("Include dependencies in filter"));
+    await user.click(screen.getByLabelText(/Include dependencies in filter/));
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
