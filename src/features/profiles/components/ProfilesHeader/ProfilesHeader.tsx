@@ -18,11 +18,11 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
   const getFilters = (): FilterKey[] => {
     switch (type) {
       case ProfileTypes.script:
-        return ["search", "status"];
+        return ["status"];
       case ProfileTypes.usg:
-        return ["status", "search", "passRateFrom", "passRateTo"];
+        return ["status", "passRateFrom", "passRateTo"];
       default:
-        return ["search"];
+        return [];
     }
   };
 
@@ -59,10 +59,12 @@ const ProfilesHeader: FC<ProfilesHeaderProps> = ({ type }) => {
           </div>
         }
       />
-      <TableFilterChips
-        filtersToDisplay={getFilters()}
-        statusOptions={hasFilters ? STATUS_OPTIONS : undefined}
-      />
+      {hasFilters && (
+        <TableFilterChips
+          filtersToDisplay={getFilters()}
+          statusOptions={STATUS_OPTIONS}
+        />
+      )}
     </>
   );
 };

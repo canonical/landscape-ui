@@ -1,4 +1,4 @@
-import { PageParamFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
@@ -200,8 +200,6 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
           </div>
         }
       />
-
-      <TableFilterChips filtersToDisplay={["search"]} />
 
       <WslInstanceReinstallModal
         close={closeReinstallModal}

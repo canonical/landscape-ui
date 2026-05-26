@@ -38,7 +38,7 @@ describe("ProfilesHeader", () => {
     expect(screen.getByText("From pass rate: 50%")).toBeInTheDocument();
   });
 
-  it("renders only search chips for non-archivable profile types", async () => {
+  it("renders only search box for non-archivable profile types", async () => {
     renderWithProviders(<ProfilesHeader type={ProfileTypes.package} />);
 
     expect(
@@ -49,7 +49,7 @@ describe("ProfilesHeader", () => {
     ).not.toBeInTheDocument();
 
     const search = screen.getByRole("searchbox");
+    expect(search).toBeInTheDocument();
     await userEvent.type(search, "search{enter}");
-    expect(screen.getByText("Search: search")).toBeInTheDocument();
   });
 });
