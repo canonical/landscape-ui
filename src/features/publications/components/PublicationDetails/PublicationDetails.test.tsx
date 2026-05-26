@@ -40,6 +40,10 @@ describe("PublicationDetails", () => {
         value: moment(publication.publishTime).format(DISPLAY_DATE_TIME_FORMAT),
       },
       {
+        label: "Distribution",
+        value: publication.distribution,
+      },
+      {
         label: "Architectures",
         value: publication.architectures.join(", "),
       },
