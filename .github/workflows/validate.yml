@@ -83,7 +83,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Stylelint
-        run: pnpm stylelint ${{ env.FILES }}
+        run: pnpm stylelint "src/**/*.module.scss"
 
   e2e-tests:
     name: Playwright (${{ matrix.name }})
