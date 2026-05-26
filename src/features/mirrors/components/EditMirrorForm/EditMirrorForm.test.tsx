@@ -158,4 +158,53 @@ describe("EditMirrorForm", () => {
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
   });
+
+  it("submits without filtering dependencies", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirrors[0].name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        filterWithDeps: undefined,
+      }),
+    );
+  });
+
+  it("submits with filtering dependencies", async () => {
+    const mirror = mirrors.find(
+      ({ preserveSignatures }) => !preserveSignatures,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.type(screen.getByRole("textbox", { name: "Filter" }), "abc");
+    await user.click(screen.getByLabelText("Include dependencies in filter"));
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        filterWithDeps: true,
+      }),
+    );
+  });
 });
