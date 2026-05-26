@@ -4,6 +4,7 @@ import classes from "./EmptyState.module.scss";
 interface EmptyStateProps {
   readonly title?: string;
   readonly body?: ReactNode;
+  readonly link?: { href: string; text: string };
   readonly icon?: string;
   readonly cta?: ReactNode[];
   readonly size?: "medium" | "large";
@@ -12,6 +13,7 @@ interface EmptyStateProps {
 const EmptyState: FC<EmptyStateProps> = ({
   title = "",
   body = "",
+  link,
   icon = "",
   cta = [],
   size = "medium",
@@ -30,7 +32,16 @@ const EmptyState: FC<EmptyStateProps> = ({
             </div>
           )}
           {title && <p className="p-heading--4 u-no-margin--bottom">{title}</p>}
-          {body && <div>{body}</div>}
+          {body && <p className="u-no-margin--bottom">{body}</p>}
+          {link && (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+            >
+              {link.text}
+            </a>
+          )}
           {cta.length > 0 && <div className={classes.cta}>{cta}</div>}
         </div>
       </div>

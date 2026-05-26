@@ -14,6 +14,7 @@ import {
 } from "@/features/publication-targets";
 import { lazy, type FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 
 const AddPublicationTargetForm = lazy(
   async () =>
@@ -64,22 +65,12 @@ const PublicationTargetsPage: FC = () => {
         actions: undefined,
         children: (
           <EmptyState
-            title="You don't have any publication targets yet"
-            body={
-              <>
-                <p className="u-no-margin--bottom">
-                  On this page you will find all publication targets that you
-                  create to publish mirrors to.
-                </p>
-                <a
-                  href="https://documentation.ubuntu.com/landscape/explanation/features/repository-mirroring"
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  Learn more about repository mirroring
-                </a>
-              </>
-            }
+            title="You don’t have any publication targets yet"
+            body="On this page you will find all publication targets that you create to publish mirrors to."
+            link={{
+              href: DEBARCHIVE_DOCUMENTATION_URL,
+              text: "Learn more about repository mirroring",
+            }}
             cta={[addButton]}
           />
         ),
@@ -119,9 +110,7 @@ const PublicationTargetsPage: FC = () => {
 
         {lastSidePathSegment === "edit" && viewTarget && (
           <SidePanel.Suspense key="edit">
-            <SidePanel.Header>
-              Edit {viewTarget.displayName ?? viewTarget.name}
-            </SidePanel.Header>
+            <SidePanel.Header>Edit {viewTarget.displayName}</SidePanel.Header>
             <SidePanel.Content>
               <EditTargetForm target={viewTarget} />
             </SidePanel.Content>

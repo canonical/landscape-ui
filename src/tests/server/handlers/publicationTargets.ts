@@ -91,7 +91,6 @@ export default [
     },
   ),
 
-  // Fallback GET for integration tests that don't mock useGetPublicationTargets directly
   http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
     const endpointStatus = getEndpointStatus();
 
