@@ -28,7 +28,7 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
           checked: formik.values.limitAutomaticInstallation,
           onChange: (e: ChangeEvent<HTMLInputElement>) => {
             if (!e.target.checked) {
-              formik.setFieldValue("automaticUpgrades", false);
+              void formik.setFieldValue("automaticUpgrades", false);
             }
             formik.getFieldProps("limitAutomaticInstallation").onChange(e);
           },
@@ -49,14 +49,14 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
     }
 
     return {
-      hashIndexing: { checked: publication?.acquireByHash, disabled: true },
-      limitAutoInstall: { checked: publication?.notAutomatic, disabled: true },
+      hashIndexing: { checked: Boolean(publication?.acquireByHash), disabled: true },
+      limitAutoInstall: { checked: Boolean(publication?.notAutomatic), disabled: true },
       automaticUpgrades: {
-        checked: publication?.butAutomaticUpgrades,
+        checked: Boolean(publication?.butAutomaticUpgrades),
         disabled: true,
       },
-      skipBz2: { checked: publication?.skipBz2, disabled: true },
-      skipContents: { checked: publication?.skipContents, disabled: true },
+      skipBz2: { checked: Boolean(publication?.skipBz2), disabled: true },
+      skipContents: { checked: Boolean(publication?.skipContents), disabled: true },
     };
   };
 

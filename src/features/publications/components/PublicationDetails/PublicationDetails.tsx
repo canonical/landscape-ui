@@ -34,6 +34,18 @@ const PublicationDetails = ({
     setFalse: closeRepublishModal,
   } = useBoolean();
 
+  const getLimitAutoInstallValue = () => {
+    if (!publication.notAutomatic) {
+      return "Both automatic";
+    }
+
+    if (publication.butAutomaticUpgrades) {
+      return "Automatic upgrades only";
+    }
+
+    return "Both manual";
+  };
+
   return (
     <>
       <div
@@ -130,18 +142,8 @@ const PublicationDetails = ({
             />
 
             <InfoGrid.Item
-              label="Limit automatic install"
-              value={boolToLabel(publication.notAutomatic)}
-            />
-
-            <InfoGrid.Item
-              label="Automatic upgrades"
-              value={boolToLabel(Boolean(publication.butAutomaticUpgrades))}
-            />
-
-            <InfoGrid.Item
-              label="Multi dist"
-              value={boolToLabel(Boolean(publication.multiDist))}
+              label="Installs and upgrades"
+              value={getLimitAutoInstallValue()}
             />
 
             <InfoGrid.Item

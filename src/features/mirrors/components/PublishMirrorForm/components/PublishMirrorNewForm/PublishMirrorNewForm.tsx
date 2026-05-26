@@ -11,12 +11,12 @@ import {
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
+  VALIDATION_SCHEMA_NEW
 } from "@/features/publications";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
-import { VALIDATION_SCHEMA_NEW } from "@/features/publications";
 
 interface PublishMirrorNewFormProps {
   readonly mirror: Mirror;
