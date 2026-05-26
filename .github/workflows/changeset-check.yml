@@ -7,6 +7,8 @@ name: Changeset check
 on:
   pull_request:
     branches: [main, "release/**"]
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   verify:
