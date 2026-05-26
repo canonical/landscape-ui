@@ -11,7 +11,7 @@ import {
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
-  VALIDATION_SCHEMA_NEW
+  VALIDATION_SCHEMA_NEW,
 } from "@/features/publications";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";

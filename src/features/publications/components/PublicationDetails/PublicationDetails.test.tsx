@@ -12,7 +12,7 @@ import moment from "moment";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
-  const [publication, publicationWithKey] = publications;
+  const [publication, publicationWithKey, manualPublication] = publications;
 
   const sourceDisplayName =
     mirrors.find((m) => m.name === publication.source)?.displayName ??
@@ -67,6 +67,33 @@ describe("PublicationDetails", () => {
       "Signing GPG Key",
       publicationWithKey.gpgKey?.fingerprint,
     );
+  });
+
+  it("renders automatic upgrades value for installs and upgrades field", async () => {
+    const { container } = renderWithProviders(
+      <PublicationDetails
+        publication={publicationWithKey}
+        sourceDisplayName={sourceDisplayName}
+        publicationTargetDisplayName={publicationTargetDisplayName}
+      />,
+    );
+
+    expect(container).toHaveInfoItem(
+      "Installs and upgrades",
+      "Automatic upgrades only",
+    );
+  });
+
+  it("renders manual value for installs and upgrades field", async () => {
+    const { container } = renderWithProviders(
+      <PublicationDetails
+        publication={manualPublication}
+        sourceDisplayName={sourceDisplayName}
+        publicationTargetDisplayName={publicationTargetDisplayName}
+      />,
+    );
+
+    expect(container).toHaveInfoItem("Installs and upgrades", "Both manual");
   });
 
   it("opens republish modal", async () => {

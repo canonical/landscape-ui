@@ -109,6 +109,10 @@ describe("AddPublicationForm", () => {
     expect(publicationTargetSelect).toHaveValue(
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
+
+    expect(
+      screen.getByText("main, restricted, universe, multiverse"),
+    ).toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: "amd64" })).toBeChecked();
   });
 
@@ -124,6 +128,7 @@ describe("AddPublicationForm", () => {
     await selectLocalSource(user);
 
     expect(screen.getByText("repo 1")).toBeInTheDocument();
+    expect(screen.getByText("component 1")).toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Architectures" }),
     ).not.toBeInTheDocument();

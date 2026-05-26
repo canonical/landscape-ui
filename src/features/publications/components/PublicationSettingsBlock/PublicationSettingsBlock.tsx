@@ -49,14 +49,23 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
     }
 
     return {
-      hashIndexing: { checked: Boolean(publication?.acquireByHash), disabled: true },
-      limitAutoInstall: { checked: Boolean(publication?.notAutomatic), disabled: true },
+      hashIndexing: {
+        checked: Boolean(publication?.acquireByHash),
+        disabled: true,
+      },
+      limitAutoInstall: {
+        checked: Boolean(publication?.notAutomatic),
+        disabled: true,
+      },
       automaticUpgrades: {
         checked: Boolean(publication?.butAutomaticUpgrades),
         disabled: true,
       },
       skipBz2: { checked: Boolean(publication?.skipBz2), disabled: true },
-      skipContents: { checked: Boolean(publication?.skipContents), disabled: true },
+      skipContents: {
+        checked: Boolean(publication?.skipContents),
+        disabled: true,
+      },
     };
   };
 
