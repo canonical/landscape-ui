@@ -178,7 +178,7 @@ describe("handleParams", () => {
     });
 
     expect(() => handleParams({ config, isOld: false })).toThrow(
-      "Unsupported argument type",
+      "Unsupported argument type. Provided: function for func",
     );
   });
 
@@ -190,7 +190,9 @@ describe("handleParams", () => {
       },
     });
 
-    expect(() => handleParams({ config, isOld: true })).toThrow();
+    expect(() => handleParams({ config, isOld: true })).toThrow(
+      "Unsupported array item type. Provided: object for items.3",
+    );
   });
 
   it("skips processing when params/data is undefined", () => {
