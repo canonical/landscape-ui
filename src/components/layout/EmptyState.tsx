@@ -31,7 +31,7 @@ const EmptyState: FC<EmptyStateProps> = ({
               />
             </div>
           )}
-          {title && <p className="p-heading--4 u-no-margin--bottom">{title}</p>}
+          {title && <p className="p-heading--4 u-no-margin">{title}</p>}
           {body && <p className="u-no-margin--bottom">{body}</p>}
           {link && (
             <a

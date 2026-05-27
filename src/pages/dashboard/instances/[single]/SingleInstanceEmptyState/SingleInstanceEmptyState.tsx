@@ -1,7 +1,6 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
-import { Button } from "@canonical/react-components";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 import { ROUTES } from "@/libs/routes";
 
 interface SingleInstanceEmptyStateProps {
@@ -13,14 +12,12 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
   childInstanceId,
   instanceId,
 }) => {
-  const navigate = useNavigate();
-
   return (
     <EmptyState
       title="Instance not found"
       icon="connected"
       body={
-        <p className="u-no-margin--bottom">
+        <>
           <span>Seems like the instance with id = </span>
           <code>{instanceId}</code>
           <span> doesn&apos;t </span>
@@ -33,28 +30,25 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
             <span>exist</span>
           )}
           .
-        </p>
+        </>
       }
       cta={[
-        <Button
-          appearance="positive"
+        <Link
+          to={ROUTES.instances.root()}
+          replace
+          className="p-button--positive u-no-margin--bottom"
           key="go-back-to-instances-page"
-          onClick={async () =>
-            navigate(ROUTES.instances.root(), { replace: true })
-          }
-          type="button"
-          aria-label="Go back"
         >
           Back to Instances page
-        </Button>,
-        <Button
+        </Link>,
+        <Link
+          to={ROUTES.root.root()}
+          replace
+          className="p-button u-no-margin--bottom"
           key="go-back-to-home-page"
-          onClick={async () => navigate(ROUTES.root.root(), { replace: true })}
-          type="button"
-          aria-label="Go back"
         >
           Home page
-        </Button>,
+        </Link>,
       ]}
     />
   );

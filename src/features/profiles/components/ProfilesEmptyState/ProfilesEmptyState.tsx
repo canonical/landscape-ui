@@ -1,7 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import type { FC } from "react";
 import AddProfileButton from "../AddProfileButton";
-import { Link } from "@canonical/react-components";
 import { getLink, getMessage } from "./helpers";
 import type { ProfileTypes } from "../../helpers";
 
@@ -10,19 +9,13 @@ interface ProfilesEmptyStateProps {
 }
 
 const ProfilesEmptyState: FC<ProfilesEmptyStateProps> = ({ type }) => {
-  const message = getMessage(type);
-  const link = getLink(type);
-
   return (
     <EmptyState
-      body={
-        <>
-          <p>{message}</p>
-          <Link href={link} target="_blank" rel="nofollow noopener noreferrer">
-            How to manage {type} profiles in Landscape
-          </Link>
-        </>
-      }
+      body={getMessage(type)}
+      link={{
+        href: getLink(type),
+        text: `How to manage ${type} profiles in Landscape`,
+      }}
       cta={[<AddProfileButton key="add" />]}
       title={`You haven't added any ${type} profiles yet.`}
       size="large"

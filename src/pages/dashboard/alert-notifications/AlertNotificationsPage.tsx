@@ -34,18 +34,22 @@ const AlertNotificationsPage: FC = () => {
 
   const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
 
+  if (
+    (hasPendingInstancesAlert && isGettingPendingInstances) ||
+    getAlertsSummaryQueryLoading
+  ) {
+    return <LoadingState />;
+  }
+
   return (
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {getAlertsSummaryQueryLoading ||
-        (hasPendingInstancesAlert && isGettingPendingInstances) ? (
-          <LoadingState />
-        ) : !alerts.length ? (
+        {!alerts.length ? (
           <EmptyState
             title="No subscribed alerts found"
             icon="connected"
-            body={<p>You are not subscribed to any alerts yet.</p>}
+            body="You are not subscribed to any alerts yet."
             cta={[
               <Button
                 appearance="positive"
