@@ -72,9 +72,10 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     ({ name }) => name === formik.values.name,
   );
 
+  // This should never happen because this form is only enabled when there are 
+  // publications, but handling it reduces the cyclomatic complexity.
   if (!publication) {
-    debug(new Error("Selected publication not found"));
-    return null;
+    throw new Error("Selected publication not found");
   }
 
   return (
