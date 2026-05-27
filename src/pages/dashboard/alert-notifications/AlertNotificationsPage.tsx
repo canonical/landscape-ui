@@ -43,7 +43,7 @@ const AlertNotificationsPage: FC = () => {
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {!alerts.length || alerts.length ? (
+        {!alerts.length ? (
           <EmptyState
             title="No subscribed alerts found"
             icon="connected"
