@@ -163,7 +163,7 @@ export const getDebArchivePaginatedResponse = <
   const paginatedData = data
     .filter(({ displayName }) => {
       if (!search) return true;
-      return displayName.includes(search ?? "");
+      return displayName.startsWith(search ?? "");
     })
     .slice(pageToken, pageToken + pageSize);
 

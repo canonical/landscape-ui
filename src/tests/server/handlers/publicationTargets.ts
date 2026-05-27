@@ -13,11 +13,12 @@ import {
 } from "./_helpers";
 
 const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { pageSize, pageToken, search } = getDebArchivePaginationParams(requestUrl);
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     publicationTargets,
     pageToken,
     pageSize,
+    search,
   );
 
   return HttpResponse.json({

@@ -6,35 +6,24 @@ import type {
   ListPublicationTargetsResponse,
   PublicationTarget,
 } from "@canonical/landscape-openapi";
-import usePageParams from "@/hooks/usePageParams";
 
 interface UseGetPublicationTargetsOptions {
   pageSize?: number;
+  search?: string;
 }
 
 export default function useGetPublicationTargets(
   options?: UseGetPublicationTargetsOptions,
 ) {
-  const { search } = usePageParams();
-
-  const { pageSize } = options ?? {};
+  const { pageSize, search } = options ?? {};
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading } = useQuery<
     PublicationTarget[],
     AxiosError<ApiError>
   >({
-    queryKey: ["publication-targets", pageSize ?? "all"],
+    queryKey: ["publication-targets", options ?? "all"],
     queryFn: async () => {
-      if (pageSize !== undefined) {
-        const response =
-          await authFetchDebArchive.get<ListPublicationTargetsResponse>(
-            "publicationTargets",
-            { params: { pageSize } },
-          );
-        return response.data.publicationTargets ?? [];
-      }
-
       let pageToken: string | undefined;
       const targets: PublicationTarget[] = [];
 
@@ -42,23 +31,23 @@ export default function useGetPublicationTargets(
         const response =
           await authFetchDebArchive.get<ListPublicationTargetsResponse>(
             "publicationTargets",
-            { params: { pageSize: 1000, pageToken } },
+            { params: {
+              pageSize: pageSize ?? 1000,
+              pageToken,
+              filter: search ? `display_name="${search}*"` : undefined,
+            } },
           );
 
         targets.push(...(response.data.publicationTargets ?? []));
-        pageToken = response.data.nextPageToken || undefined;
+        pageToken = !pageSize ? response.data.nextPageToken : undefined;
       } while (pageToken);
 
       return targets;
     },
   });
 
-  const filteredData = data?.filter((target) =>
-    target.displayName.includes(search),
-  );
-
   return {
-    publicationTargets: filteredData ?? [],
+    publicationTargets: data ?? [],
     isGettingPublicationTargets: isLoading,
     count: data?.length ?? 0,
   };

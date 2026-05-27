@@ -35,7 +35,7 @@ const AccessGroupsContainer: FC = () => {
         <EmptyState
           title="No access groups found"
           icon="copy"
-          body="You haven&#39;t added any access groups yet."
+          body="You haven't added any access groups yet."
           link={{
             href: "https://ubuntu.com/landscape/docs/access-groups",
             text: "How to manage access groups in Landscape",
