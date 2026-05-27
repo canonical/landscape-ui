@@ -22,9 +22,7 @@ export const FallbackComponent: FallbackRender = (errorData) => {
             Please try again or contact our support team.
           </p>
           {IS_DEV_ENV && (
-            <pre
-              className={classes.errorDetails}
-            >
+            <pre className={classes.errorDetails}>
               <strong>Error:</strong> {errorMessage}
               <br />
               <br />
