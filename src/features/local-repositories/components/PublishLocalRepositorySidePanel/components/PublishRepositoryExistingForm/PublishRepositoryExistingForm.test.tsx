@@ -155,8 +155,10 @@ describe("PublishRepositoryExistingForm", () => {
           repository={repositories[0]}
           publications={[]}
         />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
-    expect(screen.getByText("Selected publication not found")).toBeInTheDocument();
+    expect(
+      screen.getByText("Selected publication not found"),
+    ).toBeInTheDocument();
   });
 });
