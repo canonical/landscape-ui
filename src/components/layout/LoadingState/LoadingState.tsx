@@ -9,7 +9,11 @@ interface LoadingStateProps {
   readonly ref?: Ref<HTMLDivElement>;
 }
 
-const LoadingState: FC<LoadingStateProps> = ({ centerOnScreen, inline, ref }) => {
+const LoadingState: FC<LoadingStateProps> = ({
+  centerOnScreen,
+  inline,
+  ref,
+}) => {
   const spinningElement = (
     <>
       <span className="u-off-screen">Loading...</span>
