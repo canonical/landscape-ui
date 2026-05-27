@@ -3,24 +3,19 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Form,
-  Icon,
-  Input,
-  Select,
-  Tooltip,
-} from "@canonical/react-components";
+import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { SETTINGS_HELP_TEXT } from "../../constants";
 import useNotify from "@/hooks/useNotify";
-import classes from "../../PublishMirrorForm.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
-import { usePublishPublication } from "@/features/publications";
+import {
+  PublicationSettingsBlock,
+  usePublishPublication,
+  VALIDATION_SCHEMA_EXISTING,
+} from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, Publication } from "@canonical/landscape-openapi";
-import * as Yup from "yup";
 
 interface PublishMirrorExistingFormProps {
   readonly mirror: Mirror;
@@ -39,12 +34,12 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
     usePublishPublication();
 
   const formik = useFormik({
-    initialValues: { publicationName: publications[0]?.name ?? "" },
+    initialValues: { name: publications[0]?.name ?? "" },
 
     onSubmit: async (values) => {
       try {
         await publishPublication({
-          publicationName: values.publicationName,
+          publicationName: values.name,
           body: { forceOverwrite: true },
         });
 
@@ -60,9 +55,8 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
       }
     },
 
-    validationSchema: Yup.object().shape({
-      publicationName: Yup.string().required("This field is required."),
-    }),
+    validationSchema: VALIDATION_SCHEMA_EXISTING,
+    validateOnMount: true,
   });
 
   const publicationOptions: SelectOption[] = publications.map(
@@ -74,8 +68,14 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
   );
 
   const publication = publications.find(
-    ({ name }) => name === formik.values.publicationName,
+    ({ name }) => name === formik.values.name,
   );
+
+  // This should never happen because this form is only enabled when there are
+  // publications, but handling it reduces the cyclomatic complexity.
+  if (!publication) {
+    throw new Error("Selected publication not found");
+  }
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -85,107 +85,29 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
             label="Publication"
             required
             options={publicationOptions}
-            error={getFormikError(formik, "publicationName")}
-            {...formik.getFieldProps("publicationName")}
+            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("name")}
           />
 
           <ReadOnlyField
             label="Publication target"
-            value={publication?.publicationTarget}
-            tooltipMessage={
-              "The publication target is defined by the publication."
-            }
+            value={publication.publicationTarget}
+            tooltipMessage="The publication target is defined by the publication."
           />
 
           <ReadOnlyField
             label="Signing GPG key"
-            value={publication?.gpgKey?.armor}
-            tooltipMessage={"The GPG key is defined by the publication."}
+            value={publication.gpgKey?.armor}
+            tooltipMessage="The GPG key is defined by the publication."
           />
         </Blocks.Item>
 
         <PublishMirrorContentsBlock mirror={mirror} />
 
-        <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </>
-            }
-            checked={publication?.acquireByHash ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={!publication?.notAutomatic}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={publication?.butAutomaticUpgrades ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip bz2"
-            checked={publication?.skipBz2 ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip content indexing"
-            checked={publication?.skipContents ?? false}
-            disabled
-          />
-        </Blocks.Item>
+        <PublicationSettingsBlock publication={publication} />
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid}
         submitButtonLoading={formik.isSubmitting || isPublishingPublication}
         submitButtonText="Publish mirror"
         onCancel={popSidePathUntilClear}

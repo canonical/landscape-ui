@@ -34,6 +34,18 @@ const PublicationDetails = ({
     setFalse: closeRepublishModal,
   } = useBoolean();
 
+  const getLimitAutoInstallValue = () => {
+    if (!publication.notAutomatic) {
+      return "Both automatic";
+    }
+
+    if (publication.butAutomaticUpgrades) {
+      return "Automatic upgrades only";
+    }
+
+    return "Both manual";
+  };
+
   return (
     <>
       <div
@@ -105,7 +117,15 @@ const PublicationDetails = ({
         </Blocks.Item>
 
         <Blocks.Item title="Contents">
-          <InfoGrid>
+          <InfoGrid dense>
+            {publication.distribution && (
+              <InfoGrid.Item
+                label="Distribution"
+                large
+                value={publication.distribution}
+              />
+            )}
+
             <InfoGrid.Item
               label="Architectures"
               large
@@ -115,25 +135,15 @@ const PublicationDetails = ({
         </Blocks.Item>
 
         <Blocks.Item title="Settings">
-          <InfoGrid>
+          <InfoGrid dense>
             <InfoGrid.Item
               label="Hash indexing"
               value={boolToLabel(Boolean(publication.acquireByHash))}
             />
 
             <InfoGrid.Item
-              label="Automatic installation"
-              value={boolToLabel(!publication.notAutomatic)}
-            />
-
-            <InfoGrid.Item
-              label="Automatic upgrades"
-              value={boolToLabel(Boolean(publication.butAutomaticUpgrades))}
-            />
-
-            <InfoGrid.Item
-              label="Multi dist"
-              value={boolToLabel(Boolean(publication.multiDist))}
+              label="Installs and upgrades"
+              value={getLimitAutoInstallValue()}
             />
 
             <InfoGrid.Item
