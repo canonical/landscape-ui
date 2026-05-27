@@ -1,5 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
+import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
@@ -80,7 +80,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
             })}
             aria-label={`View details for ${row.original.displayName}`}
           >
-            {row.original.displayName || NO_DATA_TEXT}
+            {row.original.displayName}
           </Button>
         ),
       },

@@ -36,7 +36,7 @@ const SingleInstanceEmptyState: FC<SingleInstanceEmptyStateProps> = ({
         <Link
           to={ROUTES.instances.root()}
           replace
-          className="p-button--positive u-no-margin--bottom"
+          className="p-button--positive"
           key="go-back-to-instances-page"
         >
           Back to Instances page

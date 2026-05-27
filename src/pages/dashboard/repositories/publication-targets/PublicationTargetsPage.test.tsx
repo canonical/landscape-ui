@@ -8,6 +8,10 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 
 describe("PublicationTargetsPage", () => {
+  afterEach(() => {
+    setEndpointStatus({ status: "default", path: "publicationTargets" });
+  });
+
   it("renders the page title", () => {
     renderWithProviders(<PublicationTargetsPage />);
 

@@ -7,14 +7,25 @@
   gap: $spv--small;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 $sph--large;
 
-  &:global(.size-medium) {
-    max-width: 420px;
+  &:global(.size-fixed) {
+    max-width: 500px;
   }
 
-  &:global(.size-large) {
-    max-width: 550px;
+  &:global(.size-max) {
+    max-width: 100%;
+    width: max-content;
   }
+}
+
+:global(#root) > :global(.p-strip) > .inner {
+  padding: 0 $sph--x-large;
+}
+
+.body {
+  margin-bottom: 0;
+  max-width: inherit;
 }
 
 .cta {

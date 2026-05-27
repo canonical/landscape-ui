@@ -1,0 +1,17 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.errorDetails {
+  background-color: $colors--theme--background-code;
+  border: 1px solid $colors--theme--border-low-contrast;
+  border-radius: 4px;
+  margin-bottom: 0;
+  margin-top: $spv--large;
+  max-height: 200px;
+  overflow: auto;
+  padding: $spv--large;
+}
+
+:global(.is-dark) .errorDetails {
+  background-color: rgba(255, 255, 255, 0.03);
+}

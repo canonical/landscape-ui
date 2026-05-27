@@ -77,7 +77,7 @@ const getFilesystemInitialValues = (
 });
 
 const getInitialValues = (target: PublicationTarget): EditTargetFormValues => {
-  const base = { ...EMPTY_VALUES, displayName: target.displayName ?? "" };
+  const base = { ...EMPTY_VALUES, displayName: target.displayName };
   if (target.s3) return getS3InitialValues(target, base);
   if (target.swift) return getSwiftInitialValues(target, base);
   return getFilesystemInitialValues(target, base);
