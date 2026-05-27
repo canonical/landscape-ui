@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button, CustomSelect, Icon, ICONS } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -55,7 +55,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
             <span>{downgrade.name}</span>
             <span className="u-text--muted">
               Available on{" "}
-              {pluralizeWithCount(downgrade.num_computers, "instance")}
+              {pluralize(downgrade.num_computers, ["instance"], "exact")}
             </span>
           </div>
         ),
@@ -129,7 +129,7 @@ const PackageSearchDowngradeItem: FC<PackageSearchDowngradeItemProps> = ({
           {versions.map((version) => (
             <div key={version.name} className={classes.row}>
               <span>
-                {pluralizeWithCount(version.num_computers, "instance")} have
+                {pluralize(version.num_computers, ["instance"], "exact")} have
                 version {version.name} installed
               </span>
               <div className={classes.downgrade}>

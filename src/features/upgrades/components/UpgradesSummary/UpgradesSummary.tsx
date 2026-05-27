@@ -12,7 +12,7 @@ import {
 } from "@/libs/pageParamsManager/constants";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import { useMemo, useState, type FC } from "react";
@@ -142,7 +142,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
   return (
     <>
       <span className={classes.summary}>
-        {pluralizeWithCount(upgradeCount, "package upgrade")} will be applied.
+        {pluralize(upgradeCount, ["package upgrade"], "exact")} will be applied.
       </span>
       <ResponsiveTable
         columns={columns}
@@ -164,7 +164,7 @@ const UpgradesSummary: FC<UpgradesSummaryProps> = ({
       <SidePanelFormButtons
         hasBackButton={!!onBackButtonPress}
         onBackButtonPress={onBackButtonPress}
-        submitButtonText={`Upgrade ${pluralizeWithCount(upgradeCount, "package")}`}
+        submitButtonText={`Upgrade ${pluralize(upgradeCount, ["package"], "exact")}`}
         submitButtonLoading={isUpgradingInstancesPackages}
         onSubmit={submit}
       />

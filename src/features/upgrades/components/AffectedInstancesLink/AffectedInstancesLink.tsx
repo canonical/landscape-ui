@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -27,7 +27,7 @@ const AffectedInstancesLink: FC<AffectedInstancesLinkProps> = ({
         appearance="link"
         onClick={openModal}
       >
-        {pluralizeWithCount(upgrade.affected_instance_count, "instance")}
+        {pluralize(upgrade.affected_instance_count, ["instance"], "exact")}
       </Button>
       {isModalVisible && (
         <AffectedInstancesModal

@@ -7,7 +7,7 @@ import { Link } from "react-router";
 import type { CellProps } from "react-table";
 import { useGetAssociatedScriptProfiles } from "../../api";
 import type { Script, TruncatedScriptProfile } from "../../types";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 interface EditScriptConfirmationModalProps {
   readonly script: Script;
@@ -79,7 +79,7 @@ const EditScriptConfirmationModal: FC<EditScriptConfirmationModalProps> = ({
                     })}
                     target="_blank"
                   >
-                    {pluralizeWithCount(associatedComputers, "instance")}
+                    {pluralize(associatedComputers, ["instance"], "exact")}
                   </Link>
                 ) : (
                   <NoData />

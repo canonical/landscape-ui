@@ -3,12 +3,7 @@ import { useOpenActivityDetailsPanel } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import {
-  capitalize,
-  pluralize,
-  pluralizeArray,
-  pluralizeWithCount,
-} from "@/utils/_helpers";
+import { capitalize, pluralize, getSelectionLabel } from "@/utils/_helpers";
 import { type FC, useState } from "react";
 import { mapActionToPast } from "../../helpers";
 import { usePackages } from "../../hooks";
@@ -71,8 +66,8 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${pluralizeArray(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, "packages")} to be ${actionPast}.`,
-        message: `${pluralizeArray(selectedPackages, (selectedPackage) => `${selectedPackage.name}`, "selected packages")} will be ${actionPast} and ${pluralize(selectedPackages.length, "is", "are")} queued in Activities.`,
+        title: `You queued ${getSelectionLabel(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, "packages")} to be ${actionPast}.`,
+        message: `${getSelectionLabel(selectedPackages, (selectedPackage) => `${selectedPackage.name}`, "selected packages")} will be ${actionPast} and ${pluralize(selectedPackages.length, ["is", "are"])} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -156,9 +151,10 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
           <RandomizationBlock formik={formik} />
           <SidePanelFormButtons
             submitButtonDisabled={!formik.isValid || formik.isSubmitting}
-            submitButtonText={`${title} ${pluralizeWithCount(
+            submitButtonText={`${title} ${pluralize(
               selectedPackages.length,
-              "package",
+              ["package"],
+              "exact",
             )}`}
             submitButtonAppearance={actionButtonAppearance}
             hasBackButton

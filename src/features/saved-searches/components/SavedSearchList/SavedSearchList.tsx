@@ -88,9 +88,7 @@ const SavedSearchList: FC<SavedSearchListProps> = ({
               <Button
                 type="button"
                 appearance="base"
-                id={
-                  itemIdPrefix ? `${itemIdPrefix}-${index}` : undefined
-                }
+                id={itemIdPrefix ? `${itemIdPrefix}-${index}` : undefined}
                 aria-selected={index === activeIndex || undefined}
                 className={classes.search}
                 onClick={() => {

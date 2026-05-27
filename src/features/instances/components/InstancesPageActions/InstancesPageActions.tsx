@@ -9,10 +9,10 @@ import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import {
-  capitalize,
   hasOneItem,
-  pluralizeArray,
-  pluralizeWithCount,
+  getSelectionLabel,
+  pluralize,
+  capitalize,
 } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, Suspense } from "react";
@@ -105,7 +105,7 @@ const InstancesPageActions = ({
           <div className={classes.warning}>
             <p>
               You selected{" "}
-              {pluralizeWithCount(toggledInstances.length, "instance")}. This
+              {pluralize(toggledInstances.length, ["instance"], "exact")}. This
               script will:
             </p>
 
@@ -138,7 +138,7 @@ const InstancesPageActions = ({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+      `Upgrade ${getSelectionLabel(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <Upgrades query={query} toggledInstances={toggledInstances} />
       </Suspense>,
@@ -196,7 +196,7 @@ const InstancesPageActions = ({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralizeArray(toggledInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
+      `Report for ${getSelectionLabel(toggledInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={toggledInstances.map(({ id }) => id)} />
       </Suspense>,
@@ -224,7 +224,7 @@ const InstancesPageActions = ({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralizeWithCount(toggledInstances.length, "instance")}`,
+      `Attach Ubuntu Pro token to ${pluralize(toggledInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
         <AttachTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
@@ -233,7 +233,7 @@ const InstancesPageActions = ({
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralizeWithCount(toggledInstances.length, "instance")}`,
+      `Replace Ubuntu Pro token for ${pluralize(toggledInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
         <ReplaceTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
@@ -248,7 +248,10 @@ const InstancesPageActions = ({
 
   const noInstanceHasUpgrades =
     !areAllInstancesSelected &&
-    toggledInstances.every((instance) => !hasUpgrades(instance.alerts));
+    toggledInstances.every(
+      (instance) =>
+        !hasUpgrades(instance.alerts) || !getFeatures(instance).packages,
+    );
 
   const noInstanceHasPackageFeature =
     !areAllInstancesSelected &&
@@ -418,7 +421,9 @@ const InstancesPageActions = ({
       disabled:
         !areAllInstancesSelected &&
         toggledInstances.every(
-          (instance) => !hasSecurityUpgrades(instance.alerts),
+          (instance) =>
+            !hasSecurityUpgrades(instance.alerts) ||
+            !getFeatures(instance).packages,
         ),
       hasIcon: true,
     },

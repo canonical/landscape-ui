@@ -85,9 +85,7 @@ describe("ValidationResult", () => {
     ).toBeInTheDocument();
 
     expect(screen.getByText(/packages to import/i)).toBeInTheDocument();
-    expect(
-      screen.getByText("python3-snap-http_1.4.0-0ubuntu0_all"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("package1-0.2.1")).toBeInTheDocument();
     expect(screen.getByText(/page 1 of 10/i)).toBeInTheDocument();
   });
 
@@ -97,9 +95,7 @@ describe("ValidationResult", () => {
     );
 
     expect(screen.getByText(/packages to import/i)).toBeInTheDocument();
-    expect(
-      screen.getByText("python3-snap-http_1.4.0-0ubuntu0_all"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("package1-0.2.1")).toBeInTheDocument();
     expect(screen.getByText("package2-1.0.0")).toBeInTheDocument();
   });
 });

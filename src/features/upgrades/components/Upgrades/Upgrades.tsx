@@ -9,7 +9,7 @@ import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
 import type { ApiError } from "@/types/api/ApiError";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import { SearchBox } from "@canonical/react-components";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -271,7 +271,7 @@ const Upgrades: FC<UpgradesProps> = ({ query, toggledInstances }) => {
           onBackButtonPress={() => {
             setStep("list");
             setSidePanelTitle(
-              `Upgrade ${pluralizeArray(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+              `Upgrade ${getSelectionLabel(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
             );
             changeSidePanelSize("large");
           }}

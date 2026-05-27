@@ -14,7 +14,7 @@ const PluralizeWithBoldCount: FC<PluralizeWithBoldCountProps> = ({
 }) => (
   <>
     <strong>{count.toLocaleString()}</strong>{" "}
-    {pluralize(count, singular, plural)}
+    {pluralize(count, [singular, plural])}
   </>
 );
 

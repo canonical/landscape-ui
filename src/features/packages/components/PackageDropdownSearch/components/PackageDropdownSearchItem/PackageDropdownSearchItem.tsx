@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { useGetAvailablePackageVersions } from "@/features/packages";
-import { capitalize, pluralizeWithCount } from "@/utils/_helpers";
+import { capitalize, pluralize } from "@/utils/_helpers";
 import {
   Button,
   CheckboxInput,
@@ -108,9 +108,10 @@ const PackageDropdownSearchItem: FC<PackageDropdownSearchItemProps> = ({
                         <>as not installed</>
                       )}{" "}
                       on{" "}
-                      {pluralizeWithCount(
+                      {pluralize(
                         packageVersion.num_computers,
-                        "instance",
+                        ["instance"],
+                        "exact",
                       )}
                     </>
                   }

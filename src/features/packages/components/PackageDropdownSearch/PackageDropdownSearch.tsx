@@ -1,6 +1,6 @@
 import useFetch from "@/hooks/useFetch";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { SearchBox, Switch } from "@canonical/react-components";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -141,7 +141,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
             {isOverLimit && (
               <span className="p-form-help-text">
                 You can {action} a maximum of{" "}
-                {pluralizeWithCount(MAX_SELECTED_PACKAGES, "package")} in one
+                {pluralize(MAX_SELECTED_PACKAGES, ["package"], "exact")} in one
                 single operation.
               </span>
             )}

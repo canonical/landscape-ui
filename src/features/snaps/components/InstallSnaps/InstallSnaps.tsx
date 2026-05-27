@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
@@ -38,7 +38,7 @@ const InstallSnaps: FC = () => {
       });
       closeSidePanel();
       notify.success({
-        message: `You queued ${pluralizeArray(selectedSnaps, (snap) => `snap ${snap.name}`, "snaps")} to be installed.`,
+        message: `You queued ${getSelectionLabel(selectedSnaps, (snap) => `snap ${snap.name}`, "snaps")} to be installed.`,
       });
       setSelectedSnaps([]);
     } catch (error) {

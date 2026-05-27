@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -34,7 +34,7 @@ const PackagesActionSummaryItemVersion: FC<
         className={classes.instances}
         onClick={openModal}
       >
-        {pluralizeWithCount(version.num_computers, "instance")}
+        {pluralize(version.num_computers, ["instance"], "exact")}
       </Button>
       <span>
         Will {action} {action == "downgrade" ? "to " : ""}

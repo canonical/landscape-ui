@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 
 interface InstancesWithoutVersionCountProps {
@@ -13,7 +13,7 @@ const InstancesWithoutVersionCount: FC<InstancesWithoutVersionCountProps> = ({
   if (count > 0) {
     return (
       <div>
-        {pluralizeWithCount(count, "instance")} don&apos;t have this package{" "}
+        {pluralize(count, ["instance"], "exact")} don&apos;t have this package{" "}
         {type}
       </div>
     );

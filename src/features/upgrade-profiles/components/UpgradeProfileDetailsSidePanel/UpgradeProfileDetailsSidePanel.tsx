@@ -5,7 +5,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import useRoles from "@/hooks/useRoles";
-import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -89,9 +89,10 @@ const UpgradeProfileDetailsSidePanel: FC = () => {
               <InfoGrid.Item
                 label="Delivery delay window"
                 large
-                value={pluralizeWithCount(
+                value={pluralize(
                   Number(profile.deliver_delay_window),
-                  "minute",
+                  ["minute"],
+                  "exact",
                 )}
               />
             </InfoGrid>

@@ -47,7 +47,7 @@ const EditMirrorForm: FC = () => {
       downloadInstallerFiles: !!mirror.downloadInstaller,
       verificationGpgKey: mirror.gpgKey?.armor,
       packageFilter: mirror.filter,
-      includeDependencies: mirror.filterWithDeps,
+      includeDependencies: !!mirror.filterWithDeps,
       keepCurrentGpgKey: !!mirror.gpgKey,
     },
 

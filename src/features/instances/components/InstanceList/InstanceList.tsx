@@ -53,7 +53,7 @@ const InstanceList = ({
   toggledInstances,
   setColumnFilterOptions,
   setToggledInstances,
-  areAllInstancesSelected,
+  areAllInstancesSelected = false,
   selectAllInstances,
   deselectAllInstances,
   isGettingInstances,

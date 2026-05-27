@@ -6,6 +6,7 @@ import type { ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PackageList from "./PackageList";
 import type { InstancePackage } from "../../types";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const instanceId = 1;
 const instancePackages = getInstancePackages(instanceId);
@@ -45,6 +46,7 @@ describe("PackageList", () => {
       expect(screen.getByText("Name")).toBeInTheDocument();
       expect(screen.getByText("Status")).toBeInTheDocument();
       expect(screen.getByText("Current version")).toBeInTheDocument();
+      expect(screen.getByText("Available version")).toBeInTheDocument();
       expect(screen.getByText("Details")).toBeInTheDocument();
 
       packagesWithUpgrade.forEach((pkg) => {
@@ -174,7 +176,7 @@ describe("PackageList", () => {
     expect(checkbox).toBeDisabled();
   });
 
-  it("shows available version details when package has an available version", () => {
+  it("shows available version when it differs from current version", () => {
     const packageWithAvailableVersion: InstancePackage = {
       id: 100,
       name: "curl",
@@ -188,7 +190,51 @@ describe("PackageList", () => {
       <PackageList {...props} packages={[packageWithAvailableVersion]} />,
     );
 
-    expect(screen.getByText("available version: 8.0")).toBeInTheDocument();
+    const row = screen
+      .getByText(packageWithAvailableVersion.name)
+      .closest("tr");
+    assert(row);
+    expect(within(row).getByText("8.0")).toBeInTheDocument();
+  });
+
+  it(`shows ${NO_DATA_TEXT} when available version matches current version`, () => {
+    const packageWithSameVersion: InstancePackage = {
+      id: 101,
+      name: "wget",
+      summary: "network downloader",
+      status: "installed",
+      current_version: "1.0.0",
+      available_version: "1.0.0",
+    };
+
+    renderWithProviders(
+      <PackageList {...props} packages={[packageWithSameVersion]} />,
+    );
+
+    const row = screen.getByText(packageWithSameVersion.name).closest("tr");
+    assert(row);
+    expect(within(row).getByText(NO_DATA_TEXT)).toBeInTheDocument();
+  });
+
+  it(`shows ${NO_DATA_TEXT} when available version is missing`, () => {
+    const packageWithoutAvailableVersion: InstancePackage = {
+      id: 102,
+      name: "nano",
+      summary: "text editor",
+      status: "installed",
+      current_version: "7.2",
+      available_version: null,
+    };
+
+    renderWithProviders(
+      <PackageList {...props} packages={[packageWithoutAvailableVersion]} />,
+    );
+
+    const row = screen
+      .getByText(packageWithoutAvailableVersion.name)
+      .closest("tr");
+    assert(row);
+    expect(within(row).getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("shows Installed status when installed packages have no available version", () => {

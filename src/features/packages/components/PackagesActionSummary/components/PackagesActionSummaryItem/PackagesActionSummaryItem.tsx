@@ -1,5 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -74,7 +74,7 @@ const PackagesActionSummaryItem: FC<PackagesActionSummaryItemProps> = ({
             className={classes.instances}
             onClick={openModal}
           >
-            {pluralizeWithCount(outOfScope, "instance")}
+            {pluralize(outOfScope, ["instance"], "exact")}
           </Button>
           <span>
             Will not {action} <code>{selectedPackage.name}</code>

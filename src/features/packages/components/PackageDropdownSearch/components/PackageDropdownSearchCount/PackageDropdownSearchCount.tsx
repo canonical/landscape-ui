@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type { FC } from "react";
 
 interface PackageDropdownSearchCountProps {
@@ -11,7 +11,7 @@ const PackageDropdownSearchCount: FC<PackageDropdownSearchCountProps> = ({
   if (count) {
     return (
       <span className="u-text--muted">
-        {pluralizeWithCount(count, "package")}
+        {pluralize(count, ["package"], "exact")}
       </span>
     );
   }

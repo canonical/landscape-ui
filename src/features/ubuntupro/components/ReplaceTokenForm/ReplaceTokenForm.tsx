@@ -22,7 +22,7 @@ const ReplaceTokenForm: FC<ReplaceTokenFormProps> = ({ selectedInstances }) => {
     >
       <p>
         Replacing a token will override your{" "}
-        {pluralize(selectedInstances.length, "instance's", "instances'")}{" "}
+        {pluralize(selectedInstances.length, ["instance's", "instances'"])}{" "}
         existing token. You can find your tokens on the{" "}
         <a
           href={UBUNTU_PRO_DASHBOARD_URL}
