@@ -7,10 +7,15 @@ import type { FormikContextType } from "formik";
 import type { PublishSettingsValues } from "../../types";
 import type { ChangeEvent, JSX } from "react";
 
-interface PublicationSettingsBlockProps<T extends PublishSettingsValues> {
-  readonly formik?: FormikContextType<T>;
-  readonly publication?: Publication;
-}
+type PublicationSettingsBlockProps<T extends PublishSettingsValues> =
+  | {
+      readonly formik: FormikContextType<T>;
+      readonly publication?: never;
+    }
+  | {
+      readonly formik?: never;
+      readonly publication: Publication;
+    };
 
 const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   formik,
@@ -50,20 +55,20 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
 
     return {
       hashIndexing: {
-        checked: Boolean(publication?.acquireByHash),
+        checked: Boolean(publication.acquireByHash),
         disabled: true,
       },
       limitAutoInstall: {
-        checked: Boolean(publication?.notAutomatic),
+        checked: Boolean(publication.notAutomatic),
         disabled: true,
       },
       automaticUpgrades: {
-        checked: Boolean(publication?.butAutomaticUpgrades),
+        checked: Boolean(publication.butAutomaticUpgrades),
         disabled: true,
       },
-      skipBz2: { checked: Boolean(publication?.skipBz2), disabled: true },
+      skipBz2: { checked: Boolean(publication.skipBz2), disabled: true },
       skipContents: {
-        checked: Boolean(publication?.skipContents),
+        checked: Boolean(publication.skipContents),
         disabled: true,
       },
     };
@@ -72,7 +77,7 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   const inputProps = getInputProps();
   const isLimitAutoInstallChecked = formik
     ? formik.values.limitAutomaticInstallation
-    : publication?.notAutomatic;
+    : !!publication.notAutomatic;
 
   return (
     <Blocks.Item title="Settings">

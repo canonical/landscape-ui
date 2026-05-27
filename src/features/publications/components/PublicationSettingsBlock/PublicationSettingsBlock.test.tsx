@@ -28,7 +28,11 @@ const publication = {
 
 describe("PublicationSettingsBlock", () => {
   it("renders disabled checkbox settings if no formik", () => {
-    renderWithProviders(<PublicationSettingsBlock />);
+    renderWithProviders(
+      <PublicationSettingsBlock
+        publication={{ ...publication, notAutomatic: false }}
+      />,
+    );
 
     expect(
       screen.getByRole("checkbox", { name: /hash based indexing/i }),
@@ -47,7 +51,7 @@ describe("PublicationSettingsBlock", () => {
     ).toBeDisabled();
   });
 
-  it("renders existing disabled publication settings if publication is provided", () => {
+  it("renders existing publication settings if publication is provided", () => {
     renderWithProviders(<PublicationSettingsBlock publication={publication} />);
 
     const checkboxes = screen.getAllByRole("checkbox");
@@ -55,7 +59,6 @@ describe("PublicationSettingsBlock", () => {
 
     for (const checkbox of checkboxes) {
       expect(checkbox).toBeChecked();
-      expect(checkbox).toBeDisabled();
     }
   });
 

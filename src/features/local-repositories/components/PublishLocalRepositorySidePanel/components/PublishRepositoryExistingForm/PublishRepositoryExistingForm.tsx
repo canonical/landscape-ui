@@ -72,6 +72,11 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     ({ name }) => name === formik.values.name,
   );
 
+  if (!publication) {
+    debug(new Error("Selected publication not found"));
+    return null;
+  }
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Blocks>
@@ -86,7 +91,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Publication target"
-            value={publication?.publicationTarget ?? ""}
+            value={publication.publicationTarget}
             tooltipMessage={
               "The publication target is defined by the publication."
             }
@@ -94,7 +99,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Signing GPG key"
-            value={publication?.gpgKey?.armor ?? ""}
+            value={publication.gpgKey?.armor}
             tooltipMessage={"The GPG key is defined by the publication."}
           />
         </Blocks.Item>
