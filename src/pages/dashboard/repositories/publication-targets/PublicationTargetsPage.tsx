@@ -27,7 +27,8 @@ const EditTargetForm = lazy(
 );
 
 const PublicationTargetsPage: FC = () => {
-  const { search, lastSidePathSegment, name, popSidePathUntilClear } = usePageParams();
+  const { search, lastSidePathSegment, name, popSidePathUntilClear } =
+    usePageParams();
   const { publicationTargets, count, isGettingPublicationTargets } =
     useGetPublicationTargets({
       search,
@@ -52,32 +53,33 @@ const PublicationTargetsPage: FC = () => {
 
   const addButton = <PublicationTargetAddButton key="add" />;
 
-  const { actions, children, hasTable } = count || search
-    ? {
-        actions: [addButton],
-        children: (
-          <>
-            <HeaderWithSearch />
-            <PublicationTargetList targets={publicationTargets} />
-          </>
-        ),
-        hasTable: true as const,
-      }
-    : {
-        actions: undefined,
-        children: (
-          <EmptyState
-            title="You don’t have any publication targets yet"
-            body="On this page you will find all publication targets that you create to publish mirrors to."
-            link={{
-              href: DEBARCHIVE_DOCUMENTATION_URL,
-              text: "Learn more about repository mirroring",
-            }}
-            cta={[addButton]}
-          />
-        ),
-        hasTable: undefined,
-      };
+  const { actions, children, hasTable } =
+    count || search
+      ? {
+          actions: [addButton],
+          children: (
+            <>
+              <HeaderWithSearch />
+              <PublicationTargetList targets={publicationTargets} />
+            </>
+          ),
+          hasTable: true as const,
+        }
+      : {
+          actions: undefined,
+          children: (
+            <EmptyState
+              title="You don’t have any publication targets yet"
+              body="On this page you will find all publication targets that you create to publish mirrors to."
+              link={{
+                href: DEBARCHIVE_DOCUMENTATION_URL,
+                text: "Learn more about repository mirroring",
+              }}
+              cta={[addButton]}
+            />
+          ),
+          hasTable: undefined,
+        };
 
   return (
     <PageMain>

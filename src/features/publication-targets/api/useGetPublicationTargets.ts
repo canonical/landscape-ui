@@ -31,11 +31,13 @@ export default function useGetPublicationTargets(
         const response =
           await authFetchDebArchive.get<ListPublicationTargetsResponse>(
             "publicationTargets",
-            { params: {
-              pageSize: pageSize ?? 1000,
-              pageToken,
-              filter: search ? `display_name="${search}*"` : undefined,
-            } },
+            {
+              params: {
+                pageSize: pageSize ?? 1000,
+                pageToken,
+                filter: search ? `display_name="${search}*"` : undefined,
+              },
+            },
           );
 
         targets.push(...(response.data.publicationTargets ?? []));
