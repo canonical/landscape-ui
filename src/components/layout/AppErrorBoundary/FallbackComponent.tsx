@@ -15,7 +15,7 @@ export const FallbackComponent: FallbackRender = (errorData) => {
 
   return (
     <EmptyState
-      size="max"
+      className={classes.emptyState}
       body={
         <>
           <p className="u-no-margin--bottom">
