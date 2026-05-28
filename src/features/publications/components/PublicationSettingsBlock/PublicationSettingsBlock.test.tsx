@@ -5,44 +5,40 @@ import { describe, expect, it } from "vitest";
 import { PublicationSettingsBlock } from "../..";
 import { createFormik } from "@/tests/formik";
 import type { Publication } from "@canonical/landscape-openapi";
+import { AUTOMATIC_LABELS } from "../../constants";
 
 const createPublicationSettingsFormik = (
+  limitAutomaticInstallation = false,
   automaticUpgrades = false,
-  limitAutomaticInstallation = true,
 ) =>
   createFormik({
-    hashIndexing: false,
     limitAutomaticInstallation,
     automaticUpgrades,
+    hashIndexing: false,
     skipBz2: false,
     skipContentIndexing: false,
   });
 
-const publication = {
-  acquireByHash: true,
-  notAutomatic: true,
-  butAutomaticUpgrades: true,
-  skipBz2: true,
-  skipContents: true,
-} as unknown as Publication;
+const getPublication = (values: boolean) =>
+  ({
+    acquireByHash: values,
+    notAutomatic: values,
+    butAutomaticUpgrades: values,
+    skipBz2: values,
+    skipContents: values,
+  }) as unknown as Publication;
 
 describe("PublicationSettingsBlock", () => {
   it("renders disabled checkbox settings if no formik", () => {
     renderWithProviders(
-      <PublicationSettingsBlock
-        publication={{ ...publication, notAutomatic: false }}
-      />,
+      <PublicationSettingsBlock publication={getPublication(false)} />,
     );
 
+    expect(screen.getByText("Installs and upgrades")).toBeInTheDocument();
+    expect(screen.getByText(AUTOMATIC_LABELS.both)).toBeInTheDocument();
     expect(
       screen.getByRole("checkbox", { name: /hash based indexing/i }),
     ).toBeDisabled();
-    expect(
-      screen.getByRole("checkbox", { name: /limit automatic installation/i }),
-    ).toBeDisabled();
-    expect(
-      screen.queryByRole("checkbox", { name: /automatic upgrades/i }),
-    ).not.toBeInTheDocument();
     expect(screen.getByRole("checkbox", { name: /skip bz2/i })).toBeDisabled();
     expect(
       screen.getByRole("checkbox", {
@@ -52,61 +48,74 @@ describe("PublicationSettingsBlock", () => {
   });
 
   it("renders existing publication settings if publication is provided", () => {
-    renderWithProviders(<PublicationSettingsBlock publication={publication} />);
+    renderWithProviders(
+      <PublicationSettingsBlock publication={getPublication(true)} />,
+    );
+
+    expect(screen.getByText(AUTOMATIC_LABELS.upgrades)).toBeInTheDocument();
 
     const checkboxes = screen.getAllByRole("checkbox");
-    expect(checkboxes).toHaveLength(5);
+    expect(checkboxes).toHaveLength(3);
 
     for (const checkbox of checkboxes) {
       expect(checkbox).toBeChecked();
     }
   });
 
-  it("shows automatic upgrades if limit automatic installation is checked", async () => {
-    const formik = createPublicationSettingsFormik();
-
-    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
-
-    expect(
-      screen.getByRole("checkbox", { name: /limit automatic installation/i }),
-    ).toBeChecked();
-    expect(
-      screen.getByRole("checkbox", { name: /automatic upgrades/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("resets automatic upgrades when limit automatic installation is unchecked", async () => {
-    const formik = createPublicationSettingsFormik(true);
-    const user = userEvent.setup();
-
-    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
-
-    const autoInstallCheckbox = screen.getByRole("checkbox", {
-      name: /limit automatic installation/i,
-    });
-
-    await user.click(autoInstallCheckbox);
-
-    expect(formik.setFieldValue).toHaveBeenCalledWith(
-      "automaticUpgrades",
-      false,
+  it("preselects manual value from publication", () => {
+    renderWithProviders(
+      <PublicationSettingsBlock
+        publication={{
+          ...getPublication(true),
+          butAutomaticUpgrades: false,
+        }}
+      />,
     );
-    expect(formik.values.automaticUpgrades).toBe(false);
+
+    expect(screen.getByText(AUTOMATIC_LABELS.neither)).toBeInTheDocument();
   });
 
-  it("does not reset automatic upgrades when limit automatic installation is checked", async () => {
-    const formik = createPublicationSettingsFormik(true, false);
+  it("preselects manual when installs are limited and upgrades disabled", () => {
+    const formik = createPublicationSettingsFormik(true);
+
+    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
+
+    expect(
+      screen.getByRole("combobox", { name: /installs and upgrades/i }),
+    ).toHaveValue("manual");
+  });
+
+  it("preselects autoUpgrades when installs are limited and upgrades enabled", () => {
+    const formik = createPublicationSettingsFormik(true, true);
+
+    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
+
+    expect(
+      screen.getByRole("combobox", { name: /installs and upgrades/i }),
+    ).toHaveValue("autoUpgrades");
+  });
+
+  it("selects each option in the dropdown", async () => {
+    const formik = createPublicationSettingsFormik();
     const user = userEvent.setup();
 
     renderWithProviders(<PublicationSettingsBlock formik={formik} />);
 
-    const autoInstallCheckbox = screen.getByRole("checkbox", {
-      name: /limit automatic installation/i,
+    const dropdownInput = screen.getByRole("combobox", {
+      name: /installs and upgrades/i,
     });
+    expect(dropdownInput).toHaveValue("automatic");
 
-    await user.click(autoInstallCheckbox);
+    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.neither);
+    expect(formik.values.limitAutomaticInstallation).toBe(true);
+    expect(formik.values.automaticUpgrades).toBe(false);
 
-    expect(formik.setFieldValue).not.toHaveBeenCalled();
+    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.upgrades);
+    expect(formik.values.limitAutomaticInstallation).toBe(true);
     expect(formik.values.automaticUpgrades).toBe(true);
+
+    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.both);
+    expect(formik.values.limitAutomaticInstallation).toBe(false);
+    expect(formik.values.automaticUpgrades).toBe(false);
   });
 });

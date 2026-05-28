@@ -1,12 +1,15 @@
 import Blocks from "@/components/layout/Blocks";
-import { Input } from "@canonical/react-components";
+import { Input, Select } from "@canonical/react-components";
 import { PUBLICATION_SETTINGS_HELP_TEXT } from "./constants";
-import classes from "./PublicationSettingsBlock.module.scss";
 import type { Publication } from "@canonical/landscape-openapi";
 import type { FormikContextType } from "formik";
 import type { PublishSettingsValues } from "../../types";
-import type { ChangeEvent, JSX } from "react";
 import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
+import type { JSX } from "react";
+import type { SelectOption } from "@/types/SelectOption";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
+import { getInstallsAndUpgradesValue } from "../../helpers";
+import { AUTOMATIC_LABELS } from "../../constants";
 
 type PublicationSettingsBlockProps<T extends PublishSettingsValues> =
   | {
@@ -22,105 +25,86 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   formik,
   publication,
 }: PublicationSettingsBlockProps<T>): JSX.Element => {
-  const getInputProps = () => {
+  const getCheckboxProps = () => {
     if (formik) {
       return {
-        hashIndexing: {
-          ...formik.getFieldProps("hashIndexing"),
-          checked: formik.values.hashIndexing,
-        },
-        limitAutoInstall: {
-          ...formik.getFieldProps("limitAutomaticInstallation"),
-          checked: formik.values.limitAutomaticInstallation,
-          onChange: (e: ChangeEvent<HTMLInputElement>) => {
-            if (!e.target.checked) {
-              void formik.setFieldValue("automaticUpgrades", false);
-            }
-            formik.getFieldProps("limitAutomaticInstallation").onChange(e);
-          },
-        },
-        automaticUpgrades: {
-          ...formik.getFieldProps("automaticUpgrades"),
-          checked: formik.values.automaticUpgrades,
-        },
-        skipBz2: {
-          ...formik.getFieldProps("skipBz2"),
-          checked: formik.values.skipBz2,
-        },
-        skipContents: {
-          ...formik.getFieldProps("skipContentIndexing"),
-          checked: formik.values.skipContentIndexing,
-        },
+        hashIndexing: formik.getFieldProps({ name: "hashIndexing", type: "checkbox" }),
+        skipBz2: formik.getFieldProps({ name: "skipBz2", type: "checkbox" }),
+        skipContents: formik.getFieldProps({ name: "skipContentIndexing", type: "checkbox" }),
       };
     }
 
     return {
-      hashIndexing: {
-        checked: Boolean(publication.acquireByHash),
-        disabled: true,
-      },
-      limitAutoInstall: {
-        checked: Boolean(publication.notAutomatic),
-        disabled: true,
-      },
-      automaticUpgrades: {
-        checked: Boolean(publication.butAutomaticUpgrades),
-        disabled: true,
-      },
-      skipBz2: { checked: Boolean(publication.skipBz2), disabled: true },
-      skipContents: {
-        checked: Boolean(publication.skipContents),
-        disabled: true,
-      },
+      hashIndexing: { checked: !!publication.acquireByHash, disabled: true },
+      skipBz2: { checked: !!publication.skipBz2, disabled: true },
+      skipContents: { checked: !!publication.skipContents, disabled: true },
     };
   };
 
-  const inputProps = getInputProps();
-  const isLimitAutoInstallChecked = formik
-    ? formik.values.limitAutomaticInstallation
-    : !!publication.notAutomatic;
+  const checkboxProps = getCheckboxProps();
+
+  const automaticOptions: SelectOption[] = [
+    { label: AUTOMATIC_LABELS.both, value: "automatic" },
+    { label: AUTOMATIC_LABELS.upgrades, value: "autoUpgrades" },
+    { label: AUTOMATIC_LABELS.neither, value: "manual" },
+  ];
+
+  const getAutomaticOptionValue = (values: PublishSettingsValues) => {
+    if (!values.limitAutomaticInstallation) {
+      return "automatic";
+    }
+
+    if (values.automaticUpgrades) {
+      return "autoUpgrades";
+    }
+
+    return "manual";
+  };
 
   return (
     <Blocks.Item title="Settings">
+      {formik ? (
+        <Select
+          label="Installs and upgrades"
+          options={automaticOptions}
+          onChange={async (e) => {
+            const { value } = e.target;
+            if (value === "automatic") {
+              await formik.setFieldValue("limitAutomaticInstallation", false);
+              await formik.setFieldValue("automaticUpgrades", false);
+            } else if (value === "autoUpgrades") {
+              await formik.setFieldValue("limitAutomaticInstallation", true);
+              await formik.setFieldValue("automaticUpgrades", true);
+            } else {
+              await formik.setFieldValue("limitAutomaticInstallation", true);
+              await formik.setFieldValue("automaticUpgrades", false);
+            }
+          }}
+          value={getAutomaticOptionValue(formik.values)}
+        />
+      ) : (
+        <ReadOnlyField
+          label="Installs and upgrades"
+          value={getInstallsAndUpgradesValue(publication)}
+        />
+      )}
+
       <CheckboxInputWithHelp
         label="Hash based indexing"
         tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
-        {...inputProps.hashIndexing}
+        {...checkboxProps.hashIndexing}
       />
-
-      <CheckboxInputWithHelp
-        label="Limit automatic installation"
-        tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.limitAutomaticInstall}
-        {...inputProps.limitAutoInstall}
-      />
-
-      <div aria-live="polite" aria-relevant="all">
-        {isLimitAutoInstallChecked && (
-          <>
-            <span className="u-off-screen">
-              Selecting &quot;Limit automatic installation&quot; has opened a
-              new option
-            </span>
-            <CheckboxInputWithHelp
-              label="Automatic upgrades"
-              tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
-              wrapperClassName={classes.subCheckbox}
-              {...inputProps.automaticUpgrades}
-            />
-          </>
-        )}
-      </div>
 
       <Input
         type="checkbox"
         label="Skip bz2 compression for index files"
-        {...inputProps.skipBz2}
+        {...checkboxProps.skipBz2}
       />
 
       <Input
         type="checkbox"
         label="Skip generating content indexes"
-        {...inputProps.skipContents}
+        {...checkboxProps.skipContents}
       />
     </Blocks.Item>
   );

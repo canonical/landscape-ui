@@ -16,3 +16,9 @@ export const VALIDATION_SCHEMA_NEW = Yup.object().shape({
 export const VALIDATION_SCHEMA_EXISTING = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
 });
+
+export const AUTOMATIC_LABELS = {
+  both: "Automatic installs and upgrades",
+  upgrades: "Automatic upgrades only",
+  neither: "Manual installs and upgrades",
+};
