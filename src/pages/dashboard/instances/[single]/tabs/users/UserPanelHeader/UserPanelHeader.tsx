@@ -4,7 +4,6 @@ import UserPanelActionButtons from "../UserPanelActionButtons";
 import type { User } from "@/types/User";
 import { getSelectedUsers } from "./helpers";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
-import { TableFilterChips } from "@/components/filter";
 
 interface UserPanelHeaderProps {
   readonly selected: number[];
@@ -18,19 +17,16 @@ const UserPanelHeader: FC<UserPanelHeaderProps> = ({
   users,
 }) => {
   return (
-    <>
-      <HeaderWithSearch
-        actions={
-          <div className={classes.actions}>
-            <UserPanelActionButtons
-              handleClearSelection={handleClearSelection}
-              selectedUsers={getSelectedUsers(users, selected)}
-            />
-          </div>
-        }
-      />
-      <TableFilterChips filtersToDisplay={["search"]} />
-    </>
+    <HeaderWithSearch
+      actions={
+        <div className={classes.actions}>
+          <UserPanelActionButtons
+            handleClearSelection={handleClearSelection}
+            selectedUsers={getSelectedUsers(users, selected)}
+          />
+        </div>
+      }
+    />
   );
 };
 

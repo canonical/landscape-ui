@@ -31,7 +31,7 @@ const PackagesPanelHeader: FC<PackagesPanelHeaderProps> = ({
         }
       />
       <TableFilterChips
-        filtersToDisplay={["search", "status"]}
+        filtersToDisplay={["status"]}
         statusOptions={STATUS_OPTIONS}
       />
     </>

@@ -21,7 +21,7 @@ const USGProfilesHeader: FC = () => {
         }
       />
       <TableFilterChips
-        filtersToDisplay={["status", "search", "passRateFrom", "passRateTo"]}
+        filtersToDisplay={["status", "passRateFrom", "passRateTo"]}
         statusOptions={USG_STATUSES}
       />
     </>
