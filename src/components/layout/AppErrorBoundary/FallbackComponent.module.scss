@@ -15,3 +15,8 @@
 :global(.is-dark) .errorDetails {
   background-color: rgb(255 255 255 / 3%);
 }
+
+.emptyState {
+  max-width: 100%;
+  width: max-content;
+}
