@@ -32,7 +32,7 @@ export const succeededOperation: PackagesValidationOperation = {
     "@type":
       "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
     output:
-      "Would add: python3-snap-http_1.4.0-0ubuntu0_all\nWould add: package2-1.0.0\nTotal packages that would be added: 2\n",
+      "Would add: package1-0.2.1\nWould add: package2-1.0.0\nTotal packages that would be added: 2\n",
   },
 };
 
@@ -122,7 +122,7 @@ export const overCountOperation: PackagesValidationOperation = {
     "@type":
       "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskResponse",
     output: [
-      "Would add: python3-snap-http_1.4.0-0ubuntu0_all",
+      "Would add: package1-0.2.1",
       "Would add: package2-1.0.0",
       "Would add: package3-2.1.0",
       "Would add: package4-0.9.1",

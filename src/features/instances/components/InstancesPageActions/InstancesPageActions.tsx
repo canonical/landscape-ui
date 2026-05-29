@@ -6,11 +6,7 @@ import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import {
-  hasOneItem,
-  pluralizeArray,
-  pluralizeWithCount,
-} from "@/utils/_helpers";
+import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -147,7 +143,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${pluralizeArray(selectedInstances, (instance) => instance.title, `instances`)}`,
+      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, `instances`)}`,
       <Suspense fallback={<LoadingState />}>
         <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,
@@ -175,7 +171,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralizeWithCount(selectedInstances.length, "instance")}`,
+      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
         <AttachTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
@@ -184,7 +180,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralizeWithCount(selectedInstances.length, "instance")}`,
+      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
         <ReplaceTokenForm selectedInstances={selectedInstances} />
       </Suspense>,

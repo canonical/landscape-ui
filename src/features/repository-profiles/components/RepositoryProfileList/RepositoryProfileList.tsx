@@ -17,7 +17,7 @@ import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
 import classes from "./RepositoryProfileList.module.scss";
 import { ProfileAssociatedInstancesLink } from "@/features/profiles";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 const AssociatedCountCell: FC<{ readonly profile: RepositoryProfile }> = ({
   profile,
@@ -113,7 +113,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile applied machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>{pluralizeWithCount(original.applied_count ?? 0, "instance")}</>
+          <>{pluralize(original.applied_count ?? 0, ["instance"], "exact")}</>
         ),
       },
       {
@@ -125,7 +125,7 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
             `${original.title} profile pending machines count`,
         },
         Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>{pluralizeWithCount(original.pending_count ?? 0, "instance")}</>
+          <>{pluralize(original.pending_count ?? 0, ["instance"], "exact")}</>
         ),
       },
       {

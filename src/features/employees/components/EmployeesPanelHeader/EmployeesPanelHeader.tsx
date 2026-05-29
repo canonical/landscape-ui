@@ -16,7 +16,7 @@ const EmployeesPanelHeader: FC = () => {
         }
       />
       <TableFilterChips
-        filtersToDisplay={["search", "status"]}
+        filtersToDisplay={["status"]}
         statusOptions={STATUS_OPTIONS}
       />
     </>

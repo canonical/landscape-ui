@@ -3,27 +3,19 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Form,
-  Icon,
-  Input,
-  Select,
-  Textarea,
-  Tooltip,
-} from "@canonical/react-components";
+import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { SETTINGS_HELP_TEXT } from "../../constants";
 import useNotify from "@/hooks/useNotify";
-import classes from "../../PublishMirrorForm.module.scss";
 import {
+  PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
+  VALIDATION_SCHEMA_NEW,
 } from "@/features/publications";
 import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
-import * as Yup from "yup";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 interface PublishMirrorNewFormProps {
@@ -45,11 +37,11 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 
   const formik = useFormik({
     initialValues: {
-      publicationName: "",
+      name: "",
       publicationTarget: publicationTargets[0]?.name ?? "",
       signingKey: "",
       hashIndexing: false,
-      automaticInstallation: false,
+      limitAutomaticInstallation: false,
       automaticUpgrades: false,
       skipBz2: false,
       skipContentIndexing: false,
@@ -59,12 +51,12 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       try {
         const { data: publication } = await createPublication({
           body: {
-            displayName: values.publicationName,
+            displayName: values.name,
             publicationTarget: values.publicationTarget,
             source: mirror.name ?? "",
             distribution: mirror.distribution,
             acquireByHash: values.hashIndexing,
-            notAutomatic: !values.automaticInstallation,
+            notAutomatic: values.limitAutomaticInstallation,
             butAutomaticUpgrades: values.automaticUpgrades,
             skipBz2: values.skipBz2,
             skipContents: values.skipContentIndexing,
@@ -93,16 +85,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       }
     },
 
-    validationSchema: Yup.object().shape({
-      publicationName: Yup.string().required("This field is required."),
-      publicationTarget: Yup.string().required("This field is required."),
-      signingKey: Yup.string(),
-      hashIndexing: Yup.boolean(),
-      automaticInstallation: Yup.boolean(),
-      automaticUpgrades: Yup.boolean(),
-      skipBz2: Yup.boolean(),
-      skipContentIndexing: Yup.boolean(),
-    }),
+    validationSchema: VALIDATION_SCHEMA_NEW,
+    validateOnMount: true,
   });
 
   const publicationTargetOptions: SelectOption[] = publicationTargets.map(
@@ -121,8 +105,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
             type="text"
             label="Publication name"
             required
-            error={getFormikError(formik, "publicationName")}
-            {...formik.getFieldProps("publicationName")}
+            error={getFormikError(formik, "name")}
+            {...formik.getFieldProps("name")}
           />
 
           <Select
@@ -152,82 +136,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
 
         <PublishMirrorContentsBlock mirror={mirror} />
 
-        <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={formik.values.hashIndexing}
-            {...formik.getFieldProps("hashIndexing")}
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={formik.values.automaticInstallation}
-            {...formik.getFieldProps("automaticInstallation")}
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={formik.values.automaticUpgrades}
-            {...formik.getFieldProps("automaticUpgrades")}
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip bz2"
-            checked={formik.values.skipBz2}
-            {...formik.getFieldProps("skipBz2")}
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip content indexing"
-            checked={formik.values.skipContentIndexing}
-            {...formik.getFieldProps("skipContentIndexing")}
-          />
-        </Blocks.Item>
+        <PublicationSettingsBlock formik={formik} />
       </Blocks>
 
       <SidePanelFormButtons

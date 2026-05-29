@@ -2,7 +2,7 @@ import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { useOrgSettings } from "@/features/organisation-settings";
 import useEnv from "@/hooks/useEnv";
 import useRoles from "@/hooks/useRoles";
-import { getTitleByName, pluralizeWithCount } from "@/utils/_helpers";
+import { getTitleByName, pluralize } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { Input, Select } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
@@ -34,7 +34,7 @@ export default function useUsgProfileFormNameStep<
       return "Infinite";
     }
 
-    return pluralizeWithCount(auditRetentionPeriod, "day");
+    return pluralize(auditRetentionPeriod, ["day"], "exact");
   };
 
   return {

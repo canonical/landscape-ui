@@ -6,6 +6,6 @@ export interface FormProps {
   downloadInstallerFiles: boolean;
   verificationGpgKey?: string;
   packageFilter?: string;
-  includeDependencies?: boolean;
+  includeDependencies: boolean;
   keepCurrentGpgKey: boolean;
 }
