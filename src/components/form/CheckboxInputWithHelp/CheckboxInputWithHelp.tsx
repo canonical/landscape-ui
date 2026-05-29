@@ -1,13 +1,8 @@
-import type { CheckboxInputProps } from "@canonical/react-components";
-import {
-  CheckboxInput,
-  Icon,
-  ICONS,
-  Tooltip,
-} from "@canonical/react-components";
+import type { InputProps } from "@canonical/react-components";
+import { Icon, ICONS, Input, Tooltip } from "@canonical/react-components";
 import classes from "./CheckboxInputWithHelp.module.scss";
 
-interface CheckboxInputWithHelpProps extends CheckboxInputProps {
+interface CheckboxInputWithHelpProps extends InputProps {
   readonly tooltipMessage: string;
 }
 
@@ -17,7 +12,8 @@ const CheckboxInputWithHelp = ({
   ...checkboxInputProps
 }: CheckboxInputWithHelpProps) => {
   return (
-    <CheckboxInput
+    <Input
+      type="checkbox"
       label={
         <span>
           <span className={classes.settingLabel}>{label}</span>

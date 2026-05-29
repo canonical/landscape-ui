@@ -6,21 +6,18 @@ import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
-import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
-import {
-  type PublishRepositoryNewFormValues,
-  VALIDATION_SCHEMA_NEW,
-} from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "@canonical/landscape-openapi";
 import {
-  PUBLICATION_SETTINGS_HELP_TEXT,
+  PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
+  VALIDATION_SCHEMA_NEW,
 } from "@/features/publications";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
+import type { PublishNewFormValues } from "@/features/publications";
 
 interface PublishRepositoryNewFormProps {
   readonly repository: Local;
@@ -38,18 +35,18 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
   const { publishPublication, isPublishingPublication } =
     usePublishPublication();
 
-  const handleSubmit = async (values: PublishRepositoryNewFormValues) => {
+  const handleSubmit = async (values: PublishNewFormValues) => {
     const valuesforCreation = {
       displayName: values.name,
       publicationTarget: values.publicationTarget,
       source: repository.name ?? "",
       distribution: repository.defaultDistribution,
-      acquireByHash: values.acquireByHash,
-      butAutomaticUpgrades: values.butAutomaticUpgrades,
-      notAutomatic: values.notAutomatic,
+      acquireByHash: values.hashIndexing,
+      butAutomaticUpgrades: values.automaticUpgrades,
+      notAutomatic: values.limitAutomaticInstallation,
       skipBz2: values.skipBz2,
-      skipContents: values.skipContents,
-      ...(values.gpgKey && { gpgKey: { armor: values.gpgKey } }),
+      skipContents: values.skipContentIndexing,
+      ...(values.signingKey && { gpgKey: { armor: values.signingKey } }),
     };
 
     try {
@@ -84,15 +81,15 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     [publicationTargets],
   );
 
-  const initialValues: PublishRepositoryNewFormValues = {
+  const initialValues: PublishNewFormValues = {
     name: "",
     publicationTarget: publicationTargetOptions[0]?.value || "",
-    gpgKey: "",
-    acquireByHash: false,
-    butAutomaticUpgrades: false,
-    notAutomatic: false,
+    signingKey: "",
+    hashIndexing: false,
+    automaticUpgrades: false,
+    limitAutomaticInstallation: false,
     skipBz2: false,
-    skipContents: false,
+    skipContentIndexing: false,
   };
 
   const formik = useFormik({
@@ -126,51 +123,14 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
           <Textarea
             label="Signing GPG key"
             rows={4}
-            error={getFormikError(formik, "gpgKey")}
-            {...formik.getFieldProps("gpgKey")}
+            error={getFormikError(formik, "signingKey")}
+            {...formik.getFieldProps("signingKey")}
           />
         </Blocks.Item>
 
         <PublishRepositoryContentsBlock repository={repository} />
 
-        <Blocks.Item title="Settings">
-          <CheckboxInputWithHelp
-            label="Hash based indexing"
-            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
-            checked={formik.values.acquireByHash}
-            {...formik.getFieldProps("acquireByHash")}
-          />
-
-          <CheckboxInputWithHelp
-            label="Automatic installation"
-            tooltipMessage={
-              PUBLICATION_SETTINGS_HELP_TEXT.automaticInstallation
-            }
-            checked={formik.values.notAutomatic}
-            {...formik.getFieldProps("notAutomatic")}
-          />
-
-          <CheckboxInputWithHelp
-            label="Automatic upgrades"
-            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
-            checked={formik.values.butAutomaticUpgrades}
-            {...formik.getFieldProps("butAutomaticUpgrades")}
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip bz2"
-            checked={formik.values.skipBz2}
-            {...formik.getFieldProps("skipBz2")}
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip content indexing"
-            checked={formik.values.skipContents}
-            {...formik.getFieldProps("skipContents")}
-          />
-        </Blocks.Item>
+        <PublicationSettingsBlock formik={formik} />
       </Blocks>
 
       <SidePanelFormButtons

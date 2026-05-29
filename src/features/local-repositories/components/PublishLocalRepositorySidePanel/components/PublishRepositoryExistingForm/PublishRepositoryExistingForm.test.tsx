@@ -6,6 +6,7 @@ import { publications } from "@/tests/mocks/publications";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as publicationsApi from "@/features/publications";
+import { ErrorBoundary } from "@sentry/react";
 
 const localRepositoriesPublications = publications.filter(({ source }) =>
   source.startsWith("locals/"),
@@ -147,14 +148,17 @@ describe("PublishRepositoryExistingForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders with empty publications list", () => {
+  it("throws error when no publications are available", () => {
     renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={[]}
-      />,
+      <ErrorBoundary fallback={<p>Selected publication not found</p>}>
+        <PublishRepositoryExistingForm
+          repository={repositories[0]}
+          publications={[]}
+        />
+      </ErrorBoundary>,
     );
-
-    expect(screen.getByLabelText(/^publication name$/i)).toBeInTheDocument();
+    expect(
+      screen.getByText("Selected publication not found"),
+    ).toBeInTheDocument();
   });
 });

@@ -271,7 +271,6 @@ const AddMirrorForm: FC = () => {
                 tooltipMessage={SETTINGS_HELP_TEXT.preserveSignatures}
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}
-                inline
               />
             </Blocks.Item>
             <Blocks.Item
@@ -388,7 +387,6 @@ const AddMirrorForm: FC = () => {
                   !formik.values.packageFilter ||
                   formik.values.preserveSignatures
                 }
-                inline
               />
               <p className={classes.heading}>Download options:</p>
               <CheckboxInputWithHelp
@@ -396,7 +394,6 @@ const AddMirrorForm: FC = () => {
                 tooltipMessage={SETTINGS_HELP_TEXT.downloadUdebPackages}
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
-                inline
               />
               <CheckboxInput
                 label="Download sources"

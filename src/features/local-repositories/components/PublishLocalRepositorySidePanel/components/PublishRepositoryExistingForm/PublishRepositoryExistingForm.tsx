@@ -3,17 +3,16 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Input, Select } from "@canonical/react-components";
+import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
-import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
-import { VALIDATION_SCHEMA_EXISTING } from "../../constants";
 import useNotify from "@/hooks/useNotify";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Local, Publication } from "@canonical/landscape-openapi";
 import {
-  PUBLICATION_SETTINGS_HELP_TEXT,
+  PublicationSettingsBlock,
   usePublishPublication,
+  VALIDATION_SCHEMA_EXISTING,
 } from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
@@ -73,6 +72,12 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     ({ name }) => name === formik.values.name,
   );
 
+  // This should never happen because this form is only enabled when there are
+  // publications, but handling it reduces the cyclomatic complexity.
+  if (!publication) {
+    throw new Error("Selected publication not found");
+  }
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Blocks>
@@ -87,7 +92,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Publication target"
-            value={publication?.publicationTarget ?? ""}
+            value={publication.publicationTarget}
             tooltipMessage={
               "The publication target is defined by the publication."
             }
@@ -95,51 +100,14 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Signing GPG key"
-            value={publication?.gpgKey?.armor ?? ""}
+            value={publication.gpgKey?.armor}
             tooltipMessage={"The GPG key is defined by the publication."}
           />
         </Blocks.Item>
 
         <PublishRepositoryContentsBlock repository={repository} />
 
-        <Blocks.Item title="Settings">
-          <CheckboxInputWithHelp
-            label="Hash based indexing"
-            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
-            checked={publication?.acquireByHash ?? false}
-            disabled
-          />
-
-          <CheckboxInputWithHelp
-            label="Automatic installation"
-            tooltipMessage={
-              PUBLICATION_SETTINGS_HELP_TEXT.automaticInstallation
-            }
-            checked={publication?.notAutomatic ?? false}
-            disabled
-          />
-
-          <CheckboxInputWithHelp
-            label="Automatic upgrades"
-            tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
-            checked={publication?.butAutomaticUpgrades ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip bz2"
-            checked={publication?.skipBz2 ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip content indexing"
-            checked={publication?.skipContents ?? false}
-            disabled
-          />
-        </Blocks.Item>
+        <PublicationSettingsBlock publication={publication} />
       </Blocks>
 
       <SidePanelFormButtons

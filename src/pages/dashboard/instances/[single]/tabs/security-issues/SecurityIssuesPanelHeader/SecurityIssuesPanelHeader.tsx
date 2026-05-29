@@ -1,4 +1,3 @@
-import { TableFilterChips } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
@@ -97,7 +96,6 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
           </div>
         }
       />
-      <TableFilterChips filtersToDisplay={["search"]} />
     </>
   );
 };
