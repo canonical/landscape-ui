@@ -28,9 +28,15 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   const getCheckboxProps = () => {
     if (formik) {
       return {
-        hashIndexing: formik.getFieldProps({ name: "hashIndexing", type: "checkbox" }),
+        hashIndexing: formik.getFieldProps({
+          name: "hashIndexing",
+          type: "checkbox",
+        }),
         skipBz2: formik.getFieldProps({ name: "skipBz2", type: "checkbox" }),
-        skipContents: formik.getFieldProps({ name: "skipContentIndexing", type: "checkbox" }),
+        skipContents: formik.getFieldProps({
+          name: "skipContentIndexing",
+          type: "checkbox",
+        }),
       };
     }
 

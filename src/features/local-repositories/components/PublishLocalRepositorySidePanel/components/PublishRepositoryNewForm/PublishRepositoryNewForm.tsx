@@ -38,10 +38,9 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     usePublishPublication();
 
   const handleSubmit = async (values: PublishNewFormValues) => {
-    const {
-      notAutomatic,
-      butAutomaticUpgrades
-    } = getInstallsAndUpgradesValues(values.installsAndUpgrades);
+    const { notAutomatic, butAutomaticUpgrades } = getInstallsAndUpgradesValues(
+      values.installsAndUpgrades,
+    );
 
     const valuesforCreation = {
       displayName: values.name,

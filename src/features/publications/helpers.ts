@@ -24,7 +24,9 @@ export const getPublicationTargetName = (publicationTarget: string) => {
   return parts.length > 1 ? (parts[1] ?? publicationTarget) : publicationTarget;
 };
 
-export const getInitialValues = (publicationTarget = ""): PublishNewFormValues => {
+export const getInitialValues = (
+  publicationTarget = "",
+): PublishNewFormValues => {
   return {
     name: "",
     publicationTarget,
@@ -49,7 +51,7 @@ export const getInstallsAndUpgradesText = (publication: Publication) => {
 };
 
 export const getInstallsAndUpgradesValues = (
-  installsAndUpgrades: PublishNewFormValues["installsAndUpgrades"]
+  installsAndUpgrades: PublishNewFormValues["installsAndUpgrades"],
 ) => {
   switch (installsAndUpgrades) {
     case "automatic":

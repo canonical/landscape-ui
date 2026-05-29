@@ -88,10 +88,7 @@ describe("AddPublicationForm", () => {
       publicationTargetSelect,
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
-    await user.selectOptions(
-      automaticSelect,
-      "manual",
-    );
+    await user.selectOptions(automaticSelect, "manual");
     await user.click(
       screen.getByRole("checkbox", { name: /Hash based indexing/i }),
     );
@@ -111,9 +108,7 @@ describe("AddPublicationForm", () => {
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
 
-    expect(automaticSelect).toHaveValue(
-      "manual",
-    );
+    expect(automaticSelect).toHaveValue("manual");
 
     expect(
       screen.getByText("main, restricted, universe, multiverse"),

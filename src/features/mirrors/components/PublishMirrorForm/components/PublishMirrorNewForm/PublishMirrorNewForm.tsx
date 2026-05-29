@@ -42,10 +42,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
     initialValues: getInitialValues(publicationTargets[0]?.name),
 
     onSubmit: async (values: PublishNewFormValues) => {
-      const {
-        notAutomatic,
-        butAutomaticUpgrades
-      } = getInstallsAndUpgradesValues(values.installsAndUpgrades);
+      const { notAutomatic, butAutomaticUpgrades } =
+        getInstallsAndUpgradesValues(values.installsAndUpgrades);
 
       try {
         const { data: publication } = await createPublication({

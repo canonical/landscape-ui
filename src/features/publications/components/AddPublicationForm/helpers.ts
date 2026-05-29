@@ -34,10 +34,9 @@ export const getPublicationPayload = (values: FormProps) => {
     values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY
       ? []
       : values.architectures;
-  const {
-    notAutomatic,
-    butAutomaticUpgrades
-  } = getInstallsAndUpgradesValues(values.installsAndUpgrades);
+  const { notAutomatic, butAutomaticUpgrades } = getInstallsAndUpgradesValues(
+    values.installsAndUpgrades,
+  );
 
   return {
     publicationId,
