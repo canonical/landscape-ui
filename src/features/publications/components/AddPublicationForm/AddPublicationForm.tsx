@@ -276,16 +276,6 @@ const AddPublicationForm: FC = () => {
           )}
         </Blocks.Item>
 
-        {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
-          selectedSource.preserveSignatures === false && (
-            <Blocks.Item title="Signing GPG Key">
-              <Textarea
-                {...formik.getFieldProps("signingKey")}
-                error={getFormikError(formik, "signingKey")}
-              />
-            </Blocks.Item>
-          )}
-
         <PublicationSettingsBlock formik={formik} />
       </Blocks>
 

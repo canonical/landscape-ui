@@ -12,6 +12,5 @@ export { default as PublicationDetailsSidePanel } from "./components/Publication
 export { default as AssociatedPublicationsList } from "./components/AssociatedPublicationsList";
 export { default as PublicationSettingsBlock } from "./components/PublicationSettingsBlock";
 export { getSourceName, getSourceType } from "./helpers";
-export { SETTINGS_HELP_TEXT as PUBLICATION_SETTINGS_HELP_TEXT } from "./components/AddPublicationForm/constants";
 export { VALIDATION_SCHEMA_NEW, VALIDATION_SCHEMA_EXISTING } from "./constants";
 export type { PublishNewFormValues } from "./types";
