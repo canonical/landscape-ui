@@ -35,9 +35,7 @@ describe("UserInfo", () => {
   it("renders correctly", () => {
     renderWithProviders(<UserInfo />);
 
-    expect(
-      screen.getByText(versionText),
-    ).toBeInTheDocument();
+    expect(screen.getByText(versionText)).toBeInTheDocument();
     labels.forEach((label) => {
       expect(screen.getByText(label)).toBeInTheDocument();
     });
