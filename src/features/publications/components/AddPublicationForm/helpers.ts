@@ -1,6 +1,7 @@
 import type { FormProps } from "./types";
 import type { PublicationWritable } from "@canonical/landscape-openapi";
 import { SOURCE_TYPE_LOCAL_REPOSITORY } from "./constants";
+import { getInstallsAndUpgradesValues } from "../../helpers";
 
 export interface CreatePublicationPayload {
   publicationId?: string;
@@ -33,6 +34,10 @@ export const getPublicationPayload = (values: FormProps) => {
     values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY
       ? []
       : values.architectures;
+  const {
+    notAutomatic,
+    butAutomaticUpgrades
+  } = getInstallsAndUpgradesValues(values.installsAndUpgrades);
 
   return {
     publicationId,
@@ -46,8 +51,8 @@ export const getPublicationPayload = (values: FormProps) => {
       distribution: values.distribution.trim() || undefined,
       architectures: architectures.length > 0 ? architectures : undefined,
       acquireByHash: values.hashIndexing,
-      notAutomatic: values.limitAutomaticInstallation,
-      butAutomaticUpgrades: values.automaticUpgrades,
+      notAutomatic,
+      butAutomaticUpgrades,
       skipBz2: values.skipBz2,
       skipContents: values.skipContentIndexing,
       gpgKey: values.signingKey.trim()

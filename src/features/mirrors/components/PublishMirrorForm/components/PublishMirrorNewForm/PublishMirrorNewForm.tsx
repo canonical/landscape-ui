@@ -8,6 +8,8 @@ import { useFormik } from "formik";
 import type { FC } from "react";
 import useNotify from "@/hooks/useNotify";
 import {
+  getInitialValues,
+  getInstallsAndUpgradesValues,
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
@@ -17,6 +19,7 @@ import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import type { PublishNewFormValues } from "@/features/publications";
 
 interface PublishMirrorNewFormProps {
   readonly mirror: Mirror;
@@ -36,18 +39,14 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
     usePublishPublication();
 
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      publicationTarget: publicationTargets[0]?.name ?? "",
-      signingKey: "",
-      hashIndexing: false,
-      limitAutomaticInstallation: false,
-      automaticUpgrades: false,
-      skipBz2: false,
-      skipContentIndexing: false,
-    },
+    initialValues: getInitialValues(publicationTargets[0]?.name),
 
-    onSubmit: async (values) => {
+    onSubmit: async (values: PublishNewFormValues) => {
+      const {
+        notAutomatic,
+        butAutomaticUpgrades
+      } = getInstallsAndUpgradesValues(values.installsAndUpgrades);
+
       try {
         const { data: publication } = await createPublication({
           body: {
@@ -56,8 +55,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
             source: mirror.name ?? "",
             distribution: mirror.distribution,
             acquireByHash: values.hashIndexing,
-            notAutomatic: values.limitAutomaticInstallation,
-            butAutomaticUpgrades: values.automaticUpgrades,
+            notAutomatic,
+            butAutomaticUpgrades,
             skipBz2: values.skipBz2,
             skipContents: values.skipContentIndexing,
             gpgKey: values.signingKey

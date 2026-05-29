@@ -6,7 +6,7 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
-import { getInstallsAndUpgradesValue, getSourceType } from "../../helpers";
+import { getInstallsAndUpgradesText, getSourceType } from "../../helpers";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
@@ -126,7 +126,7 @@ const PublicationDetails = ({
           <InfoGrid dense>
             <InfoGrid.Item
               label="Installs and upgrades"
-              value={getInstallsAndUpgradesValue(publication)}
+              value={getInstallsAndUpgradesText(publication)}
             />
 
             <InfoGrid.Item

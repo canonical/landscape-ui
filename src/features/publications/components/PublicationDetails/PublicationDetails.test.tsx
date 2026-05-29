@@ -48,7 +48,7 @@ describe("PublicationDetails", () => {
       { label: "Hash indexing", value: "Yes" },
       {
         label: "Installs and upgrades",
-        value: AUTOMATIC_LABELS.both,
+        value: AUTOMATIC_LABELS.automatic,
       },
       { label: "Skip bz2", value: "No" },
       { label: "Skip content indexing", value: "No" },
@@ -85,7 +85,7 @@ describe("PublicationDetails", () => {
 
     expect(container).toHaveInfoItem(
       "Installs and upgrades",
-      AUTOMATIC_LABELS.upgrades,
+      AUTOMATIC_LABELS.autoUpgrades,
     );
   });
 
@@ -100,7 +100,7 @@ describe("PublicationDetails", () => {
 
     expect(container).toHaveInfoItem(
       "Installs and upgrades",
-      AUTOMATIC_LABELS.neither,
+      AUTOMATIC_LABELS.manual,
     );
   });
 

@@ -5,15 +5,13 @@ import { describe, expect, it } from "vitest";
 import { PublicationSettingsBlock } from "../..";
 import { createFormik } from "@/tests/formik";
 import type { Publication } from "@canonical/landscape-openapi";
-import { AUTOMATIC_LABELS } from "../../constants";
+import { type AUTOMATIC_KEY, AUTOMATIC_LABELS } from "../../constants";
 
 const createPublicationSettingsFormik = (
-  limitAutomaticInstallation = false,
-  automaticUpgrades = false,
+  installsAndUpgrades: AUTOMATIC_KEY = "automatic",
 ) =>
   createFormik({
-    limitAutomaticInstallation,
-    automaticUpgrades,
+    installsAndUpgrades,
     hashIndexing: false,
     skipBz2: false,
     skipContentIndexing: false,
@@ -35,7 +33,7 @@ describe("PublicationSettingsBlock", () => {
     );
 
     expect(screen.getByText("Installs and upgrades")).toBeInTheDocument();
-    expect(screen.getByText(AUTOMATIC_LABELS.both)).toBeInTheDocument();
+    expect(screen.getByText(AUTOMATIC_LABELS.automatic)).toBeInTheDocument();
     expect(
       screen.getByRole("checkbox", { name: /hash based indexing/i }),
     ).toBeDisabled();
@@ -47,12 +45,12 @@ describe("PublicationSettingsBlock", () => {
     ).toBeDisabled();
   });
 
-  it("renders existing publication settings if publication is provided", () => {
+  it("renders existing publication settings if provided", () => {
     renderWithProviders(
       <PublicationSettingsBlock publication={getPublication(true)} />,
     );
 
-    expect(screen.getByText(AUTOMATIC_LABELS.upgrades)).toBeInTheDocument();
+    expect(screen.getByText(AUTOMATIC_LABELS.autoUpgrades)).toBeInTheDocument();
 
     const checkboxes = screen.getAllByRole("checkbox");
     expect(checkboxes).toHaveLength(3);
@@ -62,7 +60,7 @@ describe("PublicationSettingsBlock", () => {
     }
   });
 
-  it("preselects manual value from publication", () => {
+  it("renders manual value from existing publication", () => {
     renderWithProviders(
       <PublicationSettingsBlock
         publication={{
@@ -72,27 +70,7 @@ describe("PublicationSettingsBlock", () => {
       />,
     );
 
-    expect(screen.getByText(AUTOMATIC_LABELS.neither)).toBeInTheDocument();
-  });
-
-  it("preselects manual when installs are limited and upgrades disabled", () => {
-    const formik = createPublicationSettingsFormik(true);
-
-    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
-
-    expect(
-      screen.getByRole("combobox", { name: /installs and upgrades/i }),
-    ).toHaveValue("manual");
-  });
-
-  it("preselects autoUpgrades when installs are limited and upgrades enabled", () => {
-    const formik = createPublicationSettingsFormik(true, true);
-
-    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
-
-    expect(
-      screen.getByRole("combobox", { name: /installs and upgrades/i }),
-    ).toHaveValue("autoUpgrades");
+    expect(screen.getByText(AUTOMATIC_LABELS.manual)).toBeInTheDocument();
   });
 
   it("selects each option in the dropdown", async () => {
@@ -106,16 +84,13 @@ describe("PublicationSettingsBlock", () => {
     });
     expect(dropdownInput).toHaveValue("automatic");
 
-    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.neither);
-    expect(formik.values.limitAutomaticInstallation).toBe(true);
-    expect(formik.values.automaticUpgrades).toBe(false);
+    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.manual);
+    expect(screen.getByText(AUTOMATIC_LABELS.manual)).toBeInTheDocument();
 
-    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.upgrades);
-    expect(formik.values.limitAutomaticInstallation).toBe(true);
-    expect(formik.values.automaticUpgrades).toBe(true);
+    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.autoUpgrades);
+    expect(screen.getByText(AUTOMATIC_LABELS.autoUpgrades)).toBeInTheDocument();
 
-    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.both);
-    expect(formik.values.limitAutomaticInstallation).toBe(false);
-    expect(formik.values.automaticUpgrades).toBe(false);
+    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.automatic);
+    expect(screen.getByText(AUTOMATIC_LABELS.automatic)).toBeInTheDocument();
   });
 });

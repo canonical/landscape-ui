@@ -16,15 +16,13 @@ describe("PublishRepositoryNewForm", () => {
     expect(screen.getByLabelText(/signing gpg key/i)).toBeInTheDocument();
   });
 
-  it("renders checkbox settings", () => {
+  it("renders settings block", () => {
     renderWithProviders(
       <PublishRepositoryNewForm repository={repositories[0]} />,
     );
 
+    expect(screen.getByText("Installs and upgrades")).toBeInTheDocument();
     expect(screen.getByLabelText(/hash based indexing/i)).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/limit automatic installation/i),
-    ).toBeInTheDocument();
     expect(screen.getByLabelText(/skip bz2/i)).toBeInTheDocument();
     expect(
       screen.getByLabelText(/skip generating content indexes/i),

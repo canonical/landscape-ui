@@ -8,7 +8,7 @@ import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import type { JSX } from "react";
 import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
-import { getInstallsAndUpgradesValue } from "../../helpers";
+import { getInstallsAndUpgradesText } from "../../helpers";
 import { AUTOMATIC_LABELS } from "../../constants";
 
 type PublicationSettingsBlockProps<T extends PublishSettingsValues> =
@@ -44,22 +44,10 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   const checkboxProps = getCheckboxProps();
 
   const automaticOptions: SelectOption[] = [
-    { label: AUTOMATIC_LABELS.both, value: "automatic" },
-    { label: AUTOMATIC_LABELS.upgrades, value: "autoUpgrades" },
-    { label: AUTOMATIC_LABELS.neither, value: "manual" },
+    { label: AUTOMATIC_LABELS.automatic, value: "automatic" },
+    { label: AUTOMATIC_LABELS.autoUpgrades, value: "autoUpgrades" },
+    { label: AUTOMATIC_LABELS.manual, value: "manual" },
   ];
-
-  const getAutomaticOptionValue = (values: PublishSettingsValues) => {
-    if (!values.limitAutomaticInstallation) {
-      return "automatic";
-    }
-
-    if (values.automaticUpgrades) {
-      return "autoUpgrades";
-    }
-
-    return "manual";
-  };
 
   return (
     <Blocks.Item title="Settings">
@@ -67,25 +55,12 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
         <Select
           label="Installs and upgrades"
           options={automaticOptions}
-          onChange={async (e) => {
-            const { value } = e.target;
-            if (value === "automatic") {
-              await formik.setFieldValue("limitAutomaticInstallation", false);
-              await formik.setFieldValue("automaticUpgrades", false);
-            } else if (value === "autoUpgrades") {
-              await formik.setFieldValue("limitAutomaticInstallation", true);
-              await formik.setFieldValue("automaticUpgrades", true);
-            } else {
-              await formik.setFieldValue("limitAutomaticInstallation", true);
-              await formik.setFieldValue("automaticUpgrades", false);
-            }
-          }}
-          value={getAutomaticOptionValue(formik.values)}
+          {...formik.getFieldProps("installsAndUpgrades")}
         />
       ) : (
         <ReadOnlyField
           label="Installs and upgrades"
-          value={getInstallsAndUpgradesValue(publication)}
+          value={getInstallsAndUpgradesText(publication)}
         />
       )}
 

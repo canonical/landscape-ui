@@ -22,7 +22,6 @@ import type { FC } from "react";
 import { useMemo } from "react";
 import { useCreatePublication } from "../../api";
 import {
-  INITIAL_VALUES,
   SOURCE_TYPE_LOCAL_REPOSITORY,
   SOURCE_TYPE_MIRROR,
   SOURCE_TYPE_OPTIONS,
@@ -31,6 +30,7 @@ import {
 import { getPublicationPayload, stripResourcePrefix } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
 import PublicationSettingsBlock from "../../components/PublicationSettingsBlock";
+import { getInitialValues } from "../../helpers";
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
@@ -44,7 +44,13 @@ const AddPublicationForm: FC = () => {
   const { createPublication, isCreatingPublication } = useCreatePublication();
 
   const formik = useFormik<FormProps>({
-    initialValues: INITIAL_VALUES,
+    initialValues: {
+      ...getInitialValues(),
+      sourceType: "",
+      source: "",
+      distribution: "",
+      architectures: [],
+    },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
