@@ -8,6 +8,9 @@ import { EditSnapType } from "../../helpers";
 import EditSnap from "./EditSnap";
 
 const snapData = {
+  snapWithNoChannels:
+    installedSnaps.find((snap) => snap.snap.name === "Snap 1") ??
+    installedSnaps[0],
   snap2:
     installedSnaps.find((snap) => snap.snap.name === "Snap 2") ??
     installedSnaps[0],
@@ -136,19 +139,32 @@ describe("EditSnap", () => {
   });
 
   describe("Switch Edit Snap Form", () => {
-    beforeEach(async () => {
+    it("renders switch-form only fields", async () => {
       renderEditSnap({
         ...SwitchSnapFormProps,
         installedSnaps: [snapData.snap2],
       });
-    });
 
-    it("renders switch-form only fields", async () => {
       const releaseSelect = await screen.findByRole("combobox");
       expect(releaseSelect).toBeInTheDocument();
     });
 
+    it("keeps the release select disabled when the snap has no available channels", async () => {
+      renderEditSnap({
+        ...SwitchSnapFormProps,
+        installedSnaps: [snapData.snapWithNoChannels],
+      });
+
+      const releaseSelect = await screen.findByRole("combobox");
+      expect(releaseSelect).toBeDisabled();
+    });
+
     it("switches between release types", async () => {
+      renderEditSnap({
+        ...SwitchSnapFormProps,
+        installedSnaps: [snapData.snap2],
+      });
+
       const releaseSelect = await screen.findByRole("combobox");
       expect(releaseSelect).toBeInTheDocument();
 
@@ -161,6 +177,11 @@ describe("EditSnap", () => {
     });
 
     it("submits the switch form and shows success notification", async () => {
+      renderEditSnap({
+        ...SwitchSnapFormProps,
+        installedSnaps: [snapData.snap2],
+      });
+
       const releaseSelect = await screen.findByRole("combobox");
       const options = await screen.findAllByRole("option");
       if (options[0]) {

@@ -176,8 +176,24 @@ export const installedSnaps = [
 
 export const availableSnapInfo = [
   {
-    name: "Snap 2",
+    name: "Snap 1",
     "snap-id": "1",
+    "channel-map": [],
+    "default-track": "latest",
+    snap: {
+      id: "1",
+      name: "canonical",
+      publisher: {
+        username: "canonical",
+        validation: "verified",
+        "display-name": "Canonical",
+        id: "1",
+      },
+    },
+  },
+  {
+    name: "Snap 2",
+    "snap-id": "2",
     "channel-map": [
       {
         channel: {
@@ -218,7 +234,7 @@ export const availableSnapInfo = [
   },
   {
     name: "Snap 3",
-    "snap-id": "2",
+    "snap-id": "3",
     "channel-map": [
       {
         channel: {
@@ -259,7 +275,7 @@ export const availableSnapInfo = [
   },
   {
     name: "Snap 4",
-    "snap-id": "3",
+    "snap-id": "4",
     "channel-map": [
       {
         channel: {

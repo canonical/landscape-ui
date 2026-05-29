@@ -162,6 +162,11 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           labelClassName="p-text--small p-text--small-caps"
           options={SNAP_CHANNEL_OPTIONS}
           disabled={SNAP_CHANNEL_OPTIONS.length === 0}
+          help={
+            SNAP_CHANNEL_OPTIONS.length === 0
+              ? "No available channels to switch to."
+              : undefined
+          }
           {...formik.getFieldProps("release")}
         />
       )}
