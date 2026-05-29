@@ -84,13 +84,13 @@ describe("PublicationSettingsBlock", () => {
     });
     expect(dropdownInput).toHaveValue("automatic");
 
-    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.manual);
-    expect(screen.getByText(AUTOMATIC_LABELS.manual)).toBeInTheDocument();
+    await user.selectOptions(dropdownInput, "manual");
+    expect(formik.values.installsAndUpgrades).toBe("manual");
 
-    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.autoUpgrades);
-    expect(screen.getByText(AUTOMATIC_LABELS.autoUpgrades)).toBeInTheDocument();
+    await user.selectOptions(dropdownInput, "autoUpgrades");
+    expect(formik.values.installsAndUpgrades).toBe("autoUpgrades");
 
-    await user.selectOptions(dropdownInput, AUTOMATIC_LABELS.automatic);
-    expect(screen.getByText(AUTOMATIC_LABELS.automatic)).toBeInTheDocument();
+    await user.selectOptions(dropdownInput, "automatic");
+    expect(formik.values.installsAndUpgrades).toBe("automatic");
   });
 });
