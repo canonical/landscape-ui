@@ -1,20 +1,27 @@
+@import "vanilla-framework/scss/settings_spacing";
+
 .inner {
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: $spv--small;
   margin-left: auto;
   margin-right: auto;
+  max-width: 500px;
+  padding-left: $sph--large;
+  padding-right: $sph--large;
 
-  &:global(.size-medium) {
-    max-width: 420px;
-  }
-
-  &:global(.size-large) {
-    max-width: 550px;
+  :global(#root) > & {
+    padding-left: $sph--x-large;
+    padding-right: $sph--x-large;
   }
 }
 
+.body {
+  margin-bottom: 0;
+  max-width: inherit;
+}
+
 .cta {
-  margin-top: 1rem;
+  margin-top: $spv--large;
 }

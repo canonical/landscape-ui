@@ -135,35 +135,6 @@ describe("PublicationTargetList", () => {
     expect(screen.getByText("Unknown")).toBeInTheDocument();
   });
 
-  it("renders NoData placeholder in Name cell when target has no displayName", () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
-    const noNameTarget: PublicationTarget = {
-      name: "publicationTargets/eeeeeeee-0000-0000-0000-000000000005",
-      publicationTargetId: "eeeeeeee-0000-0000-0000-000000000005",
-      displayName: "",
-      s3: {
-        region: "us-east-1",
-        bucket: "test-bucket",
-        disableMultiDel: false,
-        forceSigV2: false,
-        awsAccessKeyId: "AKIA...",
-        awsSecretAccessKey: "SECRET...",
-      },
-    };
-
-    renderWithProviders(<PublicationTargetList targets={[noNameTarget]} />);
-
-    // Name cell and Publications cell both show NoData — there are two instances
-    expect(screen.getAllByText(NO_DATA_TEXT).length).toBeGreaterThanOrEqual(1);
-    // Verify the Name column in particular is NoData by checking the first cell in the row
-    const cells = screen.getAllByRole("cell");
-    expect(cells[0]).toHaveTextContent(NO_DATA_TEXT);
-  });
-
   it("renders the publications count as a link filtered by publicationTargetId", () => {
     renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 

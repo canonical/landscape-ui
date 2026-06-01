@@ -25,20 +25,11 @@ const RolesContainer: FC = () => {
         (!getRolesQueryResult || !getRolesQueryResult.data.length) && (
           <EmptyState
             title="No roles found"
-            body={
-              <>
-                <p className="u-no-margin--bottom">
-                  You haven’t added any roles yet.
-                </p>
-                <a
-                  href="https://ubuntu.com/landscape/docs/administrators"
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  How to manage administrators in Landscape
-                </a>
-              </>
-            }
+            body="You haven’t added any roles yet."
+            link={{
+              href: "https://ubuntu.com/landscape/docs/administrators",
+              text: "How to manage administrators in Landscape",
+            }}
             cta={[
               <Button
                 type="button"

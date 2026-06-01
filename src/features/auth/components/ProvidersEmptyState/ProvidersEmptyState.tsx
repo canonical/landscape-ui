@@ -21,20 +21,11 @@ const ProvidersEmptyState: FC = () => {
 
   return (
     <EmptyState
-      body={
-        <>
-          <p className="u-no-margin--bottom">
-            You haven’t added any identity providers yet.
-          </p>
-          <a
-            href="https://ubuntu.com/landscape/docs/managing-computers"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            How to manage computers in Landscape
-          </a>
-        </>
-      }
+      body="You haven’t added any identity providers yet."
+      link={{
+        href: "https://ubuntu.com/landscape/docs/managing-computers",
+        text: "How to manage computers in Landscape",
+      }}
       cta={[
         <Button
           appearance="positive"

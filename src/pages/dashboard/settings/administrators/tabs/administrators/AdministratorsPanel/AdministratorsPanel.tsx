@@ -37,20 +37,11 @@ const AdministratorsPanel: FC = () => {
         (!getAdministratorsQueryResult ||
           !getAdministratorsQueryResult.data.length) && (
           <EmptyState
-            body={
-              <>
-                <p>
-                  There are no administrators in your Landscape organization.
-                </p>
-                <a
-                  href="https://ubuntu.com/landscape/docs/administrators"
-                  target="_blank"
-                  rel="nofollow noopener noreferrer"
-                >
-                  How to manage administrators in Landscape
-                </a>
-              </>
-            }
+            body="There are no administrators in your Landscape organization."
+            link={{
+              href: "https://ubuntu.com/landscape/docs/administrators",
+              text: "How to manage administrators in Landscape",
+            }}
             cta={[
               <Button
                 type="button"

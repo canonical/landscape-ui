@@ -13,11 +13,13 @@ import {
 } from "./_helpers";
 
 const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { pageSize, pageToken, search } =
+    getDebArchivePaginationParams(requestUrl);
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     publicationTargets,
     pageToken,
     pageSize,
+    search,
   );
 
   return HttpResponse.json({
@@ -91,7 +93,6 @@ export default [
     },
   ),
 
-  // Fallback GET for integration tests that don't mock useGetPublicationTargets directly
   http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
     const endpointStatus = getEndpointStatus();
 

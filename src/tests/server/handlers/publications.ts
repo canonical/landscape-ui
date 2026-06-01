@@ -50,11 +50,10 @@ const parseApiFilter = (filter: string): ((pub: Publication) => boolean) => {
 
   const displayNameMatch = filter.match(/^display_name="([^"]*)\*"$/);
   if (displayNameMatch) {
-    const [, rawPrefix = ""] = displayNameMatch;
-    const prefix = rawPrefix.toLowerCase();
+    const [, prefix = ""] = displayNameMatch;
     return (pub) =>
-      pub.displayName.toLowerCase().startsWith(prefix) ||
-      (pub.label?.toLowerCase().startsWith(prefix) ?? false);
+      pub.displayName.startsWith(prefix) ||
+      (pub.label?.startsWith(prefix) ?? false);
   }
 
   return () => true;
