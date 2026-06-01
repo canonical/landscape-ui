@@ -116,6 +116,8 @@ const AddMirrorForm: FC = () => {
             : undefined,
         });
 
+        closeSidePanel();
+
         notify.success({
           title: `You have successfully added ${values.name}`,
           message:
@@ -133,8 +135,6 @@ const AddMirrorForm: FC = () => {
         });
       } catch (error) {
         debug(error);
-      } finally {
-        closeSidePanel();
       }
     },
   });
