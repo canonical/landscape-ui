@@ -129,7 +129,7 @@ describe("AddMirrorForm", () => {
   });
 
   it("submits a mirror with preserve signatures enabled", async () => {
-    await user.click(screen.getByLabelText("Preserve upstream signing key"));
+    await user.click(screen.getByLabelText(/Preserve upstream signing key/));
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
@@ -142,7 +142,7 @@ describe("AddMirrorForm", () => {
   it("clears package filter and include dependencies when preserve signatures is enabled", async () => {
     const packageFilterField = screen.getByLabelText("Filter");
     const includeDepsCheckbox = screen.getByLabelText(
-      "Include dependencies in filter",
+      /Include dependencies in filter/,
     );
 
     await user.type(packageFilterField, "nginx*");
@@ -151,7 +151,7 @@ describe("AddMirrorForm", () => {
     expect(packageFilterField).toHaveValue("nginx*");
     expect(includeDepsCheckbox).toBeChecked();
 
-    await user.click(screen.getByLabelText("Preserve upstream signing key"));
+    await user.click(screen.getByLabelText(/Preserve upstream signing key/));
 
     expect(packageFilterField).toHaveValue("");
     expect(includeDepsCheckbox).not.toBeChecked();

@@ -4,22 +4,17 @@ import usePageParams from "@/hooks/usePageParams";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import { useGetMirror, useUpdateMirror } from "../../api";
 import { useFormik } from "formik";
 import type { FormProps } from "./types";
 import Blocks from "@/components/layout/Blocks";
-import {
-  CheckboxInput,
-  Form,
-  Icon,
-  ICONS,
-  Input,
-  Tooltip,
-} from "@canonical/react-components";
+import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import GpgKeyField from "@/components/form/GpgKeyField";
 import { getFormikError } from "@/utils/formikErrors";
 import { getSourceType } from "../MirrorDetails/helpers";
 import {
+  SETTINGS_HELP_TEXT,
   UBUNTU_ARCHIVE_HOST,
   UBUNTU_PRO_HOST,
   UBUNTU_SNAPSHOTS_HOST,
@@ -112,19 +107,13 @@ const EditMirrorForm: FC = () => {
                 value={mirror.archiveRoot}
                 tooltipMessage="You can’t change the source URL after the mirror is created."
               />
-              <CheckboxInput
+              <CheckboxInputWithHelp
                 label="Preserve upstream signing key"
+                tooltipMessage={SETTINGS_HELP_TEXT.preserveSignatures}
                 {...formik.getFieldProps("preserveSignatures")}
                 checked={formik.values.preserveSignatures}
                 disabled
-                inline
-              />{" "}
-              <Tooltip
-                position="right"
-                message="Signature-preserving mirrors directly copy the packages from the source to their destination without signing or syncing the packages."
-              >
-                <Icon name={ICONS.help} />
-              </Tooltip>
+              />
             </Blocks.Item>
             <Blocks.Item title="Mirror contents">
               <ReadOnlyField
@@ -154,8 +143,9 @@ const EditMirrorForm: FC = () => {
                 </div>
                 <MirrorFilterHelpButton />
               </div>
-              <CheckboxInput
+              <CheckboxInputWithHelp
                 label="Include dependencies in filter"
+                tooltipMessage={SETTINGS_HELP_TEXT.includeDependencies}
                 {...formik.getFieldProps("includeDependencies")}
                 checked={
                   !!formik.values.packageFilter &&
@@ -165,21 +155,14 @@ const EditMirrorForm: FC = () => {
                   !formik.values.packageFilter ||
                   formik.values.preserveSignatures
                 }
-                inline
               />
               <p className={classes.heading}>Download options:</p>
-              <CheckboxInput
-                label="Download .udeb packages "
+              <CheckboxInputWithHelp
+                label="Download .udeb packages"
+                tooltipMessage={SETTINGS_HELP_TEXT.downloadUdebPackages}
                 {...formik.getFieldProps("downloadUdebPackages")}
                 checked={formik.values.downloadUdebPackages}
-                inline
               />
-              <Tooltip
-                position="right"
-                message="Enables the mirroring of micro-debian (.udeb) packages. These are essential if you intend to use this mirror for network booting (PXE), netboot installations, or hardware discovery during the initial OS installation process."
-              >
-                <Icon name={ICONS.help} />
-              </Tooltip>
               <CheckboxInput
                 label="Download sources"
                 {...formik.getFieldProps("downloadSources")}

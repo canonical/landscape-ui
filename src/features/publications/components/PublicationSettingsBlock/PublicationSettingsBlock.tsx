@@ -1,11 +1,12 @@
 import Blocks from "@/components/layout/Blocks";
-import { Icon, Input, Tooltip } from "@canonical/react-components";
+import { Input } from "@canonical/react-components";
 import { PUBLICATION_SETTINGS_HELP_TEXT } from "./constants";
 import classes from "./PublicationSettingsBlock.module.scss";
 import type { Publication } from "@canonical/landscape-openapi";
 import type { FormikContextType } from "formik";
 import type { PublishSettingsValues } from "../../types";
 import type { ChangeEvent, JSX } from "react";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 
 type PublicationSettingsBlockProps<T extends PublishSettingsValues> =
   | {
@@ -81,39 +82,15 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
 
   return (
     <Blocks.Item title="Settings">
-      <Input
-        type="checkbox"
-        label={
-          <span>
-            <span className={classes.label}>Hash based indexing</span>
-            <Tooltip
-              message={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
-              position="top-center"
-              positionElementClassName={classes.tooltipPositionElement}
-            >
-              <Icon name="help" aria-hidden />
-              <span className="u-off-screen">Help</span>
-            </Tooltip>
-          </span>
-        }
+      <CheckboxInputWithHelp
+        label="Hash based indexing"
+        tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
         {...inputProps.hashIndexing}
       />
 
-      <Input
-        type="checkbox"
-        label={
-          <span>
-            <span className={classes.label}>Limit automatic installation</span>
-            <Tooltip
-              message={PUBLICATION_SETTINGS_HELP_TEXT.limitAutomaticInstall}
-              position="top-center"
-              positionElementClassName={classes.tooltipPositionElement}
-            >
-              <Icon name="help" aria-hidden />
-              <span className="u-off-screen">Help</span>
-            </Tooltip>
-          </span>
-        }
+      <CheckboxInputWithHelp
+        label="Limit automatic installation"
+        tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.limitAutomaticInstall}
         {...inputProps.limitAutoInstall}
       />
 
@@ -124,22 +101,10 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
               Selecting &quot;Limit automatic installation&quot; has opened a
               new option
             </span>
-            <Input
-              type="checkbox"
+            <CheckboxInputWithHelp
+              label="Automatic upgrades"
+              tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
               wrapperClassName={classes.subCheckbox}
-              label={
-                <span>
-                  <span className={classes.label}>Automatic upgrades</span>
-                  <Tooltip
-                    message={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
-                    position="top-center"
-                    positionElementClassName={classes.tooltipPositionElement}
-                  >
-                    <Icon name="help" aria-hidden />
-                    <span className="u-off-screen">Help</span>
-                  </Tooltip>
-                </span>
-              }
               {...inputProps.automaticUpgrades}
             />
           </>

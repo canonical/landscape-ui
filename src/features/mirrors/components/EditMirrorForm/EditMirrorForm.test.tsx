@@ -154,7 +154,7 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    const checkbox = screen.getByLabelText("Preserve upstream signing key");
+    const checkbox = screen.getByLabelText(/Preserve upstream signing key/);
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
   });
@@ -197,7 +197,7 @@ describe("EditMirrorForm", () => {
     await expectLoadingState();
 
     await user.type(screen.getByRole("textbox", { name: "Filter" }), "abc");
-    await user.click(screen.getByLabelText("Include dependencies in filter"));
+    await user.click(screen.getByLabelText(/Include dependencies in filter/));
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
