@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
 import { Button, Icon, ICONS, Tabs } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
@@ -28,7 +28,7 @@ import {
 } from "../../constants";
 
 const MirrorDetails: FC = () => {
-  const { name, createSidePathPusher, sidePath, setPageParams } =
+  const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
     usePageParams();
 
   const {
@@ -86,6 +86,19 @@ const MirrorDetails: FC = () => {
       setTabId(id);
     },
   }));
+
+  useEffect(() => {
+    if (updateModal) {
+      openUpdateModal();
+    }
+  }, [openUpdateModal, updateModal]);
+
+  const closeAndClearUpdateModal = () => {
+    closeUpdateModal();
+    setPageParams({
+      updateModal: false,
+    });
+  };
 
   return (
     <>
@@ -246,7 +259,7 @@ const MirrorDetails: FC = () => {
       </SidePanel.Content>
       <UpdateMirrorModal
         isOpen={isUpdateModalOpen}
-        close={closeUpdateModal}
+        close={closeAndClearUpdateModal}
         mirrorDisplayName={mirror.displayName}
         mirrorName={name}
       />

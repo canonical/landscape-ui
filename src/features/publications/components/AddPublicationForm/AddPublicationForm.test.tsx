@@ -254,7 +254,7 @@ describe("AddPublicationForm", () => {
 
     expect(
       await screen.findByText(
-        'Publication "new-local-publication" has been created.',
+        "You have successfully added new-local-publication",
       ),
     ).toBeInTheDocument();
   });
@@ -296,7 +296,7 @@ describe("AddPublicationForm", () => {
 
     expect(
       await screen.findByText(
-        'Publication "new-mirror-publication" has been created.',
+        "You have successfully added new-mirror-publication",
       ),
     ).toBeInTheDocument();
   });

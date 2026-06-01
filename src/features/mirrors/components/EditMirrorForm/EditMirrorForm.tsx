@@ -79,7 +79,7 @@ const EditMirrorForm: FC = () => {
         closeSidePanel();
 
         notify.success({
-          title: `You have successfully edited ${mirror.displayName}.`,
+          title: `You have successfully edited ${values.name}`,
           message: "The mirror details have been updated.",
         });
       } catch (error) {
