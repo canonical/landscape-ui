@@ -79,11 +79,9 @@ describe("PublishMirrorForm", () => {
     });
 
     await waitFor(() => {
-      expect(mockPublishPublication).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({
-          publicationName: mockPublicationName,
-        }),
-      );
+      expect(mockPublishPublication).toHaveBeenCalledExactlyOnceWith({
+        name: mockPublicationName,
+      });
     });
   });
 
@@ -106,11 +104,9 @@ describe("PublishMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Publish mirror" }));
 
     await waitFor(() => {
-      expect(mockPublishPublication).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({
-          publicationName: publications[0].name,
-        }),
-      );
+      expect(mockPublishPublication).toHaveBeenCalledExactlyOnceWith({
+        name: publications[0].name,
+      });
     });
 
     expect(mockCreatePublication).not.toHaveBeenCalled();
