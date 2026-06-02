@@ -20,7 +20,7 @@ import {
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
-import { useCreatePublication } from "../../api";
+import { useCreatePublication, usePublishPublication } from "../../api";
 import {
   INITIAL_VALUES,
   SOURCE_TYPE_LOCAL_REPOSITORY,
@@ -42,6 +42,8 @@ const AddPublicationForm: FC = () => {
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
+  const { publishPublication, isPublishingPublication } =
+    usePublishPublication();
 
   const formik = useFormik<FormProps>({
     initialValues: INITIAL_VALUES,
@@ -49,7 +51,8 @@ const AddPublicationForm: FC = () => {
     onSubmit: async (values) => {
       try {
         const payload = getPublicationPayload(values);
-        await createPublication(payload);
+        const { data: publication } = await createPublication(payload);
+        await publishPublication({ name: publication.name ?? "" });
 
         closeSidePanel();
 
@@ -280,7 +283,11 @@ const AddPublicationForm: FC = () => {
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting || isCreatingPublication}
+        submitButtonDisabled={
+          formik.isSubmitting ||
+          isCreatingPublication ||
+          isPublishingPublication
+        }
         submitButtonText="Add publication"
         onCancel={closeSidePanel}
       />

@@ -25,10 +25,7 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
 
   const handleRepublishPublication = async () => {
     try {
-      await publishPublication({
-        publicationName: publication.name ?? "", // TODO: change when the api is updated
-        body: { forceOverwrite: true },
-      });
+      await publishPublication({ name: publication.name ?? "" });
 
       notify.success({
         title: `You have marked ${publication.displayName} to be republished`,

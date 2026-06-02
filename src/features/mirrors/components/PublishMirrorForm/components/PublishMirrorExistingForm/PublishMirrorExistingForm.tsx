@@ -38,10 +38,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
 
     onSubmit: async (values) => {
       try {
-        await publishPublication({
-          publicationName: values.name,
-          body: { forceOverwrite: true },
-        });
+        await publishPublication({ name: values.name ?? "" });
 
         closeSidePanel();
 

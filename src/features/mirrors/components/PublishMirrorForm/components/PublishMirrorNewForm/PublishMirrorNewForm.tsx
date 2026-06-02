@@ -68,10 +68,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           },
         });
 
-        await publishPublication({
-          publicationName: publication.name ?? "",
-          body: { forceOverwrite: true },
-        });
+        await publishPublication({ name: publication.name ?? "" });
 
         closeSidePanel();
 

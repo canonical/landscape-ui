@@ -34,10 +34,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   const handleSubmit = async (values: { name: string }) => {
     try {
-      await publishPublication({
-        publicationName: values.name,
-        body: { forceOverwrite: true },
-      });
+      await publishPublication({ name: values.name });
 
       closeSidePanel();
 
