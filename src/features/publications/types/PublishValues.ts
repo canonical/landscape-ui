@@ -1,8 +1,8 @@
-import type { AUTOMATIC_KEY } from "../constants";
+import type { AUTOMATIC_LABELS } from "../constants";
 
 export interface PublishSettingsValues {
   hashIndexing: boolean;
-  installsAndUpgrades: AUTOMATIC_KEY;
+  installsAndUpgrades: keyof typeof AUTOMATIC_LABELS;
   skipBz2: boolean;
   skipContentIndexing: boolean;
 }

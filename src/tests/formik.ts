@@ -12,29 +12,15 @@ export const createFormik = <T extends object>(
     },
   );
 
-  const handleChange = vi.fn(
-    (e: {
-      target: {
-        name: string;
-        value?: unknown;
-        type?: string;
-        checked?: boolean;
-      };
-    }) => {
-      const { name, value, type, checked } = e.target;
-      mutableValues[name] = type === "checkbox" ? checked : value;
-    },
-  );
-
   return {
-    values: mutableValues as T,
+    values: values as T,
     touched: {},
     errors: {},
     setFieldValue,
     getFieldProps: vi.fn((field: keyof T) => ({
       name: field,
       value: mutableValues[String(field)],
-      onChange: handleChange,
+      onChange: vi.fn(),
       onBlur: vi.fn(),
     })),
   } as unknown as FormikContextType<T>;

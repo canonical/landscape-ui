@@ -3,19 +3,28 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { PublicationSettingsBlock } from "../..";
-import { createFormik } from "@/tests/formik";
+import { useFormik } from "formik";
 import type { Publication } from "@canonical/landscape-openapi";
-import { type AUTOMATIC_KEY, AUTOMATIC_LABELS } from "../../constants";
+import { AUTOMATIC_LABELS } from "../../constants";
+import type { PublishSettingsValues } from "../../types";
 
-const createPublicationSettingsFormik = (
-  installsAndUpgrades: AUTOMATIC_KEY = "automatic",
-) =>
-  createFormik({
-    installsAndUpgrades,
-    hashIndexing: false,
-    skipBz2: false,
-    skipContentIndexing: false,
+const PublicationSettingsFormikWrapper = ({
+  installsAndUpgrades = "automatic",
+}: {
+  readonly installsAndUpgrades?: PublishSettingsValues["installsAndUpgrades"];
+}) => {
+  const formik = useFormik<PublishSettingsValues>({
+    initialValues: {
+      installsAndUpgrades,
+      hashIndexing: false,
+      skipBz2: false,
+      skipContentIndexing: false,
+    },
+    onSubmit: () => undefined,
   });
+
+  return <PublicationSettingsBlock formik={formik} />;
+};
 
 const getPublication = (values: boolean) =>
   ({
@@ -74,10 +83,9 @@ describe("PublicationSettingsBlock", () => {
   });
 
   it("selects each option in the dropdown", async () => {
-    const formik = createPublicationSettingsFormik();
     const user = userEvent.setup();
 
-    renderWithProviders(<PublicationSettingsBlock formik={formik} />);
+    renderWithProviders(<PublicationSettingsFormikWrapper />);
 
     const dropdownInput = screen.getByRole("combobox", {
       name: /installs and upgrades/i,
@@ -85,12 +93,12 @@ describe("PublicationSettingsBlock", () => {
     expect(dropdownInput).toHaveValue("automatic");
 
     await user.selectOptions(dropdownInput, "manual");
-    expect(formik.values.installsAndUpgrades).toBe("manual");
+    expect(dropdownInput).toHaveValue("manual");
 
     await user.selectOptions(dropdownInput, "autoUpgrades");
-    expect(formik.values.installsAndUpgrades).toBe("autoUpgrades");
+    expect(dropdownInput).toHaveValue("autoUpgrades");
 
     await user.selectOptions(dropdownInput, "automatic");
-    expect(formik.values.installsAndUpgrades).toBe("automatic");
+    expect(dropdownInput).toHaveValue("automatic");
   });
 });

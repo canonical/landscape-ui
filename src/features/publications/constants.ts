@@ -8,8 +8,6 @@ export const AUTOMATIC_LABELS = {
   manual: "Manual installs and upgrades",
 } as const;
 
-export type AUTOMATIC_KEY = keyof typeof AUTOMATIC_LABELS;
-
 export const VALIDATION_SCHEMA_NEW = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   publicationTarget: Yup.string().required(REQUIRED_FIELD_MESSAGE),
