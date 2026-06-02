@@ -181,7 +181,7 @@ export const availableSnapInfo = [
     "channel-map": [],
     "default-track": "latest",
     snap: {
-      id: "1",
+      id: "2",
       name: "canonical",
       publisher: {
         username: "canonical",
@@ -263,7 +263,7 @@ export const availableSnapInfo = [
     ],
     "default-track": "latest",
     snap: {
-      id: "2",
+      id: "3",
       name: "canonical",
       publisher: {
         username: "canonical",
@@ -304,7 +304,7 @@ export const availableSnapInfo = [
     ],
     "default-track": "latest",
     snap: {
-      id: "3",
+      id: "4",
       name: "canonical",
       publisher: {
         username: "canonical",

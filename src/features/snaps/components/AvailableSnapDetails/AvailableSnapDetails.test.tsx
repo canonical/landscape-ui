@@ -6,7 +6,11 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
 import AvailableSnapDetails from "./AvailableSnapDetails";
 
-const [chosenSnap] = availableSnapInfo;
+const chosenSnap = availableSnapInfo.find(
+  (snap) => snap["channel-map"].length > 0,
+);
+
+assert(chosenSnap);
 
 const props = {
   instanceId: 1,
@@ -38,6 +42,9 @@ describe("AvailableSnap", () => {
         chosenSnap["channel-map"].find(
           (channel) => channel.confinement === "strict",
         ) ?? chosenSnap["channel-map"][0];
+
+      assert(strictConfinement);
+
       const strictOption = options.find((option) =>
         option.textContent?.includes(
           `${strictConfinement.channel.name} - ${strictConfinement.channel.architecture}`,
@@ -56,6 +63,9 @@ describe("AvailableSnap", () => {
         chosenSnap["channel-map"].find(
           (channel) => channel.confinement === "classic",
         ) ?? chosenSnap["channel-map"][0];
+
+      assert(classicConfinement);
+
       const classicOption = options.find((option) =>
         option.textContent?.includes(
           `${classicConfinement.channel.name} - ${classicConfinement.channel.architecture}`,

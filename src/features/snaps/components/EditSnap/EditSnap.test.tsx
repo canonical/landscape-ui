@@ -156,6 +156,11 @@ describe("EditSnap", () => {
       });
 
       const releaseSelect = await screen.findByRole("combobox");
+
+      expect(
+        await screen.findByText("No available channels to switch to."),
+      ).toBeInTheDocument();
+
       expect(releaseSelect).toBeDisabled();
     });
 
