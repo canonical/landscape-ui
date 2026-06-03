@@ -164,6 +164,22 @@ describe("EditSnap", () => {
       expect(releaseSelect).toBeDisabled();
     });
 
+    it("shows the release required error when submitting without available channels", async () => {
+      renderEditSnap({
+        ...SwitchSnapFormProps,
+        installedSnaps: [snapData.snapWithNoChannels],
+      });
+
+      const submitButton = await screen.findByRole("button", {
+        name: /switch/i,
+      });
+      await userEvent.click(submitButton);
+
+      expect(
+        await screen.findByText("Release is required"),
+      ).toBeInTheDocument();
+    });
+
     it("switches between release types", async () => {
       renderEditSnap({
         ...SwitchSnapFormProps,
