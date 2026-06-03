@@ -1,22 +1,90 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
-.errorDetails {
-  background-color: $colors--theme--background-code;
-  border: 1px solid $colors--theme--border-low-contrast;
-  border-radius: 4px;
-  margin-bottom: 0;
+.wrapper {
+  box-sizing: border-box;
+  padding: $spv--x-large $sph--large;
+  width: 100%;
+}
+
+.panel {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 40rem;
+}
+
+.icon:global(.p-icon--disconnect) {
+  display: block;
+  height: 2.25rem;
+  margin-bottom: $spv--large;
+  opacity: 0.2;
+  width: 2.25rem;
+}
+
+.subtitle {
+  color: $colors--theme--text-muted;
+  margin-bottom: $spv--x-large;
+  margin-top: $spv--medium;
+  max-width: 32rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spv--small;
+
+  // Drop the default margins Vanilla buttons add; the row uses `gap` instead.
+  :global(.p-button),
+  :global(.p-button--base),
+  :global(.p-button--positive) {
+    margin: 0;
+  }
+}
+
+.details {
+  border-top: 1px solid $colors--theme--border-low-contrast;
   margin-top: $spv--large;
-  max-height: 200px;
-  overflow: auto;
-  padding: $spv--large;
+  padding-top: $spv--large;
 }
 
-:global(.is-dark) .errorDetails {
-  background-color: rgb(255 255 255 / 3%);
+.summary {
+  align-items: center;
+  color: $colors--theme--link-default;
+  cursor: pointer;
+  display: inline-flex;
+  gap: $sph--small;
+  list-style: none;
+  user-select: none;
+  width: fit-content;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
 }
 
-.emptyState {
-  max-width: 100%;
-  width: max-content;
+.summaryIcon {
+  transition: transform 0.1s ease-in-out;
+}
+
+.details[open] .summaryIcon {
+  transform: rotate(180deg);
+}
+
+.detailsBody {
+  margin-top: $spv--small;
+}
+
+.copyRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: $spv--x-small;
+}
+
+.snippet {
+  margin-bottom: 0;
+
+  :global(.p-code-snippet__block) {
+    max-height: 16rem;
+    overflow: auto;
+  }
 }
