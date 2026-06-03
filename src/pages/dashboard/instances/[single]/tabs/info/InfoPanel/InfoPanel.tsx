@@ -15,6 +15,7 @@ import {
   getRecoveryKeyRegenerationAttemptMessage,
   isRecoveryKeyActivityInProgress,
   InstanceStatus,
+  InstanceTags,
   GenerateRecoveryKeyModal,
   InstanceRemoveFromLandscapeModal,
   RecoveryKeyStatus,
@@ -440,8 +441,11 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             />
             <InfoGrid.Item
               label="Tags"
-              value={instance.tags.join(", ")}
-              type="truncated"
+              value={
+                instance.tags.length > 0 ? (
+                  <InstanceTags tags={instance.tags} />
+                ) : undefined
+              }
             />
             <InfoGrid.Item
               label="Profiles"

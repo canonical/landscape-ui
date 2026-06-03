@@ -4,9 +4,10 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import InstanceStatus from "./InstanceStatus";
 import InstanceUpgrades from "./InstanceUpgrades";
+import Tags from "./Tags";
 
 const multiAlertInstance = {
   ...ubuntuInstance,
@@ -101,5 +102,23 @@ describe("InstanceUpgrades", () => {
     );
 
     expect(container).toHaveTextContent("-");
+  });
+});
+
+describe("Tags", () => {
+  it("renders static (non-interactive) pills without a click handler", () => {
+    renderWithProviders(<Tags tags={["bionic", "server"]} />);
+
+    expect(screen.getByText("bionic")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("renders clickable tags and reports the clicked tag", async () => {
+    const onTagClick = vi.fn();
+    renderWithProviders(<Tags tags={["bionic", "server"]} onTagClick={onTagClick} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "bionic" }));
+
+    expect(onTagClick).toHaveBeenCalledWith("bionic");
   });
 });

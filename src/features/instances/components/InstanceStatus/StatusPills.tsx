@@ -6,7 +6,13 @@ import { splitStatuses } from "./helpers";
 import classes from "./InstanceStatus.module.scss";
 import type { StatusItem } from "./types";
 
-const StatusPill: FC<{ readonly status: StatusItem }> = ({ status }) => {
+interface StatusPillProps {
+  readonly status: StatusItem;
+  /** When provided the pill becomes an interactive button (e.g. tag filters). */
+  readonly onClick?: (status: StatusItem) => void;
+}
+
+export const StatusPill: FC<StatusPillProps> = ({ status, onClick }) => {
   const [isTruncated, setIsTruncated] = useState(false);
 
   // A tooltip is only useful when the label is actually clipped, so the label
@@ -32,8 +38,8 @@ const StatusPill: FC<{ readonly status: StatusItem }> = ({ status }) => {
     };
   }, []);
 
-  return (
-    <span className={classNames(classes.pill, classes[status.severity])}>
+  const inner = (
+    <>
       <Icon name={status.icon} className={classes.pillIcon} />
       <span
         ref={labelRef}
@@ -42,6 +48,30 @@ const StatusPill: FC<{ readonly status: StatusItem }> = ({ status }) => {
       >
         {status.label}
       </span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className={classNames(
+          classes.pill,
+          classes[status.severity],
+          classes.clickable,
+        )}
+        onClick={() => {
+          onClick(status);
+        }}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <span className={classNames(classes.pill, classes[status.severity])}>
+      {inner}
     </span>
   );
 };
@@ -58,6 +88,8 @@ interface StatusPillsProps {
   readonly onExpand?: (
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
+  /** When provided each pill becomes clickable, e.g. to filter by a tag. */
+  readonly onStatusClick?: (status: StatusItem) => void;
 }
 
 const StatusPills: FC<StatusPillsProps> = ({
@@ -65,12 +97,17 @@ const StatusPills: FC<StatusPillsProps> = ({
   expandable,
   isExpanded,
   onExpand,
+  onStatusClick,
 }) => {
   if (!expandable) {
     return (
       <div className={classes.list}>
         {statuses.map((status) => (
-          <StatusPill key={status.key} status={status} />
+          <StatusPill
+            key={status.key}
+            status={status}
+            onClick={onStatusClick}
+          />
         ))}
       </div>
     );
@@ -82,7 +119,7 @@ const StatusPills: FC<StatusPillsProps> = ({
     <div className={classNames({ [classes.container]: isExpanded })}>
       <div className={isExpanded ? classes.expanded : classes.collapsed}>
         {(isExpanded ? statuses : visible).map((status) => (
-          <StatusPill key={status.key} status={status} />
+          <StatusPill key={status.key} status={status} onClick={onStatusClick} />
         ))}
 
         {!isExpanded && hidden.length > 0 && (

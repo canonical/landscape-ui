@@ -37,6 +37,24 @@
   text-overflow: ellipsis;
 }
 
+/* Interactive pill (e.g. clickable tag filters): reset native button chrome
+   and add a subtle hover overlay that works on top of any severity tint. */
+.clickable {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  margin: 0;
+  transition: box-shadow 0.1s ease-in-out;
+
+  &:hover {
+    box-shadow: inset 0 0 0 2rem rgb(0 0 0 / 5%);
+  }
+}
+
+:global(.is-dark) .clickable:hover {
+  box-shadow: inset 0 0 0 2rem rgb(255 255 255 / 8%);
+}
+
 /* The status colour is conveyed by the tinted background; the icon is kept
    small and slightly muted so the pills stay quiet next to the Upgrades column. */
 .pillIcon {

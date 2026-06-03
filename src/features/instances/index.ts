@@ -2,6 +2,7 @@ export * from "./api";
 export { default as InstanceList } from "./components/InstanceList";
 export { default as InstanceStatus } from "./components/InstanceStatus";
 export { InstanceUpgrades } from "./components/InstanceStatus";
+export { Tags as InstanceTags } from "./components/InstanceStatus";
 export {
   getInstanceStatuses,
   getUpgradeStatuses,

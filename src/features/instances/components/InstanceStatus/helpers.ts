@@ -182,3 +182,13 @@ export const getUpgradeStatuses = (instance: Instance): StatusItem[] => {
 
   return statuses;
 };
+
+// Tags carry no severity, so they render as neutral pills badged with the tag
+// glyph — the same chip family as statuses and upgrades.
+export const getTagStatuses = (tags: string[]): StatusItem[] =>
+  tags.map((tag) => ({
+    key: tag,
+    label: tag,
+    icon: "tag",
+    severity: "neutral",
+  }));

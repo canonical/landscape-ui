@@ -19,7 +19,11 @@ import classNames from "classnames";
 import moment from "moment";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import InstanceStatus, { InstanceUpgrades } from "../InstanceStatus";
+import InstanceStatus, {
+  getTagStatuses,
+  InstanceUpgrades,
+  StatusPill,
+} from "../InstanceStatus";
 import {
   createHeaderPropsGetter,
   getCellProps,
@@ -45,11 +49,23 @@ const InstanceList = memo(function InstanceList({
   setSelectedInstances,
 }: InstanceListProps) {
   const { disabledColumns, ...filters } = usePageParams();
+  const { setPageParams, tags: activeTags } = filters;
 
   const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
     useExpandableRow();
 
   const titleId = useId();
+
+  const toggleTagFilter = useCallback(
+    (tag: string) => {
+      setPageParams({
+        tags: activeTags.includes(tag)
+          ? activeTags.filter((current) => current !== tag)
+          : [...activeTags, tag],
+      });
+    },
+    [activeTags, setPageParams],
+  );
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
     if (typeof filter === "string") {
@@ -240,10 +256,14 @@ const InstanceList = memo(function InstanceList({
 
           return (
             <TruncatedCell
-              content={original.tags.map((tag) => (
-                <span className="truncatedItem" key={tag}>
-                  {tag}
-                </span>
+              content={getTagStatuses(original.tags).map((status) => (
+                <StatusPill
+                  key={status.key}
+                  status={status}
+                  onClick={(clicked) => {
+                    toggleTagFilter(clicked.label);
+                  }}
+                />
               ))}
               isExpanded={
                 index === expandedRowIndex && expandedColumnId === "tags"
@@ -312,6 +332,7 @@ const InstanceList = memo(function InstanceList({
       expandedRowIndex,
       expandedColumnId,
       handleExpand,
+      toggleTagFilter,
       titleId,
       isSelected,
       isNotSelected,
