@@ -54,10 +54,7 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
         body: valuesforCreation,
       });
 
-      await publishPublication({
-        publicationName: publication.name ?? "", // TODO change to use non-null assertion after fixing the API to return the publication name in the response
-        body: { forceOverwrite: true },
-      });
+      await publishPublication({ name: publication.name ?? "" });
 
       closeSidePanel();
 
