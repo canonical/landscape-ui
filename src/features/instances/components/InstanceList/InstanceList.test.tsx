@@ -68,8 +68,11 @@ describe("InstanceList", () => {
       assert(instance);
 
       if (instance.archived) {
-        assert(row.cells[1]);
-        expect(within(row.cells[1]).getByText("Archived")).toBeInTheDocument();
+        const statusCell = [...row.cells].find(
+          (cell) => cell.getAttribute("aria-label") === "Status",
+        );
+        assert(statusCell);
+        expect(within(statusCell).getByText("Archived")).toBeInTheDocument();
       }
     }
   });

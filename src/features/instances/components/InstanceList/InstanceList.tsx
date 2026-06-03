@@ -19,13 +19,12 @@ import classNames from "classnames";
 import moment from "moment";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
+import InstanceStatus, { InstanceUpgrades } from "../InstanceStatus";
 import {
   createHeaderPropsGetter,
   getCellProps,
   getColumnFilterOptions,
   getRowProps,
-  getStatusCellIconAndLabel,
-  getUpgradesCellIconAndLabel,
 } from "./helpers";
 import classes from "./InstanceList.module.scss";
 import type { InstanceColumn } from "./types";
@@ -47,7 +46,7 @@ const InstanceList = memo(function InstanceList({
 }: InstanceListProps) {
   const { disabledColumns, ...filters } = usePageParams();
 
-  const { expandedRowIndex, getTableRowsRef, handleExpand } =
+  const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
     useExpandableRow();
 
   const titleId = useId();
@@ -166,32 +165,31 @@ const InstanceList = memo(function InstanceList({
         },
       },
       {
-        accessor: "status",
-        canBeHidden: true,
-        optionLabel: "Status",
-        Header: "Status",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getStatusCellIconAndLabel(original);
-          return label;
-        },
-        getCellIcon: ({ row: { original } }) => {
-          const { icon } = getStatusCellIconAndLabel(original);
-          return icon;
-        },
-      },
-      {
         accessor: "upgrades",
         canBeHidden: true,
         optionLabel: "Upgrades",
         Header: "Upgrades",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getUpgradesCellIconAndLabel(original);
-          return label;
-        },
-        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
-          const { icon } = getUpgradesCellIconAndLabel(original);
-          return icon;
-        },
+        Cell: ({ row: { original } }: CellProps<Instance>) => (
+          <InstanceUpgrades instance={original} />
+        ),
+      },
+      {
+        accessor: "status",
+        canBeHidden: true,
+        optionLabel: "Status",
+        Header: "Status",
+        Cell: ({ row: { original, index } }: CellProps<Instance>) => (
+          <InstanceStatus
+            instance={original}
+            expandable
+            isExpanded={
+              index === expandedRowIndex && expandedColumnId === "status"
+            }
+            onExpand={() => {
+              handleExpand(index, "status");
+            }}
+          />
+        ),
       },
       {
         accessor: "os",
@@ -237,7 +235,7 @@ const InstanceList = memo(function InstanceList({
           }
 
           const onExpand = () => {
-            handleExpand(index);
+            handleExpand(index, "tags");
           };
 
           return (
@@ -247,7 +245,9 @@ const InstanceList = memo(function InstanceList({
                   {tag}
                 </span>
               ))}
-              isExpanded={index === expandedRowIndex}
+              isExpanded={
+                index === expandedRowIndex && expandedColumnId === "tags"
+              }
               onExpand={onExpand}
               showCount
             />
@@ -310,6 +310,7 @@ const InstanceList = memo(function InstanceList({
     [
       currentInstances,
       expandedRowIndex,
+      expandedColumnId,
       handleExpand,
       titleId,
       isSelected,
@@ -371,7 +372,7 @@ const InstanceList = memo(function InstanceList({
       data={currentInstances}
       getHeaderProps={createHeaderPropsGetter(titleId)}
       getRowProps={getRowProps(expandedRowIndex)}
-      getCellProps={getCellProps(expandedRowIndex)}
+      getCellProps={getCellProps(expandedRowIndex, expandedColumnId)}
       minWidth={1400}
     />
   );

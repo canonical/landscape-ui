@@ -14,7 +14,7 @@ import {
   getFeatures,
   getRecoveryKeyRegenerationAttemptMessage,
   isRecoveryKeyActivityInProgress,
-  getStatusCellIconAndLabel,
+  InstanceStatus,
   GenerateRecoveryKeyModal,
   InstanceRemoveFromLandscapeModal,
   RecoveryKeyStatus,
@@ -418,12 +418,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
           <InfoGrid>
             <InfoGrid.Item
               label="Status"
-              value={
-                <div className={classes.status}>
-                  <Icon name={getStatusCellIconAndLabel(instance).icon ?? ""} />
-                  <span>{getStatusCellIconAndLabel(instance).label}</span>
-                </div>
-              }
+              value={<InstanceStatus instance={instance} />}
             />
             <InfoGrid.Item
               label="Last ping time"
