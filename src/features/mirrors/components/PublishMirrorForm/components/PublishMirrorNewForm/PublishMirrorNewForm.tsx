@@ -76,7 +76,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
         closeSidePanel();
 
         notify.success({
-          title: `You have marked ${mirror.displayName} to be published.`,
+          title: `You have marked ${mirror.displayName} to be published`,
           message:
             "A publication has been created and an activity has been queued to publish it to the designated target.",
         });

@@ -96,4 +96,20 @@ describe("MirrorDetails", () => {
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
   });
+
+  it("opens UpdateMirrorModal if updateModal param is true", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[0].name}&updateModal=true`,
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: `Update ${mirrors[0].displayName}`,
+      }),
+    ).toBeInTheDocument();
+  });
 });

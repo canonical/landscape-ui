@@ -159,8 +159,8 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         closeSidePanel();
 
         notify.success({
-          title: "Publication target edited",
-          message: `You have successfully edited ${values.displayName}`,
+          title: `You have successfully edited ${values.displayName}`,
+          message: "The publication target details have been updated.",
         });
       } catch (error) {
         debug(error);

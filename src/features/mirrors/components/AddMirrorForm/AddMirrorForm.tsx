@@ -34,7 +34,7 @@ import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel } = usePageParams();
+  const { closeSidePanel, createPageParamsSetter } = usePageParams();
 
   const ubuntuArchiveQuery = useGetUbuntuArchiveInfo();
   const ubuntuEsmQuery = useGetUbuntuEsmInfo();
@@ -91,7 +91,7 @@ const AddMirrorForm: FC = () => {
             ? `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${values.snapshotDate}`
             : values.sourceUrl;
 
-        await createMirror({
+        const { data: newMirror } = await createMirror({
           archiveRoot,
           components: values.components.map((component) => component.trim()),
           displayName: values.name,
@@ -117,8 +117,19 @@ const AddMirrorForm: FC = () => {
         closeSidePanel();
 
         notify.success({
-          title: `You have successfully added ${values.name}.`,
-          message: "The mirror has been created.",
+          title: `You have successfully added ${values.name}`,
+          message:
+            "The mirror has been created and is now available to update.",
+          actions: [
+            {
+              label: "Update mirror",
+              onClick: createPageParamsSetter({
+                sidePath: ["view"],
+                name: newMirror.name,
+                updateModal: true,
+              }),
+            },
+          ],
         });
       } catch (error) {
         debug(error);

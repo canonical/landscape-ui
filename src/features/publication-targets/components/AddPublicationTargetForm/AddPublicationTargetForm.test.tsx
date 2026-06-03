@@ -124,7 +124,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added My S3 Target/i),
       ).toBeInTheDocument();
     });
   });
@@ -148,7 +148,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added My Swift Target/i),
       ).toBeInTheDocument();
     });
   });
@@ -169,7 +169,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added My Filesystem Target/i),
       ).toBeInTheDocument();
     });
   });
@@ -350,7 +350,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added/i),
       ).toBeInTheDocument();
     });
   });
@@ -387,7 +387,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added/i),
       ).toBeInTheDocument();
     });
   });
@@ -406,7 +406,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added/i),
       ).toBeInTheDocument();
     });
   });
@@ -488,7 +488,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 
@@ -533,7 +533,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 
@@ -572,7 +572,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 
@@ -613,7 +613,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 

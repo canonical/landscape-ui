@@ -38,7 +38,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `You have successfully removed ${mirrorDisplayName}.`,
+        title: `You have successfully removed ${mirrorDisplayName}`,
         message: "The mirror has been removed from Landscape.",
       });
     } catch (error) {

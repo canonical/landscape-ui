@@ -54,8 +54,9 @@ const AddPublicationForm: FC = () => {
         closeSidePanel();
 
         notify.success({
-          title: "Publication created",
-          message: `Publication "${values.name}" has been created.`,
+          title: `You have successfully added ${values.name}`,
+          message:
+            "The publication has been created and is now available to be published.",
         });
       } catch (error) {
         debug(error);
