@@ -283,7 +283,7 @@ const AddPublicationForm: FC = () => {
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={
+        submitButtonLoading={
           formik.isSubmitting ||
           isCreatingPublication ||
           isPublishingPublication
