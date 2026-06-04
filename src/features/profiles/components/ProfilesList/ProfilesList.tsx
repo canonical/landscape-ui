@@ -89,6 +89,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       columns={columns}
       data={filteredProfiles}
       emptyMsg={`No ${type} profiles found according to your search parameters.`}
+      minWidth={type === ProfileTypes.usg ? 1024 : undefined}
     />
   );
 };

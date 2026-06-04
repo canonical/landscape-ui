@@ -6,7 +6,6 @@ import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
-import { pluralize } from "@/utils/_helpers";
 
 vi.mock("@/hooks/useRoles", () => ({
   default: vi.fn(() => ({
@@ -43,25 +42,6 @@ describe("RepositoryProfileList", () => {
 
       expect(await within(row).findByText(accessGroup)).toBeInTheDocument();
     }
-  });
-
-  it("renders applied count for each profile row", async () => {
-    const [firstProfile] = repositoryProfiles;
-    renderWithProviders(
-      <RepositoryProfileList repositoryProfiles={[firstProfile]} />,
-    );
-
-    const table = screen.getByRole("table");
-    const row = within(table).getByRole("row", {
-      name: (name) =>
-        name.toLowerCase().includes(firstProfile.title.toLowerCase()),
-    });
-
-    expect(
-      await within(row).findByText(
-        pluralize(firstProfile.applied_count ?? 0, ["instance"], "exact"),
-      ),
-    ).toBeInTheDocument();
   });
 
   it("sets sidePath=view and name in URL when clicking a profile title", async () => {

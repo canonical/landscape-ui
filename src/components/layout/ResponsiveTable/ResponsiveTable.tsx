@@ -8,6 +8,8 @@ import { type JSX } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./ResponsiveTable.module.scss";
 
+const DEFAULT_MIN_TABLE_WIDTH = 950;
+
 export interface ResponsiveTableProps<
   Row extends Record<string, unknown> = Record<string, unknown>,
 > extends ModularTableProps<Row> {
@@ -18,7 +20,7 @@ export default function ResponsiveTable<
   Row extends Record<string, unknown> = Record<string, unknown>,
 >({
   style,
-  minWidth = 1024,
+  minWidth = DEFAULT_MIN_TABLE_WIDTH,
   ...tableProps
 }: ResponsiveTableProps<Row>): JSX.Element {
   const isSmall = useMediaQuery(`(max-width: ${BREAKPOINT_PX.sm}px)`);

@@ -10,12 +10,12 @@ import { profiles } from "@/tests/mocks/profiles";
 const [baseProfile] = profiles;
 
 const actionLabels = {
-  security: ["Edit", "Download audit", "Run", "Duplicate", "Archive"],
+  usg: ["Edit", "Download audit", "Run", "Duplicate", "Archive"],
   package: ["Edit", "Edit package constraints", "Duplicate", "Remove"],
   reboot: ["Edit", "Duplicate", "Remove"],
   script: ["Edit", "Archive"],
   default: ["Edit", "Remove"],
-  archivedSecurity: ["Download audit", "Duplicate"],
+  archivedUsg: ["Download audit", "Duplicate"],
 } as const;
 
 describe("ViewProfileActionsBlock", () => {
@@ -105,14 +105,14 @@ describe("ViewProfileActionsBlock", () => {
       actionLabels.script,
     ],
     [
-      "archived security",
+      "archived USG",
       {
         ...baseProfile,
         benchmark: "cis_level1_workstation",
         status: "archived",
       },
-      ProfileTypes.security,
-      actionLabels.archivedSecurity,
+      ProfileTypes.usg,
+      actionLabels.archivedUsg,
     ],
   ])(
     `displays the proper actions for %s profile`,
@@ -132,10 +132,10 @@ describe("ViewProfileActionsBlock", () => {
 
   it.each([
     [
-      "security",
+      "usg",
       { ...baseProfile, benchmark: "cis_level1_workstation" },
-      ProfileTypes.security,
-      actionLabels.security,
+      ProfileTypes.usg,
+      actionLabels.usg,
     ],
     [
       "package",

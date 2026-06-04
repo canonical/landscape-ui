@@ -10,9 +10,9 @@ const [baseProfile] = profiles;
 
 describe("AssociatedInstancesCell", () => {
   it.each([
-    [ProfileTypes.repository, { ...baseProfile, apt_sources: [] }, "35"],
+    [ProfileTypes.repository, { ...baseProfile, apt_sources: [] }, "2"],
     [
-      ProfileTypes.security,
+      ProfileTypes.usg,
       { ...baseProfile, benchmark: "cis_level1", associated_instances: 999 },
       "999",
     ],

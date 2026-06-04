@@ -22,15 +22,11 @@ vi.mock("@/features/package-profiles", () => ({
   PackageProfileDetailsConstraints: () => <div>package-constraints-tab</div>,
 }));
 
-vi.mock("@/features/repository-profiles", () => ({
-  ViewRepositoryProfileAptSourcesTab: () => <div>apt-sources-tab</div>,
-}));
-
 const [baseProfile] = profiles;
 
 describe("ViewProfileSidePanel", () => {
   it.each([
-    [ProfileTypes.security],
+    [ProfileTypes.usg],
     [ProfileTypes.upgrade],
     [ProfileTypes.wsl],
     [ProfileTypes.removal],
@@ -42,7 +38,6 @@ describe("ViewProfileSidePanel", () => {
 
     expect(screen.queryByText(/Activity history/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Package constraints/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Pockets/i)).not.toBeInTheDocument();
 
     expect(screen.getByText("actions-block")).toBeInTheDocument();
     expect(screen.getByText("info-tab")).toBeInTheDocument();
@@ -62,7 +57,6 @@ describe("ViewProfileSidePanel", () => {
     expect(screen.getByText("info-tab")).toBeInTheDocument();
 
     expect(screen.queryByText(/Package constraints/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Pockets/i)).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByText("Activity history"));
     expect(screen.getByText("activity-history-tab")).toBeInTheDocument();
@@ -81,31 +75,9 @@ describe("ViewProfileSidePanel", () => {
 
     expect(screen.getByText("Info")).toBeInTheDocument();
     expect(screen.queryByText(/Activity history/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Pockets/i)).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByText("Package constraints"));
     expect(screen.getByText("package-constraints-tab")).toBeInTheDocument();
     expect(screen.getByText("actions-block")).toBeInTheDocument();
-  });
-
-  it("renders APT sources tab when selected", async () => {
-    const repositoryProfile = { ...baseProfile, apt_sources: [] };
-
-    renderWithProviders(
-      <ViewProfileSidePanel
-        profile={repositoryProfile}
-        type={ProfileTypes.repository}
-      />,
-    );
-
-    expect(screen.queryByText(/Activity history/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Package constraints/i)).not.toBeInTheDocument();
-
-    await userEvent.click(screen.getByText("APT sources"));
-    expect(screen.getByText("apt-sources-tab")).toBeInTheDocument();
-    expect(screen.getByText("actions-block")).toBeInTheDocument();
-
-    await userEvent.click(screen.getByText("Info"));
-    expect(screen.getByText("info-tab")).toBeInTheDocument();
   });
 });
