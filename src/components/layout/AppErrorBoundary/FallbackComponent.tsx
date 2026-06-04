@@ -1,7 +1,7 @@
 import { FEEDBACK_LINK, IS_DEV_ENV } from "@/constants";
 import { Button, CodeSnippet, Icon } from "@canonical/react-components";
 import type { FallbackRender } from "@sentry/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FC } from "react";
 import classes from "./FallbackComponent.module.scss";
 
@@ -19,6 +19,13 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
   resetError,
 }) => {
   const [copied, setCopied] = useState(false);
+  const copiedTimeoutRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(copiedTimeoutRef.current);
+    };
+  }, []);
 
   const errorMessage = error instanceof Error ? error.message : String(error);
   const stack = error instanceof Error ? error.stack : undefined;
@@ -31,7 +38,7 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
     const report = [
       `Error: ${errorMessage}`,
       stack ? `\n\nStack trace:\n${stack}` : "",
-      componentStack ? `\n\nComponent stack:${componentStack}` : "",
+      componentStack ? `\n\nComponent stack:\n${componentStack.trim()}` : "",
     ]
       .join("")
       .trim();
@@ -39,7 +46,8 @@ const ErrorFallback: FC<ErrorFallbackProps> = ({
     try {
       await navigator.clipboard.writeText(report);
       setCopied(true);
-      window.setTimeout(() => {
+      window.clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = window.setTimeout(() => {
         setCopied(false);
       }, COPIED_FEEDBACK_TIMEOUT);
     } catch {
