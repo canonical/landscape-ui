@@ -3,7 +3,7 @@ import { useGetInstance } from "../../api";
 import { Spinner } from "@canonical/react-components";
 import NoData from "@/components/layout/NoData";
 import { Link } from "react-router";
-import { ROUTES } from "@/libs/routes/routes";
+import { ROUTES } from "@/libs/routes";
 
 interface InstanceLinkProps {
   readonly instanceId: number;
