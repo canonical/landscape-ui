@@ -72,6 +72,7 @@ export const getGeneralColumns = (
   name: {
     accessor: "title",
     Header: "Profile name",
+    className: "date-cell",
     id: "title",
     meta: {
       ariaLabel: ({ original: profile }) => `"${profile.title}" profile name`,
@@ -186,7 +187,7 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
 export const getUsgColumns = (): Column<Profile>[] => [
   {
     accessor: "last_run_results",
-    className: "medium-cell",
+    className: "date-cell",
     Header: "Pass rate",
     meta: {
       ariaLabel: ({ original: profile }) =>
@@ -200,6 +201,7 @@ export const getUsgColumns = (): Column<Profile>[] => [
   },
   {
     accessor: "schedule",
+    className: "date-cell",
     Header: (
       <div>
         Last run
