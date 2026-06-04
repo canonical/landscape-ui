@@ -23,9 +23,12 @@ describe("PublishRepositoryNewForm", () => {
 
     expect(screen.getByLabelText(/hash based indexing/i)).toBeInTheDocument();
     expect(
-      screen.getByLabelText(/automatic installation/i),
+      screen.getByLabelText(/limit automatic installation/i),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/automatic upgrades/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/skip bz2/i)).toBeInTheDocument();
+    expect(
+      screen.getByLabelText(/skip generating content indexes/i),
+    ).toBeInTheDocument();
   });
 
   it("renders contents block", () => {

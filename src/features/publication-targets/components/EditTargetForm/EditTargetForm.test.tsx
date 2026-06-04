@@ -97,7 +97,9 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(
+          `You have successfully edited ${s3TargetFull.displayName}`,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -145,7 +147,9 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(
+          `You have successfully edited ${swiftTarget.displayName}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -158,7 +162,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
 
@@ -199,7 +203,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
 
@@ -271,7 +275,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
   });
@@ -292,7 +296,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
   });

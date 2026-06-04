@@ -1,9 +1,11 @@
 import { MAX_PASSWORD_LENGTH } from "@/constants";
 import * as Yup from "yup";
 
+export const REQUIRED_FIELD_MESSAGE = "This field is required";
+
 export const passwordValidationSchema = {
   password: Yup.string()
-    .required("This field is required")
+    .required(REQUIRED_FIELD_MESSAGE)
     .min(8, "Password must be at least 8 characters long")
     .max(
       MAX_PASSWORD_LENGTH,

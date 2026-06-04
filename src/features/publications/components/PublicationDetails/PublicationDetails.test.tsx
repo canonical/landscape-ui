@@ -12,7 +12,7 @@ import moment from "moment";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
-  const [publication, publicationWithKey] = publications;
+  const [publication, publicationWithKey, manualPublication] = publications;
 
   const sourceDisplayName =
     mirrors.find((m) => m.name === publication.source)?.displayName ??
@@ -39,14 +39,13 @@ describe("PublicationDetails", () => {
         label: "Date published",
         value: moment(publication.publishTime).format(DISPLAY_DATE_TIME_FORMAT),
       },
+      { label: "Distribution", value: publication.distribution },
       {
         label: "Architectures",
         value: publication.architectures.join(", "),
       },
       { label: "Hash indexing", value: "Yes" },
-      { label: "Automatic installation", value: "Yes" },
-      { label: "Automatic upgrades", value: "No" },
-      { label: "Multi dist", value: "No" },
+      { label: "Installs and upgrades", value: "Both automatic" },
       { label: "Skip bz2", value: "No" },
       { label: "Skip content indexing", value: "No" },
     ];
@@ -69,6 +68,33 @@ describe("PublicationDetails", () => {
       "Signing GPG Key",
       publicationWithKey.gpgKey?.fingerprint,
     );
+  });
+
+  it("renders automatic upgrades value for installs and upgrades field", async () => {
+    const { container } = renderWithProviders(
+      <PublicationDetails
+        publication={publicationWithKey}
+        sourceDisplayName={sourceDisplayName}
+        publicationTargetDisplayName={publicationTargetDisplayName}
+      />,
+    );
+
+    expect(container).toHaveInfoItem(
+      "Installs and upgrades",
+      "Automatic upgrades only",
+    );
+  });
+
+  it("renders manual value for installs and upgrades field", async () => {
+    const { container } = renderWithProviders(
+      <PublicationDetails
+        publication={manualPublication}
+        sourceDisplayName={sourceDisplayName}
+        publicationTargetDisplayName={publicationTargetDisplayName}
+      />,
+    );
+
+    expect(container).toHaveInfoItem("Installs and upgrades", "Both manual");
   });
 
   it("opens republish modal", async () => {

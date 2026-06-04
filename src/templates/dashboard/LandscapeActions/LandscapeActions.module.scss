@@ -25,17 +25,3 @@
   font-weight: 550;
   margin-right: $spv--x-small;
 }
-
-.feedbackLink {
-  &:visited {
-    color: $color-link-dark;
-  }
-
-  :global(.is-dark) & {
-    &[target="_blank"] {
-      &::after {
-        @include vf-icon-external-link($color-link-dark);
-      }
-    }
-  }
-}

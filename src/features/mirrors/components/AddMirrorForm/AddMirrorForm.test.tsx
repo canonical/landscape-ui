@@ -10,10 +10,12 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
 import type { CreateMirrorData } from "@canonical/landscape-openapi";
+import { useLocation } from "react-router";
+import { mirrors } from "@/tests/mocks/mirrors";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
-const mockCreateMirror = vi.fn();
+const mockCreateMirror = vi.fn(() => ({ data: mirrors[0] }));
 
 vi.mock("../../api", async () => {
   const actual = await vi.importActual("../../api");
@@ -26,13 +28,23 @@ vi.mock("../../api", async () => {
   };
 });
 
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
+
 describe("AddMirrorForm", () => {
   const user = userEvent.setup();
 
   beforeEach(async () => {
     mockCreateMirror.mockClear();
 
-    renderWithProviders(<AddMirrorForm />);
+    renderWithProviders(
+      <>
+        <AddMirrorForm />
+        <LocationDisplay />
+      </>,
+    );
 
     // The form renders immediately; wait for the "pulling…" note in the
     // Mirror contents block to disappear so the data-dependent dropdowns are
@@ -41,6 +53,22 @@ describe("AddMirrorForm", () => {
       timeout: 2000,
     });
     await user.type(screen.getByLabelText("Name"), "Name");
+  });
+
+  it("shows success notification with Update mirror action", async () => {
+    await user.click(screen.getByRole("button", { name: "Add mirror" }));
+
+    expect(
+      screen.getByText(`You have successfully added Name`),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Update mirror" }));
+
+    const location = screen.getByTestId("location");
+    expect(location).toHaveTextContent("sidePath=view");
+    expect(location).toHaveTextContent(
+      `name=${mirrors[0].name.replace("/", "%2F")}`,
+    );
+    expect(location).toHaveTextContent("updateModal=true");
   });
 
   it("submits an ubuntu archive mirror with the default https URL", async () => {
@@ -129,7 +157,7 @@ describe("AddMirrorForm", () => {
   });
 
   it("submits a mirror with preserve signatures enabled", async () => {
-    await user.click(screen.getByLabelText("Preserve upstream signing key"));
+    await user.click(screen.getByLabelText(/Preserve upstream signing key/));
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
@@ -142,7 +170,7 @@ describe("AddMirrorForm", () => {
   it("clears package filter and include dependencies when preserve signatures is enabled", async () => {
     const packageFilterField = screen.getByLabelText("Filter");
     const includeDepsCheckbox = screen.getByLabelText(
-      "Include dependencies in filter",
+      /Include dependencies in filter/,
     );
 
     await user.type(packageFilterField, "nginx*");
@@ -151,7 +179,7 @@ describe("AddMirrorForm", () => {
     expect(packageFilterField).toHaveValue("nginx*");
     expect(includeDepsCheckbox).toBeChecked();
 
-    await user.click(screen.getByLabelText("Preserve upstream signing key"));
+    await user.click(screen.getByLabelText(/Preserve upstream signing key/));
 
     expect(packageFilterField).toHaveValue("");
     expect(includeDepsCheckbox).not.toBeChecked();

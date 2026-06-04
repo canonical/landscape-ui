@@ -56,7 +56,7 @@ describe("PublicationsContainer", () => {
     renderWithProviders(<PublicationsContainer />);
     await expectLoadingState();
     expect(
-      screen.queryByRole("button", { name: "Add publication" }),
+      screen.queryByRole("button", { name: /Add publication/ }),
     ).not.toBeInTheDocument();
     screen.debug();
   });

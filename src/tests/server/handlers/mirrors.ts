@@ -23,11 +23,13 @@ import {
 const mirrors = [...(mockMirrors as Mirror[])];
 
 const getMirrorsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { pageSize, pageToken, search } =
+    getDebArchivePaginationParams(requestUrl);
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     mirrors,
     pageToken,
     pageSize,
+    search,
   );
 
   return HttpResponse.json({
@@ -81,14 +83,14 @@ export default [
 
       const requestBody = await request.json();
       const mirrorId = requestBody.displayName.toLowerCase();
-
-      mirrors.push({
-        name: `mirrors/${mirrorId}`,
+      const newMirror: Mirror = {
         mirrorId,
+        name: `mirrors/${mirrorId}`,
         ...requestBody,
-      });
+      };
+      mirrors.push(newMirror);
 
-      return HttpResponse.json<CreateMirrorResponse>();
+      return HttpResponse.json<CreateMirrorResponse>(newMirror);
     },
   ),
 

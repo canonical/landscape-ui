@@ -51,7 +51,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     tags,
     toDate,
     type,
-    search,
     query,
     passRateFrom,
     passRateTo,
@@ -86,14 +85,6 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         items: parseSearchQuery(query),
         remove: createRemover("query", filterSearchQuery),
         clear: createClearer({ query: "" }),
-      },
-    },
-    {
-      condition: filtersToDisplay.includes("search"),
-      value: {
-        label: "Search",
-        item: search,
-        clear: createClearer({ search: "" }),
       },
     },
     {

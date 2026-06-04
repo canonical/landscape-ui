@@ -12,31 +12,25 @@ import type { SelectOption } from "@/types/SelectOption";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Form,
-  Icon,
   Input,
   Select,
   Textarea,
-  Tooltip,
   type MultiSelectItem,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useMemo } from "react";
-import { useCreatePublication } from "../../api";
-import classes from "./AddPublicationForm.module.scss";
+import { useCreatePublication, usePublishPublication } from "../../api";
 import {
   INITIAL_VALUES,
-  SETTINGS_HELP_TEXT,
   SOURCE_TYPE_LOCAL_REPOSITORY,
   SOURCE_TYPE_MIRROR,
   SOURCE_TYPE_OPTIONS,
-} from "./constants";
-import {
-  getPublicationPayload,
-  stripResourcePrefix,
   VALIDATION_SCHEMA,
-} from "./helpers";
+} from "./constants";
+import { getPublicationPayload, stripResourcePrefix } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
+import PublicationSettingsBlock from "../../components/PublicationSettingsBlock";
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
@@ -48,6 +42,8 @@ const AddPublicationForm: FC = () => {
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { createPublication, isCreatingPublication } = useCreatePublication();
+  const { publishPublication, isPublishingPublication } =
+    usePublishPublication();
 
   const formik = useFormik<FormProps>({
     initialValues: INITIAL_VALUES,
@@ -55,13 +51,15 @@ const AddPublicationForm: FC = () => {
     onSubmit: async (values) => {
       try {
         const payload = getPublicationPayload(values);
-        await createPublication(payload);
+        const { data: publication } = await createPublication(payload);
+        await publishPublication({ name: publication.name ?? "" });
 
         closeSidePanel();
 
         notify.success({
-          title: "Publication created",
-          message: `Publication "${values.name}" has been created.`,
+          title: `You have successfully added ${values.name}`,
+          message:
+            "The publication has been created and is now available to be published.",
         });
       } catch (error) {
         debug(error);
@@ -78,6 +76,7 @@ const AddPublicationForm: FC = () => {
         value: stripResourcePrefix(mirror.name, "mirrors/"),
         sourceType: SOURCE_TYPE_MIRROR,
         distribution: mirror.distribution,
+        components: mirror.components,
         architectures: mirror.architectures ?? [],
         preserveSignatures: mirror.preserveSignatures,
       })),
@@ -91,22 +90,23 @@ const AddPublicationForm: FC = () => {
         value: stripResourcePrefix(localSource.name, "locals/"),
         sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
         distribution: localSource.defaultDistribution,
+        components: [localSource.defaultComponent],
         architectures: [],
       })),
     [locals],
   );
 
   const selectableSources = useMemo(() => {
-    if (formik.values.source_type === SOURCE_TYPE_MIRROR) {
+    if (formik.values.sourceType === SOURCE_TYPE_MIRROR) {
       return mirrorSources;
     }
 
-    if (formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY) {
+    if (formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
       return localSources;
     }
 
     return [];
-  }, [formik.values.source_type, localSources, mirrorSources]);
+  }, [formik.values.sourceType, localSources, mirrorSources]);
 
   const sourceOptions = useMemo(
     () => [
@@ -121,10 +121,10 @@ const AddPublicationForm: FC = () => {
   );
 
   const isLocalSourceType =
-    formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY;
+    formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY;
 
   const isGettingSources =
-    formik.values.source_type === SOURCE_TYPE_LOCAL_REPOSITORY &&
+    formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY &&
     isGettingLocals;
 
   const publicationTargetOptions = useMemo<SelectOption[]>(
@@ -153,11 +153,11 @@ const AddPublicationForm: FC = () => {
   const handleSourceTypeChange = async (
     event: React.ChangeEvent<HTMLSelectElement>,
   ): Promise<void> => {
-    await formik.setFieldValue("source_type", event.target.value);
+    await formik.setFieldValue("sourceType", event.target.value);
     await formik.setFieldValue("source", "");
-    await formik.setFieldValue("uploader_distribution", "");
-    await formik.setFieldValue("uploader_architectures", []);
-    await formik.setFieldValue("signing_key", "");
+    await formik.setFieldValue("distribution", "");
+    await formik.setFieldValue("architectures", []);
+    await formik.setFieldValue("signingKey", "");
   };
 
   const handleSourceChange = async (
@@ -167,27 +167,24 @@ const AddPublicationForm: FC = () => {
     const source = selectableSources.find(({ value }) => value === sourceValue);
 
     await formik.setFieldValue("source", sourceValue);
-    await formik.setFieldValue(
-      "uploader_distribution",
-      source?.distribution ?? "",
-    );
+    await formik.setFieldValue("distribution", source?.distribution ?? "");
 
     if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
-      await formik.setFieldValue("uploader_architectures", []);
-      await formik.setFieldValue("signing_key", "");
+      await formik.setFieldValue("architectures", []);
+      await formik.setFieldValue("signingKey", "");
 
       return;
     }
-    await formik.setFieldValue("uploader_architectures", []);
-    await formik.setFieldValue("signing_key", "");
+    await formik.setFieldValue("architectures", []);
+    await formik.setFieldValue("signingKey", "");
   };
 
   const handleArchitectureChange = async (
     items: MultiSelectItem[],
   ): Promise<void> => {
-    await formik.setFieldTouched("uploader_architectures", true);
+    await formik.setFieldTouched("architectures", true);
     await formik.setFieldValue(
-      "uploader_architectures",
+      "architectures",
       items.map(({ value }) => String(value)),
     );
   };
@@ -208,15 +205,15 @@ const AddPublicationForm: FC = () => {
             label="Source type"
             required
             options={SOURCE_TYPE_OPTIONS}
-            error={getFormikError(formik, "source_type")}
-            {...formik.getFieldProps("source_type")}
+            error={getFormikError(formik, "sourceType")}
+            {...formik.getFieldProps("sourceType")}
             onChange={handleSourceTypeChange}
           />
 
           <Select
             label="Source"
             required
-            disabled={!formik.values.source_type || isGettingSources}
+            disabled={!formik.values.sourceType || isGettingSources}
             options={sourceOptions}
             error={getFormikError(formik, "source")}
             {...formik.getFieldProps("source")}
@@ -228,35 +225,43 @@ const AddPublicationForm: FC = () => {
             required
             disabled={isGettingPublicationTargets}
             options={publicationTargetOptions}
-            error={getFormikError(formik, "publication_target")}
-            {...formik.getFieldProps("publication_target")}
+            error={getFormikError(formik, "publicationTarget")}
+            {...formik.getFieldProps("publicationTarget")}
           />
 
-          <Input
-            type="text"
-            label="Directory prefix"
-            error={getFormikError(formik, "prefix")}
-            {...formik.getFieldProps("prefix")}
-          />
+          {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
+            selectedSource.preserveSignatures === false && (
+              <Textarea
+                label="Signing GPG key"
+                rows={4}
+                {...formik.getFieldProps("signingKey")}
+                error={getFormikError(formik, "signingKey")}
+              />
+            )}
         </Blocks.Item>
 
         <Blocks.Item title="Contents">
           {isLocalSourceType || selectedSource?.preserveSignatures ? (
             <ReadOnlyField
               label="Distribution"
-              required
-              value={formik.values.uploader_distribution}
-              tooltipMessage="The distribution is derived from the selected source."
+              value={formik.values.distribution}
+              tooltipMessage="The distribution is defined by the selected source."
             />
           ) : (
             <Input
               type="text"
               label="Distribution"
               required
-              error={getFormikError(formik, "uploader_distribution")}
-              {...formik.getFieldProps("uploader_distribution")}
+              error={getFormikError(formik, "distribution")}
+              {...formik.getFieldProps("distribution")}
             />
           )}
+
+          <ReadOnlyField
+            label={isLocalSourceType ? "Component" : "Components"}
+            value={selectedSource?.components?.join(", ")}
+            tooltipMessage={`The ${isLocalSourceType ? "component is" : "components are"} defined by the selected source.`}
+          />
 
           {!isLocalSourceType && (
             <MultiSelectField
@@ -267,104 +272,23 @@ const AddPublicationForm: FC = () => {
               disabled={!formik.values.source}
               items={architectureItems}
               selectedItems={architectureItems.filter(({ value }) =>
-                formik.values.uploader_architectures.includes(value),
+                formik.values.architectures.includes(value),
               )}
               onItemsUpdate={handleArchitectureChange}
-              error={getFormikError(formik, "uploader_architectures")}
+              error={getFormikError(formik, "architectures")}
             />
           )}
         </Blocks.Item>
 
-        {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
-          selectedSource.preserveSignatures === false && (
-            <Blocks.Item title="Signing GPG Key">
-              <Textarea
-                {...formik.getFieldProps("signing_key")}
-                error={getFormikError(formik, "signing_key")}
-              />
-            </Blocks.Item>
-          )}
-
-        <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.hashIndexing}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={formik.values.hash_indexing}
-            {...formik.getFieldProps("hash_indexing")}
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticInstallation}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={formik.values.automatic_installation}
-            {...formik.getFieldProps("automatic_installation")}
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.automaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={formik.values.automatic_upgrades}
-            {...formik.getFieldProps("automatic_upgrades")}
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip bz2"
-            checked={formik.values.skip_bz2}
-            {...formik.getFieldProps("skip_bz2")}
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip content indexing"
-            checked={formik.values.skip_content_indexing}
-            {...formik.getFieldProps("skip_content_indexing")}
-          />
-        </Blocks.Item>
+        <PublicationSettingsBlock formik={formik} />
       </Blocks>
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting || isCreatingPublication}
+        submitButtonLoading={
+          formik.isSubmitting ||
+          isCreatingPublication ||
+          isPublishingPublication
+        }
         submitButtonText="Add publication"
         onCancel={closeSidePanel}
       />

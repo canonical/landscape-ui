@@ -1,0 +1,8 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.subCheckbox {
+  border-left: 1px solid $colors--theme--border-default;
+  margin-left: $sph--small;
+  padding-left: $sph--large;
+}

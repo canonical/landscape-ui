@@ -37,7 +37,6 @@ const LandscapeActions: FC = () => {
             href={FEEDBACK_LINK}
             target="_blank"
             rel="noreferrer noopener nofollow"
-            className={classes.feedbackLink}
           >
             Share your feedback
           </a>

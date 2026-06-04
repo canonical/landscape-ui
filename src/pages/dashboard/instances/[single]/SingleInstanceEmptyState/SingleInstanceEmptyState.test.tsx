@@ -1,5 +1,4 @@
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import SingleInstanceEmptyState from "./SingleInstanceEmptyState";
@@ -37,37 +36,24 @@ describe("SingleInstanceEmptyState", () => {
     expect(screen.getByText("exist")).toBeInTheDocument();
   });
 
-  it("renders 'Back to Instances page' button", () => {
+  it("renders 'Back to Instances page' link", () => {
     renderWithProviders(
       <SingleInstanceEmptyState instanceId="42" childInstanceId={undefined} />,
     );
 
-    expect(screen.getByText("Back to Instances page")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Back to Instances page" }),
+    ).toHaveAttribute("href", "/instances");
   });
 
-  it("renders 'Home page' button", () => {
+  it("renders 'Home page' link", () => {
     renderWithProviders(
       <SingleInstanceEmptyState instanceId="42" childInstanceId={undefined} />,
     );
 
-    expect(screen.getByText("Home page")).toBeInTheDocument();
-  });
-
-  it("navigates to instances page when 'Back to Instances page' is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(
-      <SingleInstanceEmptyState instanceId="42" childInstanceId={undefined} />,
+    expect(screen.getByRole("link", { name: "Home page" })).toHaveAttribute(
+      "href",
+      "/",
     );
-
-    await user.click(screen.getByText("Back to Instances page"));
-  });
-
-  it("navigates to home page when 'Home page' is clicked", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(
-      <SingleInstanceEmptyState instanceId="42" childInstanceId={undefined} />,
-    );
-
-    await user.click(screen.getByText("Home page"));
   });
 });

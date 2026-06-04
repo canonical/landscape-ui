@@ -35,20 +35,11 @@ const AccessGroupsContainer: FC = () => {
         <EmptyState
           title="No access groups found"
           icon="copy"
-          body={
-            <>
-              <p className="u-no-margin--bottom">
-                You haven&#39;t added any access groups yet.
-              </p>
-              <a
-                href="https://ubuntu.com/landscape/docs/access-groups"
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-              >
-                How to manage access groups in Landscape
-              </a>
-            </>
-          }
+          body="You haven't added any access groups yet."
+          link={{
+            href: "https://ubuntu.com/landscape/docs/access-groups",
+            text: "How to manage access groups in Landscape",
+          }}
           cta={[
             <Button
               key="add-access-group"
