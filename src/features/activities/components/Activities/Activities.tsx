@@ -3,12 +3,10 @@ import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { BREAKPOINT_PX, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ROUTES } from "@/libs/routes";
 import { Button, CheckboxInput } from "@canonical/react-components";
 import moment from "moment/moment";
 import type { FC } from "react";
 import { useCallback, useMemo } from "react";
-import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
 import { useMediaQuery } from "usehooks-ts";
 import { ACTIVITY_STATUSES } from "../../constants";
@@ -19,7 +17,7 @@ import {
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
-import { InstanceTitle } from "@/features/instances";
+import { InstanceLink } from "@/features/instances";
 
 interface ActivitiesProps {
   readonly activities: ActivityCommon[];
@@ -137,11 +135,7 @@ const Activities: FC<ActivitiesProps> = ({
           Header: "Instance",
           Cell: ({ row }: CellProps<ActivityCommon>) =>
             row.original.computer_id ? (
-              <Link
-                to={ROUTES.instances.details.single(row.original.computer_id)}
-              >
-                <InstanceTitle instanceId={row.original.computer_id} />
-              </Link>
+              <InstanceLink instanceId={row.original.computer_id} />
             ) : (
               <NoData />
             ),
