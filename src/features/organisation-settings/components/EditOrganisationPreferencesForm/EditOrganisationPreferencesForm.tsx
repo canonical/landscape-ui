@@ -108,7 +108,7 @@ const EditOrganisationPreferencesForm: FC<
       <ReadOnlyField
         label="Account name"
         value={currentAccount.name}
-        tooltipMessage="The account name is assigned when the account is created and can't be changed. It is used to register clients with Landscape."
+        tooltipMessage="The account name is set when the account is created and can't be changed later. It's used when registering clients with Landscape."
       />
 
       <Input
