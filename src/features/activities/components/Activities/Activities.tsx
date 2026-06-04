@@ -19,6 +19,7 @@ import {
 import type { ActivityCommon } from "../../types";
 import ActivitiesHeader from "../ActivitiesHeader";
 import classes from "./Activities.module.scss";
+import { InstanceTitle } from "@/features/instances";
 
 interface ActivitiesProps {
   readonly activities: ActivityCommon[];
@@ -139,7 +140,7 @@ const Activities: FC<ActivitiesProps> = ({
               <Link
                 to={ROUTES.instances.details.single(row.original.computer_id)}
               >
-                ID: {row.original.computer_id}
+                <InstanceTitle instanceId={row.original.computer_id} />
               </Link>
             ) : (
               <NoData />
