@@ -1,5 +1,7 @@
 import buttonClasses from "@/components/form/SidePanelFormButtons/SidePanelFormButtons.module.scss";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import useAuth from "@/hooks/useAuth";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Preferences } from "@/types/Preferences";
@@ -26,6 +28,7 @@ const EditOrganisationPreferencesForm: FC<
   EditOrganisationPreferencesFormProps
 > = ({ organisationPreferences }) => {
   const { setUser, user } = useAuth();
+  const { currentAccount } = useAuthAccounts();
   const debug = useDebug();
   const { notify } = useNotify();
   const { changeOrganisationPreferences } = useOrgSettings();
@@ -102,6 +105,12 @@ const EditOrganisationPreferencesForm: FC<
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
+      <ReadOnlyField
+        label="Account name"
+        value={currentAccount.name}
+        tooltipMessage="The account name is assigned when the account is created and can't be changed. It is used to register clients with Landscape."
+      />
+
       <Input
         label="Organization's name"
         type="text"
