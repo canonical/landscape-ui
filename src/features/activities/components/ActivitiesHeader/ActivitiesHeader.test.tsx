@@ -1,3 +1,4 @@
+import { setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -15,6 +16,7 @@ describe("ActivitiesHeader", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
+    setScreenSize("xxl");
     renderWithProviders(<ActivitiesHeader {...props} />);
   });
 

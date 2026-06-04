@@ -1,4 +1,5 @@
 import { ROUTES } from "@/libs/routes";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   activities,
   INVALID_ACTIVITY_SEARCH_QUERY,
@@ -109,12 +110,15 @@ describe("Activities", () => {
 
   describe("ActivitiesHeader integration", () => {
     it("should render ActivitiesHeader component", () => {
+      setScreenSize("xxl");
       renderWithProviders(<Activities {...defaultProps} />);
 
       expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Status" }),
       ).toBeInTheDocument();
+
+      resetScreenSize();
     });
   });
 

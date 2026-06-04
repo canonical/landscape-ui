@@ -10,10 +10,14 @@ import type {
   ConfirmationButtonProps,
   Position,
 } from "@canonical/react-components";
-import { Button, ContextualMenu } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationModal,
+  ContextualMenu,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactElement, ReactNode } from "react";
-import { isValidElement, useMemo } from "react";
+import { isValidElement, useMemo, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./ResponsiveButtons.module.scss";
 import type { ButtonLikeProps, CollapsedLink, CollapsedNode } from "./types";
@@ -42,6 +46,10 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
   const isLargerThanBreakpoint = useMediaQuery(
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
+
+  const [confirmationModalProps, setConfirmationModalProps] = useState<
+    ConfirmationButtonProps["confirmationModalProps"] | null
+  >(null);
 
   const isLargeScreen = alwaysCollapse ? false : isLargerThanBreakpoint;
 
@@ -101,12 +109,18 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
         !visible.includes(node)
       ) {
         const el = node as ReactElement<ButtonLikeProps>;
+        const { confirmationModalProps: modalProps } =
+          node.props as ConfirmationButtonProps;
 
         collapsed.push({
           key: `action-${index}`,
           children:
             el.props.children || textFromNode(el) || `Action ${index + 1}`,
-          onClick: el.props.onClick,
+          onClick: modalProps
+            ? () => {
+                setConfirmationModalProps(modalProps);
+              }
+            : el.props.onClick,
           disabled: el.props.disabled,
           hasIcon: el.props.hasIcon,
         });
@@ -203,6 +217,23 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
             </>
           )}
         </ContextualMenu>
+      )}
+
+      {confirmationModalProps && (
+        <ConfirmationModal
+          {...confirmationModalProps}
+          confirmButtonLabel={confirmationModalProps.confirmButtonLabel}
+          close={() => {
+            setConfirmationModalProps(null);
+            confirmationModalProps.close?.();
+          }}
+          onConfirm={(event) => {
+            setConfirmationModalProps(null);
+            confirmationModalProps.onConfirm?.(event);
+          }}
+        >
+          {confirmationModalProps.children}
+        </ConfirmationModal>
       )}
     </div>
   );

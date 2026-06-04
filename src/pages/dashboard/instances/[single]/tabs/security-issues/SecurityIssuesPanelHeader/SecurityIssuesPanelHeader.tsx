@@ -1,10 +1,10 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { ResponsiveButtons } from "@/components/ui";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { UrlParams } from "@/types/UrlParams";
 import { ConfirmationButton, Icon } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import { useNavigate, useParams } from "react-router";
 import classes from "./SecurityIssuesPanelHeader.module.scss";
@@ -66,34 +66,38 @@ const SecurityIssuesPanelHeader: FC<SecurityIssuesPanelHeaderProps> = ({
     <>
       <HeaderWithSearch
         actions={
-          <div className={classNames("p-segmented-control", classes.actions)}>
-            <ConfirmationButton
-              className="p-segmented-control__button has-icon u-no-margin--bottom"
-              type="button"
-              disabled={usns.length === 0}
-              confirmationModalProps={{
-                title: "Upgrade affected packages",
-                children: (
-                  <p>
-                    This will upgrade affected packages for{" "}
-                    {pluralize(usns.length, [
-                      `"${usns[0]}" security issue`,
-                      `${usns.length} selected security issues`,
-                    ])}
-                    .
-                  </p>
-                ),
-                confirmButtonLabel: "Upgrade",
-                confirmButtonAppearance: "positive",
-                confirmButtonLoading: isUpgrading,
-                confirmButtonDisabled: isUpgrading,
-                onConfirm: handleUpgradePackages,
-              }}
-            >
-              <Icon name="change-version" />
-              <span>Upgrade</span>
-            </ConfirmationButton>
-          </div>
+          <ResponsiveButtons
+            className={classes.actions}
+            buttons={[
+              <ConfirmationButton
+                key="upgrade"
+                type="button"
+                className="has-icon"
+                disabled={usns.length === 0}
+                confirmationModalProps={{
+                  title: "Upgrade affected packages",
+                  children: (
+                    <p>
+                      This will upgrade affected packages for{" "}
+                      {pluralize(usns.length, [
+                        `"${usns[0]}" security issue`,
+                        `${usns.length} selected security issues`,
+                      ])}
+                      .
+                    </p>
+                  ),
+                  confirmButtonLabel: "Upgrade",
+                  confirmButtonAppearance: "positive",
+                  confirmButtonLoading: isUpgrading,
+                  confirmButtonDisabled: isUpgrading,
+                  onConfirm: handleUpgradePackages,
+                }}
+              >
+                <Icon name="change-version" />
+                <span>Upgrade</span>
+              </ConfirmationButton>,
+            ]}
+          />
         }
       />
     </>
