@@ -1,0 +1,1 @@
+import{bn as e,wn as t}from"./index-BTW5Ow18.js";var n=t(e(),1),r=(e,t)=>{let[r,i]=(0,n.useState)(e),[a,o]=(0,n.useState)([]);return e!==r&&!t&&(o([]),i(e)),{selectedItems:a,setSelectedItems:o}};export{r as t};

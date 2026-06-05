@@ -1,1 +1,0 @@
-import{Pt as e,Yt as t}from"./index-CzuHCFkM.js";var n=t(),r=({className:t,...r})=>(0,n.jsx)(e,{className:t,...r});export{r as t};

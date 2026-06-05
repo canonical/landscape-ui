@@ -1,1 +1,0 @@
-import{Ct as e,Yt as t}from"./index-CzuHCFkM.js";var n=t(),r=({count:t,singular:r,plural:i})=>(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(`strong`,{children:t.toLocaleString()}),` `,e(t,[r,i])]});export{r as t};

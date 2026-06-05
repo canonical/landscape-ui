@@ -1,1 +1,0 @@
-var e=5e3,t={cis_level1_workstation:`CIS Level 1 Workstation`,cis_level1_server:`CIS Level 1 Server`,cis_level2_workstation:`CIS Level 2 Workstation`,cis_level2_server:`CIS Level 2 Server`,disa_stig:`DISA-STIG`},n={audit:`Audit only`,"audit-fix":`Fix and audit`,"audit-fix-restart":`Fix, restart, audit`};export{t as n,n as r,e as t};

@@ -1,0 +1,1 @@
+import"./AuthTemplate-DjOMtSiq.js";

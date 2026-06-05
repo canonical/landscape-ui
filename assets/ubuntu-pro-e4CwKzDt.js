@@ -1,0 +1,1 @@
+import{Yt as e}from"./index-BTW5Ow18.js";import{d as t,l as n,m as r,u as i}from"./instances-DhHVA87u.js";var a=e(),o=({instance:e})=>e.ubuntu_pro_info?.attached?(0,a.jsxs)(a.Fragment,{children:[(0,a.jsx)(t,{instance:e}),(0,a.jsx)(i,{instance:e}),(0,a.jsx)(n,{services:e.ubuntu_pro_info.services})]}):(0,a.jsx)(r,{instance:e});export{o as default};

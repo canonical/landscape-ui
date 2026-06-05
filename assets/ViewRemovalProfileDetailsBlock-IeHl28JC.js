@@ -1,1 +1,0 @@
-import{r as e}from"./chunk-jRWAZmH_.js";import{Yt as t}from"./index-CzuHCFkM.js";import{t as n}from"./InfoGrid-D4idULm6.js";var r=t(),i=({profile:e})=>(0,r.jsx)(n.Item,{label:`Removal Timeframe`,value:`${e.days_without_exchange} days`}),a=e({default:()=>i});export{a as t};
