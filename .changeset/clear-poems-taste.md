@@ -2,4 +2,4 @@
 "landscape-ui": minor
 ---
 
-Standardized the information displayed across different profiles pages
+Remove the Applied column from repository profiles

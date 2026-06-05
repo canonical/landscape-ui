@@ -9,7 +9,7 @@ import {
   isScriptProfile,
   isUsgProfile,
   isWslProfile,
-  type ProfileTypes,
+  ProfileTypes,
 } from "../../helpers";
 import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
@@ -31,6 +31,7 @@ import {
   USGProfileLastRunWithSchedule,
 } from "@/features/usg-profiles";
 import AssociatedInstancesCell from "./components/AssociatedInstancesCell";
+import { MIN_TABLE_WIDTH } from "./constants";
 
 const getStatus = (profile: ScriptProfile | USGProfile) => {
   if (isProfileArchived(profile)) {
@@ -62,6 +63,17 @@ const getStatus = (profile: ScriptProfile | USGProfile) => {
   return { label: "Active", icon: "status-succeeded-small" };
 };
 
+export const getMinWidth = (type: ProfileTypes) => {
+  switch (type) {
+    case ProfileTypes.usg:
+      return MIN_TABLE_WIDTH.usg;
+    case ProfileTypes.upgrade:
+      return MIN_TABLE_WIDTH.upgrade;
+    default:
+      return undefined;
+  }
+};
+
 type ColumnNames = "name" | "accessGroup" | "associated" | "actions";
 
 export const getGeneralColumns = (
@@ -72,7 +84,6 @@ export const getGeneralColumns = (
   name: {
     accessor: "title",
     Header: "Profile name",
-    className: "large-cell",
     id: "title",
     meta: {
       ariaLabel: ({ original: profile }) => `"${profile.title}" profile name`,
@@ -201,7 +212,7 @@ export const getUsgColumns = (): Column<Profile>[] => [
   },
   {
     accessor: "schedule",
-    className: "large-cell",
+    className: "medium-cell",
     Header: (
       <div>
         Last run
@@ -237,6 +248,7 @@ export const getScriptColumns = (): Column<Profile>[] => [
   {
     Header: "Last run",
     accessor: "activities.last_activity.creation_time",
+    className: "medium-cell",
     meta: {
       ariaLabel: ({ original: profile }) =>
         `"${profile.title}" profile last run`,
@@ -263,6 +275,7 @@ export const getScriptColumns = (): Column<Profile>[] => [
   {
     Header: "Trigger",
     accessor: "trigger",
+    className: "medium-cell",
     meta: {
       ariaLabel: ({ original: profile }) =>
         `"${profile.title}" profile trigger`,

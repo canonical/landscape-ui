@@ -1,1 +1,4 @@
-export const USG_TABLE_WIDTH = 1300;
+export const MIN_TABLE_WIDTH = {
+  usg: 1300,
+  upgrade: 700,
+};

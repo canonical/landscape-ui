@@ -13,6 +13,7 @@ import {
   getScriptColumns,
   getUsgColumns,
   getStatusColumn,
+  getMinWidth,
 } from "./helpers";
 import {
   canArchiveProfile,
@@ -21,7 +22,6 @@ import {
   ProfileTypes,
 } from "../../helpers";
 import { useOpenProfileSidePanel } from "../../hooks/useOpenProfileSidePanel";
-import { USG_TABLE_WIDTH } from "./constants";
 
 interface ProfilesListProps {
   readonly profiles: Profile[];
@@ -90,7 +90,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       columns={columns}
       data={filteredProfiles}
       emptyMsg={`No ${type} profiles found according to your search parameters.`}
-      minWidth={type === ProfileTypes.usg ? USG_TABLE_WIDTH : undefined}
+      minWidth={getMinWidth(type)}
     />
   );
 };

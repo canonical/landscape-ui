@@ -189,6 +189,7 @@ const Activities: FC<ActivitiesProps> = ({
           emptyMsg="No activities found according to your search parameters."
           columns={columns}
           data={activities}
+          minWidth={1150}
         />
       )}
       <TablePagination

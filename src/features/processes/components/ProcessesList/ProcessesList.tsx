@@ -28,6 +28,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
     () => [
       {
         accessor: "name",
+        className: "large-cell",
         Header: (
           <>
             <CheckboxInput
