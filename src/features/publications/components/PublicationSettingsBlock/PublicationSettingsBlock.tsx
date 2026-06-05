@@ -1,15 +1,19 @@
 import Blocks from "@/components/layout/Blocks";
-import { Input, Select } from "@canonical/react-components";
-import { PUBLICATION_SETTINGS_HELP_TEXT } from "./constants";
+import {
+  CustomSelect,
+  type CustomSelectOption,
+  Input,
+} from "@canonical/react-components";
+import { AUTOMATIC_DESCRIPTIONS, HASH_INDEXING_HELP_TEXT } from "./constants";
 import type { Publication } from "@canonical/landscape-openapi";
 import type { FormikContextType } from "formik";
 import type { PublishSettingsValues } from "../../types";
 import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 import type { JSX } from "react";
-import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { getInstallsAndUpgradesText } from "../../helpers";
 import { AUTOMATIC_LABELS } from "../../constants";
+import LabelWithDescription from "@/components/layout/LabelWithDescription";
 
 type PublicationSettingsBlockProps<T extends PublishSettingsValues> =
   | {
@@ -49,30 +53,64 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
 
   const checkboxProps = getCheckboxProps();
 
-  const automaticOptions: SelectOption[] = [
-    { label: AUTOMATIC_LABELS.automatic, value: "automatic" },
-    { label: AUTOMATIC_LABELS.autoUpgrades, value: "autoUpgrades" },
-    { label: AUTOMATIC_LABELS.manual, value: "manual" },
+  const automaticOptions: CustomSelectOption[] = [
+    {
+      label: (
+        <LabelWithDescription
+          className="u-no-padding--top"
+          label={AUTOMATIC_LABELS.automatic}
+          description={AUTOMATIC_DESCRIPTIONS.automatic}
+        />
+      ),
+      text: AUTOMATIC_LABELS.automatic,
+      value: "automatic",
+    },
+    {
+      label: (
+        <LabelWithDescription
+          className="u-no-padding--top"
+          label={AUTOMATIC_LABELS.autoUpgrades}
+          description={AUTOMATIC_DESCRIPTIONS.autoUpgrades}
+        />
+      ),
+      text: AUTOMATIC_LABELS.autoUpgrades,
+      value: "autoUpgrades",
+    },
+    {
+      label: (
+        <LabelWithDescription
+          className="u-no-padding--top"
+          label={AUTOMATIC_LABELS.manual}
+          description={AUTOMATIC_DESCRIPTIONS.manual}
+        />
+      ),
+      text: AUTOMATIC_LABELS.manual,
+      value: "manual",
+    },
   ];
 
   return (
     <Blocks.Item title="Settings">
       {formik ? (
-        <Select
+        <CustomSelect
           label="Installs and upgrades"
           options={automaticOptions}
           {...formik.getFieldProps("installsAndUpgrades")}
+          onChange={async (value) => {
+            await formik.setFieldValue("installsAndUpgrades", value);
+          }}
         />
       ) : (
         <ReadOnlyField
           label="Installs and upgrades"
           value={getInstallsAndUpgradesText(publication)}
+          tooltipMessage="You can't change the settings of an existing publication."
         />
       )}
 
       <CheckboxInputWithHelp
         label="Hash based indexing"
-        tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
+        tooltipMessage={HASH_INDEXING_HELP_TEXT}
         {...checkboxProps.hashIndexing}
       />
 

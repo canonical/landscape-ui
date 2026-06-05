@@ -76,9 +76,9 @@ describe("AddPublicationForm", () => {
     const publicationTargetSelect = screen.getByRole("combobox", {
       name: "Publication target",
     });
-    const automaticSelect = screen.getByRole("combobox", {
-      name: "Installs and upgrades",
-    });
+    expect(
+      screen.getByRole("button", { name: "Installs and upgrades" }),
+    ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(publicationTargetSelect).toBeEnabled();
@@ -88,7 +88,7 @@ describe("AddPublicationForm", () => {
       publicationTargetSelect,
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
-    await user.selectOptions(automaticSelect, "manual");
+
     await user.click(
       screen.getByRole("checkbox", { name: /Hash based indexing/i }),
     );
@@ -107,8 +107,6 @@ describe("AddPublicationForm", () => {
     expect(publicationTargetSelect).toHaveValue(
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
-
-    expect(automaticSelect).toHaveValue("manual");
 
     expect(
       screen.getByText("main, restricted, universe, multiverse"),

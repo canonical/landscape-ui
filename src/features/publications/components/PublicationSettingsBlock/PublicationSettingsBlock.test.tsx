@@ -87,18 +87,33 @@ describe("PublicationSettingsBlock", () => {
 
     renderWithProviders(<PublicationSettingsFormikWrapper />);
 
-    const dropdownInput = screen.getByRole("combobox", {
+    const dropdownButton = screen.getByRole("button", {
       name: /installs and upgrades/i,
     });
-    expect(dropdownInput).toHaveValue("automatic");
+    expect(dropdownButton).toHaveTextContent(AUTOMATIC_LABELS.automatic);
 
-    await user.selectOptions(dropdownInput, "manual");
-    expect(dropdownInput).toHaveValue("manual");
+    await user.click(dropdownButton);
+    await user.click(
+      await screen.findByRole("option", {
+        name: new RegExp(AUTOMATIC_LABELS.manual, "i"),
+      }),
+    );
+    expect(dropdownButton).toHaveTextContent(AUTOMATIC_LABELS.manual);
 
-    await user.selectOptions(dropdownInput, "autoUpgrades");
-    expect(dropdownInput).toHaveValue("autoUpgrades");
+    await user.click(dropdownButton);
+    await user.click(
+      await screen.findByRole("option", {
+        name: new RegExp(AUTOMATIC_LABELS.autoUpgrades, "i"),
+      }),
+    );
+    expect(dropdownButton).toHaveTextContent(AUTOMATIC_LABELS.autoUpgrades);
 
-    await user.selectOptions(dropdownInput, "automatic");
-    expect(dropdownInput).toHaveValue("automatic");
+    await user.click(dropdownButton);
+    await user.click(
+      await screen.findByRole("option", {
+        name: new RegExp(AUTOMATIC_LABELS.automatic, "i"),
+      }),
+    );
+    expect(dropdownButton).toHaveTextContent(AUTOMATIC_LABELS.automatic);
   });
 });
