@@ -11,6 +11,8 @@ import type { SelectOption } from "@/types/SelectOption";
 import { useGetPublicationTargets } from "@/features/publication-targets";
 import type { Local } from "@canonical/landscape-openapi";
 import {
+  getInitialValues,
+  getInstallsAndUpgradesValues,
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
@@ -36,14 +38,18 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     usePublishPublication();
 
   const handleSubmit = async (values: PublishNewFormValues) => {
+    const { notAutomatic, butAutomaticUpgrades } = getInstallsAndUpgradesValues(
+      values.installsAndUpgrades,
+    );
+
     const valuesforCreation = {
       displayName: values.name,
       publicationTarget: values.publicationTarget,
       source: repository.name ?? "",
       distribution: repository.defaultDistribution,
       acquireByHash: values.hashIndexing,
-      butAutomaticUpgrades: values.automaticUpgrades,
-      notAutomatic: values.limitAutomaticInstallation,
+      butAutomaticUpgrades,
+      notAutomatic,
       skipBz2: values.skipBz2,
       skipContents: values.skipContentIndexing,
       ...(values.signingKey && { gpgKey: { armor: values.signingKey } }),
@@ -78,19 +84,8 @@ const PublishRepositoryNewForm: FC<PublishRepositoryNewFormProps> = ({
     [publicationTargets],
   );
 
-  const initialValues: PublishNewFormValues = {
-    name: "",
-    publicationTarget: publicationTargetOptions[0]?.value || "",
-    signingKey: "",
-    hashIndexing: false,
-    automaticUpgrades: false,
-    limitAutomaticInstallation: false,
-    skipBz2: false,
-    skipContentIndexing: false,
-  };
-
   const formik = useFormik({
-    initialValues: initialValues,
+    initialValues: getInitialValues(publicationTargetOptions[0]?.value),
     onSubmit: handleSubmit,
     validationSchema: VALIDATION_SCHEMA_NEW,
     validateOnMount: true,

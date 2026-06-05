@@ -1,7 +1,8 @@
+import type { AUTOMATIC_LABELS } from "../constants";
+
 export interface PublishSettingsValues {
   hashIndexing: boolean;
-  limitAutomaticInstallation: boolean;
-  automaticUpgrades: boolean;
+  installsAndUpgrades: keyof typeof AUTOMATIC_LABELS;
   skipBz2: boolean;
   skipContentIndexing: boolean;
 }

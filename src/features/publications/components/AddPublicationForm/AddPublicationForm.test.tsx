@@ -76,6 +76,9 @@ describe("AddPublicationForm", () => {
     const publicationTargetSelect = screen.getByRole("combobox", {
       name: "Publication target",
     });
+    expect(
+      screen.getByRole("button", { name: "Installs and upgrades" }),
+    ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(publicationTargetSelect).toBeEnabled();
@@ -85,14 +88,9 @@ describe("AddPublicationForm", () => {
       publicationTargetSelect,
       "aaaaaaaa-0000-0000-0000-000000000001",
     );
+
     await user.click(
       screen.getByRole("checkbox", { name: /Hash based indexing/i }),
-    );
-    await user.click(
-      screen.getByRole("checkbox", { name: /Limit automatic installation/i }),
-    );
-    await user.click(
-      screen.getByRole("checkbox", { name: /Automatic upgrades/i }),
     );
     await user.click(screen.getByRole("checkbox", { name: /Skip bz2/i }));
     await user.click(

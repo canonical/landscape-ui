@@ -9,6 +9,7 @@ import { mirrors } from "@/tests/mocks/mirrors";
 import { getSourceType } from "../..";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
+import { AUTOMATIC_LABELS } from "../../constants";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
@@ -45,7 +46,10 @@ describe("PublicationDetails", () => {
         value: publication.architectures.join(", "),
       },
       { label: "Hash indexing", value: "Yes" },
-      { label: "Installs and upgrades", value: "Both automatic" },
+      {
+        label: "Installs and upgrades",
+        value: AUTOMATIC_LABELS.automatic,
+      },
       { label: "Skip bz2", value: "No" },
       { label: "Skip content indexing", value: "No" },
     ];
@@ -81,7 +85,7 @@ describe("PublicationDetails", () => {
 
     expect(container).toHaveInfoItem(
       "Installs and upgrades",
-      "Automatic upgrades only",
+      AUTOMATIC_LABELS.autoUpgrades,
     );
   });
 
@@ -94,7 +98,10 @@ describe("PublicationDetails", () => {
       />,
     );
 
-    expect(container).toHaveInfoItem("Installs and upgrades", "Both manual");
+    expect(container).toHaveInfoItem(
+      "Installs and upgrades",
+      AUTOMATIC_LABELS.manual,
+    );
   });
 
   it("opens republish modal", async () => {

@@ -6,7 +6,7 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
-import { getSourceType } from "../../helpers";
+import { getInstallsAndUpgradesText, getSourceType } from "../../helpers";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
@@ -33,18 +33,6 @@ const PublicationDetails = ({
     setTrue: openRepublishModal,
     setFalse: closeRepublishModal,
   } = useBoolean();
-
-  const getLimitAutoInstallValue = () => {
-    if (!publication.notAutomatic) {
-      return "Both automatic";
-    }
-
-    if (publication.butAutomaticUpgrades) {
-      return "Automatic upgrades only";
-    }
-
-    return "Both manual";
-  };
 
   return (
     <>
@@ -137,13 +125,13 @@ const PublicationDetails = ({
         <Blocks.Item title="Settings">
           <InfoGrid dense>
             <InfoGrid.Item
-              label="Hash indexing"
-              value={boolToLabel(Boolean(publication.acquireByHash))}
+              label="Installs and upgrades"
+              value={getInstallsAndUpgradesText(publication)}
             />
 
             <InfoGrid.Item
-              label="Installs and upgrades"
-              value={getLimitAutoInstallValue()}
+              label="Hash indexing"
+              value={boolToLabel(Boolean(publication.acquireByHash))}
             />
 
             <InfoGrid.Item

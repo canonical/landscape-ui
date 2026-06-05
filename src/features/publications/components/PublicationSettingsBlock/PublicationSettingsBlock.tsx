@@ -1,12 +1,19 @@
 import Blocks from "@/components/layout/Blocks";
-import { Input } from "@canonical/react-components";
-import { PUBLICATION_SETTINGS_HELP_TEXT } from "./constants";
-import classes from "./PublicationSettingsBlock.module.scss";
+import {
+  CustomSelect,
+  type CustomSelectOption,
+  Input,
+} from "@canonical/react-components";
+import { AUTOMATIC_DESCRIPTIONS, HASH_INDEXING_HELP_TEXT } from "./constants";
 import type { Publication } from "@canonical/landscape-openapi";
 import type { FormikContextType } from "formik";
 import type { PublishSettingsValues } from "../../types";
-import type { ChangeEvent, JSX } from "react";
 import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
+import type { JSX } from "react";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
+import { getInstallsAndUpgradesText } from "../../helpers";
+import { AUTOMATIC_LABELS } from "../../constants";
+import LabelWithDescription from "@/components/layout/LabelWithDescription";
 
 type PublicationSettingsBlockProps<T extends PublishSettingsValues> =
   | {
@@ -22,105 +29,101 @@ const PublicationSettingsBlock = <T extends PublishSettingsValues>({
   formik,
   publication,
 }: PublicationSettingsBlockProps<T>): JSX.Element => {
-  const getInputProps = () => {
+  const getCheckboxProps = () => {
     if (formik) {
       return {
-        hashIndexing: {
-          ...formik.getFieldProps("hashIndexing"),
-          checked: formik.values.hashIndexing,
-        },
-        limitAutoInstall: {
-          ...formik.getFieldProps("limitAutomaticInstallation"),
-          checked: formik.values.limitAutomaticInstallation,
-          onChange: (e: ChangeEvent<HTMLInputElement>) => {
-            if (!e.target.checked) {
-              void formik.setFieldValue("automaticUpgrades", false);
-            }
-            formik.getFieldProps("limitAutomaticInstallation").onChange(e);
-          },
-        },
-        automaticUpgrades: {
-          ...formik.getFieldProps("automaticUpgrades"),
-          checked: formik.values.automaticUpgrades,
-        },
-        skipBz2: {
-          ...formik.getFieldProps("skipBz2"),
-          checked: formik.values.skipBz2,
-        },
-        skipContents: {
-          ...formik.getFieldProps("skipContentIndexing"),
-          checked: formik.values.skipContentIndexing,
-        },
+        hashIndexing: formik.getFieldProps({
+          name: "hashIndexing",
+          type: "checkbox",
+        }),
+        skipBz2: formik.getFieldProps({ name: "skipBz2", type: "checkbox" }),
+        skipContents: formik.getFieldProps({
+          name: "skipContentIndexing",
+          type: "checkbox",
+        }),
       };
     }
 
     return {
-      hashIndexing: {
-        checked: Boolean(publication.acquireByHash),
-        disabled: true,
-      },
-      limitAutoInstall: {
-        checked: Boolean(publication.notAutomatic),
-        disabled: true,
-      },
-      automaticUpgrades: {
-        checked: Boolean(publication.butAutomaticUpgrades),
-        disabled: true,
-      },
-      skipBz2: { checked: Boolean(publication.skipBz2), disabled: true },
-      skipContents: {
-        checked: Boolean(publication.skipContents),
-        disabled: true,
-      },
+      hashIndexing: { checked: !!publication.acquireByHash, disabled: true },
+      skipBz2: { checked: !!publication.skipBz2, disabled: true },
+      skipContents: { checked: !!publication.skipContents, disabled: true },
     };
   };
 
-  const inputProps = getInputProps();
-  const isLimitAutoInstallChecked = formik
-    ? formik.values.limitAutomaticInstallation
-    : !!publication.notAutomatic;
+  const checkboxProps = getCheckboxProps();
+
+  const automaticOptions: CustomSelectOption[] = [
+    {
+      label: (
+        <LabelWithDescription
+          className="u-no-padding--top"
+          label={AUTOMATIC_LABELS.automatic}
+          description={AUTOMATIC_DESCRIPTIONS.automatic}
+        />
+      ),
+      text: AUTOMATIC_LABELS.automatic,
+      value: "automatic",
+    },
+    {
+      label: (
+        <LabelWithDescription
+          className="u-no-padding--top"
+          label={AUTOMATIC_LABELS.autoUpgrades}
+          description={AUTOMATIC_DESCRIPTIONS.autoUpgrades}
+        />
+      ),
+      text: AUTOMATIC_LABELS.autoUpgrades,
+      value: "autoUpgrades",
+    },
+    {
+      label: (
+        <LabelWithDescription
+          className="u-no-padding--top"
+          label={AUTOMATIC_LABELS.manual}
+          description={AUTOMATIC_DESCRIPTIONS.manual}
+        />
+      ),
+      text: AUTOMATIC_LABELS.manual,
+      value: "manual",
+    },
+  ];
 
   return (
     <Blocks.Item title="Settings">
+      {formik ? (
+        <CustomSelect
+          label="Installs and upgrades"
+          options={automaticOptions}
+          {...formik.getFieldProps("installsAndUpgrades")}
+          onChange={async (value) => {
+            await formik.setFieldValue("installsAndUpgrades", value);
+          }}
+        />
+      ) : (
+        <ReadOnlyField
+          label="Installs and upgrades"
+          value={getInstallsAndUpgradesText(publication)}
+          tooltipMessage="You can't change the settings of an existing publication."
+        />
+      )}
+
       <CheckboxInputWithHelp
         label="Hash based indexing"
-        tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.hashIndexing}
-        {...inputProps.hashIndexing}
+        tooltipMessage={HASH_INDEXING_HELP_TEXT}
+        {...checkboxProps.hashIndexing}
       />
-
-      <CheckboxInputWithHelp
-        label="Limit automatic installation"
-        tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.limitAutomaticInstall}
-        {...inputProps.limitAutoInstall}
-      />
-
-      <div aria-live="polite" aria-relevant="all">
-        {isLimitAutoInstallChecked && (
-          <>
-            <span className="u-off-screen">
-              Selecting &quot;Limit automatic installation&quot; has opened a
-              new option
-            </span>
-            <CheckboxInputWithHelp
-              label="Automatic upgrades"
-              tooltipMessage={PUBLICATION_SETTINGS_HELP_TEXT.automaticUpgrades}
-              wrapperClassName={classes.subCheckbox}
-              {...inputProps.automaticUpgrades}
-            />
-          </>
-        )}
-      </div>
 
       <Input
         type="checkbox"
         label="Skip bz2 compression for index files"
-        {...inputProps.skipBz2}
+        {...checkboxProps.skipBz2}
       />
 
       <Input
         type="checkbox"
         label="Skip generating content indexes"
-        {...inputProps.skipContents}
+        {...checkboxProps.skipContents}
       />
     </Blocks.Item>
   );
