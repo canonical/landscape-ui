@@ -140,7 +140,7 @@ export default [
   }),
 
   http.post(`${API_URL}script-profiles/:profileId\\:archive`, () => {
-    if (shouldApplyEndpointStatus("script-profiles/:profileId\\:archive")) {
+    if (shouldApplyEndpointStatus("script-profiles/:profileId:archive")) {
       const { status } = getEndpointStatus();
 
       if (status === "error") {
