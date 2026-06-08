@@ -20,8 +20,9 @@ interface InstanceStatusProps {
   readonly onStatusClick?: (status: StatusItem) => void;
 }
 
-const InstanceStatus: FC<InstanceStatusProps> = ({ instance, ...pillProps }) => (
-  <StatusPills statuses={getInstanceStatuses(instance)} {...pillProps} />
-);
+const InstanceStatus: FC<InstanceStatusProps> = ({
+  instance,
+  ...pillProps
+}) => <StatusPills statuses={getInstanceStatuses(instance)} {...pillProps} />;
 
 export default InstanceStatus;

@@ -231,4 +231,3 @@ describe("InstanceList helpers", () => {
     });
   });
 });
-

@@ -38,7 +38,11 @@ describe("getInstanceStatuses", () => {
       archived: false,
       alerts: [
         { type: "PackageUpgradesAlert", summary: "Regular", severity: "info" },
-        { type: "SecurityUpgradesAlert", summary: "Security", severity: "warning" },
+        {
+          type: "SecurityUpgradesAlert",
+          summary: "Security",
+          severity: "warning",
+        },
       ],
     } as Instance);
     // No remaining alerts -> falls back to Online.
@@ -51,8 +55,16 @@ describe("getInstanceStatuses", () => {
       ...ubuntuInstance,
       archived: false,
       alerts: [
-        { type: "PackageProfilesAlert", summary: "Profiles", severity: "warning" },
-        { type: "ComputerOfflineAlert", summary: "Offline", severity: "danger" },
+        {
+          type: "PackageProfilesAlert",
+          summary: "Profiles",
+          severity: "warning",
+        },
+        {
+          type: "ComputerOfflineAlert",
+          summary: "Offline",
+          severity: "danger",
+        },
       ],
     } as Instance);
 
@@ -67,9 +79,24 @@ describe("getInstanceStatuses", () => {
 describe("splitStatuses", () => {
   it("keeps every danger status visible and collapses the rest", () => {
     const { visible, hidden } = splitStatuses([
-      { key: "a", label: "Offline", icon: "disconnect-color", severity: "danger" },
-      { key: "b", label: "Reporter", icon: "package-reporter-alert", severity: "danger" },
-      { key: "c", label: "Profiles", icon: "package-profiles-alert", severity: "warning" },
+      {
+        key: "a",
+        label: "Offline",
+        icon: "disconnect-color",
+        severity: "danger",
+      },
+      {
+        key: "b",
+        label: "Reporter",
+        icon: "package-reporter-alert",
+        severity: "danger",
+      },
+      {
+        key: "c",
+        label: "Profiles",
+        icon: "package-profiles-alert",
+        severity: "warning",
+      },
     ]);
 
     expect(visible.map((status) => status.key)).toEqual(["a", "b"]);
@@ -78,7 +105,12 @@ describe("splitStatuses", () => {
 
   it("shows the single most severe status when there are no danger statuses", () => {
     const { visible, hidden } = splitStatuses([
-      { key: "a", label: "Profiles", icon: "package-profiles-alert", severity: "warning" },
+      {
+        key: "a",
+        label: "Profiles",
+        icon: "package-profiles-alert",
+        severity: "warning",
+      },
       { key: "b", label: "Online", icon: "connected-color", severity: "info" },
     ]);
 
