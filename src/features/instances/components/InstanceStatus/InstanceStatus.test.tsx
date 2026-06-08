@@ -129,4 +129,14 @@ describe("Tags", () => {
 
     expect(onTagClick).toHaveBeenCalledWith("bionic");
   });
+
+  it("announces the expander with tag wording, not status", () => {
+    renderWithProviders(
+      <Tags tags={["bionic", "server", "edge"]} expandable />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Show 2 more tags" }),
+    ).toBeInTheDocument();
+  });
 });

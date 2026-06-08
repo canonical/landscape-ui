@@ -24,6 +24,7 @@ interface TagsProps {
 const Tags: FC<TagsProps> = ({ tags, onTagClick, ...pillProps }) => (
   <StatusPills
     statuses={getTagStatuses(tags)}
+    itemNoun={{ singular: "tag", plural: "tags" }}
     onStatusClick={
       onTagClick
         ? (status) => {

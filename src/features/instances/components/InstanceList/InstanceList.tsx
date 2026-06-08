@@ -55,20 +55,29 @@ const InstanceList = memo(function InstanceList({
     upgrades: activeUpgrades,
   } = filters;
 
-  const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
-    useExpandableRow();
+  const {
+    expandedRowIndex,
+    expandedColumnId,
+    getTableRowsRef,
+    handleExpand,
+    collapse,
+  } = useExpandableRow();
 
   const titleId = useId();
 
+  // Filtering re-renders the table with a different dataset, so any expanded
+  // cell is collapsed first — otherwise its coordinates would leave an
+  // unrelated row at the same index rendered in the expanded state.
   const toggleTagFilter = useCallback(
     (tag: string) => {
+      collapse();
       setPageParams({
         tags: activeTags.includes(tag)
           ? activeTags.filter((current) => current !== tag)
           : [...activeTags, tag],
       });
     },
-    [activeTags, setPageParams],
+    [activeTags, collapse, setPageParams],
   );
 
   // The status filter is single-select, so clicking a pill swaps to that status
@@ -79,11 +88,12 @@ const InstanceList = memo(function InstanceList({
         return;
       }
 
+      collapse();
       setPageParams({
         status: activeStatus === status.filterValue ? "" : status.filterValue,
       });
     },
-    [activeStatus, setPageParams],
+    [activeStatus, collapse, setPageParams],
   );
 
   // Upgrades are a multi-select filter, so clicking a pill toggles that upgrade
@@ -96,13 +106,14 @@ const InstanceList = memo(function InstanceList({
 
       const { filterValue } = upgrade;
 
+      collapse();
       setPageParams({
         upgrades: activeUpgrades.includes(filterValue)
           ? activeUpgrades.filter((current) => current !== filterValue)
           : [...activeUpgrades, filterValue],
       });
     },
-    [activeUpgrades, setPageParams],
+    [activeUpgrades, collapse, setPageParams],
   );
 
   const isFilteringInstances = Object.values(filters).some((filter) => {

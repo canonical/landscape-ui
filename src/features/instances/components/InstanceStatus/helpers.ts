@@ -164,7 +164,8 @@ const getUpgradesFromUpgrades = (
 
 // Upgrades get the same labelled-pill treatment as statuses so severity is
 // communicated by text and tint rather than colour alone. Returns an empty
-// list when the instance has no packages feature (the cell then shows "---").
+// list when the instance has no packages feature (InstanceUpgrades then renders
+// a neutral "N/A" pill).
 export const getUpgradeStatuses = (instance: Instance): StatusItem[] => {
   if (!getFeatures(instance).packages) {
     return [];

@@ -22,6 +22,10 @@ export function useExpandableRow<T extends HTMLElement>() {
     tableRowsRef.current = [...instance.querySelectorAll<T>("tbody tr")];
   }, []);
 
+  const collapse = useCallback(() => {
+    setExpanded(null);
+  }, []);
+
   // Collapse on any click that lands outside the expanded region. When a
   // specific column is expanded its cell carries the `expandedCell` class and
   // hosts the pop-over, so that cell is the boundary: clicking anywhere else —
@@ -36,7 +40,11 @@ export function useExpandableRow<T extends HTMLElement>() {
     const handlePointerDown = (event: Event) => {
       const row = tableRowsRef.current[expandedRowIndex];
 
+      // The expanded row is gone (e.g. the data changed underneath us), so the
+      // coordinates are stale — drop them rather than leaving a phantom cell
+      // expanded at the same index.
       if (!row) {
+        setExpanded(null);
         return;
       }
 
@@ -73,5 +81,6 @@ export function useExpandableRow<T extends HTMLElement>() {
     expandedColumnId,
     getTableRowsRef,
     handleExpand,
+    collapse,
   };
 }

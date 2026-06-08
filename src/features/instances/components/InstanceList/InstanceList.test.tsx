@@ -276,6 +276,42 @@ describe("InstanceList", () => {
     expect(screen.queryByText("jammy")).not.toBeInTheDocument();
   });
 
+  it("collapses an expanded tag cell when a tag pill inside it is clicked", async () => {
+    const taggedInstance = {
+      ...ubuntuInstance,
+      id: 1,
+      title: "tagged-instance",
+      archived: false,
+      tags: ["core", "jammy", "extra"],
+    } as Instance;
+
+    renderWithProviders(
+      <>
+        <InstanceList {...props} instances={[taggedInstance]} />
+        <LocationProbe />
+      </>,
+    );
+
+    const tagsExpander = screen
+      .getAllByRole("button", { name: /show .* more/i })
+      .find(
+        (button) => button.closest("td")?.getAttribute("aria-label") === "Tags",
+      );
+    assert(tagsExpander);
+
+    await userEvent.click(tagsExpander);
+    expect(screen.getByText("jammy")).toBeVisible();
+
+    // Clicking a tag pill inside the pop-over filters AND collapses the cell, so
+    // the now-stale expansion can't carry over to whatever the filter returns.
+    await userEvent.click(screen.getByRole("button", { name: "jammy" }));
+
+    expect(screen.getByTestId("location-probe")).toHaveTextContent(
+      "tags=jammy",
+    );
+    expect(screen.queryByText("jammy")).not.toBeInTheDocument();
+  });
+
   it("clears selection", async () => {
     assert(props.instanceCount);
     assert(props.instanceCount > props.instances.length);

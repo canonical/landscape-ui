@@ -92,6 +92,11 @@ interface StatusPillsProps {
   ) => void;
   /** When provided each pill becomes clickable, e.g. to filter by a tag. */
   readonly onStatusClick?: (status: StatusItem) => void;
+  /**
+   * The noun announced by the expander, e.g. "Show 2 more statuses". Defaults to
+   * status wording; Tags pass tag wording since they reuse this component.
+   */
+  readonly itemNoun?: { singular: string; plural: string };
 }
 
 const StatusPills: FC<StatusPillsProps> = ({
@@ -100,6 +105,7 @@ const StatusPills: FC<StatusPillsProps> = ({
   isExpanded,
   onExpand,
   onStatusClick,
+  itemNoun = { singular: "status", plural: "statuses" },
 }) => {
   if (!expandable) {
     return (
@@ -137,7 +143,7 @@ const StatusPills: FC<StatusPillsProps> = ({
               classes.button,
             )}
             onClick={onExpand}
-            aria-label={`Show ${hidden.length} more ${1 === hidden.length ? "status" : "statuses"}`}
+            aria-label={`Show ${hidden.length} more ${1 === hidden.length ? itemNoun.singular : itemNoun.plural}`}
           >
             <span className="u-text--muted">+{hidden.length}</span>
           </Button>
