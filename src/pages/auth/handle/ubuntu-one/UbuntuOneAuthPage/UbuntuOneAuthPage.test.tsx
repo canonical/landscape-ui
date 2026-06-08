@@ -13,6 +13,18 @@ const setUser = vi.fn();
 
 vi.mock("@/hooks/useEnv");
 
+// Standalone-account existence is driven by a single hoisted, static mock read
+// at call time, so each test sets it imperatively. The previous approach
+// re-registered the module via `vi.doMock` per test, which raced with the
+// describe-level `doMock` and intermittently used the wrong value.
+const accountState = vi.hoisted(() => ({ accountExists: false }));
+
+vi.mock("@/features/account-creation", () => ({
+  useGetStandaloneAccount: () => ({
+    accountExists: accountState.accountExists,
+  }),
+}));
+
 const mockSelfHosted: EnvContextState = {
   envLoading: false,
   isSaas: false,
@@ -63,6 +75,7 @@ describe("UbuntuOneAuthPage", () => {
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
+    accountState.accountExists = false;
   });
 
   it("should render error message when there is no search params", async () => {
@@ -160,9 +173,6 @@ describe("UbuntuOneAuthPage", () => {
     beforeEach(() => {
       vi.resetModules();
       vi.mocked(useEnv).mockReturnValue(mockSaas);
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: false }),
-      }));
       vi.doMock("@/constants", async (importOriginal) => ({
         ...(await importOriginal()),
         GENERIC_DOMAIN: "localhost",
@@ -213,9 +223,6 @@ describe("UbuntuOneAuthPage", () => {
     beforeEach(() => {
       vi.resetModules();
       vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: false }),
-      }));
     });
 
     it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
@@ -235,10 +242,7 @@ describe("UbuntuOneAuthPage", () => {
     });
 
     it("should redirect to no-access when accountExists is true", async () => {
-      vi.resetModules();
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: true }),
-      }));
+      accountState.accountExists = true;
 
       mockTestParams({
         ...authUser,
