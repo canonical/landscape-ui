@@ -14,7 +14,6 @@ const ScriptsContainer: FC = () => {
   const { currentPage, pageSize, search, status } = usePageParams();
 
   const { scripts, scriptsCount, isScriptsLoading } = useGetScripts();
-  const isFilteringScripts = !!search || !!status;
 
   if (
     isScriptsEmptyState(
@@ -35,7 +34,7 @@ const ScriptsContainer: FC = () => {
       {isScriptsLoadingState(currentPage, pageSize, isScriptsLoading) ? (
         <LoadingState />
       ) : (
-        <ScriptList scripts={scripts} isFilteringScripts={isFilteringScripts} />
+        <ScriptList scripts={scripts} />
       )}
       <TablePagination
         totalItems={scriptsCount}

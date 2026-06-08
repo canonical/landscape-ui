@@ -27,10 +27,9 @@ const ScriptDetails = lazy(async () => import("../ScriptDetails"));
 
 interface ScriptListProps {
   readonly scripts: Script[];
-  readonly isFilteringScripts: boolean;
 }
 
-const ScriptList: FC<ScriptListProps> = ({ scripts, isFilteringScripts }) => {
+const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { setSidePanelContent } = useSidePanel();
   const { isFeatureEnabled } = useAuth();
   const { getAccessGroupQuery } = useRoles();
@@ -191,11 +190,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts, isFilteringScripts }) => {
 
   return (
     <ResponsiveTable
-      emptyMsg={
-        isFilteringScripts
-          ? "No scripts found according to your search parameters."
-          : "No scripts found"
-      }
+      emptyMsg="No scripts found according to your search parameters."
       ref={getTableRowsRef}
       columns={columns}
       data={scripts}

@@ -3,10 +3,14 @@ import { expectLoadingState } from "@/tests/helpers";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import ScriptsContainer from "./ScriptsContainer";
 
 describe("Scripts Empty State", () => {
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("should empty state when there are no scripts", async () => {
     setEndpointStatus("empty");
 
@@ -19,8 +23,6 @@ describe("Scripts Empty State", () => {
   });
 
   it("should show scripts when there are scripts", async () => {
-    setEndpointStatus("default");
-
     renderWithProviders(<ScriptsContainer />);
 
     await expectLoadingState();
@@ -31,12 +33,12 @@ describe("Scripts Empty State", () => {
 
   it("should show scripts when there are scripts with search", async () => {
     const searchText = scripts[0].title;
-    setEndpointStatus("default");
+    const encodedSearchText = encodeURIComponent(searchText);
 
     renderWithProviders(
       <ScriptsContainer />,
       undefined,
-      `/scripts?search=${searchText}`,
+      `/scripts?search=${encodedSearchText}`,
     );
 
     await expectLoadingState();

@@ -9,7 +9,6 @@ import ScriptList from "./ScriptList";
 
 const props: ComponentProps<typeof ScriptList> = {
   scripts: scripts,
-  isFilteringScripts: false,
 };
 
 const activeScript = scripts.find((script) => script.status === "ACTIVE");
@@ -116,21 +115,13 @@ describe("ScriptList", () => {
     expect(inactiveStatusCell).toHaveIcon("status-queued-small");
   });
 
-  it("should show search-specific empty message when filtering", () => {
+  it("should show the search-specific empty message for an empty list", () => {
     vi.mocked(useAuth).mockReturnValue(authContextValues);
 
-    renderWithProviders(<ScriptList scripts={[]} isFilteringScripts />);
+    renderWithProviders(<ScriptList scripts={[]} />);
 
     expect(
       screen.getByText("No scripts found according to your search parameters."),
     ).toBeInTheDocument();
-  });
-
-  it("should show default empty message when not filtering", () => {
-    vi.mocked(useAuth).mockReturnValue(authContextValues);
-
-    renderWithProviders(<ScriptList scripts={[]} isFilteringScripts={false} />);
-
-    expect(screen.getByText("No scripts found")).toBeInTheDocument();
   });
 });
