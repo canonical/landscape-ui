@@ -1,35 +1,36 @@
-import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import LoadingState from "@/components/layout/LoadingState";
-import NoData from "@/components/layout/NoData";
-import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import StaticLink from "@/components/layout/StaticLink";
-import TruncatedCell from "@/components/layout/TruncatedCell";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useAuth from "@/hooks/useAuth";
-import { useExpandableRow } from "@/hooks/useExpandableRow";
-import useRoles from "@/hooks/useRoles";
-import useSidePanel from "@/hooks/useSidePanel";
-import { ROUTES } from "@/libs/routes";
-import type { SelectOption } from "@/types/SelectOption";
-import { Button } from "@canonical/react-components";
-import moment from "moment";
-import type { FC, ReactElement } from "react";
-import { lazy, Suspense, useMemo } from "react";
-import type { CellProps, Column } from "react-table";
-import { formatTitleCase } from "../../helpers";
-import { useOpenScriptDetails } from "../../hooks";
-import type { Script } from "../../types";
-import ScriptListActions from "../ScriptListActions";
-import { getCellProps, getRowProps } from "./helpers";
-import classes from "./ScriptList.module.scss";
+import { LIST_ACTIONS_COLUMN_PROPS } from '@/components/layout/ListActions';
+import LoadingState from '@/components/layout/LoadingState';
+import NoData from '@/components/layout/NoData';
+import ResponsiveTable from '@/components/layout/ResponsiveTable';
+import StaticLink from '@/components/layout/StaticLink';
+import TruncatedCell from '@/components/layout/TruncatedCell';
+import { DISPLAY_DATE_TIME_FORMAT } from '@/constants';
+import useAuth from '@/hooks/useAuth';
+import { useExpandableRow } from '@/hooks/useExpandableRow';
+import useRoles from '@/hooks/useRoles';
+import useSidePanel from '@/hooks/useSidePanel';
+import { ROUTES } from '@/libs/routes';
+import type { SelectOption } from '@/types/SelectOption';
+import { Button } from '@canonical/react-components';
+import moment from 'moment';
+import type { FC, ReactElement } from 'react';
+import { lazy, Suspense, useCallback, useMemo } from 'react';
+import type { CellProps, Column } from 'react-table';
+import { formatTitleCase } from '../../helpers';
+import { useOpenScriptDetails } from '../../hooks';
+import type { Script } from '../../types';
+import ScriptListActions from '../ScriptListActions';
+import { getCellProps, getRowProps } from './helpers';
+import classes from './ScriptList.module.scss';
 
-const ScriptDetails = lazy(async () => import("../ScriptDetails"));
+const ScriptDetails = lazy(async () => import('../ScriptDetails'));
 
 interface ScriptListProps {
   readonly scripts: Script[];
+  readonly isFilteringScripts: boolean;
 }
 
-const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
+const ScriptList: FC<ScriptListProps> = ({ scripts, isFilteringScripts }) => {
   const { setSidePanelContent } = useSidePanel();
   const { isFeatureEnabled } = useAuth();
   const { getAccessGroupQuery } = useRoles();
@@ -37,14 +38,17 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
 
-  const openViewPanel = (script: Script) => {
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
-      </Suspense>,
-    );
-  };
+  const openViewPanel = useCallback(
+    (script: Script) => {
+      setSidePanelContent(
+        script.title,
+        <Suspense fallback={<LoadingState />}>
+          <ScriptDetails scriptId={script.id} />
+        </Suspense>,
+      );
+    },
+    [setSidePanelContent],
+  );
 
   useOpenScriptDetails((profile) => {
     openViewPanel(profile);
@@ -60,13 +64,13 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const columns = useMemo<Column<Script>[]>(() => {
     const result = [
       {
-        Header: "Name",
-        id: "name",
+        Header: 'Name',
+        id: 'name',
         Cell: ({ row: { original } }: CellProps<Script>) => (
           <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top u-align-text--left"
+            type='button'
+            appearance='link'
+            className='u-no-margin--bottom u-no-padding--top u-align-text--left'
             aria-label={`Show details of script ${original.title}`}
             onClick={() => {
               openViewPanel(original);
@@ -77,29 +81,29 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         ),
       },
       {
-        Header: "Status",
-        id: "status",
+        Header: 'Status',
+        id: 'status',
         Cell: ({ row }: CellProps<Script>) => (
           <>{formatTitleCase(row.original.status)}</>
         ),
         getCellIcon: ({ row }: CellProps<Script>) => {
-          if (row.original.status === "ACTIVE") {
-            return "status-succeeded-small";
+          if (row.original.status === 'ACTIVE') {
+            return 'status-succeeded-small';
           }
-          return "status-queued-small";
+          return 'status-queued-small';
         },
       },
       {
-        accessor: "access_group",
-        Header: "Access group",
+        accessor: 'access_group',
+        Header: 'Access group',
         Cell: ({ row }: CellProps<Script>) =>
           accessGroupOptions.find(
             ({ value }) => row.original.access_group === value,
           )?.label ?? row.original.access_group,
       },
       {
-        Header: "Associated profiles",
-        id: "associated_profiles",
+        Header: 'Associated profiles',
+        id: 'associated_profiles',
         className: classes.associatedProfiles,
         Cell: ({
           row: {
@@ -112,12 +116,12 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
               content={script_profiles.map(({ id, title }) => (
                 <StaticLink
                   to={ROUTES.scripts.root({
-                    tab: "profiles",
-                    sidePath: ["view"],
+                    tab: 'profiles',
+                    sidePath: ['view'],
                     name: id.toString(),
                   })}
                   key={id}
-                  className="truncatedItem"
+                  className='truncatedItem'
                 >
                   {title}
                 </StaticLink>
@@ -133,34 +137,34 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
           ),
       },
       {
-        Header: "Created",
-        id: "created_at",
-        className: "date-cell",
+        Header: 'Created',
+        id: 'created_at',
+        className: 'date-cell',
         Cell: ({
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
           <div>
-            <div className="font-monospace">
+            <div className='font-monospace'>
               {moment(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
             </div>
-            <div className="u-text--muted p-text--small u-no-margin--bottom">
+            <div className='u-text--muted p-text--small u-no-margin--bottom'>
               {original.created_by.name}
             </div>
           </div>
         ),
       },
       {
-        Header: "Last modified",
-        id: "last_modified_at",
-        className: "date-cell",
+        Header: 'Last modified',
+        id: 'last_modified_at',
+        className: 'date-cell',
         Cell: ({
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
           <div>
-            <div className="font-monospace">
+            <div className='font-monospace'>
               {moment(original.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
             </div>
-            <div className="u-text--muted p-text--small u-no-margin--bottom">
+            <div className='u-text--muted p-text--small u-no-margin--bottom'>
               {original.last_edited_by.name}
             </div>
           </div>
@@ -174,13 +178,24 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       },
     ];
 
-    return isFeatureEnabled("script-profiles")
+    return isFeatureEnabled('script-profiles')
       ? result
-      : result.filter((column) => column.id !== "associated_profiles");
-  }, [scripts, accessGroupOptions, expandedRowIndex]);
+      : result.filter((column) => column.id !== 'associated_profiles');
+  }, [
+    accessGroupOptions,
+    expandedRowIndex,
+    handleExpand,
+    isFeatureEnabled,
+    openViewPanel,
+  ]);
 
   return (
     <ResponsiveTable
+      emptyMsg={
+        isFilteringScripts
+          ? 'No scripts found according to your search parameters.'
+          : 'No scripts found'
+      }
       ref={getTableRowsRef}
       columns={columns}
       data={scripts}
