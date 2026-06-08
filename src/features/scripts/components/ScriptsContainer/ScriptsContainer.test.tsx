@@ -31,7 +31,7 @@ describe("Scripts Empty State", () => {
 
   it("should show scripts when there are scripts with search", async () => {
     const searchText = scripts[0].title;
-    setEndpointStatus('default');
+    setEndpointStatus("default");
 
     renderWithProviders(
       <ScriptsContainer />,
