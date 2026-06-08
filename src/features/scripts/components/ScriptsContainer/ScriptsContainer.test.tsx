@@ -1,14 +1,14 @@
-import { setEndpointStatus } from '@/tests/controllers/controller';
-import { expectLoadingState } from '@/tests/helpers';
-import { scripts } from '@/tests/mocks/script';
-import { renderWithProviders } from '@/tests/render';
-import { screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import ScriptsContainer from './ScriptsContainer';
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { expectLoadingState } from "@/tests/helpers";
+import { scripts } from "@/tests/mocks/script";
+import { renderWithProviders } from "@/tests/render";
+import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import ScriptsContainer from "./ScriptsContainer";
 
-describe('Scripts Empty State', () => {
-  it('should empty state when there are no scripts', async () => {
-    setEndpointStatus('empty');
+describe("Scripts Empty State", () => {
+  it("should empty state when there are no scripts", async () => {
+    setEndpointStatus("empty");
 
     renderWithProviders(<ScriptsContainer />);
 
@@ -18,18 +18,18 @@ describe('Scripts Empty State', () => {
     expect(emptyStateTitle).toBeInTheDocument();
   });
 
-  it('should show scripts when there are scripts', async () => {
-    setEndpointStatus('default');
+  it("should show scripts when there are scripts", async () => {
+    setEndpointStatus("default");
 
     renderWithProviders(<ScriptsContainer />);
 
     await expectLoadingState();
 
-    const table = screen.getByRole('table');
+    const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
   });
 
-  it('should show scripts when there are scripts with search', async () => {
+  it("should show scripts when there are scripts with search", async () => {
     const searchText = scripts[0].title;
     setEndpointStatus('default');
 
@@ -50,19 +50,19 @@ describe('Scripts Empty State', () => {
       });
   });
 
-  it('should show search-specific empty message when there are no search results', async () => {
-    setEndpointStatus('empty');
+  it("should show search-specific empty message when there are no search results", async () => {
+    setEndpointStatus("empty");
 
     renderWithProviders(
       <ScriptsContainer />,
       undefined,
-      '/scripts?search=non-existent-script',
+      "/scripts?search=non-existent-script",
     );
 
     await expectLoadingState();
 
     const emptyStateTitle = screen.getByText(
-      'No scripts found according to your search parameters.',
+      "No scripts found according to your search parameters.",
     );
     expect(emptyStateTitle).toBeInTheDocument();
   });
