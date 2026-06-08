@@ -36,6 +36,11 @@ const authContextValuesWithoutFeatureFlag: AuthContextProps = {
 
 describe('ScriptList', () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
+  });
+
   assert(activeScript);
   assert(inactiveScript);
 
