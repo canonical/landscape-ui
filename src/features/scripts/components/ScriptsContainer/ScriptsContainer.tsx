@@ -1,14 +1,14 @@
-import LoadingState from '@/components/layout/LoadingState';
-import { TablePagination } from '@/components/layout/TablePagination';
+import LoadingState from "@/components/layout/LoadingState";
+import { TablePagination } from "@/components/layout/TablePagination";
 import {
   ScriptList,
   ScriptsEmptyState,
   useGetScripts,
-} from '@/features/scripts';
-import usePageParams from '@/hooks/usePageParams';
-import type { FC } from 'react';
-import ScriptsHeader from '../ScriptsHeader';
-import { isScriptsEmptyState, isScriptsLoadingState } from './helpers';
+} from "@/features/scripts";
+import usePageParams from "@/hooks/usePageParams";
+import type { FC } from "react";
+import ScriptsHeader from "../ScriptsHeader";
+import { isScriptsEmptyState, isScriptsLoadingState } from "./helpers";
 
 const ScriptsContainer: FC = () => {
   const { currentPage, pageSize, search, status } = usePageParams();
