@@ -40,7 +40,7 @@ export const StatusPill: FC<StatusPillProps> = ({ status, onClick }) => {
 
   const inner = (
     <>
-      <Icon name={status.icon} className={classes.pillIcon} />
+      {status.icon && <Icon name={status.icon} className={classes.pillIcon} />}
       <span
         ref={labelRef}
         className={classes.pillLabel}
@@ -51,7 +51,9 @@ export const StatusPill: FC<StatusPillProps> = ({ status, onClick }) => {
     </>
   );
 
-  if (onClick) {
+  // Only pills that map to a filter become interactive: the rest stay as plain,
+  // non-clickable chips so they don't advertise an action that does nothing.
+  if (onClick && status.filterValue) {
     return (
       <button
         type="button"
@@ -119,7 +121,11 @@ const StatusPills: FC<StatusPillsProps> = ({
     <div className={classNames({ [classes.container]: isExpanded })}>
       <div className={isExpanded ? classes.expanded : classes.collapsed}>
         {(isExpanded ? statuses : visible).map((status) => (
-          <StatusPill key={status.key} status={status} onClick={onStatusClick} />
+          <StatusPill
+            key={status.key}
+            status={status}
+            onClick={onStatusClick}
+          />
         ))}
 
         {!isExpanded && hidden.length > 0 && (

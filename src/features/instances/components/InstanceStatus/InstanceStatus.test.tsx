@@ -13,9 +13,17 @@ const multiAlertInstance = {
   ...ubuntuInstance,
   archived: false,
   alerts: [
-    { type: "PackageReporterAlert", summary: "Reporter failed", severity: "danger" },
+    {
+      type: "PackageReporterAlert",
+      summary: "Reporter failed",
+      severity: "danger",
+    },
     { type: "ComputerOfflineAlert", summary: "Offline", severity: "danger" },
-    { type: "PackageProfilesAlert", summary: "Profile alert", severity: "warning" },
+    {
+      type: "PackageProfilesAlert",
+      summary: "Profile alert",
+      severity: "warning",
+    },
   ],
 } as Instance;
 
@@ -96,12 +104,10 @@ describe("InstanceUpgrades", () => {
     expect(screen.getByText("Up to date")).toBeInTheDocument();
   });
 
-  it("renders no data when the instance has no packages feature", () => {
-    const { container } = renderWithProviders(
-      <InstanceUpgrades instance={ubuntuCoreInstance} />,
-    );
+  it("renders a neutral N/A pill when the instance has no packages feature", () => {
+    renderWithProviders(<InstanceUpgrades instance={ubuntuCoreInstance} />);
 
-    expect(container).toHaveTextContent("-");
+    expect(screen.getByText("N/A")).toBeInTheDocument();
   });
 });
 
@@ -115,7 +121,9 @@ describe("Tags", () => {
 
   it("renders clickable tags and reports the clicked tag", async () => {
     const onTagClick = vi.fn();
-    renderWithProviders(<Tags tags={["bionic", "server"]} onTagClick={onTagClick} />);
+    renderWithProviders(
+      <Tags tags={["bionic", "server"]} onTagClick={onTagClick} />,
+    );
 
     await userEvent.click(screen.getByRole("button", { name: "bionic" }));
 

@@ -9,9 +9,22 @@
   background-color: rgba($color, 0.025);
   border: 1px solid rgba($color, 0.2);
 
+  /* Clickable pills deepen their own tint on hover (status-aware) rather than
+     overlaying a flat grey, so the affordance reads in the status colour. The
+     bumps are kept gentle so the hover stays soft. */
+  &.clickable:hover {
+    background-color: rgba($color, 0.08);
+    border-color: rgba($color, 0.35);
+  }
+
   :global(.is-dark) & {
     background-color: rgba($color, 0.12);
     border-color: rgba($color, 0.4);
+  }
+
+  :global(.is-dark) &.clickable:hover {
+    background-color: rgba($color, 0.2);
+    border-color: rgba($color, 0.55);
   }
 }
 
@@ -37,22 +50,17 @@
   text-overflow: ellipsis;
 }
 
-/* Interactive pill (e.g. clickable tag filters): reset native button chrome
-   and add a subtle hover overlay that works on top of any severity tint. */
+/* Interactive pill (e.g. clickable tag/status filters): reset native button
+   chrome. The status-aware hover tint itself lives in the `status-tint` mixin
+   so each severity deepens in its own colour. */
 .clickable {
   appearance: none;
   cursor: pointer;
   font-family: inherit;
   margin: 0;
-  transition: box-shadow 0.1s ease-in-out;
-
-  &:hover {
-    box-shadow: inset 0 0 0 2rem rgb(0 0 0 / 5%);
-  }
-}
-
-:global(.is-dark) .clickable:hover {
-  box-shadow: inset 0 0 0 2rem rgb(255 255 255 / 8%);
+  transition:
+    background-color 0.1s ease-in-out,
+    border-color 0.1s ease-in-out;
 }
 
 /* The status colour is conveyed by the tinted background; the icon is kept

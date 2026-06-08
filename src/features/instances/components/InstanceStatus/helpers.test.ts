@@ -11,7 +11,13 @@ describe("getInstanceStatuses", () => {
   it("returns a neutral 'Archived' status for archived instances", () => {
     const result = getInstanceStatuses({ ...ubuntuInstance, archived: true });
     expect(result).toEqual([
-      { key: "archived", label: "Archived", icon: "archive", severity: "neutral" },
+      {
+        key: "archived",
+        label: "Archived",
+        icon: "archive",
+        severity: "neutral",
+        filterValue: "archived",
+      },
     ]);
   });
 

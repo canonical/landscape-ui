@@ -3,7 +3,6 @@ import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
-import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
@@ -20,9 +19,9 @@ import moment from "moment";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import InstanceStatus, {
-  getTagStatuses,
   InstanceUpgrades,
-  StatusPill,
+  type StatusItem,
+  Tags,
 } from "../InstanceStatus";
 import {
   createHeaderPropsGetter,
@@ -49,7 +48,12 @@ const InstanceList = memo(function InstanceList({
   setSelectedInstances,
 }: InstanceListProps) {
   const { disabledColumns, ...filters } = usePageParams();
-  const { setPageParams, tags: activeTags } = filters;
+  const {
+    setPageParams,
+    tags: activeTags,
+    status: activeStatus,
+    upgrades: activeUpgrades,
+  } = filters;
 
   const { expandedRowIndex, expandedColumnId, getTableRowsRef, handleExpand } =
     useExpandableRow();
@@ -65,6 +69,40 @@ const InstanceList = memo(function InstanceList({
       });
     },
     [activeTags, setPageParams],
+  );
+
+  // The status filter is single-select, so clicking a pill swaps to that status
+  // (or clears it when it's already the active one).
+  const toggleStatusFilter = useCallback(
+    (status: StatusItem) => {
+      if (!status.filterValue) {
+        return;
+      }
+
+      setPageParams({
+        status: activeStatus === status.filterValue ? "" : status.filterValue,
+      });
+    },
+    [activeStatus, setPageParams],
+  );
+
+  // Upgrades are a multi-select filter, so clicking a pill toggles that upgrade
+  // type in (or out of) the active set.
+  const toggleUpgradeFilter = useCallback(
+    (upgrade: StatusItem) => {
+      if (!upgrade.filterValue) {
+        return;
+      }
+
+      const { filterValue } = upgrade;
+
+      setPageParams({
+        upgrades: activeUpgrades.includes(filterValue)
+          ? activeUpgrades.filter((current) => current !== filterValue)
+          : [...activeUpgrades, filterValue],
+      });
+    },
+    [activeUpgrades, setPageParams],
   );
 
   const isFilteringInstances = Object.values(filters).some((filter) => {
@@ -186,7 +224,10 @@ const InstanceList = memo(function InstanceList({
         optionLabel: "Upgrades",
         Header: "Upgrades",
         Cell: ({ row: { original } }: CellProps<Instance>) => (
-          <InstanceUpgrades instance={original} />
+          <InstanceUpgrades
+            instance={original}
+            onUpgradeClick={toggleUpgradeFilter}
+          />
         ),
       },
       {
@@ -204,6 +245,7 @@ const InstanceList = memo(function InstanceList({
             onExpand={() => {
               handleExpand(index, "status");
             }}
+            onStatusClick={toggleStatusFilter}
           />
         ),
       },
@@ -250,26 +292,17 @@ const InstanceList = memo(function InstanceList({
             return <NoData />;
           }
 
-          const onExpand = () => {
-            handleExpand(index, "tags");
-          };
-
           return (
-            <TruncatedCell
-              content={getTagStatuses(original.tags).map((status) => (
-                <StatusPill
-                  key={status.key}
-                  status={status}
-                  onClick={(clicked) => {
-                    toggleTagFilter(clicked.label);
-                  }}
-                />
-              ))}
+            <Tags
+              tags={original.tags}
+              expandable
               isExpanded={
                 index === expandedRowIndex && expandedColumnId === "tags"
               }
-              onExpand={onExpand}
-              showCount
+              onExpand={() => {
+                handleExpand(index, "tags");
+              }}
+              onTagClick={toggleTagFilter}
             />
           );
         },
@@ -333,6 +366,8 @@ const InstanceList = memo(function InstanceList({
       expandedColumnId,
       handleExpand,
       toggleTagFilter,
+      toggleStatusFilter,
+      toggleUpgradeFilter,
       titleId,
       isSelected,
       isNotSelected,

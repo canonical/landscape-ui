@@ -148,7 +148,13 @@ const ARCHIVED_STATUS_OPTION: SelectOption = {
   value: "archived",
 };
 
-type FilterKey = "os" | "groupBy" | "status" | "wsl" | "contractExpiryDays";
+type FilterKey =
+  | "os"
+  | "groupBy"
+  | "status"
+  | "upgrades"
+  | "wsl"
+  | "contractExpiryDays";
 
 export const FILTERS = {
   os: {
@@ -189,6 +195,23 @@ export const FILTERS = {
           query,
         })),
       ARCHIVED_STATUS_OPTION,
+    ],
+  },
+  upgrades: {
+    slug: "upgrades",
+    label: "Upgrades",
+    type: "multi-select",
+    options: [
+      {
+        label: "Security upgrades",
+        value: "security-upgrades",
+        query: "alert:security-upgrades",
+      },
+      {
+        label: "Regular upgrades",
+        value: "package-upgrades",
+        query: "alert:package-upgrades",
+      },
     ],
   },
   wsl: {

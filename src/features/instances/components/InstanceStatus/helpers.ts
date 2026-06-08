@@ -2,7 +2,7 @@ import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
 import { getAlertStatus } from "@/features/alert-notifications";
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import { pluralize } from "@/utils/_helpers";
-import { ALERT_STATUSES } from "../../constants";
+import { ALERT_STATUSES, STATUS_FILTERS } from "../../constants";
 import {
   getFeatures,
   hasRegularUpgrades,
@@ -51,12 +51,25 @@ const SEVERITY_RANK: Record<StatusSeverity, number> = {
   neutral: 4,
 };
 
+// The status filter is a single-select param keyed by these slugs. A status is
+// only clickable when it maps to one of them, so the pill never sets a value
+// the filter can't honour.
+const STATUS_FILTER_VALUES = new Set(
+  Object.values(STATUS_FILTERS).map(({ filterValue }) => filterValue),
+);
+
 export const getInstanceStatuses = (
   instance: InstanceWithoutRelation,
 ): StatusItem[] => {
   if (instance.archived) {
     return [
-      { key: "archived", label: "Archived", icon: "archive", severity: "neutral" },
+      {
+        key: "archived",
+        label: "Archived",
+        icon: "archive",
+        severity: "neutral",
+        filterValue: "archived",
+      },
     ];
   }
 
@@ -72,14 +85,23 @@ export const getInstanceStatuses = (
           ALERT_STATUSES.Online.alternateLabel ?? ALERT_STATUSES.Online.label,
         icon: ALERT_STATUSES.Online.icon.color,
         severity: "info",
+        filterValue: ALERT_STATUSES.Online.filterValue,
       },
     ];
   }
 
   return alerts
     .map(({ type, summary }) => {
-      const icon = getAlertStatus(type).icon.color;
-      return { key: type, label: summary, icon, severity: getSeverityFromIcon(icon) };
+      const { icon, filterValue } = getAlertStatus(type);
+      return {
+        key: type,
+        label: summary,
+        icon: icon.color,
+        severity: getSeverityFromIcon(icon.color),
+        filterValue: STATUS_FILTER_VALUES.has(filterValue)
+          ? filterValue
+          : undefined,
+      };
     })
     .sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]);
 };
@@ -93,7 +115,9 @@ interface VisibleStatuses {
 // status is shown so the cell is never reduced to a bare counter. Everything
 // else collapses behind the expander.
 export const splitStatuses = (statuses: StatusItem[]): VisibleStatuses => {
-  const dangerStatuses = statuses.filter(({ severity }) => "danger" === severity);
+  const dangerStatuses = statuses.filter(
+    ({ severity }) => "danger" === severity,
+  );
   const visible = dangerStatuses.length ? dangerStatuses : statuses.slice(0, 1);
   const hidden = statuses.filter((status) => !visible.includes(status));
 
@@ -158,6 +182,7 @@ export const getUpgradeStatuses = (instance: Instance): StatusItem[] => {
       label: security,
       icon: SECURITY_UPGRADE_ICON,
       severity: "danger",
+      filterValue: "security-upgrades",
     });
   }
 
@@ -167,6 +192,7 @@ export const getUpgradeStatuses = (instance: Instance): StatusItem[] => {
       label: regular,
       icon: REGULAR_UPGRADE_ICON,
       severity: "warning",
+      filterValue: "package-upgrades",
     });
   }
 
@@ -191,4 +217,5 @@ export const getTagStatuses = (tags: string[]): StatusItem[] =>
     label: tag,
     icon: "tag",
     severity: "neutral",
+    filterValue: tag,
   }));

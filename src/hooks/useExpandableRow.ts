@@ -1,10 +1,19 @@
-import { useCallback, useRef, useState } from "react";
-import { useOnClickOutside } from "usehooks-ts";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+interface ExpandedCell {
+  rowIndex: number;
+  columnId: string | null;
+}
 
 export function useExpandableRow<T extends HTMLElement>() {
-  const [expandedRowIndex, setExpandedRowIndex] = useState<number | null>(null);
-  const [expandedColumnId, setExpandedColumnId] = useState<string | null>(null);
+  // A single piece of state keeps the row/column coordinates atomic, so the
+  // stable `handleExpand` can toggle a re-clicked cell closed via a functional
+  // update without reading stale values.
+  const [expanded, setExpanded] = useState<ExpandedCell | null>(null);
   const tableRowsRef = useRef<T[]>([]);
+
+  const expandedRowIndex = expanded?.rowIndex ?? null;
+  const expandedColumnId = expanded?.columnId ?? null;
 
   const getTableRowsRef = useCallback((instance: HTMLElement | null) => {
     if (!instance) {
@@ -13,26 +22,50 @@ export function useExpandableRow<T extends HTMLElement>() {
     tableRowsRef.current = [...instance.querySelectorAll<T>("tbody tr")];
   }, []);
 
-  useOnClickOutside(
-    {
-      current:
-        expandedRowIndex == null
-          ? null
-          : tableRowsRef.current[expandedRowIndex]!,
-    },
-    () => {
-      setExpandedRowIndex(null);
-    },
-  );
+  // Collapse on any click that lands outside the expanded region. When a
+  // specific column is expanded its cell carries the `expandedCell` class and
+  // hosts the pop-over, so that cell is the boundary: clicking anywhere else —
+  // including another expandable cell in the same row — collapses it. Tables
+  // that expand a whole row (no column id) fall back to the row itself. The
+  // boundary is resolved at event time so it reflects the committed DOM.
+  useEffect(() => {
+    if (expandedRowIndex == null) {
+      return;
+    }
+
+    const handlePointerDown = (event: Event) => {
+      const row = tableRowsRef.current[expandedRowIndex];
+
+      if (!row) {
+        return;
+      }
+
+      const boundary = expandedColumnId
+        ? (row.querySelector<HTMLElement>(".expandedCell") ?? row)
+        : row;
+
+      if (!boundary.contains(event.target as Node)) {
+        setExpanded(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [expandedRowIndex, expandedColumnId]);
 
   const handleExpand = useCallback((index: number, id?: string) => {
-    if (index === expandedRowIndex && id === expandedColumnId) {
-      setExpandedRowIndex(null);
-      setExpandedColumnId(null);
-    } else {
-      setExpandedRowIndex(index);
-      setExpandedColumnId(id ?? null);
-    }
+    const columnId = id ?? null;
+
+    setExpanded((current) =>
+      current && current.rowIndex === index && current.columnId === columnId
+        ? null
+        : { rowIndex: index, columnId },
+    );
   }, []);
 
   return {
