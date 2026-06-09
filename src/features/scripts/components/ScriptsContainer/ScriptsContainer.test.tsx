@@ -18,8 +18,21 @@ describe("Scripts Empty State", () => {
 
     await expectLoadingState();
 
-    const emptyStateTitle = screen.getByText(/No scripts found/i);
+    const emptyStateTitle = screen.getByText("No scripts found");
     expect(emptyStateTitle).toBeInTheDocument();
+
+    expect(
+      screen.getByText("You haven’t added any scripts yet."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Add script" }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(
+        "No scripts found according to your search parameters.",
+      ),
+    ).not.toBeInTheDocument();
   });
 
   it("should show scripts when there are scripts", async () => {
