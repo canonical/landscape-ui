@@ -51,7 +51,11 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
     ConfirmationButtonProps["confirmationModalProps"] | null
   >(null);
 
-  const isLargeScreen = alwaysCollapse ? false : isLargerThanBreakpoint;
+  // A lone button gains nothing from collapsing into an "Actions" menu — it
+  // saves no horizontal space and just hides the action behind an extra click.
+  const isLargeScreen = alwaysCollapse
+    ? false
+    : isLargerThanBreakpoint || buttons.length <= 1;
 
   const { visibleButtons, collapsedItems } = useMemo(() => {
     const visible = isLargeScreen ? buttons : buttons.slice(0, alwaysVisible);
@@ -112,6 +116,14 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
         const { confirmationModalProps: modalProps } =
           node.props as ConfirmationButtonProps;
 
+        // Some buttons (e.g. ConfirmationButton) signal an icon via the
+        // `has-icon` class rather than the `hasIcon` prop; honour both so the
+        // collapsed menu item keeps the icon aligned with its label.
+        const hasIcon =
+          el.props.hasIcon ||
+          (typeof el.props.className === "string" &&
+            el.props.className.split(/\s+/).includes("has-icon"));
+
         collapsed.push({
           key: `action-${index}`,
           children:
@@ -122,7 +134,7 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
               }
             : el.props.onClick,
           disabled: el.props.disabled,
-          hasIcon: el.props.hasIcon,
+          hasIcon,
         });
 
         return;

@@ -431,12 +431,62 @@ describe("ResponsiveButtons", () => {
       </Button>,
     ];
 
-    render(<ResponsiveButtons buttons={nestedButtons} />);
+    render(<ResponsiveButtons buttons={nestedButtons} alwaysCollapse />);
 
     await userEvent.click(screen.getByRole("button", { name: /actions/i }));
 
     expect(
       screen.getByRole("button", { name: "Nested text" }),
     ).toBeInTheDocument();
+  });
+
+  it("does not collapse a single button below the breakpoint", () => {
+    setScreenSize("xs");
+
+    const onClick = vi.fn();
+
+    render(
+      <ResponsiveButtons
+        buttons={[
+          <Button key="only" type="button" onClick={onClick}>
+            Upgrade
+          </Button>,
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /actions/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps the has-icon class on a collapsed button that signals its icon via className", async () => {
+    setScreenSize("xs");
+
+    render(
+      <ResponsiveButtons
+        buttons={[
+          <Button
+            key="icon"
+            type="button"
+            className="has-icon"
+            onClick={vi.fn()}
+          >
+            <Icon name="change-version" />
+            <span>Upgrade</span>
+          </Button>,
+          <Button key="other" type="button" onClick={vi.fn()}>
+            Other
+          </Button>,
+        ]}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+
+    expect(screen.getByRole("button", { name: "Upgrade" })).toHaveClass(
+      "has-icon",
+    );
   });
 });
