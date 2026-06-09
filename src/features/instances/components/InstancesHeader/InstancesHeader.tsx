@@ -11,6 +11,7 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
+import InstancesExportNotification from "../InstancesExportNotification";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
@@ -144,7 +145,9 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
             />,
           ]}
         />
-        <ColumnFilter label="Columns" options={columnFilterOptions} />
+        <div className={classes.actions}>
+          <ColumnFilter label="Columns" options={columnFilterOptions} />
+        </div>
       </div>
 
       <TableFilterChips
@@ -176,6 +179,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
           setShowSearchHelp(false);
         }}
       />
+      <InstancesExportNotification />
       <PendingInstancesNotification />
     </>
   );

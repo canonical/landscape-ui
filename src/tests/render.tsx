@@ -31,7 +31,9 @@ export function renderHookWithProviders() {
     return (
       <MemoryRouter>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </QueryClientProvider>
       </MemoryRouter>
     );
