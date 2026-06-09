@@ -90,7 +90,7 @@ describe("RepositoryProfileContainer", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Add repository profile/i }),
+      screen.getByRole("button", { name: /Add profile/i }),
     ).toBeInTheDocument();
   });
 

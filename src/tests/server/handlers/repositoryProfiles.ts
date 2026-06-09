@@ -101,7 +101,6 @@ export default [
       access_group: body.access_group ?? "global",
       all_computers: body.all_computers ?? false,
       apt_sources: aptSources,
-      applied_count: 0,
       tags: body.tags ?? [],
       pending_count: 0,
     };
@@ -168,7 +167,6 @@ export default [
         access_group: body.access_group,
         all_computers: body.all_computers,
         apt_sources: updatedSources,
-        applied_count: profile.applied_count,
         tags: body.tags,
         pending_count: profile.pending_count,
       };

@@ -99,7 +99,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
       {
         accessor: "publishTime",
         Header: "Date Published",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({
           row: {
             original: { publishTime },
