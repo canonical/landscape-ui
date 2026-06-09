@@ -44,7 +44,6 @@ describe("ScriptList", () => {
   assert(inactiveScript);
 
   it("should render profile list with feature flag enabled", async () => {
-    vi.mocked(useAuth).mockReturnValue(authContextValues);
     const { container } = renderWithProviders(<ScriptList {...props} />);
 
     expect(container).toHaveTexts([
