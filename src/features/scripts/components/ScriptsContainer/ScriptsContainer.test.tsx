@@ -11,7 +11,7 @@ describe("Scripts Empty State", () => {
     setEndpointStatus("default");
   });
 
-  it("should empty state when there are no scripts", async () => {
+  it("should show empty state when there are no scripts", async () => {
     setEndpointStatus("empty");
 
     renderWithProviders(<ScriptsContainer />);
