@@ -13,7 +13,6 @@ const ConsentBannerModal: FC<ConsentBannerProps> = ({ onClose }) => {
   return (
     <Modal
       title="Proceed After Acknowledging Consent"
-      className="is-narrow"
       buttonRow={
         <Button
           appearance="positive"

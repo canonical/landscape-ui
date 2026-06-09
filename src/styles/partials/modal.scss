@@ -8,16 +8,17 @@
   }
 
   table {
-    width: 40rem;
+    width: 100%;
   }
 }
 
 .p-modal__dialog {
   @media (min-width: $breakpoint-large) {
     min-width: 40rem;
+    max-width: 40rem;
   }
 
-  .p-modal.is-narrow & {
-    max-width: 40rem;
+  .p-modal.is-medium & {
+    max-width: 60rem;
   }
 }

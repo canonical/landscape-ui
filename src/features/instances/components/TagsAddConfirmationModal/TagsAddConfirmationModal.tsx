@@ -11,6 +11,7 @@ import {
   ModularTable,
   Tooltip,
 } from "@canonical/react-components";
+import classNames from "classnames";
 import { type ComponentProps, type FC, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { useCounter } from "usehooks-ts";
@@ -121,6 +122,7 @@ const TagsAddConfirmationModal: FC<TagsAddConfirmationModalProps> = ({
       confirmButtonLabel="Add tags"
       {...props}
       renderInPortal
+      className={classNames("is-medium", props.className)}
     >
       <p>Adding tags could trigger irreversible changes to your instances.</p>
 

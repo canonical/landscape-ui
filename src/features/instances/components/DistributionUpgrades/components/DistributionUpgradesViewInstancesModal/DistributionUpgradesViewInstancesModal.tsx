@@ -48,7 +48,7 @@ const DistributionUpgradesViewInstancesModal: FC<
   const modalTitle = getModalTitle(category);
 
   return createPortal(
-    <Modal close={onClose} title={modalTitle}>
+    <Modal close={onClose} title={modalTitle} className="is-medium">
       <ModularTable
         className="u-no-margin--bottom"
         columns={columns}
