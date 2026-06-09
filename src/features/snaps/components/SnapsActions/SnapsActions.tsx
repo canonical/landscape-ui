@@ -1,18 +1,17 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import { Suspense } from "react";
-import {
-  EditSnapType,
-  getSelectedSnaps,
-  getSnapUpgradeCounts,
-} from "../../helpers";
+import { getSelectedSnaps, getSnapName } from "./helpers";
 import type { InstalledSnap } from "../../types";
-import EditSnap from "../EditSnap";
+import HoldSnapForm from "../HoldSnapForm";
 import InstallSnaps from "../InstallSnaps";
+import RefreshSnapForm from "../RefreshSnapForm";
+import SwitchSnapForm from "../SwitchSnapForm";
+import UnholdSnapForm from "../UnholdSnapForm";
+import UninstallSnapForm from "../UninstallSnapForm";
 import classes from "./SnapActions.module.scss";
 
 interface SnapsActionProps {
@@ -30,33 +29,53 @@ const SnapsActions: FC<SnapsActionProps> = ({
 
   const singleSnap = installedSnaps.length === 1 ? installedSnaps[0] : null;
   const selectedSnaps = getSelectedSnaps(installedSnaps, selectedSnapIds);
-  const { held, unheld } = getSnapUpgradeCounts(selectedSnaps);
+  const unheldSnaps = selectedSnaps.filter((s) => s.held_until === null);
+  const heldSnaps = selectedSnaps.filter((s) => s.held_until !== null);
 
-  const handleEditSnap = (action: EditSnapType) => {
-    const getCount = () => {
-      if (action === EditSnapType.Unhold) {
-        return held;
-      }
-      if (action === EditSnapType.Hold) {
-        return unheld;
-      }
-      return selectedSnapIds.length;
-    };
-
-    const title = singleSnap
-      ? `${action} ${singleSnap.snap.name}${action === EditSnapType.Switch ? "'s channel" : ""}`
-      : `${action} ${pluralize(getCount(), ["snap"], "exact")}`;
-
+  const openPanel = (title: string, form: ReactNode) => {
     setSidePanelContent(
       title,
-      <Suspense fallback={<LoadingState />}>
-        <EditSnap installedSnaps={selectedSnaps} type={action} />
-      </Suspense>,
+      <Suspense fallback={<LoadingState />}>{form}</Suspense>,
     );
   };
 
-  const handleInstallSnap = () => {
+  const handleInstall = () => {
     setSidePanelContent("Install snaps", <InstallSnaps />);
+  };
+
+  const handleSwitchChannel = () => {
+    openPanel(
+      `Switch ${getSnapName(selectedSnaps)}'s channel`,
+      <SwitchSnapForm installedSnaps={selectedSnaps} />,
+    );
+  };
+
+  const handleUninstall = () => {
+    openPanel(
+      `Uninstall ${getSnapName(selectedSnaps)}`,
+      <UninstallSnapForm installedSnaps={selectedSnaps} />,
+    );
+  };
+
+  const handleHold = () => {
+    openPanel(
+      `Hold ${getSnapName(unheldSnaps)}`,
+      <HoldSnapForm installedSnaps={selectedSnaps} />,
+    );
+  };
+
+  const handleUnhold = () => {
+    openPanel(
+      `Unhold ${getSnapName(heldSnaps)}`,
+      <UnholdSnapForm installedSnaps={selectedSnaps} />,
+    );
+  };
+
+  const handleRefresh = () => {
+    openPanel(
+      `Refresh ${getSnapName(selectedSnaps)}`,
+      <RefreshSnapForm installedSnaps={selectedSnaps} />,
+    );
   };
 
   return (
@@ -64,7 +83,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
       {!sidePanel && (
         <Button
           type="button"
-          onClick={handleInstallSnap}
+          onClick={handleInstall}
           hasIcon
           className="u-no-margin--bottom"
         >
@@ -81,9 +100,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
               type="button"
               className="p-segmented-control__button has-icon u-no-margin--bottom"
               disabled={0 === selectedSnapIds.length}
-              onClick={() => {
-                handleEditSnap(EditSnapType.Switch);
-              }}
+              onClick={handleSwitchChannel}
               hasIcon
             >
               <Icon name="fork" />
@@ -95,9 +112,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             key="uninstall"
             className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === selectedSnapIds.length}
-            onClick={() => {
-              handleEditSnap(EditSnapType.Uninstall);
-            }}
+            onClick={handleUninstall}
             hasIcon
           >
             <Icon name={ICONS.delete} />
@@ -108,10 +123,8 @@ const SnapsActions: FC<SnapsActionProps> = ({
               key="hold"
               type="button"
               className="p-segmented-control__button has-icon u-no-margin--bottom"
-              disabled={0 === unheld}
-              onClick={() => {
-                handleEditSnap(EditSnapType.Hold);
-              }}
+              disabled={0 === unheldSnaps.length}
+              onClick={handleHold}
               hasIcon
             >
               <Icon name="pause" />
@@ -123,10 +136,8 @@ const SnapsActions: FC<SnapsActionProps> = ({
               key="unhold"
               type="button"
               className="p-segmented-control__button has-icon u-no-margin--bottom"
-              disabled={0 === held}
-              onClick={() => {
-                handleEditSnap(EditSnapType.Unhold);
-              }}
+              disabled={0 === heldSnaps.length}
+              onClick={handleUnhold}
               hasIcon
             >
               <Icon name="play" />
@@ -138,9 +149,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             type="button"
             className="p-segmented-control__button has-icon u-no-margin--bottom"
             disabled={0 === selectedSnapIds.length}
-            onClick={() => {
-              handleEditSnap(EditSnapType.Refresh);
-            }}
+            onClick={handleRefresh}
             hasIcon
           >
             <Icon name="change-version" />
@@ -153,3 +162,4 @@ const SnapsActions: FC<SnapsActionProps> = ({
 };
 
 export default SnapsActions;
+

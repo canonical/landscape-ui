@@ -1,6 +1,6 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import type { FC } from "react";
-import { getSelectedSnaps } from "../../helpers";
+import { getSelectedSnaps } from "../SnapsActions/helpers";
 import type { InstalledSnap } from "../../types";
 import SnapsActions from "../SnapsActions";
 import classes from "./SnapsHeader.module.scss";

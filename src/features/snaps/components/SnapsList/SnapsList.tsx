@@ -6,7 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import type { CellProps, Column, Row } from "react-table";
 import type { InstalledSnap } from "../../types";
 import SnapDetails from "../SnapDetails";
@@ -28,32 +28,38 @@ const SnapsList: FC<SnapsListProps> = ({
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleSelectionChange = (row: Row<InstalledSnap>) => {
-    if (selectedSnapIds.includes(row.original.snap.id)) {
-      setSelectedSnapIds(
-        selectedSnapIds.filter((id) => id !== row.original.snap.id),
-      );
-    } else {
-      setSelectedSnapIds([...selectedSnapIds, row.original.snap.id]);
-    }
-  };
+  const handleSelectionChange = useCallback(
+    (row: Row<InstalledSnap>) => {
+      if (selectedSnapIds.includes(row.original.snap.id)) {
+        setSelectedSnapIds(
+          selectedSnapIds.filter((id) => id !== row.original.snap.id),
+        );
+      } else {
+        setSelectedSnapIds([...selectedSnapIds, row.original.snap.id]);
+      }
+    },
+    [selectedSnapIds, setSelectedSnapIds],
+  );
 
-  const toggleAll = () => {
+  const toggleAll = useCallback(() => {
     setSelectedSnapIds(
       selectedSnapIds.length !== 0
         ? []
         : installedSnaps.map(({ snap }) => snap.id),
     );
-  };
+  }, [selectedSnapIds, installedSnaps, setSelectedSnapIds]);
 
-  const handleShowSnapDetails = (snap: InstalledSnap) => {
-    setSidePanelContent(
-      `${snap.snap.name} details`,
-      <Suspense fallback={<LoadingState />}>
-        <SnapDetails installedSnap={snap} />
-      </Suspense>,
-    );
-  };
+  const handleShowSnapDetails = useCallback(
+    (snap: InstalledSnap) => {
+      setSidePanelContent(
+        `${snap.snap.name} details`,
+        <Suspense fallback={<LoadingState />}>
+          <SnapDetails installedSnap={snap} />
+        </Suspense>,
+      );
+    },
+    [setSidePanelContent],
+  );
 
   const columns = useMemo<Column<InstalledSnap>[]>(
     () => [
@@ -159,7 +165,7 @@ const SnapsList: FC<SnapsListProps> = ({
         ),
       },
     ],
-    [selectedSnapIds, installedSnaps],
+    [selectedSnapIds, installedSnaps, handleSelectionChange, handleShowSnapDetails, toggleAll],
   );
 
   return (

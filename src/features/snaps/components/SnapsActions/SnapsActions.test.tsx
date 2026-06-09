@@ -6,7 +6,7 @@ import { screen } from "@testing-library/react";
 import { describe } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PATHS, ROUTES } from "@/libs/routes";
-import { getSelectedSnaps } from "../../helpers";
+import { getSelectedSnaps } from "./helpers";
 import SnapsActions from "./SnapsActions";
 
 const snapData = {

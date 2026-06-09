@@ -2,8 +2,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { Button, Form, Icon, ICONS, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useSnaps } from "../../hooks";
+import { useMemo, useState } from "react";
+import { useGetSnapInfo } from "../../api";
 import type { SelectedSnaps } from "../../types";
 import classes from "./AvailableSnapDetails.module.scss";
 
@@ -20,15 +20,12 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
   handleAddToSelectedItems,
   instanceId,
 }) => {
-  const [selectedChannel, setSelectedChannel] = useState<string>("");
+  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
 
-  const { getAvailableSnapInfo } = useSnaps();
-  const { data: availableSnapInfo, isLoading } = getAvailableSnapInfo({
+  const { snapInfo: item, isSnapInfoLoading: isLoading } = useGetSnapInfo({
     instance_id: instanceId,
     name: name,
   });
-
-  const item = availableSnapInfo?.data;
 
   const CHANNEL_OPTIONS = useMemo(() => {
     return item
@@ -47,11 +44,7 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
     setSelectedChannel(channel);
   };
 
-  useEffect(() => {
-    if (CHANNEL_OPTIONS[0]) {
-      setSelectedChannel(CHANNEL_OPTIONS[0].value);
-    }
-  }, [CHANNEL_OPTIONS]);
+  const effectiveChannel = selectedChannel ?? CHANNEL_OPTIONS[0]?.value ?? "";
 
   return (
     <>
@@ -70,14 +63,14 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
                   .find(
                     (channel) =>
                       `${channel.channel.name} - ${channel.channel.architecture}` ===
-                      selectedChannel,
+                      effectiveChannel,
                   )
                   ?.revision.toString() ?? "Unknown revision",
               channel:
                 item["channel-map"].find(
                   (channel) =>
                     `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    selectedChannel,
+                    effectiveChannel,
                 )?.channel.name ?? "Unknown channel",
             });
           }}
@@ -99,7 +92,7 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
                 <span className="u-text--muted p-text--small">Release</span>
               }
               required
-              value={selectedChannel}
+              value={effectiveChannel}
               options={CHANNEL_OPTIONS}
               onChange={(event) => {
                 handleSelectChannel(event.currentTarget.value);
@@ -108,7 +101,7 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
                 item["channel-map"].find(
                   (channel) =>
                     `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    selectedChannel,
+                    effectiveChannel,
                 )?.confinement === "classic" ? (
                   <span>
                     <Icon name={ICONS.warning} />
