@@ -39,9 +39,12 @@ describe("EditOrganisationPreferencesForm", () => {
     );
 
     expect(container).toHaveTexts([
+      "Account name",
       "Organization's name",
       "Use registration key",
     ]);
+
+    expect(screen.getByText(authUser.current_account)).toBeInTheDocument();
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
     expect(saveButton).toBeInTheDocument();

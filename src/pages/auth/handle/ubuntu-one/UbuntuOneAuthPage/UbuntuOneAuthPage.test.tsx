@@ -213,12 +213,13 @@ describe("UbuntuOneAuthPage", () => {
     beforeEach(() => {
       vi.resetModules();
       vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: false }),
-      }));
     });
 
     it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
+      vi.doMock("@/features/account-creation", () => ({
+        useGetStandaloneAccount: () => ({ accountExists: false }),
+      }));
+
       mockTestParams({
         ...authUser,
         accounts: [],
@@ -235,7 +236,6 @@ describe("UbuntuOneAuthPage", () => {
     });
 
     it("should redirect to no-access when accountExists is true", async () => {
-      vi.resetModules();
       vi.doMock("@/features/account-creation", () => ({
         useGetStandaloneAccount: () => ({ accountExists: true }),
       }));

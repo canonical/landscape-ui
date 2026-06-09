@@ -64,7 +64,7 @@ describe("ApiCredentialsTables", () => {
 
     expect(screen.getAllByRole("table")).toHaveLength(mockUser.accounts.length);
     mockUser.accounts.forEach((account) => {
-      expect(screen.getByText(account.name)).toBeInTheDocument();
+      expect(screen.queryByText(account.name)).not.toBeInTheDocument();
       expect(screen.getByText(account.roles.join(", "))).toBeInTheDocument();
     });
   });
@@ -80,7 +80,7 @@ describe("ApiCredentialsTables", () => {
     expect(tables).toHaveLength(0);
 
     mockUser.accounts.forEach((account) => {
-      expect(screen.getByText(account.name)).toBeInTheDocument();
+      expect(screen.queryByText(account.name)).not.toBeInTheDocument();
       expect(screen.getByText(account.roles.join(", "))).toBeInTheDocument();
     });
   });
