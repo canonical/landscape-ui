@@ -10,11 +10,14 @@ import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { getFeatures, hasUpgrades } from "../../helpers";
+import { getFeatures, hasUpgrades, type InstanceListParams } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
+const InstancesExportForm = lazy(
+  async () => import("../InstancesExportForm"),
+);
 
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
@@ -38,11 +41,15 @@ const ReplaceTokenForm = lazy(
 );
 
 interface InstancesPageActionsProps {
+  readonly exportParams: InstanceListParams;
+  readonly instanceCount: number | undefined;
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
+  exportParams,
+  instanceCount,
   isGettingInstances,
   selectedInstances,
 }: InstancesPageActionsProps) {
@@ -77,6 +84,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
     return (
       <PluralizeWithBoldCount count={instances.length} singular="instance" />
     );
+  };
+  const hasSelectedInstances = selectedInstances.length > 0;
+  const hasInstancesToExport =
+    hasSelectedInstances || (instanceCount ?? 0) > 0;
+
+  const getExportTitle = () => {
+    if (hasSelectedInstances) {
+      return `Export ${pluralize(selectedInstances.length, ["instance"], "exact")} as TSV`;
+    }
+
+    if (instanceCount !== undefined) {
+      return `Export ${pluralize(instanceCount, ["instance"], "exact")} as TSV`;
+    }
+
+    return "Export instances as TSV";
   };
 
   const handleRunScript = async () => {
@@ -187,6 +209,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
+  const handleExport = () => {
+    setSidePanelContent(
+      getExportTitle(),
+      <Suspense fallback={<LoadingState />}>
+        <InstancesExportForm
+          exportParams={exportParams}
+          instanceCount={instanceCount}
+          selectedInstanceCount={selectedInstances.length}
+          selectedInstanceIds={selectedInstances.map(({ id }) => id)}
+        />
+      </Suspense>,
+      "medium",
+    );
+  };
+
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
@@ -256,12 +293,24 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
+          <Icon name="export" />
+          <span>Export</span>
+        </>
+      ),
+      onClick: handleExport,
+      hasIcon: true,
+      disabled: !hasInstancesToExport,
+    },
+    {
+      children: (
+        <>
           <Icon name="power-off" />
           <span>Shut down</span>
         </>
       ),
       onClick: openShutdownModal,
       hasIcon: true,
+      disabled: !hasSelectedInstances,
     },
     {
       children: (
@@ -272,6 +321,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       ),
       onClick: openRebootModal,
       hasIcon: true,
+      disabled: !hasSelectedInstances,
     },
     {
       children: (
@@ -282,6 +332,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       ),
       onClick: openRemoveModal,
       hasIcon: true,
+      disabled: !hasSelectedInstances,
     },
     {
       children: (
@@ -293,6 +344,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: handleUpgradesRequest,
       hasIcon: true,
       disabled:
+        !hasSelectedInstances ||
         selectedInstances.every((instance) => !hasUpgrades(instance.alerts)) ||
         isGettingInstances,
     },
@@ -306,6 +358,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: handleDistributionUpgradesRequest,
       hasIcon: true,
       disabled:
+        !hasSelectedInstances ||
         isGettingInstances ||
         !selectedInstances.some((instance) => instance.has_release_upgrades),
     },
@@ -319,6 +372,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           ),
           onClick: handleReportView,
           hasIcon: true,
+          disabled: !hasSelectedInstances,
         }
       : {},
     {
@@ -331,6 +385,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: handleRunScript,
       hasIcon: true,
       disabled:
+        !hasSelectedInstances ||
         isGettingInstances ||
         selectedInstances.every((instance) => !getFeatures(instance).scripts),
     },
@@ -348,7 +403,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
+            toggleDisabled={!hasInstancesToExport}
             hasToggleIcon
           />,
           <ContextualMenu
