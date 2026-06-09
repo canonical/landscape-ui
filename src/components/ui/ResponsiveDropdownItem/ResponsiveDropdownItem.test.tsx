@@ -88,4 +88,30 @@ describe("ResponsiveDropdownItem", () => {
     expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveIcon("chevron-left");
   });
+
+  it("flips the submenu to the left when it would overflow the right edge", async () => {
+    const rectSpy = vi
+      .spyOn(Element.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        right: window.innerWidth + 1000,
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => "",
+      } as DOMRect);
+
+    renderWithProviders(<ResponsiveDropdownItem el={element} />);
+
+    const button = screen.getByRole("button", { name: "Status" });
+    await user.click(button);
+
+    expect(button.closest(".root")).toHaveClass("alignRight");
+    expect(button).toHaveIcon("chevron-left");
+
+    rectSpy.mockRestore();
+  });
 });
