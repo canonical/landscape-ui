@@ -1,18 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ViewProfileAssociationBlock from "./ViewProfileAssociationBlock";
 import type { Profile } from "../../../../types";
 import { ProfileTypes } from "../../../../helpers";
-import { useGetProfileAssociatedCount } from "../../../../hooks/useGetProfileAssociatedCount";
-
-vi.mock("../../../../hooks/useGetProfileAssociatedCount", () => ({
-  useGetProfileAssociatedCount: vi.fn(),
-}));
-
-const mockedUseGetProfileAssociatedCount = vi.mocked(
-  useGetProfileAssociatedCount,
-);
 
 const profile: Profile = {
   access_group: "global",
@@ -26,11 +17,6 @@ const profile: Profile = {
 
 describe("ViewProfileAssociationBlock", () => {
   it("shows no associations message", () => {
-    mockedUseGetProfileAssociatedCount.mockReturnValue({
-      associatedCount: 0,
-      isGettingInstances: false,
-    });
-
     renderWithProviders(
       <ViewProfileAssociationBlock
         profile={{ ...profile, tags: [] }}
@@ -52,11 +38,6 @@ describe("ViewProfileAssociationBlock", () => {
   });
 
   it("renders tags when profile has them", () => {
-    mockedUseGetProfileAssociatedCount.mockReturnValue({
-      associatedCount: 6,
-      isGettingInstances: false,
-    });
-
     renderWithProviders(
       <ViewProfileAssociationBlock
         profile={profile}
@@ -70,11 +51,6 @@ describe("ViewProfileAssociationBlock", () => {
   });
 
   it("renders compliance links when profile has compliance data", () => {
-    mockedUseGetProfileAssociatedCount.mockReturnValue({
-      associatedCount: 3,
-      isGettingInstances: false,
-    });
-
     const packageProfile = {
       ...profile,
       constraints: [],

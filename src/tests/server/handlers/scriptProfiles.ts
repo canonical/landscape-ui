@@ -30,7 +30,8 @@ export default [
     });
 
     if (shouldApplyEndpointStatus("script-profiles")) {
-      const { status: endpointStatusValue } = getEndpointStatus();
+      const { status: endpointStatusValue } =
+        getEndpointStatus("script-profiles");
 
       if (endpointStatusValue === "error") {
         throw createEndpointStatusNetworkError();

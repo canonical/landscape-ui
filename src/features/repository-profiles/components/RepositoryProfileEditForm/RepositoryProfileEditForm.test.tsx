@@ -4,14 +4,14 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { Suspense } from "react";
+import { describe, expect, it } from "vitest";
 import RepositoryProfileEditForm from "./RepositoryProfileEditForm";
-
-vi.mock("../../api/useGetRepositoryProfile", () => ({
-  useGetRepositoryProfile: vi.fn(() => ({ data: repositoryProfiles[0] })),
-}));
+import LoadingState from "@/components/layout/LoadingState";
 
 const [profile] = repositoryProfiles;
+
+assert(profile, "Expected repository profile test fixture");
 
 const LocationDisplay = () => {
   const { search } = useLocation();
@@ -20,10 +20,12 @@ const LocationDisplay = () => {
 
 const renderEditForm = (sidePath = "view,edit") =>
   renderWithProviders(
-    <>
-      <RepositoryProfileEditForm />
-      <LocationDisplay />
-    </>,
+    <Suspense fallback={<LoadingState />}>
+      <>
+        <RepositoryProfileEditForm />
+        <LocationDisplay />
+      </>
+    </Suspense>,
     undefined,
     `/?sidePath=${sidePath}&name=${profile.name}`,
   );

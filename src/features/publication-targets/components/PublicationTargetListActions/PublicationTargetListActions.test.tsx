@@ -2,42 +2,23 @@ import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Mock } from "vitest";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useLocation } from "react-router";
 import PublicationTargetListActions from "./PublicationTargetListActions";
-
-vi.mock("../../api/useGetPublicationsByTarget", () => ({
-  default: vi.fn(),
-}));
-
-vi.mock("../../api/useRemovePublicationTarget", () => ({
-  default: vi.fn(() => ({
-    removePublicationTargetQuery: {
-      mutateAsync: vi.fn(),
-      isPending: false,
-    },
-  })),
-}));
-
-import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 
 const LocationDisplay = () => {
   const { search } = useLocation();
   return <div data-testid="location">{search}</div>;
 };
 
-const targetWithDisplayName = publicationTargets[0]!;
+const [targetWithDisplayName] = publicationTargets;
+
+assert(targetWithDisplayName, "Expected publication target test fixture");
 
 describe("PublicationTargetListActions", () => {
   const user = userEvent.setup();
 
   it("renders the actions toggle button with display_name", () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     renderWithProviders(
       <>
         <PublicationTargetListActions target={targetWithDisplayName} />
@@ -53,11 +34,6 @@ describe("PublicationTargetListActions", () => {
   });
 
   it("shows View details, Edit, and Remove actions in the dropdown", async () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     renderWithProviders(
       <>
         <PublicationTargetListActions target={targetWithDisplayName} />
@@ -77,23 +53,18 @@ describe("PublicationTargetListActions", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("menuitem", {
+      screen.getByRole("menuitem", {
         name: `Edit ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("menuitem", {
+      screen.getByRole("menuitem", {
         name: `Remove ${targetWithDisplayName.displayName}`,
       }),
     ).toBeInTheDocument();
   });
 
   it("sets sidePath=view and name in URL when View details is clicked", async () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     renderWithProviders(
       <>
         <PublicationTargetListActions target={targetWithDisplayName} />
@@ -119,11 +90,6 @@ describe("PublicationTargetListActions", () => {
   });
 
   it("sets sidePath=edit and name in URL when Edit is clicked", async () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     renderWithProviders(
       <>
         <PublicationTargetListActions target={targetWithDisplayName} />
@@ -149,11 +115,6 @@ describe("PublicationTargetListActions", () => {
   });
 
   it("opens remove confirmation dialog when Remove is clicked", async () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     renderWithProviders(
       <>
         <PublicationTargetListActions target={targetWithDisplayName} />

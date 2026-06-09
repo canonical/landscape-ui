@@ -1,3 +1,4 @@
+import type { ProfileDay } from "@/features/profiles";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { ApiError } from "@/types/api/ApiError";
 import type { QueryFnType } from "@/types/api/QueryFnType";
@@ -5,7 +6,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
   UpgradeProfile,
-  UpgradeProfileDay,
   UpgradeProfileFrequency,
   UpgradeProfileType,
 } from "../types";
@@ -21,7 +21,7 @@ export interface CreateUpgradeProfileParams {
   autoremove?: boolean;
   deliver_delay_window?: `${number}`;
   deliver_within?: number;
-  on_days?: UpgradeProfileDay[];
+  on_days?: ProfileDay[];
   tags?: string[];
 }
 

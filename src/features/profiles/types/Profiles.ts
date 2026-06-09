@@ -1,3 +1,5 @@
+import type { SelectOption } from "@/types/SelectOption";
+
 export type ProfileActions =
   | "edit"
   | "edit-constraints"
@@ -21,3 +23,10 @@ export interface Profile extends Record<string, unknown> {
   tags: string[];
   title: string;
 }
+
+export type ProfileDay = "mo" | "tu" | "we" | "th" | "fr" | "sa" | "su";
+
+export type ProfileDayOption = SelectOption & {
+  value: ProfileDay;
+  order: number;
+};

@@ -1,10 +1,6 @@
-import type { SelectOption } from "@/types/SelectOption";
-import type { UpgradeProfileDay } from "./types/UpgradeProfile";
+import type { ProfileDayOption } from "./types";
 
-export const DAY_OPTIONS: (SelectOption & {
-  value: UpgradeProfileDay;
-  order: number;
-})[] = [
+export const PROFILE_DAY_OPTIONS: ProfileDayOption[] = [
   { label: "Sunday", order: 0, value: "su" },
   { label: "Monday", order: 1, value: "mo" },
   { label: "Tuesday", order: 2, value: "tu" },
