@@ -116,8 +116,6 @@ describe("ScriptList", () => {
   });
 
   it("should show the search-specific empty message for an empty list", () => {
-    vi.mocked(useAuth).mockReturnValue(authContextValues);
-
     renderWithProviders(<ScriptList scripts={[]} />);
 
     expect(
