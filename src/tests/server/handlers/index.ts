@@ -12,6 +12,7 @@ import employees from "./employees";
 import eventsLog from "./eventsLog";
 import features from "./features";
 import instance from "./instance";
+import instancesExport from "./instancesExport";
 import invitations from "./invitations";
 import kernel from "./kernel";
 import mirrors from "./mirrors";
@@ -57,6 +58,7 @@ export default [
   ...employees,
   ...eventsLog,
   ...instance,
+  ...instancesExport,
   ...invitations,
   ...kernel,
   ...mirrors,

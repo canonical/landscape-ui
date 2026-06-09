@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FILTERS } from "@/features/instances";
-import { getOptionQuery, getQuery } from "./helpers";
+import { getInstanceListParams, getOptionQuery, getQuery } from "./helpers";
 
 const windowsOption = FILTERS.os.options.find(
   (option) => option.value === "windows",
@@ -96,5 +96,27 @@ describe("InstancesPage helpers", () => {
     });
 
     expect(query).toBeUndefined();
+  });
+
+  it("builds list params that preserve archived and WSL filters", () => {
+    expect(
+      getInstanceListParams({
+        filters: {
+          os: "",
+          status: "archived",
+          contractExpiryDays: "",
+          query: "name:web",
+          tags: [],
+          accessGroups: [],
+          availabilityZones: [],
+        },
+        wsl: ["child", "parent"],
+      }),
+    ).toEqual({
+      archived_only: true,
+      query: "name:web",
+      wsl_children: true,
+      wsl_parents: true,
+    });
   });
 });

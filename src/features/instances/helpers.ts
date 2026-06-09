@@ -1,6 +1,10 @@
 import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
+import type { ListFilter } from "@/types/Filters";
 import type { USGProfile } from "../usg-profiles";
+import { FILTERS } from "./constants";
 import type { RecoveryKeyActivityStatus } from "./types/RecoveryKey";
+import type { AxiosResponse } from "axios";
+import moment from "moment";
 
 export const isRecoveryKeyActivityFailedOrCanceled = (
   activityStatus?: RecoveryKeyActivityStatus | null,
@@ -115,4 +119,139 @@ export const getProfileTypes = (featureFlags: {
   }
 
   return profileTypes;
+};
+
+export const getOptionQuery = (filter: ListFilter, optionValue: string) => {
+  return filter.type === "select"
+    ? (filter.options.find((option) => option.value === optionValue)?.query ??
+        "")
+    : "";
+};
+
+export interface GetInstanceQueryProps {
+  accessGroups: string[];
+  availabilityZones: string[];
+  contractExpiryDays: string;
+  os: string;
+  query: string;
+  status: string;
+  tags: string[];
+}
+
+export interface InstanceListParams {
+  archived_only?: boolean;
+  query?: string;
+  wsl_children?: boolean;
+  wsl_parents?: boolean;
+}
+
+export const getQuery = ({
+  accessGroups,
+  availabilityZones,
+  contractExpiryDays,
+  os,
+  query,
+  status,
+  tags,
+}: GetInstanceQueryProps) => {
+  const queryParts: string[] = [];
+  const osQuery = os ? getOptionQuery(FILTERS.os, os) : "";
+  const statusQuery = status ? getOptionQuery(FILTERS.status, status) : "";
+  const contractExpiryQuery = contractExpiryDays
+    ? getOptionQuery(FILTERS.contractExpiryDays, contractExpiryDays)
+    : "";
+
+  if (osQuery) {
+    queryParts.push(osQuery);
+  }
+
+  if (statusQuery) {
+    queryParts.push(statusQuery);
+  }
+
+  if (contractExpiryQuery) {
+    queryParts.push(contractExpiryQuery);
+  }
+
+  if (query) {
+    queryParts.push(...query.split(","));
+  }
+
+  if (tags.length) {
+    queryParts.push(`tag:${tags.join(" OR tag:")}`);
+  }
+
+  if (accessGroups.length) {
+    queryParts.push(`access-group:${accessGroups.join(" OR access-group:")}`);
+  }
+
+  if (availabilityZones.length) {
+    queryParts.push(
+      availabilityZones.includes("none")
+        ? "availability-zone:null"
+        : `availability-zone:${availabilityZones.join(" OR availability-zone:")}`,
+    );
+  }
+
+  return queryParts.join(" ");
+};
+
+export const getInstanceListParams = ({
+  filters,
+  wsl,
+}: {
+  filters: GetInstanceQueryProps & { status: string };
+  wsl: string[];
+}): InstanceListParams => ({
+  query: getQuery(filters),
+  archived_only: filters.status === "archived",
+  wsl_children: wsl.includes("child"),
+  wsl_parents: wsl.includes("parent"),
+});
+
+const getDownloadFilename = (response?: AxiosResponse<Blob>) => {
+  const disposition = response?.headers["content-disposition"];
+
+  if (typeof disposition === "string") {
+    const match = disposition.match(/filename="?([^"]+)"?/);
+    if (match?.[1]) {
+      return match[1];
+    }
+  }
+
+  return `instances-${moment().format("YYYY-MM-DD-HHmmss")}.tsv`;
+};
+
+const normalizeDownloadFilename = (filename?: string) => {
+  const trimmedFilename = filename?.trim();
+
+  if (!trimmedFilename) {
+    return undefined;
+  }
+
+  return trimmedFilename.toLowerCase().endsWith(".csv") ||
+    trimmedFilename.toLowerCase().endsWith(".tsv")
+    ? trimmedFilename
+    : `${trimmedFilename}.tsv`;
+};
+
+export const downloadInstancesCsv = ({
+  blob,
+  filename,
+  response,
+}: {
+  blob: Blob;
+  filename?: string;
+  response?: AxiosResponse<Blob>;
+}) => {
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = objectUrl;
+  link.download =
+    normalizeDownloadFilename(filename) ?? getDownloadFilename(response);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(objectUrl);
 };
