@@ -1,22 +1,26 @@
+import type { SelectOption } from "@/types/SelectOption";
 import type { AvailableSnapInfo } from "../../types";
-
-interface ChannelOption {
-  label: string;
-  value: string;
-}
+import { INITIAL_VALUES } from "./constants";
+import type { SwitchFormValues } from "./types";
 
 export const getChannelOptions = (
   snapInfo: AvailableSnapInfo | null,
-): ChannelOption[] => {
+): SelectOption[] => {
   if (!snapInfo) return [];
   return snapInfo["channel-map"]
-    .sort((a, b) =>
+    .toSorted((a, b) =>
       a.channel.architecture.localeCompare(b.channel.architecture),
     )
     .map((channel) => ({
       label: `${channel.channel.name} - ${channel.channel.architecture}`,
       value: `${channel.channel.name} - ${channel.channel.architecture}`,
     }));
+};
+
+export const getInitialValues = (
+  channelOptions: SelectOption[],
+): SwitchFormValues => {
+  return { ...INITIAL_VALUES, release: channelOptions[0]?.value ?? "" };
 };
 
 export const getChannelName = (

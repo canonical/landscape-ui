@@ -1,25 +1,47 @@
 import { PATHS } from "@/libs/routes";
-import { installedSnaps } from "@/tests/mocks/snap";
+import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { fireEvent, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, beforeEach } from "vitest";
+import { assert, describe, expect, it, beforeEach } from "vitest";
 import SwitchSnapForm from "./SwitchSnapForm";
 
-const snapWithChannels =
-  installedSnaps.find((snap) => snap.snap.name === "Snap 2") ??
-  installedSnaps[0];
+const snapWithChannels = installedSnaps.find((snap) => {
+  const snapInfo = availableSnapInfo.find(
+    (info) => info.name === snap.snap.name,
+  );
+  return snapInfo && snapInfo["channel-map"].length > 0;
+});
 
-const snapWithNoChannels =
-  installedSnaps.find((snap) => snap.snap.name === "Snap 1") ??
-  installedSnaps[0];
+const snapWithNoChannels = installedSnaps.find((snap) => {
+  const snapInfo = availableSnapInfo.find(
+    (info) => info.name === snap.snap.name,
+  );
+  return snapInfo && snapInfo["channel-map"].length === 0;
+});
+
+assert(
+  snapWithChannels,
+  "No installed snap has available channels to switch to.",
+);
+assert(snapWithNoChannels, "No installed snap has zero available channels.");
+
+const snapInfoWithChannels =
+  availableSnapInfo.find((info) => info.name === snapWithChannels.snap.name) ??
+  null;
+
+const snapInfoWithNoChannels =
+  availableSnapInfo.find(
+    (info) => info.name === snapWithNoChannels.snap.name,
+  ) ?? null;
 
 const renderSwitchSnapForm = (
-  snap: (typeof installedSnaps)[number] = snapWithChannels,
+  snap = snapWithChannels,
+  snapInfo = snapInfoWithChannels,
 ) =>
   renderWithProviders(
-    <SwitchSnapForm installedSnaps={[snap]} />,
+    <SwitchSnapForm installedSnaps={[snap]} snapInfo={snapInfo} />,
     {},
     "/instances/1",
     `/${PATHS.instances.root}/${PATHS.instances.single}`,
@@ -27,63 +49,56 @@ const renderSwitchSnapForm = (
 
 describe("SwitchSnapForm", () => {
   describe("rendering", () => {
-    it("renders the channel select and submit button", async () => {
+    it("renders the channel select and submit button", () => {
       renderSwitchSnapForm();
 
-      expect(
-        await screen.findByRole("combobox"),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /switch/i }),
       ).toBeInTheDocument();
     });
 
-    it("renders delivery scheduling blocks", async () => {
+    it("renders delivery scheduling blocks", () => {
       renderSwitchSnapForm();
-
-      await screen.findByRole("combobox");
 
       expect(screen.getByLabelText("As soon as possible")).toBeInTheDocument();
       expect(screen.getByLabelText("No")).toBeInTheDocument();
     });
 
-    it("populates channel options from the API", async () => {
+    it("populates channel options from snap info", () => {
       renderSwitchSnapForm();
 
-      const options = await screen.findAllByRole("option");
+      const options = screen.getAllByRole("option");
       expect(options.length).toBeGreaterThan(0);
     });
 
-    it("pre-selects the first available channel", async () => {
+    it("pre-selects the first available channel", () => {
       renderSwitchSnapForm();
 
-      const select = await screen.findByRole("combobox");
-      const options = await screen.findAllByRole("option");
+      const select = screen.getByRole("combobox");
+      const options = screen.getAllByRole("option");
 
       expect(select).toHaveValue(options[0]?.getAttribute("value") ?? "");
     });
   });
 
   describe("no available channels", () => {
-    it("disables the channel select when no channels are available", async () => {
-      renderSwitchSnapForm(snapWithNoChannels);
+    it("disables the channel select when no channels are available", () => {
+      renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
 
-      const select = await screen.findByRole("combobox");
-      expect(select).toBeDisabled();
+      expect(screen.getByRole("combobox")).toBeDisabled();
     });
 
-    it("shows the no available channels help text", async () => {
-      renderSwitchSnapForm(snapWithNoChannels);
+    it("shows the no available channels help text", () => {
+      renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
 
       expect(
-        await screen.findByText("No available channels to switch to."),
+        screen.getByText("No available channels to switch to."),
       ).toBeInTheDocument();
     });
 
     it("shows the release required error when submitting without a channel", async () => {
-      renderSwitchSnapForm(snapWithNoChannels);
-
-      await screen.findByRole("combobox");
+      renderSwitchSnapForm(snapWithNoChannels, snapInfoWithNoChannels);
 
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
@@ -94,15 +109,13 @@ describe("SwitchSnapForm", () => {
   });
 
   describe("channel selection", () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       renderSwitchSnapForm();
-      await screen.findByRole("combobox");
     });
 
     it("allows switching between channel options", async () => {
       const releaseSelect = screen.getByRole("combobox");
-      const options: HTMLOptionElement[] =
-        await screen.findAllByRole("option");
+      const options: HTMLOptionElement[] = screen.getAllByRole("option");
 
       assert(options[0]);
       assert(options[1]);
@@ -117,8 +130,6 @@ describe("SwitchSnapForm", () => {
     it("submits successfully and shows success notification", async () => {
       renderSwitchSnapForm();
 
-      await screen.findByRole("combobox");
-
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
@@ -127,8 +138,6 @@ describe("SwitchSnapForm", () => {
 
     it("submits with scheduled delivery and shows success notification", async () => {
       renderSwitchSnapForm();
-
-      await screen.findByRole("combobox");
 
       await userEvent.click(screen.getByLabelText("Scheduled"));
       const deliverAfterInput = await screen.findByLabelText(/deliver after/i);
@@ -144,8 +153,6 @@ describe("SwitchSnapForm", () => {
     it("submits with randomize delivery enabled and shows success notification", async () => {
       renderSwitchSnapForm();
 
-      await screen.findByRole("combobox");
-
       await userEvent.click(screen.getByLabelText("Yes"));
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 
@@ -155,8 +162,6 @@ describe("SwitchSnapForm", () => {
     it("shows an error notification on API failure", async () => {
       setEndpointStatus("error");
       renderSwitchSnapForm();
-
-      await screen.findByRole("combobox");
 
       await userEvent.click(screen.getByRole("button", { name: /switch/i }));
 

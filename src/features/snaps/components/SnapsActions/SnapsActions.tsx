@@ -3,23 +3,23 @@ import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC, ReactNode } from "react";
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { getSelectedSnaps, getSnapName } from "./helpers";
 import type { InstalledSnap } from "../../types";
-import HoldSnapForm from "../HoldSnapForm";
-import InstallSnaps from "../InstallSnaps";
-import RefreshSnapForm from "../RefreshSnapForm";
-import SwitchSnapForm from "../SwitchSnapForm";
-import UnholdSnapForm from "../UnholdSnapForm";
-import UninstallSnapForm from "../UninstallSnapForm";
+import SwitchChannelButton from "./components/SwitchChannelButton";
 import classes from "./SnapActions.module.scss";
+
+const HoldSnapForm = lazy(() => import("../HoldSnapForm"));
+const InstallSnaps = lazy(() => import("../InstallSnaps"));
+const RefreshSnapForm = lazy(() => import("../RefreshSnapForm"));
+const UnholdSnapForm = lazy(() => import("../UnholdSnapForm"));
+const UninstallSnapForm = lazy(() => import("../UninstallSnapForm"));
 
 interface SnapsActionProps {
   readonly selectedSnapIds: string[];
   readonly installedSnaps: InstalledSnap[];
   readonly sidePanel?: boolean;
 }
-
 const SnapsActions: FC<SnapsActionProps> = ({
   selectedSnapIds,
   installedSnaps,
@@ -41,13 +41,6 @@ const SnapsActions: FC<SnapsActionProps> = ({
 
   const handleInstall = () => {
     setSidePanelContent("Install snaps", <InstallSnaps />);
-  };
-
-  const handleSwitchChannel = () => {
-    openPanel(
-      `Switch ${getSnapName(selectedSnaps)}'s channel`,
-      <SwitchSnapForm installedSnaps={selectedSnaps} />,
-    );
   };
 
   const handleUninstall = () => {
@@ -95,17 +88,11 @@ const SnapsActions: FC<SnapsActionProps> = ({
         collapseFrom="lg"
         buttons={[
           singleSnap && sidePanel && (
-            <Button
+            <SwitchChannelButton
               key="switch-channel"
-              type="button"
-              className="p-segmented-control__button has-icon u-no-margin--bottom"
-              disabled={0 === selectedSnapIds.length}
-              onClick={handleSwitchChannel}
-              hasIcon
-            >
-              <Icon name="fork" />
-              <span>Switch channel</span>
-            </Button>
+              snap={singleSnap}
+              selectedSnaps={selectedSnaps}
+            />
           ),
           <Button
             type="button"
@@ -162,4 +149,3 @@ const SnapsActions: FC<SnapsActionProps> = ({
 };
 
 export default SnapsActions;
-

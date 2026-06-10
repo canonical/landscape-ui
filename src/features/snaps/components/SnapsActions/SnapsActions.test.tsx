@@ -1,9 +1,9 @@
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import "@/tests/matcher";
-import { installedSnaps } from "@/tests/mocks/snap";
+import { availableSnapInfo, installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { describe } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, it } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { getSelectedSnaps } from "./helpers";
@@ -146,6 +146,9 @@ describe("SnapsActions", () => {
           selectedSnapIds={[snapData.single.heldSnap]}
           sidePanel={true}
         />,
+        undefined,
+        ROUTES.instances.details.single(INSTANCE_ID),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
       );
 
       expect(container).toHaveTexts(formHeldSnapButtons);
@@ -160,6 +163,9 @@ describe("SnapsActions", () => {
           selectedSnapIds={[snapData.single.unheldSnap]}
           sidePanel={true}
         />,
+        undefined,
+        ROUTES.instances.details.single(INSTANCE_ID),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
       );
 
       expect(container).toHaveTexts(formUnheldSnapButtons);
@@ -310,11 +316,53 @@ describe("SnapsActions", () => {
         `/${PATHS.instances.root}/${PATHS.instances.single}`,
       );
 
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Switch channel" }),
+        ).toBeEnabled();
+      });
+
       await user.click(screen.getByRole("button", { name: "Switch channel" }));
 
       expect(
         await screen.findByRole("heading", { name: /Switch .*'s channel/i }),
       ).toBeInTheDocument();
+    });
+
+    it("disables switch channel and shows a tooltip when no channels are available", async () => {
+      const user = userEvent.setup();
+
+      const snapWithNoChannels = installedSnaps.find((snap) => {
+        const snapInfo = availableSnapInfo.find(
+          (info) => info.name === snap.snap.name,
+        );
+        return snapInfo && snapInfo["channel-map"].length === 0;
+      });
+
+      assert(snapWithNoChannels);
+
+      renderWithProviders(
+        <SnapsActions
+          installedSnaps={[snapWithNoChannels]}
+          selectedSnapIds={[snapWithNoChannels.snap.id]}
+          sidePanel={true}
+        />,
+        undefined,
+        ROUTES.instances.details.single(INSTANCE_ID),
+        `/${PATHS.instances.root}/${PATHS.instances.single}`,
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: "Switch channel" }),
+        ).toHaveAttribute("aria-disabled");
+      });
+
+      await user.hover(screen.getByText("Switch channel"));
+
+      expect(
+        await screen.findByText("No available channels to switch to."),
+      ).toBeVisible();
     });
 
     it("opens uninstall side panel with single snap title in sidepanel mode", async () => {
