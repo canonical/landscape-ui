@@ -9,7 +9,7 @@ import {
   isScriptProfile,
   isUsgProfile,
   isWslProfile,
-  type ProfileTypes,
+  ProfileTypes,
 } from "../../helpers";
 import ProfileAssociatedInstancesLink from "../ProfileAssociatedInstancesLink";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
@@ -31,6 +31,7 @@ import {
   USGProfileLastRunWithSchedule,
 } from "@/features/usg-profiles";
 import AssociatedInstancesCell from "./components/AssociatedInstancesCell";
+import { MIN_TABLE_WIDTH } from "./constants";
 
 const getStatus = (profile: ScriptProfile | USGProfile) => {
   if (isProfileArchived(profile)) {
@@ -60,6 +61,17 @@ const getStatus = (profile: ScriptProfile | USGProfile) => {
   }
 
   return { label: "Active", icon: "status-succeeded-small" };
+};
+
+export const getMinWidth = (type: ProfileTypes) => {
+  switch (type) {
+    case ProfileTypes.usg:
+      return MIN_TABLE_WIDTH.usg;
+    case ProfileTypes.upgrade:
+      return MIN_TABLE_WIDTH.upgrade;
+    default:
+      return undefined;
+  }
 };
 
 type ColumnNames = "name" | "accessGroup" | "associated" | "actions";
@@ -133,11 +145,15 @@ export const getStatusColumn = (): Column<Profile> => ({
     if (isUsgProfile(profile) || isScriptProfile(profile)) {
       return getStatus(profile).icon;
     }
+
+    return null;
   },
   Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
     if (isUsgProfile(profile) || isScriptProfile(profile)) {
       return getStatus(profile).label;
     }
+
+    return null;
   },
 });
 
@@ -161,6 +177,8 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
           />
         );
       }
+
+      return null;
     },
   },
   {
@@ -179,6 +197,8 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
           />
         );
       }
+
+      return null;
     },
   },
 ];
@@ -186,7 +206,7 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
 export const getUsgColumns = (): Column<Profile>[] => [
   {
     accessor: "last_run_results",
-    className: "medium-cell",
+    className: "large-cell",
     Header: "Pass rate",
     meta: {
       ariaLabel: ({ original: profile }) =>
@@ -196,10 +216,13 @@ export const getUsgColumns = (): Column<Profile>[] => [
       if (isUsgProfile(profile)) {
         return <USGProfileAuditPassRate profile={profile} />;
       }
+
+      return null;
     },
   },
   {
     accessor: "schedule",
+    className: "medium-cell",
     Header: (
       <div>
         Last run
@@ -215,6 +238,8 @@ export const getUsgColumns = (): Column<Profile>[] => [
       if (isUsgProfile(profile)) {
         return <USGProfileLastRunWithSchedule profile={profile} />;
       }
+
+      return null;
     },
   },
   {
@@ -227,6 +252,8 @@ export const getUsgColumns = (): Column<Profile>[] => [
       if (isUsgProfile(profile)) {
         return USG_PROFILE_MODE_LABELS[profile.mode];
       }
+
+      return null;
     },
   },
 ];
@@ -235,6 +262,7 @@ export const getScriptColumns = (): Column<Profile>[] => [
   {
     Header: "Last run",
     accessor: "activities.last_activity.creation_time",
+    className: "medium-cell",
     meta: {
       ariaLabel: ({ original: profile }) =>
         `"${profile.title}" profile last run`,
@@ -256,11 +284,14 @@ export const getScriptColumns = (): Column<Profile>[] => [
           <NoData />
         );
       }
+
+      return null;
     },
   },
   {
     Header: "Trigger",
     accessor: "trigger",
+    className: "medium-cell",
     meta: {
       ariaLabel: ({ original: profile }) =>
         `"${profile.title}" profile trigger`,
@@ -269,6 +300,8 @@ export const getScriptColumns = (): Column<Profile>[] => [
       if (isScriptProfile(profile)) {
         return getTriggerText(profile);
       }
+
+      return null;
     },
   },
 ];
@@ -284,6 +317,8 @@ export const getRebootColumn = (): Column<Profile> => ({
     if (isRebootProfile(profile)) {
       return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
     }
+
+    return null;
   },
 });
 
@@ -298,5 +333,7 @@ export const getRemovalColumn = (): Column<Profile> => ({
     if (isRemovalProfile(profile)) {
       return `${profile.days_without_exchange} days`;
     }
+
+    return null;
   },
 });

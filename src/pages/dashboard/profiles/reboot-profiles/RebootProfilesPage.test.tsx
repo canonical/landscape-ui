@@ -5,22 +5,11 @@ import { describe, expect, it } from "vitest";
 import RebootProfilesPage from "./RebootProfilesPage";
 import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
-import type * as actualModule from "@/features/profiles";
-
-vi.mock("@/features/profiles", async () => {
-  const actual = await vi.importActual<typeof actualModule>(
-    "@/features/profiles",
-  );
-
-  return {
-    ...actual,
-    ProfilesContainer: () => <div>Reboot profiles table</div>,
-  };
-});
 
 describe("RebootProfilesPage", () => {
   it("has a button to add a profile", async () => {
     renderWithProviders(<RebootProfilesPage />);
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
 
     const user = userEvent.setup();
 
@@ -46,7 +35,6 @@ describe("RebootProfilesPage", () => {
       `/?sidePath=duplicate&name=${rebootProfiles[0].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Duplicate ${rebootProfiles[0].title}`,
@@ -61,7 +49,6 @@ describe("RebootProfilesPage", () => {
       `/?sidePath=edit&name=${rebootProfiles[0].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${rebootProfiles[0].title}`,

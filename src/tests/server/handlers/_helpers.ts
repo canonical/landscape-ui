@@ -2,7 +2,10 @@ import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { HttpHandler } from "msw";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
-import { getEndpointStatus } from "@/tests/controllers/controller";
+import {
+  getEndpointStatus,
+  normalizeEndpointPath,
+} from "@/tests/controllers/controller";
 import { createEndpointStatusNetworkError } from "./_constants";
 
 interface GeneratePaginatedResponseProps<D> {
@@ -81,10 +84,12 @@ export const isAction = (request: Request, actionName: string | string[]) => {
  * affects the matching handler.
  */
 export function shouldApplyEndpointStatus(path?: string): boolean {
-  const { status, path: statusPath } = getEndpointStatus();
+  const { status, path: statusPath } = getEndpointStatus(path);
   if (status === "default") return false;
   if (!statusPath) return true;
-  return !!path && statusPath.includes(path);
+  return (
+    !!path && normalizeEndpointPath(statusPath) === normalizeEndpointPath(path)
+  );
 }
 
 interface GenerateGetListEndpointParams<T> {
@@ -98,7 +103,7 @@ export function generateGetListEndpoint<T>({
 }: GenerateGetListEndpointParams<T>): HttpHandler {
   return http.get(`${API_URL}${path}`, () => {
     if (shouldApplyEndpointStatus(path)) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus(path);
 
       if (status === "error") {
         throw createEndpointStatusNetworkError();

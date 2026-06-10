@@ -2,7 +2,7 @@ import HeaderActions from "@/components/layout/HeaderActions";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { FC } from "react";
-import React, { lazy, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import DetachTokenModal from "../DetachTokenModal";
 import LoadingState from "@/components/layout/LoadingState";

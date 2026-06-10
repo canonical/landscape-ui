@@ -4,13 +4,13 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import {
-  RepositoryProfileAddButton,
   RepositoryProfileContainer,
   useRepositoryProfiles,
 } from "@/features/repository-profiles";
 import usePageParams from "@/hooks/usePageParams";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import { lazy, type FC } from "react";
+import { AddProfileButton } from "@/features/profiles";
 
 const RepositoryProfileAddSidePanel = lazy(
   async () =>
@@ -54,7 +54,7 @@ const RepositoryProfilesPage: FC = () => {
         title="Repository profiles"
         actions={
           unfilteredRepositoryProfilesResult.data?.data.count
-            ? [<RepositoryProfileAddButton key="add" />]
+            ? [<AddProfileButton key="add" />]
             : undefined
         }
       />

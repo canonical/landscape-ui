@@ -64,6 +64,8 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
   const initialSnap = installedSnap
     ? snapInfoData?.data["channel-map"][0]
     : null;
+  const hasNoAvailableChannels =
+    !!snapInfoData?.data && snapInfoData.data["channel-map"].length === 0;
 
   const formik = useFormik<SnapFormProps>({
     initialValues: {
@@ -162,6 +164,12 @@ const EditSnap: FC<EditSnapProps> = ({ installedSnaps, type }) => {
           labelClassName="p-text--small p-text--small-caps"
           options={SNAP_CHANNEL_OPTIONS}
           disabled={SNAP_CHANNEL_OPTIONS.length === 0}
+          error={getFormikError(formik, "release")}
+          help={
+            hasNoAvailableChannels
+              ? "No available channels to switch to."
+              : undefined
+          }
           {...formik.getFieldProps("release")}
         />
       )}

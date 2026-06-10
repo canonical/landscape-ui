@@ -138,7 +138,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Created",
         id: "created_at",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (
@@ -155,7 +155,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
       {
         Header: "Last modified",
         id: "last_modified_at",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({
           row: { original },
         }: CellProps<Script>): ReactElement<Element> => (

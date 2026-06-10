@@ -176,34 +176,9 @@ export const installedSnaps = [
 
 export const availableSnapInfo = [
   {
-    name: "Snap 2",
+    name: "Snap 1",
     "snap-id": "1",
-    "channel-map": [
-      {
-        channel: {
-          architecture: "amd64",
-          name: "latest",
-          "released-at": "2021-08-01T00:00:00Z",
-          risk: "stable",
-          track: "latest",
-        },
-        confinement: "strict",
-        revision: 1,
-        version: "1.0.0",
-      },
-      {
-        channel: {
-          architecture: "amd86",
-          name: "latest",
-          "released-at": "2022-07-01T00:00:00Z",
-          risk: "stable",
-          track: "latest",
-        },
-        confinement: "classic",
-        revision: 2,
-        version: "2.0.0",
-      },
-    ],
+    "channel-map": [],
     "default-track": "latest",
     snap: {
       id: "1",
@@ -217,7 +192,7 @@ export const availableSnapInfo = [
     },
   },
   {
-    name: "Snap 3",
+    name: "Snap 2",
     "snap-id": "2",
     "channel-map": [
       {
@@ -258,7 +233,7 @@ export const availableSnapInfo = [
     },
   },
   {
-    name: "Snap 4",
+    name: "Snap 3",
     "snap-id": "3",
     "channel-map": [
       {
@@ -289,6 +264,47 @@ export const availableSnapInfo = [
     "default-track": "latest",
     snap: {
       id: "3",
+      name: "canonical",
+      publisher: {
+        username: "canonical",
+        validation: "verified",
+        "display-name": "Canonical",
+        id: "1",
+      },
+    },
+  },
+  {
+    name: "Snap 4",
+    "snap-id": "4",
+    "channel-map": [
+      {
+        channel: {
+          architecture: "amd64",
+          name: "latest",
+          "released-at": "2021-08-01T00:00:00Z",
+          risk: "stable",
+          track: "latest",
+        },
+        confinement: "strict",
+        revision: 1,
+        version: "1.0.0",
+      },
+      {
+        channel: {
+          architecture: "amd86",
+          name: "latest",
+          "released-at": "2022-07-01T00:00:00Z",
+          risk: "stable",
+          track: "latest",
+        },
+        confinement: "classic",
+        revision: 2,
+        version: "2.0.0",
+      },
+    ],
+    "default-track": "latest",
+    snap: {
+      id: "4",
       name: "canonical",
       publisher: {
         username: "canonical",
