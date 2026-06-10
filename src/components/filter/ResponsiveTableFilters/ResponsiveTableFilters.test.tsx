@@ -2,7 +2,7 @@ import { setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import PageParamFilter from "../PageParamFilter";
 import ResponsiveTableFilters from "./ResponsiveTableFilters";
 
@@ -72,7 +72,43 @@ describe("ResponsiveTableFilters", () => {
     expect(screen.getByRole("button", { name: "Label 1" })).toBeInTheDocument();
   });
 
-  it("reverses the collapsed filter items so their submenus open to the left", async () => {
+  it("keeps the default (right-opening) items when there is room on the right", async () => {
+    setScreenSize("sm");
+    renderWithProviders(
+      <ResponsiveTableFilters
+        filters={[
+          <PageParamFilter
+            pageParamKey="status"
+            key={0}
+            label="Label 0"
+            options={[]}
+          />,
+        ]}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Filters" }));
+
+    expect(screen.getByRole("button", { name: "Label 0" })).toHaveIcon(
+      "chevron-right",
+    );
+  });
+
+  it("reverses the items to open left when the menu is near the right edge", async () => {
+    const rectSpy = vi
+      .spyOn(Element.prototype, "getBoundingClientRect")
+      .mockReturnValue({
+        right: window.innerWidth,
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: 0,
+        height: 0,
+        x: 0,
+        y: 0,
+        toJSON: () => "",
+      } as DOMRect);
+
     setScreenSize("sm");
     renderWithProviders(
       <ResponsiveTableFilters
@@ -92,5 +128,7 @@ describe("ResponsiveTableFilters", () => {
     expect(screen.getByRole("button", { name: "Label 0" })).toHaveIcon(
       "chevron-left",
     );
+
+    rectSpy.mockRestore();
   });
 });

@@ -1,4 +1,5 @@
 import type { FC, JSXElementConstructor, ReactElement, ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classNames from "classnames";
 import type { Position } from "@canonical/react-components";
@@ -9,6 +10,10 @@ import { BREAKPOINT_PX } from "@/constants";
 import classes from "./ResponsiveTableFilters.module.scss";
 import ResponsiveDropdownItem from "@/components/ui/ResponsiveDropdownItem";
 import type { FilterProps } from "@/components/filter/types";
+
+// Rough width a filter submenu needs to the right of the menu before it would
+// run off-screen; with less room than this we open submenus to the left.
+const SUBMENU_WIDTH_ESTIMATE_PX = 256;
 
 export interface ResponsiveTableFiltersProps {
   readonly filters: ReactElement<
@@ -39,8 +44,45 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
 
+  // The Filters menu sits at the right of the table header. When there isn't
+  // room to the right for a submenu to open, we reverse the items (chevron on
+  // the left, label on the right) and open them to the left so they stay on
+  // screen. Measured on the always-mounted wrapper (and on resize) so the
+  // direction is settled before the menu is opened — no switching mid-use.
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [openLeft, setOpenLeft] = useState(false);
+
+  const measure = useCallback(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) {
+      return;
+    }
+    const { right } = wrapper.getBoundingClientRect();
+    setOpenLeft(right + SUBMENU_WIDTH_ESTIMATE_PX > window.innerWidth);
+  }, []);
+
+  const wrapperCallbackRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      wrapperRef.current = node;
+      measure();
+    },
+    [measure],
+  );
+
+  useEffect(() => {
+    window.addEventListener("resize", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+    };
+  }, [measure]);
+
+  const submenuPosition: Position = openLeft ? "right" : "left";
+
   return (
-    <div className={classNames(classes.wrapper, className)}>
+    <div
+      ref={wrapperCallbackRef}
+      className={classNames(classes.wrapper, className)}
+    >
       {isLarge && !isCollapsed ? (
         filters.map((node, i) => <span key={i}>{node}</span>)
       ) : (
@@ -57,11 +99,12 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
                 return node;
               }
 
-              // The Filters menu is anchored to the right of the table header,
-              // so its submenus open to the left and the items are reversed
-              // (chevron on the left, label on the right) to stay on screen.
               return (
-                <ResponsiveDropdownItem key={i} el={node} position="right" />
+                <ResponsiveDropdownItem
+                  key={i}
+                  el={node}
+                  position={submenuPosition}
+                />
               );
             })}
           </div>
