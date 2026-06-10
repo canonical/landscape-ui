@@ -11,17 +11,6 @@ import type {
 } from "@canonical/landscape-openapi";
 import { idleOperation } from "@/tests/mocks/operations";
 
-const getBatchLocalsResponse = async (
-  request: Request,
-): Promise<HttpResponse> => {
-  const body = (await request.json()) as { names: string[] };
-  const requestedNames = body.names ?? [];
-  const matched = repositories.filter(({ name }) =>
-    name ? requestedNames.includes(name) : false,
-  );
-  return HttpResponse.json({ locals: matched });
-};
-
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
     const url = new URL(request.url);
@@ -36,10 +25,6 @@ export default [
         displayName.startsWith(search.replaceAll(/"|\*/gm, "")),
       ),
     });
-  }),
-
-  http.post(`${API_URL_DEB_ARCHIVE}locals:batchGet`, async ({ request }) => {
-    return getBatchLocalsResponse(request);
   }),
 
   http.post<never, LocalWritable>(
@@ -58,9 +43,9 @@ export default [
     async ({ request }) => {
       const { names } = await request.json();
 
-      return HttpResponse.json(
-        repositories.filter(({ name }) => names.includes(name ?? "")),
-      );
+      return HttpResponse.json({
+        locals: repositories.filter(({ name }) => names.includes(name ?? "")),
+      });
     },
   ),
 

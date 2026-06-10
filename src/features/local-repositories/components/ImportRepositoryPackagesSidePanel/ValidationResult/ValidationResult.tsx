@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
-import type { PackagesValidationState } from "@/features/operations";
 import LocalRepositoryPackagesList from "../../LocalRepositoryPackagesList";
+import type { PackagesValidationState } from "../../../types";
 
 interface ValidationResultProps {
   readonly validationTask: PackagesValidationState;

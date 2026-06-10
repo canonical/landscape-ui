@@ -1,7 +1,51 @@
 export type OperationStatus = "idle" | "in progress" | "succeeded" | "failed";
 
-export interface OperationMetadata {
+interface OperationMetadata {
+  "@type": string;
   description: string;
-  operation_id: string;
+  operationId: string;
   status: OperationStatus;
+  progressPercent: number;
+  resource: string;
 }
+
+interface OperationResponse {
+  "@type": string;
+  output?: string;
+}
+
+export interface OperationError {
+  code: number;
+  message: string;
+  details?: string[];
+}
+
+interface BaseOperation {
+  name: string;
+  metadata: OperationMetadata;
+  done: boolean;
+  response?: OperationResponse;
+  error?: OperationError;
+}
+
+interface UnfinishedOperation extends BaseOperation {
+  done: false;
+  error?: never;
+}
+
+interface SuccessfulOperation extends BaseOperation {
+  done: true;
+  response: OperationResponse;
+  error?: never;
+}
+
+interface FailedOperation extends BaseOperation {
+  done: true;
+  response?: never;
+  error: OperationError;
+}
+
+export type Operation =
+  | UnfinishedOperation
+  | SuccessfulOperation
+  | FailedOperation;

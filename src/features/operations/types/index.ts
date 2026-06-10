@@ -1,5 +1,1 @@
-export type { OperationMetadata, OperationStatus } from "./Operation";
-export type {
-  PackagesValidationState,
-  PackagesValidationOperation,
-} from "./PackagesValidationOperation";
+export type { OperationStatus, OperationError, Operation } from "./Operation";

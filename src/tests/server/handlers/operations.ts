@@ -7,10 +7,22 @@ import {
   overCountOperation,
   timeoutOperation,
   idleOperation,
+  operations,
 } from "@/tests/mocks/operations";
 import { http, delay, HttpResponse } from "msw";
 
 export default [
+  http.post<never, { names: string[] }>(
+    `${API_URL_DEB_ARCHIVE}operations\\:batchGet`,
+    async ({ request }) => {
+      const { names } = await request.json();
+
+      return HttpResponse.json({
+        operations: operations.filter(({ name }) => names.includes(name ?? "")),
+      });
+    },
+  ),
+
   http.get(`${API_URL_DEB_ARCHIVE}operations/:operationId`, ({ params }) => {
     const { operationId } = params;
     delay(1000);

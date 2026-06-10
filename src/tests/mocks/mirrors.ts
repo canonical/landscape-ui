@@ -14,6 +14,7 @@ export const mirrors = [
     downloadSources: false,
     downloadUdebs: true,
     lastDownloadDate: new Date("2024-06-01T12:00:00Z"),
+    lastOperation: "operations/ssss-cccc-dddd",
   },
   {
     name: "mirrors/ubuntu-security-mirror",
@@ -28,6 +29,7 @@ export const mirrors = [
     downloadSources: true,
     downloadUdebs: false,
     lastDownloadDate: new Date("2024-05-01T12:00:00Z"),
+    lastOperation: "operations/pppp-gggg-ssss",
   },
   {
     name: "mirrors/third-party-mirror",
@@ -41,10 +43,24 @@ export const mirrors = [
     downloadInstaller: false,
     downloadSources: false,
     downloadUdebs: false,
-    lastDownloadDate: new Date("2024-04-01T12:00:00Z"),
     gpgKey: {
       armor: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
       fingerprint: "ABCDEF1234567890",
     },
+    lastDownloadDate: new Date("2024-05-01T12:00:00Z"),
+    lastOperation: "operations/ffff-llll-dddd",
+  },
+  {
+    name: "mirrors/unsynced-mirror",
+    mirrorId: "unsynced-mirror",
+    displayName: "Unsynced mirror",
+    archiveRoot: "https://example.com/repo",
+    distribution: "noble",
+    components: ["main", "universe"],
+    architectures: ["amd64"],
+    preserveSignatures: false,
+    downloadInstaller: true,
+    downloadSources: true,
+    downloadUdebs: true,
   },
 ] as const satisfies Mirror[];
