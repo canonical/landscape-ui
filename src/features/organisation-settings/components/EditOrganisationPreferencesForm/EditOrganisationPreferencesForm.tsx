@@ -4,7 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Preferences } from "@/types/Preferences";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Input } from "@canonical/react-components";
+import { ActionButton, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ChangeEvent, FC } from "react";
 import { useOrgSettings } from "../../hooks";
@@ -144,14 +144,15 @@ const EditOrganisationPreferencesForm: FC<
       </p>
 
       <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
-        <Button
+        <ActionButton
           className="u-no-margin--bottom"
           appearance="positive"
           type="submit"
-          disabled={formik.isSubmitting || !formik.dirty}
+          disabled={!formik.dirty}
+          loading={formik.isSubmitting}
         >
           Save changes
-        </Button>
+        </ActionButton>
       </div>
     </Form>
   );

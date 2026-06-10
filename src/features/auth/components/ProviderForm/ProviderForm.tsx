@@ -56,38 +56,57 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
     { enabled: action === "edit" && provider.provider !== "ubuntu-one" },
   );
 
-  const { mutateAsync: addProvider } = addProviderQuery;
-  const { mutateAsync: updateProvider } = updateProviderQuery;
-  const { mutateAsync: toggleUbuntuOne } = toggleUbuntuOneQuery;
+  const { mutateAsync: addProvider, isPending: isAdding } = addProviderQuery;
+  const { mutateAsync: updateProvider, isPending: isUpdating } =
+    updateProviderQuery;
+  const { mutateAsync: toggleUbuntuOne, isPending: isToggling } =
+    toggleUbuntuOneQuery;
+
+  const getCommonValuesToSubmit = (
+    values: ProviderFormValues,
+  ): AddProviderParams => ({
+    configuration: {
+      issuer: values.issuer,
+      client_id: values.client_id,
+      client_secret: values.client_secret,
+      name: values.name,
+      provider: action === "add" ? provider.provider_slug : provider.provider,
+    },
+    enabled: values.enabled,
+  });
+
+  const getMutation = () => {
+    if (action === "add") {
+      return {
+        mutate: (values: ProviderFormValues) =>
+          addProvider(getCommonValuesToSubmit(values)),
+        isMutating: isAdding,
+      };
+    } else if (provider.provider === "ubuntu-one") {
+      return {
+        mutate: (values: ProviderFormValues) =>
+          toggleUbuntuOne({
+            ubuntu_one: values.enabled,
+          }),
+        isMutating: isToggling,
+      };
+    } else {
+      return {
+        mutate: (values: ProviderFormValues) =>
+          updateProvider({
+            ...getCommonValuesToSubmit(values),
+            providerId: provider.id,
+          }),
+        isMutating: isUpdating,
+      };
+    }
+  };
+
+  const { mutate, isMutating } = getMutation();
 
   const handleSubmit = async (values: ProviderFormValues) => {
-    const commonValuesToSubmit: AddProviderParams = {
-      configuration: {
-        issuer: values.issuer,
-        client_id: values.client_id,
-        client_secret: values.client_secret,
-        name: values.name,
-        provider: action === "add" ? provider.provider_slug : provider.provider,
-      },
-      enabled: values.enabled,
-    };
-
     try {
-      if (action === "add") {
-        await addProvider(commonValuesToSubmit);
-      } else {
-        if (provider.provider === "ubuntu-one") {
-          await toggleUbuntuOne({
-            ubuntu_one: values.enabled,
-          });
-        } else {
-          await updateProvider({
-            ...commonValuesToSubmit,
-            providerId: provider.id,
-          });
-        }
-      }
-
+      await mutate(values);
       closeSidePanel();
     } catch (error) {
       debug(error);
@@ -106,7 +125,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
     }
 
     formik.setFieldValue("enabled", provider.enabled);
-  }, [action, provider]);
+  }, [action, formik, provider]);
 
   useEffect(() => {
     if (!getSingleProviderQueryResult) {
@@ -121,7 +140,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
       issuer: getSingleProviderQueryResult.data.configuration.issuer,
       name: getSingleProviderQueryResult.data.configuration.name,
     });
-  }, [getSingleProviderQueryResult]);
+  }, [formik, getSingleProviderQueryResult]);
 
   const disabled =
     action === "edit" &&
@@ -241,7 +260,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
         </>
       )}
 
-      <ProviderFormCta action={action} />
+      <ProviderFormCta action={action} loading={isMutating} />
     </Form>
   );
 };

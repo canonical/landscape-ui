@@ -1,6 +1,11 @@
 import type { FC } from "react";
 import { useEffect } from "react";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import {
+  ActionButton,
+  Icon,
+  ICONS,
+  Tooltip,
+} from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
 import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";
 import { FEEDBACK_LINK } from "@/constants";
@@ -13,6 +18,7 @@ const LandscapeActions: FC = () => {
   const {
     data: getClassicDashboardUrlQueryResult,
     refetch: refetchClassicDashboardUrl,
+    isFetching: isFetchingClassicDashboardUrl,
   } = getClassicDashboardUrlQuery({}, { enabled: false });
 
   useEffect(() => {
@@ -42,14 +48,15 @@ const LandscapeActions: FC = () => {
           </a>
         </li>
         <li className={classNames("p-list__item", classes.listItem)}>
-          <Button
+          <ActionButton
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top"
-            onClick={refetchClassicDashboardUrl}
+            onClick={() => refetchClassicDashboardUrl()}
+            loading={isFetchingClassicDashboardUrl}
           >
             <span>Switch to classic dashboard</span>
-          </Button>
+          </ActionButton>
         </li>
       </ul>
     </div>
