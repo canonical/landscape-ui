@@ -188,6 +188,14 @@ export const FILTERS = {
     options: [
       { label: "All", value: "", query: "" },
       ...Object.values(STATUS_FILTERS)
+        // Package/security upgrades have their own "Upgrades" filter, so they
+        // are excluded from the status filter to avoid duplication.
+        .filter(
+          ({ alertType }) =>
+            !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(
+              alertType,
+            ),
+        )
         .sort((a, b) => a.label.localeCompare(b.label))
         .map(({ label, filterValue, query }) => ({
           label,
@@ -203,12 +211,12 @@ export const FILTERS = {
     type: "multi-select",
     options: [
       {
-        label: "Security upgrades",
+        label: "Security upgrades available",
         value: "security-upgrades",
         query: "alert:security-upgrades",
       },
       {
-        label: "Regular upgrades",
+        label: "Regular upgrades available",
         value: "package-upgrades",
         query: "alert:package-upgrades",
       },
