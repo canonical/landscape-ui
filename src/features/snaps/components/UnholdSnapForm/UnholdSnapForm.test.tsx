@@ -8,14 +8,12 @@ import { describe, expect, it, beforeEach } from "vitest";
 import type { InstalledSnap } from "../../types";
 import UnholdSnapForm from "./UnholdSnapForm";
 
-const heldSnap = installedSnaps.find((snap) => snap.held_until !== null) ??
-  installedSnaps[0];
+const heldSnap =
+  installedSnaps.find((snap) => snap.held_until !== null) ?? installedSnaps[0];
 const defaultInstalledSnaps: InstalledSnap[] = [heldSnap];
 const multipleInstalledSnaps: InstalledSnap[] = [...installedSnaps];
 
-const renderUnholdSnapForm = (
-  snaps: InstalledSnap[] = defaultInstalledSnaps,
-) =>
+const renderUnholdSnapForm = (snaps: InstalledSnap[] = defaultInstalledSnaps) =>
   renderWithProviders(
     <UnholdSnapForm installedSnaps={snaps} />,
     {},
@@ -28,9 +26,7 @@ describe("UnholdSnapForm", () => {
     it("renders the snap message and submit button", () => {
       renderUnholdSnapForm();
 
-      expect(
-        screen.getByText(/resume automatic updates/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/resume automatic updates/i)).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: /unhold/i }),
       ).toBeInTheDocument();

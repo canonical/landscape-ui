@@ -50,23 +50,21 @@ const SnapsPanel: FC = () => {
         isLoading &&
         currentPage === 1 &&
         pageSize === DEFAULT_PAGE_SIZE && <LoadingState />}
-      {!isLoading &&
-        !search &&
-        installedSnaps.length === 0 && (
-          <EmptyState
-            title="You haven't installed any snaps yet"
-            cta={[
-              <Button
-                type="button"
-                appearance="positive"
-                key="empty-state-install-snap"
-                onClick={handleEmptyStateInstall}
-              >
-                Install snaps
-              </Button>,
-            ]}
-          />
-        )}
+      {!isLoading && !search && installedSnaps.length === 0 && (
+        <EmptyState
+          title="You haven't installed any snaps yet"
+          cta={[
+            <Button
+              type="button"
+              appearance="positive"
+              key="empty-state-install-snap"
+              onClick={handleEmptyStateInstall}
+            >
+              Install snaps
+            </Button>,
+          ]}
+        />
+      )}
       {(search ||
         currentPage !== 1 ||
         pageSize !== DEFAULT_PAGE_SIZE ||

@@ -8,14 +8,12 @@ import { describe, expect, it, beforeEach } from "vitest";
 import type { InstalledSnap } from "../../types";
 import HoldSnapForm from "./HoldSnapForm";
 
-const unheldSnap = installedSnaps.find((snap) => snap.held_until === null) ??
-  installedSnaps[0];
+const unheldSnap =
+  installedSnaps.find((snap) => snap.held_until === null) ?? installedSnaps[0];
 const defaultInstalledSnaps: InstalledSnap[] = [unheldSnap];
 const multipleInstalledSnaps: InstalledSnap[] = [...installedSnaps];
 
-const renderHoldSnapForm = (
-  snaps: InstalledSnap[] = defaultInstalledSnaps,
-) =>
+const renderHoldSnapForm = (snaps: InstalledSnap[] = defaultInstalledSnaps) =>
   renderWithProviders(
     <HoldSnapForm installedSnaps={snaps} />,
     {},
@@ -28,12 +26,8 @@ describe("HoldSnapForm", () => {
     it("renders the snap message and submit button", () => {
       renderHoldSnapForm();
 
-      expect(
-        screen.getByText(/pause automatic updates/i),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /hold/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/pause automatic updates/i)).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /hold/i })).toBeInTheDocument();
     });
 
     it("renders the hold radio group", () => {
@@ -59,9 +53,7 @@ describe("HoldSnapForm", () => {
     it("renders hold/unhold summary for mixed snap selection", () => {
       renderHoldSnapForm(multipleInstalledSnaps);
 
-      expect(
-        screen.getByText(/you selected 4 snaps/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/you selected 4 snaps/i)).toBeInTheDocument();
     });
   });
 

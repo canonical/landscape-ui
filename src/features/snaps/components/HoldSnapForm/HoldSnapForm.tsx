@@ -100,7 +100,9 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
           </p>
           {heldSnaps.length > 0 && unheldSnaps.length > 0 && (
             <>
-              <span>You selected {installedSnaps.length} snaps. This will:</span>
+              <span>
+                You selected {installedSnaps.length} snaps. This will:
+              </span>
               <ul>
                 <li>
                   hold{" "}

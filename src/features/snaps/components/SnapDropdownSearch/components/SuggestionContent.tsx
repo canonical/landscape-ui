@@ -59,7 +59,9 @@ const SuggestionContent: FC<SuggestionContentProps> = ({
       <div className="u-truncate" data-testid="dropdownElement">
         <BoldSubstring text={item.name} substring={search} />
       </div>
-      <small className="u-text-muted">{item.snap.publisher["display-name"]}</small>
+      <small className="u-text-muted">
+        {item.snap.publisher["display-name"]}
+      </small>
     </li>
   ));
 };

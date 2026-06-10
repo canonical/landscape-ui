@@ -70,4 +70,3 @@ const InstallSnaps: FC = () => {
 };
 
 export default InstallSnaps;
-

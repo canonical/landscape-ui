@@ -165,7 +165,13 @@ const SnapsList: FC<SnapsListProps> = ({
         ),
       },
     ],
-    [selectedSnapIds, installedSnaps, handleSelectionChange, handleShowSnapDetails, toggleAll],
+    [
+      selectedSnapIds,
+      installedSnaps,
+      handleSelectionChange,
+      handleShowSnapDetails,
+      toggleAll,
+    ],
   );
 
   return (
@@ -174,7 +180,9 @@ const SnapsList: FC<SnapsListProps> = ({
       data={installedSnaps}
       getCellProps={handleCellProps}
       emptyMsg={
-        isSnapsLoading ? "Loading..." : "No snaps found from the search"
+        isSnapsLoading
+          ? "Loading..."
+          : "No snaps found according to your search parameters"
       }
       minWidth={1150}
     />

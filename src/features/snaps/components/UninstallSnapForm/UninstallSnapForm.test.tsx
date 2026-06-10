@@ -76,23 +76,17 @@ describe("UninstallSnapForm", () => {
     it("submits successfully and shows success notification", async () => {
       renderUninstallSnapForm();
 
-      await userEvent.click(
-        screen.getByRole("button", { name: /uninstall/i }),
-      );
+      await userEvent.click(screen.getByRole("button", { name: /uninstall/i }));
 
       expect(await screen.findByText(/you queued/i)).toBeInTheDocument();
-      expect(
-        await screen.findByText(/to be uninstalled/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/to be uninstalled/i)).toBeInTheDocument();
     });
 
     it("shows an error notification on API failure", async () => {
       setEndpointStatus("error");
       renderUninstallSnapForm();
 
-      await userEvent.click(
-        screen.getByRole("button", { name: /uninstall/i }),
-      );
+      await userEvent.click(screen.getByRole("button", { name: /uninstall/i }));
 
       expect(await screen.findByText(/error response/i)).toBeInTheDocument();
     });

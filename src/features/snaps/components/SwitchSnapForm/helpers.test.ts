@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { availableSnapInfo } from "@/tests/mocks/snap";
-import { getChannelName, getChannelOptions, getChannelRevision } from "./helpers";
+import {
+  getChannelName,
+  getChannelOptions,
+  getChannelRevision,
+} from "./helpers";
 
 const [snapInfoEmpty, snapInfoWithChannels] = availableSnapInfo;
 
