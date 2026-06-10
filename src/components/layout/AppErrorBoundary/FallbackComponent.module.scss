@@ -33,7 +33,6 @@
   flex-wrap: wrap;
   gap: $spv--small;
 
-  // Drop the default margins Vanilla buttons add; the row uses `gap` instead.
   :global(.p-button),
   :global(.p-button--base),
   :global(.p-button--positive) {
@@ -86,5 +85,9 @@
   :global(.p-code-snippet__block) {
     max-height: 16rem;
     overflow: auto;
+
+    /* Reserve the scrollbar track so toggling the details doesn't shift the
+       layout when the snippet overflows. */
+    scrollbar-gutter: stable;
   }
 }

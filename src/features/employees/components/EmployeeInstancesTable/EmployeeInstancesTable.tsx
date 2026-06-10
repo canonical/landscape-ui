@@ -52,7 +52,7 @@ const EmployeeInstancesTable: FC<EmployeeInstancesTableProps> = ({
         ),
       },
     ],
-    [instances],
+    [],
   );
 
   return (

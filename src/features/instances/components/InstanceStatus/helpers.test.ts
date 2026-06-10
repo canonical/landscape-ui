@@ -3,6 +3,7 @@ import type { Instance } from "@/types/Instance";
 import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import {
   getInstanceStatuses,
+  getTagStatuses,
   getUpgradeStatuses,
   splitStatuses,
 } from "./helpers";
@@ -215,5 +216,32 @@ describe("getUpgradeStatuses with the detailed upgrades view enabled", () => {
       "1 security upgrade",
       "5 regular upgrades",
     ]);
+  });
+});
+
+describe("getTagStatuses", () => {
+  it("maps each tag to a neutral, filterable pill keyed by the tag", () => {
+    const result = getTagStatuses(["bionic", "server"]);
+
+    expect(result).toEqual([
+      {
+        key: "bionic",
+        label: "bionic",
+        icon: "tag",
+        severity: "neutral",
+        filterValue: "bionic",
+      },
+      {
+        key: "server",
+        label: "server",
+        icon: "tag",
+        severity: "neutral",
+        filterValue: "server",
+      },
+    ]);
+  });
+
+  it("returns an empty list when there are no tags", () => {
+    expect(getTagStatuses([])).toEqual([]);
   });
 });
