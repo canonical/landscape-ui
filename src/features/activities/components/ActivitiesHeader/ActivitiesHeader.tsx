@@ -80,7 +80,6 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
         <div className={classes.actions}>
           <ResponsiveTableFilters
             collapseFrom="xl"
-            menuPosition="right"
             filters={[
               <PageParamFilter
                 key="status"

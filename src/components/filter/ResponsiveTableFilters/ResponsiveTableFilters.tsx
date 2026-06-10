@@ -31,7 +31,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
   filters,
   collapseFrom = "md",
   className,
-  menuPosition = "left",
+  menuPosition,
   isCollapsed = false,
   menuLabel = (
     <>
@@ -44,11 +44,13 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
 
-  // The Filters menu sits at the right of the table header. When there isn't
-  // room to the right for a submenu to open, we reverse the items (chevron on
-  // the left, label on the right) and open them to the left so they stay on
-  // screen. Measured on the always-mounted wrapper (and on resize) so the
-  // direction is settled before the menu is opened — no switching mid-use.
+  // The Filters menu sits at the right of the table header. With room to the
+  // right it stays left-aligned and its submenus open rightward (default);
+  // when it gets close to the right edge it flips to right-aligned and the
+  // submenu items reverse (chevron on the left, label on the right) to open
+  // leftward and stay on screen. Measured on the always-mounted wrapper (and
+  // on resize) so the direction is settled before the menu is opened — no
+  // switching mid-use.
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const [openLeft, setOpenLeft] = useState(false);
 
@@ -70,13 +72,15 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
   );
 
   useEffect(() => {
-    window.addEventListener("resize", measure);
+    window.addEventListener("resize", measure, { passive: true });
     return () => {
       window.removeEventListener("resize", measure);
     };
   }, [measure]);
 
-  const submenuPosition: Position = openLeft ? "right" : "left";
+  // Both the dropdown and its submenus align to the same side; an explicit
+  // `menuPosition` prop overrides the measurement.
+  const menuAlignment: Position = menuPosition ?? (openLeft ? "right" : "left");
 
   return (
     <div
@@ -87,7 +91,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
         filters.map((node, i) => <span key={i}>{node}</span>)
       ) : (
         <ContextualMenu
-          position={menuPosition}
+          position={menuAlignment}
           hasToggleIcon
           toggleLabel={menuLabel}
           toggleClassName="u-no-margin--bottom"
@@ -103,7 +107,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
                 <ResponsiveDropdownItem
                   key={i}
                   el={node}
-                  position={submenuPosition}
+                  position={menuAlignment}
                 />
               );
             })}
