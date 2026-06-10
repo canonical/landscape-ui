@@ -40,34 +40,47 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleInstall = () => {
-    setSidePanelContent("Install snaps", <InstallSnaps />);
+    setSidePanelContent(
+      "Install snaps",
+      <Suspense fallback={<LoadingState />}>
+        <InstallSnaps />
+      </Suspense>,
+    );
   };
 
   const handleUninstall = () => {
     openPanel(
       `Uninstall ${getSnapName(selectedSnaps)}`,
-      <UninstallSnapForm installedSnaps={selectedSnaps} />,
+      <Suspense fallback={<LoadingState />}>
+        <UninstallSnapForm installedSnaps={selectedSnaps} />
+      </Suspense>,
     );
   };
 
   const handleHold = () => {
     openPanel(
       `Hold ${getSnapName(unheldSnaps)}`,
-      <HoldSnapForm installedSnaps={selectedSnaps} />,
+      <Suspense fallback={<LoadingState />}>
+        <HoldSnapForm installedSnaps={selectedSnaps} />
+      </Suspense>,
     );
   };
 
   const handleUnhold = () => {
     openPanel(
       `Unhold ${getSnapName(heldSnaps)}`,
-      <UnholdSnapForm installedSnaps={selectedSnaps} />,
+      <Suspense fallback={<LoadingState />}>
+        <UnholdSnapForm installedSnaps={selectedSnaps} />
+      </Suspense>,
     );
   };
 
   const handleRefresh = () => {
     openPanel(
       `Refresh ${getSnapName(selectedSnaps)}`,
-      <RefreshSnapForm installedSnaps={selectedSnaps} />,
+      <Suspense fallback={<LoadingState />}>
+        <RefreshSnapForm installedSnaps={selectedSnaps} />
+      </Suspense>,
     );
   };
 
