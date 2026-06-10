@@ -132,7 +132,7 @@ export const getInitialUbuntuProValues = (
     sourceType: "ubuntu-pro",
     token: "",
     sourceUrl: `https://${UBUNTU_PRO_HOST}/`,
-    proService: firstValidProService ? firstValidProService.mirror_type : "",
+    proService: firstValidProService ? firstValidProService.mirror_url : "",
   };
 };
 

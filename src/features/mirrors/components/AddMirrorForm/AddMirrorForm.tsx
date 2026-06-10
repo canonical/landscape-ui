@@ -49,6 +49,23 @@ const AddMirrorForm: FC = () => {
   const isMirrorContentsLoading =
     ubuntuArchiveQuery.isPending || ubuntuEsmQuery.isPending;
 
+  const getArchiveRoot = (values: FormProps) => {
+    switch (values.sourceType) {
+      case "ubuntu-snapshots":
+        return `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${values.snapshotDate}`;
+
+      case "ubuntu-pro": {
+        const archiveRoot = new URL(values.proService);
+        archiveRoot.username = "bearer";
+        archiveRoot.password = values.token;
+        return archiveRoot.href;
+      }
+
+      default:
+        return values.sourceUrl;
+    }
+  };
+
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues({
       ubuntuArchiveInfo,
@@ -86,13 +103,8 @@ const AddMirrorForm: FC = () => {
 
     onSubmit: async (values) => {
       try {
-        const archiveRoot =
-          values.sourceType === "ubuntu-snapshots"
-            ? `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${values.snapshotDate}`
-            : values.sourceUrl;
-
         const { data: newMirror } = await createMirror({
-          archiveRoot,
+          archiveRoot: getArchiveRoot(values),
           components: values.components.map((component) => component.trim()),
           displayName: values.name,
           architectures: values.architectures.map((architecture) =>
@@ -139,7 +151,7 @@ const AddMirrorForm: FC = () => {
 
   const proServiceOptions: SelectOption[] = ubuntuEsmInfo.map((proService) => ({
     label: proService.label,
-    value: proService.mirror_type,
+    value: proService.mirror_url,
     disabled: !isArchiveInfoValid(proService),
   }));
 
