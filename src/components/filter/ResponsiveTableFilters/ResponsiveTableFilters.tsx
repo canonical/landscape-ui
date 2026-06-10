@@ -57,7 +57,12 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
                 return node;
               }
 
-              return <ResponsiveDropdownItem key={i} el={node} />;
+              // The Filters menu is anchored to the right of the table header,
+              // so its submenus open to the left and the items are reversed
+              // (chevron on the left, label on the right) to stay on screen.
+              return (
+                <ResponsiveDropdownItem key={i} el={node} position="right" />
+              );
             })}
           </div>
         </ContextualMenu>

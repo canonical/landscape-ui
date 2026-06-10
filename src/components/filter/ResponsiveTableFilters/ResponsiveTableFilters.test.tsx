@@ -71,4 +71,26 @@ describe("ResponsiveTableFilters", () => {
     expect(screen.getByText("divider")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Label 1" })).toBeInTheDocument();
   });
+
+  it("reverses the collapsed filter items so their submenus open to the left", async () => {
+    setScreenSize("sm");
+    renderWithProviders(
+      <ResponsiveTableFilters
+        filters={[
+          <PageParamFilter
+            pageParamKey="status"
+            key={0}
+            label="Label 0"
+            options={[]}
+          />,
+        ]}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Filters" }));
+
+    expect(screen.getByRole("button", { name: "Label 0" })).toHaveIcon(
+      "chevron-left",
+    );
+  });
 });
