@@ -58,7 +58,7 @@ describe("RepublishPublicationModal", () => {
       publication,
     };
 
-    setEndpointStatus({ status: "error", path: "publications/publish" });
+    setEndpointStatus({ status: "error", path: "publications" });
 
     renderWithProviders(<RepublishPublicationModal {...props} />);
 

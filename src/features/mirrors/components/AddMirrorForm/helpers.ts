@@ -154,12 +154,14 @@ export const getInitialValues = ({
   ubuntuArchiveInfo: UbuntuArchiveInfo | undefined;
   ubuntuEsmInfo: UbuntuArchiveInfo[];
 }): FormProps => {
-  sourceType ??= getInitialSourceType({
-    ubuntuArchiveInfo,
-    ubuntuEsmInfo,
-  });
+  const resolvedSourceType =
+    sourceType ??
+    getInitialSourceType({
+      ubuntuArchiveInfo,
+      ubuntuEsmInfo,
+    });
 
-  switch (sourceType) {
+  switch (resolvedSourceType) {
     case "ubuntu-archive":
       return getInitialUbuntuArchiveValues(ubuntuArchiveInfo);
     case "ubuntu-snapshots":

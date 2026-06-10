@@ -107,6 +107,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
         {
           accessor: "version_id",
           Header: "OS",
+          className: "medium-cell",
           Cell: ({ row: { original } }: CellProps<WslInstanceListRow>) =>
             original.os,
         },
@@ -119,6 +120,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
           : null,
         {
           Header: "Default",
+          className: "small-cell",
           Cell: ({ row: { original } }: CellProps<WslInstanceListRow>) =>
             original.default,
         },
@@ -305,6 +307,7 @@ const WslInstanceList: FC<WslInstanceListProps> = ({
             : createRow(filteredWslInstances)
         }
         emptyMsg="No WSL instances found according to your search parameters."
+        minWidth={1150}
       />
     </>
   );

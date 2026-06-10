@@ -94,7 +94,8 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
               "manage",
             )}
             isExpanded={
-              expandedCell?.rowIndex === index &&
+              !!expandedCell &&
+              expandedCell.rowIndex === index &&
               expandedCell.columnId === "manage"
             }
             onExpand={() => {
@@ -106,7 +107,7 @@ const RoleList: FC<RoleListProps> = ({ roleList }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row }: CellProps<Role>) => {
-          if (row.original.name == "GlobalAdmin") {
+          if (row.original.name === "GlobalAdmin") {
             return null;
           }
 

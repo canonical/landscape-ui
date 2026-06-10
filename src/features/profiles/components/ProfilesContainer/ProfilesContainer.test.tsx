@@ -1,17 +1,11 @@
+import { withProfilesContext } from "@/tests/mocks/profilesContext";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ProfilesContainer from "./ProfilesContainer";
 import { ProfileTypes } from "../../helpers";
-import useProfiles from "@/hooks/useProfiles";
 import { profiles as profileList } from "@/tests/mocks/profiles";
 import type { ComponentProps } from "react";
-
-vi.mock("@/hooks/useProfiles", () => ({
-  default: vi.fn(),
-}));
-
-const mockUseProfiles = vi.mocked(useProfiles);
 
 const props: ComponentProps<typeof ProfilesContainer> = {
   type: ProfileTypes.usg,
@@ -20,14 +14,14 @@ const props: ComponentProps<typeof ProfilesContainer> = {
 };
 
 describe("ProfilesContainer", () => {
-  beforeEach(() => {
-    mockUseProfiles.mockReturnValue({
-      isProfileLimitReached: false,
-    } as unknown as ReturnType<typeof useProfiles>);
-  });
-
   it("renders loading state when pending", () => {
-    renderWithProviders(<ProfilesContainer {...props} isPending />);
+    renderWithProviders(
+      <ProfilesContainer {...props} isPending />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext(),
+    );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
@@ -39,6 +33,10 @@ describe("ProfilesContainer", () => {
         type={ProfileTypes.package}
         profiles={[]}
       />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext(),
     );
 
     expect(
@@ -51,6 +49,8 @@ describe("ProfilesContainer", () => {
       <ProfilesContainer {...props} profiles={[]} />,
       undefined,
       "/?search=search",
+      undefined,
+      withProfilesContext(),
     );
 
     expect(
@@ -61,7 +61,13 @@ describe("ProfilesContainer", () => {
   });
 
   it("renders header and list when data exists", async () => {
-    renderWithProviders(<ProfilesContainer {...props} />);
+    renderWithProviders(
+      <ProfilesContainer {...props} />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext(),
+    );
 
     expect(await screen.findByRole("searchbox")).toBeInTheDocument();
     expect(
@@ -74,18 +80,28 @@ describe("ProfilesContainer", () => {
   });
 
   it("renders pagination when count exists", () => {
-    renderWithProviders(<ProfilesContainer {...props} profilesCount={10} />);
+    renderWithProviders(
+      <ProfilesContainer {...props} profilesCount={10} />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext(),
+    );
 
     expect(screen.getByText("Showing 3 of 10 results")).toBeInTheDocument();
   });
 
   it("shows usg profile limit notification when limit is reached", () => {
-    mockUseProfiles.mockReturnValue({
-      isProfileLimitReached: true,
-      profileLimit: 5,
-    } as ReturnType<typeof useProfiles>);
-
-    renderWithProviders(<ProfilesContainer {...props} />);
+    renderWithProviders(
+      <ProfilesContainer {...props} />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({
+        isProfileLimitReached: true,
+        profileLimit: 5,
+      }),
+    );
 
     expect(screen.getByText("Profile limit reached:")).toBeInTheDocument();
     expect(
@@ -96,13 +112,15 @@ describe("ProfilesContainer", () => {
   });
 
   it("shows wsl profile limit notification when limit is reached", () => {
-    mockUseProfiles.mockReturnValue({
-      isProfileLimitReached: true,
-      profileLimit: 100,
-    } as ReturnType<typeof useProfiles>);
-
     renderWithProviders(
       <ProfilesContainer {...props} type={ProfileTypes.wsl} />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({
+        isProfileLimitReached: true,
+        profileLimit: 100,
+      }),
     );
 
     expect(

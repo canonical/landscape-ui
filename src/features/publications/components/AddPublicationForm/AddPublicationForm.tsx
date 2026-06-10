@@ -174,13 +174,6 @@ const AddPublicationForm: FC = () => {
 
     await formik.setFieldValue("source", sourceValue);
     await formik.setFieldValue("distribution", source?.distribution ?? "");
-
-    if (source?.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
-      await formik.setFieldValue("architectures", []);
-      await formik.setFieldValue("signingKey", "");
-
-      return;
-    }
     await formik.setFieldValue("architectures", []);
     await formik.setFieldValue("signingKey", "");
   };

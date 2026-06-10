@@ -13,6 +13,7 @@ import {
   getScriptColumns,
   getUsgColumns,
   getStatusColumn,
+  getMinWidth,
 } from "./helpers";
 import {
   canArchiveProfile,
@@ -89,6 +90,7 @@ const ProfilesList: FC<ProfilesListProps> = ({ profiles, type }) => {
       columns={columns}
       data={filteredProfiles}
       emptyMsg={`No ${type} profiles found according to your search parameters.`}
+      minWidth={getMinWidth(type)}
     />
   );
 };

@@ -113,6 +113,7 @@ const SnapsList: FC<SnapsListProps> = ({
       {
         Header: "held until",
         accessor: "held_until",
+        className: "large-cell",
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>
             {moment(row.original.held_until).isValid() ? (
@@ -169,6 +170,7 @@ const SnapsList: FC<SnapsListProps> = ({
       emptyMsg={
         isSnapsLoading ? "Loading..." : "No snaps found from the search"
       }
+      minWidth={1150}
     />
   );
 };

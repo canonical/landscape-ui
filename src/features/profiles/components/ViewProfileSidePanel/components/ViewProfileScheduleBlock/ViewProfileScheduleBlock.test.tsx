@@ -1,15 +1,9 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import ViewProfileScheduleBlock from "./ViewProfileScheduleBlock";
 import { profiles } from "@/tests/mocks/profiles";
-
-vi.mock("./helpers", () => ({
-  getScheduleMessage: () => "Every Monday",
-  getLastRunData: () => "2024-01-01T12:00:00Z",
-  getNextRunData: () => "2024-01-02T12:00:00Z",
-}));
 
 const [baseProfile] = profiles;
 
@@ -17,10 +11,12 @@ describe("ViewProfileScheduleBlock", () => {
   it("renders trigger and last run for script profile", () => {
     const scriptProfile = {
       ...baseProfile,
-      script_id: 1,
+      script_id: 30,
+      username: "root",
+      time_limit: 300,
       trigger: {
         trigger_type: "one_time",
-        next_run: "x",
+        next_run: "2024-01-02T12:00:00Z",
         last_run: "y",
         timestamp: "z",
       },
@@ -33,7 +29,7 @@ describe("ViewProfileScheduleBlock", () => {
       screen.getByRole("heading", { name: /Running schedule/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Trigger/i)).toBeInTheDocument();
-    expect(screen.getByText(/Every Monday/i)).toBeInTheDocument();
+    expect(screen.getByText(/On a date/i)).toBeInTheDocument();
     expect(screen.getByText(/Last run/i)).toBeInTheDocument();
     expect(screen.getByText(/Next run/i)).toBeInTheDocument();
 
@@ -48,6 +44,7 @@ describe("ViewProfileScheduleBlock", () => {
       ...baseProfile,
       benchmark: "cis_level1_server",
       mode: "audit-fix",
+      schedule: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO",
       restart_deliver_delay: 2,
       restart_deliver_delay_window: 30,
       next_run_time: "2024-01-02T12:00:00Z",
@@ -76,6 +73,7 @@ describe("ViewProfileScheduleBlock", () => {
       ...baseProfile,
       benchmark: "cis_level1_server",
       mode: "audit-fix-restart",
+      schedule: "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO",
       restart_deliver_delay: 2,
       restart_deliver_delay_window: 30,
       next_run_time: "2024-01-02T12:00:00Z",
@@ -94,20 +92,21 @@ describe("ViewProfileScheduleBlock", () => {
   });
 
   it("renders next restart for reboot profile", () => {
-    const usgProfile = {
+    const rebootProfile = {
       ...baseProfile,
-      next_run: "",
-      schedule: "",
+      next_run: "2024-01-02T12:00:00Z",
+      schedule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=12;BYMINUTE=20",
       deliver_within: 40,
       deliver_delay_window: 15,
       num_computers: 7,
     };
 
-    renderWithProviders(<ViewProfileScheduleBlock profile={usgProfile} />);
+    renderWithProviders(<ViewProfileScheduleBlock profile={rebootProfile} />);
     expect(
       screen.getByRole("heading", { name: /Running schedule/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/^Schedule$/i)).toBeInTheDocument();
+    expect(screen.getByText(/Monday at 12:20 UTC/i)).toBeInTheDocument();
     expect(screen.getByText(/Next restart/i)).toBeInTheDocument();
 
     expect(screen.queryByText(/Next run/i)).not.toBeInTheDocument();
@@ -122,10 +121,11 @@ describe("ViewProfileScheduleBlock", () => {
     const upgradeProfile = {
       ...baseProfile,
       upgrade_type: "all",
+      autoremove: true,
       at_minute: `${20}`,
       deliver_delay_window: `${30}`,
       every: "week",
-      next_run: "string",
+      next_run: "2024-01-02T12:00:00Z",
       at_hour: `${12}`,
       on_days: ["mo"],
     };
@@ -136,6 +136,7 @@ describe("ViewProfileScheduleBlock", () => {
       screen.getByRole("heading", { name: /Running schedule/i }),
     ).toBeInTheDocument();
     expect(screen.getByText(/^Schedule$/i)).toBeInTheDocument();
+    expect(screen.getByText(/Every Monday at 12:20 UTC/i)).toBeInTheDocument();
     expect(screen.getByText(/Delivery delay window/i)).toBeInTheDocument();
     expect(screen.getByText(/Next run/i)).toBeInTheDocument();
 

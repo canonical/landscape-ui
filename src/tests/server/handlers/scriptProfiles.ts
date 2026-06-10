@@ -30,7 +30,8 @@ export default [
     });
 
     if (shouldApplyEndpointStatus("script-profiles")) {
-      const { status: endpointStatusValue } = getEndpointStatus();
+      const { status: endpointStatusValue } =
+        getEndpointStatus("script-profiles");
 
       if (endpointStatusValue === "error") {
         throw createEndpointStatusNetworkError();
@@ -137,5 +138,16 @@ export default [
       max_num_profiles: 10,
       min_interval: 30,
     });
+  }),
+
+  http.post(`${API_URL}script-profiles/:profileId\\:archive`, () => {
+    if (shouldApplyEndpointStatus("script-profiles/:profileId:archive")) {
+      const { status } = getEndpointStatus();
+
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
+    }
+    return HttpResponse.json();
   }),
 ];

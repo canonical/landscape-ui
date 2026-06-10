@@ -11,7 +11,7 @@ const Chip: FC<ChipProps> = ({ className, value }) => {
   return (
     <span
       className={classNames(
-        "p-chip is-dense u-no-margin--bottom u-no-margin--right",
+        "p-chip is-dense u-no-margin--bottom",
         classes.chip,
         className,
       )}

@@ -29,8 +29,12 @@ export const useGetPageLocalRepository =
       };
     }
 
+    if (!repository) {
+      throw new Error("Local repository not found");
+    }
+
     return {
-      repository: repository as Local,
+      repository: repository,
       isGettingRepository: false,
     };
   };

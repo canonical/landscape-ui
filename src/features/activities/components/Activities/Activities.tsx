@@ -148,7 +148,7 @@ const Activities: FC<ActivitiesProps> = ({
         {
           accessor: "creation_time",
           Header: "Created at",
-          className: "date-cell",
+          className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <span className="font-monospace">
               {moment(row.original.creation_time).format(
@@ -189,6 +189,7 @@ const Activities: FC<ActivitiesProps> = ({
           emptyMsg="No activities found according to your search parameters."
           columns={columns}
           data={activities}
+          minWidth={1150}
         />
       )}
       <TablePagination

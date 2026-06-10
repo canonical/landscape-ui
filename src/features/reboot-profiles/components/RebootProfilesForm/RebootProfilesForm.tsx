@@ -3,6 +3,7 @@ import { RandomizationBlock } from "@/components/form/DeliveryScheduling";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { PROFILE_DAY_OPTIONS } from "@/features/profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -25,7 +26,6 @@ import {
 } from "../../api";
 import {
   CTA_LABELS,
-  DAY_OPTIONS,
   EXPIRATION_TOOLTIP_MESSAGE,
   NOTIFICATION_ACTIONS,
 } from "./constants";
@@ -131,8 +131,8 @@ const RebootProfilesForm: FC<RebootProfilesFormProps> = (props) => {
           <MultiSelectField
             variant="condensed"
             label="Days"
-            items={DAY_OPTIONS}
-            selectedItems={DAY_OPTIONS.filter(({ value }) =>
+            items={PROFILE_DAY_OPTIONS}
+            selectedItems={PROFILE_DAY_OPTIONS.filter(({ value }) =>
               formik.values.on_days.includes(value),
             )}
             onItemsUpdate={async (items) =>
