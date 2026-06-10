@@ -7,6 +7,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { MAX_USERS_LIMIT } from "@/pages/dashboard/instances/[single]/tabs/users/UserPanel/constants";
 import type { UserCredentials } from "@/features/api-credentials";
 import { createEndpointStatusError } from "./_constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 
 const [defaultAccount] = userDetails.accounts;
 
@@ -29,12 +30,16 @@ const userCredentials: UserCredentials = {
 
 export default [
   http.get(`${API_URL}users`, () => {
-    const endpointStatus = getEndpointStatus();
     const offset = 0;
+    const endpointStatus = getEndpointStatus();
 
     return HttpResponse.json(
       generatePaginatedResponse<User>({
-        data: endpointStatus.status === "default" ? users : [],
+        data:
+          !shouldApplyEndpointStatus("users") ||
+          endpointStatus.status === "default"
+            ? users
+            : [],
         limit: MAX_USERS_LIMIT,
         offset,
       }),
@@ -42,60 +47,60 @@ export default [
   }),
 
   http.post(`${API_URL}users`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "users")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("users")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(userDetails);
   }),
 
   http.put(`${API_URL}users`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "users")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("users")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(userDetails);
   }),
 
   http.delete(`${API_URL}users`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "users")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("users")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(userDetails);
   }),
 
   http.post(`${API_URL}users/lock`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "lockUser")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("lockUser")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(userDetails);
   }),
 
   http.post(`${API_URL}users/unlock`, async () => {
-    const endpointStatus = getEndpointStatus();
-    if (
-      endpointStatus.status === "error" &&
-      (!endpointStatus.path || endpointStatus.path === "unlockUser")
-    ) {
-      throw createEndpointStatusError();
+    if (shouldApplyEndpointStatus("unlockUser")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
     }
 
     return HttpResponse.json(userDetails);
@@ -103,6 +108,18 @@ export default [
 
   http.get(`${API_URL}person`, async () => {
     await delay();
+
+    return HttpResponse.json(userDetails);
+  }),
+
+  http.post(`${API_URL}person`, async () => {
+    if (shouldApplyEndpointStatus("person")) {
+      const endpointStatus = getEndpointStatus();
+
+      if (endpointStatus.status === "error") {
+        throw createEndpointStatusError();
+      }
+    }
 
     return HttpResponse.json(userDetails);
   }),

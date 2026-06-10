@@ -1,20 +1,14 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import AddLocalRepositoryButton from "./AddLocalRepositoryButton";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import usePageParams from "@/hooks/usePageParams";
+import { useLocation } from "react-router";
 
-vi.mock("@/hooks/usePageParams", () => ({
-  default: vi.fn(),
-}));
-
-const mockCreatePageParamsSetter = vi.fn();
-const mockUsePageParams = vi.mocked(usePageParams);
-
-mockUsePageParams.mockReturnValue({
-  createPageParamsSetter: mockCreatePageParamsSetter,
-} as unknown as ReturnType<typeof usePageParams>);
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
+};
 
 describe("AddLocalRepositoryButton", () => {
   it("renders the button with correct label and styling", () => {
@@ -29,13 +23,20 @@ describe("AddLocalRepositoryButton", () => {
 
   it("opens add form when clicked", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<AddLocalRepositoryButton />);
 
-    const button = screen.getByRole("button", {
-      name: /add local repository/i,
-    });
-    await user.click(button);
+    renderWithProviders(
+      <>
+        <AddLocalRepositoryButton />
+        <LocationDisplay />
+      </>,
+    );
 
-    expect(mockCreatePageParamsSetter).toBeCalledWith({ sidePath: ["add"] });
+    await user.click(
+      screen.getByRole("button", {
+        name: /add local repository/i,
+      }),
+    );
+
+    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=add");
   });
 });

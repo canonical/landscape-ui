@@ -1,52 +1,28 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import RemoveMirrorModal from "./RemoveMirrorModal";
 import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { publications } from "@/tests/mocks/publications";
-import type { Publication } from "@canonical/landscape-openapi";
-
-const mockDeleteMirror = vi.fn();
-
-const useGetPublicationsBySource = vi.hoisted(() =>
-  vi.fn(() => ({
-    publications: publications as Publication[],
-    isGettingPublications: false,
-  })),
-);
-
-vi.mock("../../api", async () => {
-  const actual = await vi.importActual("../../api");
-
-  return {
-    ...actual,
-    useDeleteMirror: () => ({
-      mutateAsync: mockDeleteMirror,
-    }),
-  };
-});
-
-vi.mock("@/features/publications", async () => {
-  const actual = await vi.importActual("@/features/publications");
-
-  return {
-    ...actual,
-    useGetPublicationsBySource,
-  };
-});
+import { mirrors } from "@/tests/mocks/mirrors";
 
 describe("RemoveMirrorModal", () => {
+  const close = vi.fn();
   const props: ComponentProps<typeof RemoveMirrorModal> = {
-    close: () => undefined,
+    close,
     isOpen: true,
-    mirrorDisplayName: "Mirror display name",
-    mirrorName: "mirrors/name",
+    mirrorDisplayName: mirrors[0].displayName,
+    mirrorName: mirrors[0].name,
   };
 
   const user = userEvent.setup();
 
-  it("doesn't render while closed", async () => {
+  beforeEach(() => {
+    close.mockReset();
+  });
+
+  it("doesn't render while closed", () => {
     renderWithProviders(<RemoveMirrorModal {...props} isOpen={false} />);
 
     expect(
@@ -57,24 +33,32 @@ describe("RemoveMirrorModal", () => {
   it("renders a list of publications", async () => {
     renderWithProviders(<RemoveMirrorModal {...props} />);
 
-    for (const { displayName } of publications) {
-      expect(screen.getByText(displayName)).toBeInTheDocument();
+    for (const { displayName } of publications.filter(
+      ({ source }) => source === props.mirrorName,
+    )) {
+      expect(await screen.findByText(displayName)).toBeInTheDocument();
     }
   });
 
   it("renders a message when there are no publications", async () => {
-    useGetPublicationsBySource.mockReturnValueOnce({
-      publications: [],
-      isGettingPublications: false,
-    });
-
-    renderWithProviders(<RemoveMirrorModal {...props} />);
+    renderWithProviders(
+      <RemoveMirrorModal
+        {...props}
+        mirrorDisplayName={mirrors[1].displayName}
+        mirrorName={mirrors[1].name}
+      />,
+    );
 
     expect(
       screen.queryByText(
         "This mirror is associated with the following publications:",
       ),
     ).not.toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        /This action will remove the mirror from Landscape/i,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("removes a mirror", async () => {
@@ -86,6 +70,11 @@ describe("RemoveMirrorModal", () => {
     );
     await user.click(screen.getByRole("button", { name: /remove mirror/i }));
 
-    expect(mockDeleteMirror).toHaveBeenCalledTimes(1);
+    expect(
+      await screen.findByText(
+        `You have successfully removed ${props.mirrorDisplayName}`,
+      ),
+    ).toBeInTheDocument();
+    expect(close).toHaveBeenCalled();
   });
 });

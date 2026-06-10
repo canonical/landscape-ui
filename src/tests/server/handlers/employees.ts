@@ -20,8 +20,13 @@ export default [
       const search = url.searchParams.get("search") ?? "";
 
       const endpointStatus = getEndpointStatus();
+      const variantEndpointStatus = getEndpointStatus("employees");
 
       if (shouldApplyEndpointStatus("employees")) {
+        if (variantEndpointStatus.status === "variant") {
+          return HttpResponse.json(variantEndpointStatus.response);
+        }
+
         if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
         }

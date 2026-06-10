@@ -30,7 +30,7 @@ export default [
     const search = url.searchParams.get("search") || "";
 
     if (shouldApplyEndpointStatus("scripts")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("scripts");
 
       if (status === "error") {
         throw createEndpointStatusNetworkError();

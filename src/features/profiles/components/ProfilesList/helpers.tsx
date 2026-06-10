@@ -145,11 +145,15 @@ export const getStatusColumn = (): Column<Profile> => ({
     if (isUsgProfile(profile) || isScriptProfile(profile)) {
       return getStatus(profile).icon;
     }
+
+    return null;
   },
   Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
     if (isUsgProfile(profile) || isScriptProfile(profile)) {
       return getStatus(profile).label;
     }
+
+    return null;
   },
 });
 
@@ -173,6 +177,8 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
           />
         );
       }
+
+      return null;
     },
   },
   {
@@ -191,6 +197,8 @@ export const getComplianceColumns = (type: ProfileTypes): Column<Profile>[] => [
           />
         );
       }
+
+      return null;
     },
   },
 ];
@@ -208,6 +216,8 @@ export const getUsgColumns = (): Column<Profile>[] => [
       if (isUsgProfile(profile)) {
         return <USGProfileAuditPassRate profile={profile} />;
       }
+
+      return null;
     },
   },
   {
@@ -228,6 +238,8 @@ export const getUsgColumns = (): Column<Profile>[] => [
       if (isUsgProfile(profile)) {
         return <USGProfileLastRunWithSchedule profile={profile} />;
       }
+
+      return null;
     },
   },
   {
@@ -240,6 +252,8 @@ export const getUsgColumns = (): Column<Profile>[] => [
       if (isUsgProfile(profile)) {
         return USG_PROFILE_MODE_LABELS[profile.mode];
       }
+
+      return null;
     },
   },
 ];
@@ -270,6 +284,8 @@ export const getScriptColumns = (): Column<Profile>[] => [
           <NoData />
         );
       }
+
+      return null;
     },
   },
   {
@@ -284,6 +300,8 @@ export const getScriptColumns = (): Column<Profile>[] => [
       if (isScriptProfile(profile)) {
         return getTriggerText(profile);
       }
+
+      return null;
     },
   },
 ];
@@ -299,6 +317,8 @@ export const getRebootColumn = (): Column<Profile> => ({
     if (isRebootProfile(profile)) {
       return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
     }
+
+    return null;
   },
 });
 
@@ -313,5 +333,7 @@ export const getRemovalColumn = (): Column<Profile> => ({
     if (isRemovalProfile(profile)) {
       return `${profile.days_without_exchange} days`;
     }
+
+    return null;
   },
 });

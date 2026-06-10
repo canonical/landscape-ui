@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import WslInstancesHeader from "./WslInstancesHeader";
 import {
   instanceChildren,
@@ -188,7 +189,7 @@ describe("WslInstancesHeader", () => {
     await user.click(screen.getByRole("button", { name: /^install$/i }));
 
     expect(
-      await screen.findByText('The endpoint status is set to "error".'),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

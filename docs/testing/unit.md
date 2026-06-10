@@ -76,6 +76,7 @@ It also supports route-aware tests:
 
 - `routePath` seeds the current URL
 - `routePattern` mounts the component under a matching route definition
+- `additionalProviders` wraps the rendered subtree with test-local providers when a component needs route-scoped or custom context that should not be global in `AppProviders`
 
 This is the default helper for most `src/pages/`, `src/features/`, and app-shell components.
 
@@ -231,11 +232,20 @@ Supported common states:
 - `setEndpointStatus("empty")`
 - `setEndpointStatus("error")`
 - `setEndpointStatus({ status: "error", path: "/features" })`
+- `setEndpointStatus({ status: "variant", path: "auth/handle-code", response: authState })`
+- `setEndpointStatus({ status: "variant", path: "standalone-account", response: { exists: false } })`
+- `setEndpointStatus([{ status: "variant", path: "auth/handle-code", response: authState }, { status: "variant", path: "standalone-account", response: { exists: false } }])`
+
+Guidance:
+
+- use `variant` when a shared handler needs a custom response body for one targeted endpoint
+- use the array form when one test needs more than one targeted endpoint override active at the same time
+- prefer `error` over `variant` when the shared endpoint-status error response is sufficient
 
 Documented implication:
 
 - if a unit test triggers network traffic and no handler exists, the test should fail
-- if you only need default, empty, or error behavior, prefer `setEndpointStatus(...)`
+- if you only need default, empty, or shared error behavior, prefer `setEndpointStatus(...)`
 - if the current shared handlers cannot express the needed case, add the capability to the handler or fixture layer instead of scattering ad hoc network stubs through tests
 
 ## Forms And Formik-Based Components

@@ -46,3 +46,27 @@ export const noneLoginMethods: LoginMethods = {
     enabled: false,
   },
 };
+
+export const ubuntuOneOnlyLoginMethods: LoginMethods = {
+  ...noneLoginMethods,
+  ubuntu_one: {
+    available: true,
+    enabled: true,
+  },
+  password: {
+    available: true,
+    enabled: true,
+  },
+};
+
+export const oidcOnlyLoginMethods: LoginMethods = {
+  ...noneLoginMethods,
+  oidc: {
+    available: true,
+    configurations: identityProviders,
+  },
+  password: {
+    available: true,
+    enabled: true,
+  },
+};

@@ -166,7 +166,7 @@ const AddMirrorForm: FC = () => {
       return;
     }
 
-    void formik.setValues({
+    formik.setValues({
       ...getInitialValues({
         sourceType: formik.values.sourceType,
         ubuntuArchiveInfo,

@@ -9,9 +9,11 @@ import AppNotification from "@/components/layout/AppNotification";
 import AuthProvider from "@/context/auth";
 import SidePanelProvider from "@/context/sidePanel";
 
-interface WrapperProps {
+export interface TestProviderProps {
   readonly children: ReactNode;
 }
+
+export type AdditionalProviders = FC<TestProviderProps>;
 
 const testQueryClientConfig = {
   defaultOptions: {
@@ -41,9 +43,23 @@ export const renderWithProviders = (
   options?: RenderOptions,
   routePath?: string,
   routePattern?: string,
+  additionalProviders?: AdditionalProviders,
 ) => {
-  const Wrapper: FC<WrapperProps> = ({ children }) => {
+  const Wrapper: FC<TestProviderProps> = ({ children }) => {
     const initialEntries = routePath ? [routePath] : undefined;
+    const AdditionalProviders = additionalProviders;
+    const renderedChildren = routePattern ? (
+      <Routes>
+        <Route path={routePattern} element={children} />
+      </Routes>
+    ) : (
+      children
+    );
+    const wrappedChildren = AdditionalProviders ? (
+      <AdditionalProviders>{renderedChildren}</AdditionalProviders>
+    ) : (
+      renderedChildren
+    );
 
     return (
       <MemoryRouter initialEntries={initialEntries}>
@@ -53,13 +69,7 @@ export const renderWithProviders = (
               {({ notify }) => (
                 <>
                   <AppNotification notify={notify} />
-                  {routePattern ? (
-                    <Routes>
-                      <Route path={routePattern} element={children} />
-                    </Routes>
-                  ) : (
-                    children
-                  )}
+                  {wrappedChildren}
                 </>
               )}
             </NotifyContext.Consumer>

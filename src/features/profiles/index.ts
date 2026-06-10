@@ -8,8 +8,9 @@ export { default as ProfilesList } from "./components/ProfilesList";
 export { default as ProfilesListActions } from "./components/ProfilesList/components/ProfilesListActions";
 export { default as RemoveProfileModal } from "./components/RemoveProfileModal";
 
+export { PROFILE_DAY_OPTIONS } from "./constants";
 export { useOpenProfileSidePanel } from "./hooks";
 
-export { ProfileTypes } from "./helpers";
+export { parseSchedule, ProfileTypes } from "./helpers";
 
-export type { Profile, ComplianceInstanceCounts } from "./types";
+export type { Profile, ComplianceInstanceCounts, ProfileDay } from "./types";

@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { API_URL, ROOT_PATH } from "@/constants";
 import { authResponse } from "@/tests/mocks/auth";
 import type {
@@ -56,19 +56,29 @@ export default [
     },
   ),
 
-  http.get(`${API_URL}login/methods`, () => {
-    const endpointStatus = getEndpointStatus();
+  http.get(`${API_URL}login/methods`, async () => {
+    if (shouldApplyEndpointStatus("login/methods")) {
+      const endpointStatus = getEndpointStatus();
 
-    if (endpointStatus.status === "error") {
-      return HttpResponse.json(
-        {
-          error: "InternalServerError",
-          message: "Error response",
-        },
-        {
-          status: 500,
-        },
-      );
+      if (endpointStatus.status === "loading") {
+        await delay();
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+
+      if (endpointStatus.status === "error") {
+        return HttpResponse.json(
+          {
+            error: "InternalServerError",
+            message: "Error response",
+          },
+          {
+            status: 500,
+          },
+        );
+      }
     }
 
     return HttpResponse.json(allLoginMethods);
@@ -215,6 +225,24 @@ export default [
     const url = new URL(request.url);
     const code = url.searchParams.get("code");
 
+    if (shouldApplyEndpointStatus("auth/handle-code")) {
+      const endpointStatus = getEndpointStatus("auth/handle-code");
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+
+      if (endpointStatus.status === "error") {
+        return HttpResponse.json(
+          {
+            error: "InternalServerError",
+            message: "OIDC completion failed",
+          },
+          { status: 500 },
+        );
+      }
+    }
+
     if (code === "attach-code") {
       return HttpResponse.json({
         ...authResponse,
@@ -282,6 +310,24 @@ export default [
   http.get(`${API_URL}auth/ubuntu-one/complete`, ({ request }) => {
     const url = new URL(request.url);
     const callbackUrl = url.searchParams.get("url");
+
+    if (shouldApplyEndpointStatus("auth/ubuntu-one/complete")) {
+      const endpointStatus = getEndpointStatus("auth/ubuntu-one/complete");
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+
+      if (endpointStatus.status === "error") {
+        return HttpResponse.json(
+          {
+            error: "InternalServerError",
+            message: "Ubuntu One completion failed",
+          },
+          { status: 500 },
+        );
+      }
+    }
 
     let invitationIdFromUrl = null;
 

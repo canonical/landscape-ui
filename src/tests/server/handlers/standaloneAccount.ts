@@ -1,5 +1,7 @@
+import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
 import { API_URL } from "@/constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 
 interface CreateStandaloneAccountParams {
   email: string;
@@ -11,9 +13,27 @@ export const standaloneAccountState = {
   exists: true,
 };
 
+const getStandaloneAccountExists = () => {
+  if (shouldApplyEndpointStatus("standalone-account")) {
+    const endpointStatus = getEndpointStatus("standalone-account");
+
+    if (
+      endpointStatus.status === "variant" &&
+      typeof endpointStatus.response === "object" &&
+      endpointStatus.response !== null &&
+      "exists" in endpointStatus.response &&
+      typeof endpointStatus.response.exists === "boolean"
+    ) {
+      return endpointStatus.response.exists;
+    }
+  }
+
+  return standaloneAccountState.exists;
+};
+
 export default [
   http.get(`${API_URL}standalone-account`, () => {
-    return HttpResponse.json({ exists: standaloneAccountState.exists });
+    return HttpResponse.json({ exists: getStandaloneAccountExists() });
   }),
 
   http.post<never, CreateStandaloneAccountParams>(
@@ -21,7 +41,7 @@ export default [
     async ({ request }) => {
       const { email, name } = await request.json();
 
-      if (standaloneAccountState.exists) {
+      if (getStandaloneAccountExists()) {
         return HttpResponse.json(
           {
             error: "BadRequest",
@@ -30,8 +50,6 @@ export default [
           { status: 400 },
         );
       }
-
-      standaloneAccountState.exists = true;
 
       return HttpResponse.json(
         {
