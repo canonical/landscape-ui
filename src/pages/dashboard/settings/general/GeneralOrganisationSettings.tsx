@@ -14,7 +14,7 @@ const GeneralOrganisationSettings: FC = () => {
   const { getOrganisationPreferences } = useOrgSettings();
   const {
     data: orgPreferencesData,
-    isFetching,
+    isLoading,
     refetch,
   } = getOrganisationPreferences();
   const organisationPreferences = orgPreferencesData?.data;
@@ -27,8 +27,8 @@ const GeneralOrganisationSettings: FC = () => {
     <PageMain>
       <PageHeader title="General" />
       <PageContent container="medium">
-        {isFetching && <LoadingState />}
-        {!isFetching && !organisationPreferences && (
+        {isLoading && <LoadingState />}
+        {!isLoading && !organisationPreferences && (
           <EmptyState
             title="Could not load general information"
             icon="connected"
@@ -44,7 +44,7 @@ const GeneralOrganisationSettings: FC = () => {
             ]}
           />
         )}
-        {organisationPreferences && !isFetching && (
+        {organisationPreferences && !isLoading && (
           <EditOrganisationPreferencesForm
             organisationPreferences={organisationPreferences}
           />
