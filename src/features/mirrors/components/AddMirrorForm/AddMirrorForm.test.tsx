@@ -150,6 +150,20 @@ describe("AddMirrorForm", () => {
     );
   });
 
+  it("explains which token an ubuntu pro mirror requires", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Ubuntu Pro",
+    );
+
+    expect(
+      screen.getByText(/use the bearer token for the pro service/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("/etc/apt/auth.conf.d/90ubuntu-advantage"),
+    ).toBeInTheDocument();
+  });
+
   it("submits a mirror with preserve signatures enabled", async () => {
     await user.click(screen.getByLabelText(/Preserve upstream signing key/));
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
