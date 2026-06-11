@@ -11,6 +11,8 @@ import {
 } from "@/tests/mocks/operations";
 import { http, delay, HttpResponse } from "msw";
 
+let progress = inProgressOperation.metadata.progressPercent;
+
 export default [
   http.post<never, { names: string[] }>(
     `${API_URL_DEB_ARCHIVE}operations\\:batchGet`,
@@ -40,7 +42,20 @@ export default [
     }
 
     if (operationId === "pppp-gggg-ssss") {
-      return HttpResponse.json(inProgressOperation);
+      progress += 10;
+
+      if (progress >= 100) {
+        progress = inProgressOperation.metadata.progressPercent;
+        return HttpResponse.json(succeededOperation);
+      }
+
+      return HttpResponse.json({
+        ...inProgressOperation,
+        metadata: {
+          ...inProgressOperation.metadata,
+          progressPercent: progress,
+        },
+      });
     }
 
     if (operationId === "mmmm-pppp-tttt") {

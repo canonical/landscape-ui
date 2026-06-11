@@ -1,16 +1,14 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
-.button {
-  margin-bottom: 0;
-  padding-top: 0;
-  margin-left: $sph--small;
+.failedText {
+  margin-right: $sph--small;
 }
 
 .progressBar {
   background-color: $colors--theme--background-active;
   display: inline-flex;
-  margin: 0 $spv--small;
+  margin: 0 $sph--small;
   height: $spv--small;
   width: 4rem;
 

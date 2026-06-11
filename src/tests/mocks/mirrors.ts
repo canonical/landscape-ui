@@ -47,6 +47,8 @@ export const mirrors = [
       armor: "-----BEGIN PGP PUBLIC KEY BLOCK-----",
       fingerprint: "ABCDEF1234567890",
     },
+    filter: "!package1 | !package2",
+    filterWithDeps: true,
     lastDownloadDate: new Date("2024-05-01T12:00:00Z"),
     lastOperation: "operations/ffff-llll-dddd",
   },

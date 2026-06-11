@@ -50,7 +50,7 @@ export const failedOperation: Operation = {
     operationId: "ffff-llll-dddd",
     status: "failed",
     progressPercent: 62,
-    resource: "locals/e755a4bd-8044-4529-8b5d-53f1c3887e9e",
+    resource: "mirrors/third-party-mirror",
   },
   done: true,
   error: {

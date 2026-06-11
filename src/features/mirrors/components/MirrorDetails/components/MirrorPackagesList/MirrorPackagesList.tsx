@@ -1,6 +1,6 @@
 import { useMemo, type FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
-import { useListMirrorPackages } from "../../api";
+import { useListMirrorPackages } from "../../../../api";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";

@@ -1,5 +1,4 @@
 import SidePanel from "@/components/layout/SidePanel";
-import LoadingState from "@/components/layout/SidePanel/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import {
   Button,
@@ -10,12 +9,16 @@ import {
 import { useEffect, useRef, useState, type FC } from "react";
 import { useGetOperation } from "../../api";
 import classes from "./ViewLogsSidePanel.module.scss";
+import { useGetMirror } from "@/features/mirrors";
 
 const COPIED_FEEDBACK_TIMEOUT = 2000;
 
 const ViewLogsSidePanel: FC = () => {
   const { name } = usePageParams();
-  const { operation, isGettingOperation } = useGetOperation(name);
+  const mirror = useGetMirror(name).data.data;
+  const { operation, isGettingOperation } = useGetOperation(mirror.lastOperation ?? "", 
+    { enabled: !!mirror.lastOperation }
+  );
   const logs = operation?.error?.details?.join("\n") ?? "";
 
   const [copied, setCopied] = useState(false);
@@ -43,13 +46,29 @@ const ViewLogsSidePanel: FC = () => {
     }
   };
 
+  const title = <SidePanel.Header>Update logs for {mirror.displayName}</SidePanel.Header>;
+
+  if (!mirror.lastOperation) {
+    return (
+      <>
+        {title}
+        <SidePanel.Content>
+          <Notification
+            severity="negative"
+            title="The selected mirror hasn't had any update attempts yet."
+          />
+        </SidePanel.Content>
+      </>
+    );
+  }
+
   if (isGettingOperation) {
-    return <LoadingState />;
+    return <SidePanel.LoadingState />;
   }
 
   return (
     <>
-      <SidePanel.Header>Update logs for mirror</SidePanel.Header>
+      {title}
       <SidePanel.Content>
         {logs ? (
           <>
@@ -85,9 +104,10 @@ const ViewLogsSidePanel: FC = () => {
             />
           </>
         ) : (
-          <Notification borderless severity="negative">
-            No logs available.
-          </Notification>
+          <Notification
+            severity="negative"
+            title="The last update attempt for the selected mirror had no logs."
+          />
         )}
       </SidePanel.Content>
     </>

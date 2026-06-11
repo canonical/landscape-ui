@@ -1,18 +1,16 @@
 import type { Operation } from "@/features/operations";
-import usePageParams from "@/hooks/usePageParams";
-import { Button } from "@canonical/react-components";
 import type { FC } from "react";
 import classes from "./OperationStatusCell.module.scss";
+import ViewLogsButton from "../ViewLogsButton";
 
 interface OperationStatusCellProps {
   readonly operation: Operation | undefined;
 }
 
 const OperationStatusCell: FC<OperationStatusCellProps> = ({ operation }) => {
-  const { createPageParamsSetter } = usePageParams();
-  const { status, progressPercent = 0 } = operation?.metadata ?? {};
+  const { status, resource, progressPercent = 0 } = operation?.metadata ?? {};
 
-  if (!operation || !status) {
+  if (!status) {
     return "Not yet updated";
   }
 
@@ -23,18 +21,8 @@ const OperationStatusCell: FC<OperationStatusCellProps> = ({ operation }) => {
   if (status === "failed") {
     return (
       <>
-        <span>Update failed</span>
-        <Button
-          className={classes.button}
-          type="button"
-          appearance="link"
-          onClick={createPageParamsSetter({
-            sidePath: ["logs"],
-            name: operation?.name,
-          })}
-        >
-          View logs
-        </Button>
+        <span className={classes.failedText}>Update failed</span>
+        <ViewLogsButton resource={resource} />
       </>
     );
   }
