@@ -1,5 +1,4 @@
 import type { FC } from "react";
-import { useEffect } from "react";
 import {
   ActionButton,
   Icon,
@@ -7,27 +6,14 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
-import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";
 import { FEEDBACK_LINK } from "@/constants";
 import classNames from "classnames";
 import { TOOLTIP_MESSAGE } from "./constants";
+import { useRedirectToClassicDashboard } from "@/hooks/useRedirectToClassicDashboard";
 
 const LandscapeActions: FC = () => {
-  const { getClassicDashboardUrlQuery } = useAuthHandle();
-
-  const {
-    data: getClassicDashboardUrlQueryResult,
-    refetch: refetchClassicDashboardUrl,
-    isFetching: isFetchingClassicDashboardUrl,
-  } = getClassicDashboardUrlQuery({}, { enabled: false });
-
-  useEffect(() => {
-    if (!getClassicDashboardUrlQueryResult) {
-      return;
-    }
-
-    redirectToExternalUrl(getClassicDashboardUrlQueryResult.data.url);
-  }, [getClassicDashboardUrlQueryResult]);
+  const { redirectToClassicDashboard, isRedirectingToClassicDashboard } =
+    useRedirectToClassicDashboard();
 
   return (
     <div className={classNames("is-fading-when-collapsed", classes.container)}>
@@ -52,8 +38,8 @@ const LandscapeActions: FC = () => {
             type="button"
             appearance="link"
             className="u-no-margin--bottom u-no-padding--top"
-            onClick={() => refetchClassicDashboardUrl()}
-            loading={isFetchingClassicDashboardUrl}
+            onClick={redirectToClassicDashboard}
+            loading={isRedirectingToClassicDashboard}
           >
             <span>Switch to classic dashboard</span>
           </ActionButton>
