@@ -10,51 +10,46 @@ import {
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import { useEffect } from "react";
 import { Link } from "react-router";
 import type { AddProviderParams } from "../../hooks";
 import { useAuthHandle } from "../../hooks";
-import type { IdentityProvider, SupportedIdentityProvider } from "../../types";
+import type {
+  IdentityProvider,
+  SingleIdentityProvider,
+  SupportedIdentityProvider,
+} from "../../types";
 import ProviderFormCta from "../ProviderFormCta";
-import {
-  INITIAL_VALUES,
-  SCOPES_DEFAULT_VALUES,
-  SCOPES_OPTIONS,
-} from "./constants";
+import { SCOPES_DEFAULT_VALUES, SCOPES_OPTIONS } from "./constants";
 import { getValidationSchema } from "./helpers";
 import classes from "./ProviderForm.module.scss";
 import type { ProviderFormValues } from "./types";
 import { useCopyToClipboard } from "usehooks-ts";
 import { getFormikError } from "@/utils/formikErrors";
 
-type ProvideFormProps =
-  | {
-      action: "add";
-      provider: SupportedIdentityProvider;
-    }
-  | {
-      action: "edit";
-      canBeDisabled: boolean;
-      provider: IdentityProvider;
-    };
+interface ProviderFormAddProps {
+  action: "add";
+  provider: SupportedIdentityProvider;
+}
 
-const ProviderForm: FC<ProvideFormProps> = (props) => {
-  const { action, provider } = props;
+interface ProviderFormEditProps {
+  action: "edit";
+  canBeDisabled: boolean;
+  provider: IdentityProvider;
+  singleProvider?: SingleIdentityProvider;
+}
+
+export type ProviderFormProps = {
+  readonly initialValues: ProviderFormValues;
+} & (ProviderFormAddProps | ProviderFormEditProps);
+
+const ProviderForm: FC<ProviderFormProps> = (props) => {
+  const { action, provider, initialValues } = props;
 
   const [, copy] = useCopyToClipboard();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const {
-    getSingleProviderQuery,
-    addProviderQuery,
-    updateProviderQuery,
-    toggleUbuntuOneQuery,
-  } = useAuthHandle();
-
-  const { data: getSingleProviderQueryResult } = getSingleProviderQuery(
-    { providerId: action === "edit" ? provider.id : 0 },
-    { enabled: action === "edit" && provider.provider !== "ubuntu-one" },
-  );
+  const { addProviderQuery, updateProviderQuery, toggleUbuntuOneQuery } =
+    useAuthHandle();
 
   const { mutateAsync: addProvider, isPending: isAdding } = addProviderQuery;
   const { mutateAsync: updateProvider, isPending: isUpdating } =
@@ -114,38 +109,13 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
   };
 
   const formik = useFormik({
-    initialValues: INITIAL_VALUES,
+    initialValues,
     onSubmit: handleSubmit,
     validationSchema: getValidationSchema(action === "edit" ? provider : null),
   });
 
-  useEffect(() => {
-    if (action !== "edit" || provider.provider !== "ubuntu-one") {
-      return;
-    }
-
-    formik.setFieldValue("enabled", provider.enabled);
-  }, [action, formik, provider]);
-
-  useEffect(() => {
-    if (!getSingleProviderQueryResult) {
-      return;
-    }
-
-    formik.setValues({
-      client_id: getSingleProviderQueryResult.data.configuration.client_id,
-      client_secret:
-        getSingleProviderQueryResult.data.configuration.client_secret,
-      enabled: getSingleProviderQueryResult.data.enabled,
-      issuer: getSingleProviderQueryResult.data.configuration.issuer,
-      name: getSingleProviderQueryResult.data.configuration.name,
-    });
-  }, [formik, getSingleProviderQueryResult]);
-
   const disabled =
-    action === "edit" &&
-    !props.canBeDisabled &&
-    getSingleProviderQueryResult?.data.enabled;
+    action === "edit" && !props.canBeDisabled && props.singleProvider?.enabled;
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -157,7 +127,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
             <code className={classes.url}>
               {action === "add"
                 ? provider.redirect_uri
-                : getSingleProviderQueryResult?.data.redirect_uri}
+                : props.singleProvider?.redirect_uri}
             </code>
             <Button
               className={classes.copyButton}
@@ -166,7 +136,7 @@ const ProviderForm: FC<ProvideFormProps> = (props) => {
                 copy(
                   action === "add"
                     ? (provider.redirect_uri ?? "")
-                    : (getSingleProviderQueryResult?.data.redirect_uri ?? ""),
+                    : (props.singleProvider?.redirect_uri ?? ""),
                 );
               }}
             >
