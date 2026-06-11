@@ -15,39 +15,33 @@ import { handleCellProps } from "./helpers";
 
 interface SnapsListProps {
   readonly installedSnaps: InstalledSnap[];
-  readonly selectedSnapIds: string[];
-  readonly setSelectedSnapIds: (items: string[]) => void;
+  readonly selectedSnaps: InstalledSnap[];
+  readonly setSelectedSnaps: (items: InstalledSnap[]) => void;
   readonly isSnapsLoading: boolean;
 }
 
 const SnapsList: FC<SnapsListProps> = ({
   installedSnaps,
-  selectedSnapIds,
+  selectedSnaps,
   isSnapsLoading,
-  setSelectedSnapIds,
+  setSelectedSnaps,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
   const handleSelectionChange = useCallback(
     (row: Row<InstalledSnap>) => {
-      if (selectedSnapIds.includes(row.original.snap.id)) {
-        setSelectedSnapIds(
-          selectedSnapIds.filter((id) => id !== row.original.snap.id),
-        );
+      if (selectedSnaps.includes(row.original)) {
+        setSelectedSnaps(selectedSnaps.filter((s) => s !== row.original));
       } else {
-        setSelectedSnapIds([...selectedSnapIds, row.original.snap.id]);
+        setSelectedSnaps([...selectedSnaps, row.original]);
       }
     },
-    [selectedSnapIds, setSelectedSnapIds],
+    [selectedSnaps, setSelectedSnaps],
   );
 
   const toggleAll = useCallback(() => {
-    setSelectedSnapIds(
-      selectedSnapIds.length !== 0
-        ? []
-        : installedSnaps.map(({ snap }) => snap.id),
-    );
-  }, [selectedSnapIds, installedSnaps, setSelectedSnapIds]);
+    setSelectedSnaps(selectedSnaps.length !== 0 ? [] : [...installedSnaps]);
+  }, [selectedSnaps, installedSnaps, setSelectedSnaps]);
 
   const handleShowSnapDetails = useCallback(
     (snap: InstalledSnap) => {
@@ -71,12 +65,12 @@ const SnapsList: FC<SnapsListProps> = ({
               inline
               onChange={toggleAll}
               checked={
-                selectedSnapIds.length === installedSnaps.length &&
+                selectedSnaps.length === installedSnaps.length &&
                 installedSnaps.length !== 0
               }
               indeterminate={
-                selectedSnapIds.length !== 0 &&
-                selectedSnapIds.length < installedSnaps.length
+                selectedSnaps.length !== 0 &&
+                selectedSnaps.length < installedSnaps.length
               }
             />
             <span>Name</span>
@@ -90,7 +84,7 @@ const SnapsList: FC<SnapsListProps> = ({
                 <span className="u-off-screen">{row.original.snap.name}</span>
               }
               inline
-              checked={selectedSnapIds.includes(row.original.snap.id)}
+              checked={selectedSnaps.includes(row.original)}
               onChange={() => {
                 handleSelectionChange(row);
               }}
@@ -166,7 +160,7 @@ const SnapsList: FC<SnapsListProps> = ({
       },
     ],
     [
-      selectedSnapIds,
+      selectedSnaps,
       installedSnaps,
       handleSelectionChange,
       handleShowSnapDetails,

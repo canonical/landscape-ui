@@ -45,7 +45,12 @@ describe("RefreshSnapForm", () => {
       renderRefreshSnapForm(multipleInstalledSnaps);
 
       expect(
-        screen.getByText(/update 4 snaps to the latest version/i),
+        screen.getByText(
+          new RegExp(
+            `update ${multipleInstalledSnaps.length} snaps to the latest version`,
+            "i",
+          ),
+        ),
       ).toBeInTheDocument();
     });
   });

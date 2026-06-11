@@ -45,7 +45,12 @@ describe("UninstallSnapForm", () => {
       renderUninstallSnapForm(multipleInstalledSnaps);
 
       expect(
-        screen.getByText(/this will remove 4 snaps from your system/i),
+        screen.getByText(
+          new RegExp(
+            `this will remove ${multipleInstalledSnaps.length} snaps from your system`,
+            "i",
+          ),
+        ),
       ).toBeInTheDocument();
     });
 

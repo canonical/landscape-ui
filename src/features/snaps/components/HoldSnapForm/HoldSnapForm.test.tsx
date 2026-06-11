@@ -53,7 +53,11 @@ describe("HoldSnapForm", () => {
     it("renders hold/unhold summary for mixed snap selection", () => {
       renderHoldSnapForm(multipleInstalledSnaps);
 
-      expect(screen.getByText(/you selected 4 snaps/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          new RegExp(`you selected ${multipleInstalledSnaps.length} snaps`, "i"),
+        ),
+      ).toBeInTheDocument();
     });
   });
 

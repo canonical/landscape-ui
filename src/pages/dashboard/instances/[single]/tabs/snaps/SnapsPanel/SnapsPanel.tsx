@@ -8,17 +8,16 @@ import {
   useGetInstalledSnaps,
 } from "@/features/snaps";
 import usePageParams from "@/hooks/usePageParams";
+import useSelection from "@/hooks/useSelection";
 import useSidePanel from "@/hooks/useSidePanel";
+import type { InstalledSnap } from "@/features/snaps";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { useState } from "react";
 import { useParams } from "react-router";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 const SnapsPanel: FC = () => {
-  const [selectedSnapIds, setSelectedSnapIds] = useState<string[]>([]);
-
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const { search, currentPage, pageSize } = usePageParams();
   const { setSidePanelContent } = useSidePanel();
@@ -36,12 +35,15 @@ const SnapsPanel: FC = () => {
     search: search,
   });
 
-  const handleEmptyStateInstall = () => {
-    setSidePanelContent("Install snaps", <InstallSnaps />);
-  };
+  const { selectedItems: selectedSnaps, setSelectedItems: setSelectedSnaps } =
+    useSelection<InstalledSnap>(installedSnaps, isLoading);
 
   const handleClearSelection = () => {
-    setSelectedSnapIds([]);
+    setSelectedSnaps([]);
+  };
+
+  const handleEmptyStateInstall = () => {
+    setSidePanelContent("Install snaps", <InstallSnaps />);
   };
 
   return (
@@ -71,15 +73,12 @@ const SnapsPanel: FC = () => {
         installedSnaps.length > 0) && (
         <>
           <SnapsHeader
-            selectedSnapIds={selectedSnapIds}
-            installedSnaps={installedSnaps}
+            selectedSnaps={selectedSnaps}
             handleClearSelection={handleClearSelection}
           />
           <SnapsList
-            selectedSnapIds={selectedSnapIds}
-            setSelectedSnapIds={(items) => {
-              setSelectedSnapIds(items);
-            }}
+            selectedSnaps={selectedSnaps}
+            setSelectedSnaps={setSelectedSnaps}
             installedSnaps={installedSnaps}
             isSnapsLoading={isLoading}
           />

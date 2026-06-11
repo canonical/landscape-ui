@@ -16,6 +16,7 @@ import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
 import type { InstalledSnap } from "../../types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import type { SnapFormValues } from "./types";
 
 interface RefreshSnapFormProps {
   readonly installedSnaps: InstalledSnap[];
@@ -30,7 +31,7 @@ const RefreshSnapForm: FC<RefreshSnapFormProps> = ({ installedSnaps }) => {
 
   const instanceId = Number(urlInstanceId);
 
-  const formik = useFormik({
+  const formik = useFormik<SnapFormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {

@@ -18,6 +18,7 @@ import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
 import type { AvailableSnapInfo, InstalledSnap } from "../../types";
 import { VALIDATION_SCHEMA } from "./constants";
+import type { SwitchFormValues } from "./types";
 import {
   getChannelName,
   getChannelOptions,
@@ -47,7 +48,7 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
   const hasNoAvailableChannels =
     !!snapInfo && snapInfo["channel-map"].length === 0;
 
-  const formik = useFormik({
+  const formik = useFormik<SwitchFormValues>({
     initialValues: getInitialValues(channelOptions),
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {

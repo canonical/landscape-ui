@@ -17,6 +17,7 @@ import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
 import type { InstalledSnap } from "../../types";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
+import type { SnapFormValues } from "./types";
 
 interface UnholdSnapFormProps {
   readonly installedSnaps: InstalledSnap[];
@@ -34,7 +35,7 @@ const UnholdSnapForm: FC<UnholdSnapFormProps> = ({ installedSnaps }) => {
   const heldSnaps = installedSnaps.filter((s) => s.held_until !== null);
   const unheldSnaps = installedSnaps.filter((s) => s.held_until === null);
 
-  const formik = useFormik({
+  const formik = useFormik<SnapFormValues>({
     initialValues: INITIAL_VALUES,
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {

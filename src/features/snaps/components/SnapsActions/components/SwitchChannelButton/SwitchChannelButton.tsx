@@ -8,6 +8,7 @@ import { useParams } from "react-router";
 import { useGetSnapInfo } from "../../../../api";
 import type { InstalledSnap } from "../../../../types";
 import { getSnapName } from "../../helpers";
+import { getSwitchChannelTooltip } from "./helpers";
 
 const SwitchSnapForm = lazy(() => import("../../../SwitchSnapForm"));
 
@@ -34,9 +35,7 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
 
   const isDisabled = isSnapInfoLoading || !snapInfo || hasNoAvailableChannels;
 
-  const tooltip = isDisabled
-    ? "No available channels to switch to."
-    : undefined;
+  const tooltip = getSwitchChannelTooltip(isSnapInfoLoading, hasNoAvailableChannels);
 
   const handleClick = () => {
     if (isDisabled) {

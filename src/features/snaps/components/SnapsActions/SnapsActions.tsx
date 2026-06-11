@@ -4,7 +4,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { getSelectedSnaps, getSnapName } from "./helpers";
+import { getSnapName } from "./helpers";
 import type { InstalledSnap } from "../../types";
 import SwitchChannelButton from "./components/SwitchChannelButton";
 import classes from "./SnapActions.module.scss";
@@ -16,19 +16,17 @@ const UnholdSnapForm = lazy(() => import("../UnholdSnapForm"));
 const UninstallSnapForm = lazy(() => import("../UninstallSnapForm"));
 
 interface SnapsActionProps {
-  readonly selectedSnapIds: string[];
-  readonly installedSnaps: InstalledSnap[];
+  readonly selectedSnaps: InstalledSnap[];
   readonly sidePanel?: boolean;
 }
+
 const SnapsActions: FC<SnapsActionProps> = ({
-  selectedSnapIds,
-  installedSnaps,
+  selectedSnaps,
   sidePanel = false,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const singleSnap = installedSnaps.length === 1 ? installedSnaps[0] : null;
-  const selectedSnaps = getSelectedSnaps(installedSnaps, selectedSnapIds);
+  const singleSnap = selectedSnaps.length === 1 ? selectedSnaps[0] : null;
   const unheldSnaps = selectedSnaps.filter((s) => s.held_until === null);
   const heldSnaps = selectedSnaps.filter((s) => s.held_until !== null);
 
@@ -54,7 +52,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
     setSidePanelContent(
       `Hold ${getSnapName(unheldSnaps)}`,
       <Suspense fallback={<LoadingState />}>
-        <HoldSnapForm installedSnaps={selectedSnaps} />
+        <HoldSnapForm installedSnaps={unheldSnaps} />
       </Suspense>,
     );
   };
@@ -63,7 +61,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
     setSidePanelContent(
       `Unhold ${getSnapName(heldSnaps)}`,
       <Suspense fallback={<LoadingState />}>
-        <UnholdSnapForm installedSnaps={selectedSnaps} />
+        <UnholdSnapForm installedSnaps={heldSnaps} />
       </Suspense>,
     );
   };
@@ -104,7 +102,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             type="button"
             key="uninstall"
             className="p-segmented-control__button has-icon u-no-margin--bottom"
-            disabled={0 === selectedSnapIds.length}
+            disabled={selectedSnaps.length === 0}
             onClick={handleUninstall}
             hasIcon
           >
@@ -141,7 +139,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
             key="refresh"
             type="button"
             className="p-segmented-control__button has-icon u-no-margin--bottom"
-            disabled={0 === selectedSnapIds.length}
+            disabled={selectedSnaps.length === 0}
             onClick={handleRefresh}
             hasIcon
           >
