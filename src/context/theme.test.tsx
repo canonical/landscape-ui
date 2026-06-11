@@ -1,26 +1,41 @@
-import { render, screen, act } from "@testing-library/react";
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import ThemeProvider, { useTheme, LS_KEY } from "./theme";
+import { act, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Theme } from "./theme";
+import ThemeProvider, { LS_KEY, useTheme } from "./theme";
+
+const mockSystemDark = (matches: boolean) => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    configurable: true,
+    value: (query: string) => ({
+      matches: query === "(prefers-color-scheme: dark)" && matches,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }),
+  });
+};
 
 const TestConsumer = () => {
-  const { isDarkMode, set } = useTheme();
+  const { isDarkMode, theme, setTheme } = useTheme();
   return (
     <div>
       <span data-testid="mode">{isDarkMode ? "dark" : "light"}</span>
-      <button
-        onClick={() => {
-          set(true);
-        }}
-      >
-        Set Dark
-      </button>
-      <button
-        onClick={() => {
-          set(false);
-        }}
-      >
-        Set Light
-      </button>
+      <span data-testid="theme">{theme}</span>
+      {(["light", "dark", "system"] as Theme[]).map((value) => (
+        <button
+          key={value}
+          onClick={() => {
+            setTheme(value);
+          }}
+        >
+          {`Set ${value}`}
+        </button>
+      ))}
     </div>
   );
 };
@@ -38,7 +53,35 @@ describe("ThemeProvider", () => {
     document.body.style.colorScheme = "";
   });
 
-  it("defaults to light mode when no saved preference", () => {
+  it("defaults to the system theme when no saved preference", () => {
+    render(
+      <ThemeProvider>
+        <TestConsumer />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByTestId("theme")).toHaveTextContent("system");
+    expect(screen.getByTestId("mode")).toHaveTextContent("light");
+  });
+
+  it("follows a dark system preference when the theme is system", () => {
+    mockSystemDark(true);
+
+    render(
+      <ThemeProvider>
+        <TestConsumer />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByTestId("theme")).toHaveTextContent("system");
+    expect(screen.getByTestId("mode")).toHaveTextContent("dark");
+    expect(document.body.classList.contains("is-dark")).toBe(true);
+  });
+
+  it("ignores a dark system preference when the theme is light", () => {
+    mockSystemDark(true);
+    localStorage.setItem(LS_KEY, "light");
+
     render(
       <ThemeProvider>
         <TestConsumer />
@@ -48,7 +91,33 @@ describe("ThemeProvider", () => {
     expect(screen.getByTestId("mode")).toHaveTextContent("light");
   });
 
-  it("reads dark mode from localStorage", () => {
+  it("reads the dark theme from localStorage", () => {
+    localStorage.setItem(LS_KEY, "dark");
+
+    render(
+      <ThemeProvider>
+        <TestConsumer />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByTestId("theme")).toHaveTextContent("dark");
+    expect(screen.getByTestId("mode")).toHaveTextContent("dark");
+  });
+
+  it("reads the light theme from localStorage", () => {
+    localStorage.setItem(LS_KEY, "light");
+
+    render(
+      <ThemeProvider>
+        <TestConsumer />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByTestId("theme")).toHaveTextContent("light");
+    expect(screen.getByTestId("mode")).toHaveTextContent("light");
+  });
+
+  it("migrates the legacy dark mode value", () => {
     localStorage.setItem(LS_KEY, "true");
 
     render(
@@ -57,10 +126,11 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
 
+    expect(screen.getByTestId("theme")).toHaveTextContent("dark");
     expect(screen.getByTestId("mode")).toHaveTextContent("dark");
   });
 
-  it("reads light mode from localStorage", () => {
+  it("migrates the legacy light mode value", () => {
     localStorage.setItem(LS_KEY, "false");
 
     render(
@@ -69,10 +139,23 @@ describe("ThemeProvider", () => {
       </ThemeProvider>,
     );
 
+    expect(screen.getByTestId("theme")).toHaveTextContent("light");
     expect(screen.getByTestId("mode")).toHaveTextContent("light");
   });
 
-  it("toggling to dark mode adds the is-dark class to body", async () => {
+  it("falls back to the system theme for an unknown saved value", () => {
+    localStorage.setItem(LS_KEY, "unknown");
+
+    render(
+      <ThemeProvider>
+        <TestConsumer />
+      </ThemeProvider>,
+    );
+
+    expect(screen.getByTestId("theme")).toHaveTextContent("system");
+  });
+
+  it("setting the dark theme adds the is-dark class to body", async () => {
     render(
       <ThemeProvider>
         <TestConsumer />
@@ -80,15 +163,15 @@ describe("ThemeProvider", () => {
     );
 
     await act(async () => {
-      screen.getByText("Set Dark").click();
+      screen.getByText("Set dark").click();
     });
 
     expect(document.body.classList.contains("is-dark")).toBe(true);
     expect(document.body.style.colorScheme).toBe("dark");
   });
 
-  it("toggling to light mode removes the is-dark class from body", async () => {
-    localStorage.setItem(LS_KEY, "true");
+  it("setting the light theme removes the is-dark class from body", async () => {
+    localStorage.setItem(LS_KEY, "dark");
 
     render(
       <ThemeProvider>
@@ -97,14 +180,14 @@ describe("ThemeProvider", () => {
     );
 
     await act(async () => {
-      screen.getByText("Set Light").click();
+      screen.getByText("Set light").click();
     });
 
     expect(document.body.classList.contains("is-dark")).toBe(false);
     expect(document.body.style.colorScheme).toBe("light");
   });
 
-  it("persists dark mode preference to localStorage", async () => {
+  it("persists the theme preference to localStorage", async () => {
     render(
       <ThemeProvider>
         <TestConsumer />
@@ -112,26 +195,16 @@ describe("ThemeProvider", () => {
     );
 
     await act(async () => {
-      screen.getByText("Set Dark").click();
+      screen.getByText("Set dark").click();
     });
 
-    expect(localStorage.getItem(LS_KEY)).toBe("true");
-  });
-
-  it("persists light mode preference to localStorage", async () => {
-    localStorage.setItem(LS_KEY, "true");
-
-    render(
-      <ThemeProvider>
-        <TestConsumer />
-      </ThemeProvider>,
-    );
+    expect(localStorage.getItem(LS_KEY)).toBe("dark");
 
     await act(async () => {
-      screen.getByText("Set Light").click();
+      screen.getByText("Set system").click();
     });
 
-    expect(localStorage.getItem(LS_KEY)).toBe("false");
+    expect(localStorage.getItem(LS_KEY)).toBe("system");
   });
 
   it("renders children", () => {
@@ -144,23 +217,23 @@ describe("ThemeProvider", () => {
     expect(screen.getByTestId("child")).toBeInTheDocument();
   });
 
-  it("default context set function is a no-op when called without provider", () => {
+  it("default context setTheme function is a no-op when called without provider", () => {
     const TestDefault = () => {
-      const { set } = useTheme();
+      const { setTheme } = useTheme();
       return (
         <button
           onClick={() => {
-            set(true);
+            setTheme("dark");
           }}
         >
-          call set
+          call setTheme
         </button>
       );
     };
 
     render(<TestDefault />);
     expect(() => {
-      screen.getByText("call set").click();
+      screen.getByText("call setTheme").click();
     }).not.toThrow();
   });
 });

@@ -1,0 +1,12 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+// Match the spacing of Vanilla's global form label styles
+.label {
+  display: block;
+  margin-bottom: $spv--large - $spv-nudge;
+  padding-top: $spv-nudge;
+}
+
+.help {
+  margin-top: $spv--small;
+}

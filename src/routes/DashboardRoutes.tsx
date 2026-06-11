@@ -5,7 +5,6 @@ import { FeatureGuard } from "@/components/guards/FeatureGuard";
 import * as Pages from "@/routes/elements";
 import SecondaryNavigation from "@/templates/dashboard/SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/constants";
-import DarkModeSwitch from "@/templates/dashboard/SecondaryNavigation/components/DarkModeSwitch";
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
@@ -183,9 +182,7 @@ export const DashboardRoutes = (
               <SecondaryNavigation
                 title={ACCOUNT_SETTINGS.label}
                 items={ACCOUNT_SETTINGS.items}
-              >
-                <DarkModeSwitch />
-              </SecondaryNavigation>
+              />
               <div className={classes.pageContent}>
                 <Outlet />
               </div>

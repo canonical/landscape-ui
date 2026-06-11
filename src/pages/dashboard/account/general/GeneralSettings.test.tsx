@@ -31,6 +31,8 @@ describe("GeneralSettings", () => {
       screen.queryByRole("textbox", { name: /name/i }),
     ).not.toBeInTheDocument();
 
+    expect(screen.getByRole("tablist", { name: "Theme" })).toBeInTheDocument();
+
     expect(screen.queryByText("listed from")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: /ubuntu one/i }),
@@ -77,6 +79,7 @@ describe("GeneralSettings", () => {
 
     expect(screen.getByText("General")).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /name/i })).toBeInTheDocument();
+    expect(screen.getByRole("tablist", { name: "Theme" })).toBeInTheDocument();
 
     expect(screen.queryByText("listed from")).not.toBeInTheDocument();
     expect(

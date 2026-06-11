@@ -11,6 +11,7 @@ import { Button, Form, Input, Link, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
+import ThemeSwitcher from "../ThemeSwitcher";
 import { useUserGeneralSettings } from "../../hooks";
 import type { UserDetails } from "../../types";
 import { TIMEZONE_OPTIONS, VALIDATION_SCHEMA } from "./constants";
@@ -192,6 +193,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
           error={getFormikError(formik, "preferred_account")}
         />
       )}
+      <ThemeSwitcher />
       <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
         <Button
           className="u-no-margin--bottom"
