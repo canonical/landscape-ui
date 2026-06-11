@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS } from "@canonical/react-components";
-import type { FC, ReactNode } from "react";
+import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { getSelectedSnaps, getSnapName } from "./helpers";
 import type { InstalledSnap } from "../../types";
@@ -32,13 +32,6 @@ const SnapsActions: FC<SnapsActionProps> = ({
   const unheldSnaps = selectedSnaps.filter((s) => s.held_until === null);
   const heldSnaps = selectedSnaps.filter((s) => s.held_until !== null);
 
-  const openPanel = (title: string, form: ReactNode) => {
-    setSidePanelContent(
-      title,
-      <Suspense fallback={<LoadingState />}>{form}</Suspense>,
-    );
-  };
-
   const handleInstall = () => {
     setSidePanelContent(
       "Install snaps",
@@ -49,7 +42,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleUninstall = () => {
-    openPanel(
+    setSidePanelContent(
       `Uninstall ${getSnapName(selectedSnaps)}`,
       <Suspense fallback={<LoadingState />}>
         <UninstallSnapForm installedSnaps={selectedSnaps} />
@@ -58,7 +51,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleHold = () => {
-    openPanel(
+    setSidePanelContent(
       `Hold ${getSnapName(unheldSnaps)}`,
       <Suspense fallback={<LoadingState />}>
         <HoldSnapForm installedSnaps={selectedSnaps} />
@@ -67,7 +60,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleUnhold = () => {
-    openPanel(
+    setSidePanelContent(
       `Unhold ${getSnapName(heldSnaps)}`,
       <Suspense fallback={<LoadingState />}>
         <UnholdSnapForm installedSnaps={selectedSnaps} />
@@ -76,7 +69,7 @@ const SnapsActions: FC<SnapsActionProps> = ({
   };
 
   const handleRefresh = () => {
-    openPanel(
+    setSidePanelContent(
       `Refresh ${getSnapName(selectedSnaps)}`,
       <Suspense fallback={<LoadingState />}>
         <RefreshSnapForm installedSnaps={selectedSnaps} />

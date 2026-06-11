@@ -7,8 +7,8 @@ export const getChannelOptions = (
   snapInfo: AvailableSnapInfo | null,
 ): SelectOption[] => {
   if (!snapInfo) return [];
-  return snapInfo["channel-map"]
-    .toSorted((a, b) =>
+  return [...snapInfo["channel-map"]]
+    .sort((a, b) =>
       a.channel.architecture.localeCompare(b.channel.architecture),
     )
     .map((channel) => ({

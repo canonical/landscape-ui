@@ -26,7 +26,7 @@ export const useGetSnapInfo = (
     queryKey: ["snaps", "info", { ...params }],
     queryFn: async () =>
       authFetch.get(
-        `computers/${params.instance_id}/snaps/${params.name}/info`,
+        `computers/${params.instance_id}/snaps/${encodeURIComponent(params.name)}/info`,
       ),
     ...options,
   });

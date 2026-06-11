@@ -24,7 +24,7 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
   const { setSidePanelContent } = useSidePanel();
   const instanceId = Number(urlInstanceId);
 
-  const { snapInfo } = useGetSnapInfo({
+  const { snapInfo, isSnapInfoLoading } = useGetSnapInfo({
     instance_id: instanceId,
     name: snap.snap.name,
   });
@@ -32,12 +32,14 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
   const hasNoAvailableChannels =
     !!snapInfo && snapInfo["channel-map"].length === 0;
 
+  const isDisabled = isSnapInfoLoading || !snapInfo || hasNoAvailableChannels;
+
   const tooltip = hasNoAvailableChannels
     ? "No available channels to switch to."
     : undefined;
 
   const handleClick = () => {
-    if (!snapInfo) {
+    if (isDisabled) {
       return;
     }
 
@@ -53,7 +55,7 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
     <Button
       type="button"
       className="p-segmented-control__button has-icon u-no-margin--bottom"
-      disabled={hasNoAvailableChannels}
+      disabled={isDisabled}
       onClick={handleClick}
       hasIcon
     >
