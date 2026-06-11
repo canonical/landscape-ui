@@ -35,7 +35,10 @@ const SwitchChannelButton: FC<SwitchChannelButtonProps> = ({
 
   const isDisabled = isSnapInfoLoading || !snapInfo || hasNoAvailableChannels;
 
-  const tooltip = getSwitchChannelTooltip(isSnapInfoLoading, hasNoAvailableChannels);
+  const tooltip = getSwitchChannelTooltip(
+    isSnapInfoLoading,
+    hasNoAvailableChannels,
+  );
 
   const handleClick = () => {
     if (isDisabled) {

@@ -55,7 +55,10 @@ describe("HoldSnapForm", () => {
 
       expect(
         screen.getByText(
-          new RegExp(`you selected ${multipleInstalledSnaps.length} snaps`, "i"),
+          new RegExp(
+            `you selected ${multipleInstalledSnaps.length} snaps`,
+            "i",
+          ),
         ),
       ).toBeInTheDocument();
     });
