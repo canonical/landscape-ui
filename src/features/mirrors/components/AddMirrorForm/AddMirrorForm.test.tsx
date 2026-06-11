@@ -55,10 +55,11 @@ describe("AddMirrorForm", () => {
   it("shows success notification with Update mirror action", async () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      screen.getByText(`You have successfully added Name`),
-    ).toBeInTheDocument();
+    const notification = await screen.findByText(/You have successfully added Name/i);
+    expect(notification).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Update mirror" }));
+
+    expect(notification).not.toBeInTheDocument();
 
     const location = screen.getByTestId("location");
     expect(location).toHaveTextContent("sidePath=view");
