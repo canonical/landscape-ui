@@ -24,6 +24,7 @@ import {
   instances,
   pendingInstances,
 } from "@/tests/mocks/instance";
+import { getHealthFixture } from "@/tests/mocks/health";
 import { userGroups } from "@/tests/mocks/userGroup";
 import type {
   Instance,
@@ -152,6 +153,14 @@ export default [
     const endpointStatus = getEndpointStatus();
     const offset = Number(url.searchParams.get("offset")) || 0;
     const limit = Number(url.searchParams.get("limit")) || 1;
+    // LA061: categorical health-band filter. Comma-separated, e.g. "critical,warning".
+    const healthBandRaw = url.searchParams.get("health_band") || "";
+    const healthBandSet = new Set(
+      healthBandRaw ? healthBandRaw.split(",") : [],
+    );
+    // LA061 Phase 1.7: fold the inline health snapshot into each row so the
+    // UI list view doesn't fall back to per-id requests.
+    const withHealth = url.searchParams.get("with_health") === "true";
 
     if (shouldApplyEndpointStatus("computers")) {
       const { status } = getEndpointStatus();
@@ -160,15 +169,63 @@ export default [
       }
     }
 
-    return (
-      matchComputersQuery(query, endpointStatus, limit, offset) ??
-      HttpResponse.json(
-        generatePaginatedResponse<Instance>({
-          data: instances,
-          limit,
-          offset,
-        }),
-      )
+    const filterByHealthBand = (data: Instance[]): Instance[] => {
+      if (healthBandSet.size === 0) return data;
+      const { computers: healthByComputer } = getHealthFixture();
+      const idsInBand = new Set(
+        healthByComputer
+          .filter((h) => healthBandSet.has(h.band))
+          .map((h) => h.computer_id),
+      );
+      return data.filter((instance) => idsInBand.has(instance.id));
+    };
+
+    const enrichWithHealth = (data: Instance[]): Instance[] => {
+      if (!withHealth) return data;
+      const { computers: healthByComputer } = getHealthFixture();
+      const byId = new Map(
+        healthByComputer.map((h) => [h.computer_id, h]),
+      );
+      return data.map((instance) => {
+        const h = byId.get(instance.id);
+        // Mirror the real server: computers without a state row get the
+        // 100/healthy placeholder.
+        const snapshot = h
+          ? {
+              score: h.score,
+              band: h.band,
+              critical_factor_count: h.critical_factor_count,
+              factors: h.factors,
+              recommended_actions: h.recommended_actions ?? [],
+              updated_at: h.updated_at ?? null,
+            }
+          : {
+              score: 100,
+              band: "healthy" as const,
+              critical_factor_count: 0,
+              factors: [],
+              recommended_actions: [],
+              updated_at: null,
+            };
+        return { ...instance, health: snapshot };
+      });
+    };
+
+    const queryMatch = matchComputersQuery(
+      query,
+      endpointStatus,
+      limit,
+      offset,
+    );
+    if (queryMatch) {
+      return queryMatch;
+    }
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({
+        data: enrichWithHealth(filterByHealthBand(instances)),
+        limit,
+        offset,
+      }),
     );
   }),
 

@@ -24,6 +24,13 @@ export interface GetInstancesParams {
   with_upgrades?: boolean;
   with_wsl_profiles?: boolean;
   with_release_upgrades?: boolean;
+  // LA061: categorical band filter (`critical,warning,healthy`). Server-side
+  // joins `computer_health_state` to filter the result set.
+  health_band?: string;
+  // LA061 Phase 1.7: include the LA061 health snapshot (score, band, factors,
+  // recommended_actions) per row in one batched join. Avoids firing N
+  // per-row HTTP requests from the UI list view.
+  with_health?: boolean;
 }
 
 export const useGetInstances = (

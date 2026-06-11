@@ -16,6 +16,7 @@ export interface PageParams {
   disabledColumns: string[];
   fromDate: string;
   groupBy: string;
+  healthBand: string[];
   os: string;
   pageSize: number;
   search: string;

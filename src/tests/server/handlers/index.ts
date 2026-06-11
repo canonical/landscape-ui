@@ -11,6 +11,7 @@ import availabilityZones from "./availabilityZones";
 import employees from "./employees";
 import eventsLog from "./eventsLog";
 import features from "./features";
+import health from "./health";
 import instance from "./instance";
 import invitations from "./invitations";
 import kernel from "./kernel";
@@ -90,4 +91,5 @@ export default [
   ...wsl,
   ...wslProfiles,
   ...features,
+  ...health,
 ];

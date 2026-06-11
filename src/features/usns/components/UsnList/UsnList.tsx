@@ -265,6 +265,13 @@ const UsnList: FC<UsnListProps> = ({
           accessor: "computers_count",
           Header: "Affected instances",
           Cell: ({ column, row: { index, original } }: CellProps<Usn>) => {
+            // No affected instances → no list to expand. Render plain
+            // text so the row doesn't advertise a drill-down that opens
+            // an empty table.
+            if (original.computers_count === 0) {
+              return <span>0</span>;
+            }
+
             const isExpandedInstancesCell =
               expandedCell?.column === column.id && expandedCell?.row === index;
 

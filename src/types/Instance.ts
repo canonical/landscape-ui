@@ -197,6 +197,24 @@ export interface InstanceWithoutRelation extends Record<string, unknown> {
   upgrades?: InstanceUpgrades;
   wsl_profiles?: Profile[];
   has_release_upgrades: boolean;
+  // LA061 Phase 1.7: optional batched health snapshot folded in by the
+  // server when `with_health=true` is passed to GET /computers. The HealthCell
+  // prefers this over firing a per-row request to /computers/{id}/health.
+  health?: InstanceHealth;
+}
+
+export interface InstanceHealth {
+  score: number;
+  band: "critical" | "warning" | "healthy";
+  critical_factor_count: number;
+  factors: {
+    rule_id: number;
+    rule_key: string;
+    description: string;
+    points: number;
+  }[];
+  recommended_actions: string[];
+  updated_at: string | null;
 }
 
 type WithRelation<T extends InstanceWithoutRelation> = T & {

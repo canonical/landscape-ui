@@ -1,0 +1,32 @@
+@import "vanilla-framework/scss/settings_colors";
+
+/* Mirrors the Vanilla `.p-badge` geometry so the chip sits neatly next to */
+/* a tab label, alongside the stock `Badge` used by other tabs. */
+.badge {
+  border-radius: 999rem;
+  display: inline-block;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 0.375rem;
+  min-width: 1.5rem;
+  padding: 0.1875rem 0.4375rem;
+  text-align: center;
+  vertical-align: baseline;
+}
+
+.band_critical {
+  background: $color-negative;
+  color: $color-x-light;
+}
+
+.band_warning {
+  background: $color-caution;
+  color: $color-dark;
+}
+
+.band_healthy {
+  background: $color-positive;
+  color: $color-x-light;
+}

@@ -1,0 +1,29 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.trigger {
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0;
+  text-align: left;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-link;
+    outline-offset: 2px;
+  }
+
+  &:hover:not(:disabled) {
+    background: rgba($color-mid-light, 0.18);
+  }
+}
+
+.notMeasurable {
+  cursor: help;
+  display: inline-block;
+}

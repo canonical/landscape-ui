@@ -10,3 +10,42 @@
     flex-direction: row;
   }
 }
+
+/* LA061 Phase 1.8: three-row dashboard when the health feature is on.
+ *   Row 1 — 2fr hero (Fleet health gauge + bands) | 1fr Top issues now
+ *   Row 2 — RemediationPile (3 cards side by side, governed by the
+ *           widget's own grid)
+ *   Row 3 — 1fr Health by group | 1fr Top detractors
+ * Each row stacks to a single column on narrower viewports. */
+.healthDashboard {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-medium;
+}
+
+.heroRow {
+  display: grid;
+  gap: $sp-medium;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  /* `stretch` so the Top Issues card matches the hero's height on wider */
+  /* viewports; the list inside scrolls when there are more rows than fit. */
+  align-items: stretch;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+    /* Back to natural heights when stacked — equal-height makes no sense */
+    /* when the cards are full-width siblings, not row neighbours. */
+    align-items: start;
+  }
+}
+
+.splitRow {
+  display: grid;
+  gap: $sp-medium;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}

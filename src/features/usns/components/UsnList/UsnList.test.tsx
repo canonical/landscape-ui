@@ -227,4 +227,29 @@ describe("UsnList", () => {
 
     expect(onSelectedUsnsChange).toHaveBeenCalledWith([]);
   });
+
+  it("does not render an expand button on the affected-instances cell when computers_count is 0", () => {
+    const [base] = mockedUsns;
+    assert(base);
+    const usnWithNoComputers = { ...base, computers_count: 0 };
+    render(
+      <UsnList
+        {...expandableProps}
+        usns={[usnWithNoComputers]}
+        totalUsnCount={1}
+      />,
+    );
+
+    // The Affected instances column previously rendered a Button with
+    // "0" inside, which expanded to an empty list. Now it renders the
+    // count as plain text — the row no longer advertises a drill-down.
+    const buttons = screen.queryAllByRole("button", { name: "0" });
+    expect(buttons).toHaveLength(0);
+    // The count itself is still shown.
+    const row = screen.getAllByRole("row").find(
+      ({ textContent }) => textContent?.includes(usnWithNoComputers.usn),
+    );
+    assert(row);
+    expect(row).toHaveTextContent("0");
+  });
 });

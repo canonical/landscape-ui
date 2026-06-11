@@ -230,6 +230,15 @@ export const FILTERS = {
   },
 } as const satisfies Record<FilterKey, ListFilter>;
 
+// LA061: categorical health-band filter, used when `health` is on instead of
+// the legacy Status filter. Values map 1:1 to the server's HealthBand enum
+// and the UI's `useFleetHealthSummary` counters.
+export const HEALTH_BAND_OPTIONS = [
+  { label: "Critical", value: "critical" },
+  { label: "Warning", value: "warning" },
+  { label: "Healthy", value: "healthy" },
+] as const;
+
 export const REBOOT_OR_SHUT_DOWN_INITIAL_VALUES = {
   deliver_after: "",
   deliverImmediately: true,

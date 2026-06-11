@@ -176,4 +176,98 @@ describe("Upgrades", () => {
       await screen.findByText("You queued packages to be upgraded"),
     ).toBeInTheDocument();
   });
+
+  it("opens on the tab named by initialTabId when provided", () => {
+    renderWithProviders(
+      <Upgrades selectedInstances={instances} initialTabId="tab-link-packages" />,
+    );
+    expect(screen.getByRole("tab", { name: /packages/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByRole("tabpanel")).toHaveAttribute(
+      "aria-labelledby",
+      "tab-link-packages",
+    );
+  });
+
+  describe("trustSelection", () => {
+    // Instances stripped of every alert so the default alerts-based filter
+    // (`hasUpgrades` / `hasSecurityUpgrades`) would normally drop them all.
+    // With `trustSelection`, the caller is asserting that these are already
+    // the right set — `<Upgrades>` must not re-filter.
+    const noAlertInstances = instances.map((instance) => ({
+      ...instance,
+      alerts: [],
+    }));
+
+    it("defaults the active tab to USNs", () => {
+      renderWithProviders(
+        <Upgrades selectedInstances={noAlertInstances} trustSelection />,
+      );
+      expect(screen.getByRole("tab", { name: /usns/i })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      expect(screen.getByRole("tabpanel")).toHaveAttribute(
+        "aria-labelledby",
+        "tab-link-usns",
+      );
+    });
+
+    it("swaps the UpgradeInfo header for the simpler trusted-selection line", () => {
+      renderWithProviders(
+        <Upgrades selectedInstances={noAlertInstances} trustSelection />,
+      );
+      // The alerts-based UpgradeInfo would say "No upgrades needed for N
+      // instances" for these alert-less inputs; trustSelection must replace
+      // that header with the health-engine-friendly summary line.
+      expect(
+        screen.getByText(/Applying open Ubuntu security notices to/i),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/No upgrades needed for/i),
+      ).not.toBeInTheDocument();
+    });
+
+    it("keeps the USNs tab and trusts the caller's selection as the USN-affected set", async () => {
+      renderWithProviders(
+        <Upgrades selectedInstances={noAlertInstances} trustSelection />,
+      );
+      // Without trustSelection, `instancesWithUsn` would be empty and the
+      // USNs tab would be filtered out of the tablist. With trustSelection,
+      // the tab must remain.
+      expect(screen.getByRole("tab", { name: /usns/i })).toBeInTheDocument();
+      expect(
+        await screen.findByText(/Showing \d of \d+ security issues/i),
+      ).toBeInTheDocument();
+    });
+
+    it("submits to the USNs endpoint with the trusted selection", async () => {
+      const user = userEvent.setup();
+      renderWithProviders(
+        <Upgrades selectedInstances={noAlertInstances} trustSelection />,
+      );
+      await user.click(screen.getByRole("button", { name: "Upgrade" }));
+      // Existing tests already cover that this notification comes from the
+      // USNs submission path; reuse it as the success signal here.
+      expect(
+        await screen.findByText("You queued packages to be upgraded"),
+      ).toBeInTheDocument();
+    });
+
+    it("honours an explicit initialTabId override when trustSelection is set", () => {
+      renderWithProviders(
+        <Upgrades
+          selectedInstances={noAlertInstances}
+          trustSelection
+          initialTabId="tab-link-instances"
+        />,
+      );
+      expect(screen.getByRole("tab", { name: /instances/i })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+    });
+  });
 });

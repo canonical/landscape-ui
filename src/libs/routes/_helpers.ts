@@ -24,7 +24,7 @@ const buildUrl = <T extends Record<string, PathParamValue>>(
     return resolvedPath;
   }
 
-  const qs = new URLSearchParams();
+  const parts: string[] = [];
 
   Object.entries(queryParams).forEach(([key, value]) => {
     if (value == null) {
@@ -32,23 +32,32 @@ const buildUrl = <T extends Record<string, PathParamValue>>(
     }
 
     if (Array.isArray(value)) {
-      value.forEach((item) => {
-        if (item == null) {
-          return;
-        }
-
-        qs.append(key, String(item));
-      });
+      // Comma-join array-typed params (`healthBand`, `tags`, `accessGroups`,
+      // …) — `pageParamsManager` reads them with `searchParams.get(key)`
+      // followed by `.split(",")`, so a multi-param URL
+      // (`?healthBand=critical&healthBand=warning`) collapses to just the
+      // first value when the page parses it. Comma-joining keeps deep links
+      // round-trippable. We assemble the query string by hand here because
+      // `URLSearchParams` would percent-encode the comma (`%2C`); the
+      // pageParamsManager handles either form, but the literal-comma URL is
+      // what callers asked for and reads better in address bars / logs.
+      const items = value.filter((item) => item != null).map(String);
+      if (items.length > 0) {
+        parts.push(
+          `${encodeURIComponent(key)}=${items.map(encodeURIComponent).join(",")}`,
+        );
+      }
     } else {
-      qs.append(key, String(value));
+      parts.push(
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`,
+      );
     }
   });
 
-  if (qs.toString()) {
-    return `${resolvedPath}?${qs.toString()}`;
+  if (parts.length === 0) {
+    return resolvedPath;
   }
-
-  return resolvedPath;
+  return `${resolvedPath}?${parts.join("&")}`;
 };
 
 export const createRoute = (path: string) => (params?: Partial<PageParams>) =>

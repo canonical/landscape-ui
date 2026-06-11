@@ -1,0 +1,210 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+$band-critical: $color-negative;
+$band-warning: $color-caution;
+$band-healthy: $color-positive;
+
+.titleRow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.heading {
+  margin: 0;
+}
+
+.bandPill {
+  align-items: center;
+  border-radius: 999rem;
+  display: inline-flex;
+  font-size: 0.875rem;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+
+  strong {
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.band_critical {
+  background: rgba($band-critical, 0.18);
+  color: $band-critical;
+}
+
+.band_warning {
+  background: rgba($band-warning, 0.24);
+  color: darken($band-warning, 14%);
+}
+
+.band_healthy {
+  background: rgba($band-healthy, 0.18);
+  color: $band-healthy;
+}
+
+.criticalChip {
+  background: $band-critical;
+  border-radius: 999rem;
+  color: $color-x-light;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.25rem;
+  padding: 0.125rem 0.5rem;
+}
+
+.cleanState {
+  align-items: center;
+  background: rgba($band-healthy, 0.16);
+  border-radius: 0.25rem;
+  color: $band-healthy;
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+  padding: $spv--small $sph--small;
+}
+
+.bodyHint {
+  color: $colors--theme--text-muted;
+  margin: 0 0 $spv--small 0;
+}
+
+.footnote {
+  color: $colors--theme--text-muted;
+  font-size: 0.75rem;
+  margin: $spv--small 0 0 0;
+}
+
+/* ── Recommended actions list ── */
+.actionExplainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.actionRow {
+  align-items: flex-start;
+  background: $colors--theme--background-alt;
+  border-radius: 0.25rem;
+  display: grid;
+  gap: 0.625rem;
+  grid-template-columns: auto 1fr;
+  padding: $spv--small $sph--small;
+}
+
+.actionIcon {
+  align-items: center;
+  background: $colors--theme--background-default;
+  border-radius: 999rem;
+  color: $colors--theme--text-muted;
+  display: inline-flex;
+  height: 1.75rem;
+  justify-content: center;
+  width: 1.75rem;
+}
+
+.actionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1875rem;
+  min-width: 0;
+}
+
+.actionDescription {
+  color: $colors--theme--text-muted;
+  font-size: 0.875rem;
+}
+
+.actionBecause {
+  color: $colors--theme--text-muted;
+  font-size: 0.75rem;
+}
+
+/* ── Related signals ── */
+.relatedList {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.relatedLink {
+  background: $colors--theme--background-default;
+  border: 1px solid $colors--theme--border-low-contrast;
+  border-radius: 0.25rem;
+  color: $colors--theme--text-default;
+  display: grid;
+  font-weight: 500;
+  gap: 0.125rem 0.625rem;
+  grid-template-areas:
+    "icon title"
+    "icon hint";
+  grid-template-columns: auto 1fr;
+  padding: $spv--small $sph--small;
+  text-decoration: none;
+
+  > :first-child {
+    align-self: center;
+    grid-area: icon;
+  }
+  > :nth-child(2) {
+    grid-area: title;
+  }
+  > :nth-child(3) {
+    grid-area: hint;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: $colors--theme--background-alt;
+    outline: none;
+    text-decoration: none;
+  }
+}
+
+.relatedHint {
+  color: $colors--theme--text-muted;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+/* ── Non-measurable empty state ── */
+.notMeasurable {
+  align-items: flex-start;
+  background: $colors--theme--background-alt;
+  border-radius: 0.375rem;
+  color: $colors--theme--text-muted;
+  display: grid;
+  gap: $sph--small;
+  grid-template-columns: auto 1fr;
+  margin-top: $spv--large;
+  padding: $spv--large $sph--large;
+
+  p {
+    margin: 0 0 $spv--x-small 0;
+  }
+}
+
+.notMeasurableTitle {
+  color: $colors--theme--text-default;
+  font-size: 1.125rem;
+  margin: 0 0 $spv--x-small 0;
+}
+
+.errorState {
+  align-items: center;
+  background: rgba($band-critical, 0.14);
+  border-radius: 0.25rem;
+  color: $band-critical;
+  display: flex;
+  gap: 0.5rem;
+  margin-top: $spv--large;
+  padding: $spv--large $sph--large;
+}

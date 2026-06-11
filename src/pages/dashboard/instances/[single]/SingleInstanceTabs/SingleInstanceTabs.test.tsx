@@ -55,6 +55,7 @@ describe("SingleInstanceTabs", () => {
     it("should use the correct tabs for ubuntu", () => {
       validateTabs(ubuntuInstance, [
         "Info",
+        "Health",
         "Activities",
         "Kernel",
         "Security issues",
@@ -70,6 +71,7 @@ describe("SingleInstanceTabs", () => {
     it("should use the correct tabs for ubuntu core", () => {
       validateTabs(ubuntuCoreInstance, [
         "Info",
+        "Health",
         "Activities",
         "Snaps",
         "Processes",
@@ -79,6 +81,8 @@ describe("SingleInstanceTabs", () => {
     });
 
     it("should use the correct tabs for windows", () => {
+      // LA061 Phase 1.7: Health tab is hidden for non-Ubuntu instances because
+      // the Landscape client doesn't run there — no signals to score.
       validateTabs(windowsInstance, [
         "Info",
         "WSL",
@@ -88,6 +92,7 @@ describe("SingleInstanceTabs", () => {
     });
 
     it("should use the correct tabs for other linux", () => {
+      // LA061 Phase 1.7: Health tab is hidden for non-Ubuntu instances.
       validateTabs(debianInstance, [
         "Info",
         "Activities",

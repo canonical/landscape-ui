@@ -54,6 +54,16 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
+    urlParam: "healthBand",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+    validator: (val: string) =>
+      val === "" ||
+      val
+        .split(",")
+        .every((v) => v === "critical" || v === "warning" || v === "healthy"),
+  },
+  {
     urlParam: "os",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,

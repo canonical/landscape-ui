@@ -1,0 +1,90 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* LA061 Phase 1.8: see `RemediationPile.module.scss` for the rationale —
+ * keep card framing consistent with the legacy InfoTables. */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-medium;
+  padding: $sp-medium;
+  border: 1px solid $colors--theme--border-default;
+  background: $colors--theme--background-default;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $sph--small;
+}
+
+.title {
+  font-weight: 600;
+  margin: 0;
+}
+
+.selectGroup {
+  display: flex;
+  align-items: center;
+  gap: $sph--x-small;
+}
+
+.selectLabel {
+  font-size: 0.8125rem;
+  color: $colors--theme--text-muted;
+}
+
+.table {
+  display: grid;
+  grid-template-columns: minmax(80px, 1fr) minmax(0, 3fr) minmax(60px, auto);
+  row-gap: 6px;
+  column-gap: $sph--large;
+  align-items: center;
+}
+
+.tableHeader {
+  font-size: 0.75rem;
+  color: $colors--theme--text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tableHeaderTotal {
+  text-align: right;
+}
+
+.groupLabel {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bar {
+  display: flex;
+  height: 12px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.segment {
+  height: 100%;
+}
+
+.segmentCritical { background: #c7162b; }
+.segmentWarning  { background: #f99b11; }
+.segmentHealthy  { background: #0e8420; }
+
+.totalCell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: $colors--theme--text-muted;
+}
+
+.empty {
+  padding: $sph--large;
+  color: $colors--theme--text-muted;
+  text-align: center;
+}

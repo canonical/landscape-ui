@@ -37,28 +37,37 @@ const UsnPackagesContainer: FC<UsnPackagesContainerProps> = ({
 
   const usnPackages = getAffectedPackagesQueryResult?.data ?? [];
 
+  // `UsnPackageList` renders its own loading / empty / table states so
+  // the expanded section keeps the "Packages affected by …" heading
+  // anchored across all three. `UsnInstanceList` doesn't yet have that
+  // treatment, so we keep the bare-spinner fallback for the instances
+  // path until it gets the same.
+  if (listType === "packages") {
+    return (
+      <UsnPackageList
+        instanceTitle={instances[0]!.title}
+        isLoading={getAffectedPackagesQueryLoading}
+        limit={limit}
+        onLimitChange={() => {
+          setLimit((prevState) => prevState + 5);
+        }}
+        showRemoveButton={isRemovable}
+        usn={usn}
+        usnPackages={usnPackages}
+      />
+    );
+  }
+
   return (
     <>
       {getAffectedPackagesQueryLoading && <LoadingState />}
-      {!getAffectedPackagesQueryLoading && listType === "instances" && (
+      {!getAffectedPackagesQueryLoading && (
         <UsnInstanceList
           instances={instances}
           limit={limit}
           onLimitChange={() => {
             setLimit((prevState) => prevState + 5);
           }}
-          usn={usn}
-          usnPackages={usnPackages}
-        />
-      )}
-      {!getAffectedPackagesQueryLoading && listType === "packages" && (
-        <UsnPackageList
-          instanceTitle={instances[0]!.title}
-          limit={limit}
-          onLimitChange={() => {
-            setLimit((prevState) => prevState + 5);
-          }}
-          showRemoveButton={isRemovable}
           usn={usn}
           usnPackages={usnPackages}
         />

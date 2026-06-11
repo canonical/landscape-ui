@@ -1,0 +1,126 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* LA061 Phase 1.8: flat-bordered card to match InfoTables / other widgets.
+   `height: 100%` + flex column lets the parent's `align-items: stretch`
+   make the card match the Fleet health hero's height; the `.list` scrolls
+   inside the leftover space when there are more rows than fit. */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-medium;
+  padding: $sp-medium;
+  border: 1px solid $colors--theme--border-default;
+  background: $colors--theme--background-default;
+  height: 100%;
+  min-height: 0;
+}
+
+.heading {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: $colors--theme--text-muted;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $sph--x-small;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Take the remaining card height and scroll when the row count exceeds */
+  /* what fits. `min-height: 0` is required for a flex child to actually */
+  /* shrink — without it the list pushes the card taller than the hero. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 1fr auto auto;
+  gap: $sph--small;
+  padding: $sph--x-small $sph--small;
+  border-radius: 0.25rem;
+  background: $colors--theme--background-alt;
+  text-decoration: none;
+  transition: background-color 120ms ease;
+
+  /* The row is a `<Link>` — the Vanilla `a:link/:visited` rules win over a */
+  /* plain `color:` on `.row`, which is why visited destinations were */
+  /* turning blue. The row reads as a button (chevron + chip on the right), */
+  /* so we keep the entire surface in default text colour for every state. */
+  &,
+  &:link,
+  &:visited,
+  &:hover,
+  &:focus-visible {
+    color: $colors--theme--text-default;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background: rgba($color-mid-light, 0.28);
+    outline: none;
+    text-decoration: none;
+  }
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detail {
+  color: $colors--theme--text-muted;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Instance-count chip rendered to the right of the title. The number reads
+   as a tally next to the issue name; severity tint matches the leading icon. */
+.countChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.5rem;
+  padding: 0 $sph--small;
+  border-radius: 999rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba($color-caution, 0.18);
+  color: darken($color-caution, 14%);
+}
+
+.countChipCritical {
+  background: rgba($color-negative, 0.14);
+  color: $color-negative;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  gap: $sph--small;
+  padding: $sph--small;
+  border-radius: 0.25rem;
+  color: $color-positive;
+  background: rgba($color-positive, 0.14);
+}

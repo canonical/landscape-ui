@@ -20,19 +20,30 @@ import type { UpgradesFormProps } from "./types";
 
 interface UpgradesProps {
   readonly selectedInstances: Instance[];
+  // When the caller has already filtered `selectedInstances` upstream (e.g.
+  // the Remediation Pile widget filters by health-engine factors, not by
+  // `Instance.alerts`), set this so `<Upgrades>` doesn't re-filter and drop
+  // the very rows the caller meant to act on. The instances-page flow
+  // leaves this false and keeps its alert-based filtering.
+  readonly trustSelection?: boolean;
+  readonly initialTabId?: string;
 }
 
-const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
+const Upgrades: FC<UpgradesProps> = ({
+  selectedInstances,
+  trustSelection = false,
+  initialTabId,
+}) => {
+  const affectedInstances = trustSelection
+    ? selectedInstances
+    : selectedInstances.filter(({ alerts }) => hasUpgrades(alerts));
+
+  const instancesWithUsn = trustSelection
+    ? selectedInstances
+    : affectedInstances.filter(({ alerts }) => hasSecurityUpgrades(alerts));
+
   const [activeTabLinkId, setActiveTabLinkId] = useState<string>(
-    TAB_LINKS[0].id,
-  );
-
-  const affectedInstances = selectedInstances.filter(({ alerts }) =>
-    hasUpgrades(alerts),
-  );
-
-  const instancesWithUsn = affectedInstances.filter(({ alerts }) =>
-    hasSecurityUpgrades(alerts),
+    initialTabId ?? (trustSelection ? "tab-link-usns" : TAB_LINKS[0].id),
   );
 
   const debug = useDebug();
@@ -83,7 +94,14 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
 
   return (
     <Form onSubmit={formik.handleSubmit}>
-      <UpgradeInfo instances={selectedInstances} />
+      {trustSelection ? (
+        <p>
+          Applying open Ubuntu security notices to{" "}
+          <b>{pluralize(selectedInstances.length, ["instance"], "exact")}</b>.
+        </p>
+      ) : (
+        <UpgradeInfo instances={selectedInstances} />
+      )}
 
       <Tabs
         links={getTabLinks({

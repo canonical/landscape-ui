@@ -4,6 +4,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { describe, vi } from "vitest";
+import type { Instance } from "@/types/Instance";
 import InstancesPanel from "./InstancesPanel";
 
 const affectedInstances = instances.filter(
@@ -156,5 +157,67 @@ describe("InstancesPanel", () => {
     });
     await userEvent.click(showMorePackages);
     expect(screen.getByText("Packages affected on")).toBeInTheDocument();
+  });
+
+  it("sums regular and security upgrade buckets for the affected-packages count", () => {
+    const [base] = affectedInstances;
+    assert(base);
+    // `{regular: 0, security: 7}` previously rendered 0 because the
+    // coalesce short-circuited on `0`. The fix sums the two buckets.
+    const securityOnly: Instance = {
+      ...base,
+      id: 90001,
+      title: "Security Only Instance",
+      upgrades: { regular: 0, security: 7 },
+    };
+    const mixed: Instance = {
+      ...base,
+      id: 90002,
+      title: "Mixed Upgrades Instance",
+      upgrades: { regular: 4, security: 3 },
+    };
+
+    renderWithProviders(
+      <InstancesPanel {...props} instances={[securityOnly, mixed]} />,
+    );
+
+    const rows = screen.getAllByRole("row");
+    const securityRow = rows.find(
+      ({ firstChild }) => firstChild?.textContent === securityOnly.title,
+    );
+    const mixedRow = rows.find(
+      ({ firstChild }) => firstChild?.textContent === mixed.title,
+    );
+    assert(securityRow);
+    assert(mixedRow);
+    // Security-only: 0 + 7 = 7 (was 0 under the old coalesce).
+    expect(within(securityRow).getByRole("button")).toHaveTextContent("7");
+    // Mixed: 4 + 3 = 7 (was 4 under the old coalesce — security silently dropped).
+    expect(within(mixedRow).getByRole("button")).toHaveTextContent("7");
+  });
+
+  it("does not render an expand button for an instance with zero affected packages", () => {
+    const [base] = affectedInstances;
+    assert(base);
+    const empty: Instance = {
+      ...base,
+      id: 90003,
+      title: "No Upgrades Instance",
+      upgrades: { regular: 0, security: 0 },
+    };
+
+    renderWithProviders(
+      <InstancesPanel {...props} instances={[empty]} />,
+    );
+
+    const rows = screen.getAllByRole("row");
+    const emptyRow = rows.find(
+      ({ firstChild }) => firstChild?.textContent === empty.title,
+    );
+    assert(emptyRow);
+    // The cell still shows "0", but as plain text — no expand button, so
+    // the user can't open a row that has nothing to show.
+    expect(within(emptyRow).queryByRole("button")).not.toBeInTheDocument();
+    expect(emptyRow).toHaveTextContent("0");
   });
 });

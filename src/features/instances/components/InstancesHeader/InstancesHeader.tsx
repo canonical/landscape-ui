@@ -6,13 +6,15 @@ import ColumnFilter from "@/components/form/ColumnFilter";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import { SearchBoxWithSavedSearches } from "@/features/saved-searches";
 import { useGetTags } from "@/features/tags";
+import useAuth from "@/hooks/useAuth";
 import useRoles from "@/hooks/useRoles";
 import type { FC } from "react";
 import { useState } from "react";
 import { useGetAvailabilityZones } from "../../api";
-import { FILTERS } from "../../constants";
+import { FILTERS, HEALTH_BAND_OPTIONS } from "../../constants";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
+import HealthBandFilter from "../HealthBandFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
 import WslFilter from "../WslFilter";
@@ -28,6 +30,8 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
   columnFilterOptions,
   onChangeFilter,
 }) => {
+  const { isFeatureEnabled } = useAuth();
+  const healthEnabled = isFeatureEnabled("health");
   const instanceSearchHelpTerms = useInstanceSearchHelpTerms();
 
   const [showSearchHelp, setShowSearchHelp] = useState(false);
@@ -88,13 +92,23 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
         <ResponsiveTableFilters
           isCollapsed={true}
           filters={[
-            <PageParamFilter
-              pageParamKey="status"
-              key="status"
-              label="Status"
-              options={statusOptions}
-              onChange={onChangeFilter}
-            />,
+            // LA061: Health filter replaces Status when `health` is on.
+            healthEnabled ? (
+              <HealthBandFilter
+                key="health-band"
+                label="Health"
+                options={[...HEALTH_BAND_OPTIONS]}
+                onChange={onChangeFilter}
+              />
+            ) : (
+              <PageParamFilter
+                pageParamKey="status"
+                key="status"
+                label="Status"
+                options={statusOptions}
+                onChange={onChangeFilter}
+              />
+            ),
             <PageParamFilter
               key="os"
               label="OS"
@@ -143,7 +157,9 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
           "accessGroups",
           "os",
           "availabilityZones",
-          "status",
+          ...(healthEnabled
+            ? (["healthBand"] as const)
+            : (["status"] as const)),
           "tags",
           "wsl",
           "contractExpiryDays",
@@ -156,6 +172,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
         tagOptions={tagOptions}
         wslOptions={wslOptions}
         contractExpiryOptions={contractExpiryOptions}
+        healthBandOptions={[...HEALTH_BAND_OPTIONS]}
       />
 
       <SearchHelpPopup

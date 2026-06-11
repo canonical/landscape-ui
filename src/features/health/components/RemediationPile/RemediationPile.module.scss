@@ -1,0 +1,96 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.container {
+  /* LA061 Phase 1.8: the three remediation cards now share a single row.
+   * Falls back to a stacked column on narrow viewports so each card has
+   * enough room for its CTA. */
+  display: grid;
+  gap: $sp-medium;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+
+  @media (max-width: 64rem) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* LA061 Phase 1.8: card frame mirrors `InfoTablesContainer.tableContainer`
+ * for visual consistency with the rest of the Overview — flat border, no
+ * corner radius, no shadow. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: $spv-nudge;
+  padding: $sp-medium;
+  border: 1px solid $colors--theme--border-default;
+  background: $colors--theme--background-default;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $sph--small;
+}
+
+.cardTitle {
+  font-weight: 600;
+  margin: 0;
+}
+
+.cardSubtitle {
+  color: $colors--theme--text-muted;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.metricRow {
+  display: flex;
+  align-items: baseline;
+  gap: $sph--small;
+  flex-wrap: wrap;
+}
+
+/* The card title (`p-heading--5`) is the primary anchor — what the card */
+/* does. The count is supporting info, so it reads at the body size */
+/* with a 600 weight to keep it scannable without competing with the title. */
+.metricCount {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.metricPenalty {
+  color: $colors--theme--text-muted;
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.proBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(14, 132, 32, 0.14);
+  color: $colors--theme--text-default;
+  font-size: 0.75rem;
+  font-weight: 600;
+  align-self: flex-start;
+  margin-top: $spv-nudge;
+}
+
+.actions {
+  display: flex;
+  gap: $sph--small;
+  align-items: center;
+  margin-top: $spv-nudge;
+}
+
+.empty {
+  padding: $sph--large $sph--large;
+  color: $colors--theme--text-muted;
+  text-align: center;
+  border: 1px dashed $colors--theme--border-low-contrast;
+  border-radius: 4px;
+}

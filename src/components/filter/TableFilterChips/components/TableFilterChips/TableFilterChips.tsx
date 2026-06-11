@@ -19,6 +19,7 @@ interface TableFilterChipsProps {
   readonly availabilityZonesOptions?: SelectOption[];
   readonly contractExpiryOptions?: SelectOption[];
   readonly filtersToDisplay?: FilterKey[];
+  readonly healthBandOptions?: SelectOption[];
   readonly onChange?: () => void;
   readonly osOptions?: SelectOption[];
   readonly statusOptions?: SelectOption[];
@@ -32,6 +33,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   availabilityZonesOptions,
   contractExpiryOptions,
   filtersToDisplay = defaultFiltersToDisplay,
+  healthBandOptions,
   onChange,
   osOptions,
   statusOptions,
@@ -46,6 +48,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     availabilityZones,
     contractExpiryDays,
     fromDate,
+    healthBand,
     os,
     status,
     tags,
@@ -186,6 +189,17 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
       },
     },
     {
+      // LA061 categorical health filter chip.
+      condition: filtersToDisplay.includes("healthBand"),
+      value: {
+        label: "Health",
+        multiple: true as const,
+        items: getItems(healthBandOptions, healthBand),
+        remove: createRemover("healthBand", filterItem),
+        clear: createClearer({ healthBand: [] }),
+      },
+    },
+    {
       condition: filtersToDisplay.includes("contractExpiryDays"),
       value: {
         label: "Contract expiry",
@@ -202,6 +216,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     availabilityZones: [],
     contractExpiryDays: "",
     fromDate: "",
+    healthBand: [],
     os: "",
     status: "",
     tags: [],

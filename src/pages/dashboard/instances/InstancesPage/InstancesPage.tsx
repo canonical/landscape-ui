@@ -10,7 +10,8 @@ import InstancesContainer from "../InstancesContainer";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
-  const { currentPage, pageSize, wsl, ...filters } = usePageParams();
+  const { currentPage, pageSize, wsl, healthBand, ...filters } =
+    usePageParams();
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     query: getQuery(filters),
@@ -18,10 +19,16 @@ const InstancesPage: FC = () => {
     with_alerts: true,
     with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+    // LA061 Phase 1.7: fold the health snapshot into the list response so
+    // HealthCell can render without firing one HTTP request per row.
+    with_health: true,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
     wsl_children: wsl.includes("child"),
     wsl_parents: wsl.includes("parent"),
+    // LA061: categorical health-band filter. Omitted when the array is empty
+    // so we don't churn the query cache on every navigation.
+    ...(healthBand.length > 0 ? { health_band: healthBand.join(",") } : {}),
   });
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);

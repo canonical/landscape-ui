@@ -132,20 +132,33 @@ const InstancesPanel: FC<InstancesPanelProps> = ({
       {
         accessor: "upgrades",
         Header: "Affected packages",
-        Cell: ({ row: { index, original } }: CellProps<Instance>) => (
-          <Button
-            type="button"
-            className={classNames("p-accordion__tab", classes.expandButton)}
-            aria-expanded={expandedRow === index}
-            onClick={() => {
-              handleExpandCellClick(index);
-            }}
-          >
-            {DETAILED_UPGRADES_VIEW_ENABLED
-              ? (original.upgrades?.regular ?? original.upgrades?.security ?? 0)
-              : null}
-          </Button>
-        ),
+        Cell: ({ row: { index, original } }: CellProps<Instance>) => {
+          // `regular` and `security` are independent buckets (an instance
+          // can have both). The previous `regular ?? security ?? 0` was a
+          // coalesce, which short-circuits on `0` and silently drops the
+          // other bucket — e.g. `{regular: 0, security: 7}` reported 0
+          // when the expanded table had 7 rows.
+          const count =
+            (original.upgrades?.regular ?? 0)
+            + (original.upgrades?.security ?? 0);
+          // No packages → no table to expand. Render plain text so the
+          // row doesn't advertise a drill-down that opens an empty list.
+          if (DETAILED_UPGRADES_VIEW_ENABLED && count === 0) {
+            return <span>{count}</span>;
+          }
+          return (
+            <Button
+              type="button"
+              className={classNames("p-accordion__tab", classes.expandButton)}
+              aria-expanded={expandedRow === index}
+              onClick={() => {
+                handleExpandCellClick(index);
+              }}
+            >
+              {DETAILED_UPGRADES_VIEW_ENABLED ? count : null}
+            </Button>
+          );
+        },
       },
     ],
     [

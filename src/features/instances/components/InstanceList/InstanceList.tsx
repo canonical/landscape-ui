@@ -5,6 +5,8 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { HealthCell } from "@/features/health";
+import useAuth from "@/hooks/useAuth";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
@@ -46,6 +48,8 @@ const InstanceList = memo(function InstanceList({
   setSelectedInstances,
 }: InstanceListProps) {
   const { disabledColumns, ...filters } = usePageParams();
+  const { isFeatureEnabled } = useAuth();
+  const healthEnabled = isFeatureEnabled("health");
 
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
@@ -165,34 +169,61 @@ const InstanceList = memo(function InstanceList({
           );
         },
       },
-      {
-        accessor: "status",
-        canBeHidden: true,
-        optionLabel: "Status",
-        Header: "Status",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getStatusCellIconAndLabel(original);
-          return label;
-        },
-        getCellIcon: ({ row: { original } }) => {
-          const { icon } = getStatusCellIconAndLabel(original);
-          return icon;
-        },
-      },
-      {
-        accessor: "upgrades",
-        canBeHidden: true,
-        optionLabel: "Upgrades",
-        Header: "Upgrades",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getUpgradesCellIconAndLabel(original);
-          return label;
-        },
-        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
-          const { icon } = getUpgradesCellIconAndLabel(original);
-          return icon;
-        },
-      },
+      // LA061: when `health` is on, Health replaces both Status and Upgrades
+      // (the latter handled below). With the flag off, the legacy columns
+      // stay — accounts that haven't opted in still need their existing
+      // sort/filter semantics.
+      // TODO(LA061): extend the instance-list endpoint to embed per-row health
+      // so this column doesn't fan out N fetches per page render.
+      ...(healthEnabled
+        ? [
+            {
+              accessor: "health",
+              canBeHidden: true,
+              optionLabel: "Health",
+              Header: "Health",
+              Cell: ({ row: { original } }: CellProps<Instance>) => (
+                <HealthCell instance={original} />
+              ),
+            } satisfies InstanceColumn,
+          ]
+        : [
+            {
+              accessor: "status",
+              canBeHidden: true,
+              optionLabel: "Status",
+              Header: "Status",
+              Cell: ({ row: { original } }: CellProps<Instance>) => {
+                const { label } = getStatusCellIconAndLabel(original);
+                return label;
+              },
+              getCellIcon: ({ row: { original } }) => {
+                const { icon } = getStatusCellIconAndLabel(original);
+                return icon;
+              },
+            } satisfies InstanceColumn,
+          ]),
+      // LA061: Upgrades column is rolled into Health when `health` is on
+      // (USN priorities + reboot_required already feed the score), so we hide
+      // it here to avoid duplicate signals.
+      ...(healthEnabled
+        ? []
+        : [
+            {
+              accessor: "upgrades",
+              canBeHidden: true,
+              optionLabel: "Upgrades",
+              Header: "Upgrades",
+              Cell: ({ row: { original } }: CellProps<Instance>) => {
+                const { label } = getUpgradesCellIconAndLabel(original);
+                return label;
+              },
+              getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
+                const { icon } = getUpgradesCellIconAndLabel(original);
+                return icon;
+              },
+            } satisfies InstanceColumn,
+          ]),
       {
         accessor: "os",
         canBeHidden: true,
@@ -317,6 +348,7 @@ const InstanceList = memo(function InstanceList({
       select,
       deselect,
       toggleAll,
+      healthEnabled,
     ],
   );
 

@@ -1,0 +1,183 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* LA061 Health Bar — band icon, score, progress bar, band label. */
+/* */
+/* Tokens map onto the Vanilla negative/caution/positive scale so the bar */
+/* reads correctly in the existing themes. Each band gets a paired pale */
+/* background tint applied to the score chip and bar track for a richer */
+/* look than a flat colored fill. */
+$bar-height: 0.5rem;
+$bar-width: 4.5rem;
+$bar-radius: 999rem;
+
+.root {
+  align-items: center;
+  background: transparent;
+  border-radius: 0.25rem;
+  cursor: inherit;
+  display: inline-flex;
+  font-variant-numeric: tabular-nums;
+  gap: 0.5rem;
+  line-height: 1;
+  min-width: 0;
+  padding: 0.125rem 0.25rem;
+  white-space: nowrap;
+}
+
+.compact {
+  gap: 0.375rem;
+  padding: 0;
+}
+
+.iconSlot {
+  align-items: center;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 1.125rem;
+  justify-content: center;
+  width: 1.125rem;
+
+  /* Bare-glyph icon. The Vanilla `Icon` inherits color from this slot, */
+  /* so the band class on the root tints the SVG via `currentcolor`. */
+  /* Scaling up to 1.125rem gives the icon visual weight after removing */
+  /* the circular backdrop. */
+  i {
+    height: 1.125rem;
+    width: 1.125rem;
+  }
+}
+
+.score {
+  font-weight: 600;
+  min-width: 2.25ch;
+  text-align: right;
+}
+
+.bar {
+  background: rgba($color-mid-light, 0.35);
+  border-radius: $bar-radius;
+  display: inline-block;
+  flex-shrink: 0;
+  height: $bar-height;
+  overflow: hidden;
+  position: relative;
+  width: $bar-width;
+}
+
+.compact .bar {
+  width: 4.5rem;
+}
+
+.fill {
+  background: currentcolor;
+  border-radius: $bar-radius;
+  display: block;
+  height: 100%;
+  transition: width 240ms ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.bandLabel {
+  color: $colors--theme--text-muted;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.criticalCount {
+  background: $color-negative;
+  border-radius: 999rem;
+  color: $color-x-light;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.125rem 0.375rem;
+}
+
+/* ── band variants ── */
+.bandCritical {
+  color: $color-negative;
+
+  .fill {
+    background: $color-negative;
+  }
+  .bandLabel {
+    color: $color-negative;
+  }
+}
+
+.bandWarning {
+  /* Caution amber does not pass AA on light backgrounds for thin text; */
+  /* we keep the bar/icon amber but switch the label to a darker neutral. */
+  color: $color-caution;
+
+  .fill {
+    background: $color-caution;
+  }
+  .bandLabel {
+    color: $colors--theme--text-muted;
+    font-weight: 600;
+  }
+}
+
+.bandHealthy {
+  color: $color-positive;
+
+  .fill {
+    background: $color-positive;
+  }
+  .bandLabel {
+    color: $colors--theme--text-muted;
+  }
+}
+
+.notMeasurable {
+  color: $colors--theme--text-muted;
+
+  .score {
+    color: $colors--theme--text-muted;
+    font-weight: 500;
+  }
+}
+
+.errored {
+  color: $colors--theme--text-muted;
+}
+
+/* ── loading skeleton ── */
+.skeleton {
+  color: $colors--theme--background-alt;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    $colors--theme--background-alt 0%,
+    $color-light 50%,
+    $colors--theme--background-alt 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.25rem;
+  display: inline-block;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background: $colors--theme--background-alt;
+  }
+}
+
+.iconSlot.shimmer {
+  border-radius: 999rem;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

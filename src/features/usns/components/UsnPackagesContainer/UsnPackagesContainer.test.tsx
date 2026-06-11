@@ -29,6 +29,22 @@ describe("UsnPackagesContainer", () => {
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
+  it("renders heading + loading anchor for the packages listType while fetching", () => {
+    renderWithProviders(
+      <UsnPackagesContainer
+        instances={[ubuntuInstance]}
+        isRemovable={false}
+        listType="packages"
+        usn="USN-6557-1"
+      />,
+    );
+    // The packages path now delegates loading rendering to UsnPackageList
+    // so the "Packages affected by …" heading stays put while the fetch
+    // is in flight — the expanded section never looks like a bare spinner.
+    expect(screen.getByText(/Packages affected by/i)).toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
   it("renders instance list after loading when listType is 'instances'", async () => {
     renderWithProviders(
       <UsnPackagesContainer

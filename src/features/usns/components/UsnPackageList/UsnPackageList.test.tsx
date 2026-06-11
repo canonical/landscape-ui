@@ -65,4 +65,34 @@ describe("UsnPackageList", () => {
 
     expect(screen.getAllByRole("rowheader")).toHaveLength(newLimit);
   });
+
+  it("renders an empty-state message when the USN has no affected packages", () => {
+    renderWithProviders(<UsnPackageList {...props} usnPackages={[]} />);
+    // The expandable table previously rendered a headers-only body when
+    // the post-expand fetch returned 0 packages. Now we show a clear
+    // empty-state message instead.
+    expect(
+      screen.getByText(/No packages are currently affected by this USN/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("rowheader")).not.toBeInTheDocument();
+    // Heading stays as the visual anchor so the expanded section reads
+    // consistently across loading / empty / data states.
+    expect(screen.getByText(/Packages affected by/i)).toBeInTheDocument();
+  });
+
+  it("renders the heading + loading state while the package fetch is in flight", () => {
+    renderWithProviders(
+      <UsnPackageList {...props} isLoading usnPackages={[]} />,
+    );
+    // The heading stays anchored — the user always knows which USN is
+    // being inspected, even before data arrives.
+    expect(screen.getByText(/Packages affected by/i)).toBeInTheDocument();
+    // LoadingState renders an element with role="status".
+    expect(screen.getByRole("status")).toBeInTheDocument();
+    // No empty-state copy and no table while loading.
+    expect(
+      screen.queryByText(/No packages are currently affected/i),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("rowheader")).not.toBeInTheDocument();
+  });
 });
