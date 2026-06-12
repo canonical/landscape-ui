@@ -146,7 +146,9 @@ describe("AddMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({}),
+      expect.objectContaining({
+        archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
+      }),
     );
   });
 
