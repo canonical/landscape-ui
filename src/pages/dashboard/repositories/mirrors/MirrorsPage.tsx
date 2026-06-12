@@ -66,8 +66,8 @@ const MirrorsPage: FC = () => {
     </Button>,
   ];
 
-  const { mirrors } = data.data;
-  const showList = !!mirrors?.length || !!search;
+  const { mirrors = [] } = data.data;
+  const showList = !!mirrors.length || !!search;
 
   const { actions, children, hasTable } = showList
     ? {
@@ -76,7 +76,7 @@ const MirrorsPage: FC = () => {
           <>
             <HeaderWithSearch />
             <MirrorsList
-              mirrors={mirrors ?? []}
+              mirrors={mirrors}
               emptyMsg={`No mirrors found with the search: "${search}"`}
             />
           </>
