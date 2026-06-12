@@ -6,7 +6,7 @@ import {
   Icon,
   Notification,
 } from "@canonical/react-components";
-import { useEffect, useRef, useState, type FC } from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import { useGetOperation } from "../../api";
 import classes from "./ViewLogsSidePanel.module.scss";
 import { useGetMirror } from "@/features/mirrors";
@@ -25,14 +25,22 @@ const ViewLogsSidePanel: FC = () => {
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<number | undefined>(undefined);
 
-  const blob = new Blob([logs], { type: "text/plain" });
-  const url = URL.createObjectURL(blob);
+  const url = useMemo(() => {
+    const blob = new Blob([logs], { type: "text/plain" });
+    return URL.createObjectURL(blob);
+  }, [logs]);
 
   useEffect(() => {
     return () => {
       window.clearTimeout(copiedTimeoutRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(url);
+    };
+  }, [url]);
 
   const handleCopy = async () => {
     try {

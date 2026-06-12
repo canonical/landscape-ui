@@ -18,7 +18,7 @@ export const useGetOperation = (
     isPending,
     error,
   } = useQuery<AxiosResponse<Operation>, AxiosError<GetOperationError>>({
-    queryKey: ["local", name],
+    queryKey: ["operation", name],
     queryFn: async () => authFetchDebArchive.get(name),
     ...config,
   });

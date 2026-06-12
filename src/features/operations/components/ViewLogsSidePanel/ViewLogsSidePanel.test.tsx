@@ -11,19 +11,11 @@ import type { Mirror } from "@canonical/landscape-openapi";
 
 const COPIED_FEEDBACK_TIMEOUT = 2010;
 const typedMirrors = mirrors as Mirror[];
+
 const failedMirror = typedMirrors.find(
   (mirror) => mirror.lastOperation === "operations/ffff-llll-dddd",
 );
-const noLogsMirror = typedMirrors.find(
-  (mirror) => mirror.lastOperation === "operations/ssss-cccc-dddd",
-);
-const unsyncedMirror = typedMirrors.find((mirror) => !mirror.lastOperation);
-assert(failedMirror, "Test data must include a mirror with a failed operation");
-assert(
-  noLogsMirror,
-  "Test data must include a mirror with an operation that has no error details",
-);
-assert(unsyncedMirror, "Test data must include a mirror with no lastOperation");
+assert(failedMirror, "Missing mock mirror with a failed operation");
 
 const ComponentWrapper = ({
   isTestingCopy = false,
@@ -107,10 +99,11 @@ describe("ViewLogsSidePanel", () => {
     expect(screen.getByRole("button", { name: /copied/i })).toBeInTheDocument();
 
     await waitFor(
-      () =>
+      () => {
         expect(
           screen.getByRole("button", { name: /copy/i }),
-        ).toBeInTheDocument(),
+        ).toBeInTheDocument();
+      },
       { timeout: COPIED_FEEDBACK_TIMEOUT },
     );
   });
@@ -138,6 +131,11 @@ describe("ViewLogsSidePanel", () => {
   });
 
   it("shows error notification when operation has no error details", async () => {
+    const noLogsMirror = typedMirrors.find(
+      (mirror) => mirror.lastOperation === "operations/ssss-cccc-dddd",
+    );
+    assert(noLogsMirror, "Missing mock mirror with a successful operation");
+
     renderWithProviders(
       <ComponentWrapper />,
       undefined,
@@ -161,6 +159,9 @@ describe("ViewLogsSidePanel", () => {
   });
 
   it("handles mirrors with no lastOperation gracefully", async () => {
+    const unsyncedMirror = typedMirrors.find((mirror) => !mirror.lastOperation);
+    assert(unsyncedMirror, "Missing mock mirror with no lastOperation");
+
     renderWithProviders(
       <ComponentWrapper />,
       undefined,
