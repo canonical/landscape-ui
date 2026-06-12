@@ -142,7 +142,7 @@ describe("AddMirrorForm", () => {
       "Ubuntu Pro",
     );
 
-    await user.type(screen.getByLabelText("Token"), token);
+    await user.type(screen.getByLabelText("Bearer token"), token);
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
@@ -156,8 +156,9 @@ describe("AddMirrorForm", () => {
       "Ubuntu Pro",
     );
 
+    expect(screen.getByLabelText("Bearer token")).toBeInTheDocument();
     expect(
-      screen.getByText(/use the bearer token for the pro service/i),
+      screen.getByText(/this is not your ubuntu pro subscription token/i),
     ).toBeInTheDocument();
     expect(
       screen.getByText("/etc/apt/auth.conf.d/90ubuntu-advantage"),

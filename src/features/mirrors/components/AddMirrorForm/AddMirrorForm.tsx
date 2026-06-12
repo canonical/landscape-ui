@@ -250,15 +250,14 @@ const AddMirrorForm: FC = () => {
               {formik.values.sourceType === "ubuntu-pro" && (
                 <Input
                   type="text"
-                  label="Token"
+                  label="Bearer token"
                   required
                   help={
                     <>
                       Use the bearer token for the Pro service you want to
-                      mirror, found in{" "}
-                      <code>/etc/apt/auth.conf.d/90ubuntu-advantage</code> on an
-                      Ubuntu Pro-attached machine. This is not your Ubuntu Pro
-                      contract token.
+                      mirror. This is not your Ubuntu Pro subscription token.
+                      For ESM repositories, your token is found in{" "}
+                      <code>/etc/apt/auth.conf.d/90ubuntu-advantage</code>.
                     </>
                   }
                   {...formik.getFieldProps("token")}
