@@ -18,6 +18,8 @@ import {
   getOperationStatusIcon,
 } from "@/features/operations";
 
+const POLL_INTERVAL = 2000;
+
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
   readonly emptyMsg?: string;
@@ -26,10 +28,18 @@ interface MirrorsListProps {
 const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
   const { createPageParamsSetter } = usePageParams();
 
-  const { operations, isGettingOperations } = useBatchGetOperations(
-    mirrors
-      .map((mirror) => mirror.lastOperation ?? "")
-      .filter((operation) => !!operation),
+  const operationNames = mirrors
+    .filter((mirror) => mirror.lastOperation)
+    .map((mirror) => mirror.lastOperation ?? "");
+
+  const { operations: operations, isGettingOperations } = useBatchGetOperations(
+    operationNames,
+    {
+      refetchInterval: ({ state }) =>
+        Object.values(state.data ?? {}).some((operation) => !operation.done)
+          ? POLL_INTERVAL
+          : false,
+    },
   );
 
   const columns = useMemo<Column<Mirror>[]>(
@@ -55,24 +65,18 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         Header: "Status",
         className: "large-cell",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          if (isGettingOperations) {
-            return <LoadingState inline />;
-          }
-
-          if (!mirror.lastOperation) {
-            return "Not yet updated";
-          }
-
-          const lastOperation = operations[mirror.lastOperation];
-          return <OperationStatusCell operation={lastOperation} />;
+          const operation = operations[mirror.lastOperation ?? ""];
+          return (
+            <OperationStatusCell
+              isGettingOperation={isGettingOperations}
+              operation={operation}
+            />
+          );
         },
         getCellIcon: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          if (isGettingOperations || !mirror.lastOperation) {
-            return null;
-          }
-
-          const lastOperation = operations[mirror.lastOperation];
-          return getOperationStatusIcon(lastOperation);
+          // eslint-disable-next-line react/prop-types
+          const operation = operations[mirror.lastOperation ?? ""];
+          return getOperationStatusIcon(operation);
         },
       },
       {

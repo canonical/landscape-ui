@@ -1,14 +1,22 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { Operation } from "../types";
+
+type BatchGetOperationsReturnType = Record<string, Operation>;
 
 interface BatchGetOperationsResponse {
   operations?: Operation[] | undefined;
 }
-export const useBatchGetOperations = (names: string[]) => {
+export const useBatchGetOperations = (
+  names: string[],
+  config: Omit<
+    UseQueryOptions<BatchGetOperationsReturnType>,
+    "queryKey" | "queryFn"
+  > = {},
+) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<Record<string, Operation>>({
+  const { data, isLoading } = useQuery<BatchGetOperationsReturnType>({
     queryKey: ["operations", "batch", names],
     queryFn: async () => {
       const response =
@@ -26,6 +34,7 @@ export const useBatchGetOperations = (names: string[]) => {
       return lookup;
     },
     enabled: names.length > 0,
+    ...config,
   });
 
   return {

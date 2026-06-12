@@ -2,12 +2,21 @@ import type { Operation } from "@/features/operations";
 import type { FC } from "react";
 import classes from "./OperationStatusCell.module.scss";
 import ViewLogsButton from "../ViewLogsButton";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface OperationStatusCellProps {
   readonly operation: Operation | undefined;
+  readonly isGettingOperation?: boolean;
 }
 
-const OperationStatusCell: FC<OperationStatusCellProps> = ({ operation }) => {
+const OperationStatusCell: FC<OperationStatusCellProps> = ({
+  operation,
+  isGettingOperation = false,
+}) => {
+  if (isGettingOperation) {
+    return <LoadingState inline />;
+  }
+
   const { status, resource, progressPercent = 0 } = operation?.metadata ?? {};
 
   if (!status) {

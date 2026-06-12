@@ -11,7 +11,11 @@ import { inProgressOperation } from "@/tests/mocks/operations";
 
 const [mirror] = mirrors;
 
-const ComponentWrapper = ({ inProgress = false }: { readonly inProgress?: boolean }) => {
+const ComponentWrapper = ({
+  inProgress = false,
+}: {
+  readonly inProgress?: boolean;
+}) => {
   const { search } = useLocation();
 
   return (
@@ -125,7 +129,9 @@ describe("MirrorDetailsActionBlock", () => {
 
     const location = screen.getByTestId("location");
     expect(location).toHaveTextContent("sidePath=view%2Cpublish");
-    expect(location).toHaveTextContent(`name=${encodeURIComponent(mirror.name)}`);
+    expect(location).toHaveTextContent(
+      `name=${encodeURIComponent(mirror.name)}`,
+    );
   });
 
   it("opens NoPublicationTargetsModal when Publish is clicked and no targets exist", async () => {

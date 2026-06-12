@@ -16,8 +16,9 @@ const COPIED_FEEDBACK_TIMEOUT = 2000;
 const ViewLogsSidePanel: FC = () => {
   const { name } = usePageParams();
   const mirror = useGetMirror(name).data.data;
-  const { operation, isGettingOperation } = useGetOperation(mirror.lastOperation ?? "", 
-    { enabled: !!mirror.lastOperation }
+  const { operation, isGettingOperation } = useGetOperation(
+    mirror.lastOperation ?? "",
+    { enabled: !!mirror.lastOperation },
   );
   const logs = operation?.error?.details?.join("\n") ?? "";
 
@@ -46,7 +47,9 @@ const ViewLogsSidePanel: FC = () => {
     }
   };
 
-  const title = <SidePanel.Header>Update logs for {mirror.displayName}</SidePanel.Header>;
+  const title = (
+    <SidePanel.Header>Update logs for {mirror.displayName}</SidePanel.Header>
+  );
 
   if (!mirror.lastOperation) {
     return (

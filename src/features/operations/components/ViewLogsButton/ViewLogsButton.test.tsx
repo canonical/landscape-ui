@@ -20,9 +20,7 @@ describe("ViewLogsButton", () => {
   it("opens side panel with logs action when sidePath is empty", async () => {
     renderWithProviders(<ComponentWrapper />);
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /view logs/i }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: /view logs/i }));
 
     expect(screen.getByTestId("location")).toHaveTextContent(
       "?sidePath=logs&name=test-resource",
@@ -33,19 +31,13 @@ describe("ViewLogsButton", () => {
     renderWithProviders(
       <ComponentWrapper />,
       undefined,
-      "?sidePath=view&name=test-resource"
+      "?sidePath=view&name=test-resource",
     );
 
-    await userEvent.click(
-      screen.getByRole("button", { name: /view logs/i }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: /view logs/i }));
 
     const location = screen.getByTestId("location");
-    expect(location).toHaveTextContent(
-      "name=test-resource",
-    );
-    expect(location).toHaveTextContent(
-      "sidePath=view%2Clogs",
-    );
+    expect(location).toHaveTextContent("name=test-resource");
+    expect(location).toHaveTextContent("sidePath=view%2Clogs");
   });
 });

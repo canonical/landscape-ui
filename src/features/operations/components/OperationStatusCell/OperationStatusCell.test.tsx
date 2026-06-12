@@ -10,6 +10,14 @@ import {
 } from "@/tests/mocks/operations";
 
 describe("OperationStatusCell", () => {
+  it("renders loading while fetching", () => {
+    renderWithProviders(
+      <OperationStatusCell operation={undefined} isGettingOperation={true} />,
+    );
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
   it("renders operation status when operation is undefined", () => {
     renderWithProviders(<OperationStatusCell operation={undefined} />);
 
@@ -17,9 +25,7 @@ describe("OperationStatusCell", () => {
   });
 
   it("renders successful operation status", () => {
-    renderWithProviders(
-      <OperationStatusCell operation={succeededOperation} />,
-    );
+    renderWithProviders(<OperationStatusCell operation={succeededOperation} />);
 
     expect(screen.getByText("Updated")).toBeInTheDocument();
   });

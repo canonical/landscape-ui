@@ -8,8 +8,8 @@
 .progressBar {
   background-color: $colors--theme--background-active;
   display: inline-flex;
-  margin: 0 $sph--small;
   height: $spv--small;
+  margin: 0 $sph--small;
   width: 4rem;
 
   > div {

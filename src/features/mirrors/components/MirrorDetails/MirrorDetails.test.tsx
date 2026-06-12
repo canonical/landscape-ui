@@ -48,7 +48,9 @@ describe("MirrorDetails", () => {
     expect(screen.getByText("Components")).toBeInTheDocument();
     expect(screen.getByText("Architectures")).toBeInTheDocument();
     expect(screen.getByText("Filter")).toBeInTheDocument();
-    expect(screen.queryByText("Include dependencies in filter")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Include dependencies in filter"),
+    ).not.toBeInTheDocument();
     expect(screen.getByText(/Download .udeb/i)).toBeInTheDocument();
     expect(screen.getByText("Download sources")).toBeInTheDocument();
     expect(screen.getByText(/Download installer files/i)).toBeInTheDocument();
@@ -116,7 +118,7 @@ describe("MirrorDetails", () => {
     await expectLoadingState();
 
     await waitFor(() =>
-      expect(container).toHaveInfoItem("Include dependencies in filter", "Yes")
+      expect(container).toHaveInfoItem("Include dependencies in filter", "Yes"),
     );
   });
 
@@ -135,7 +137,9 @@ describe("MirrorDetails", () => {
 
     await screen.findByRole("heading", { name: mirrors[0].displayName });
 
-    const packagesTab = within(screen.getByRole("navigation")).getByText("Packages");
+    const packagesTab = within(screen.getByRole("navigation")).getByText(
+      "Packages",
+    );
     await user.click(packagesTab);
 
     expect(

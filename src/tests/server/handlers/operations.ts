@@ -20,7 +20,31 @@ export default [
       const { names } = await request.json();
 
       return HttpResponse.json({
-        operations: operations.filter(({ name }) => names.includes(name ?? "")),
+        operations: operations
+          .filter(({ name }) => names.includes(name ?? ""))
+          .map((operation) => {
+            if (operation.metadata.operationId === "pppp-gggg-ssss") {
+              progress += 10;
+
+              if (progress >= 100) {
+                progress = inProgressOperation.metadata.progressPercent;
+
+                return {
+                  ...succeededOperation,
+                  name: operation.name,
+                };
+              }
+
+              return {
+                ...operation,
+                metadata: {
+                  ...operation.metadata,
+                  progressPercent: progress,
+                },
+              };
+            }
+            return operation;
+          }),
       });
     },
   ),

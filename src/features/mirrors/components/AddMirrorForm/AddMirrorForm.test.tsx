@@ -55,7 +55,9 @@ describe("AddMirrorForm", () => {
   it("shows success notification with Update mirror action", async () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    const notification = await screen.findByText(/You have successfully added Name/i);
+    const notification = await screen.findByText(
+      /You have successfully added Name/i,
+    );
     expect(notification).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Update mirror" }));
 

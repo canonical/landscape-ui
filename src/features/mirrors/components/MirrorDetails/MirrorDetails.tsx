@@ -22,7 +22,12 @@ import {
   UBUNTU_PRO_HOST,
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
-import { getOperationStatusIcon, OperationStatusCell, useGetOperation, ViewLogsButton } from "@/features/operations";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  useGetOperation,
+  ViewLogsButton,
+} from "@/features/operations";
 import MirrorDetailsActionBlock from "./components/MirrorDetailsActionBlock";
 
 const POLLING_INTERVAL = 2000;
@@ -32,11 +37,13 @@ const MirrorDetails: FC = () => {
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
   const mirror = useGetMirror(name).data.data;
-  const { operation, isGettingOperation } = useGetOperation(mirror.lastOperation ?? "",
-    { 
+  const { operation, isGettingOperation } = useGetOperation(
+    mirror.lastOperation ?? "",
+    {
       enabled: !!mirror.lastOperation,
-      refetchInterval: ({ state }) => state.data?.data?.done ? false : POLLING_INTERVAL,
-     },
+      refetchInterval: ({ state }) =>
+        state.data?.data?.done ? false : POLLING_INTERVAL,
+    },
   );
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
@@ -79,7 +86,10 @@ const MirrorDetails: FC = () => {
             Your last mirror update was not completed successfully.
           </Notification>
         )}
-        <MirrorDetailsActionBlock displayName={mirror.displayName} operation={operation} />
+        <MirrorDetailsActionBlock
+          displayName={mirror.displayName}
+          operation={operation}
+        />
         <Tabs listClassName={classes.marginBottom} links={links} />
         {tabId === "details" && (
           <Blocks>
@@ -107,7 +117,9 @@ const MirrorDetails: FC = () => {
                   label="Status"
                   value={
                     <>
-                      {!!iconName && <Icon name={iconName} className={classes.icon} />}
+                      {!!iconName && (
+                        <Icon name={iconName} className={classes.icon} />
+                      )}
                       <OperationStatusCell operation={operation} />
                     </>
                   }

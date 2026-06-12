@@ -11,14 +11,25 @@ import type { Mirror } from "@canonical/landscape-openapi";
 
 const COPIED_FEEDBACK_TIMEOUT = 2010;
 const typedMirrors = mirrors as Mirror[];
-const failedMirror = typedMirrors.find((mirror) => mirror.lastOperation === "operations/ffff-llll-dddd");
-const noLogsMirror = typedMirrors.find((mirror) => mirror.lastOperation === "operations/ssss-cccc-dddd");
+const failedMirror = typedMirrors.find(
+  (mirror) => mirror.lastOperation === "operations/ffff-llll-dddd",
+);
+const noLogsMirror = typedMirrors.find(
+  (mirror) => mirror.lastOperation === "operations/ssss-cccc-dddd",
+);
 const unsyncedMirror = typedMirrors.find((mirror) => !mirror.lastOperation);
 assert(failedMirror, "Test data must include a mirror with a failed operation");
-assert(noLogsMirror, "Test data must include a mirror with an operation that has no error details");
+assert(
+  noLogsMirror,
+  "Test data must include a mirror with an operation that has no error details",
+);
 assert(unsyncedMirror, "Test data must include a mirror with no lastOperation");
 
-const ComponentWrapper = ({ isTestingCopy = false }: { readonly isTestingCopy?: boolean }) => (
+const ComponentWrapper = ({
+  isTestingCopy = false,
+}: {
+  readonly isTestingCopy?: boolean;
+}) => (
   <Suspense fallback={<LoadingState />}>
     <ViewLogsSidePanel />
     {isTestingCopy && <input type="textbox" />}
@@ -50,7 +61,9 @@ describe("ViewLogsSidePanel", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: `Update logs for ${failedMirror.displayName}` })
+      await screen.findByRole("heading", {
+        name: `Update logs for ${failedMirror.displayName}`,
+      }),
     ).toBeInTheDocument();
 
     expect(screen.getByRole("heading", { name: "Output" })).toBeInTheDocument();
@@ -67,12 +80,15 @@ describe("ViewLogsSidePanel", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("button", { name: /copy/i })
+      await screen.findByRole("button", { name: /copy/i }),
     ).toBeInTheDocument();
 
     const downloadLink = screen.getByRole("link", { name: /download/i });
     expect(downloadLink).toBeInTheDocument();
-    expect(downloadLink).toHaveAttribute("download", `${failedMirror.name}.log`);
+    expect(downloadLink).toHaveAttribute(
+      "download",
+      `${failedMirror.name}.log`,
+    );
   });
 
   it("Updates button content when copy button is clicked", async () => {
@@ -90,9 +106,13 @@ describe("ViewLogsSidePanel", () => {
     await user.click(copyButton);
     expect(screen.getByRole("button", { name: /copied/i })).toBeInTheDocument();
 
-    await waitFor(() => expect(
-      screen.getByRole("button", { name: /copy/i })
-    ).toBeInTheDocument(), { timeout: COPIED_FEEDBACK_TIMEOUT });
+    await waitFor(
+      () =>
+        expect(
+          screen.getByRole("button", { name: /copy/i }),
+        ).toBeInTheDocument(),
+      { timeout: COPIED_FEEDBACK_TIMEOUT },
+    );
   });
 
   it("doesn't change copy button when clipboard write fails", async () => {
@@ -112,7 +132,9 @@ describe("ViewLogsSidePanel", () => {
     const copyButton = await screen.findByRole("button", { name: /copy/i });
     await user.click(copyButton);
     expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /copied/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /copied/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows error notification when operation has no error details", async () => {
@@ -124,13 +146,17 @@ describe("ViewLogsSidePanel", () => {
 
     await expectLoadingState();
 
-    expect(await screen.findByRole("heading", { name: "The last update attempt for the selected mirror had no logs." })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", {
+        name: "The last update attempt for the selected mirror had no logs.",
+      }),
+    ).toBeInTheDocument();
 
     expect(
-      screen.queryByRole("button", { name: /copy/i })
+      screen.queryByRole("button", { name: /copy/i }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /download/i })
+      screen.queryByRole("link", { name: /download/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -144,10 +170,14 @@ describe("ViewLogsSidePanel", () => {
     await expectLoadingState();
 
     expect(
-      await screen.findByRole("heading", { name: `Update logs for ${unsyncedMirror.displayName}` })
+      await screen.findByRole("heading", {
+        name: `Update logs for ${unsyncedMirror.displayName}`,
+      }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("heading", { name: "The selected mirror hasn't had any update attempts yet." })
+      await screen.findByRole("heading", {
+        name: "The selected mirror hasn't had any update attempts yet.",
+      }),
     ).toBeInTheDocument();
   });
 });
