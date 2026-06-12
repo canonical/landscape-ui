@@ -28,18 +28,18 @@ interface BaseOperation {
   error?: OperationError;
 }
 
-interface UnfinishedOperation extends BaseOperation {
+export interface UnfinishedOperation extends BaseOperation {
   done: false;
   error?: never;
 }
 
-interface SuccessfulOperation extends BaseOperation {
+export interface SuccessfulOperation extends BaseOperation {
   done: true;
   response: OperationResponse;
   error?: never;
 }
 
-interface FailedOperation extends BaseOperation {
+export interface FailedOperation extends BaseOperation {
   done: true;
   response?: never;
   error: OperationError;

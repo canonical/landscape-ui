@@ -6,4 +6,11 @@ export { default as ViewLogsButton } from "./components/ViewLogsButton";
 
 export { getOperationStatusIcon } from "./helpers";
 
-export type { OperationStatus, OperationError, Operation } from "./types";
+export type {
+  OperationStatus,
+  OperationError,
+  Operation,
+  SuccessfulOperation,
+  UnfinishedOperation,
+  FailedOperation,
+} from "./types";

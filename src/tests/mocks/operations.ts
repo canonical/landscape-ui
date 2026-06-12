@@ -1,6 +1,11 @@
-import type { Operation } from "@/features/operations";
+import type {
+  FailedOperation,
+  Operation,
+  SuccessfulOperation,
+  UnfinishedOperation,
+} from "@/features/operations";
 
-export const idleOperation: Operation = {
+export const idleOperation: UnfinishedOperation = {
   name: "operations/iiii-dddd-llll",
   metadata: {
     "@type":
@@ -19,7 +24,7 @@ export const idleOperation: Operation = {
   },
 };
 
-export const succeededOperation: Operation = {
+export const succeededOperation: SuccessfulOperation = {
   name: "operations/ssss-cccc-dddd",
   metadata: {
     "@type":
@@ -40,7 +45,7 @@ export const succeededOperation: Operation = {
   },
 };
 
-export const failedOperation: Operation = {
+export const failedOperation: FailedOperation = {
   name: "operations/ffff-llll-dddd",
   metadata: {
     "@type":
@@ -85,7 +90,7 @@ export const failedOperation: Operation = {
   },
 };
 
-export const timeoutOperation: Operation = {
+export const timeoutOperation: FailedOperation = {
   name: "operations/tttt-mmmm-oooo",
   metadata: {
     "@type":
@@ -106,7 +111,7 @@ export const timeoutOperation: Operation = {
   },
 };
 
-export const inProgressOperation: Operation = {
+export const inProgressOperation: UnfinishedOperation = {
   name: "operations/pppp-gggg-ssss",
   metadata: {
     "@type":
@@ -125,7 +130,7 @@ export const inProgressOperation: Operation = {
   },
 };
 
-export const emptyOperation: Operation = {
+export const emptyOperation: SuccessfulOperation = {
   name: "operations/mmmm-pppp-tttt",
   metadata: {
     "@type":
@@ -144,7 +149,7 @@ export const emptyOperation: Operation = {
   },
 };
 
-export const overCountOperation: Operation = {
+export const overCountOperation: SuccessfulOperation = {
   name: "operations/oooo-vvvv-cccc",
   metadata: {
     "@type":
@@ -267,7 +272,7 @@ export const overCountOperation: Operation = {
   },
 };
 
-export const operations = [
+export const operations: Operation[] = [
   idleOperation,
   succeededOperation,
   failedOperation,

@@ -50,7 +50,10 @@ describe("ValidationResult", () => {
   it("renders default error notification when failed without error message", () => {
     renderWithProviders(
       <ValidationResult
-        validationTask={makeTask({ ...failedOperation, error: undefined })}
+        validationTask={makeTask({
+          ...failedOperation,
+          error: { ...failedOperation.error, message: "" },
+        })}
       />,
     );
 
