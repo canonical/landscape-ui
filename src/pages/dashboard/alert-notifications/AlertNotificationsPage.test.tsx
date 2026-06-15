@@ -12,11 +12,11 @@ describe("AlertNotificationsPage", () => {
     const emptyStateTitle = await screen.findByText(
       "No subscribed alerts found",
     );
-    const goToAlertsButton = await screen.findByRole("button", {
-      name: "Go to alerts page",
+    const goToAlertsLink = await screen.findByRole("link", {
+      name: "Go to alerts",
     });
 
-    expect(goToAlertsButton).toBeInTheDocument();
+    expect(goToAlertsLink).toBeInTheDocument();
     expect(emptyStateTitle).toBeInTheDocument();
   });
 

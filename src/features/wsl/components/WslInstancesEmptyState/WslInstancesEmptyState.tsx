@@ -22,21 +22,11 @@ const WslInstancesEmptyState: FC = () => {
   return (
     <EmptyState
       title="No WSL instances found"
-      body={
-        <>
-          <p>
-            This computer does not have any WSL instances installed. You can
-            install a new instance by clicking the button below.
-          </p>
-          <a
-            href="https://ubuntu.com/desktop/wsl"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Learn more about Ubuntu WSL
-          </a>
-        </>
-      }
+      body="This computer does not have any WSL instances installed. You can install a new instance by clicking the button below."
+      link={{
+        href: "https://ubuntu.com/desktop/wsl",
+        text: "Learn more about Ubuntu WSL",
+      }}
       cta={[
         <Button
           key="install-new-instance-button"

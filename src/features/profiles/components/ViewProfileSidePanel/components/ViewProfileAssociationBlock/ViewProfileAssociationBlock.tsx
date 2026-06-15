@@ -14,7 +14,6 @@ import { useGetProfileAssociatedCount } from "../../../../hooks/useGetProfileAss
 interface ViewProfileAssociationBlockProps {
   readonly profile: Profile;
   readonly type: ProfileTypes;
-  readonly titleClassName?: string;
 }
 
 const ViewProfileAssociationBlock: FC<ViewProfileAssociationBlockProps> = ({

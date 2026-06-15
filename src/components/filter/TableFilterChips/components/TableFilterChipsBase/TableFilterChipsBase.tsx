@@ -96,13 +96,15 @@ const TableFilterChipsBase: FC<TableFilterChipsProps> = ({
   const hasMultipleChips = flatFilters.length > 1;
 
   useEffect(() => {
-    if (hasMultipleChips) {
-      window.addEventListener("resize", calculateOverflowingChips);
-
-      return () => {
-        window.removeEventListener("resize", calculateOverflowingChips);
-      };
+    if (!hasMultipleChips) {
+      return undefined;
     }
+
+    window.addEventListener("resize", calculateOverflowingChips);
+
+    return () => {
+      window.removeEventListener("resize", calculateOverflowingChips);
+    };
   }, [hasMultipleChips, calculateOverflowingChips]);
 
   useEffect(() => {

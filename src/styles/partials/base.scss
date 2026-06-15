@@ -1,26 +1,30 @@
 a[target="_blank"] {
   &::after {
     content: "";
-    position: initial;
+    vertical-align: middle;
 
     @extend %icon;
-    @include vf-icon-external-link($color-focus);
-  }
+    @include vf-icon-external-link($colors--light-theme--link-default);
 
-  .is-dark & {
-    &::after {
-      @include vf-icon-external-link($color-focus-dark);
+    .is-dark & {
+      @include vf-icon-external-link($colors--dark-theme--focus);
+    }
+
+    // The CustomSelect highlight background color is the default link color so
+    // we make the text white instead
+    .highlight & {
+      @include vf-icon-external-link($colors--dark-theme--text-default);
     }
   }
 }
 
 body:not(.is-dark) {
-  --vf-color-link-visited: #06c;
+  --vf-color-link-visited: #{$colors--light-theme--link-default};
 }
 
 body.is-dark {
-  --vf-color-link-default: #9cf;
-  --vf-color-link-visited: #9cf;
+  --vf-color-link-default: #{$colors--dark-theme--focus};
+  --vf-color-link-visited: #{$colors--dark-theme--focus};
 }
 
 input:-webkit-autofill,

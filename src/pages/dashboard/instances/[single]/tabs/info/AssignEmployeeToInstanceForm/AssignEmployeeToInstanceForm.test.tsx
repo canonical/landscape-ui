@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { PATHS, ROUTES } from "@/libs/routes";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import type { ComponentProps } from "react";
 import { describe, expect } from "vitest";
@@ -97,7 +98,7 @@ describe("AssignEmployeeToInstanceForm", () => {
     await user.click(screen.getByRole("button", { name: /Associate/i }));
 
     expect(
-      await screen.findByText('The endpoint status is set to "error".'),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

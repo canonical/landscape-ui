@@ -304,7 +304,7 @@ const InstanceList = ({
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
         Header: "Ubuntu pro expiration",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
           if (
             instance.ubuntu_pro_info?.attached &&
@@ -327,7 +327,7 @@ const InstanceList = ({
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({ row: { original: instance } }: CellProps<Instance>) => (
           <>
             {moment(instance.last_ping_time).isValid() ? (

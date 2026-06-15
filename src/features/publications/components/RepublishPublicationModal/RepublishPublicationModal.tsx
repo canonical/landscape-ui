@@ -25,15 +25,12 @@ const RepublishPublicationModal: FC<RepublishPublicationModalProps> = ({
 
   const handleRepublishPublication = async () => {
     try {
-      await publishPublication({
-        publicationName: publication.name ?? "", // TODO: change when the api is updated
-        body: { forceOverwrite: true },
-      });
+      await publishPublication({ name: publication.name ?? "" });
 
       notify.success({
         title: `You have marked ${publication.displayName} to be republished`,
         message:
-          "This publication has been queued for republishing to the designated target.",
+          "An activity has been queued to republish it to the designated target.",
       });
     } catch (error) {
       debug(error);

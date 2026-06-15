@@ -34,6 +34,7 @@ export interface PageParams {
   sidePath: string[];
   name: string;
   mirror: string;
+  updateModal: boolean;
 }
 
 /**

@@ -50,14 +50,13 @@ describe("PublicationsContainer", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("does not render button to add publication when there are no publications", async () => {
+  it("renders button to add publication when there are no publications", async () => {
     setEndpointStatus({ status: "empty", path: "publications" });
 
     renderWithProviders(<PublicationsContainer />);
-    await expectLoadingState();
+    await screen.findByText(/you don.t have any publications yet/i);
     expect(
-      screen.queryByRole("button", { name: "Add publication" }),
-    ).not.toBeInTheDocument();
-    screen.debug();
+      screen.getByRole("button", { name: /Add publication/ }),
+    ).toBeInTheDocument();
   });
 });

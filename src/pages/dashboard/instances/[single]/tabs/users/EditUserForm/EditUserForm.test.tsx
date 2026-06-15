@@ -3,6 +3,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { users } from "@/tests/mocks/user";
 import { userGroups } from "@/tests/mocks/userGroup";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import type { User } from "@/types/User";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -132,7 +133,7 @@ describe("EditUserForm", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText('The endpoint status is set to "error".'),
+        screen.getByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
       ).toBeInTheDocument();
     });
   });

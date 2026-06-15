@@ -33,7 +33,7 @@ describe("RepositoryProfilesPage", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /Add repository profile/i }),
+      screen.getByRole("button", { name: /Add profile/i }),
     ).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe("RepositoryProfilesPage", () => {
     renderWithProviders(<RepositoryProfilesPage />);
 
     expect(
-      await screen.findByRole("button", { name: /Add repository profile/i }),
+      await screen.findByRole("button", { name: /Add profile/i }),
     ).toBeInTheDocument();
   });
 
@@ -64,9 +64,7 @@ describe("RepositoryProfilesPage", () => {
     renderWithProviders(<RepositoryProfilesPage />);
 
     await expectLoadingState();
-    await userEvent.click(
-      screen.getByRole("button", { name: "Add repository profile" }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: "Add profile" }));
 
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("button", {

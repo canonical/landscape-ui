@@ -6,7 +6,7 @@ import { Button, Icon, ICONS } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
-import { getSourceType } from "../../helpers";
+import { getInstallsAndUpgradesText, getSourceType } from "../../helpers";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
@@ -105,7 +105,15 @@ const PublicationDetails = ({
         </Blocks.Item>
 
         <Blocks.Item title="Contents">
-          <InfoGrid>
+          <InfoGrid dense>
+            {publication.distribution && (
+              <InfoGrid.Item
+                label="Distribution"
+                large
+                value={publication.distribution}
+              />
+            )}
+
             <InfoGrid.Item
               label="Architectures"
               large
@@ -115,25 +123,15 @@ const PublicationDetails = ({
         </Blocks.Item>
 
         <Blocks.Item title="Settings">
-          <InfoGrid>
+          <InfoGrid dense>
+            <InfoGrid.Item
+              label="Installs and upgrades"
+              value={getInstallsAndUpgradesText(publication)}
+            />
+
             <InfoGrid.Item
               label="Hash indexing"
               value={boolToLabel(Boolean(publication.acquireByHash))}
-            />
-
-            <InfoGrid.Item
-              label="Automatic installation"
-              value={boolToLabel(!publication.notAutomatic)}
-            />
-
-            <InfoGrid.Item
-              label="Automatic upgrades"
-              value={boolToLabel(Boolean(publication.butAutomaticUpgrades))}
-            />
-
-            <InfoGrid.Item
-              label="Multi dist"
-              value={boolToLabel(Boolean(publication.multiDist))}
             />
 
             <InfoGrid.Item

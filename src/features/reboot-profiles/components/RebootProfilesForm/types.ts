@@ -17,5 +17,3 @@ export type RebootProfilesFormProps =
   | { action: "add" }
   | { action: "edit"; profile: RebootProfile }
   | { action: "duplicate"; profile: RebootProfile };
-
-export type RebootProfileDay = "mo" | "tu" | "we" | "th" | "fr" | "sa" | "su";

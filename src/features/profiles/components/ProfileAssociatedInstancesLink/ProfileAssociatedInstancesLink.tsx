@@ -62,6 +62,8 @@ const ProfileAssociatedInstancesLink: FC<
             (id) => !profile.computers["non-compliant"].includes(id),
           );
     }
+
+    return undefined;
   };
 
   const formattedQuery =

@@ -6,18 +6,21 @@ import type {
   BatchGetPublicationTargetsResponse,
 } from "@canonical/landscape-openapi";
 import { http, HttpResponse, type StrictResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import {
   getDebArchivePaginatedResponse,
   getDebArchivePaginationParams,
+  shouldApplyEndpointStatus,
 } from "./_helpers";
 
 const getPublicationTargetsResponse = (requestUrl: string) => {
-  const { pageSize, pageToken } = getDebArchivePaginationParams(requestUrl);
+  const { pageSize, pageToken, search } =
+    getDebArchivePaginationParams(requestUrl);
   const { paginatedData, nextPageToken } = getDebArchivePaginatedResponse(
     publicationTargets,
     pageToken,
     pageSize,
+    search,
   );
 
   return HttpResponse.json({
@@ -43,6 +46,19 @@ export default [
       PublicationTarget,
       "name" | "publicationTargetId"
     >;
+
+    if (shouldApplyEndpointStatus("publicationTargets/create")) {
+      const endpointStatus = getEndpointStatus("publicationTargets/create");
+
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+    }
+
     const now = Date.now();
     const newTarget: PublicationTarget = {
       name: `publicationTargets/new-${now}`,
@@ -53,10 +69,24 @@ export default [
   }),
 
   http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, ({ params }) => {
+    if (shouldApplyEndpointStatus("publicationTargets/delete")) {
+      const endpointStatus = getEndpointStatus("publicationTargets/delete");
+
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+    }
+
     const idx = publicationTargets.findIndex(
       (t) => t.name === `publicationTargets/${params.id}`,
     );
-    if (idx !== -1) publicationTargets.splice(idx, 1);
+    if (idx === -1) {
+      return new HttpResponse(null, { status: 404 });
+    }
     return new HttpResponse(null, { status: 204 });
   }),
 
@@ -64,6 +94,19 @@ export default [
     `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
     async ({ params, request }) => {
       const body = (await request.json()) as Partial<PublicationTarget>;
+
+      if (shouldApplyEndpointStatus("publicationTargets/update")) {
+        const endpointStatus = getEndpointStatus("publicationTargets/update");
+
+        if (endpointStatus.status === "error") {
+          return createEndpointStatusError();
+        }
+
+        if (endpointStatus.status === "variant") {
+          return HttpResponse.json(endpointStatus.response);
+        }
+      }
+
       const idx = publicationTargets.findIndex(
         (t) => t.name === `publicationTargets/${params.id}`,
       );
@@ -79,7 +122,6 @@ export default [
           ? { filesystem: { ...existing.filesystem, ...body.filesystem } }
           : {}),
       } as PublicationTarget;
-      publicationTargets[idx] = updated;
       return HttpResponse.json(updated);
     },
   ),
@@ -91,25 +133,20 @@ export default [
     },
   ),
 
-  // Fallback GET for integration tests that don't mock useGetPublicationTargets directly
   http.get(`${API_URL_DEB_ARCHIVE}publicationTargets`, ({ request }) => {
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("publicationTargets")) {
+      const endpointStatus = getEndpointStatus("publicationTargets");
 
-    if (
-      endpointStatus.status === "error" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return ENDPOINT_STATUS_API_ERROR;
-    }
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
 
-    if (
-      endpointStatus.status === "empty" &&
-      endpointStatus.path === "publicationTargets"
-    ) {
-      return HttpResponse.json({
-        publicationTargets: [],
-        nextPageToken: "",
-      });
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json({
+          publicationTargets: [],
+          nextPageToken: "",
+        });
+      }
     }
 
     return getPublicationTargetsResponse(request.url);

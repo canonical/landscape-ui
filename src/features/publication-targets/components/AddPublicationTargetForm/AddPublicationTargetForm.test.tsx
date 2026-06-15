@@ -1,6 +1,8 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
-import server from "@/tests/server";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
@@ -9,6 +11,10 @@ import AddPublicationTargetForm from "./AddPublicationTargetForm";
 
 describe("AddPublicationTargetForm", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
 
   it("renders the type selector with S3, Swift and Filesystem options", () => {
     renderWithProviders(<AddPublicationTargetForm />);
@@ -124,7 +130,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added My S3 Target/i),
       ).toBeInTheDocument();
     });
   });
@@ -148,7 +154,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added My Swift Target/i),
       ).toBeInTheDocument();
     });
   });
@@ -169,7 +175,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added My Filesystem Target/i),
       ).toBeInTheDocument();
     });
   });
@@ -350,7 +356,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added/i),
       ).toBeInTheDocument();
     });
   });
@@ -387,7 +393,7 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added/i),
       ).toBeInTheDocument();
     });
   });
@@ -406,17 +412,16 @@ describe("AddPublicationTargetForm", () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText("Publication target created"),
+        screen.getByText(/You have successfully added/i),
       ).toBeInTheDocument();
     });
   });
 
   it("shows an error notification when form submission fails", async () => {
-    server.use(
-      http.post(`${API_URL_DEB_ARCHIVE}publicationTargets`, () =>
-        HttpResponse.json({ message: "server error" }, { status: 500 }),
-      ),
-    );
+    setEndpointStatus({
+      status: "error",
+      path: "publicationTargets/create",
+    });
 
     renderWithProviders(<AddPublicationTargetForm />);
 
@@ -436,7 +441,9 @@ describe("AddPublicationTargetForm", () => {
       screen.getByRole("button", { name: /add publication target/i }),
     );
 
-    expect(await screen.findByText("server error")).toBeInTheDocument();
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
   });
 
   describe("payload shape", () => {
@@ -451,6 +458,7 @@ describe("AddPublicationTargetForm", () => {
 
     beforeEach(() => {
       capturedBody = undefined;
+
       server.use(
         http.post(
           `${API_URL_DEB_ARCHIVE}publicationTargets`,
@@ -488,7 +496,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 
@@ -533,7 +541,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 
@@ -572,7 +580,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 
@@ -613,7 +621,7 @@ describe("AddPublicationTargetForm", () => {
 
       await vi.waitFor(() => {
         expect(
-          screen.getByText("Publication target created"),
+          screen.getByText(/You have successfully added/i),
         ).toBeInTheDocument();
       });
 

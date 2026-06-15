@@ -146,6 +146,13 @@ const UsnList: FC<UsnListProps> = ({
             </>
           ),
           Cell: ({ row: { index, original } }: CellProps<Usn>) => {
+            const isExpandedDetailsRow =
+              expandedCell &&
+              expandedCell.row === index - 1 &&
+              ["computers_count", "release_packages"].includes(
+                expandedCell.column,
+              );
+
             if (index === 0 && showSelectAllButton) {
               return (
                 <SelectAllButton
@@ -160,12 +167,7 @@ const UsnList: FC<UsnListProps> = ({
               );
             }
 
-            if (
-              expandedCell?.row === index - 1 &&
-              ["computers_count", "release_packages"].includes(
-                expandedCell.column,
-              )
-            ) {
+            if (isExpandedDetailsRow) {
               return (
                 <UsnPackagesContainer
                   isRemovable={
@@ -216,8 +218,11 @@ const UsnList: FC<UsnListProps> = ({
         {
           accessor: "cves",
           Header: "CVE(s)",
-          Cell: ({ row: { original, index } }: CellProps<Usn>) =>
-            original.cves.length > 0 ? (
+          Cell: ({ row: { original, index } }: CellProps<Usn>) => {
+            const isExpandedCveCell =
+              expandedCell?.column === "cves" && expandedCell?.row === index;
+
+            return original.cves.length > 0 ? (
               <TruncatedCell
                 content={original.cves.map(({ cve, cve_link }) => (
                   <span key={cve} className={classes.cve}>
@@ -231,16 +236,15 @@ const UsnList: FC<UsnListProps> = ({
                     </a>
                   </span>
                 ))}
-                isExpanded={
-                  expandedCell?.column === "cves" && expandedCell.row === index
-                }
+                isExpanded={isExpandedCveCell}
                 onExpand={() => {
                   handleExpandCellClick("cves", index);
                 }}
               />
             ) : (
               <NoData />
-            ),
+            );
+          },
         },
         {
           accessor: "date",
@@ -260,38 +264,44 @@ const UsnList: FC<UsnListProps> = ({
         {
           accessor: "computers_count",
           Header: "Affected instances",
-          Cell: ({ column, row: { index, original } }: CellProps<Usn>) => (
-            <Button
-              type="button"
-              className={classNames("p-accordion__tab", classes.expandButton)}
-              aria-expanded={
-                expandedCell?.column === column.id && expandedCell.row === index
-              }
-              onClick={() => {
-                handleExpandCellClick(column.id, index);
-              }}
-            >
-              {original.computers_count}
-            </Button>
-          ),
+          Cell: ({ column, row: { index, original } }: CellProps<Usn>) => {
+            const isExpandedInstancesCell =
+              expandedCell?.column === column.id && expandedCell?.row === index;
+
+            return (
+              <Button
+                type="button"
+                className={classNames("p-accordion__tab", classes.expandButton)}
+                aria-expanded={isExpandedInstancesCell}
+                onClick={() => {
+                  handleExpandCellClick(column.id, index);
+                }}
+              >
+                {original.computers_count}
+              </Button>
+            );
+          },
         },
         {
           accessor: "release_packages",
           Header: "Affected packages",
-          Cell: ({ column, row: { index } }: CellProps<Usn>) => (
-            <Button
-              type="button"
-              className={classNames("p-accordion__tab", classes.expandButton)}
-              aria-expanded={
-                expandedCell?.column === column.id && expandedCell.row === index
-              }
-              onClick={() => {
-                handleExpandCellClick(column.id, index);
-              }}
-            >
-              {`${expandedCell?.column === column.id && expandedCell.row === index ? "Hide" : "Show"} packages`}
-            </Button>
-          ),
+          Cell: ({ column, row: { index } }: CellProps<Usn>) => {
+            const isExpandedPackagesCell =
+              expandedCell?.column === column.id && expandedCell?.row === index;
+
+            return (
+              <Button
+                type="button"
+                className={classNames("p-accordion__tab", classes.expandButton)}
+                aria-expanded={isExpandedPackagesCell}
+                onClick={() => {
+                  handleExpandCellClick(column.id, index);
+                }}
+              >
+                {`${isExpandedPackagesCell ? "Hide" : "Show"} packages`}
+              </Button>
+            );
+          },
         },
       ].filter(({ accessor }) =>
         otherProps.tableType === "paginated"

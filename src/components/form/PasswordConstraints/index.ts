@@ -1,2 +1,2 @@
 export { default } from "./PasswordConstraints";
-export { passwordValidationSchema } from "./constants";
+export { passwordValidationSchema, REQUIRED_FIELD_MESSAGE } from "./constants";
