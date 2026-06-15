@@ -35,11 +35,15 @@ const authContextValuesWithoutFeatureFlag: AuthContextProps = {
 
 describe("ScriptList", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.mocked(useAuth).mockReturnValue(authContextValues);
+  });
+
   assert(activeScript);
   assert(inactiveScript);
 
   it("should render profile list with feature flag enabled", async () => {
-    vi.mocked(useAuth).mockReturnValue(authContextValues);
     const { container } = renderWithProviders(<ScriptList {...props} />);
 
     expect(container).toHaveTexts([
@@ -108,5 +112,13 @@ describe("ScriptList", () => {
     });
     expect(inactiveStatusCell).toBeInTheDocument();
     expect(inactiveStatusCell).toHaveIcon("status-queued-small");
+  });
+
+  it("should show the search-specific empty message for an empty list", () => {
+    renderWithProviders(<ScriptList scripts={[]} />);
+
+    expect(
+      screen.getByText("No scripts found according to your search parameters."),
+    ).toBeInTheDocument();
   });
 });

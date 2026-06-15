@@ -14,7 +14,7 @@ import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactElement } from "react";
-import { lazy, Suspense, useMemo } from "react";
+import { lazy, Suspense, useCallback, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import { formatTitleCase } from "../../helpers";
 import { useOpenScriptDetails } from "../../hooks";
@@ -37,14 +37,17 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
 
-  const openViewPanel = (script: Script) => {
-    setSidePanelContent(
-      script.title,
-      <Suspense fallback={<LoadingState />}>
-        <ScriptDetails scriptId={script.id} />
-      </Suspense>,
-    );
-  };
+  const openViewPanel = useCallback(
+    (script: Script) => {
+      setSidePanelContent(
+        script.title,
+        <Suspense fallback={<LoadingState />}>
+          <ScriptDetails scriptId={script.id} />
+        </Suspense>,
+      );
+    },
+    [setSidePanelContent],
+  );
 
   useOpenScriptDetails((profile) => {
     openViewPanel(profile);
@@ -177,10 +180,17 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
     return isFeatureEnabled("script-profiles")
       ? result
       : result.filter((column) => column.id !== "associated_profiles");
-  }, [scripts, accessGroupOptions, expandedRowIndex]);
+  }, [
+    accessGroupOptions,
+    expandedRowIndex,
+    handleExpand,
+    isFeatureEnabled,
+    openViewPanel,
+  ]);
 
   return (
     <ResponsiveTable
+      emptyMsg="No scripts found according to your search parameters."
       ref={getTableRowsRef}
       columns={columns}
       data={scripts}
