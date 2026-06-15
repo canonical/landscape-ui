@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Mirror } from "@canonical/landscape-openapi";
-import { getSourceType, shouldShowAuthentication } from "./helpers";
+import {
+  getSourceType,
+  getStrippedUrl,
+  shouldShowAuthentication,
+} from "./helpers";
 
 const buildMirror = (overrides: Partial<Mirror> = {}): Mirror =>
   ({
@@ -196,6 +200,32 @@ describe("MirrorDetails helpers", () => {
           }),
         ),
       ).toBe(false);
+    });
+  });
+
+  describe("getStrippedUrl", () => {
+    it("strips embedded credentials from an Ubuntu Pro archive root", () => {
+      expect(
+        getStrippedUrl(
+          "https://bearer:s3cr3t-token@esm.ubuntu.com/infra/ubuntu/",
+        ),
+      ).toBe("https://esm.ubuntu.com/infra/ubuntu/");
+    });
+
+    it("leaves a credential-free URL unchanged", () => {
+      expect(getStrippedUrl("https://archive.ubuntu.com/ubuntu/")).toBe(
+        "https://archive.ubuntu.com/ubuntu/",
+      );
+    });
+
+    it("does not strip an @ that is part of the path", () => {
+      expect(getStrippedUrl("https://example.com/foo@bar/")).toBe(
+        "https://example.com/foo@bar/",
+      );
+    });
+
+    it("returns the input unchanged when it is not a valid absolute URL", () => {
+      expect(getStrippedUrl("not a url")).toBe("not a url");
     });
   });
 });
