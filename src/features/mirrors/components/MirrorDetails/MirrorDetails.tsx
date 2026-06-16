@@ -1,72 +1,52 @@
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import { Button, Icon, ICONS, Tabs } from "@canonical/react-components";
+import { Icon, Tabs, Notification } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { useGetMirror, useListPublicationTargets } from "../../api";
+import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { getSourceType } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import UpdateMirrorModal from "../UpdateMirrorModal";
-import { useBoolean } from "usehooks-ts";
-import RemoveMirrorModal from "../RemoveMirrorModal";
 import { boolToLabel } from "@/utils/output";
-import { NoPublicationTargetsModal } from "@/features/publication-targets";
 import {
   AssociatedPublicationsList,
   useGetPublicationsBySource,
 } from "@/features/publications";
 import classes from "./MirrorDetails.module.scss";
-import MirrorPackagesList from "../MirrorPackagesList";
+import MirrorPackagesList from "./components/MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   UBUNTU_ARCHIVE_HOST,
   UBUNTU_PRO_HOST,
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  useGetOperation,
+  ViewLogsButton,
+} from "@/features/operations";
+import MirrorDetailsActionBlock from "./components/MirrorDetailsActionBlock";
+
+const POLLING_INTERVAL = 2000;
 
 const MirrorDetails: FC = () => {
-  const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
-    usePageParams();
-
-  const {
-    value: isUpdateModalOpen,
-    setTrue: openUpdateModal,
-    setFalse: closeUpdateModal,
-  } = useBoolean();
-  const {
-    value: isRemoveModalOpen,
-    setTrue: openRemoveModal,
-    setFalse: closeRemoveModal,
-  } = useBoolean();
-  const {
-    value: isNoPublicationTargetsModalOpen,
-    setTrue: openNoPublicationTargetsModal,
-    setFalse: closeNoPublicationTargetsModal,
-  } = useBoolean();
-
+  const { name } = usePageParams();
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
   const mirror = useGetMirror(name).data.data;
-
+  const { operation, isGettingOperation } = useGetOperation(
+    mirror.lastOperation ?? "",
+    {
+      enabled: !!mirror.lastOperation,
+      refetchInterval: ({ state }) =>
+        state.data?.data?.done ? false : POLLING_INTERVAL,
+    },
+  );
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
-
-  const { publicationTargets = [] } = useListPublicationTargets({
-    pageSize: 1000,
-  }).data.data;
-
-  const tryPublish = () => {
-    if (publicationTargets.length || publications.length) {
-      setPageParams({
-        sidePath: [...sidePath, "publish"],
-      });
-    } else {
-      openNoPublicationTargetsModal();
-    }
-  };
 
   const tabs: { label: string; id: "details" | "packages" }[] = [
     {
@@ -87,61 +67,29 @@ const MirrorDetails: FC = () => {
     },
   }));
 
-  useEffect(() => {
-    if (updateModal) {
-      openUpdateModal();
-    }
-  }, [openUpdateModal, updateModal]);
+  if (mirror.lastOperation && isGettingOperation) {
+    return <SidePanel.LoadingState />;
+  }
 
-  const closeAndClearUpdateModal = () => {
-    closeUpdateModal();
-    setPageParams({
-      updateModal: false,
-    });
-  };
+  const iconName = getOperationStatusIcon(operation);
 
   return (
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <div className="p-segmented-control">
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={createSidePathPusher("edit")}
+        {!!operation && !!operation.error && (
+          <Notification
+            severity="negative"
+            title="Update failed"
+            actions={[<ViewLogsButton resource={name} key="view-logs" />]}
           >
-            <Icon name="edit" />
-            <span>Edit</span>
-          </Button>
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={openUpdateModal}
-          >
-            <Icon name="restart" />
-            <span>Update</span>
-          </Button>
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={tryPublish}
-          >
-            <Icon name="upload" />
-            <span>Publish</span>
-          </Button>
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={openRemoveModal}
-          >
-            <Icon name={`${ICONS.delete}--negative`} />
-            <span className="u-text--negative">Remove</span>
-          </Button>
-        </div>
+            Your last mirror update was not completed successfully.
+          </Notification>
+        )}
+        <MirrorDetailsActionBlock
+          displayName={mirror.displayName}
+          operation={operation}
+        />
         <Tabs listClassName={classes.marginBottom} links={links} />
         {tabId === "details" && (
           <Blocks>
@@ -165,10 +113,16 @@ const MirrorDetails: FC = () => {
                   }
                   large
                 />
-
                 <InfoGrid.Item
-                  label="Preserve upstream signing key"
-                  value={boolToLabel(mirror.preserveSignatures)}
+                  label="Status"
+                  value={
+                    <>
+                      {!!iconName && (
+                        <Icon name={iconName} className={classes.icon} />
+                      )}
+                      <OperationStatusCell operation={operation} />
+                    </>
+                  }
                 />
                 <InfoGrid.Item
                   label="Last update"
@@ -186,6 +140,10 @@ const MirrorDetails: FC = () => {
                       <MirrorPackagesCount mirrorName={mirror.name} />
                     )
                   }
+                />
+                <InfoGrid.Item
+                  label="Preserve upstream signing key"
+                  value={boolToLabel(mirror.preserveSignatures)}
                 />
               </InfoGrid>
             </Blocks.Item>
@@ -257,21 +215,6 @@ const MirrorDetails: FC = () => {
           <MirrorPackagesList mirrorName={mirror.name} />
         )}
       </SidePanel.Content>
-      <UpdateMirrorModal
-        isOpen={isUpdateModalOpen}
-        close={closeAndClearUpdateModal}
-        mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
-      />
-      <RemoveMirrorModal
-        isOpen={isRemoveModalOpen}
-        close={closeRemoveModal}
-        mirrorDisplayName={mirror.displayName}
-        mirrorName={name}
-      />
-      {isNoPublicationTargetsModalOpen && (
-        <NoPublicationTargetsModal close={closeNoPublicationTargetsModal} />
-      )}
     </>
   );
 };
