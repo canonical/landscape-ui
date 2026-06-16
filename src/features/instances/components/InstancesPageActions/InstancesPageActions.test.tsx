@@ -52,12 +52,12 @@ const defaultProps: ComponentProps<typeof InstancesPageActions> = {
   instanceCount: selected.length,
   isGettingInstances: false,
   selectedInstances: selected,
+  isAllSelected: false,
 };
 
 const renderPageActions = (
   props: Partial<ComponentProps<typeof InstancesPageActions>> = {},
-) =>
-  renderWithProviders(<InstancesPageActions {...defaultProps} {...props} />);
+) => renderWithProviders(<InstancesPageActions {...defaultProps} {...props} />);
 
 describe("InstancesPageActions", () => {
   beforeEach(() => {
@@ -144,7 +144,9 @@ describe("InstancesPageActions", () => {
         "is-disabled",
       );
 
-      await userEvent.click(screen.getByRole("menuitem", { name: /^export$/i }));
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /^export$/i }),
+      );
 
       expect(
         screen.getByRole("heading", { name: /export 3 instances as tsv/i }),
@@ -286,7 +288,9 @@ describe("InstancesPageActions", () => {
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
       );
-      await userEvent.click(screen.getByRole("menuitem", { name: /^export$/i }));
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /^export$/i }),
+      );
 
       expect(
         screen.getByRole("heading", {
@@ -490,7 +494,9 @@ describe("InstancesPageActions", () => {
       const startIdx = 9;
       const endIdx = 12;
 
-      renderPageActions({ selectedInstances: instances.slice(startIdx, endIdx) });
+      renderPageActions({
+        selectedInstances: instances.slice(startIdx, endIdx),
+      });
 
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),

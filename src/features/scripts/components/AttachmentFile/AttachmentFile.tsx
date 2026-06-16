@@ -8,6 +8,7 @@ import {
 import classNames from "classnames";
 import type { FC } from "react";
 import useDebug from "@/hooks/useDebug";
+import { downloadBlob } from "@/utils/browserDownload";
 import { useGetSingleScriptAttachment } from "../../api";
 import classes from "./AttachmentFile.module.scss";
 
@@ -40,14 +41,7 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
         return;
       }
 
-      const url = URL.createObjectURL(data.data);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      downloadBlob(data.data, filename);
     } catch (error) {
       debug(error);
     }

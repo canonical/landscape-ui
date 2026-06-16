@@ -20,11 +20,15 @@ import {
 interface ActivitiesHeaderProps {
   readonly selected: ActivityCommon[];
   readonly resetSelectedIds: () => void;
+  readonly activityCount?: number;
+  readonly isAllSelected?: boolean;
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   resetSelectedIds,
   selected,
+  activityCount,
+  isAllSelected = false,
 }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [showSearchHelp, setShowSearchHelp] = useState(false);
@@ -40,6 +44,9 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   }));
 
   useEffect(() => {
+    // Intentional prop->state sync: resets the search input when the URL query
+    // param changes externally (e.g. browser back/forward).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchText(query ?? "");
   }, [query]);
 
@@ -87,7 +94,14 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
             <ActivitiesDateFilter />
           </div>
 
-          {IS_PANEL && <ActivitiesActions selected={selected} />}
+          {IS_PANEL && (
+            <ActivitiesActions
+              selected={selected}
+              activityCount={activityCount}
+              isAllSelected={isAllSelected}
+              exportBaseQuery={instanceId ? `computer:id:${instanceId}` : ""}
+            />
+          )}
         </div>
       </div>
       <SearchHelpPopup

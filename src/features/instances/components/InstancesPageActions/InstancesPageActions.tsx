@@ -10,14 +10,17 @@ import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { getFeatures, hasUpgrades, type InstanceListParams } from "../../helpers";
+import {
+  getFeatures,
+  hasUpgrades,
+  type InstanceListParams,
+} from "../../helpers";
+import { getExportTitle } from "./helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-const InstancesExportForm = lazy(
-  async () => import("../InstancesExportForm"),
-);
+const InstancesExportForm = lazy(async () => import("../InstancesExportForm"));
 
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
@@ -45,6 +48,7 @@ interface InstancesPageActionsProps {
   readonly instanceCount: number | undefined;
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
+  readonly isAllSelected: boolean;
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
@@ -52,6 +56,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
   instanceCount,
   isGettingInstances,
   selectedInstances,
+  isAllSelected,
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
@@ -86,20 +91,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
   const hasSelectedInstances = selectedInstances.length > 0;
-  const hasInstancesToExport =
-    hasSelectedInstances || (instanceCount ?? 0) > 0;
-
-  const getExportTitle = () => {
-    if (hasSelectedInstances) {
-      return `Export ${pluralize(selectedInstances.length, ["instance"], "exact")} as TSV`;
-    }
-
-    if (instanceCount !== undefined) {
-      return `Export ${pluralize(instanceCount, ["instance"], "exact")} as TSV`;
-    }
-
-    return "Export instances as TSV";
-  };
+  const hasInstancesToExport = isAllSelected || hasSelectedInstances;
 
   const handleRunScript = async () => {
     setSidePanelContent(
@@ -211,13 +203,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleExport = () => {
     setSidePanelContent(
-      getExportTitle(),
+      getExportTitle({
+        isAllSelected,
+        selectedCount: selectedInstances.length,
+        instanceCount,
+      }),
       <Suspense fallback={<LoadingState />}>
         <InstancesExportForm
           exportParams={exportParams}
           instanceCount={instanceCount}
-          selectedInstanceCount={selectedInstances.length}
-          selectedInstanceIds={selectedInstances.map(({ id }) => id)}
+          selectedInstanceCount={
+            isAllSelected ? undefined : selectedInstances.length
+          }
+          selectedInstanceIds={
+            isAllSelected ? undefined : selectedInstances.map(({ id }) => id)
+          }
         />
       </Suspense>,
       "medium",

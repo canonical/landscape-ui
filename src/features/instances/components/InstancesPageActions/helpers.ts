@@ -1,26 +1,19 @@
-import type { NotificationMethodArgs } from "@/types/Notification";
-import type { Instance } from "@/types/Instance";
-import { pluralize, getSelectionLabel } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
-type GetNotificationArgsFn = (params: {
-  action: "reboot" | "shutdown";
-  onDetailsClick: () => void;
-  selected: Instance[];
-}) => NotificationMethodArgs;
-
-export const getNotificationArgs: GetNotificationArgsFn = ({
-  action,
-  onDetailsClick,
-  selected,
-}) => {
-  return {
-    title: `Selected ${pluralize(selected.length, ["instance has", "instances have"])} been queued for ${action}.`,
-    message: `${getSelectionLabel(selected, (instance) => `"${instance.title}" instance has`, `instances have`)} been queued in Activities for ${action}.`,
-    actions: [
-      {
-        label: "View details",
-        onClick: onDetailsClick,
-      },
-    ],
-  };
+export const getExportTitle = ({
+  isAllSelected,
+  selectedCount,
+  instanceCount,
+}: {
+  isAllSelected: boolean;
+  selectedCount: number;
+  instanceCount: number | undefined;
+}): string => {
+  if (!isAllSelected && selectedCount > 0) {
+    return `Export ${pluralize(selectedCount, ["instance"], "exact")} as TSV`;
+  }
+  if (instanceCount !== undefined) {
+    return `Export ${pluralize(instanceCount, ["instance"], "exact")} as TSV`;
+  }
+  return "Export instances as TSV";
 };

@@ -144,14 +144,14 @@ export const getAnnotationFieldOptions = (
     });
   });
 
-  return [...annotationKeys].sort((left, right) => left.localeCompare(right)).map(
-    (annotationKey) => ({
+  return [...annotationKeys]
+    .sort((left, right) => left.localeCompare(right))
+    .map((annotationKey) => ({
       id: `annotation:${annotationKey}`,
       label: `Annotation: ${annotationKey}`,
       annotationKey,
       getValue: (instance) => instance.annotations?.[annotationKey] ?? "",
-    }),
-  );
+    }));
 };
 
 export const getSelectedExportFields = ({
@@ -183,19 +183,9 @@ export const buildExportQuery = ({
   query?: string;
   selectedInstanceIds?: number[];
 }) => {
-  const baseQuery = query?.trim();
-  const selectionQuery = selectedInstanceIds?.length
-    ? `id:${selectedInstanceIds.join(" OR id:")}`
-    : "";
-
-  if (!selectionQuery) {
-    return baseQuery;
+  if (selectedInstanceIds?.length) {
+    return `id:${selectedInstanceIds.join(" OR id:")}`;
   }
 
-  if (!baseQuery) {
-    return selectionQuery;
-  }
-
-  return `(${baseQuery}) AND (${selectionQuery})`;
+  return query?.trim();
 };
-
