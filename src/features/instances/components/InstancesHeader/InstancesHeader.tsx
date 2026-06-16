@@ -11,7 +11,6 @@ import type { FC } from "react";
 import { useState } from "react";
 import { useGetAvailabilityZones } from "../../api";
 import { FILTERS } from "../../constants";
-import InstancesExportNotification from "../InstancesExportNotification";
 import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
@@ -168,7 +167,6 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
           setShowSearchHelp(false);
         }}
       />
-      <InstancesExportNotification />
       <PendingInstancesNotification />
     </>
   );

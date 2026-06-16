@@ -26,6 +26,7 @@ export {
 } from "./api";
 export { default as Activities } from "./components/Activities";
 export { default as ActivitiesActions } from "./components/ActivitiesActions";
+export { default as ActivitiesContainer } from "./components/ActivitiesContainer";
 export { default as ActivitiesEmptyState } from "./components/ActivitiesEmptyState";
 export { ACTIVITY_STATUSES } from "./constants";
 export { useOpenActivityDetails, useOpenActivityDetailsPanel } from "./hooks";

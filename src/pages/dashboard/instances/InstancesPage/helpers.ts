@@ -1,1 +1,5 @@
-export { getInstanceListParams, getOptionQuery, getQuery } from "@/features/instances";
+export {
+  getInstanceListParams,
+  getOptionQuery,
+  getQuery,
+} from "@/features/instances";
