@@ -1,5 +1,8 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DEFAULT_POLLING_INTERVAL,
+  DISPLAY_DATE_TIME_FORMAT,
+} from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
@@ -18,8 +21,6 @@ import {
   getOperationStatusIcon,
 } from "@/features/operations";
 
-const POLL_INTERVAL = 2000;
-
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
   readonly emptyMsg?: string;
@@ -37,7 +38,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
     {
       refetchInterval: ({ state }) =>
         Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? POLL_INTERVAL
+          ? DEFAULT_POLLING_INTERVAL
           : false,
     },
   );
@@ -70,6 +71,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
             <OperationStatusCell
               isGettingOperation={isGettingOperations}
               operation={operation}
+              type="mirror"
             />
           );
         },

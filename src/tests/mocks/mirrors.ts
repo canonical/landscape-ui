@@ -50,7 +50,7 @@ export const mirrors = [
     filter: "!package1 | !package2",
     filterWithDeps: true,
     lastDownloadDate: new Date("2024-05-01T12:00:00Z"),
-    lastOperation: "operations/ffff-llll-dddd",
+    lastOperation: "operations/mirror-ffff-llll-dddd",
   },
   {
     name: "mirrors/unsynced-mirror",
