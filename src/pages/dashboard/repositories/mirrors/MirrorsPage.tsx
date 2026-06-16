@@ -28,10 +28,6 @@ const PublishMirrorForm = lazy(
   async () => import("@/features/mirrors/components/PublishMirrorForm"),
 );
 
-const ViewLogsSidePanel = lazy(
-  async () => import("@/features/operations/components/ViewLogsSidePanel"),
-);
-
 const MirrorsPage: FC = () => {
   const {
     search,
@@ -41,13 +37,7 @@ const MirrorsPage: FC = () => {
     createPageParamsSetter,
   } = usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", [
-    "add",
-    "edit",
-    "publish",
-    "view",
-    "logs",
-  ]);
+  useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
 
   const { data } = useListMirrors({
     filter: search ? `display_name=${JSON.stringify(`${search}*`)}` : undefined,
@@ -66,46 +56,43 @@ const MirrorsPage: FC = () => {
     </Button>,
   ];
 
-  const { mirrors = [] } = data.data;
-  const showList = !!mirrors.length || !!search;
+  const hasMirrors = !!data.data.mirrors?.length;
+  const isSearchActive = !!search;
 
-  const { actions, children, hasTable } = showList
-    ? {
-        actions: buttons,
-        children: (
-          <>
-            <HeaderWithSearch />
-            <MirrorsList
-              mirrors={mirrors}
-              emptyMsg={`No mirrors found with the search: "${search}"`}
+  const { actions, children, hasTable } =
+    hasMirrors || isSearchActive
+      ? {
+          actions: buttons,
+          children: (
+            <>
+              <HeaderWithSearch />
+              <MirrorsList
+                mirrors={data.data.mirrors ?? []}
+                emptyMsg={`No mirrors found with the search: "${search}"`}
+              />
+            </>
+          ),
+          hasTable: true,
+        }
+      : {
+          children: (
+            <EmptyState
+              title="You don’t have any mirrors yet"
+              body="This feature allows you to mirror Debian repositories."
+              link={{
+                href: DEBARCHIVE_DOCUMENTATION_URL,
+                text: "Learn more about repository mirroring",
+              }}
+              cta={buttons}
             />
-          </>
-        ),
-        hasTable: true,
-      }
-    : {
-        children: (
-          <EmptyState
-            title="You don’t have any mirrors yet"
-            body="This feature allows you to mirror Debian repositories."
-            link={{
-              href: DEBARCHIVE_DOCUMENTATION_URL,
-              text: "Learn more about repository mirroring",
-            }}
-            cta={buttons}
-          />
-        ),
-      };
+          ),
+        };
 
   return (
     <PageMain>
       <PageHeader title="Mirrors" actions={actions} />
       <PageContent hasTable={hasTable}>{children}</PageContent>
-      <SidePanel
-        onClose={popSidePathUntilClear}
-        isOpen={!!sidePath.length}
-        size={lastSidePathSegment === "logs" ? "medium" : "small"}
-      >
+      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <AddMirrorForm />
@@ -124,11 +111,6 @@ const MirrorsPage: FC = () => {
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <MirrorDetails />
-          </SidePanel.Suspense>
-        )}
-        {lastSidePathSegment === "logs" && (
-          <SidePanel.Suspense key="logs">
-            <ViewLogsSidePanel />
           </SidePanel.Suspense>
         )}
       </SidePanel>

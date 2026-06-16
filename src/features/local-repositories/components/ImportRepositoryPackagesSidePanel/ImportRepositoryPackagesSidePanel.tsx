@@ -14,9 +14,12 @@ import { useGetOperation } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralize } from "@/utils/_helpers";
+import type {
+  OperationStatus,
+  PackagesValidationState,
+} from "@/features/operations";
 import { getPackageList } from "./helpers";
 import ValidationResult from "./ValidationResult/ValidationResult";
-import type { PackagesValidationState } from "../../types";
 
 const POLL_INTERVAL = 2000;
 
@@ -42,12 +45,12 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const getTaskStatus = (): PackagesValidationState | undefined => {
     if (isPolling && operation) {
       const { response, count } = getPackageList(
-        operation.response?.output ?? "",
+        (operation.response?.output as string) ?? "",
       );
 
       return {
-        done: operation.done,
-        status: operation.metadata.status,
+        done: operation.done ?? false,
+        status: (operation.metadata?.status as OperationStatus) ?? "idle",
         response: response,
         count: count,
         error: operation.error,

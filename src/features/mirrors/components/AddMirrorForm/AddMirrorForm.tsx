@@ -36,7 +36,7 @@ import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setPageParams } = usePageParams();
+  const { closeSidePanel, createPageParamsSetter } = usePageParams();
 
   const ubuntuArchiveQuery = useGetUbuntuArchiveInfo();
   const ubuntuEsmQuery = useGetUbuntuEsmInfo();
@@ -137,14 +137,11 @@ const AddMirrorForm: FC = () => {
           actions: [
             {
               label: "Update mirror",
-              onClick: () => {
-                setPageParams({
-                  sidePath: ["view"],
-                  name: newMirror.name,
-                  updateModal: true,
-                });
-                notify.clear();
-              },
+              onClick: createPageParamsSetter({
+                sidePath: ["view"],
+                name: newMirror.name,
+                updateModal: true,
+              }),
             },
           ],
         });
