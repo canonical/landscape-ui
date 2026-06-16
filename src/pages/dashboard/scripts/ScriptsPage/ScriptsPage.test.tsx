@@ -80,7 +80,7 @@ describe("ScriptsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should trigger navigation to legacy portal when clicking the link", async () => {
+  it("should link to the legacy portal scripts page", async () => {
     vi.mocked(useAuth).mockReturnValue(mockAuth);
     renderWithProviders(<ScriptsPage />);
 

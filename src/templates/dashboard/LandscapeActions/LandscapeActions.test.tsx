@@ -1,6 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import LandscapeActions from "./LandscapeActions";
 import { FEEDBACK_LINK } from "@/constants";
 
