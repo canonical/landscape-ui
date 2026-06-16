@@ -16,6 +16,9 @@ const props: Omit<
   isGettingInstances: false,
   selectedInstances: [],
   onChangeFilter: vi.fn(),
+  isAllSelected: false,
+  onSelectAll: vi.fn(),
+  onClearSelection: vi.fn(),
 };
 
 const columns = [

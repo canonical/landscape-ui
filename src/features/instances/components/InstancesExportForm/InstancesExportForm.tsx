@@ -1,7 +1,9 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
+import { INPUT_DATE_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ROUTES } from "@/libs/routes";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Accordion,
@@ -10,17 +12,17 @@ import {
   Input,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import {
-  useCallback,
-  useMemo,
-  useState,
-  type FC,
-} from "react";
+import moment from "moment";
+import { useCallback, useMemo, useState, type FC } from "react";
+import { useNavigate } from "react-router";
 import { useExportInstancesCsv } from "../../api/useExportInstancesCsv";
 import type { InstanceListParams } from "../../helpers";
 import classes from "./InstancesExportForm.module.scss";
-import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
-import { EXPORT_FIELD_GROUPS } from "./constants";
+import {
+  EXPORT_FIELD_GROUPS,
+  INITIAL_VALUES,
+  VALIDATION_SCHEMA,
+} from "./constants";
 import { buildExportQuery } from "./helpers";
 import type {
   ExportField,
@@ -28,7 +30,7 @@ import type {
   StepIndex,
 } from "./types";
 import classNames from "classnames";
-import SortableFieldList from "./components/SortableFieldList";
+import { SortableFieldList } from "@/features/exports";
 
 interface InstancesExportFormProps {
   readonly exportParams: InstanceListParams;
@@ -45,12 +47,17 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
 }) => {
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
+  const navigate = useNavigate();
   const debug = useDebug();
   const { exportInstancesCsv, isExportInstancesCsvLoading } =
     useExportInstancesCsv();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
+
+  const handleBack = () => {
+    setStep(0);
+  };
 
   const formik = useFormik<InstancesExportFormValues>({
     initialValues: INITIAL_VALUES,
@@ -75,19 +82,32 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
       });
 
       try {
-        await exportInstancesCsv({
+        const response = await exportInstancesCsv({
           name: values.name.trim(),
           query,
           archived_only: exportParams.archived_only,
           wsl_children: exportParams.wsl_children,
           wsl_parents: exportParams.wsl_parents,
           selected_field_ids: fieldsToExport.map((field) => field.id),
+          retain_until: moment(values.retainUntil).toISOString(),
+          display_query: exportParams.query ?? "",
+          has_selection: !!selectedInstanceIds?.length,
         });
+        const job = response.data;
 
         closeSidePanel();
-        notify.info({
+        notify.success({
           title: "TSV export in progress",
-          message: `Your instances export "${values.name.trim()}"${exportParams.query ? ` for "${exportParams.query}"` : ""} is being generated. You can track it from the instances page.`,
+          message: `Your instances export "${values.name.trim()}"${exportParams.query ? ` for "${exportParams.query}"` : ""} is being generated.`,
+          actions: [
+            {
+              label: "View export status",
+              onClick: () =>
+                navigate(
+                  ROUTES.exports.root({ sidePath: ["view"], name: job.id }),
+                ),
+            },
+          ],
         });
       } catch (error) {
         debug(error);
@@ -199,6 +219,15 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
             {...formik.getFieldProps("name")}
           />
           <Input
+            type="date"
+            label="Keep until"
+            required
+            min={moment().add(1, "day").format(INPUT_DATE_FORMAT)}
+            max={moment().add(100, "years").format(INPUT_DATE_FORMAT)}
+            error={getFormikError(formik, "retainUntil")}
+            {...formik.getFieldProps("retainUntil")}
+          />
+          <Input
             type="search"
             label="Search attributes"
             placeholder="Search attributes"
@@ -237,23 +266,18 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
-      <p className={classes.description}>
-        {step === 0
-          ? "Name your export, select the attributes you want to include, and filter the list if needed."
-          : "Review your selected columns before generating the export."}
-      </p>
+      {step === 0 && (
+        <p className={classes.description}>
+          Name your export, select the attributes you want to include, and
+          filter the list if needed.
+        </p>
+      )}
 
       {stepContent}
 
       <SidePanelFormButtons
         hasBackButton={step === 1}
-        onBackButtonPress={
-          step === 1
-            ? () => {
-                setStep(0);
-              }
-            : undefined
-        }
+        onBackButtonPress={step === 1 ? handleBack : undefined}
         submitButtonDisabled={
           (step === 0 &&
             (!formik.values.name.trim() ||

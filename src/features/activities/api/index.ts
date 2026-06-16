@@ -4,3 +4,4 @@ export { default as useCancelActivities } from "./useCancelActivities";
 export { default as useGetActivityTypes } from "./useGetActivityTypes";
 export { default as useGetSingleActivity } from "./useGetSingleActivity";
 export { default as useRedoActivities } from "./useRedoActivities";
+export { useExportActivitiesCsv } from "./useExportActivitiesCsv";

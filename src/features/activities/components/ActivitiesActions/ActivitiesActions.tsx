@@ -1,29 +1,82 @@
-import type { FC } from "react";
 import { ResponsiveButtons } from "@/components/ui";
+import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
+import useSidePanel from "@/hooks/useSidePanel";
+import { Button, Icon } from "@canonical/react-components";
+import { ConfirmationButton } from "@canonical/react-components";
+import { lazy, Suspense, type FC } from "react";
 import type { ActivityCommon } from "../../types";
 import { pluralize } from "@/utils/_helpers";
-import { ConfirmationButton } from "@canonical/react-components";
+import { getExportTitle } from "./helpers";
 import {
   useApproveActivities,
   useCancelActivities,
   useRedoActivities,
 } from "../../api";
 
+const ActivitiesExportForm = lazy(
+  async () => import("../ActivitiesExportForm"),
+);
+
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
+  readonly activityCount?: number;
+  readonly isAllSelected?: boolean;
+  readonly exportBaseQuery?: string;
 }
 
-const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
+const ActivitiesActions: FC<ActivitiesActionsProps> = ({
+  selected,
+  activityCount,
+  isAllSelected = false,
+  exportBaseQuery = "",
+}) => {
   const { notify } = useNotify();
   const debug = useDebug();
+  const { setSidePanelContent } = useSidePanel();
+  const { query, search, status, fromDate, toDate, type } = usePageParams();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const selectedIds = selected.map((activity) => activity.id);
+
+  const exportQuery = [
+    exportBaseQuery,
+    search,
+    query,
+    status ? `status:${status}` : "",
+    fromDate ? `created-after:${fromDate}` : "",
+    toDate ? `created-before:${toDate}` : "",
+    type ? `type:${type}` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const title = pluralize(selected.length, ["activity", "activities"], "exact");
+
+  const handleExport = () => {
+    setSidePanelContent(
+      getExportTitle({
+        isAllSelected,
+        selectedCount: selected.length,
+        activityCount,
+      }),
+      <Suspense fallback={<LoadingState />}>
+        <ActivitiesExportForm
+          exportParams={{ query: exportQuery }}
+          activityCount={activityCount}
+          selectedActivityCount={isAllSelected ? undefined : selected.length}
+          selectedActivityIds={
+            !isAllSelected && selected.length > 0 ? selectedIds : undefined
+          }
+        />
+      </Suspense>,
+      "medium",
+    );
+  };
 
   const handleApproveActivities = async () => {
     try {
@@ -68,6 +121,17 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
     <ResponsiveButtons
       collapseFrom="xl"
       buttons={[
+        <Button
+          key="export"
+          className="p-segmented-control__button"
+          type="button"
+          hasIcon
+          disabled={!isAllSelected && selected.length === 0}
+          onClick={handleExport}
+        >
+          <Icon name="export" />
+          <span>Export</span>
+        </Button>,
         <ConfirmationButton
           key="approve"
           type="button"

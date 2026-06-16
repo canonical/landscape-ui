@@ -36,3 +36,4 @@ export { default as useInstanceSearchHelpTerms } from "./components/InstancesHea
 export { default as RestartModal } from "./components/RestartModal";
 export { default as ShutDownModal } from "./components/ShutDownModal";
 export type { InstanceListParams } from "./helpers";
+export type { InstancesExportJob } from "./types";

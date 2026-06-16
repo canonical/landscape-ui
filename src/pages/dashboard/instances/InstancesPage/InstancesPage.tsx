@@ -29,8 +29,15 @@ const InstancesPage: FC = () => {
   });
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
 
   const clearSelection = useCallback(() => {
+    setSelectedInstances([]);
+    setIsAllSelected(false);
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setIsAllSelected(true);
     setSelectedInstances([]);
   }, []);
 
@@ -45,6 +52,7 @@ const InstancesPage: FC = () => {
             instanceCount={instancesCount}
             isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
+            isAllSelected={isAllSelected}
           />,
         ]}
       />
@@ -56,6 +64,9 @@ const InstancesPage: FC = () => {
           setSelectedInstances={setSelectedInstances}
           onChangeFilter={clearSelection}
           isGettingInstances={isGettingInstances}
+          isAllSelected={isAllSelected}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
         />
       </PageContent>
     </PageMain>

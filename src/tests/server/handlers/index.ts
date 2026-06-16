@@ -6,13 +6,13 @@ import activity from "./activity";
 import administrators from "./administrators";
 import alerts from "./alerts";
 import auth from "./auth";
+import exports from "./exports";
 import autoinstallFiles from "./autoinstallFiles";
 import availabilityZones from "./availabilityZones";
 import employees from "./employees";
 import eventsLog from "./eventsLog";
 import features from "./features";
 import instance from "./instance";
-import instancesExport from "./instancesExport";
 import invitations from "./invitations";
 import kernel from "./kernel";
 import mirrors from "./mirrors";
@@ -53,12 +53,12 @@ export default [
   ...activity,
   ...alerts,
   ...auth,
+  ...exports,
   ...oidcIssuers,
   ...availabilityZones,
   ...employees,
   ...eventsLog,
   ...instance,
-  ...instancesExport,
   ...invitations,
   ...kernel,
   ...mirrors,
