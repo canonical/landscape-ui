@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
@@ -142,7 +143,7 @@ describe("AddMirrorForm", () => {
       "Ubuntu Pro",
     );
 
-    await user.type(screen.getByLabelText("Token"), token);
+    await user.type(screen.getByLabelText("Bearer token"), token);
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
@@ -150,6 +151,33 @@ describe("AddMirrorForm", () => {
         archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
       }),
     );
+  });
+
+  it("explains which token an ubuntu pro mirror requires", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Ubuntu Pro",
+    );
+
+    const tokenInput = screen.getByLabelText("Bearer token");
+    expect(tokenInput).toBeInTheDocument();
+
+    // The explanatory copy now lives in a tooltip on the field label.
+    const helpIcon = document
+      .querySelector(`label[for="${tokenInput.id}"]`)
+      ?.querySelector(".p-icon--help");
+    assert(helpIcon);
+    await user.hover(helpIcon);
+
+    const tooltip = await screen.findByRole("tooltip");
+    expect(
+      within(tooltip).getByText(
+        /this is not your ubuntu pro subscription token/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(tooltip).getByText("/etc/apt/auth.conf.d/90ubuntu-advantage"),
+    ).toBeInTheDocument();
   });
 
   it("submits a mirror with preserve signatures enabled", async () => {
