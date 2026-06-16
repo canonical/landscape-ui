@@ -1,9 +1,12 @@
 import type { ExportFieldGroup, InstancesExportFormValues } from "./types";
+import { INPUT_DATE_FORMAT } from "@/constants";
+import moment from "moment";
 import * as Yup from "yup";
 
 export const INITIAL_VALUES: InstancesExportFormValues = {
   name: "",
   selectedFieldIds: [],
+  retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
 };
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
@@ -11,6 +14,19 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
   selectedFieldIds: Yup.array()
     .of(Yup.string().required())
     .min(1, "Select at least one attribute"),
+  retainUntil: Yup.string()
+    .required("This field is required")
+    .test(
+      "retain-until-future",
+      "Must be a date in the future",
+      (value) => !!value && moment(value).isAfter(moment().startOf("day")),
+    )
+    .test(
+      "retain-until-max",
+      "Must be within 100 years from today",
+      (value) =>
+        !!value && moment(value).isSameOrBefore(moment().add(100, "years")),
+    ),
 });
 
 export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
@@ -130,14 +146,3 @@ export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
     ],
   },
 ];
-
-export const ALL_EXPORT_FIELD_IDS = EXPORT_FIELD_GROUPS.flatMap((group) =>
-  group.fields.map((field) => field.id),
-);
-
-export const DEFAULT_ASYNC_EXPORT_FIELD_IDS = EXPORT_FIELD_GROUPS.flatMap(
-  (group) =>
-    group.fields
-      .filter((field) => field.defaultSelected)
-      .map((field) => field.id),
-);

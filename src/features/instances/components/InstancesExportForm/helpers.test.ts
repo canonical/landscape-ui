@@ -6,9 +6,9 @@ const SECOND_INSTANCE_ID = 42;
 
 describe("buildExportQuery", () => {
   it("returns the original query when there is no row selection", () => {
-    expect(buildExportQuery({ query: "name:prod", selectedInstanceIds: [] })).toBe(
-      "name:prod",
-    );
+    expect(
+      buildExportQuery({ query: "name:prod", selectedInstanceIds: [] }),
+    ).toBe("name:prod");
   });
 
   it("builds an id-only query when there is no base query", () => {
@@ -17,14 +17,12 @@ describe("buildExportQuery", () => {
     );
   });
 
-  it("combines the current query with the selected instance ids", () => {
+  it("uses only the selected instance ids when both a query and ids are provided", () => {
     expect(
       buildExportQuery({
         query: "tag:server archived:false",
         selectedInstanceIds: [FIRST_INSTANCE_ID, SECOND_INSTANCE_ID],
       }),
-    ).toBe(
-      `(tag:server archived:false) AND (id:${FIRST_INSTANCE_ID} OR id:${SECOND_INSTANCE_ID})`,
-    );
+    ).toBe(`id:${FIRST_INSTANCE_ID} OR id:${SECOND_INSTANCE_ID}`);
   });
 });

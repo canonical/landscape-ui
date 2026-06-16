@@ -1,0 +1,3 @@
+export const OVERLAY_CURSOR_OFFSET_PX = 12;
+export const JUST_MOVED_HIGHLIGHT_MS = 1500;
+export const FLIP_TRANSITION_CLEANUP_MS = 300;
