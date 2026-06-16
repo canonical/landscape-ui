@@ -5,9 +5,11 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
   Form,
+  Icon,
   Input,
   Select,
   Textarea,
+  Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type ComponentProps, type FC, useEffect, useRef } from "react";
@@ -249,18 +251,30 @@ const AddMirrorForm: FC = () => {
               />
               {formik.values.sourceType === "ubuntu-pro" && (
                 <Input
-                  type="password"
+                  type="text"
+                  className={classes.maskedInput}
                   autoComplete="off"
-                  label="Bearer token"
-                  required
-                  help={
+                  label={
                     <>
-                      Use the bearer token for the Pro service you want to
-                      mirror. This is not your Ubuntu Pro subscription token.
-                      For ESM repositories, your token is found in{" "}
-                      <code>/etc/apt/auth.conf.d/90ubuntu-advantage</code>.
+                      <span>Bearer token </span>
+                      <Tooltip
+                        message={
+                          <>
+                            Use the bearer token for the Pro service you want to
+                            mirror. This is not your Ubuntu Pro subscription
+                            token. For ESM repositories, your token is found in{" "}
+                            <code>/etc/apt/auth.conf.d/90ubuntu-advantage</code>
+                            .
+                          </>
+                        }
+                        position="top-center"
+                        tooltipClassName={classes.tooltip}
+                      >
+                        <Icon name="help" />
+                      </Tooltip>
                     </>
                   }
+                  required
                   {...formik.getFieldProps("token")}
                   error={getFormikError(formik, "token")}
                 />
