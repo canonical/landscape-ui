@@ -8,25 +8,15 @@ import Suspense from "@/components/layout/SidePanel/Suspense";
 import LoadingState from "@/components/layout/SidePanel/LoadingState";
 import { mirrors } from "@/tests/mocks/mirrors";
 import type { Mirror } from "@canonical/landscape-openapi";
+import { publications } from "@/tests/mocks/publications";
 
 const COPIED_FEEDBACK_TIMEOUT = 2010;
 const typedMirrors = mirrors as Mirror[];
 
 const failedMirror = typedMirrors.find(
-  (mirror) => mirror.lastOperation === "operations/ffff-llll-dddd",
+  (mirror) => mirror.lastOperation === "operations/mirror-ffff-llll-dddd",
 );
 assert(failedMirror, "Missing mock mirror with a failed operation");
-
-const ComponentWrapper = ({
-  isTestingCopy = false,
-}: {
-  readonly isTestingCopy?: boolean;
-}) => (
-  <Suspense fallback={<LoadingState />}>
-    <ViewLogsSidePanel />
-    {isTestingCopy && <input type="textbox" />}
-  </Suspense>
-);
 
 describe("ViewLogsSidePanel", () => {
   beforeEach(() => {
@@ -35,7 +25,9 @@ describe("ViewLogsSidePanel", () => {
 
   it("renders loading state when fetching", () => {
     renderWithProviders(
-      <ComponentWrapper />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
       undefined,
       `?sidePath=logs&name=${failedMirror.name}`,
     );
@@ -45,7 +37,9 @@ describe("ViewLogsSidePanel", () => {
 
   it("renders operation logs when available", async () => {
     renderWithProviders(
-      <ComponentWrapper />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
       undefined,
       `?sidePath=logs&name=${failedMirror.name}`,
     );
@@ -64,7 +58,9 @@ describe("ViewLogsSidePanel", () => {
 
   it("displays actions when logs are available", async () => {
     renderWithProviders(
-      <ComponentWrapper />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
       undefined,
       `?sidePath=logs&name=${failedMirror.name}`,
     );
@@ -79,7 +75,7 @@ describe("ViewLogsSidePanel", () => {
     expect(downloadLink).toBeInTheDocument();
     expect(downloadLink).toHaveAttribute(
       "download",
-      `${failedMirror.name}.log`,
+      `${failedMirror.displayName.replaceAll(" ", "-")}_mirror-ffff-llll-dddd.log`,
     );
   });
 
@@ -87,7 +83,9 @@ describe("ViewLogsSidePanel", () => {
     const user = userEvent.setup();
 
     renderWithProviders(
-      <ComponentWrapper isTestingCopy />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
       undefined,
       `?sidePath=logs&name=${failedMirror.name}`,
     );
@@ -115,7 +113,9 @@ describe("ViewLogsSidePanel", () => {
     );
 
     renderWithProviders(
-      <ComponentWrapper />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
       undefined,
       `?sidePath=logs&name=${failedMirror.name}`,
     );
@@ -130,25 +130,32 @@ describe("ViewLogsSidePanel", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows error notification when operation has no error details", async () => {
-    const noLogsMirror = typedMirrors.find(
-      (mirror) => mirror.lastOperation === "operations/ssss-cccc-dddd",
+  it("shows empty state when operation has no error details", async () => {
+    const noLogsPublication = publications.find(
+      (pub) => pub.lastOperation === "operations/ssss-cccc-dddd",
     );
-    assert(noLogsMirror, "Missing mock mirror with a successful operation");
+    assert(
+      noLogsPublication,
+      "Missing mock publication with a successful operation",
+    );
 
     renderWithProviders(
-      <ComponentWrapper />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="publications" />
+      </Suspense>,
       undefined,
-      `?sidePath=logs&name=${noLogsMirror.name}`,
+      `?sidePath=logs&name=${noLogsPublication.publicationId}`,
     );
 
     await expectLoadingState();
 
     expect(
       await screen.findByRole("heading", {
-        name: "The last update attempt for the selected mirror had no logs.",
+        name: `Publication logs for ${noLogsPublication.displayName}`,
       }),
     ).toBeInTheDocument();
+
+    expect(await screen.findByText("Logs not found")).toBeInTheDocument();
 
     expect(
       screen.queryByRole("button", { name: /copy/i }),
@@ -163,22 +170,13 @@ describe("ViewLogsSidePanel", () => {
     assert(unsyncedMirror, "Missing mock mirror with no lastOperation");
 
     renderWithProviders(
-      <ComponentWrapper />,
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
       undefined,
       `?sidePath=logs&name=${unsyncedMirror.name}`,
     );
 
-    await expectLoadingState();
-
-    expect(
-      await screen.findByRole("heading", {
-        name: `Update logs for ${unsyncedMirror.displayName}`,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByRole("heading", {
-        name: "The selected mirror hasn't had any update attempts yet.",
-      }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Logs not found")).toBeInTheDocument();
   });
 });

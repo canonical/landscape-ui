@@ -8,6 +8,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
 import { inProgressOperation } from "@/tests/mocks/operations";
+import { resetLroProgress } from "@/tests/server/handlers/operations";
 
 const [mirror] = mirrors;
 
@@ -32,6 +33,7 @@ const ComponentWrapper = ({
 describe("MirrorDetailsActionBlock", () => {
   beforeEach(() => {
     setEndpointStatus("default");
+    resetLroProgress();
   });
 
   it("opens UpdateMirrorModal if updateModal param is true", async () => {
@@ -80,7 +82,7 @@ describe("MirrorDetailsActionBlock", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows disabled Updating button with tooltip when operation is in progress", async () => {
+  it("shows disabled Updating button when operation is in progress", async () => {
     renderWithProviders(
       <ComponentWrapper inProgress />,
       undefined,
@@ -90,6 +92,10 @@ describe("MirrorDetailsActionBlock", () => {
     expect(
       await screen.findByRole("button", { name: /Updating/i }),
     ).toHaveAttribute("aria-disabled", "true");
+
+    expect(
+      screen.queryByRole("button", { name: "Update" }),
+    ).not.toBeInTheDocument();
   });
 
   it("opens RemoveMirrorModal when Remove button is clicked", async () => {

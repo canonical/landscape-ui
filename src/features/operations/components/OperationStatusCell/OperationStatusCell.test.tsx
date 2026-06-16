@@ -8,30 +8,44 @@ import {
   succeededOperation,
   inProgressOperation,
 } from "@/tests/mocks/operations";
+import { resetLroProgress } from "@/tests/server/handlers/operations";
 
 describe("OperationStatusCell", () => {
   it("renders loading while fetching", () => {
     renderWithProviders(
-      <OperationStatusCell operation={undefined} isGettingOperation={true} />,
+      <OperationStatusCell
+        operation={undefined}
+        isGettingOperation={true}
+        type={"mirror"}
+      />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
   it("renders operation status when operation is undefined", () => {
-    renderWithProviders(<OperationStatusCell operation={undefined} />);
+    renderWithProviders(
+      <OperationStatusCell operation={undefined} type={"mirror"} />,
+    );
 
     expect(screen.getByText("Not yet updated")).toBeInTheDocument();
   });
 
-  it("renders successful operation status", () => {
-    renderWithProviders(<OperationStatusCell operation={succeededOperation} />);
+  it("renders successful publication operation status", () => {
+    renderWithProviders(
+      <OperationStatusCell
+        operation={succeededOperation}
+        type={"publication"}
+      />,
+    );
 
-    expect(screen.getByText("Updated")).toBeInTheDocument();
+    expect(screen.getByText("Published")).toBeInTheDocument();
   });
 
-  it("renders failed operation status", () => {
-    renderWithProviders(<OperationStatusCell operation={failedOperation} />);
+  it("renders failed mirror operation status", () => {
+    renderWithProviders(
+      <OperationStatusCell operation={failedOperation} type={"mirror"} />,
+    );
 
     expect(screen.getByText("Update failed")).toBeInTheDocument();
     expect(
@@ -39,19 +53,23 @@ describe("OperationStatusCell", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders in progress operation status", () => {
+  it("renders in progress mirror operation status", () => {
+    resetLroProgress();
+
     renderWithProviders(
-      <OperationStatusCell operation={inProgressOperation} />,
+      <OperationStatusCell operation={inProgressOperation} type={"mirror"} />,
     );
 
     expect(screen.getByText("Updating")).toBeInTheDocument();
-    expect(screen.getByText("38%")).toBeInTheDocument();
+    expect(screen.getByText("78%")).toBeInTheDocument();
   });
 
-  it("renders in progress operation status for idle operation", () => {
-    renderWithProviders(<OperationStatusCell operation={idleOperation} />);
+  it("renders idle local operation status", () => {
+    renderWithProviders(
+      <OperationStatusCell operation={idleOperation} type={"local"} />,
+    );
 
-    expect(screen.getByText("Updating")).toBeInTheDocument();
+    expect(screen.getByText("Importing packages")).toBeInTheDocument();
     expect(screen.getByText("0%")).toBeInTheDocument();
   });
 });

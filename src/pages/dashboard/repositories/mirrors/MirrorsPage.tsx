@@ -128,7 +128,7 @@ const MirrorsPage: FC = () => {
         )}
         {lastSidePathSegment === "logs" && (
           <SidePanel.Suspense key="logs">
-            <ViewLogsSidePanel />
+            <ViewLogsSidePanel resourceType="mirrors" />
           </SidePanel.Suspense>
         )}
       </SidePanel>

@@ -5,6 +5,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
 import { mirrors } from "@/tests/mocks/mirrors";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const buildDisplayNameMaps = (pubs: typeof publications) => {
   const sourceDisplayNames: Record<string, string> = {};
@@ -29,7 +30,7 @@ describe("PublicationsList", () => {
   const { sourceDisplayNames, publicationTargetDisplayNames } =
     buildDisplayNameMaps(publications);
 
-  it("renders list columns and row data", () => {
+  it("renders list columns and row data", async () => {
     renderWithProviders(
       <PublicationsList
         publications={publications}
@@ -39,6 +40,10 @@ describe("PublicationsList", () => {
     );
 
     expect(screen.getByRole("columnheader", { name: "name" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "status" })).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "last published" }),
+    ).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "source type" }),
     ).toBeVisible();
@@ -52,6 +57,12 @@ describe("PublicationsList", () => {
         name: publication.displayName,
       }),
     ).toBeInTheDocument();
+
+    expect(await screen.findByText("Publishing")).toBeInTheDocument();
+    expect(screen.getByText("Published")).toBeInTheDocument();
+    expect(screen.getByText("Publishing failed")).toBeInTheDocument();
+
+    expect(screen.getByText("Mar 12, 2026, 00:00")).toBeInTheDocument();
 
     const mirrorsCount = publications.filter((pub) =>
       pub.source.startsWith("mirrors/"),
@@ -72,6 +83,25 @@ describe("PublicationsList", () => {
         name: publicationTargetDisplayNames[publication.publicationTarget],
       }),
     ).toBeInTheDocument();
+  });
+
+  it("renders status cell for no operation as fallback", async () => {
+    renderWithProviders(
+      <PublicationsList
+        publications={[
+          {
+            ...publication,
+            lastOperation: undefined,
+            publishTime: undefined,
+          },
+        ]}
+        sourceDisplayNames={sourceDisplayNames}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
+
+    expect(screen.getByText("Not yet published")).toBeInTheDocument();
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("shows empty message with search query", () => {

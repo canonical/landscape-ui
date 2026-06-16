@@ -55,7 +55,7 @@ export const failedOperation: FailedOperation = {
     operationId: "ffff-llll-dddd",
     status: "failed",
     progressPercent: 62,
-    resource: "mirrors/third-party-mirror",
+    resource: "locals/cccc-dddd-eeee",
   },
   done: true,
   error: {
@@ -99,7 +99,7 @@ export const timeoutOperation: FailedOperation = {
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "tttt-mmmm-oooo",
     status: "failed",
-    progressPercent: 79,
+    progressPercent: 39,
     resource: "locals/e755a4bd-8044-4529-8b5d-53f1c3887e9e",
   },
   done: true,
@@ -120,7 +120,7 @@ export const inProgressOperation: UnfinishedOperation = {
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "pppp-gggg-ssss",
     status: "in progress",
-    progressPercent: 38,
+    progressPercent: 78,
     resource: "locals/e755a4bd-8044-4529-8b5d-53f1c3887e9e",
   },
   done: false,
@@ -272,6 +272,96 @@ export const overCountOperation: SuccessfulOperation = {
   },
 };
 
+export const failedMirrorOperation: FailedOperation = {
+  name: "operations/mirror-ffff-llll-dddd",
+  metadata: {
+    "@type":
+      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+    description:
+      "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
+    operationId: "mirror-ffff-llll-dddd",
+    status: "failed",
+    progressPercent: 62,
+    resource: "mirrors/third-party-mirror",
+  },
+  done: true,
+  error: {
+    code: 13,
+    message: "The operation failed unexpectedly.",
+    details: [
+      "0% [Working]",
+      "0% [Connecting to 10.0.1.13]",
+      "0% [Waiting for headers]",
+      "Get:1 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl-dev amd64 1.0.1f-1ubuntu2.2 [1066 kB]",
+      "0% [1 libssl-dev 2465 B/1066 kB 0%]",
+      "1% [1 libssl-dev 21.9 kB/1066 kB 2%]",
+      "15% [1 libssl-dev 749 kB/1066 kB 70%]",
+      "21% [Working]",
+      "21% [Waiting for headers]",
+      "Get:2 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 i386 1.0.1f-1ubuntu2.2 [779 kB]",
+      "21% [2 libssl1.0.0:i386 1080 B/779 kB 0%]",
+      "36% [Working]",
+      "36% [Waiting for headers]",
+      "Get:3 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 amd64 1.0.1f-1ubuntu2.2 [826 kB]",
+      "36% [3 libssl1.0.0 1080 B/826 kB 0%]",
+      "39% [3 libssl1.0.0 129 kB/826 kB 15%]",
+      "52% [Working]",
+      "52% [Waiting for headers]",
+      "Get:4 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main openssl amd64 1.0.1f-1ubuntu2.2 [488 kB]",
+      "52% [4 openssl 2468 B/488 kB 0%]",
+      "62% [Working]",
+      "62% [Waiting for headers]",
+      "Get:5 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main unity amd64 7.2.1+14.04.20140513-0ubuntu2 [1452 kB]",
+      "62% [5 unity 1078 B/1452 kB 0%]",
+    ],
+  },
+};
+
+export const failedPublicationOperation: FailedOperation = {
+  name: "operations/publication-ffff-llll-dddd",
+  metadata: {
+    "@type":
+      "type.googleapis.com/canonical.landscape.debarchive.v1beta1.TaskMetadata",
+    description:
+      "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
+    operationId: "publication-ffff-llll-dddd",
+    status: "failed",
+    progressPercent: 62,
+    resource: "publications/g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
+  },
+  done: true,
+  error: {
+    code: 13,
+    message: "The operation failed unexpectedly.",
+    details: [
+      "0% [Working]",
+      "0% [Connecting to 10.0.1.13]",
+      "0% [Waiting for headers]",
+      "Get:1 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl-dev amd64 1.0.1f-1ubuntu2.2 [1066 kB]",
+      "0% [1 libssl-dev 2465 B/1066 kB 0%]",
+      "1% [1 libssl-dev 21.9 kB/1066 kB 2%]",
+      "15% [1 libssl-dev 749 kB/1066 kB 70%]",
+      "21% [Working]",
+      "21% [Waiting for headers]",
+      "Get:2 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 i386 1.0.1f-1ubuntu2.2 [779 kB]",
+      "21% [2 libssl1.0.0:i386 1080 B/779 kB 0%]",
+      "36% [Working]",
+      "36% [Waiting for headers]",
+      "Get:3 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 amd64 1.0.1f-1ubuntu2.2 [826 kB]",
+      "36% [3 libssl1.0.0 1080 B/826 kB 0%]",
+      "39% [3 libssl1.0.0 129 kB/826 kB 15%]",
+      "52% [Working]",
+      "52% [Waiting for headers]",
+      "Get:4 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main openssl amd64 1.0.1f-1ubuntu2.2 [488 kB]",
+      "52% [4 openssl 2468 B/488 kB 0%]",
+      "62% [Working]",
+      "62% [Waiting for headers]",
+      "Get:5 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main unity amd64 7.2.1+14.04.20140513-0ubuntu2 [1452 kB]",
+      "62% [5 unity 1078 B/1452 kB 0%]",
+    ],
+  },
+};
+
 export const operations: Operation[] = [
   idleOperation,
   succeededOperation,
@@ -280,4 +370,6 @@ export const operations: Operation[] = [
   inProgressOperation,
   emptyOperation,
   overCountOperation,
+  failedMirrorOperation,
+  failedPublicationOperation,
 ];
