@@ -1,19 +1,17 @@
 import type { FC } from "react";
-import {
-  ActionButton,
-  Icon,
-  ICONS,
-  Tooltip,
-} from "@canonical/react-components";
+import { Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
 import { FEEDBACK_LINK } from "@/constants";
 import classNames from "classnames";
 import { TOOLTIP_MESSAGE } from "./constants";
-import { useRedirectToClassicDashboard } from "@/hooks/useRedirectToClassicDashboard";
+import { useAuthHandle } from "@/features/auth";
+import LoadingState from "@/components/layout/LoadingState";
+import { Link } from "react-router";
 
 const LandscapeActions: FC = () => {
-  const { redirectToClassicDashboard, isRedirectingToClassicDashboard } =
-    useRedirectToClassicDashboard();
+  const { getClassicDashboardUrlQuery } = useAuthHandle();
+
+  const { data, isLoading } = getClassicDashboardUrlQuery();
 
   return (
     <div className={classNames("is-fading-when-collapsed", classes.container)}>
@@ -33,17 +31,16 @@ const LandscapeActions: FC = () => {
             Share your feedback
           </a>
         </li>
-        <li className={classNames("p-list__item", classes.listItem)}>
-          <ActionButton
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={redirectToClassicDashboard}
-            loading={isRedirectingToClassicDashboard}
-          >
-            <span>Switch to classic dashboard</span>
-          </ActionButton>
-        </li>
+        {isLoading && (
+          <li className={classNames("p-list__item", classes.listItem)}>
+            <LoadingState inline />
+          </li>
+        )}
+        {data && (
+          <li className={classNames("p-list__item", classes.listItem)}>
+            <Link to={data.data.url}>Switch to classic dashboard</Link>
+          </li>
+        )}
       </ul>
     </div>
   );

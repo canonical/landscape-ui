@@ -108,6 +108,19 @@ export default function useAuthHandle() {
       queryClient.invalidateQueries({ queryKey: ["loginMethods"] }),
   });
 
+  const getClassicDashboardUrlQuery: QueryFnType<
+    AxiosResponse<{ url: string }>,
+    Record<never, unknown>
+  > = (queryParams = {}, config = {}) =>
+    useQuery({
+      queryKey: ["classicDashboardUrl"],
+      queryFn: async () =>
+        authFetch.get<{ url: string }>("classic_dashboard_url", {
+          params: queryParams,
+        }),
+      ...config,
+    });
+
   const switchAccountQuery = useMutation<
     AxiosResponse<{ token: string }>,
     AxiosError<ApiError>,
@@ -129,6 +142,7 @@ export default function useAuthHandle() {
   return {
     addProviderQuery,
     deleteProviderQuery,
+    getClassicDashboardUrlQuery,
     getSingleProviderQuery,
     getSupportedProvidersQuery,
     handleLogoutQuery,
