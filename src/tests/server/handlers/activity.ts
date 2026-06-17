@@ -9,6 +9,7 @@ import {
   manyDeliveredActivities,
   manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
+import moment from "moment";
 import { http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
@@ -230,81 +231,20 @@ export default [
       id: "act-job-new",
       name: typeof body.name === "string" ? body.name : "New activities export",
       filename: "activities-export.tsv",
-      rowCount: 0,
+      row_count: 0,
       type: "activity",
-      attributeLabels: [],
-      selectedFieldIds: Array.isArray(body.selected_field_ids)
-        ? (body.selected_field_ids as string[])
-        : [],
-      createdAt: new Date().toISOString(),
+      attribute_labels: [],
+      created_at: new Date().toISOString(),
       status: "processing",
       progress: 0,
-      downloadReady: false,
+      download_ready: false,
+      retain_until:
+        typeof body.retain_until === "string"
+          ? body.retain_until
+          : moment().add(3, "years").toISOString(),
       query: typeof body.query === "string" ? body.query : null,
-      displayQuery:
-        typeof body.display_query === "string"
-          ? body.display_query || null
-          : null,
-      hasSelection: body.has_selection === true,
     };
     return HttpResponse.json(job, { status: 201 });
   }),
 
-  http.get(`${API_URL}activities/exports`, ({ request }) => {
-    if (shouldApplyEndpointStatus("activities/exports")) {
-      const { status, response } = getEndpointStatus();
-      if (status === "error") {
-        return createEndpointStatusNetworkError();
-      }
-      if (status === "empty") {
-        return HttpResponse.json({ count: 0, results: [] });
-      }
-      if (status === "variant" && Array.isArray(response)) {
-        const jobs = response as ExportJob[];
-        const url = new URL(request.url);
-        const search = url.searchParams.get("search") ?? "";
-        const limit = parseInt(url.searchParams.get("limit") ?? "50", 10);
-        const offset = parseInt(url.searchParams.get("offset") ?? "0", 10);
-        const filtered = search
-          ? jobs.filter((job) =>
-              job.name.toLowerCase().includes(search.toLowerCase()),
-            )
-          : jobs;
-        return HttpResponse.json({
-          count: filtered.length,
-          results: filtered.slice(offset, offset + limit),
-        });
-      }
-    }
-    return HttpResponse.json({ count: 0, results: [] });
-  }),
-
-  http.post(`${API_URL}activities/exports/:jobId/cancel`, () => {
-    if (shouldApplyEndpointStatus("activities/exports/:jobId/cancel")) {
-      const { status } = getEndpointStatus();
-      if (status === "error") return createEndpointStatusError();
-    }
-    return new HttpResponse(null, { status: 204 });
-  }),
-
-  http.delete(`${API_URL}activities/exports/:jobId`, () => {
-    if (shouldApplyEndpointStatus("activities/exports/:jobId")) {
-      const { status } = getEndpointStatus();
-      if (status === "error") return createEndpointStatusError();
-    }
-    return new HttpResponse(null, { status: 204 });
-  }),
-
-  http.get(`${API_URL}activities/exports/:jobId/download`, () => {
-    if (shouldApplyEndpointStatus("activities/exports/:jobId/download")) {
-      const { status } = getEndpointStatus();
-      if (status === "error") return createEndpointStatusNetworkError();
-    }
-    return new HttpResponse(
-      "id\ttype\nsummary\nstatus\n1\tscript\ntest\nsucceeded",
-      {
-        headers: { "Content-Type": "text/tab-separated-values" },
-      },
-    );
-  }),
 ];

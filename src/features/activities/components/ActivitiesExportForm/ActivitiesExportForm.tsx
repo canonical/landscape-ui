@@ -88,8 +88,6 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
           selected_activity_ids: selectedActivityIds ?? [],
           selected_field_ids: fieldsToExport.map((field) => field.id),
           retain_until: moment(values.retainUntil).toISOString(),
-          display_query: exportParams.query ?? "",
-          has_selection: !!selectedActivityIds?.length,
         });
         const job = response.data;
 
