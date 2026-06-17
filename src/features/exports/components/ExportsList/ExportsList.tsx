@@ -36,12 +36,16 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
   const [jobToDiscard, setJobToDiscard] = useState<ExportJob | null>(null);
 
   async function handleDownload(job: ExportJob) {
-    const result = await onDownload(job);
-    if (result) {
-      notify.success({
-        title: "TSV download started",
-        message: `${job.name} has been downloaded and removed from the export list.`,
-      });
+    try {
+      const result = await onDownload(job);
+      if (result) {
+        notify.success({
+          title: "TSV download started",
+          message: `${job.name} has been downloaded and removed from the export list.`,
+        });
+      }
+    } catch (error) {
+      debug(error);
     }
   }
 
@@ -69,12 +73,16 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
   async function handleConfirmDiscard() {
     if (!jobToDiscard) return;
 
-    await onDiscard(jobToDiscard.id);
-    setJobToDiscard(null);
-    notify.success({
-      title: "TSV discarded",
-      message: `${jobToDiscard.name} has been discarded.`,
-    });
+    try {
+      await onDiscard(jobToDiscard.id);
+      setJobToDiscard(null);
+      notify.success({
+        title: "TSV discarded",
+        message: `${jobToDiscard.name} has been discarded.`,
+      });
+    } catch (error) {
+      debug(error);
+    }
   }
 
   const columns = useMemo<Column<ExportRowData>[]>(
@@ -115,7 +123,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
             return (
               <ExportProgressBar
                 progress={job.progress}
-                secondsRemaining={job.estimatedSecondsRemaining ?? null}
+                secondsRemaining={job.estimated_seconds_remaining ?? null}
               />
             );
           }
@@ -133,7 +141,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         id: "createdAt",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <>
-            {moment(row.original.job.createdAt).format(
+            {moment(row.original.job.created_at).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           </>
@@ -145,11 +153,9 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         id: "retainUntil",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <>
-            {row.original.job.retainUntil
-              ? moment(row.original.job.retainUntil).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )
-              : "—"}
+            {moment(row.original.job.retain_until).format(
+              DISPLAY_DATE_TIME_FORMAT,
+            )}
           </>
         ),
       },

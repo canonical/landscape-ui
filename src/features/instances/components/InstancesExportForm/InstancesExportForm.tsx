@@ -15,7 +15,7 @@ import { useFormik } from "formik";
 import moment from "moment";
 import { useCallback, useMemo, useState, type FC } from "react";
 import { useNavigate } from "react-router";
-import { useExportInstancesCsv } from "../../api/useExportInstancesCsv";
+import { useExportInstancesTsv } from "../../api/useExportInstancesTsv";
 import type { InstanceListParams } from "../../helpers";
 import classes from "./InstancesExportForm.module.scss";
 import {
@@ -49,8 +49,8 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
-  const { exportInstancesCsv, isExportInstancesCsvLoading } =
-    useExportInstancesCsv();
+  const { exportInstancesTsv, isExportInstancesTsvLoading } =
+    useExportInstancesTsv();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
@@ -82,7 +82,7 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
       });
 
       try {
-        const response = await exportInstancesCsv({
+        const response = await exportInstancesTsv({
           name: values.name.trim(),
           query,
           archived_only: exportParams.archived_only,
@@ -90,8 +90,6 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
           wsl_parents: exportParams.wsl_parents,
           selected_field_ids: fieldsToExport.map((field) => field.id),
           retain_until: moment(values.retainUntil).toISOString(),
-          display_query: exportParams.query ?? "",
-          has_selection: !!selectedInstanceIds?.length,
         });
         const job = response.data;
 
@@ -282,7 +280,7 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
           (step === 0 &&
             (!formik.values.name.trim() ||
               formik.values.selectedFieldIds.length === 0)) ||
-          isExportInstancesCsvLoading ||
+          isExportInstancesTsvLoading ||
           formik.isSubmitting
         }
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}

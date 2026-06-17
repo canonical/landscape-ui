@@ -133,27 +133,6 @@ export const DEFAULT_EXPORT_FIELD_IDS = BUILTIN_EXPORT_FIELDS.filter(
   ({ defaultSelected }) => defaultSelected,
 ).map(({ id }) => id);
 
-export const getAnnotationFieldOptions = (
-  instances: Instance[],
-): AnnotationFieldOption[] => {
-  const annotationKeys = new Set<string>();
-
-  instances.forEach((instance) => {
-    Object.keys(instance.annotations ?? {}).forEach((annotationKey) => {
-      annotationKeys.add(annotationKey);
-    });
-  });
-
-  return [...annotationKeys]
-    .sort((left, right) => left.localeCompare(right))
-    .map((annotationKey) => ({
-      id: `annotation:${annotationKey}`,
-      label: `Annotation: ${annotationKey}`,
-      annotationKey,
-      getValue: (instance) => instance.annotations?.[annotationKey] ?? "",
-    }));
-};
-
 export const getSelectedExportFields = ({
   annotationFieldOptions,
   selectedFieldIds,

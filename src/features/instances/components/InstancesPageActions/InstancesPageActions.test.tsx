@@ -1,4 +1,3 @@
-import { API_URL } from "@/constants";
 import * as Constants from "@/constants";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
@@ -7,10 +6,8 @@ import {
   windowsInstance,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
@@ -64,11 +61,6 @@ describe("InstancesPageActions", () => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
-    server.use(
-      http.get(`${API_URL}computers/export/annotations`, () => {
-        return HttpResponse.json({ results: [] });
-      }),
-    );
   });
 
   afterEach(() => {
