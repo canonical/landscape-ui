@@ -1,7 +1,7 @@
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, CodeSnippet, Icon } from "@canonical/react-components";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
+import { useEffect, useRef, useState, type FC } from "react";
 import { useGetOperation, useGetOperationResource } from "../../api";
 import classes from "./ViewLogsSidePanel.module.scss";
 import EmptyState from "@/components/layout/EmptyState";
@@ -42,22 +42,25 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<number | undefined>(undefined);
 
-  const url = useMemo(() => {
-    const blob = new Blob([logs], { type: "text/plain" });
-    return URL.createObjectURL(blob);
-  }, [logs]);
-
   useEffect(() => {
     return () => {
       window.clearTimeout(copiedTimeoutRef.current);
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [url]);
+  const fileName = resource.displayName.replaceAll(" ", "-");
+
+  const handleDownload = () => {
+    const blob = new Blob([logs], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${fileName}_${operationId}.log`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleCopy = async () => {
     try {
@@ -75,8 +78,6 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
   if (resource.lastOperation && isGettingOperation) {
     return <SidePanel.LoadingState />;
   }
-
-  const file = `${resource.displayName.replaceAll(" ", "-")}_${operationId}`;
 
   return (
     <>
@@ -103,14 +104,16 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
                 <Icon name={copied ? "success" : "copy"} />
                 <span>{copied ? "Copied" : "Copy"}</span>
               </Button>
-              <a
-                className="p-button--base has-icon u-no-margin--bottom"
-                href={url}
-                download={`${file}.log`}
+              <Button
+                appearance="base"
+                className="u-no-margin--bottom"
+                hasIcon
+                onClick={handleDownload}
+                type="button"
               >
                 <Icon name="begin-downloading" />
                 <span>Download</span>
-              </a>
+              </Button>
             </div>
             <CodeSnippet
               blocks={[
