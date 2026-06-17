@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import PublicationsList from "./PublicationsList";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { resetLroProgress } from "@/tests/server/handlers/operations";
 
 const buildDisplayNameMaps = (pubs: typeof publications) => {
   const sourceDisplayNames: Record<string, string> = {};
@@ -31,6 +32,8 @@ describe("PublicationsList", () => {
     buildDisplayNameMaps(publications);
 
   it("renders list columns and row data", async () => {
+    resetLroProgress();
+
     renderWithProviders(
       <PublicationsList
         publications={publications}
