@@ -102,4 +102,15 @@ export const features: Feature[] = [
       account: true,
     },
   },
+  {
+    name: "Instance Reports",
+    description:
+      "View a compliance and security report for a selection of instances from the instances list.",
+    key: "instance-reports",
+    database_key: 15,
+    enabled: true,
+    details: {
+      configuration: true,
+    },
+  },
 ];
