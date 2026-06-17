@@ -7,17 +7,13 @@ export interface ExportJob {
   readonly name: string;
   readonly filename: string;
   readonly type: ExportJobType;
-  readonly rowCount: number;
-  readonly attributeLabels: string[];
-  readonly selectedFieldIds: string[];
-  readonly createdAt: string;
+  readonly row_count: number;
+  readonly attribute_labels: string[];
+  readonly created_at: string;
   readonly status: ExportJobStatus;
   readonly progress: number;
-  readonly estimatedSecondsRemaining?: number | null;
-  readonly errorMessage?: string | null;
-  readonly downloadReady?: boolean;
-  readonly retainUntil?: string | null;
+  readonly estimated_seconds_remaining?: number | null;
+  readonly download_ready: boolean;
+  readonly retain_until: string;
   readonly query?: string | null;
-  readonly displayQuery?: string | null;
-  readonly hasSelection?: boolean;
 }

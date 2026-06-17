@@ -5,7 +5,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { InstancesExportJob } from "../types/InstancesExportJob";
 import type { CreateInstancesExportJobParams } from "./instancesExportJobsShared";
 
-export const useExportInstancesCsv = () => {
+export const useExportInstancesTsv = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -15,7 +15,7 @@ export const useExportInstancesCsv = () => {
     CreateInstancesExportJobParams
   >({
     mutationFn: async (params) =>
-      authFetch.post<InstancesExportJob>("computers/export/csv", params),
+      authFetch.post<InstancesExportJob>("computers/exports", params),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["instances-export-jobs"],
@@ -24,7 +24,7 @@ export const useExportInstancesCsv = () => {
   });
 
   return {
-    exportInstancesCsv: mutateAsync,
-    isExportInstancesCsvLoading: isPending,
+    exportInstancesTsv: mutateAsync,
+    isExportInstancesTsvLoading: isPending,
   };
 };
