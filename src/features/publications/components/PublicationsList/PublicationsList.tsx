@@ -44,7 +44,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
     .filter((publication) => publication.lastOperation)
     .map((publication) => publication.lastOperation ?? "");
 
-  const { operations: operations, isGettingOperations } = useBatchGetOperations(
+  const { operations, isGettingOperations } = useBatchGetOperations(
     operationNames,
     {
       refetchInterval: ({ state }) =>
