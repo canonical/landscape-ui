@@ -7,6 +7,8 @@ import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import classes from "./ReportForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
 
+const DEFAULT_RANGE_DAYS = 30;
+
 const downloadCSV = (csvString: string, filename: string) => {
   // Create blob from string
   const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
@@ -30,27 +32,40 @@ const downloadCSV = (csvString: string, filename: string) => {
 };
 
 interface ReportFormProps {
-  readonly instanceIds: number[];
+  readonly instanceIds: readonly number[];
 }
 
 const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
   const { getCsvComplianceData } = useReports();
 
-  const { data: getCsvComplianceDataResult } = getCsvComplianceData({
-    query: `id:${instanceIds.join(" OR id:")}`,
-  });
-
   const formik = useFormik({
-    initialValues: { range: 0, reportByCve: true },
+    initialValues: { range: DEFAULT_RANGE_DAYS, reportByCve: true },
     validationSchema: Yup.object({
-      range: Yup.number().required("This field is required"),
+      range: Yup.number()
+        .min(1, "Range must be at least 1 day")
+        .required("This field is required"),
       reportByCve: Yup.boolean(),
     }),
-    // todo: figure out how to use form values to submit
-    onSubmit: () => {
-      downloadCSV(getCsvComplianceDataResult?.data || "", "report.csv");
+    onSubmit: async () => {
+      // `refetch` is declared just below: the query must read the latest form
+      // values, so the hook is set up after the form it depends on.
+      // eslint-disable-next-line no-use-before-define
+      const { data } = await refetch();
+      downloadCSV(data?.data ?? "", "report.csv");
     },
   });
+
+  // Fetched on submit (not on mount) so the report reflects the chosen range
+  // and CVE/USN grouping, and so we make the heavy compliance query only when
+  // the user actually downloads.
+  const { refetch, isFetching } = getCsvComplianceData(
+    {
+      query: `id:${instanceIds.join(" OR id:")}`,
+      max_days: Number(formik.values.range),
+      by_cve: formik.values.reportByCve,
+    },
+    { enabled: false },
+  );
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -72,8 +87,15 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
         <span>Days</span>
       </div>
 
+      <p className="p-text--small u-text--muted">
+        The CSV reports each instance against the USNs or CVEs released within
+        the selected range. USNs outstanding for longer than the range (such as
+        the &ldquo;60+ days outstanding&rdquo; metric in the report) are not
+        included.
+      </p>
+
       <SidePanelFormButtons
-        submitButtonDisabled={false}
+        submitButtonDisabled={isFetching}
         submitButtonText="Download"
       />
     </Form>
