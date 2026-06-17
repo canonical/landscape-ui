@@ -33,7 +33,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
     .filter((mirror) => mirror.lastOperation)
     .map((mirror) => mirror.lastOperation ?? "");
 
-  const { operations: operations, isGettingOperations } = useBatchGetOperations(
+  const { operations, isGettingOperations } = useBatchGetOperations(
     operationNames,
     {
       refetchInterval: ({ state }) =>
