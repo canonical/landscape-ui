@@ -12,6 +12,7 @@ import moment from "moment";
 import { AUTOMATIC_LABELS } from "../../constants";
 import { expectLoadingState } from "@/tests/helpers";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { resetLroProgress } from "@/tests/server/handlers/operations";
 
 describe("PublicationDetails", () => {
   const user = userEvent.setup();
@@ -117,6 +118,8 @@ describe("PublicationDetails", () => {
   });
 
   it("renders disabled button while publishing", async () => {
+    resetLroProgress();
+
     renderWithProviders(
       <PublicationDetails
         publication={publicationWithKey}

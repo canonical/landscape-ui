@@ -71,15 +71,44 @@ describe("ViewLogsSidePanel", () => {
       await screen.findByRole("button", { name: /copy/i }),
     ).toBeInTheDocument();
 
-    const downloadLink = screen.getByRole("link", { name: /download/i });
-    expect(downloadLink).toBeInTheDocument();
-    expect(downloadLink).toHaveAttribute(
-      "download",
-      `${failedMirror.displayName.replaceAll(" ", "-")}_mirror-ffff-llll-dddd.log`,
-    );
+    expect(
+      screen.getByRole("button", { name: /download/i }),
+    ).toBeInTheDocument();
   });
 
-  it("Updates button content when copy button is clicked", async () => {
+  it("downloads the logs file when download button is clicked", async () => {
+    const user = userEvent.setup();
+
+    const anchorClick = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => undefined);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="mirrors" />
+      </Suspense>,
+      undefined,
+      `?sidePath=logs&name=${failedMirror.name}`,
+    );
+
+    await expectLoadingState();
+
+    const createElementSpy = vi.spyOn(document, "createElement");
+
+    await user.click(await screen.findByRole("button", { name: /download/i }));
+
+    const anchor = createElementSpy.mock.results.find(
+      (result) => result.value instanceof HTMLAnchorElement,
+    )?.value as HTMLAnchorElement;
+
+    expect(anchor).toBeDefined();
+    expect(anchor.download).toBe(
+      "Third-party-mirror_mirror-ffff-llll-dddd.log",
+    );
+    expect(anchorClick).toHaveBeenCalledOnce();
+  });
+
+  it("updates button content when copy button is clicked", async () => {
     const user = userEvent.setup();
 
     renderWithProviders(
@@ -161,7 +190,7 @@ describe("ViewLogsSidePanel", () => {
       screen.queryByRole("button", { name: /copy/i }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("link", { name: /download/i }),
+      screen.queryByRole("button", { name: /download/i }),
     ).not.toBeInTheDocument();
   });
 

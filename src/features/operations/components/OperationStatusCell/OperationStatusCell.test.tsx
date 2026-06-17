@@ -3,7 +3,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import OperationStatusCell from "./OperationStatusCell";
 import {
-  failedOperation,
+  failedMirrorOperation,
   idleOperation,
   succeededOperation,
   inProgressOperation,
@@ -44,7 +44,7 @@ describe("OperationStatusCell", () => {
 
   it("renders failed mirror operation status", () => {
     renderWithProviders(
-      <OperationStatusCell operation={failedOperation} type={"mirror"} />,
+      <OperationStatusCell operation={failedMirrorOperation} type={"mirror"} />,
     );
 
     expect(screen.getByText("Update failed")).toBeInTheDocument();
