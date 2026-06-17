@@ -30,8 +30,8 @@ import classes from "./PublicationDetails.module.scss";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
-  readonly sourceDisplayName?: string;
-  readonly publicationTargetDisplayName?: string;
+  readonly sourceDisplayName: string;
+  readonly publicationTargetDisplayName: string;
 }
 
 const PublicationDetails = ({

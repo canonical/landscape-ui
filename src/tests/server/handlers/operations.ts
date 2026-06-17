@@ -1,4 +1,5 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { Operation } from "@/features/operations";
 import {
   inProgressOperation,
   succeededOperation,
@@ -12,6 +13,35 @@ export const resetLroProgress = () => {
   progress = inProgressOperation.metadata.progressPercent;
 };
 
+const getOperationResponse = (operation: Operation) => {
+  if (operation.metadata.operationId === "pppp-gggg-ssss") {
+    progress += 10;
+
+    if (progress >= 100) {
+      progress = inProgressOperation.metadata.progressPercent;
+
+      return {
+        ...succeededOperation,
+        name: operation.name,
+        metadata: {
+          ...operation.metadata,
+          progressPercent: 100,
+          status: succeededOperation.metadata.status,
+        },
+      };
+    }
+
+    return {
+      ...operation,
+      metadata: {
+        ...operation.metadata,
+        progressPercent: progress,
+      },
+    };
+  }
+  return operation;
+};
+
 export default [
   http.post<never, { names: string[] }>(
     `${API_URL_DEB_ARCHIVE}operations\\:batchGet`,
@@ -22,27 +52,7 @@ export default [
         operations: operations
           .filter(({ name }) => names.includes(name ?? ""))
           .map((operation) => {
-            if (operation.metadata.operationId === "pppp-gggg-ssss") {
-              progress += 10;
-
-              if (progress >= 100) {
-                progress = inProgressOperation.metadata.progressPercent;
-
-                return {
-                  ...succeededOperation,
-                  name: operation.name,
-                };
-              }
-
-              return {
-                ...operation,
-                metadata: {
-                  ...operation.metadata,
-                  progressPercent: progress,
-                },
-              };
-            }
-            return operation;
+            return getOperationResponse(operation);
           }),
       });
     },
@@ -53,27 +63,17 @@ export default [
     async ({ params }) => {
       const { operationId } = params;
 
-      if (operationId === "pppp-gggg-ssss") {
-        progress += 10;
+      const operation = operations.find(
+        (op) => op.metadata.operationId === operationId,
+      );
 
-        if (progress >= 100) {
-          progress = inProgressOperation.metadata.progressPercent;
-          return HttpResponse.json(succeededOperation);
-        }
-
-        return HttpResponse.json({
-          ...inProgressOperation,
-          metadata: {
-            ...inProgressOperation.metadata,
-            progressPercent: progress,
-          },
-        });
+      if (operation) {
+        return HttpResponse.json(getOperationResponse(operation));
       }
 
       return HttpResponse.json(
-        operations.find(
-          (operation) => operation.metadata.operationId === operationId,
-        ),
+        { error: "Operation not found" },
+        { status: 404 },
       );
     },
   ),
