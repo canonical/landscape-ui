@@ -12,6 +12,7 @@ import {
 } from "@canonical/react-components";
 import moment from "moment";
 import { useState, type FC } from "react";
+import useDebug from "@/hooks/useDebug";
 import ExportProgressBar from "../ExportProgressBar";
 import { getStatusLabel, getTypeLabel } from "../../api/exportJobsShared";
 import { useCancelExportJob } from "../../api/useCancelExportJob";
@@ -19,11 +20,11 @@ import { useDiscardExportJob } from "../../api/useDiscardExportJob";
 import { useDownloadExportJob } from "../../api/useDownloadExportJob";
 import { useGetExportJob } from "../../api/useGetExportJob";
 import { getFilterValue } from "./helpers";
-import NoData from "@/components/layout/NoData";
 
 const ExportDetailsSidePanel: FC = () => {
   const { name: jobId, popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
+  const debug = useDebug();
 
   const { exportJob: job } = useGetExportJob(jobId ?? "");
   const { cancelExportJob: onCancel } = useCancelExportJob();
@@ -37,12 +38,16 @@ const ExportDetailsSidePanel: FC = () => {
       return;
     }
 
-    const result = await onDownload(job);
-    if (result) {
-      notify.success({
-        title: "TSV download started",
-        message: `${job.name} has been downloaded and removed from the export list.`,
-      });
+    try {
+      const result = await onDownload(job);
+      if (result) {
+        notify.success({
+          title: "TSV download started",
+          message: `${job.name} has been downloaded and removed from the export list.`,
+        });
+      }
+    } catch (error) {
+      debug(error);
     }
   }
 
@@ -51,11 +56,15 @@ const ExportDetailsSidePanel: FC = () => {
       return;
     }
 
-    await onCancel(job.id);
-    notify.success({
-      title: "TSV generation cancelled",
-      message: `${job.name} has been cancelled.`,
-    });
+    try {
+      await onCancel(job.id);
+      notify.success({
+        title: "TSV generation cancelled",
+        message: `${job.name} has been cancelled.`,
+      });
+    } catch (error) {
+      debug(error);
+    }
   }
 
   function handleOpenDiscard() {
@@ -71,13 +80,17 @@ const ExportDetailsSidePanel: FC = () => {
       return;
     }
 
-    await onDiscard(job.id);
-    setConfirmDiscard(false);
-    popSidePathUntilClear();
-    notify.success({
-      title: "TSV discarded",
-      message: `${job.name} has been discarded.`,
-    });
+    try {
+      await onDiscard(job.id);
+      setConfirmDiscard(false);
+      popSidePathUntilClear();
+      notify.success({
+        title: "TSV discarded",
+        message: `${job.name} has been discarded.`,
+      });
+    } catch (error) {
+      debug(error);
+    }
   }
 
   if (!job) {
@@ -137,7 +150,7 @@ const ExportDetailsSidePanel: FC = () => {
                   job.status === "processing" ? (
                     <ExportProgressBar
                       progress={job.progress}
-                      secondsRemaining={job.estimatedSecondsRemaining ?? null}
+                      secondsRemaining={job.estimated_seconds_remaining ?? null}
                       fullWidth
                     />
                   ) : (
@@ -148,21 +161,17 @@ const ExportDetailsSidePanel: FC = () => {
               />
               <InfoGrid.Item
                 label={countLabel}
-                value={job.rowCount.toLocaleString()}
+                value={job.row_count.toLocaleString()}
               />
               <InfoGrid.Item
                 label="Created"
-                value={moment(job.createdAt).format(DISPLAY_DATE_TIME_FORMAT)}
+                value={moment(job.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
               />
               <InfoGrid.Item
                 label="Expires"
-                value={
-                  job.retainUntil ? (
-                    moment(job.retainUntil).format(DISPLAY_DATE_TIME_FORMAT)
-                  ) : (
-                    <NoData />
-                  )
-                }
+                value={moment(job.retain_until).format(
+                  DISPLAY_DATE_TIME_FORMAT,
+                )}
               />
               <InfoGrid.Item label="Filter" value={getFilterValue(job)} large />
             </InfoGrid>

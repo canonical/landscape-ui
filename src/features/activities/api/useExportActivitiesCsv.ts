@@ -10,8 +10,6 @@ interface CreateActivitiesExportJobParams {
   readonly selected_activity_ids: number[];
   readonly selected_field_ids: string[];
   readonly retain_until: string;
-  readonly display_query: string;
-  readonly has_selection: boolean;
 }
 
 export const useExportActivitiesCsv = () => {
