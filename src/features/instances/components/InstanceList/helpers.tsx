@@ -33,39 +33,6 @@ export const getColumnFilterOptions = (
   }));
 };
 
-interface FigureCheckboxStateParams {
-  instance: Instance;
-  selectedInstances: Instance[];
-}
-
-export const getCheckboxState = ({
-  instance,
-  selectedInstances,
-}: FigureCheckboxStateParams) => {
-  const selectedInstancesIds = selectedInstances.map(({ id }) => id);
-  return selectedInstancesIds.includes(instance.id) ? "checked" : "unchecked";
-};
-
-interface HandleCheckboxChangeParams {
-  instance: Instance;
-  selectedInstances: Instance[];
-  setSelectedInstances: (instances: Instance[]) => void;
-}
-
-export const handleCheckboxChange = ({
-  instance,
-  selectedInstances,
-  setSelectedInstances,
-}: HandleCheckboxChangeParams) => {
-  if (selectedInstances.some(({ id }) => id === instance.id)) {
-    setSelectedInstances(
-      selectedInstances.filter(({ id }) => id !== instance.id),
-    );
-  } else {
-    setSelectedInstances([...selectedInstances, instance]);
-  }
-};
-
 export const getStatusCellIconAndLabel = (
   instance: InstanceWithoutRelation,
 ): { label: ReactNode; icon?: string } => {
@@ -248,7 +215,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
       case "ubuntu_pro":
         cellProps["aria-label"] = "Ubuntu Pro expiration date";
         break;
-      case "last_ping":
+      case "last_ping_time":
         cellProps["aria-label"] = "Last ping";
         break;
       case "actions":

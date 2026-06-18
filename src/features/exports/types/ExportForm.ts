@@ -1,11 +1,10 @@
 export interface ExportField {
-  readonly id: string;
-  readonly label: string;
-  readonly defaultSelected?: boolean;
+  id: string;
+  label: string;
 }
 
 export interface ExportFieldGroup {
-  readonly title: string;
-  readonly key: string;
-  readonly fields: readonly ExportField[];
+  title: string;
+  key: string;
+  fields: readonly ExportField[];
 }

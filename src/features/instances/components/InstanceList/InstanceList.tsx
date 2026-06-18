@@ -299,7 +299,7 @@ const InstanceList = memo(function InstanceList({
         },
       },
       {
-        accessor: "last_ping",
+        accessor: "last_ping_time",
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",

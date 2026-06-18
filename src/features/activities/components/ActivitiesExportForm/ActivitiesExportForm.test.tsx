@@ -46,9 +46,13 @@ describe("ActivitiesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("keeps Next disabled until an export name and at least one field are selected", async () => {
+  it("pre-selects the visible table columns and keeps Next disabled until a name is given", async () => {
     const user = userEvent.setup();
     renderWithProviders(<ActivitiesExportForm {...defaultProps} />);
+
+    await openAttributeGroup(user, /primary identity/i);
+    expect(screen.getByRole("checkbox", { name: "Summary" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Status" })).toBeChecked();
 
     const nextButton = screen.getByRole("button", { name: "Next" });
     expect(nextButton).toHaveAttribute("aria-disabled", "true");
@@ -57,10 +61,6 @@ describe("ActivitiesExportForm", () => {
       screen.getByRole("textbox", { name: "Export name" }),
       "My activities export",
     );
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
-
-    await openAttributeGroup(user, /primary identity/i);
-    await user.click(screen.getByRole("checkbox", { name: "ID" }));
     expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
   });
 

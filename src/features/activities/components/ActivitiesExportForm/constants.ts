@@ -3,9 +3,17 @@ import { INPUT_DATE_FORMAT } from "@/constants";
 import moment from "moment";
 import * as Yup from "yup";
 
+const VISIBLE_COLUMN_FIELD_IDS: string[] = [
+  "summary",
+  "status",
+  "computer_id",
+  "creation_time",
+  "creator",
+];
+
 export const INITIAL_VALUES: ActivitiesExportFormValues = {
   name: "",
-  selectedFieldIds: [],
+  selectedFieldIds: VISIBLE_COLUMN_FIELD_IDS,
   retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
 };
 
@@ -34,17 +42,17 @@ export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
     title: "Primary Identity",
     key: "primary-identity",
     fields: [
-      { id: "id", label: "ID", defaultSelected: true },
-      { id: "type", label: "Type", defaultSelected: true },
-      { id: "summary", label: "Summary", defaultSelected: true },
-      { id: "status", label: "Status", defaultSelected: true },
+      { id: "id", label: "ID" },
+      { id: "type", label: "Type" },
+      { id: "summary", label: "Summary" },
+      { id: "status", label: "Status" },
     ],
   },
   {
     title: "Target & Progress",
     key: "target-progress",
     fields: [
-      { id: "computer_id", label: "Computer ID", defaultSelected: true },
+      { id: "computer_id", label: "Computer ID" },
       { id: "progress", label: "Progress" },
     ],
   },
@@ -60,8 +68,8 @@ export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
     title: "Audit & Time",
     key: "audit-time",
     fields: [
-      { id: "creator", label: "Creator", defaultSelected: true },
-      { id: "creation_time", label: "Creation time", defaultSelected: true },
+      { id: "creator", label: "Creator" },
+      { id: "creation_time", label: "Creation time" },
       { id: "schedule_after_time", label: "Schedule after time" },
       { id: "schedule_before_time", label: "Schedule before time" },
       { id: "modification_time", label: "Modification time" },

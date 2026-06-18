@@ -4,12 +4,9 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import { EXPORT_JOBS_POLL_INTERVAL_MS } from "../constants";
-import {
-  hasProcessingExportJobs,
-  type AllExportJobsResponse,
-} from "./exportJobsShared";
-
-const DEFAULT_EXPORT_JOBS_PAGE_SIZE = 50;
+import type { ExportJob } from "../types/ExportJob";
+import { hasProcessingExportJobs } from "../helpers";
+import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 
 interface GetAllExportJobsListParams {
   search?: string;
@@ -27,29 +24,31 @@ export const useGetAllExportJobsList = (
   { listenToUrlParams = true }: GetAllExportJobsListConfig = {},
 ) => {
   const authFetch = useFetch();
-  const {
-    currentPage,
-    pageSize,
-    search: urlSearch,
-    type: urlType,
-  } = usePageParams();
+  const { currentPage, pageSize, search, type } = usePageParams();
 
-  const {
-    search = listenToUrlParams ? urlSearch : "",
-    type = listenToUrlParams ? urlType : "",
-    limit = listenToUrlParams ? pageSize : DEFAULT_EXPORT_JOBS_PAGE_SIZE,
-    offset = listenToUrlParams ? (currentPage - 1) * pageSize : 0,
-  } = params;
+  const paramsWithPagination = {
+    ...(listenToUrlParams
+      ? {
+          limit: pageSize,
+          offset: (currentPage - 1) * pageSize,
+          search: search ?? undefined,
+          type: type ?? undefined,
+        }
+      : params),
+  };
 
   const {
     data: response,
     isLoading,
     dataUpdatedAt,
-  } = useQuery<AxiosResponse<AllExportJobsResponse>, AxiosError<ApiError>>({
-    queryKey: ["all-export-jobs", { search, type, limit, offset }],
+  } = useQuery<
+    AxiosResponse<ApiPaginatedResponse<ExportJob>>,
+    AxiosError<ApiError>
+  >({
+    queryKey: ["all-export-jobs", paramsWithPagination],
     queryFn: async () =>
-      authFetch.get<AllExportJobsResponse>("exports", {
-        params: { search, type: type || undefined, limit, offset },
+      authFetch.get<ApiPaginatedResponse<ExportJob>>("exports", {
+        params: paramsWithPagination,
       }),
     refetchInterval: (query) =>
       hasProcessingExportJobs(query.state.data?.data.results ?? [])
