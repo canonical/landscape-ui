@@ -27,7 +27,7 @@ import type {
   StepIndex,
 } from "./types";
 import classNames from "classnames";
-import { SortableFieldList } from "@/features/exports";
+import { getExportScope, SortableFieldList } from "@/features/exports";
 
 interface InstancesExportFormProps {
   readonly exportParams: InstanceListParams;
@@ -90,11 +90,16 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
           retain_until: moment(values.retainUntil).toISOString(),
         });
         const job = response.data;
+        const exportScope = getExportScope({
+          query: exportParams.query,
+          selectedCount: selectedInstanceIds?.length,
+          selectionForms: ["selected instance", "selected instances"],
+        });
 
         closeSidePanel();
         notify.success({
           title: "TSV export in progress",
-          message: `Your instances export "${values.name.trim()}"${exportParams.query ? ` for "${exportParams.query}"` : ""} is being generated.`,
+          message: `Your instances export "${values.name.trim()}"${exportScope} is being generated.`,
           actions: [
             {
               label: "View export status",

@@ -12,7 +12,7 @@ interface CreateActivitiesExportJobParams {
   readonly retain_until: string;
 }
 
-export const useExportActivitiesCsv = () => {
+export const useExportActivitiesTsv = () => {
   const authFetch = useFetch();
   const queryClient = useQueryClient();
 
@@ -25,13 +25,13 @@ export const useExportActivitiesCsv = () => {
       authFetch.post<ActivitiesExportJob>("activities/exports", params),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["activities-export-jobs"],
+        queryKey: ["all-export-jobs"],
       });
     },
   });
 
   return {
-    exportActivitiesCsv: mutateAsync,
-    isExportActivitiesCsvLoading: isPending,
+    exportActivitiesTsv: mutateAsync,
+    isExportActivitiesTsvLoading: isPending,
   };
 };

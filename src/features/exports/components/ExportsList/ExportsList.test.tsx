@@ -11,7 +11,6 @@ import ExportsList from "./ExportsList";
 const exportJobs = [completedExportJob, processingExportJob, failedExportJob];
 
 describe("ExportsList", () => {
-
   it("renders all export jobs", () => {
     renderWithProviders(<ExportsList exportJobs={exportJobs} />);
 
