@@ -1,24 +1,8 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ComponentProps } from "react";
 import { describe, expect, it } from "vitest";
 import InstancesExportForm from "./InstancesExportForm";
-
-type InstancesExportFormProps = ComponentProps<typeof InstancesExportForm>;
-
-const defaultProps = {
-  exportParams: {
-    query: "name:prod",
-    archived_only: false,
-    wsl_children: false,
-    wsl_parents: false,
-  },
-  instanceCount: 1,
-} satisfies InstancesExportFormProps;
-
-const renderForm = (props: Partial<InstancesExportFormProps> = {}) =>
-  renderWithProviders(<InstancesExportForm {...defaultProps} {...props} />);
 
 const openAttributeGroup = async (
   user: ReturnType<typeof userEvent.setup>,
@@ -30,7 +14,17 @@ const openAttributeGroup = async (
 describe("InstancesExportForm", () => {
   it("shows the export details fields and instance attribute groups", async () => {
     const user = userEvent.setup();
-    renderForm();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={1}
+      />,
+    );
 
     expect(
       screen.getByText(/select the attributes you want to include/i),
@@ -54,10 +48,28 @@ describe("InstancesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("keeps Next disabled until an export name and at least one field are selected", async () => {
+  it("pre-selects the visible table columns and keeps Next disabled until a name is given", async () => {
     const user = userEvent.setup();
-    renderForm();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={1}
+      />,
+    );
 
+    // Attributes matching the visible table columns are pre-selected on open.
+    await openAttributeGroup(user, /primary identity/i);
+    expect(
+      screen.getByRole("checkbox", { name: "Instance name" }),
+    ).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Status" })).toBeChecked();
+
+    // A name is still required before proceeding.
     const nextButton = screen.getByRole("button", { name: "Next" });
     expect(nextButton).toHaveAttribute("aria-disabled", "true");
 
@@ -65,16 +77,22 @@ describe("InstancesExportForm", () => {
       screen.getByRole("textbox", { name: "Export name" }),
       "Weekly export",
     );
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
-
-    await openAttributeGroup(user, /primary identity/i);
-    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
     expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("filters attributes by field name without matching group titles", async () => {
     const user = userEvent.setup();
-    renderForm();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={1}
+      />,
+    );
 
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "host");
@@ -98,17 +116,34 @@ describe("InstancesExportForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows attribute validation after clearing the last selected field", async () => {
+  it("shows attribute validation after clearing every pre-selected field", async () => {
     const user = userEvent.setup();
-    renderForm();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={1}
+      />,
+    );
 
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
       "Weekly export",
     );
-    await openAttributeGroup(user, /primary identity/i);
-    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
-    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
+
+    const uncheck = async (...labels: string[]) => {
+      for (const label of labels) {
+        await user.click(screen.getByLabelText(label));
+      }
+    };
+    await uncheck("Instance name", "Status", "OS");
+    await uncheck("Security upgrades count");
+    await uncheck("Tags", "Ubuntu Pro expiration");
+    await uncheck("Availability zone", "Last ping", "Regular upgrades count");
 
     expect(screen.getByText("Select at least one attribute")).toHaveClass(
       "p-form-validation__message",
@@ -117,15 +152,23 @@ describe("InstancesExportForm", () => {
 
   it("moves to the review step and back without losing selected fields", async () => {
     const user = userEvent.setup();
-    renderForm();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={1}
+      />,
+    );
 
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
       "Weekly export",
     );
-    await openAttributeGroup(user, /primary identity/i);
-    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
-    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    // Visible-column attributes are pre-selected, so proceed straight to review.
     await user.click(screen.getByRole("button", { name: "Next" }));
 
     expect(
@@ -134,7 +177,7 @@ describe("InstancesExportForm", () => {
     expect(
       screen.getByLabelText("Order for Instance name"),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Order for Hostname")).toBeInTheDocument();
+    expect(screen.getByLabelText("Order for Status")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Back" }));
 
@@ -143,12 +186,22 @@ describe("InstancesExportForm", () => {
     expect(
       screen.getByRole("checkbox", { name: "Instance name" }),
     ).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: "Hostname" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Status" })).toBeChecked();
   });
 
   it("keeps the order input focused while typing", async () => {
     const user = userEvent.setup();
-    renderForm();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={1}
+      />,
+    );
 
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
@@ -170,7 +223,17 @@ describe("InstancesExportForm", () => {
 
   it("queues an export and shows a success notification with a status action", async () => {
     const user = userEvent.setup();
-    renderForm({ instanceCount: 8 });
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+        instanceCount={8}
+      />,
+    );
 
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),

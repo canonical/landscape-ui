@@ -1,89 +1,25 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import ListActions from "@/components/layout/ListActions";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { Button, ConfirmationModal } from "@canonical/react-components";
+import { Button } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import ExportProgressBar from "../ExportProgressBar";
-import {
-  getStatusIcon,
-  getStatusLabel,
-  getTypeLabel,
-} from "../../api/exportJobsShared";
-import { useCancelExportJob } from "../../api/useCancelExportJob";
-import { useDiscardExportJob } from "../../api/useDiscardExportJob";
-import { useDownloadExportJob } from "../../api/useDownloadExportJob";
+import ExportsListActions from "../ExportsListActions";
+import { getStatusLabel, getTypeLabel } from "../../helpers";
+import { getStatusIcon, getTypeIcon } from "./helpers";
 import type { ExportJob } from "../../types/ExportJob";
 import type { ExportRowData } from "./types";
-import useDebug from "@/hooks/useDebug";
 
 interface ExportsListProps {
   readonly exportJobs: ExportJob[];
 }
 
 const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
-  const { notify } = useNotify();
-  const debug = useDebug();
   const { createPageParamsSetter } = usePageParams();
-  const { cancelExportJob: onCancel } = useCancelExportJob();
-  const { discardExportJob: onDiscard } = useDiscardExportJob();
-  const { downloadExportJob: onDownload } = useDownloadExportJob();
-  const [jobToDiscard, setJobToDiscard] = useState<ExportJob | null>(null);
-
-  async function handleDownload(job: ExportJob) {
-    try {
-      const result = await onDownload(job);
-      if (result) {
-        notify.success({
-          title: "TSV download started",
-          message: `${job.name} has been downloaded and removed from the export list.`,
-        });
-      }
-    } catch (error) {
-      debug(error);
-    }
-  }
-
-  async function handleCancel(job: ExportJob) {
-    try {
-      await onCancel(job.id);
-
-      notify.success({
-        title: "TSV generation cancelled",
-        message: `${job.name} has been cancelled.`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  }
-
-  function handleDiscardClick(job: ExportJob) {
-    setJobToDiscard(job);
-  }
-
-  function handleCloseDiscard() {
-    setJobToDiscard(null);
-  }
-
-  async function handleConfirmDiscard() {
-    if (!jobToDiscard) return;
-
-    try {
-      await onDiscard(jobToDiscard.id);
-      setJobToDiscard(null);
-      notify.success({
-        title: "TSV discarded",
-        message: `${jobToDiscard.name} has been discarded.`,
-      });
-    } catch (error) {
-      debug(error);
-    }
-  }
 
   const columns = useMemo<Column<ExportRowData>[]>(
     () => [
@@ -112,6 +48,8 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <>{getTypeLabel(row.original.job)}</>
         ),
+        getCellIcon: ({ row: { original } }: CellProps<ExportRowData>) =>
+          getTypeIcon(original.job),
       },
       {
         Header: "Status",
@@ -127,12 +65,12 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
               />
             );
           }
-          return (
-            <span>
-              <i className={`p-icon--${getStatusIcon(job)}`} />{" "}
-              {getStatusLabel(job)}
-            </span>
-          );
+          return <>{getStatusLabel(job)}</>;
+        },
+        getCellIcon: ({ row: { original } }: CellProps<ExportRowData>) => {
+          return original.job.status === "processing"
+            ? false
+            : getStatusIcon(original.job);
         },
       },
       {
@@ -161,45 +99,12 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row }: CellProps<ExportRowData>) => {
-          const { job } = row.original;
-          const downloadActions =
-            job.status === "completed"
-              ? [
-                  {
-                    icon: "begin-downloading",
-                    label: "Download",
-                    onClick: handleDownload.bind(null, job),
-                  },
-                ]
-              : [];
-          const destructiveActions =
-            job.status === "processing"
-              ? [
-                  {
-                    icon: "close",
-                    label: "Cancel",
-                    onClick: handleCancel.bind(null, job),
-                  },
-                ]
-              : [
-                  {
-                    icon: "delete",
-                    label: "Discard",
-                    onClick: handleDiscardClick.bind(null, job),
-                  },
-                ];
-          return (
-            <ListActions
-              actions={downloadActions}
-              destructiveActions={destructiveActions}
-              toggleAriaLabel={`Actions for ${job.name}`}
-            />
-          );
-        },
+        Cell: ({ row }: CellProps<ExportRowData>) => (
+          <ExportsListActions job={row.original.job} />
+        ),
       },
     ],
-    [createPageParamsSetter, notify, onCancel, onDownload],
+    [createPageParamsSetter],
   );
 
   const data = useMemo<ExportRowData[]>(
@@ -208,32 +113,12 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
   );
 
   return (
-    <>
-      <ResponsiveTable
-        columns={columns}
-        data={data}
-        sortable={false}
-        emptyMsg="No exports found according to your search parameters."
-      />
-      {jobToDiscard && (
-        <ConfirmationModal
-          title={`Discard "${jobToDiscard.name}"?`}
-          confirmButtonLabel="Discard"
-          confirmButtonAppearance="negative"
-          close={handleCloseDiscard}
-          onConfirm={handleConfirmDiscard}
-          renderInPortal
-        >
-          <p>
-            The export &quot;{jobToDiscard.name}&quot; will be permanently
-            deleted.
-          </p>
-          <p>
-            This action is <strong>irreversible</strong>.
-          </p>
-        </ConfirmationModal>
-      )}
-    </>
+    <ResponsiveTable
+      columns={columns}
+      data={data}
+      sortable={false}
+      emptyMsg="No exports found according to your search parameters."
+    />
   );
 };
 

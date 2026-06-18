@@ -3,6 +3,7 @@ import { INPUT_DATE_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import { getFormikError } from "@/utils/formikErrors";
 import {
@@ -18,12 +19,8 @@ import { useNavigate } from "react-router";
 import { useExportInstancesTsv } from "../../api/useExportInstancesTsv";
 import type { InstanceListParams } from "../../helpers";
 import classes from "./InstancesExportForm.module.scss";
-import {
-  EXPORT_FIELD_GROUPS,
-  INITIAL_VALUES,
-  VALIDATION_SCHEMA,
-} from "./constants";
-import { buildExportQuery } from "./helpers";
+import { EXPORT_FIELD_GROUPS, VALIDATION_SCHEMA } from "./constants";
+import { buildExportQuery, getInitialValues } from "./helpers";
 import type {
   ExportField,
   InstancesExportFormValues,
@@ -54,13 +51,14 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
+  const { disabledColumns } = usePageParams();
 
   const handleBack = () => {
     setStep(0);
   };
 
   const formik = useFormik<InstancesExportFormValues>({
-    initialValues: INITIAL_VALUES,
+    initialValues: getInitialValues(disabledColumns),
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       const selectedFields = EXPORT_FIELD_GROUPS.flatMap(

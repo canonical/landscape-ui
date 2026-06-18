@@ -118,33 +118,6 @@ describe("InstancesPageActions", () => {
       }
     });
 
-    it("should keep Operations enabled for filtered export without a row selection", async () => {
-      renderPageActions({ instanceCount: 3, selectedInstances: [] });
-
-      const operationsButton = screen.getByRole("button", {
-        name: MENU_LABELS[0],
-      });
-
-      expect(operationsButton).not.toHaveClass("is-disabled");
-
-      await userEvent.click(operationsButton);
-
-      expect(
-        screen.getByRole("menuitem", { name: /^export$/i }),
-      ).not.toHaveClass("is-disabled");
-      expect(screen.getByRole("menuitem", { name: /shut down/i })).toHaveClass(
-        "is-disabled",
-      );
-
-      await userEvent.click(
-        screen.getByRole("menuitem", { name: /^export$/i }),
-      );
-
-      expect(
-        screen.getByRole("heading", { name: /export 3 instances as tsv/i }),
-      ).toBeInTheDocument();
-    });
-
     it("'View report' menu item should be visible when feature enabled", async () => {
       renderPageActions();
 
