@@ -17,9 +17,7 @@ describe("ExportsListActions", () => {
 
   it("shows download and discard for completed jobs", async () => {
     renderWithProviders(<ExportsListActions job={completedExportJob} />);
-    await user.click(
-      screen.getByRole("button", { name: /actions for/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /actions for/i }));
 
     expect(
       await screen.findByRole("menuitem", { name: "Download" }),
@@ -32,9 +30,7 @@ describe("ExportsListActions", () => {
 
   it("shows cancel for processing jobs", async () => {
     renderWithProviders(<ExportsListActions job={processingExportJob} />);
-    await user.click(
-      screen.getByRole("button", { name: /actions for/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /actions for/i }));
 
     expect(
       await screen.findByRole("menuitem", { name: "Cancel" }),
@@ -43,13 +39,9 @@ describe("ExportsListActions", () => {
 
   it("opens discard confirmation modal", async () => {
     renderWithProviders(<ExportsListActions job={completedExportJob} />);
-    await user.click(
-      screen.getByRole("button", { name: /actions for/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /actions for/i }));
 
-    await user.click(
-      await screen.findByRole("menuitem", { name: "Discard" }),
-    );
+    await user.click(await screen.findByRole("menuitem", { name: "Discard" }));
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText(/permanently deleted/i)).toBeInTheDocument();
@@ -57,17 +49,11 @@ describe("ExportsListActions", () => {
 
   it("opens cancel confirmation modal for processing jobs", async () => {
     renderWithProviders(<ExportsListActions job={processingExportJob} />);
-    await user.click(
-      screen.getByRole("button", { name: /actions for/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /actions for/i }));
 
-    await user.click(
-      await screen.findByRole("menuitem", { name: "Cancel" }),
-    );
+    await user.click(await screen.findByRole("menuitem", { name: "Cancel" }));
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    expect(
-      screen.getByText(/still being generated/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/still being generated/i)).toBeInTheDocument();
   });
 });

@@ -40,7 +40,9 @@ describe("ExportsContainer", () => {
 
     expect(screen.getByText(completedExportJob.name)).toBeInTheDocument();
     expect(screen.getByText(processingExportJob.name)).toBeInTheDocument();
-    expect(screen.getByText(completedActivitiesExportJob.name)).toBeInTheDocument();
+    expect(
+      screen.getByText(completedActivitiesExportJob.name),
+    ).toBeInTheDocument();
   });
 
   it("renders the type filter", async () => {
