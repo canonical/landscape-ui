@@ -677,7 +677,6 @@ export default [
       filename: "instances-export.tsv",
       row_count: 0,
       type: "instance",
-      attribute_labels: [],
       created_at: new Date().toISOString(),
       status: "processing",
       progress: 0,

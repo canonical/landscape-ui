@@ -3,17 +3,16 @@ export type ExportJobType = "instance" | "activity";
 export type ExportJobStatus = "processing" | "completed" | "failed";
 
 export interface ExportJob {
-  readonly id: string;
-  readonly name: string;
-  readonly filename: string;
-  readonly type: ExportJobType;
-  readonly row_count: number;
-  readonly attribute_labels: string[];
-  readonly created_at: string;
-  readonly status: ExportJobStatus;
-  readonly progress: number;
-  readonly estimated_seconds_remaining?: number | null;
-  readonly download_ready: boolean;
-  readonly retain_until: string;
-  readonly query?: string | null;
+  id: string;
+  name: string;
+  filename: string;
+  type: ExportJobType;
+  row_count: number;
+  created_at: string;
+  status: ExportJobStatus;
+  progress: number;
+  estimated_seconds_remaining?: number | null;
+  download_ready: boolean;
+  retain_until: string;
+  query?: string | null;
 }
