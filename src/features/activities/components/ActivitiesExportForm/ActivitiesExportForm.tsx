@@ -16,8 +16,8 @@ import moment from "moment";
 import { useCallback, useMemo, useState, type FC } from "react";
 import { useNavigate } from "react-router";
 import classNames from "classnames";
-import { SortableFieldList } from "@/features/exports";
-import { useExportActivitiesCsv } from "../../api/useExportActivitiesCsv";
+import { getExportScope, SortableFieldList } from "@/features/exports";
+import { useExportActivitiesTsv } from "../../api/useExportActivitiesTsv";
 import classes from "./ActivitiesExportForm.module.scss";
 import {
   EXPORT_FIELD_GROUPS,
@@ -49,8 +49,8 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
-  const { exportActivitiesCsv, isExportActivitiesCsvLoading } =
-    useExportActivitiesCsv();
+  const { exportActivitiesTsv, isExportActivitiesTsvLoading } =
+    useExportActivitiesTsv();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
@@ -82,7 +82,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
       });
 
       try {
-        const response = await exportActivitiesCsv({
+        const response = await exportActivitiesTsv({
           name: values.name.trim(),
           query,
           selected_activity_ids: selectedActivityIds ?? [],
@@ -90,11 +90,16 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
           retain_until: moment(values.retainUntil).toISOString(),
         });
         const job = response.data;
+        const exportScope = getExportScope({
+          query: exportParams.query,
+          selectedCount: selectedActivityIds?.length,
+          selectionForms: ["selected activity", "selected activities"],
+        });
 
         closeSidePanel();
         notify.success({
           title: "TSV export in progress",
-          message: `Your activities export "${values.name.trim()}"${exportParams.query ? ` for "${exportParams.query}"` : ""} is being generated.`,
+          message: `Your activities export "${values.name.trim()}"${exportScope} is being generated.`,
           actions: [
             {
               label: "View export status",
@@ -278,7 +283,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
           (step === 0 &&
             (!formik.values.name.trim() ||
               formik.values.selectedFieldIds.length === 0)) ||
-          isExportActivitiesCsvLoading ||
+          isExportActivitiesTsvLoading ||
           formik.isSubmitting
         }
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}

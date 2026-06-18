@@ -118,9 +118,7 @@ const ExportsListActions: FC<ExportsListActionsProps> = ({ job }) => {
           onConfirm={handleConfirmDiscard}
           renderInPortal
         >
-          <p>
-            The export &quot;{job.name}&quot; will be permanently deleted.
-          </p>
+          <p>The export &quot;{job.name}&quot; will be permanently deleted.</p>
           <p>
             This action is <strong>irreversible</strong>.
           </p>
@@ -135,9 +133,7 @@ const ExportsListActions: FC<ExportsListActionsProps> = ({ job }) => {
           onConfirm={handleConfirmCancel}
           renderInPortal
         >
-          <p>
-            The export &quot;{job.name}&quot; is still being generated.
-          </p>
+          <p>The export &quot;{job.name}&quot; is still being generated.</p>
           <p>
             Cancelling it will stop the generation and discard any partial
             results.

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   hasProcessingExportJobs,
+  getExportScope,
   getStatusLabel,
   getTypeLabel,
 } from "./helpers";
@@ -10,6 +11,36 @@ import {
   failedExportJob,
   processingExportJob,
 } from "@/tests/mocks/exports";
+
+describe("getExportScope", () => {
+  const selectionForms = ["selected activity", "selected activities"] as const;
+
+  it("uses the selected item count instead of the query", () => {
+    expect(
+      getExportScope({
+        query: "status:succeeded",
+        selectedCount: 2,
+        selectionForms,
+      }),
+    ).toBe(" for 2 selected activities");
+  });
+
+  it("uses the singular selection label", () => {
+    expect(getExportScope({ selectedCount: 1, selectionForms })).toBe(
+      " for 1 selected activity",
+    );
+  });
+
+  it("uses the query when there is no selection", () => {
+    expect(getExportScope({ query: "status:succeeded", selectionForms })).toBe(
+      ' for "status:succeeded"',
+    );
+  });
+
+  it("returns an empty scope when there is no selection or query", () => {
+    expect(getExportScope({ selectionForms })).toBe("");
+  });
+});
 
 describe("hasProcessingExportJobs", () => {
   it("returns true when any job is processing", () => {

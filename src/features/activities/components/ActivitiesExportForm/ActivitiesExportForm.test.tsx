@@ -121,7 +121,11 @@ describe("ActivitiesExportForm", () => {
   it("queues an activities export and shows a success notification with a status action", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <ActivitiesExportForm {...defaultProps} activityCount={5} />,
+      <ActivitiesExportForm
+        {...defaultProps}
+        activityCount={5}
+        selectedActivityIds={[1, 2]}
+      />,
     );
 
     await user.type(
@@ -137,7 +141,7 @@ describe("ActivitiesExportForm", () => {
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
     expect(
       screen.getByText(
-        'Your activities export "My activities export" for "status:succeeded" is being generated.',
+        'Your activities export "My activities export" for 2 selected activities is being generated.',
       ),
     ).toBeVisible();
     expect(
