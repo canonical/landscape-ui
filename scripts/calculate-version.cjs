@@ -1,32 +1,36 @@
 const { execSync } = require("child_process");
 
 /**
- * Calendar-based version derivation for Landscape UI.
+ * Version derivation for Landscape UI.
  *
  * Branch -> version shape:
- *   main             -> ${currentCycle}.0.${count}-beta
- *   point/YYYY-MM-DD -> ${currentCycle}.0.${count}-beta
- *   dev              -> ${currentCycle}.0.${count}-dev
- *   release/YY.MM    -> YY.MM.1.${count}          (cycle pinned by branch name)
+ *   main          -> ${currentCycle}.0.${count}-beta  (PR-title label only; never shipped)
+ *   release/YY.MM -> YY.MM.0.${count}                 (base of a cycle; cycle pinned by name)
+ *   point/YY.MM.N -> YY.MM.N.${count}                 (Nth point release; once released)
+ *                 -> YY.MM.N.${count}-rc              (candidate, until promoted)
  *
- * `currentCycle` is the upcoming Ubuntu release we are working toward:
+ * A point release is promoted from candidate to release by listing its branch
+ * in the RELEASED_POINT_BRANCHES Actions variable (comma-separated). Until then
+ * its builds carry an -rc suffix.
+ *
+ * `currentCycle` is the upcoming Ubuntu release we are working toward. It is now
+ * only used for main's (never-shipped) version-PR label, since everything that
+ * actually ships is pinned by its branch name:
  *   Jan-Apr  -> YY.04
  *   May-Oct  -> YY.10
  *   Nov-Dec  -> (YY+1).04
  *
- * `count` is derived from git, not from GITHUB_RUN_NUMBER, so each branch
- * has its own monotonic counter:
- *   main / dev               -> total commits reachable from HEAD
- *   release/* / point/*      -> commits added since the cut from main
- *                               (origin/main..HEAD) — first build = 0
+ * `count` is derived from git, not from GITHUB_RUN_NUMBER, so each branch has
+ * its own monotonic counter:
+ *   main                -> total commits reachable from HEAD
+ *   release/* / point/* -> commits added since the cut from main
+ *                          (origin/main..HEAD) — first build = 0
  *
- * This means cutting release/26.04 produces 26.04.1.0 on the first build,
- * 26.04.1.1 after the first cherry-pick, and so on — independent of how
- * many CI runs have happened on other branches.
- *
- * Pinning `release/*` from the branch name (rather than from the calendar)
- * ensures point releases never drift across cycles — a fix backported to
- * release/26.04 in November 2026 still ships as 26.04.1.X, not 27.04.1.X.
+ * This means cutting release/26.10 produces 26.10.0.0 on the first build,
+ * 26.10.0.1 after the first cherry-pick, and so on; the first point release
+ * cut from main is point/26.10.1 -> 26.10.1.0, the next point/26.10.2, etc.
+ * Pinning the cycle and point number from the branch name (rather than the
+ * calendar) ensures a release never drifts across cycles on rebuild.
  */
 
 function getCurrentCycle(now = new Date()) {
@@ -68,8 +72,7 @@ function getBuildNumber(branch) {
   // the branch since it diverged from main. First build of a fresh release
   // or point branch = 0.
   if (branch.startsWith("release/") || branch.startsWith("point/")) {
-    const count =
-      gitRevCount("origin/main..HEAD") ?? gitRevCount("main..HEAD");
+    const count = gitRevCount("origin/main..HEAD") ?? gitRevCount("main..HEAD");
     if (count !== null) return count;
   }
 
@@ -78,16 +81,27 @@ function getBuildNumber(branch) {
   return gitRevCount("HEAD") ?? "0";
 }
 
+// A point release branch ships a clean release once it's listed in the
+// RELEASED_POINT_BRANCHES Actions variable; until then it's a candidate (-rc).
+function isReleasedPoint(branch) {
+  return (process.env.RELEASED_POINT_BRANCHES || "")
+    .split(",")
+    .map((b) => b.trim())
+    .filter(Boolean)
+    .includes(branch);
+}
+
 function getVersion() {
   const branch = getBranch();
   const buildNum = getBuildNumber(branch);
 
-  if (branch === "main" || branch.startsWith("point/")) {
+  // main: integration trunk / CHANGELOG baseline. Never shipped — this version
+  // only labels its "Version Packages" PR, so it stays calendar-derived.
+  if (branch === "main") {
     return `${getCurrentCycle()}.0.${buildNum}-beta`;
   }
-  if (branch === "dev") {
-    return `${getCurrentCycle()}.0.${buildNum}-dev`;
-  }
+
+  // release/YY.MM: the base of a cycle -> point segment 0.
   if (branch.startsWith("release/")) {
     const cycle = branch.slice("release/".length);
     if (!/^\d{2}\.(04|10)$/.test(cycle)) {
@@ -95,7 +109,22 @@ function getVersion() {
         `Invalid release branch name: '${branch}'. Expected 'release/YY.04' or 'release/YY.10'.`,
       );
     }
-    return `${cycle}.1.${buildNum}`;
+    return `${cycle}.0.${buildNum}`;
+  }
+
+  // point/YY.MM.N: the Nth point release of a cycle. Cycle and point number
+  // come straight from the branch name; candidates carry -rc until promoted.
+  if (branch.startsWith("point/")) {
+    const spec = branch.slice("point/".length);
+    const match = spec.match(/^(\d{2}\.(?:04|10))\.(\d+)$/);
+    if (!match) {
+      throw new Error(
+        `Invalid point branch name: '${branch}'. Expected 'point/YY.04.N' or 'point/YY.10.N' (e.g. point/26.10.1).`,
+      );
+    }
+    const [, cycle, point] = match;
+    const version = `${cycle}.${point}.${buildNum}`;
+    return isReleasedPoint(branch) ? version : `${version}-rc`;
   }
 
   return `0.0.0-draft.${buildNum}`;
