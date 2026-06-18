@@ -1,3 +1,9 @@
+landscape-dashboard (26.10~beta.3-0landscape0) jammy; urgency=medium
+
+  * Release 26.10~beta.3 for jammy
+
+ -- Joey Mucci <joseph.mucci@canonical.com>  Thu, 18 Jun 2026 20:05:36 +0000
+
 landscape-dashboard (26.10~beta.2-0landscape0) jammy; urgency=medium
 
   * Release 26.10~beta.2 for jammy
