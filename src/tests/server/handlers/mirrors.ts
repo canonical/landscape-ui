@@ -51,7 +51,7 @@ const getBatchMirrorsResponse = async (
 };
 
 export default [
-  http.post(`${API_URL_DEB_ARCHIVE}mirrors\\:batchGet`, async ({ request }) => {
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, async ({ request }) => {
     return getBatchMirrorsResponse(request);
   }),
 

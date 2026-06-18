@@ -2,7 +2,10 @@ import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import ValidationResult from "./ValidationResult";
-import type { Operation } from "@/features/operations";
+import type {
+  PackagesValidationState,
+  PackagesValidationOperation,
+} from "@/features/operations";
 import {
   emptyOperation,
   overCountOperation,
@@ -11,12 +14,13 @@ import {
   timeoutOperation,
 } from "@/tests/mocks/operations";
 import { getPackageList } from "../helpers";
-import type { PackagesValidationState } from "../../../types";
 
-const makeTask = (operation: Operation): PackagesValidationState => {
+const makeTask = (
+  operation: PackagesValidationOperation,
+): PackagesValidationState => {
   const { response, count } = getPackageList(operation.response?.output ?? "");
   return {
-    status: operation.metadata.status,
+    status: operation.metadata?.status,
     count: count,
     response: response,
     done: operation.done,
@@ -50,10 +54,7 @@ describe("ValidationResult", () => {
   it("renders default error notification when failed without error message", () => {
     renderWithProviders(
       <ValidationResult
-        validationTask={makeTask({
-          ...failedOperation,
-          error: { ...failedOperation.error, message: "" },
-        })}
+        validationTask={makeTask({ ...failedOperation, error: undefined })}
       />,
     );
 
