@@ -25,7 +25,7 @@ export const useSyncSortableFields = ({
     // Intentional prop->state sync: setState in this effect is the deliberate
     // mechanism, not an accident. Reading draggingFieldIdRef during render (to
     // avoid the effect) would instead trip react-hooks/refs.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setOrderedFields(fields);
   }, [draggingFieldIdRef, fields, setOrderedFields]);
 };

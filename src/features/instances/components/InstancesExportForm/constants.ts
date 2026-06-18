@@ -34,11 +34,11 @@ export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
     title: "Primary Identity",
     key: "primary-identity",
     fields: [
-      { id: "hostname", label: "Hostname", defaultSelected: true },
-      { id: "title", label: "Instance name", defaultSelected: true },
-      { id: "os", label: "OS", defaultSelected: true },
-      { id: "id", label: "ID", defaultSelected: true },
-      { id: "status", label: "Status", defaultSelected: true },
+      { id: "hostname", label: "Hostname" },
+      { id: "title", label: "Instance name" },
+      { id: "os", label: "OS" },
+      { id: "id", label: "ID" },
+      { id: "status", label: "Status" },
     ],
   },
   {
@@ -74,8 +74,8 @@ export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
     title: "Business Logic",
     key: "business-logic",
     fields: [
-      { id: "tags", label: "Tags", defaultSelected: true },
-      { id: "access_group", label: "Access group", defaultSelected: true },
+      { id: "tags", label: "Tags" },
+      { id: "access_group", label: "Access group" },
       { id: "annotations", label: "Annotations" },
       { id: "ubuntu_pro", label: "Ubuntu Pro expiration" },
       { id: "license_type", label: "License type" },
@@ -85,7 +85,7 @@ export const EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
     title: "Granular Metadata & Deep Diagnostics",
     key: "granular-metadata-diagnostics",
     fields: [
-      { id: "last_ping_time", label: "Last ping", defaultSelected: true },
+      { id: "last_ping_time", label: "Last ping" },
       { id: "juju_machine_id", label: "Juju machine ID" },
       { id: "cloud_instance_metadata", label: "Cloud instance metadata" },
       { id: "hostagent_uid", label: "Host agent UID" },

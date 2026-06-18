@@ -233,7 +233,6 @@ export default [
       filename: "activities-export.tsv",
       row_count: 0,
       type: "activity",
-      attribute_labels: [],
       created_at: new Date().toISOString(),
       status: "processing",
       progress: 0,

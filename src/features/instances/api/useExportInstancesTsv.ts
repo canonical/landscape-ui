@@ -3,7 +3,13 @@ import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type { InstancesExportJob } from "../types/InstancesExportJob";
-import type { CreateInstancesExportJobParams } from "./instancesExportJobsShared";
+import type { InstanceListParams } from "../helpers";
+
+interface CreateInstancesExportJobParams extends InstanceListParams {
+  name: string;
+  selected_field_ids: string[];
+  retain_until: string;
+}
 
 export const useExportInstancesTsv = () => {
   const authFetch = useFetch();

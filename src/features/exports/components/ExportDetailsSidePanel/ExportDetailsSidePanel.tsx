@@ -6,15 +6,15 @@ import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import {
   Button,
-  ConfirmationModal,
+  ConfirmationButton,
   Icon,
   ICONS,
 } from "@canonical/react-components";
 import moment from "moment";
-import { useState, type FC } from "react";
+import { type FC } from "react";
 import useDebug from "@/hooks/useDebug";
 import ExportProgressBar from "../ExportProgressBar";
-import { getStatusLabel, getTypeLabel } from "../../api/exportJobsShared";
+import { getStatusLabel, getTypeLabel } from "../../helpers";
 import { useCancelExportJob } from "../../api/useCancelExportJob";
 import { useDiscardExportJob } from "../../api/useDiscardExportJob";
 import { useDownloadExportJob } from "../../api/useDownloadExportJob";
@@ -31,9 +31,7 @@ const ExportDetailsSidePanel: FC = () => {
   const { discardExportJob: onDiscard } = useDiscardExportJob();
   const { downloadExportJob: onDownload } = useDownloadExportJob();
 
-  const [confirmDiscard, setConfirmDiscard] = useState(false);
-
-  async function handleDownload() {
+  const handleDownload = async () => {
     if (!job) {
       return;
     }
@@ -49,9 +47,9 @@ const ExportDetailsSidePanel: FC = () => {
     } catch (error) {
       debug(error);
     }
-  }
+  };
 
-  async function handleCancel() {
+  const handleConfirmCancel = async () => {
     if (!job) {
       return;
     }
@@ -65,24 +63,15 @@ const ExportDetailsSidePanel: FC = () => {
     } catch (error) {
       debug(error);
     }
-  }
+  };
 
-  function handleOpenDiscard() {
-    setConfirmDiscard(true);
-  }
-
-  function handleCloseDiscard() {
-    setConfirmDiscard(false);
-  }
-
-  async function handleConfirmDiscard() {
+  const handleConfirmDiscard = async () => {
     if (!job) {
       return;
     }
 
     try {
       await onDiscard(job.id);
-      setConfirmDiscard(false);
       popSidePathUntilClear();
       notify.success({
         title: "TSV discarded",
@@ -91,7 +80,7 @@ const ExportDetailsSidePanel: FC = () => {
     } catch (error) {
       debug(error);
     }
-  }
+  };
 
   if (!job) {
     return <SidePanel.LoadingState />;
@@ -117,26 +106,60 @@ const ExportDetailsSidePanel: FC = () => {
               </Button>
             )}
             {job.status === "processing" && (
-              <Button
+              <ConfirmationButton
                 type="button"
-                hasIcon
-                className="p-segmented-control__button"
-                onClick={handleCancel}
+                className="p-button has-icon p-segmented-control__button"
+                confirmationModalProps={{
+                  title: `Cancel "${job.name}"?`,
+                  confirmButtonLabel: "Cancel",
+                  confirmButtonAppearance: "negative",
+                  onConfirm: handleConfirmCancel,
+                  children: (
+                    <>
+                      <p>
+                        The export &quot;{job.name}&quot; is still being
+                        generated.
+                      </p>
+                      <p>
+                        Cancelling it will stop the generation and discard any
+                        partial results.
+                      </p>
+                      <p>
+                        This action is <strong>irreversible</strong>.
+                      </p>
+                    </>
+                  ),
+                }}
               >
                 <Icon name="close--negative" />
                 <span className="u-text--negative">Cancel</span>
-              </Button>
+              </ConfirmationButton>
             )}
             {job.status !== "processing" && (
-              <Button
+              <ConfirmationButton
                 type="button"
-                hasIcon
-                className="p-segmented-control__button"
-                onClick={handleOpenDiscard}
+                className="p-button has-icon p-segmented-control__button"
+                confirmationModalProps={{
+                  title: `Discard "${job.name}"?`,
+                  confirmButtonLabel: "Discard",
+                  confirmButtonAppearance: "negative",
+                  onConfirm: handleConfirmDiscard,
+                  children: (
+                    <>
+                      <p>
+                        The export &quot;{job.name}&quot; will be permanently
+                        deleted.
+                      </p>
+                      <p>
+                        This action is <strong>irreversible</strong>.
+                      </p>
+                    </>
+                  ),
+                }}
               >
                 <Icon name={`${ICONS.delete}--negative`} />
                 <span className="u-text--negative">Discard</span>
-              </Button>
+              </ConfirmationButton>
             )}
           </div>
         </div>
@@ -178,21 +201,6 @@ const ExportDetailsSidePanel: FC = () => {
           </Blocks.Item>
         </Blocks>
       </SidePanel.Content>
-      {confirmDiscard && (
-        <ConfirmationModal
-          title={`Discard "${job.name}"?`}
-          confirmButtonLabel="Discard"
-          confirmButtonAppearance="negative"
-          close={handleCloseDiscard}
-          onConfirm={handleConfirmDiscard}
-          renderInPortal
-        >
-          <p>The export &quot;{job.name}&quot; will be permanently deleted.</p>
-          <p>
-            This action is <strong>irreversible</strong>.
-          </p>
-        </ConfirmationModal>
-      )}
     </>
   );
 };
