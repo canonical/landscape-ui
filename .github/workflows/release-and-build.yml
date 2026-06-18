@@ -1,8 +1,11 @@
 name: Release and PPA Build
 
+# Only the publishing branches build here. main is excluded — it is no longer a
+# publish target; its changeset/version bookkeeping lives in changeset-version.yml.
+# Stable ships from release/*, point releases (candidate and released) from point/*.
 on:
   push:
-    branches: [main, dev, "release/**", "point/**"]
+    branches: ["release/**", "point/**"]
 
 permissions:
   contents: write
@@ -42,17 +45,23 @@ jobs:
           # demoting a bad promotion or delaying a fresh cut from going
           # stable immediately.
           STABLE_RELEASE_BRANCH: ${{ vars.STABLE_RELEASE_BRANCH }}
+          # Comma-separated point branches that have been promoted from
+          # candidate (-rc) to released (clean version), e.g.
+          # "point/26.10.1,point/26.10.2". Unlisted point branches stay -rc.
+          RELEASED_POINT_BRANCHES: ${{ vars.RELEASED_POINT_BRANCHES }}
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          # Per-branch destination: every branch publishes to its own ppa-build-*,
-          # so main and point/* no longer collide on a shared target.
+          # Per-release destination: every publishing branch gets its own
+          # ppa-build-* target so cycles and point releases never collide.
+          #   release/26.10  -> ppa-build-26.10
+          #   point/26.10.2  -> ppa-build-26.10.2   (candidate and released
+          #                     share the target; the -rc suffix in the version
+          #                     distinguishes them)
           case "$GITHUB_REF" in
-            refs/heads/main)        DEST="ppa-build" ;;
-            refs/heads/dev)         DEST="ppa-build-dev" ;;
-            refs/heads/point/*)     DEST="ppa-build-point" ;;
-            refs/heads/release/*)   DEST="ppa-build-${GITHUB_REF##*/}" ;;
+            refs/heads/release/*)   DEST="ppa-build-${GITHUB_REF#refs/heads/release/}" ;;
+            refs/heads/point/*)     DEST="ppa-build-${GITHUB_REF#refs/heads/point/}" ;;
             *)                      DEST="ppa-build-draft" ;;
           esac
           echo "dest_branch=$DEST" >> $GITHUB_OUTPUT
