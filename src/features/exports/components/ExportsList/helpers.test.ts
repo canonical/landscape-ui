@@ -13,7 +13,9 @@ describe("getStatusIcon", () => {
   });
 
   it('returns "status-failed-small" for failed', () => {
-    expect(getStatusIcon(failedActivitiesExportJob)).toBe("status-failed-small");
+    expect(getStatusIcon(failedActivitiesExportJob)).toBe(
+      "status-failed-small",
+    );
   });
 
   it('returns "status-in-progress-small" for processing', () => {
@@ -27,6 +29,8 @@ describe("getTypeIcon", () => {
   });
 
   it('returns "switcher-environments" for activity exports', () => {
-    expect(getTypeIcon(completedActivitiesExportJob)).toBe("switcher-environments");
+    expect(getTypeIcon(completedActivitiesExportJob)).toBe(
+      "switcher-environments",
+    );
   });
 });

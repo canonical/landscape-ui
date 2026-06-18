@@ -232,6 +232,7 @@ describe("InstancesExportForm", () => {
           wsl_parents: false,
         }}
         instanceCount={8}
+        selectedInstanceIds={[1, 2]}
       />,
     );
 
@@ -249,7 +250,7 @@ describe("InstancesExportForm", () => {
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
     expect(
       screen.getByText(
-        'Your instances export "Weekly export" for "name:prod" is being generated.',
+        'Your instances export "Weekly export" for 2 selected instances is being generated.',
       ),
     ).toBeVisible();
     expect(

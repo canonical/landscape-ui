@@ -15,11 +15,7 @@ describe("ExportDetailsSidePanel", () => {
   const user = userEvent.setup();
 
   it("renders loading state while fetching", () => {
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      LOADING_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, LOADING_URL);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
@@ -31,11 +27,7 @@ describe("ExportDetailsSidePanel", () => {
       response: completedExportJob,
     });
 
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      SIDE_PANEL_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, SIDE_PANEL_URL);
 
     await expectLoadingState();
 
@@ -54,11 +46,7 @@ describe("ExportDetailsSidePanel", () => {
       response: completedExportJob,
     });
 
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      SIDE_PANEL_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, SIDE_PANEL_URL);
 
     await expectLoadingState();
 
@@ -77,17 +65,11 @@ describe("ExportDetailsSidePanel", () => {
       response: processingExportJob,
     });
 
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      PROCESSING_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, PROCESSING_URL);
 
     await expectLoadingState();
 
-    expect(
-      screen.getByRole("button", { name: /cancel/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
   it("opens cancel confirmation modal for processing jobs", async () => {
@@ -97,22 +79,14 @@ describe("ExportDetailsSidePanel", () => {
       response: processingExportJob,
     });
 
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      PROCESSING_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, PROCESSING_URL);
 
     await expectLoadingState();
 
-    await user.click(
-      screen.getByRole("button", { name: /cancel/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /cancel/i }));
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
-    expect(
-      screen.getByText(/still being generated/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/still being generated/i)).toBeInTheDocument();
   });
 
   it("shows discard confirmation modal", async () => {
@@ -122,17 +96,11 @@ describe("ExportDetailsSidePanel", () => {
       response: completedExportJob,
     });
 
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      SIDE_PANEL_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, SIDE_PANEL_URL);
 
     await expectLoadingState();
 
-    await user.click(
-      screen.getByRole("button", { name: /discard/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /discard/i }));
 
     expect(await screen.findByRole("dialog")).toBeInTheDocument();
     expect(screen.getByText(/permanently deleted/i)).toBeInTheDocument();
@@ -146,11 +114,7 @@ describe("ExportDetailsSidePanel", () => {
       response: jobWithQuery,
     });
 
-    renderWithProviders(
-      <ExportDetailsSidePanel />,
-      undefined,
-      SIDE_PANEL_URL,
-    );
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, SIDE_PANEL_URL);
 
     await expectLoadingState();
 

@@ -245,5 +245,4 @@ export default [
     };
     return HttpResponse.json(job, { status: 201 });
   }),
-
 ];

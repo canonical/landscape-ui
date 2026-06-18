@@ -24,7 +24,7 @@ export const useExportInstancesTsv = () => {
       authFetch.post<InstancesExportJob>("computers/exports", params),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["instances-export-jobs"],
+        queryKey: ["all-export-jobs"],
       });
     },
   });
