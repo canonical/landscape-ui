@@ -7,10 +7,6 @@ import type {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-type UpdateMirrorParams = Omit<MirrorWritable, "gpgKey"> & {
-  gpgKey?: { armor: string } | null;
-};
-
 export function useUpdateMirror(name: string) {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
@@ -18,7 +14,7 @@ export function useUpdateMirror(name: string) {
   return useMutation<
     AxiosResponse<MirrorServiceUpdateMirrorResponse>,
     AxiosError<MirrorServiceUpdateMirrorError>,
-    UpdateMirrorParams
+    MirrorWritable
   >({
     mutationKey: ["mirror", name, "update"],
     mutationFn: async (params) => authFetchDebArchive.patch(name, params),
