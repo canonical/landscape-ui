@@ -3,6 +3,9 @@ import type {
   MirrorWritable,
   MirrorServiceUpdateMirrorError,
   MirrorServiceUpdateMirrorResponse,
+  MirrorWritable,
+  MirrorServiceUpdateMirrorError,
+  MirrorServiceUpdateMirrorResponse,
 } from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
