@@ -26,7 +26,7 @@ const RemovePublicationModal: FC<RemovePublicationModalProps> = ({
 
   const handleRemovePublication = async () => {
     try {
-      await deletePublication({ publicationName: publication.name ?? "" }); // TODO: change when the api is updated
+      await deletePublication(publication.name ?? ""); // TODO: change when the api is updated
 
       notify.success({
         title: `You have successfully removed ${publication.displayName}`,

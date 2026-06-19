@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@canonical/landscape-openapi':
-        specifier: 0.0.60
-        version: 0.0.60
+        specifier: 0.0.70
+        version: 0.0.70(axios@1.17.0)
       '@canonical/react-components':
         specifier: 4.5.4
         version: 4.5.4(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(formik@2.4.9(@types/react@19.2.16)(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vanilla-framework@4.51.0(sass@1.100.0))
@@ -277,8 +277,10 @@ packages:
   '@cacheable/utils@2.4.1':
     resolution: {integrity: sha512-eiFgzCbIneyMlLOmNG4g9xzF7Hv3Mga4LjxjcSC/ues6VYq2+gUbQI8JqNuw/ZM8tJIeIaBGpswAsqV2V7ApgA==}
 
-  '@canonical/landscape-openapi@0.0.60':
-    resolution: {integrity: sha512-uy4TQjpjU7cMvb0BJZMAvgjTAW0O9ePyBIsQQ+gL31ksQFcDlcIHV1eP7XCPruXcvoW2Yh3encUjqciwJkG7Ig==}
+  '@canonical/landscape-openapi@0.0.70':
+    resolution: {integrity: sha512-2RM1+H+ylYqB8vu6EfazDa23BU+HgzvZWrqdhrV5SlldFnH1V0JSGVI/emjdkzK8JDnAA0pWby8/1mbJbMObOg==}
+    peerDependencies:
+      axios: ^1.0.0
 
   '@canonical/react-components@4.5.4':
     resolution: {integrity: sha512-VbHV3665ceF5HeRgFGpIhBBGBFE12Iyhpd3e59vUjgCeC/ERu6xQGKy428ZU5VBQDMEIOcH/YoLIyD0YRupq6A==}
@@ -4054,7 +4056,9 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@canonical/landscape-openapi@0.0.60': {}
+  '@canonical/landscape-openapi@0.0.70(axios@1.17.0)':
+    dependencies:
+      axios: 1.17.0
 
   '@canonical/react-components@4.5.4(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(formik@2.4.9(@types/react@19.2.16)(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vanilla-framework@4.51.0(sass@1.100.0))':
     dependencies:

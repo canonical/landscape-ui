@@ -2,9 +2,9 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
-  UpdateLocalData,
-  UpdateLocalError,
-  UpdateLocalResponse,
+  LocalServiceUpdateLocalError,
+  LocalServiceUpdateLocalResponse,
+  LocalWritable,
 } from "@canonical/landscape-openapi";
 
 export const useUpdateLocalRepository = () => {
@@ -12,9 +12,9 @@ export const useUpdateLocalRepository = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<UpdateLocalResponse>,
-    AxiosError<UpdateLocalError>,
-    UpdateLocalData["body"] & { name: string }
+    AxiosResponse<LocalServiceUpdateLocalResponse>,
+    AxiosError<LocalServiceUpdateLocalError>,
+    Required<LocalWritable>
   >({
     mutationKey: ["local", "update"],
     mutationFn: async ({ name, ...local }) =>

@@ -1,19 +1,19 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  SyncMirrorData,
-  SyncMirrorError,
-  SyncMirrorResponse,
+  SyncMirrorRequest,
+  MirrorServiceSyncMirrorError,
+  MirrorServiceSyncMirrorResponse,
 } from "@canonical/landscape-openapi";
 import { useMutation } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-export function useSyncMirror(name: SyncMirrorData["path"]["name"]) {
+export function useSyncMirror(name: string) {
   const authFetchDebArchive = useFetchDebArchive();
 
   return useMutation<
-    AxiosResponse<SyncMirrorResponse>,
-    AxiosError<SyncMirrorError>,
-    SyncMirrorData["body"]
+    AxiosResponse<MirrorServiceSyncMirrorResponse>,
+    AxiosError<MirrorServiceSyncMirrorError>,
+    SyncMirrorRequest
   >({
     mutationKey: ["mirror", name, "sync"],
     mutationFn: async (params) =>

@@ -1,7 +1,7 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  BatchGetLocalsError,
   BatchGetLocalsResponse,
+  LocalServiceBatchGetLocalsError,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
@@ -11,7 +11,7 @@ export const useBatchGetLocals = (names: string[]) => {
 
   const { data, isLoading } = useQuery<
     Record<string, string>,
-    AxiosError<BatchGetLocalsError>
+    AxiosError<LocalServiceBatchGetLocalsError>
   >({
     queryKey: ["locals", "batch", names],
     queryFn: async () => {

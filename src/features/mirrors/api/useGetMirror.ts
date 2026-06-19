@@ -1,19 +1,18 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  GetMirrorData,
-  GetMirrorError,
-  GetMirrorResponse,
+  MirrorServiceGetMirrorError,
+  MirrorServiceGetMirrorResponse,
 } from "@canonical/landscape-openapi";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 export function useGetMirror(
-  mirrorName: GetMirrorData["path"]["name_1"],
+  mirrorName: string,
   options: Omit<
     UseQueryOptions<
-      AxiosResponse<GetMirrorResponse>,
-      AxiosError<GetMirrorError>
+      AxiosResponse<MirrorServiceGetMirrorResponse>,
+      AxiosError<MirrorServiceGetMirrorError>
     >,
     "queryKey" | "queryFn"
   > = {},
@@ -21,8 +20,8 @@ export function useGetMirror(
   const authFetchDebArchive = useFetchDebArchive();
 
   return useSuspenseQuery<
-    AxiosResponse<GetMirrorResponse>,
-    AxiosError<GetMirrorError>
+    AxiosResponse<MirrorServiceGetMirrorResponse>,
+    AxiosError<MirrorServiceGetMirrorError>
   >({
     queryKey: ["mirror", mirrorName],
     queryFn: async () => authFetchDebArchive.get(mirrorName),

@@ -2,8 +2,8 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type {
-  ListLocalPackagesError,
-  ListLocalPackagesResponse,
+  LocalServiceListLocalPackagesError,
+  LocalServiceListLocalPackagesResponse,
 } from "@canonical/landscape-openapi";
 
 export const useGetRepositoryPackages = (repository: string) => {
@@ -11,7 +11,7 @@ export const useGetRepositoryPackages = (repository: string) => {
 
   const { data, isPending } = useQuery<
     string[],
-    AxiosError<ListLocalPackagesError>
+    AxiosError<LocalServiceListLocalPackagesError>
   >({
     queryKey: ["packages", repository],
     queryFn: async () => {
@@ -20,7 +20,7 @@ export const useGetRepositoryPackages = (repository: string) => {
 
       do {
         const response =
-          await authFetchDebArchive.get<ListLocalPackagesResponse>(
+          await authFetchDebArchive.get<LocalServiceListLocalPackagesResponse>(
             `${repository}/packages`,
             {
               params: {
