@@ -111,7 +111,7 @@ const ExportDetailsSidePanel: FC = () => {
                 className="p-button has-icon p-segmented-control__button"
                 confirmationModalProps={{
                   title: `Cancel "${job.name}"?`,
-                  confirmButtonLabel: "Cancel",
+                  confirmButtonLabel: "Confirm",
                   confirmButtonAppearance: "negative",
                   onConfirm: handleConfirmCancel,
                   children: (

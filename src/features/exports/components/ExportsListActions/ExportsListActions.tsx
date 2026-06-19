@@ -127,7 +127,7 @@ const ExportsListActions: FC<ExportsListActionsProps> = ({ job }) => {
       {isCancelModalOpen && (
         <ConfirmationModal
           title={`Cancel "${job.name}"?`}
-          confirmButtonLabel="Cancel"
+          confirmButtonLabel="Confirm"
           confirmButtonAppearance="negative"
           close={closeCancelModal}
           onConfirm={handleConfirmCancel}

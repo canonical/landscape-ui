@@ -44,8 +44,10 @@ export const useDownloadExportJob = () => {
       downloadBlob(response.data, filename);
       return job;
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["all-export-jobs"] });
+    onSuccess: async (data) => {
+      if (data) {
+        await queryClient.invalidateQueries({ queryKey: ["all-export-jobs"] });
+      }
     },
   });
 
