@@ -14,7 +14,8 @@ export interface SaveFilePickerWindow {
 export const supportsNativeSave = (
   candidate: typeof window,
 ): candidate is typeof window & SaveFilePickerWindow =>
-  "showSaveFilePicker" in candidate;
+  "showSaveFilePicker" in candidate &&
+  typeof (candidate as SaveFilePickerWindow).showSaveFilePicker === "function";
 
 export const downloadBlob = (blob: Blob, filename: string): void => {
   const objectUrl = URL.createObjectURL(blob);
