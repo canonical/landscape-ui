@@ -145,7 +145,7 @@ const MirrorDetails: FC = () => {
                 <InfoGrid.Item label="Name" value={mirror.displayName} />
                 <InfoGrid.Item
                   label="Source type"
-                  value={getSourceType(mirror.mirrorType)}
+                  value={getSourceType(mirror)}
                 />
                 <InfoGrid.Item
                   label="Source URL"

@@ -9,6 +9,13 @@ import type {
   PublicationTargetServiceUpdatePublicationTargetResponse,
 } from "@canonical/landscape-openapi";
 
+interface EditPublicationTargetParams {
+  name?: string;
+  displayName: string;
+  s3?: Partial<S3Target>;
+  swift?: Partial<SwiftTarget>;
+  filesystem?: Partial<FilesystemTarget>;
+}
 export default function useEditPublicationTarget() {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();

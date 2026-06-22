@@ -21,14 +21,35 @@ describe("MirrorDetails helpers", () => {
       ["UBUNTU_SNAPSHOTS", "Ubuntu snapshots"],
       ["UBUNTU_PRO", "Ubuntu Pro"],
       ["THIRD_PARTY", "Third party"],
-      ["MIRROR_TYPE_UNSPECIFIED", "Third party"],
     ] as const)("maps %s to %s", (mirrorType, label) => {
-      expect(getSourceType(mirrorType)).toBe(label);
+      expect(getSourceType(buildMirror({ mirrorType }))).toBe(label);
     });
 
-    it("falls back to Third party when mirrorType is missing", () => {
-      expect(getSourceType(undefined)).toBe("Third party");
-    });
+    it.each([
+      ["https://archive.ubuntu.com/ubuntu", "Ubuntu archive"],
+      ["https://snapshot.ubuntu.com/ubuntu/20240101", "Ubuntu snapshots"],
+      ["https://bearer:token@esm.ubuntu.com/infra/ubuntu", "Ubuntu Pro"],
+      ["https://example.com/repo", "Third party"],
+    ] as const)(
+      "infers %s as %s when mirrorType is missing",
+      (archiveRoot, label) => {
+        expect(getSourceType(buildMirror({ archiveRoot }))).toBe(label);
+      },
+    );
+
+    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
+      "infers from the URL for legacy mirrors (mirrorType %s)",
+      (mirrorType) => {
+        expect(
+          getSourceType(
+            buildMirror({
+              mirrorType,
+              archiveRoot: "https://archive.ubuntu.com/ubuntu",
+            }),
+          ),
+        ).toBe("Ubuntu archive");
+      },
+    );
   });
 
   describe("shouldShowAuthentication", () => {
@@ -52,6 +73,34 @@ describe("MirrorDetails helpers", () => {
         expect(
           shouldShowAuthentication(buildMirror({ mirrorType, gpgKey })),
         ).toBe(true);
+      },
+    );
+
+    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
+      "shows authentication for legacy third-party mirrors (mirrorType %s) inferred from the URL",
+      (mirrorType) => {
+        expect(
+          shouldShowAuthentication(
+            buildMirror({
+              mirrorType,
+              archiveRoot: "https://example.com/repo",
+            }),
+          ),
+        ).toBe(true);
+      },
+    );
+
+    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
+      "hides authentication for legacy Ubuntu mirrors (mirrorType %s) without a GPG key",
+      (mirrorType) => {
+        expect(
+          shouldShowAuthentication(
+            buildMirror({
+              mirrorType,
+              archiveRoot: "https://archive.ubuntu.com/ubuntu",
+            }),
+          ),
+        ).toBe(false);
       },
     );
   });

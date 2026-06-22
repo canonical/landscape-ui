@@ -97,7 +97,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Source type"
-                value={getSourceType(mirror.mirrorType)}
+                value={getSourceType(mirror)}
                 tooltipMessage="You can’t change the source type after the mirror is created."
               />
               <ReadOnlyField
