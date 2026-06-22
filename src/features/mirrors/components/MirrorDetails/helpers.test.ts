@@ -27,10 +27,12 @@ describe("MirrorDetails helpers", () => {
 
     it.each([
       ["https://archive.ubuntu.com/ubuntu", "Ubuntu archive"],
+      ["https://us.archive.ubuntu.com/ubuntu", "Ubuntu archive"],
       ["https://security.ubuntu.com/ubuntu", "Ubuntu archive"],
       ["https://snapshot.ubuntu.com/ubuntu/20240101", "Ubuntu snapshots"],
       ["https://bearer:token@esm.ubuntu.com/infra/ubuntu", "Ubuntu Pro"],
       ["https://example.com/repo", "Third party"],
+      ["https://mirror.example.com/archive.ubuntu.com/ubuntu", "Third party"],
     ] as const)(
       "infers %s as %s when mirrorType is missing",
       (archiveRoot, label) => {

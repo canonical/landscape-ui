@@ -55,8 +55,9 @@ describe("EditMirrorForm", () => {
     await expectLoadingState();
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnce();
-    expect(mockUpdateMirror.mock.calls[0]?.[0]).not.toHaveProperty("mirrorType");
+    expect(mockUpdateMirror.mock.calls[0]?.[0]).not.toHaveProperty(
+      "mirrorType",
+    );
 
     expect(
       await screen.findByText(

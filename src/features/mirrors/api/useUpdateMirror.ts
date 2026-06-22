@@ -7,9 +7,6 @@ import type {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-// MirrorWritable types gpgKey as non-nullable, but the API uses an explicit
-// null to clear an existing key (omitting it keeps the current key), so allow
-// null here.
 type UpdateMirrorParams = Omit<MirrorWritable, "gpgKey"> & {
   gpgKey?: MirrorWritable["gpgKey"] | null;
 };
