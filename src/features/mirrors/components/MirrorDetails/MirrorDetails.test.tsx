@@ -28,6 +28,7 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Name")).toBeInTheDocument();
     expect(screen.getByText("Source type")).toBeInTheDocument();
+    expect(screen.getByText("Ubuntu archive")).toBeInTheDocument();
     expect(screen.getByText("Source URL")).toBeInTheDocument();
     expect(screen.getByText("Last update")).toBeInTheDocument();
     expect(screen.getAllByText("Packages")).toHaveLength(2);

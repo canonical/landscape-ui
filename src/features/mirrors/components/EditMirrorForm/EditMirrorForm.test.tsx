@@ -7,11 +7,6 @@ import { expectLoadingState } from "@/tests/helpers";
 import { beforeEach, expect, vi } from "vitest";
 import { EditMirrorForm } from "../..";
 import { mirrors } from "@/tests/mocks/mirrors";
-import {
-  UBUNTU_ARCHIVE_HOST,
-  UBUNTU_PRO_HOST,
-  UBUNTU_SNAPSHOTS_HOST,
-} from "../../constants";
 import usePageParams from "@/hooks/usePageParams";
 
 const TestComponent = () => {
@@ -44,7 +39,7 @@ describe("EditMirrorForm", () => {
 
   it("edits an ubuntu archive mirror", async () => {
     const mirror = mirrors.find(
-      ({ archiveRoot }) => new URL(archiveRoot).host === UBUNTU_ARCHIVE_HOST,
+      ({ mirrorType }) => mirrorType === "UBUNTU_ARCHIVE",
     );
 
     assert(mirror);
@@ -69,10 +64,7 @@ describe("EditMirrorForm", () => {
 
   it("edits a third party mirror", async () => {
     const mirror = mirrors.find(
-      (m) =>
-        ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
-          new URL(m.archiveRoot).host,
-        ) && "gpgKey" in m,
+      (m) => m.mirrorType === "THIRD_PARTY" && "gpgKey" in m,
     );
 
     assert(mirror);
@@ -108,10 +100,7 @@ describe("EditMirrorForm", () => {
 
   it("preserves existing GPG key when checkbox is checked", async () => {
     const mirror = mirrors.find(
-      (m) =>
-        ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
-          new URL(m.archiveRoot).host,
-        ) && "gpgKey" in m,
+      (m) => m.mirrorType === "THIRD_PARTY" && "gpgKey" in m,
     );
 
     assert(mirror);

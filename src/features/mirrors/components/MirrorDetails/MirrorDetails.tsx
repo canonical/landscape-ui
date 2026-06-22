@@ -5,7 +5,7 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useGetMirror, useListPublicationTargets } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
-import { getSourceType } from "./helpers";
+import { getSourceType, shouldShowAuthentication } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -21,11 +21,6 @@ import {
 import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
-import {
-  UBUNTU_ARCHIVE_HOST,
-  UBUNTU_PRO_HOST,
-  UBUNTU_SNAPSHOTS_HOST,
-} from "../../constants";
 
 const MirrorDetails: FC = () => {
   const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
@@ -150,7 +145,7 @@ const MirrorDetails: FC = () => {
                 <InfoGrid.Item label="Name" value={mirror.displayName} />
                 <InfoGrid.Item
                   label="Source type"
-                  value={getSourceType(mirror.archiveRoot)}
+                  value={getSourceType(mirror.mirrorType)}
                 />
                 <InfoGrid.Item
                   label="Source URL"
@@ -227,11 +222,7 @@ const MirrorDetails: FC = () => {
                 />
               </InfoGrid>
             </Blocks.Item>
-            {![
-              UBUNTU_ARCHIVE_HOST,
-              UBUNTU_SNAPSHOTS_HOST,
-              UBUNTU_PRO_HOST,
-            ].includes(new URL(mirror.archiveRoot).host) && (
+            {shouldShowAuthentication(mirror) && (
               <Blocks.Item title="Authentication">
                 <InfoGrid dense>
                   <InfoGrid.Item

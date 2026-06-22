@@ -1,6 +1,19 @@
+import type { MirrorWritable } from "@canonical/landscape-openapi";
+import type { FormProps } from "./components/AddMirrorForm/types";
+
 export const UBUNTU_ARCHIVE_HOST = "archive.ubuntu.com";
 export const UBUNTU_SNAPSHOTS_HOST = "snapshot.ubuntu.com";
 export const UBUNTU_PRO_HOST = "esm.ubuntu.com";
+
+export const SOURCE_TYPE_TO_MIRROR_TYPE: Record<
+  FormProps["sourceType"],
+  NonNullable<MirrorWritable["mirrorType"]>
+> = {
+  "ubuntu-archive": "UBUNTU_ARCHIVE",
+  "ubuntu-snapshots": "UBUNTU_SNAPSHOTS",
+  "ubuntu-pro": "UBUNTU_PRO",
+  "third-party": "THIRD_PARTY",
+};
 
 export const SETTINGS_HELP_TEXT = {
   preserveSignatures:

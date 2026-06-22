@@ -1,18 +1,20 @@
-import {
-  UBUNTU_ARCHIVE_HOST,
-  UBUNTU_PRO_HOST,
-  UBUNTU_SNAPSHOTS_HOST,
-} from "../../constants";
+import type { Mirror } from "@canonical/landscape-openapi";
 
-export function getSourceType(archiveRoot: string): string {
-  switch (new URL(archiveRoot).host) {
-    case UBUNTU_ARCHIVE_HOST:
-      return "Ubuntu archive";
-    case UBUNTU_SNAPSHOTS_HOST:
-      return "Ubuntu snapshots";
-    case UBUNTU_PRO_HOST:
-      return "Ubuntu Pro";
-    default:
-      return "Third party";
-  }
+const MIRROR_TYPE_LABELS: Record<NonNullable<Mirror["mirrorType"]>, string> = {
+  MIRROR_TYPE_UNSPECIFIED: "Third party",
+  UBUNTU_ARCHIVE: "Ubuntu archive",
+  UBUNTU_SNAPSHOTS: "Ubuntu snapshots",
+  UBUNTU_PRO: "Ubuntu Pro",
+  THIRD_PARTY: "Third party",
+};
+
+export function getSourceType(mirrorType: Mirror["mirrorType"]): string {
+  return mirrorType ? MIRROR_TYPE_LABELS[mirrorType] : "Third party";
+}
+
+// Legacy mirrors created before mirrorType existed report it as undefined or
+// MIRROR_TYPE_UNSPECIFIED, so fall back to the presence of a GPG key to keep
+// their authentication details visible.
+export function shouldShowAuthentication(mirror: Mirror): boolean {
+  return mirror.mirrorType === "THIRD_PARTY" || !!mirror.gpgKey;
 }

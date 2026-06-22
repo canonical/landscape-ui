@@ -12,13 +12,11 @@ import Blocks from "@/components/layout/Blocks";
 import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import GpgKeyField from "@/components/form/GpgKeyField";
 import { getFormikError } from "@/utils/formikErrors";
-import { getSourceType } from "../MirrorDetails/helpers";
 import {
-  SETTINGS_HELP_TEXT,
-  UBUNTU_ARCHIVE_HOST,
-  UBUNTU_PRO_HOST,
-  UBUNTU_SNAPSHOTS_HOST,
-} from "../../constants";
+  getSourceType,
+  shouldShowAuthentication,
+} from "../MirrorDetails/helpers";
+import { SETTINGS_HELP_TEXT } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import * as Yup from "yup";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
@@ -99,7 +97,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Source type"
-                value={getSourceType(mirror.archiveRoot)}
+                value={getSourceType(mirror.mirrorType)}
                 tooltipMessage="You can’t change the source type after the mirror is created."
               />
               <ReadOnlyField
@@ -173,11 +171,7 @@ const EditMirrorForm: FC = () => {
                 {...formik.getFieldProps("downloadInstallerFiles")}
                 checked={formik.values.downloadInstallerFiles}
               />
-              {![
-                UBUNTU_ARCHIVE_HOST,
-                UBUNTU_SNAPSHOTS_HOST,
-                UBUNTU_PRO_HOST,
-              ].includes(new URL(mirror.archiveRoot).host) && (
+              {shouldShowAuthentication(mirror) && (
                 <Blocks.Item title="Authentication">
                   <GpgKeyField
                     existingKey={mirror.gpgKey}
