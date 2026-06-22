@@ -68,22 +68,8 @@ function inferSourceTypeFromUrl(archiveRoot?: string): string {
     return sourceTypeFromHostname(hostname);
   }
 
-  // The substring fallback only applies to truly non-URL legacy values.
-  if (archiveRoot.includes(UBUNTU_SNAPSHOTS_HOST)) {
-    return MIRROR_TYPE_LABELS.UBUNTU_SNAPSHOTS;
-  }
-
-  if (archiveRoot.includes(UBUNTU_PRO_HOST)) {
-    return MIRROR_TYPE_LABELS.UBUNTU_PRO;
-  }
-
-  if (
-    archiveRoot.includes(UBUNTU_ARCHIVE_HOST) ||
-    archiveRoot.includes(UBUNTU_SECURITY_HOST)
-  ) {
-    return MIRROR_TYPE_LABELS.UBUNTU_ARCHIVE;
-  }
-
+  // Legacy values were validated to ensure only URL values, so if hostname
+  // extraction failed, treat as third-party.
   return MIRROR_TYPE_LABELS.THIRD_PARTY;
 }
 
@@ -106,12 +92,5 @@ export function shouldShowAuthentication(mirror: Mirror): boolean {
     return true;
   }
 
-  if (mirror.mirrorType && mirror.mirrorType !== "MIRROR_TYPE_UNSPECIFIED") {
-    return mirror.mirrorType === "THIRD_PARTY";
-  }
-
-  return (
-    inferSourceTypeFromUrl(mirror.archiveRoot) ===
-    MIRROR_TYPE_LABELS.THIRD_PARTY
-  );
+  return getSourceType(mirror) === MIRROR_TYPE_LABELS.THIRD_PARTY;
 }

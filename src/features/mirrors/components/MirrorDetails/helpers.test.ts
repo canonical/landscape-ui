@@ -16,43 +16,111 @@ const buildMirror = (overrides: Partial<Mirror> = {}): Mirror =>
 
 describe("MirrorDetails helpers", () => {
   describe("getSourceType", () => {
-    it.each([
-      ["UBUNTU_ARCHIVE", "Ubuntu archive"],
-      ["UBUNTU_SNAPSHOTS", "Ubuntu snapshots"],
-      ["UBUNTU_PRO", "Ubuntu Pro"],
-      ["THIRD_PARTY", "Third party"],
-    ] as const)("maps %s to %s", (mirrorType, label) => {
-      expect(getSourceType(buildMirror({ mirrorType }))).toBe(label);
+    it("maps UBUNTU_ARCHIVE to Ubuntu archive", () => {
+      expect(getSourceType(buildMirror({ mirrorType: "UBUNTU_ARCHIVE" }))).toBe(
+        "Ubuntu archive",
+      );
     });
 
-    it.each([
-      ["https://archive.ubuntu.com/ubuntu", "Ubuntu archive"],
-      ["https://us.archive.ubuntu.com/ubuntu", "Ubuntu archive"],
-      ["https://security.ubuntu.com/ubuntu", "Ubuntu archive"],
-      ["https://snapshot.ubuntu.com/ubuntu/20240101", "Ubuntu snapshots"],
-      ["https://bearer:token@esm.ubuntu.com/infra/ubuntu", "Ubuntu Pro"],
-      ["https://example.com/repo", "Third party"],
-      ["https://mirror.example.com/archive.ubuntu.com/ubuntu", "Third party"],
-    ] as const)(
-      "infers %s as %s when mirrorType is missing",
-      (archiveRoot, label) => {
-        expect(getSourceType(buildMirror({ archiveRoot }))).toBe(label);
-      },
-    );
+    it("maps UBUNTU_SNAPSHOTS to Ubuntu snapshots", () => {
+      expect(
+        getSourceType(buildMirror({ mirrorType: "UBUNTU_SNAPSHOTS" })),
+      ).toBe("Ubuntu snapshots");
+    });
 
-    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
-      "infers from the URL for legacy mirrors (mirrorType %s)",
-      (mirrorType) => {
-        expect(
-          getSourceType(
-            buildMirror({
-              mirrorType,
-              archiveRoot: "https://archive.ubuntu.com/ubuntu",
-            }),
-          ),
-        ).toBe("Ubuntu archive");
-      },
-    );
+    it("maps UBUNTU_PRO to Ubuntu Pro", () => {
+      expect(getSourceType(buildMirror({ mirrorType: "UBUNTU_PRO" }))).toBe(
+        "Ubuntu Pro",
+      );
+    });
+
+    it("maps THIRD_PARTY to Third party", () => {
+      expect(getSourceType(buildMirror({ mirrorType: "THIRD_PARTY" }))).toBe(
+        "Third party",
+      );
+    });
+
+    it("infers https://archive.ubuntu.com/ubuntu as Ubuntu archive when mirrorType is missing", () => {
+      expect(
+        getSourceType(
+          buildMirror({ archiveRoot: "https://archive.ubuntu.com/ubuntu" }),
+        ),
+      ).toBe("Ubuntu archive");
+    });
+
+    it("infers https://us.archive.ubuntu.com/ubuntu as Ubuntu archive when mirrorType is missing", () => {
+      expect(
+        getSourceType(
+          buildMirror({ archiveRoot: "https://us.archive.ubuntu.com/ubuntu" }),
+        ),
+      ).toBe("Ubuntu archive");
+    });
+
+    it("infers https://security.ubuntu.com/ubuntu as Ubuntu archive when mirrorType is missing", () => {
+      expect(
+        getSourceType(
+          buildMirror({ archiveRoot: "https://security.ubuntu.com/ubuntu" }),
+        ),
+      ).toBe("Ubuntu archive");
+    });
+
+    it("infers https://snapshot.ubuntu.com/ubuntu/20240101 as Ubuntu snapshots when mirrorType is missing", () => {
+      expect(
+        getSourceType(
+          buildMirror({
+            archiveRoot: "https://snapshot.ubuntu.com/ubuntu/20240101",
+          }),
+        ),
+      ).toBe("Ubuntu snapshots");
+    });
+
+    it("infers https://bearer:token@esm.ubuntu.com/infra/ubuntu as Ubuntu Pro when mirrorType is missing", () => {
+      expect(
+        getSourceType(
+          buildMirror({
+            archiveRoot: "https://bearer:token@esm.ubuntu.com/infra/ubuntu",
+          }),
+        ),
+      ).toBe("Ubuntu Pro");
+    });
+
+    it("infers https://example.com/repo as Third party when mirrorType is missing", () => {
+      expect(
+        getSourceType(buildMirror({ archiveRoot: "https://example.com/repo" })),
+      ).toBe("Third party");
+    });
+
+    it("infers https://mirror.example.com/archive.ubuntu.com/ubuntu as Third party when mirrorType is missing", () => {
+      expect(
+        getSourceType(
+          buildMirror({
+            archiveRoot: "https://mirror.example.com/archive.ubuntu.com/ubuntu",
+          }),
+        ),
+      ).toBe("Third party");
+    });
+
+    it("infers from the URL for legacy mirrors (mirrorType MIRROR_TYPE_UNSPECIFIED)", () => {
+      expect(
+        getSourceType(
+          buildMirror({
+            mirrorType: "MIRROR_TYPE_UNSPECIFIED",
+            archiveRoot: "https://archive.ubuntu.com/ubuntu",
+          }),
+        ),
+      ).toBe("Ubuntu archive");
+    });
+
+    it("infers from the URL for legacy mirrors (mirrorType undefined)", () => {
+      expect(
+        getSourceType(
+          buildMirror({
+            mirrorType: undefined,
+            archiveRoot: "https://archive.ubuntu.com/ubuntu",
+          }),
+        ),
+      ).toBe("Ubuntu archive");
+    });
   });
 
   describe("shouldShowAuthentication", () => {
@@ -70,41 +138,64 @@ describe("MirrorDetails helpers", () => {
       ).toBe(false);
     });
 
-    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
-      "shows authentication for legacy mirrors (mirrorType %s) that have a GPG key",
-      (mirrorType) => {
-        expect(
-          shouldShowAuthentication(buildMirror({ mirrorType, gpgKey })),
-        ).toBe(true);
-      },
-    );
+    it("shows authentication for legacy mirrors (mirrorType MIRROR_TYPE_UNSPECIFIED) that have a GPG key", () => {
+      expect(
+        shouldShowAuthentication(
+          buildMirror({ mirrorType: "MIRROR_TYPE_UNSPECIFIED", gpgKey }),
+        ),
+      ).toBe(true);
+    });
 
-    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
-      "shows authentication for legacy third-party mirrors (mirrorType %s) inferred from the URL",
-      (mirrorType) => {
-        expect(
-          shouldShowAuthentication(
-            buildMirror({
-              mirrorType,
-              archiveRoot: "https://example.com/repo",
-            }),
-          ),
-        ).toBe(true);
-      },
-    );
+    it("shows authentication for legacy mirrors (mirrorType undefined) that have a GPG key", () => {
+      expect(
+        shouldShowAuthentication(
+          buildMirror({ mirrorType: undefined, gpgKey }),
+        ),
+      ).toBe(true);
+    });
 
-    it.each(["MIRROR_TYPE_UNSPECIFIED", undefined] as const)(
-      "hides authentication for legacy Ubuntu mirrors (mirrorType %s) without a GPG key",
-      (mirrorType) => {
-        expect(
-          shouldShowAuthentication(
-            buildMirror({
-              mirrorType,
-              archiveRoot: "https://archive.ubuntu.com/ubuntu",
-            }),
-          ),
-        ).toBe(false);
-      },
-    );
+    it("shows authentication for legacy third-party mirrors (mirrorType MIRROR_TYPE_UNSPECIFIED) inferred from the URL", () => {
+      expect(
+        shouldShowAuthentication(
+          buildMirror({
+            mirrorType: "MIRROR_TYPE_UNSPECIFIED",
+            archiveRoot: "https://example.com/repo",
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it("shows authentication for legacy third-party mirrors (mirrorType undefined) inferred from the URL", () => {
+      expect(
+        shouldShowAuthentication(
+          buildMirror({
+            mirrorType: undefined,
+            archiveRoot: "https://example.com/repo",
+          }),
+        ),
+      ).toBe(true);
+    });
+
+    it("hides authentication for legacy Ubuntu mirrors (mirrorType MIRROR_TYPE_UNSPECIFIED) without a GPG key", () => {
+      expect(
+        shouldShowAuthentication(
+          buildMirror({
+            mirrorType: "MIRROR_TYPE_UNSPECIFIED",
+            archiveRoot: "https://archive.ubuntu.com/ubuntu",
+          }),
+        ),
+      ).toBe(false);
+    });
+
+    it("hides authentication for legacy Ubuntu mirrors (mirrorType undefined) without a GPG key", () => {
+      expect(
+        shouldShowAuthentication(
+          buildMirror({
+            mirrorType: undefined,
+            archiveRoot: "https://archive.ubuntu.com/ubuntu",
+          }),
+        ),
+      ).toBe(false);
+    });
   });
 });
