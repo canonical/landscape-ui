@@ -87,9 +87,7 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
             </small>
           </span>
           <Select
-            label={
-              <span className="u-text--muted p-text--small">Release</span>
-            }
+            label={<span className="u-text--muted p-text--small">Release</span>}
             required
             value={effectiveChannel}
             options={CHANNEL_OPTIONS}
