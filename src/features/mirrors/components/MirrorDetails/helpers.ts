@@ -106,6 +106,7 @@ export function shouldShowAuthentication(mirror: Mirror): boolean {
   }
 
   return (
-    inferSourceTypeFromUrl(mirror.archiveRoot) === MIRROR_TYPE_LABELS.THIRD_PARTY
+    inferSourceTypeFromUrl(mirror.archiveRoot) ===
+    MIRROR_TYPE_LABELS.THIRD_PARTY
   );
 }
