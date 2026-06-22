@@ -68,7 +68,7 @@ const useGetActivities = (
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
           ...params,
-          query: queryParts.join(" "),
+          query: queryParts.join(" ") || undefined,
         }
       : params;
 
