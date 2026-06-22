@@ -11,7 +11,7 @@ import {
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import type {
   Publication,
-  PublishPublicationResponse,
+  PublicationServicePublishPublicationResponse,
 } from "@canonical/landscape-openapi";
 import { succeededOperation } from "@/tests/mocks/operations";
 
@@ -105,7 +105,7 @@ const getDeletePublicationResponse = () => {
 };
 
 const getPublishPublicationResponse =
-  (): StrictResponse<PublishPublicationResponse> => {
+  (): StrictResponse<PublicationServicePublishPublicationResponse> => {
     return HttpResponse.json(
       { ...succeededOperation, response: undefined },
       { status: 200 },

@@ -1,6 +1,6 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  BatchGetMirrorsError,
+  MirrorServiceBatchGetMirrorsError,
   BatchGetMirrorsResponse,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ export const useBatchGetMirrors = (names: string[]) => {
 
   const { data, isLoading } = useQuery<
     Record<string, string>,
-    AxiosError<BatchGetMirrorsError>
+    AxiosError<MirrorServiceBatchGetMirrorsError>
   >({
     queryKey: ["mirrors", "batch", names],
     queryFn: async () => {

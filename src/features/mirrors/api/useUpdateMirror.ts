@@ -1,23 +1,23 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  UpdateMirrorData,
-  UpdateMirrorError,
-  UpdateMirrorResponse,
+  MirrorWritable,
+  MirrorServiceUpdateMirrorError,
+  MirrorServiceUpdateMirrorResponse,
 } from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-type UpdateMirrorParams = Omit<UpdateMirrorData["body"], "gpgKey"> & {
+type UpdateMirrorParams = Omit<MirrorWritable, "gpgKey"> & {
   gpgKey?: { armor: string } | null;
 };
 
-export function useUpdateMirror(name: UpdateMirrorData["path"]["mirror.name"]) {
+export function useUpdateMirror(name: string) {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
   return useMutation<
-    AxiosResponse<UpdateMirrorResponse>,
-    AxiosError<UpdateMirrorError>,
+    AxiosResponse<MirrorServiceUpdateMirrorResponse>,
+    AxiosError<MirrorServiceUpdateMirrorError>,
     UpdateMirrorParams
   >({
     mutationKey: ["mirror", name, "update"],
