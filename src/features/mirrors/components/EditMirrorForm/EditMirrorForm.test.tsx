@@ -60,9 +60,11 @@ describe("EditMirrorForm", () => {
     await expectLoadingState();
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({}),
-    );
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("edits a third party mirror", async () => {
@@ -85,23 +87,23 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    const params = {
-      gpgKey: { armor: "ABCDEF" },
-    };
-
-    // Mirror has existing GPG key, so checkbox is checked by default - uncheck to show textarea
     await user.click(screen.getByLabelText("Keep current GPG key"));
     await user.clear(screen.getByLabelText("Verification GPG key"));
-    await user.type(
-      screen.getByLabelText("Verification GPG key"),
-      params.gpgKey.armor,
-    );
+    await user.type(screen.getByLabelText("Verification GPG key"), "ABCDEF");
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining(params),
+      expect.objectContaining({
+        gpgKey: { armor: "ABCDEF" },
+      }),
     );
+
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("preserves existing GPG key when checkbox is checked", async () => {
@@ -124,19 +126,22 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    // Keep current GPG key checkbox is checked by default
     expect(screen.getByLabelText("Keep current GPG key")).toBeChecked();
-    // Textarea should be hidden
     expect(
       screen.queryByLabelText("Verification GPG key"),
     ).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
-    // gpgKey should NOT be in the payload when keeping existing key
     expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.not.objectContaining({ gpgKey: expect.anything() }),
     );
+
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}`,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("shows preserve signatures as disabled", async () => {
@@ -154,8 +159,57 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    const checkbox = screen.getByLabelText("Preserve upstream signing key");
+    const checkbox = screen.getByLabelText(/Preserve upstream signing key/);
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
+  });
+
+  it("submits without filtering dependencies", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirrors[0].name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        filterWithDeps: undefined,
+      }),
+    );
+  });
+
+  it("submits with filtering dependencies", async () => {
+    const mirror = mirrors.find(
+      ({ preserveSignatures }) => !preserveSignatures,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.type(screen.getByRole("textbox", { name: "Filter" }), "abc");
+    await user.click(screen.getByLabelText(/Include dependencies in filter/));
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        filterWithDeps: true,
+      }),
+    );
   });
 });

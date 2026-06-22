@@ -1,9 +1,9 @@
 import MultiSelectField from "@/components/form/MultiSelectField";
+import { PROFILE_DAY_OPTIONS } from "@/features/profiles";
 import { Icon, Input, RadioInput, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
-import { DAY_OPTIONS } from "../../constants";
 import type { FormProps } from "../../types";
 import { EXPIRATION_TOOLTIP_MESSAGE } from "./constants";
 import classes from "./UpgradeProfileScheduleBlock.module.scss";
@@ -30,8 +30,8 @@ const UpgradeProfileScheduleBlock: FC<UpgradeProfileScheduleBlockProps> = ({
       <MultiSelectField
         variant="condensed"
         label="Days"
-        items={DAY_OPTIONS}
-        selectedItems={DAY_OPTIONS.filter(({ value }) =>
+        items={PROFILE_DAY_OPTIONS}
+        selectedItems={PROFILE_DAY_OPTIONS.filter(({ value }) =>
           formik.values.on_days.includes(value),
         )}
         onItemsUpdate={(items) =>

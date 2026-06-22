@@ -1,11 +1,54 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import PublishRepositoryNewForm from "./PublishRepositoryNewForm";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+const mockCreatePublication = vi.fn();
+vi.mock("@/features/publications", async () => {
+  const actual = await vi.importActual("@/features/publications");
+  return {
+    ...actual,
+    useCreatePublication: () => ({
+      createPublication: mockCreatePublication,
+      isCreatingPublication: false,
+    }),
+  };
+});
+
+const fillFormAndSubmit = async (
+  installsAndUpgrades = "Automatic installs and upgrades",
+) => {
+  const user = userEvent.setup();
+
+  const nameInput = screen.getByLabelText(/^publication name$/i);
+  await user.type(nameInput, "Test Publication");
+
+  const targetSelect = screen.getByLabelText(/^publication target$/i);
+  expect(await screen.findByText("prod-s3-us-east")).toBeInTheDocument();
+  await user.selectOptions(
+    targetSelect,
+    "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+  );
+
+  await user.click(
+    screen.getByRole("button", { name: /installs and upgrades/i }),
+  );
+  await user.click(
+    await screen.findByRole("option", {
+      name: new RegExp(installsAndUpgrades, "i"),
+    }),
+  );
+
+  await user.click(screen.getByRole("button", { name: /publish/i }));
+};
+
 describe("PublishRepositoryNewForm", () => {
+  beforeEach(() => {
+    mockCreatePublication.mockReset();
+  });
+
   it("renders form with required fields", () => {
     renderWithProviders(
       <PublishRepositoryNewForm repository={repositories[0]} />,
@@ -16,16 +59,17 @@ describe("PublishRepositoryNewForm", () => {
     expect(screen.getByLabelText(/signing gpg key/i)).toBeInTheDocument();
   });
 
-  it("renders checkbox settings", () => {
+  it("renders settings block", () => {
     renderWithProviders(
       <PublishRepositoryNewForm repository={repositories[0]} />,
     );
 
+    expect(screen.getByText("Installs and upgrades")).toBeInTheDocument();
     expect(screen.getByLabelText(/hash based indexing/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/skip bz2/i)).toBeInTheDocument();
     expect(
-      screen.getByLabelText(/automatic installation/i),
+      screen.getByLabelText(/skip generating content indexes/i),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText(/automatic upgrades/i)).toBeInTheDocument();
   });
 
   it("renders contents block", () => {
@@ -70,31 +114,53 @@ describe("PublishRepositoryNewForm", () => {
   });
 
   it("submits form with valid data", async () => {
-    const user = userEvent.setup();
     renderWithProviders(
       <PublishRepositoryNewForm repository={repositories[0]} />,
     );
 
-    const nameInput = screen.getByLabelText(/^publication name$/i);
-    await user.type(nameInput, "Test Publication");
+    await fillFormAndSubmit();
 
-    const targetSelect = screen.getByLabelText(/^publication target$/i);
-    expect(await screen.findByText("prod-s3-us-east")).toBeInTheDocument();
-    await user.selectOptions(
-      targetSelect,
-      "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+    expect(mockCreatePublication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          notAutomatic: false,
+          butAutomaticUpgrades: false,
+        }),
+      }),
     );
-
-    const submitButton = screen.getByRole("button", { name: /publish/i });
-    await user.click(submitButton);
   });
 
-  it("renders help text for settings", () => {
+  it("submits manual installs and upgrades values", async () => {
     renderWithProviders(
       <PublishRepositoryNewForm repository={repositories[0]} />,
     );
 
-    const helpTexts = screen.getAllByText("Help");
-    expect(helpTexts.length).toBeGreaterThan(0);
+    await fillFormAndSubmit("Manual installs and upgrades");
+
+    expect(mockCreatePublication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          notAutomatic: true,
+          butAutomaticUpgrades: false,
+        }),
+      }),
+    );
+  });
+
+  it("submits automatic upgrades only values", async () => {
+    renderWithProviders(
+      <PublishRepositoryNewForm repository={repositories[0]} />,
+    );
+
+    await fillFormAndSubmit("Automatic upgrades only");
+
+    expect(mockCreatePublication).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          notAutomatic: true,
+          butAutomaticUpgrades: true,
+        }),
+      }),
+    );
   });
 });

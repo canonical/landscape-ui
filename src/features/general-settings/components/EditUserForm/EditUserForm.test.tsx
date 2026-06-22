@@ -4,25 +4,19 @@ import type { Account } from "@/features/auth";
 import useAuth from "@/hooks/useAuth";
 import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useEnv from "@/hooks/useEnv";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { accountsDefault } from "@/tests/mocks/accounts";
 import { authUser } from "@/tests/mocks/auth";
-import { getTestErrorParams } from "@/tests/mocks/error";
 import { renderWithProviders } from "@/tests/render";
-import type { ApiError } from "@/types/api/ApiError";
-import type { UseMutationResult } from "@tanstack/react-query";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { AxiosError, AxiosResponse } from "axios";
-import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useUserGeneralSettings } from "../../hooks";
-import type { EditUserDetailsParams, UserDetails } from "../../types";
 import EditUserForm from "./EditUserForm";
 import { MASKED_VALUE } from "@/constants";
 
 vi.mock("@/hooks/useEnv");
 vi.mock("@/hooks/useAuth");
-vi.mock("../../hooks");
 vi.mock("@/hooks/useAuthAccounts");
 
 vi.mocked(useAuthAccounts).mockReturnValue({
@@ -86,26 +80,10 @@ const mockSaas: EnvContextState = {
 };
 
 describe("EditUserForm", () => {
-  const { testError, testErrorMessage } = getTestErrorParams();
-
-  const mockEditUserDetails = vi.fn(({ name }: { name: string }) => {
-    if (name === "error") {
-      throw testError;
-    }
-  });
-
   beforeEach(() => {
+    setEndpointStatus("default");
     vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
     vi.mocked(useAuth).mockReturnValue(authContextValues);
-    vi.mocked(useUserGeneralSettings, { partial: true }).mockReturnValue({
-      editUserDetails: {
-        mutateAsync: mockEditUserDetails,
-      } as UseMutationResult<
-        AxiosResponse<UserDetails>,
-        AxiosError<ApiError>,
-        EditUserDetailsParams
-      > & { mutateAsync: Mock },
-    });
   });
 
   describe("tests for saas and self-hosted", () => {
@@ -137,15 +115,18 @@ describe("EditUserForm", () => {
 
       await userEvent.click(saveButton);
 
-      expect(mockEditUserDetails).toHaveBeenCalledWith({
-        name: `${props.userDetails.name} Updated`,
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
+      expect(authContextValues.setUser).toHaveBeenCalledWith({
+        ...authUser,
         email: props.userDetails.email,
-        timezone: props.userDetails.timezone,
-        preferred_account: props.userDetails.preferred_account,
+        name: `${props.userDetails.name} Updated`,
       });
     });
 
     it("should show error notification if editUserDetails throws an error", async () => {
+      setEndpointStatus({ status: "error", path: "person" });
       renderWithProviders(<EditUserForm {...props} />);
 
       const nameInput = screen.getByRole("textbox");
@@ -158,14 +139,9 @@ describe("EditUserForm", () => {
 
       await userEvent.click(saveButton);
 
-      expect(mockEditUserDetails).toHaveBeenCalledWith({
-        name: "error",
-        email: props.userDetails.email,
-        timezone: props.userDetails.timezone,
-        preferred_account: props.userDetails.preferred_account,
-      });
-
-      expect(screen.getByText(testErrorMessage)).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
 
     it("calls editUserDetails and setPreferredAccount when form is submitted", async () => {
@@ -178,6 +154,9 @@ describe("EditUserForm", () => {
       const saveButton = screen.getByRole("button", { name: /save changes/i });
       await userEvent.click(saveButton);
 
+      expect(
+        await screen.findByText("User details updated successfully"),
+      ).toBeInTheDocument();
       expect(saveButton).toHaveAttribute("aria-disabled");
     });
 

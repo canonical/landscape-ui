@@ -5,22 +5,11 @@ import { describe, expect, it } from "vitest";
 import USGProfilesPage from "./USGProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
-import type * as actualModule from "@/features/profiles";
-
-vi.mock("@/features/profiles", async () => {
-  const actual = await vi.importActual<typeof actualModule>(
-    "@/features/profiles",
-  );
-
-  return {
-    ...actual,
-    ProfilesContainer: () => <div>USG profiles table</div>,
-  };
-});
 
 describe("USGProfilesPage", () => {
   it("has a button to add a profile", async () => {
     renderWithProviders(<USGProfilesPage />);
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
     const user = userEvent.setup();
 
     await user.click(
@@ -47,7 +36,6 @@ describe("USGProfilesPage", () => {
       `/?sidePath=download&name=${usgProfiles[1].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Download audit for ${usgProfiles[1].title} USG profile`,
@@ -62,7 +50,6 @@ describe("USGProfilesPage", () => {
       `/?sidePath=duplicate&name=${usgProfiles[1].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Duplicate ${usgProfiles[1].title}`,
@@ -77,7 +64,6 @@ describe("USGProfilesPage", () => {
       `/?sidePath=edit&name=${usgProfiles[1].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${usgProfiles[1].title}`,
@@ -92,7 +78,6 @@ describe("USGProfilesPage", () => {
       `/?sidePath=run&name=${usgProfiles[1].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Run "${usgProfiles[1].title}" profile`,

@@ -33,7 +33,7 @@ export default [
 
     return HttpResponse.json({
       locals: repositories.filter(({ displayName }) =>
-        displayName.includes(search.replaceAll(/"|\*/gm, "")),
+        displayName.startsWith(search.replaceAll(/"|\*/gm, "")),
       ),
     });
   }),

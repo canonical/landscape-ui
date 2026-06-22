@@ -10,6 +10,7 @@ import type { FormProps } from "../AddMirrorForm/types";
 import type { ComponentProps } from "react";
 import { hasOneItem } from "@/utils/_helpers";
 import type { Distribution } from "../../types";
+import { screen } from "@testing-library/react";
 
 const TestComponent = ({
   initialValues,
@@ -75,10 +76,12 @@ describe("SelectableMirrorContentsBlock", () => {
           name: "",
           sourceType: "ubuntu-pro",
           sourceUrl: "",
-          proService: proService.mirror_type,
+          proService: proService.mirror_url,
           token: "",
         }}
       />,
     );
+
+    expect(screen.queryAllByRole("combobox")).toHaveLength(0);
   });
 });

@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -60,7 +60,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
           )}
         >
           Showing {currentItemCount} of{" "}
-          {pluralizeWithCount(totalItems, "result")}
+          {pluralize(totalItems, ["result"], "exact")}
         </p>
       )}
 

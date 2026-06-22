@@ -6,6 +6,7 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import { useListMirrors } from "@/features/mirrors";
 import { MirrorsList } from "@/features/mirrors";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
@@ -76,12 +77,12 @@ const MirrorsPage: FC = () => {
       : {
           children: (
             <EmptyState
-              title="You don't have any mirrors yet."
-              body={
-                <>
-                  <p>This feature allows you to mirror Debian repositories.</p>
-                </>
-              }
+              title="You don’t have any mirrors yet"
+              body="This feature allows you to mirror Debian repositories."
+              link={{
+                href: DEBARCHIVE_DOCUMENTATION_URL,
+                text: "Learn more about repository mirroring",
+              }}
               cta={buttons}
             />
           ),

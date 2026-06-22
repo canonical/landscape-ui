@@ -27,7 +27,7 @@ const LabelWithDescription: FC<LabelWithDescriptionProps> = ({
             className={classes.link}
             href={link}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             onClick={(event) => {
               event.stopPropagation();
             }}

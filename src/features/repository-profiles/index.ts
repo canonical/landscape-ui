@@ -1,4 +1,3 @@
-export { default as RepositoryProfileAddButton } from "./components/RepositoryProfileAddButton";
 export { default as RepositoryProfileAddSidePanel } from "./components/RepositoryProfileAddSidePanel";
 export { default as RepositoryProfileContainer } from "./components/RepositoryProfileContainer";
 export { default as RepositoryProfileDetails } from "./components/RepositoryProfileDetails";

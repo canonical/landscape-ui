@@ -15,9 +15,8 @@ import type { RepositoryProfile } from "../../types";
 import { useGetProfileInstancesCount } from "../../api";
 import RepositoryProfileListActions from "../RepositoryProfileListActions";
 import { getCellProps, getRowProps } from "./helpers";
-import classes from "./RepositoryProfileList.module.scss";
 import { ProfileAssociatedInstancesLink } from "@/features/profiles";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 
 const AssociatedCountCell: FC<{ readonly profile: RepositoryProfile }> = ({
   profile,
@@ -83,7 +82,6 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
       {
         accessor: "access_group",
         Header: "Access group",
-        className: classes.accessGroup,
         meta: {
           ariaLabel: ({ original }) => `${original.title} profile access group`,
         },
@@ -95,7 +93,6 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
       {
         accessor: "associated",
         Header: "Associated",
-        className: classes.associated,
         meta: {
           ariaLabel: ({ original }) =>
             `${original.title} profile associated machines count`,
@@ -105,28 +102,14 @@ const RepositoryProfileList: FC<RepositoryProfileListProps> = ({
         ),
       },
       {
-        accessor: "applied_count",
-        Header: "Applied",
-        className: classes.applied,
-        meta: {
-          ariaLabel: ({ original }) =>
-            `${original.title} profile applied machines count`,
-        },
-        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>{pluralizeWithCount(original.applied_count ?? 0, "instance")}</>
-        ),
-      },
-      {
         accessor: "pending_count",
         Header: "Pending",
-        className: classes.pending,
         meta: {
           ariaLabel: ({ original }) =>
             `${original.title} profile pending machines count`,
         },
-        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) => (
-          <>{pluralizeWithCount(original.pending_count ?? 0, "instance")}</>
-        ),
+        Cell: ({ row: { original } }: CellProps<RepositoryProfile>) =>
+          pluralize(original.pending_count, ["instance"], "exact"),
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,

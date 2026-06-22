@@ -1,6 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -42,7 +42,7 @@ const PendingInstancesNotification: FC = () => {
     >
       <span>
         You currently have{" "}
-        {pluralizeWithCount(pendingInstances.length, "pending instance")}{" "}
+        {pluralize(pendingInstances.length, ["pending instance"], "exact")}{" "}
         awaiting your review and approval.{" "}
       </span>
       <Button

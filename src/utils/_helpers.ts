@@ -85,35 +85,34 @@ export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
 
 export const pluralize = (
   count: number,
-  singularForm: string,
-  pluralForm?: string,
+  [singularForm, pluralForm = `${singularForm}s`]: readonly [
+    singular: string,
+    plural?: string,
+  ],
+  countType: "none" | "exact" | "limited" = "none",
 ) => {
-  return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
+  const form = count === 1 ? singularForm : pluralForm;
+
+  switch (countType) {
+    case "none":
+      return form;
+    case "exact":
+      return `${count.toLocaleString()} ${form}`;
+    case "limited":
+      return `${count.toLocaleString()}+ ${form}`;
+  }
 };
 
-export const pluralizeWithCount = (
-  count: number,
-  singularForm: string,
-  pluralForm?: string,
-) => {
-  return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
-};
-
-export const pluralizeNew = (
-  count = 0,
-  singularForm: string,
-  options: { pluralForm?: string; showCount?: "exact" | "limited" } = {},
-) =>
-  `${options.showCount ? `${count}${options.showCount === "limited" ? "+" : ""} ` : ""}${count === 1 ? singularForm : (options.pluralForm ?? `${singularForm}s`)}`;
-
-export const pluralizeArray = <T>(
+export const getSelectionLabel = <T>(
   items: readonly T[],
-  getSingularForm: (item: T) => string,
+  getItemLabel: (item: T) => string,
   pluralForm: string,
 ) => {
-  return hasOneItem(items)
-    ? getSingularForm(items[0])
-    : `${items.length.toLocaleString()} ${pluralForm}`;
+  if (hasOneItem(items)) {
+    return getItemLabel(items[0]);
+  } else {
+    return `${items.length.toLocaleString()} ${pluralForm}`;
+  }
 };
 
 export const capitalize = <T extends string>(s: T) =>

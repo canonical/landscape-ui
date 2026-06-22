@@ -1,4 +1,4 @@
-import { PageParamFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
@@ -9,7 +9,7 @@ import type {
   InstanceChild,
   WindowsInstanceWithoutRelation,
 } from "@/types/Instance";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import { Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -70,7 +70,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       );
 
       notify.success({
-        title: `You have successfully queued ${pluralizeArray(selectedWslInstances, (instance) => `"${instance.name}"`, `instances`)} to be installed.`,
+        title: `You have successfully queued ${getSelectionLabel(selectedWslInstances, (instance) => `"${instance.name}"`, `instances`)} to be installed.`,
         message: "An activity has been queued to install it.",
       });
     } catch (error) {
@@ -200,8 +200,6 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
           </div>
         }
       />
-
-      <TableFilterChips filtersToDisplay={["search"]} />
 
       <WslInstanceReinstallModal
         close={closeReinstallModal}

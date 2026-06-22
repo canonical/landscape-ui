@@ -77,7 +77,7 @@ const getFilesystemInitialValues = (
 });
 
 const getInitialValues = (target: PublicationTarget): EditTargetFormValues => {
-  const base = { ...EMPTY_VALUES, displayName: target.displayName ?? "" };
+  const base = { ...EMPTY_VALUES, displayName: target.displayName };
   if (target.s3) return getS3InitialValues(target, base);
   if (target.swift) return getSwiftInitialValues(target, base);
   return getFilesystemInitialValues(target, base);
@@ -159,8 +159,8 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         closeSidePanel();
 
         notify.success({
-          title: "Publication target edited",
-          message: `You have successfully edited ${values.displayName}`,
+          title: `You have successfully edited ${values.displayName}`,
+          message: "The publication target details have been updated.",
         });
       } catch (error) {
         debug(error);

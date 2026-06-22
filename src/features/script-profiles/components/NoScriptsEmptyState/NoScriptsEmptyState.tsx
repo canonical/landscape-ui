@@ -24,25 +24,20 @@ const NoScriptsEmptyState: FC = () => {
   return (
     <EmptyState
       title="You need at least one script to add a profile."
-      body={
-        <>
-          <p>
-            In order to create a script profile, you need to have added a script
-            to your Landscape organization.
-          </p>
-
-          <Button
-            type="button"
-            appearance="positive"
-            onClick={addScript}
-            className="u-no-margin--bottom"
-            hasIcon
-          >
-            <Icon name="plus" light />
-            <span>Add script</span>
-          </Button>
-        </>
-      }
+      body="In order to create a script profile, you need to have added a script to your Landscape organization."
+      cta={[
+        <Button
+          type="button"
+          appearance="positive"
+          onClick={addScript}
+          className="u-no-margin--bottom"
+          hasIcon
+          key="add-script-button"
+        >
+          <Icon name="plus" light />
+          <span>Add script</span>
+        </Button>,
+      ]}
     />
   );
 };

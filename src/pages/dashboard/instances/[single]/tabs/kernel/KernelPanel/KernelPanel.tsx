@@ -75,21 +75,23 @@ const KernelPanel: FC<KernelPanelProps> = ({ instanceTitle }) => {
           }
         />
       )}
-      {!isLoadingKernelStatuses && kernelStatuses?.data.installed && (
-        <>
-          <KernelHeader
-            instanceName={instanceTitle}
-            hasTableData={livepatchFixes.length > 0}
-            kernelStatuses={kernelStatuses.data}
-          />
-          <KernelOverview kernelOverview={kernelOverviewData} />
-          <KernelTableList kernelData={livepatchFixes} />
-          <TablePagination
-            totalItems={allLivepatchFixes.length}
-            currentItemCount={livepatchFixes.length}
-          />
-        </>
-      )}
+      {!isLoadingKernelStatuses &&
+        kernelStatuses &&
+        kernelStatuses.data.installed && (
+          <>
+            <KernelHeader
+              instanceName={instanceTitle}
+              hasTableData={livepatchFixes.length > 0}
+              kernelStatuses={kernelStatuses.data}
+            />
+            <KernelOverview kernelOverview={kernelOverviewData} />
+            <KernelTableList kernelData={livepatchFixes} />
+            <TablePagination
+              totalItems={allLivepatchFixes.length}
+              currentItemCount={livepatchFixes.length}
+            />
+          </>
+        )}
     </>
   );
 };

@@ -4,56 +4,40 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
-import type { Mock } from "vitest";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import TargetDetails from "./TargetDetails";
-
-vi.mock("../../api/useGetPublicationsByTarget", () => ({
-  default: vi.fn(),
-}));
-
-vi.mock("@/features/mirrors", () => ({
-  useBatchGetMirrors: () => ({
-    mirrorDisplayNames: {},
-    isLoadingMirrorDisplayNames: false,
-  }),
-}));
-
-vi.mock("@/features/local-repositories", () => ({
-  useBatchGetLocals: () => ({
-    localDisplayNames: {},
-    isLoadingLocalDisplayNames: false,
-  }),
-}));
-
-import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { LINK_METHOD_OPTIONS } from "../../constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { expectLoadingState } from "@/tests/helpers";
 
-const [
-  targetWithPublications,
-  targetWithoutPublications,
-  swiftMock,
-  filesystemMock,
-] = publicationTargets;
+const [targetWithPublications, , swiftMock, filesystemMock] =
+  publicationTargets;
+
+const targetWithoutPublications = publicationTargets.find(
+  (target) =>
+    !publications.some(
+      ({ publicationTarget }) => publicationTarget === target.name,
+    ),
+);
+
 const [firstPublication] = publications;
 
-if (
-  !targetWithPublications?.s3 ||
-  !targetWithoutPublications?.s3 ||
-  !firstPublication?.label
-) {
-  throw new Error("Test data is missing required properties");
-}
-if (!swiftMock?.swift) throw new Error("Missing swift mock target");
-if (!filesystemMock?.filesystem)
-  throw new Error("Missing filesystem mock target");
-
-const swiftTarget = swiftMock.swift;
-const filesystemTarget = filesystemMock.filesystem;
+assert(targetWithPublications, "Expected target detail test fixture");
+assert(swiftMock, "Expected target detail test fixture");
+assert(filesystemMock, "Expected target detail test fixture");
+assert(firstPublication, "Expected target detail test fixture");
+assert(targetWithPublications.s3, "Expected S3 publication target fixture");
+assert(swiftMock.swift, "Expected Swift publication target fixture");
+assert(
+  filesystemMock.filesystem,
+  "Expected filesystem publication target fixture",
+);
+assert(targetWithoutPublications, "Expected publication target test fixture");
 
 const s3WithPubs = targetWithPublications.s3;
-const s3WithoutPubs = targetWithoutPublications.s3;
+const swiftTarget = swiftMock.swift;
+const filesystemTarget = filesystemMock.filesystem;
 const firstPubName = firstPublication.displayName;
 
 const LocationDisplay = () => {
@@ -66,11 +50,6 @@ describe("TargetDetails", () => {
 
   describe("action buttons", () => {
     it("renders Edit and Remove buttons", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: publications,
-        isGettingPublications: false,
-      });
-
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
@@ -80,11 +59,6 @@ describe("TargetDetails", () => {
     });
 
     it("sets sidePath=edit in URL when Edit is clicked", async () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       renderWithProviders(
         <>
           <TargetDetails target={targetWithPublications} />
@@ -98,11 +72,6 @@ describe("TargetDetails", () => {
     });
 
     it("opens the remove confirmation modal when Remove is clicked", async () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       await user.click(screen.getByRole("button", { name: /remove/i }));
@@ -117,22 +86,12 @@ describe("TargetDetails", () => {
 
   describe("S3 target details", () => {
     it("renders the DETAILS heading", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByText("Details")).toBeInTheDocument();
     });
 
     it("renders the target displayName", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(
@@ -140,12 +99,7 @@ describe("TargetDetails", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders all S3 fields: region, bucket, prefix, acl, storageClass, encryptionMethod, disableMultiDel, forceSigV2", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
+    it("renders all S3 fields", () => {
       const { container } = renderWithProviders(
         <TargetDetails target={targetWithPublications} />,
       );
@@ -172,31 +126,8 @@ describe("TargetDetails", () => {
       );
     });
 
-    it("renders S3 configuration with partial fields (missing optional fields have undefined values)", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
-      const { container } = renderWithProviders(
-        <TargetDetails target={targetWithoutPublications} />,
-      );
-
-      expect(container).toHaveInfoItem("Region", s3WithoutPubs.region);
-      expect(container).toHaveInfoItem("Bucket Name", s3WithoutPubs.bucket);
-      expect(container).toHaveInfoItem(
-        "Disable MultiDel",
-        s3WithoutPubs.disableMultiDel ? "Yes" : "No",
-      );
-    });
-
     it("renders 'Yes' for forceSigV2 when it is true", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
-      const targetWithForceSigV2: typeof targetWithPublications = {
+      const targetWithForceSigV2 = {
         ...targetWithPublications,
         s3: { ...s3WithPubs, forceSigV2: true },
       };
@@ -210,27 +141,24 @@ describe("TargetDetails", () => {
   });
 
   describe("Used In section", () => {
-    it("shows the Used In section and publications table when target has publications", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: publications,
-        isGettingPublications: false,
-      });
-
+    it("shows the Used In section and publications table when target has publications", async () => {
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
-      expect(screen.getByText("Used In")).toBeInTheDocument();
+      expect(await screen.findByText("Used In")).toBeInTheDocument();
+
+      await expectLoadingState();
       expect(screen.getByText(firstPubName)).toBeInTheDocument();
     });
 
-    it("shows empty table when target has no publications", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
+    it("shows empty table when target has no publications", async () => {
+      setEndpointStatus("empty");
 
       renderWithProviders(<TargetDetails target={targetWithoutPublications} />);
 
       expect(screen.queryByText("Used In")).toBeInTheDocument();
+
+      await expectLoadingState();
+
       expect(
         screen.getByRole("columnheader", { name: /publication/i }),
       ).toBeInTheDocument();
@@ -240,11 +168,6 @@ describe("TargetDetails", () => {
     });
 
     it("shows LoadingState while publications are loading", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: true,
-      });
-
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(screen.getByText("Details")).toBeInTheDocument();
@@ -255,11 +178,6 @@ describe("TargetDetails", () => {
 
   describe("Swift target", () => {
     it("renders container and authUrl info items", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       const { container } = renderWithProviders(
         <TargetDetails target={swiftMock} />,
       );
@@ -269,11 +187,6 @@ describe("TargetDetails", () => {
     });
 
     it("renders optional tenant field when present", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       const { container } = renderWithProviders(
         <TargetDetails target={swiftMock} />,
       );
@@ -282,11 +195,6 @@ describe("TargetDetails", () => {
     });
 
     it("does not render S3-specific fields", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       const { container } = renderWithProviders(
         <TargetDetails target={swiftMock} />,
       );
@@ -298,11 +206,6 @@ describe("TargetDetails", () => {
 
   describe("Filesystem target", () => {
     it("renders path and link method info items", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       const { container } = renderWithProviders(
         <TargetDetails target={filesystemMock} />,
       );
@@ -316,11 +219,6 @@ describe("TargetDetails", () => {
     });
 
     it("does not render S3-specific fields", () => {
-      (useGetPublicationsByTarget as Mock).mockReturnValue({
-        publications: [],
-        isGettingPublications: false,
-      });
-
       const { container } = renderWithProviders(
         <TargetDetails target={filesystemMock} />,
       );

@@ -8,7 +8,6 @@ import classNames from "classnames";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import classes from "./ProcessesHeader.module.scss";
-import { TableFilterChips } from "@/components/filter";
 import { pluralize } from "@/utils/_helpers";
 
 interface ProcessesHeaderProps {
@@ -36,7 +35,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         computer_id: instanceId,
       });
       notify.success({
-        message: `${pluralize(selectedPids.length, "Process", "Processes")} successfully ended.`,
+        message: `${pluralize(selectedPids.length, ["Process", "Processes"])} successfully ended.`,
       });
       handleClearSelection();
     } catch (error) {
@@ -51,7 +50,7 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         computer_id: instanceId,
       });
       notify.success({
-        message: `${pluralize(selectedPids.length, "Process", "Processes")} successfully killed.`,
+        message: `${pluralize(selectedPids.length, ["Process", "Processes"])} successfully killed.`,
       });
       handleClearSelection();
     } catch (error) {
@@ -86,7 +85,6 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         }
         afterSearch={handleClearSelection}
       />
-      <TableFilterChips filtersToDisplay={["search"]} />
     </>
   );
 };

@@ -127,8 +127,9 @@ const AddPublicationTargetForm: FC = () => {
         closeSidePanel();
 
         notify.success({
-          title: "Publication target created",
-          message: `You have successfully added ${values.displayName}`,
+          title: `You have successfully added ${values.displayName}`,
+          message:
+            "The publication target has been created and is now available to be used.",
         });
       } catch (error) {
         debug(error);

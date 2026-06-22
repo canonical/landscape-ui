@@ -1,26 +1,16 @@
 import EmptyState from "@/components/layout/EmptyState";
 import AddPublicationButton from "../AddPublicationButton";
-import { DOCUMENTATION_URL } from "./constants";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 
 const NoPublicationsEmptyState = () => {
   return (
     <EmptyState
       title="You don’t have any publications yet"
-      body={
-        <>
-          <p>
-            On this page you will find all publications created when publishing
-            a mirror or a local repository.{" "}
-          </p>
-          <a
-            href={DOCUMENTATION_URL}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Learn more about repository mirroring.
-          </a>
-        </>
-      }
+      body="On this page you will find all publications created when publishing a mirror or a local repository."
+      link={{
+        href: DEBARCHIVE_DOCUMENTATION_URL,
+        text: "Learn more about repository mirroring",
+      }}
       cta={[<AddPublicationButton key="add-publication-button" />]}
     />
   );
