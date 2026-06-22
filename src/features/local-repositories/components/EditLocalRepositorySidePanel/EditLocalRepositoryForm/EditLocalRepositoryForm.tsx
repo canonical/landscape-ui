@@ -29,7 +29,7 @@ const EditLocalRepositoryForm: FC<EditLocalRepositoryFormProps> = ({
 
   const handleSubmit = async (values: EditLocalRepositoryFormValues) => {
     const localToUpdate = {
-      name: repository.name ?? "",
+      name: repository.name,
       displayName: values.displayName ?? repository.displayName,
       comment: values.description ?? repository.comment,
       defaultDistribution: repository.defaultDistribution,

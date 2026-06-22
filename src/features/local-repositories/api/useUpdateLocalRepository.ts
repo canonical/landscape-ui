@@ -14,11 +14,11 @@ export const useUpdateLocalRepository = () => {
   const { mutateAsync, isPending } = useMutation<
     AxiosResponse<LocalServiceUpdateLocalResponse>,
     AxiosError<LocalServiceUpdateLocalError>,
-    Required<LocalWritable>
+    LocalWritable
   >({
     mutationKey: ["local", "update"],
     mutationFn: async ({ name, ...local }) =>
-      authFetchDebArchive.patch(name, local),
+      authFetchDebArchive.patch(name ?? "", local),
     onSuccess: async (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["locals"] });
       queryClient.invalidateQueries({ queryKey: ["local", variables.name] });

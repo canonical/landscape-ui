@@ -13,7 +13,7 @@ export function useSyncMirror(name: string) {
   return useMutation<
     AxiosResponse<MirrorServiceSyncMirrorResponse>,
     AxiosError<MirrorServiceSyncMirrorError>,
-    SyncMirrorRequest
+    Omit<SyncMirrorRequest, "name">
   >({
     mutationKey: ["mirror", name, "sync"],
     mutationFn: async (params) =>
