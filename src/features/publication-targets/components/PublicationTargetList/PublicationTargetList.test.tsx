@@ -87,8 +87,6 @@ describe("PublicationTargetList", () => {
         bucket: "test-bucket",
         disableMultiDel: false,
         forceSigV2: false,
-        awsAccessKeyId: "AKIA...",
-        awsSecretAccessKey: "SECRET...",
       },
     };
 

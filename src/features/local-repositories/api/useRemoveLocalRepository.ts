@@ -2,8 +2,8 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
-  DeleteLocalError,
-  DeleteLocalData,
+  LocalServiceDeleteLocalData,
+  LocalServiceDeleteLocalError,
 } from "@canonical/landscape-openapi";
 
 export const useRemoveLocalRepository = () => {
@@ -12,11 +12,11 @@ export const useRemoveLocalRepository = () => {
 
   const { mutateAsync, isPending } = useMutation<
     AxiosResponse,
-    AxiosError<DeleteLocalError>,
-    DeleteLocalData["path"]
+    AxiosError<LocalServiceDeleteLocalError>,
+    LocalServiceDeleteLocalData["path"]["local"]
   >({
     mutationKey: ["locals", "delete"],
-    mutationFn: async ({ name }) => authFetchDebArchive.delete(name),
+    mutationFn: async (name) => authFetchDebArchive.delete(name),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["locals"] }),
   });

@@ -55,7 +55,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
 
   const handleRemoveLocalRepository = async () => {
     try {
-      await removeRepository({ name: repository.name ?? "" });
+      await removeRepository(repository.name ?? "");
 
       closeSidePanel();
 
