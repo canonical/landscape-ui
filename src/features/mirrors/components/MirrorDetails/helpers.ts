@@ -53,7 +53,12 @@ function inferSourceTypeFromUrl(archiveRoot?: string): string {
   try {
     ({ hostname } = new URL(archiveRoot));
   } catch {
-    hostname = undefined;
+    try {
+      // Handle legacy values missing a scheme (e.g. "archive.ubuntu.com/ubuntu").
+      ({ hostname } = new URL(`https://${archiveRoot}`));
+    } catch {
+      hostname = undefined;
+    }
   }
 
   // When the archive root parses as a URL, classify strictly by hostname so a
