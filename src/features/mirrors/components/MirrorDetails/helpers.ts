@@ -97,7 +97,15 @@ export function getSourceType(
 // report it as undefined or MIRROR_TYPE_UNSPECIFIED, so reuse getSourceType's
 // URL-based inference, and always show it when a GPG key already exists.
 export function shouldShowAuthentication(mirror: Mirror): boolean {
+  if (mirror.gpgKey) {
+    return true;
+  }
+
+  if (mirror.mirrorType && mirror.mirrorType !== "MIRROR_TYPE_UNSPECIFIED") {
+    return mirror.mirrorType === "THIRD_PARTY";
+  }
+
   return (
-    getSourceType(mirror) === MIRROR_TYPE_LABELS.THIRD_PARTY || !!mirror.gpgKey
+    inferSourceTypeFromUrl(mirror.archiveRoot) === MIRROR_TYPE_LABELS.THIRD_PARTY
   );
 }
