@@ -27,6 +27,7 @@ describe("MirrorDetails helpers", () => {
 
     it.each([
       ["https://archive.ubuntu.com/ubuntu", "Ubuntu archive"],
+      ["https://security.ubuntu.com/ubuntu", "Ubuntu archive"],
       ["https://snapshot.ubuntu.com/ubuntu/20240101", "Ubuntu snapshots"],
       ["https://bearer:token@esm.ubuntu.com/infra/ubuntu", "Ubuntu Pro"],
       ["https://example.com/repo", "Third party"],

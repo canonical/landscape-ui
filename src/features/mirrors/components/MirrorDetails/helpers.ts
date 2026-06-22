@@ -16,16 +16,43 @@ const MIRROR_TYPE_LABELS: Record<NonNullable<Mirror["mirrorType"]>, string> = {
 // Legacy mirrors created before mirrorType existed report it as undefined or
 // MIRROR_TYPE_UNSPECIFIED, so infer the type from the archive host to avoid
 // mislabeling Ubuntu mirrors as "Third party".
-function inferSourceTypeFromUrl(archiveRoot: string | undefined): string {
-  if (archiveRoot?.includes(UBUNTU_SNAPSHOTS_HOST)) {
+function inferSourceTypeFromUrl(archiveRoot?: string): string {
+  if (!archiveRoot) {
+    return MIRROR_TYPE_LABELS.THIRD_PARTY;
+  }
+
+  let hostname: string | undefined;
+  try {
+    hostname = new URL(archiveRoot).hostname;
+  } catch {
+    hostname = undefined;
+  }
+
+  switch (hostname) {
+    case UBUNTU_SNAPSHOTS_HOST:
+      return MIRROR_TYPE_LABELS.UBUNTU_SNAPSHOTS;
+    case UBUNTU_PRO_HOST:
+      return MIRROR_TYPE_LABELS.UBUNTU_PRO;
+    case UBUNTU_ARCHIVE_HOST:
+    case "security.ubuntu.com":
+      return MIRROR_TYPE_LABELS.UBUNTU_ARCHIVE;
+    default:
+      break;
+  }
+
+  // Fallback for non-URL legacy values.
+  if (archiveRoot.includes(UBUNTU_SNAPSHOTS_HOST)) {
     return MIRROR_TYPE_LABELS.UBUNTU_SNAPSHOTS;
   }
 
-  if (archiveRoot?.includes(UBUNTU_PRO_HOST)) {
+  if (archiveRoot.includes(UBUNTU_PRO_HOST)) {
     return MIRROR_TYPE_LABELS.UBUNTU_PRO;
   }
 
-  if (archiveRoot?.includes(UBUNTU_ARCHIVE_HOST)) {
+  if (
+    archiveRoot.includes(UBUNTU_ARCHIVE_HOST) ||
+    archiveRoot.includes("security.ubuntu.com")
+  ) {
     return MIRROR_TYPE_LABELS.UBUNTU_ARCHIVE;
   }
 
