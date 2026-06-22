@@ -17,7 +17,7 @@ import type {
 } from "./constants";
 import useNotify from "@/hooks/useNotify";
 import { FilesystemFields, S3Fields, SwiftFields } from "../TargetTypeFields";
-import type { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
+import type { FilesystemTarget } from "@canonical/landscape-openapi";
 
 const TARGET_TYPE_OPTIONS = [
   { value: "s3", label: "S3" },
@@ -90,7 +90,7 @@ const buildSwiftPayload = (values: SwiftFormValues) => ({
 const buildFilesystemPayload = (values: FilesystemFormValues) => ({
   path: values.path,
   ...(values.linkMethod && {
-    linkMethod: values.linkMethod as FilesystemTargetLinkMethod,
+    linkMethod: values.linkMethod as FilesystemTarget["linkMethod"],
   }),
 });
 

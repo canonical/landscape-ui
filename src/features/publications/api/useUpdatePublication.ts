@@ -1,9 +1,9 @@
 import type {
-  Publication,
   PublicationWritable,
+  PublicationServiceUpdatePublicationError,
+  PublicationServiceUpdatePublicationResponse,
 } from "@canonical/landscape-openapi";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
@@ -17,8 +17,8 @@ export default function useUpdatePublication() {
   const queryClient = useQueryClient();
 
   const updatePublicationQuery = useMutation<
-    AxiosResponse<Publication>,
-    AxiosError<ApiError>,
+    AxiosResponse<PublicationServiceUpdatePublicationResponse>,
+    AxiosError<PublicationServiceUpdatePublicationError>,
     UpdatePublicationParams
   >({
     mutationKey: ["publications", "update"],

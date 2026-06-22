@@ -10,7 +10,7 @@ import {
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
-import type { CreateMirrorData } from "@canonical/landscape-openapi";
+import type { MirrorWritable } from "@canonical/landscape-openapi";
 import { useLocation } from "react-router";
 import { mirrors } from "@/tests/mocks/mirrors";
 
@@ -216,7 +216,7 @@ describe("AddMirrorForm", () => {
       components: ["main", "universe"],
       architectures: ["amd64", "arm64"],
       gpgKey: { armor: "ABCDEFG" },
-    } satisfies Partial<CreateMirrorData["body"]>;
+    } satisfies Partial<MirrorWritable>;
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),

@@ -1,4 +1,4 @@
-import type { Any } from "@canonical/landscape-openapi";
+import type { Status } from "@canonical/landscape-openapi";
 import type { OperationStatus } from "./Operation";
 
 export interface PackagesValidationState {
@@ -25,9 +25,5 @@ export interface PackagesValidationOperation {
     "@type": string;
     output?: string;
   };
-  error?: {
-    code?: number;
-    message?: string;
-    details?: Any[];
-  };
+  error?: Status;
 }
