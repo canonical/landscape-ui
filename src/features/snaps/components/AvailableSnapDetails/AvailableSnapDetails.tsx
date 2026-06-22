@@ -47,7 +47,12 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
   const effectiveChannel = selectedChannel ?? CHANNEL_OPTIONS[0]?.value ?? "";
 
   return (
-    <>
+    <li
+      className={classNames(
+        "p-autocomplete__result p-list__item p-card u-no-margin--bottom u-no-padding--bottom",
+        classes.toBeConfirmedCard,
+      )}
+    >
       {isLoading && <LoadingState />}
       {item && (
         <Form
@@ -75,72 +80,65 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
             });
           }}
         >
-          <li
-            className={classNames(
-              "p-autocomplete__result p-list__item p-card u-no-margin--bottom u-no-padding--bottom",
-              classes.toBeConfirmedCard,
-            )}
-          >
-            <div className={classes.bold}>{item.name}</div>
-            <span>
-              <small className="u-text--muted p-text--small">
-                {item.snap.publisher["display-name"]}
-              </small>
-            </span>
-            <Select
-              label={
-                <span className="u-text--muted p-text--small">Release</span>
-              }
-              required
-              value={effectiveChannel}
-              options={CHANNEL_OPTIONS}
-              onChange={(event) => {
-                handleSelectChannel(event.currentTarget.value);
+          <div className={classes.bold}>{item.name}</div>
+          <span>
+            <small className="u-text--muted p-text--small">
+              {item.snap.publisher["display-name"]}
+            </small>
+          </span>
+          <Select
+            label={
+              <span className="u-text--muted p-text--small">Release</span>
+            }
+            required
+            value={effectiveChannel}
+            options={CHANNEL_OPTIONS}
+            onChange={(event) => {
+              handleSelectChannel(event.currentTarget.value);
+            }}
+            help={
+              item["channel-map"].find(
+                (channel) =>
+                  `${channel.channel.name} - ${channel.channel.architecture}` ===
+                  effectiveChannel,
+              )?.confinement === "classic" ? (
+                <span>
+                  <Icon name={ICONS.warning} />
+                  This release requires classic permission.{" "}
+                  <a
+                    href="https://snapcraft.io/docs"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    Learn more
+                  </a>
+                </span>
+              ) : undefined
+            }
+          />
+          <div className={classes.toBeConfirmedCard__buttons}>
+            <Button
+              small
+              type="button"
+              appearance="base"
+              onClick={() => {
+                handleDeleteToBeConfirmedItem();
               }}
-              help={
-                item["channel-map"].find(
-                  (channel) =>
-                    `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    effectiveChannel,
-                )?.confinement === "classic" ? (
-                  <span>
-                    <Icon name={ICONS.warning} />
-                    This release requires classic permission.{" "}
-                    <a
-                      href="https://snapcraft.io/docs"
-                      target="_blank"
-                      rel="nofollow noopener noreferrer"
-                    >
-                      Learn more
-                    </a>
-                  </span>
-                ) : undefined
-              }
-            />
-            <div className={classes.toBeConfirmedCard__buttons}>
-              <Button
-                small
-                type="button"
-                appearance="base"
-                onClick={() => {
-                  handleDeleteToBeConfirmedItem();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                small
-                className={classes.toBeConfirmedCard__confirmButton}
-                type="submit"
-                appearance="positive"
-              >
-                Add
-              </Button>
-            </div>
-          </li>
+            >
+              Cancel
+            </Button>
+            <Button
+              small
+              className={classes.toBeConfirmedCard__confirmButton}
+              type="submit"
+              appearance="positive"
+            >
+              Add
+            </Button>
+          </div>
         </Form>
       )}
-    </>
+    </li>
   );
 };
 
