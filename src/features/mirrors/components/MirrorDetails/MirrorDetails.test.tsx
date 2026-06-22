@@ -6,6 +6,9 @@ import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { expectLoadingState } from "@/tests/helpers";
 import { screen } from "@testing-library/react";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 describe("MirrorDetails", () => {
   it("renders", async () => {
@@ -71,6 +74,33 @@ describe("MirrorDetails", () => {
       screen.getByRole("heading", { name: "Authentication" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Verification GPG Key")).toBeInTheDocument();
+    expect(
+      screen.getByText(mirrors[2].gpgKey?.fingerprint),
+    ).toBeInTheDocument();
+  });
+
+  it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {
+    const legacyMirror = { ...mirrors[2], mirrorType: undefined };
+
+    server.use(
+      http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, () =>
+        HttpResponse.json(legacyMirror),
+      ),
+    );
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[2].name}`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByRole("heading", { name: "Authentication" }),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(mirrors[2].gpgKey?.fingerprint),
     ).toBeInTheDocument();

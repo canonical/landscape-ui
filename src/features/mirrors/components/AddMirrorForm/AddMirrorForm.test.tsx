@@ -96,6 +96,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: cdnUrl,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
