@@ -90,8 +90,8 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
     <Form onSubmit={formik.handleSubmit} noValidate>
       {hasOneItem(installedSnaps) ? (
         <p>
-          This will pause automatic updates for that particular snap.{" "}
-          {installedSnaps[0].snap.name} will maintain the current version.
+          This will pause automatic updates for {installedSnaps[0].snap.name},
+          and it will maintain its current version.
         </p>
       ) : (
         <>
