@@ -63,7 +63,7 @@ const EditMirrorForm: FC = () => {
           ...(!values.keepCurrentGpgKey && {
             gpgKey: values.verificationGpgKey
               ? { armor: values.verificationGpgKey }
-              : undefined,
+              : null,
           }),
           filter: values.packageFilter,
           filterWithDeps: values.packageFilter
