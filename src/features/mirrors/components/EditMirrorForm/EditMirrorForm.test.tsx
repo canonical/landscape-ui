@@ -137,6 +137,39 @@ describe("EditMirrorForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("clears the GPG key when the checkbox is unchecked and the key is empty", async () => {
+    const mirror = mirrors.find(
+      (m) => m.mirrorType === "THIRD_PARTY" && "gpgKey" in m,
+    );
+
+    assert(mirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(mirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(screen.getByLabelText("Keep current GPG key"));
+    await user.clear(screen.getByLabelText("Verification GPG key"));
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(mockUpdateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ gpgKey: null }),
+    );
+
+    expect(
+      await screen.findByText(
+        `You have successfully edited ${mirror.displayName}`,
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("shows preserve signatures as disabled", async () => {
     const mirror = mirrors.find(({ preserveSignatures }) => preserveSignatures);
 

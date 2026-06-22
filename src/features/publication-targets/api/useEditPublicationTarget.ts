@@ -16,6 +16,7 @@ interface EditPublicationTargetParams {
   swift?: Partial<SwiftTarget>;
   filesystem?: Partial<FilesystemTarget>;
 }
+
 export default function useEditPublicationTarget() {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();

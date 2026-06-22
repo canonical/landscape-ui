@@ -86,8 +86,10 @@ const getInitialValues = (target: PublicationTarget): EditTargetFormValues => {
 const buildS3Payload = (values: EditTargetFormValues) => ({
   region: values.region,
   bucket: values.bucket,
-  awsAccessKeyId: values.awsAccessKeyId,
-  awsSecretAccessKey: values.awsSecretAccessKey,
+  ...(values.awsAccessKeyId && { awsAccessKeyId: values.awsAccessKeyId }),
+  ...(values.awsSecretAccessKey && {
+    awsSecretAccessKey: values.awsSecretAccessKey,
+  }),
   ...(values.endpoint && { endpoint: values.endpoint }),
   ...(values.s3Prefix && { prefix: values.s3Prefix }),
   ...(values.acl && { acl: values.acl }),
@@ -102,8 +104,8 @@ const buildS3Payload = (values: EditTargetFormValues) => ({
 const buildSwiftPayload = (values: EditTargetFormValues) => ({
   container: values.container,
   authUrl: values.authUrl,
-  username: values.swiftUsername,
-  password: values.swiftPassword,
+  ...(values.swiftUsername && { username: values.swiftUsername }),
+  ...(values.swiftPassword && { password: values.swiftPassword }),
   ...(values.swiftPrefix && { prefix: values.swiftPrefix }),
   ...(values.tenant && { tenant: values.tenant }),
   ...(values.tenantId && { tenantId: values.tenantId }),
