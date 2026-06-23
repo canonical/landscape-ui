@@ -25,7 +25,7 @@ import {
 } from "@canonical/react-components";
 import type { AxiosResponse } from "axios";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -317,10 +317,10 @@ const InfoTablesContainer: FC = () => {
         Header: "Created at",
         accessor: "creation_time",
         Cell: ({ row }: CellProps<ActivityCommon>): ReactNode => {
-          const date = moment(row.original.creation_time);
+          const createdAt = date(row.original.creation_time);
           return (
             <span className="font-monospace">
-              {date.local().format(DISPLAY_DATE_TIME_FORMAT)}
+              {createdAt.local().format(DISPLAY_DATE_TIME_FORMAT)}
             </span>
           );
         },

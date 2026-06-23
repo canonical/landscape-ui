@@ -4,7 +4,7 @@ import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { useFormik } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import type { ReactNode } from "react";
 import * as Yup from "yup";
 import { getDayOfWeek } from "../helpers";
@@ -63,7 +63,7 @@ const useUsgProfileForm = ({
           start_type == "recurring" && end_type == "on-a-date"
             ? schema.required("This field is required.").test({
                 test: (end_date) => {
-                  return moment(end_date).isAfter(moment(start_date));
+                  return date(end_date).isAfter(date(start_date));
                 },
                 message: `The end date must be after the start date.`,
               })
@@ -146,8 +146,8 @@ const useUsgProfileForm = ({
           }
 
           case "MONTHLY": {
-            const date = new Date(values.start_date);
-            const dayOfMonth = date.getDate();
+            const startDate = new Date(values.start_date);
+            const dayOfMonth = startDate.getDate();
 
             switch (values.day_of_month_type) {
               case "day-of-month": {
@@ -157,7 +157,7 @@ const useUsgProfileForm = ({
 
               case "day-of-week": {
                 const ordinalWeek = Math.ceil(dayOfMonth / 7);
-                const day = getDayOfWeek(date);
+                const day = getDayOfWeek(startDate);
 
                 scheduleRuleParts.push(
                   `BYDAY=${ordinalWeek > 4 ? -1 : ordinalWeek}${DAY_OPTIONS[day].value}`,
@@ -177,7 +177,7 @@ const useUsgProfileForm = ({
 
         if (values.end_type == "on-a-date") {
           scheduleRuleParts.push(
-            `UNTIL=${moment(values.end_date).format("YYYYMMDDTHHmmss")}Z`,
+            `UNTIL=${date(values.end_date).format("YYYYMMDDTHHmmss")}Z`,
           );
         }
       } else {
@@ -202,7 +202,7 @@ const useUsgProfileForm = ({
               ? values.restart_deliver_delay
               : undefined,
           schedule: scheduleRuleParts.join(";"),
-          start_date: `${moment(values.start_date).format(
+          start_date: `${date(values.start_date).format(
             INPUT_DATE_TIME_FORMAT,
           )}Z`,
           tags: values.all_computers ? undefined : values.tags,

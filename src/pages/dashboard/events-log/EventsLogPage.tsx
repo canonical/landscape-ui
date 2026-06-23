@@ -12,7 +12,7 @@ import {
 import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { downloadCSV } from "./helpers";
@@ -48,7 +48,7 @@ const EventsLogPage: FC = () => {
             onClick={() => {
               downloadCSV(
                 eventsLog,
-                `Event Log - ${user.current_account}-${moment().format("YYYY-MM-DDTHH mm ss[Z]")}.csv`,
+                `Event Log - ${user.current_account}-${date().format("YYYY-MM-DDTHH mm ss[Z]")}.csv`,
               );
             }}
           >

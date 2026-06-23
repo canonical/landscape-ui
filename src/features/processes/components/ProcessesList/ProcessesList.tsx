@@ -1,7 +1,7 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { CheckboxInput } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -95,7 +95,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
         className: "large-cell",
         Cell: ({ row }: CellProps<Process>) => (
           <span className="font-monospace">
-            {moment(row.original.start_time).format(DISPLAY_DATE_TIME_FORMAT)}
+            {date(row.original.start_time).format(DISPLAY_DATE_TIME_FORMAT)}
           </span>
         ),
       },

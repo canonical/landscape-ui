@@ -11,7 +11,7 @@ import {
   DISPLAY_DATE_TIME_FORMAT,
   DEFAULT_POLLING_INTERVAL,
 } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import {
   OperationStatusContent,
@@ -134,7 +134,7 @@ const PublicationDetails = ({
               label="Last published"
               value={
                 publication.publishTime
-                  ? moment(publication.publishTime).format(
+                  ? date(publication.publishTime).format(
                       DISPLAY_DATE_TIME_FORMAT,
                     )
                   : NO_DATA_TEXT

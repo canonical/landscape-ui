@@ -18,7 +18,7 @@ import {
   Row,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import moment from "moment/moment";
+import date from "@/libs/date";
 import { type FC, useState } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useEditScript, useRunScript } from "../../api";
@@ -85,13 +85,13 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
       time_limit: Number(values.time_limit),
       deliver_after: values.deliver_immediately
         ? undefined
-        : moment(values.deliver_after)
+        : date(values.deliver_after)
             .toISOString()
             .replace(/\.\d+(?=Z$)/, ""),
     };
 
     if (!values.deliver_immediately) {
-      valuesToSubmit.deliver_after = moment(values.deliver_after)
+      valuesToSubmit.deliver_after = date(values.deliver_after)
         .toISOString()
         .replace(/\.\d+(?=Z$)/, "");
     }

@@ -15,7 +15,7 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import { memo, useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import InstanceStatus, {
@@ -338,11 +338,11 @@ const InstanceList = memo(function InstanceList({
         Cell: ({ row }: CellProps<Instance>) => {
           if (
             row.original.ubuntu_pro_info?.attached &&
-            moment(row.original.ubuntu_pro_info.expires).isValid()
+            date(row.original.ubuntu_pro_info.expires).isValid()
           ) {
             return (
               <span className="font-monospace">
-                {moment(row.original.ubuntu_pro_info.expires).format(
+                {date(row.original.ubuntu_pro_info.expires).format(
                   DISPLAY_DATE_TIME_FORMAT,
                 )}
               </span>
@@ -360,9 +360,9 @@ const InstanceList = memo(function InstanceList({
         className: "large-cell",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
-            {moment(row.original.last_ping_time).isValid() ? (
+            {date(row.original.last_ping_time).isValid() ? (
               <span className="font-monospace">
-                {moment(row.original.last_ping_time).format(
+                {date(row.original.last_ping_time).format(
                   DISPLAY_DATE_TIME_FORMAT,
                 )}
               </span>

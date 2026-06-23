@@ -12,7 +12,7 @@ import {
 } from "../../../../helpers";
 import Blocks from "@/components/layout/Blocks";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { getLastRunData, getNextRunData, getScheduleMessage } from "./helpers";
 import { pluralize } from "@/utils/_helpers";
 
@@ -44,7 +44,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
             label="Last run"
             value={
               lastRun
-                ? `${moment(lastRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
+                ? `${date(lastRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
                 : null
             }
           />
@@ -62,7 +62,7 @@ const ViewProfileScheduleBlock: FC<ViewProfileScheduleBlockProps> = ({
             label={nextLabel}
             value={
               nextRun
-                ? `${moment(nextRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
+                ? `${date(nextRun).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`
                 : null
             }
           />

@@ -3,7 +3,7 @@ import {
   deliveryValidationSchema,
   randomizationValidationSchema,
 } from "@/components/form/DeliveryScheduling";
-import moment from "moment";
+import date from "@/libs/date";
 import * as Yup from "yup";
 
 export const INITIAL_VALUES: HoldFormValues = {
@@ -24,7 +24,7 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
       if (!value) {
         return true;
       }
-      return moment(value).isValid();
+      return date(value).isValid();
     },
     message: "You have to enter a valid date and time",
   }),

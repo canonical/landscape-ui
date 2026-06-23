@@ -23,7 +23,7 @@ import {
   SearchBox,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import { useMemo, useState, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { useBoolean } from "usehooks-ts";
@@ -139,7 +139,7 @@ const WslProfileNonCompliantInstancesList: FC<
       {
         Header: "Last ping",
         Cell: ({ row: { original: instance } }: CellProps<WindowsInstance>) => {
-          const dateTime = moment(instance.last_ping_time);
+          const dateTime = date(instance.last_ping_time);
 
           if (dateTime.isValid()) {
             return (
