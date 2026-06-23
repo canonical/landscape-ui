@@ -3,7 +3,7 @@ import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -66,7 +66,7 @@ const AutoinstallFilesList: FC<AutoinstallFilesListProps> = ({
           },
         }: CellProps<AutoinstallFile>): ReactNode => (
           <div className="font-monospace">
-            {moment(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
+            {date(last_modified_at).format(DISPLAY_DATE_TIME_FORMAT)}
           </div>
         ),
       },

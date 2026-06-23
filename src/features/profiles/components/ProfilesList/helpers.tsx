@@ -18,7 +18,7 @@ import { getTitleByName } from "@/utils/_helpers";
 import { Button, Link } from "@canonical/react-components";
 import type { CellProps, Column } from "react-table";
 import ProfilesListActions from "./components/ProfilesListActions";
-import moment from "moment";
+import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import type { AxiosResponse } from "axios";
@@ -276,7 +276,7 @@ export const getScriptColumns = (): Column<Profile>[] => [
               query: `parent-id:${last_activity.id}`,
             })}
           >
-            {moment(last_activity.creation_time)
+            {date(last_activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}
           </Link>
@@ -315,7 +315,7 @@ export const getRebootColumn = (): Column<Profile> => ({
   },
   Cell: ({ row: { original: profile } }: CellProps<Profile>) => {
     if (isRebootProfile(profile)) {
-      return moment(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
+      return date(profile.next_run).utc().format(DISPLAY_DATE_TIME_FORMAT);
     }
 
     return null;

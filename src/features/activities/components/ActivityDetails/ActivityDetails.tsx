@@ -4,7 +4,7 @@ import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetInstance } from "@/features/instances";
 import { CodeSnippet, Icon } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { ACTIVITY_STATUSES } from "../../constants";
 import { useGetSingleActivity } from "../../api";
@@ -79,7 +79,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         />
         <InfoGrid.Item
           label="Created at"
-          value={moment(activity.creation_time).format(
+          value={date(activity.creation_time).format(
             DISPLAY_DATE_TIME_FORMAT,
           )}
         />
@@ -87,7 +87,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         {typeof activity.delivery_time === "string" && (
           <InfoGrid.Item
             label="Delivered at"
-            value={moment(activity.delivery_time).format(
+            value={date(activity.delivery_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           />
@@ -95,7 +95,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         {activity.completion_time !== null && (
           <InfoGrid.Item
             label="Completed at"
-            value={moment(activity.completion_time).format(
+            value={date(activity.completion_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           />

@@ -1,5 +1,5 @@
 import { DISPLAY_DATE_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getLivepatchCoverageDisplayValue,
@@ -28,7 +28,7 @@ describe("KernelOverview helpers", () => {
     expect(
       getStatusTooltipMessage("Kernel upgrade available", expiry),
     ).toContain(
-      `covered by Livepatch until ${moment(expiry).format(DISPLAY_DATE_FORMAT)}`,
+      `covered by Livepatch until ${date(expiry).format(DISPLAY_DATE_FORMAT)}`,
     );
   });
 
@@ -70,9 +70,9 @@ describe("KernelOverview helpers", () => {
   });
 
   it("computes livepatch coverage icons by enablement and expiry window", () => {
-    const soonExpiry = moment(NOW).add(TWO_DAYS, "days").toISOString();
-    const laterExpiry = moment(NOW).add(TEN_DAYS, "days").toISOString();
-    const expired = moment(NOW).subtract(1, "day").toISOString();
+    const soonExpiry = date(NOW).add(TWO_DAYS, "days").toISOString();
+    const laterExpiry = date(NOW).add(TEN_DAYS, "days").toISOString();
+    const expired = date(NOW).subtract(1, "day").toISOString();
 
     expect(getLivepatchCoverageIcon(true, soonExpiry)).toBe(
       "status-waiting-small",
@@ -90,15 +90,15 @@ describe("KernelOverview helpers", () => {
   });
 
   it("computes display value for disabled, expired, and active coverage", () => {
-    const laterExpiry = moment(NOW).add(TEN_DAYS, "days").toISOString();
-    const expired = moment(NOW).subtract(1, "day").toISOString();
+    const laterExpiry = date(NOW).add(TEN_DAYS, "days").toISOString();
+    const expired = date(NOW).subtract(1, "day").toISOString();
 
     expect(getLivepatchCoverageDisplayValue(false, laterExpiry)).toBe(
       "Livepatch is disabled",
     );
     expect(getLivepatchCoverageDisplayValue(true, expired)).toBe("Expired");
     expect(getLivepatchCoverageDisplayValue(true, laterExpiry)).toBe(
-      `Expires on ${moment(laterExpiry).format(DISPLAY_DATE_FORMAT)}`,
+      `Expires on ${date(laterExpiry).format(DISPLAY_DATE_FORMAT)}`,
     );
   });
 });

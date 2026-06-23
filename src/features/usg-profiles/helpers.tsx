@@ -3,7 +3,7 @@ import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import type { NotificationHelper } from "@/types/Notification";
 import { Icon, Tooltip } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import { USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "./constants";
 import classes from "./helpers.module.scss";
 import type { USGProfile } from "./types";
@@ -150,7 +150,7 @@ export const getUsgSchedule = (profile: USGProfile, short = false) => {
   }
 
   if (schedule.UNTIL) {
-    scheduleText += ` until ${moment(schedule.UNTIL).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`;
+    scheduleText += ` until ${date(schedule.UNTIL).utc().format(DISPLAY_DATE_TIME_FORMAT)} UTC`;
   }
 
   return scheduleText;
@@ -199,8 +199,8 @@ export const getInitialValues = (profile: USGProfile): USGProfileFormValues => {
         : [],
     delivery_time: profile.restart_deliver_delay ? "delayed" : "asap",
     end_date: schedule.UNTIL
-      ? moment(schedule.UNTIL).format(INPUT_DATE_TIME_FORMAT)
-      : moment().format(INPUT_DATE_TIME_FORMAT),
+      ? date(schedule.UNTIL).format(INPUT_DATE_TIME_FORMAT)
+      : date().format(INPUT_DATE_TIME_FORMAT),
     end_type: schedule.UNTIL ? "on-a-date" : "never",
     every: schedule.INTERVAL,
     months:
@@ -208,7 +208,7 @@ export const getInitialValues = (profile: USGProfile): USGProfileFormValues => {
         ? schedule.BYMONTH.split(",").map((month: string) => Number(month))
         : [],
     randomize_delivery: profile.restart_deliver_delay_window ? true : false,
-    start_date: moment(
+    start_date: date(
       profile.next_run_time ?? profile.last_run_results.timestamp,
     ).format(INPUT_DATE_TIME_FORMAT),
     start_type: schedule.COUNT == 1 ? "on-a-date" : "recurring",
@@ -232,6 +232,6 @@ export const getNotificationMessage = (
   }
 };
 
-export const getDayOfWeek = (date: Date) => {
-  return date.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export const getDayOfWeek = (value: Date) => {
+  return value.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
 };

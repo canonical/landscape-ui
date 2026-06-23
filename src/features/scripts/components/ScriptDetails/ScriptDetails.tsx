@@ -4,7 +4,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useGetSingleScript } from "@/features/scripts";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, Icon, ICONS, Notification } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useArchiveScriptModal, useDeleteScriptModal } from "../../hooks";
@@ -120,7 +120,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
       <Notification severity="caution" className="u-no-margin">
         <b>Script deleted:</b> The script was deleted by{" "}
         {script.last_edited_by.name} on{" "}
-        {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
+        {date(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
       </Notification>
     );
   }
@@ -131,7 +131,7 @@ const ScriptDetails: FC<ScriptDetailsProps> = ({
         <Notification severity="caution">
           <b>Script archived:</b> The script was archived by{" "}
           {script.last_edited_by.name} on{" "}
-          {moment(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
+          {date(script.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
         </Notification>
       ) : null}
 

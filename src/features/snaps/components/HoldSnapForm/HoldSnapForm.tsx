@@ -12,7 +12,7 @@ import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import type { ChangeEvent, FC } from "react";
 import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
@@ -46,12 +46,12 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
         if (values.hold === "forever") {
           holdTime = "forever";
         } else if (values.hold_until) {
-          holdTime = moment(values.hold_until).format();
+          holdTime = date(values.hold_until).format();
         }
 
         const deliverAfter =
           !values.deliver_immediately && values.deliver_after
-            ? moment(values.deliver_after).format()
+            ? date(values.deliver_after).format()
             : undefined;
 
         await snapAction({
@@ -81,7 +81,7 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
     if (event.currentTarget.value === "date") {
       void formik.setFieldValue(
         "hold_until",
-        moment().toISOString().slice(0, 16),
+        date().toISOString().slice(0, 16),
       );
     }
   };

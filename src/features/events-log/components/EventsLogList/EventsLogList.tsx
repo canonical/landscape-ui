@@ -2,7 +2,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import TruncatedCell from "@/components/layout/TruncatedCell";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -26,7 +26,7 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
         className: "large-cell",
         Cell: ({ row }: CellProps<EventLog>) => (
           <span className="font-monospace">
-            {moment(row.original.creation_time).format(
+            {date(row.original.creation_time).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           </span>
