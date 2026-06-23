@@ -5,7 +5,7 @@ import {
 } from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import { Suspense, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
@@ -92,7 +92,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         className: "medium-cell",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.lastDownloadDate ? (
-            moment(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT)
+            date(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT)
           ) : (
             <NoData />
           ),

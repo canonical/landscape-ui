@@ -2,7 +2,7 @@ import { Buffer } from "buffer";
 import type { ScriptFormValues } from "./types";
 import type { CreateScriptAttachmentParams } from "./api";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 
 export const getEncodedCode = (code: string) => {
   const escapedCode = JSON.parse(JSON.stringify(code).replace(/\\r/g, ""));
@@ -85,10 +85,10 @@ export const getCode = ({
 
 export const getAuthorInfo = ({
   author,
-  date,
+  date: dateString,
 }: {
   author: string;
   date: string;
 }) => {
-  return `${moment(date).format(DISPLAY_DATE_TIME_FORMAT)}, by ${author}`;
+  return `${date(dateString).format(DISPLAY_DATE_TIME_FORMAT)}, by ${author}`;
 };

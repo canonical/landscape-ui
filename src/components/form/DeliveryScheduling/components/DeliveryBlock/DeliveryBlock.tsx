@@ -1,5 +1,5 @@
 import type { FormikContextType } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import { Input } from "@canonical/react-components";
 import { getFormikError } from "@/utils/formikErrors";
 import RadioGroup from "@/components/form/RadioGroup";
@@ -34,7 +34,7 @@ const DeliveryBlock = <T extends DeliveryProps>({
           onSelect: async () => {
             await formik.setFieldValue(
               "deliver_after",
-              moment().add(5, "minutes").toISOString().slice(0, 16),
+              date().add(5, "minutes").toISOString().slice(0, 16),
             );
           },
           expansion: (

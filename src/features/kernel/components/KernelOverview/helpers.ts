@@ -1,14 +1,14 @@
 import { DISPLAY_DATE_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 
 export const getStatusTooltipMessage = (type: string, expiryDate: string) => {
   switch (type) {
     case "Fully patched":
       return "All available kernel security patches have been applied. You have no pending patches.";
     case "Kernel upgrade available": {
-      const date = moment(expiryDate);
+      const coverageDate = date(expiryDate);
 
-      return `A new kernel version is available.${date.isValid() ? ` The current version is covered by Livepatch until ${date.format(DISPLAY_DATE_FORMAT)}` : ""}`;
+      return `A new kernel version is available.${coverageDate.isValid() ? ` The current version is covered by Livepatch until ${coverageDate.format(DISPLAY_DATE_FORMAT)}` : ""}`;
     }
     case "Restart required":
       return "Low and/or medium patches have been installed. You must restart to complete patching.";
@@ -40,11 +40,11 @@ export const getLivepatchCoverageIcon = (
   livepatchEnabled: boolean,
   expiryDate: string,
 ): string => {
-  const expiry = moment(expiryDate);
-  const today = moment();
+  const expiry = date(expiryDate);
+  const today = date();
   const diffDays = expiry.diff(today, "days");
 
-  if (diffDays < 0 || !livepatchEnabled || !moment(expiryDate).isValid()) {
+  if (diffDays < 0 || !livepatchEnabled || !date(expiryDate).isValid()) {
     return "status-failed-small";
   } else if (diffDays < 7) {
     return "status-waiting-small";
@@ -61,13 +61,13 @@ export const getLivepatchCoverageDisplayValue = (
     return "Livepatch is disabled";
   }
 
-  const expiry = moment(expiryDate);
-  const today = moment();
+  const expiry = date(expiryDate);
+  const today = date();
   const diffDays = expiry.diff(today, "days");
 
   if (diffDays < 0) {
     return "Expired";
   } else {
-    return `Expires on ${moment(expiryDate).format(DISPLAY_DATE_FORMAT)}`;
+    return `Expires on ${date(expiryDate).format(DISPLAY_DATE_FORMAT)}`;
   }
 };

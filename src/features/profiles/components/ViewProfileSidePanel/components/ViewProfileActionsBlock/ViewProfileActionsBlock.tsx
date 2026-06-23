@@ -7,7 +7,7 @@ import type { Action } from "@/types/Action";
 import classes from "./ViewProfileActionsBlock.module.scss";
 import { useGetProfileActions } from "../../../../hooks/useGetProfileActions";
 import { isScriptProfile, type ProfileTypes } from "../../../../helpers";
-import moment from "moment";
+import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 const RemoveProfileModal = lazy(
@@ -41,7 +41,7 @@ const ViewProfileActionsBlock: FC<ViewProfileActionsBlockProps> = ({
     return (
       <Notification inline title="Profile archived:" severity="caution">
         The profile was archived on{" "}
-        {moment(profile.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}.
+        {date(profile.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}.
       </Notification>
     );
   }

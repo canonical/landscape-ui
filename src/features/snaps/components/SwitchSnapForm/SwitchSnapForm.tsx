@@ -11,7 +11,7 @@ import { pluralize } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import { useParams } from "react-router";
@@ -55,7 +55,7 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
       try {
         const deliverAfter =
           !values.deliver_immediately && values.deliver_after
-            ? moment(values.deliver_after).format()
+            ? date(values.deliver_after).format()
             : undefined;
         await snapAction({
           computer_ids: [instanceId],

@@ -4,7 +4,7 @@ import InfoItem from "@/components/layout/InfoItem";
 import LoadingState from "@/components/layout/LoadingState";
 import { DISPLAY_DATE_FORMAT } from "@/constants";
 import { Input } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useGetAutoinstallFile } from "../../api";
 import {
@@ -50,7 +50,7 @@ const AutoinstallFileVersion: FC<AutoinstallFileVersionProps> = ({
 
       <InfoItem
         label="Date created"
-        value={moment(versionInfo.created_at).format(DISPLAY_DATE_FORMAT)}
+        value={date(versionInfo.created_at).format(DISPLAY_DATE_FORMAT)}
       />
 
       {isAutoinstallFileLoading ? (

@@ -49,7 +49,7 @@ import {
   Tooltip,
 } from "@canonical/react-components";
 import classNames from "classnames";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { Fragment, lazy, Suspense } from "react";
 import { useNavigate } from "react-router";
@@ -428,8 +428,8 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             <InfoGrid.Item
               label="Last ping time"
               value={
-                moment(instance.last_ping_time).isValid()
-                  ? moment(instance.last_ping_time).format(
+                date(instance.last_ping_time).isValid()
+                  ? date(instance.last_ping_time).format(
                       DISPLAY_DATE_TIME_FORMAT,
                     )
                   : null
@@ -523,7 +523,7 @@ const InfoPanel: FC<InfoPanelProps> = ({ instance }) => {
             )}
             <InfoGrid.Item
               label="Registered"
-              value={moment(instance.registered_at).format(
+              value={date(instance.registered_at).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
             />
