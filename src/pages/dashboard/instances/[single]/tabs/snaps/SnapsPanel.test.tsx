@@ -6,6 +6,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe } from "vitest";
 import SnapsPanel from "./SnapsPanel";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 describe("SnapsPanel", () => {
   it("renders empty state", async () => {
@@ -38,7 +39,7 @@ describe("SnapsPanel", () => {
     renderWithProviders(<SnapsPanel />);
     await expectLoadingState();
 
-    for (const installedSnap of installedSnaps) {
+    for (const installedSnap of installedSnaps.slice(0, DEFAULT_PAGE_SIZE)) {
       const snap = await screen.findByRole("button", {
         name: `Show details of snap ${installedSnap.snap.name}`,
       });

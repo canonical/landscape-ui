@@ -1,5 +1,3 @@
-import BoldSubstring from "@/components/form/BoldSubstring";
-import LoadingState from "@/components/layout/LoadingState";
 import useDebug from "@/hooks/useDebug";
 import type { UrlParams } from "@/types/UrlParams";
 import { Button, Icon, ICONS, SearchBox } from "@canonical/react-components";
@@ -9,9 +7,9 @@ import type { FC } from "react";
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import { useDebounceCallback } from "usehooks-ts";
-import { useSnaps } from "../../hooks";
+import { useGetAvailableSnaps } from "../../api";
 import type { AvailableSnap, SelectedSnaps } from "../../types";
-import AvailableSnapDetails from "../AvailableSnapDetails";
+import SuggestionContent from "./components";
 import classes from "./SnapDropdownSearch.module.scss";
 import { DEBOUNCE_DELAY } from "./constants";
 
@@ -28,7 +26,6 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
 }) => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
-  const { getAvailableSnaps } = useSnaps();
 
   const [search, setSearch] = useState<string>("");
   const [open, setOpen] = useState(false);
@@ -39,17 +36,11 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
 
   const instanceId = Number(urlInstanceId);
 
-  const { data: snapsDataRes, isFetching } = getAvailableSnaps(
-    {
-      instance_id: instanceId,
-      query: search,
-    },
-    {
-      enabled: search.length > 0,
-    },
-  );
-
-  const snapsData = snapsDataRes?.data?.results ?? [];
+  const { availableSnaps: snapsData, isFetchingAvailableSnaps: isFetching } =
+    useGetAvailableSnaps(
+      { instance_id: instanceId, query: search },
+      { enabled: search.length > 0 },
+    );
 
   const getAvailableSnapSuggestions = (itemName: string): boolean => {
     return !selectedItems.map((item) => item.name).includes(itemName);
@@ -171,39 +162,17 @@ const SnapDropdownSearch: FC<SnapDropdownSearchProps> = ({
                 )}
                 {...getMenuProps()}
               >
-                {toBeConfirmedItem && instanceId ? (
-                  <AvailableSnapDetails
-                    handleAddToSelectedItems={handleAddToSelectedItems}
-                    handleDeleteToBeConfirmedItem={
-                      handleDeleteToBeConfirmedItem
-                    }
-                    name={toBeConfirmedItem.name}
-                    instanceId={instanceId}
-                    key={toBeConfirmedItem["snap-id"]}
-                  />
-                ) : isFetching ? (
-                  <LoadingState />
-                ) : (
-                  suggestions.map((item: AvailableSnap, index: number) => (
-                    <li
-                      className={classNames("p-list__item", classes.pointer, {
-                        [classes.highlighted]: highlightedIndex === index,
-                      })}
-                      key={item["snap-id"]}
-                      {...getItemProps({
-                        item,
-                        index,
-                      })}
-                    >
-                      <div className="u-truncate" data-testid="dropdownElement">
-                        <BoldSubstring text={item.name} substring={search} />
-                      </div>
-                      <small className="u-text-muted">
-                        {item.snap.publisher["display-name"]}
-                      </small>
-                    </li>
-                  ))
-                )}
+                <SuggestionContent
+                  toBeConfirmedItem={toBeConfirmedItem}
+                  instanceId={instanceId}
+                  isFetching={isFetching}
+                  suggestions={suggestions}
+                  search={search}
+                  highlightedIndex={highlightedIndex}
+                  getItemProps={getItemProps}
+                  handleAddToSelectedItems={handleAddToSelectedItems}
+                  handleDeleteToBeConfirmedItem={handleDeleteToBeConfirmedItem}
+                />
               </ul>
             ) : null}
           </div>
