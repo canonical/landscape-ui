@@ -79,6 +79,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -95,6 +96,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: cdnUrl,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -131,6 +133,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
+        mirrorType: "UBUNTU_SNAPSHOTS",
       }),
     );
   });
@@ -149,6 +152,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
+        mirrorType: "UBUNTU_PRO",
       }),
     );
   });
@@ -212,6 +216,7 @@ describe("AddMirrorForm", () => {
   it("submits a third-party mirror", async () => {
     const params = {
       archiveRoot: "https://archive.ubuntu.com/",
+      mirrorType: "THIRD_PARTY",
       distribution: "focal",
       components: ["main", "universe"],
       architectures: ["amd64", "arm64"],

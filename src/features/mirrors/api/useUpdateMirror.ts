@@ -7,8 +7,9 @@ import type {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
+// The API needs an explicit null to clear an existing key
 type UpdateMirrorParams = Omit<MirrorWritable, "gpgKey"> & {
-  gpgKey?: { armor: string } | null;
+  gpgKey?: MirrorWritable["gpgKey"] | null;
 };
 
 export function useUpdateMirror(name: string) {
