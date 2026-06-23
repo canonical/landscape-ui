@@ -11,7 +11,7 @@ interface DateFactory {
 }
 
 /**
- * Moment-shaped factory used as a drop-in replacement for `moment(...)`.
+ * Date factory used by the Landscape UI date helper.
  *
  * Usage:
  *   date()                          // now

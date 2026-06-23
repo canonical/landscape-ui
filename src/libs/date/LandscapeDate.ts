@@ -1,10 +1,9 @@
 /**
- * LandscapeDate is a small, Moment-shaped wrapper around the native `Date`
- * object. It exists to replace the `moment` dependency while preserving the
- * exact call style and behavior the Landscape UI relies on.
+ * LandscapeDate is a small wrapper around the native `Date` object. It
+ * centralizes the date behavior and call style the Landscape UI relies on.
  *
- * It intentionally implements only the subset of Moment used in this codebase,
- * delegating to native `Date` for arithmetic, comparison and serialization and
+ * It intentionally implements only the subset used in this codebase, delegating
+ * to native `Date` for arithmetic, comparison and serialization and
  * adding a small token-based formatter that the native APIs do not provide.
  */
 
@@ -55,8 +54,22 @@ const MS_PER_HOUR = 3_600_000;
 const MS_PER_MINUTE = 60_000;
 const HOURS_PER_HALF_DAY = 12;
 const DAYS_PER_WEEK = 7;
+const MONTHS_PER_YEAR = 12;
+const FEBRUARY = 2;
+const APRIL = 4;
+const JUNE = 6;
+const SEPTEMBER = 9;
+const NOVEMBER = 11;
+const DAYS_IN_FEBRUARY = 28;
+const DAYS_IN_LEAP_YEAR_FEBRUARY = 29;
+const DAYS_IN_SHORT_MONTH = 30;
+const DAYS_IN_LONG_MONTH = 31;
+const LEAP_YEAR_CENTURY = 100;
+const LEAP_YEAR_FULL_CYCLE = 400;
+const MAX_HOUR = 23;
+const MAX_MINUTE_OR_SECOND = 59;
 
-/** Sentinel used like `moment.ISO_8601` for strict ISO 8601 parsing. */
+/** Sentinel used for strict ISO 8601 parsing. */
 export const ISO_8601 = Symbol("ISO_8601");
 
 const ISO_8601_REGEX =
@@ -66,6 +79,9 @@ const DATE_ONLY_REGEX = /^(\d{4})-(\d{2})-(\d{2})$/;
 
 const DATE_TIME_NO_TZ_REGEX =
   /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?$/;
+
+const ISO_8601_PARTS_REGEX =
+  /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d+))?)?(?:(Z)|([+-])(\d{2}):?(\d{2}))?)?$/;
 
 const FORMAT_TOKEN_REGEX =
   /\[([^\]]*)\]|YYYY|YY|MMMM|MMM|MM|M|DD|D|dddd|ddd|dd|HH|H|hh|h|mm|m|ss|s|A|a/g;
@@ -136,6 +152,106 @@ const to12Hour = (hour: number): number => {
   return h === 0 ? HOURS_PER_HALF_DAY : h;
 };
 
+const isLeapYear = (year: number): boolean =>
+  year % 4 === 0 &&
+  (year % LEAP_YEAR_CENTURY !== 0 || year % LEAP_YEAR_FULL_CYCLE === 0);
+
+const getDaysInMonth = (year: number, month: number): number => {
+  if (month === FEBRUARY) {
+    return isLeapYear(year) ? DAYS_IN_LEAP_YEAR_FEBRUARY : DAYS_IN_FEBRUARY;
+  }
+
+  return [APRIL, JUNE, SEPTEMBER, NOVEMBER].includes(month)
+    ? DAYS_IN_SHORT_MONTH
+    : DAYS_IN_LONG_MONTH;
+};
+
+const parseMilliseconds = (milliseconds?: string): number =>
+  milliseconds ? Math.trunc(Number(`0.${milliseconds}`) * 1000) : 0;
+
+const hasValidDateTimeParts = (
+  year: number,
+  month: number,
+  day: number,
+  hour = 0,
+  minute = 0,
+  second = 0,
+): boolean =>
+  month >= 1 &&
+  month <= MONTHS_PER_YEAR &&
+  day >= 1 &&
+  day <= getDaysInMonth(year, month) &&
+  hour >= 0 &&
+  hour <= MAX_HOUR &&
+  minute >= 0 &&
+  minute <= MAX_MINUTE_OR_SECOND &&
+  second >= 0 &&
+  second <= MAX_MINUTE_OR_SECOND;
+
+const createLocalTime = (
+  year: number,
+  month: number,
+  day: number,
+  hour = 0,
+  minute = 0,
+  second = 0,
+  millisecond = 0,
+): number => {
+  if (!hasValidDateTimeParts(year, month, day, hour, minute, second)) {
+    return NaN;
+  }
+
+  const date = new Date(0);
+  date.setFullYear(year, month - 1, day);
+  date.setHours(hour, minute, second, millisecond);
+  return date.getTime();
+};
+
+const hasValidTimezoneOffset = (
+  offsetHour?: string,
+  offsetMinute?: string,
+): boolean =>
+  offsetHour === undefined ||
+  (Number(offsetHour) <= MAX_HOUR &&
+    Number(offsetMinute) <= MAX_MINUTE_OR_SECOND);
+
+const parseStrictIsoTime = (input: string): number => {
+  const parts = ISO_8601_PARTS_REGEX.exec(input);
+  if (!parts) {
+    return NaN;
+  }
+
+  const [, y, m, d, h, min, s, ms, z, offsetSign, offsetHour, offsetMinute] =
+    parts;
+  const year = Number(y);
+  const month = Number(m);
+  const day = Number(d);
+  const hour = Number(h ?? 0);
+  const minute = Number(min ?? 0);
+  const second = Number(s ?? 0);
+
+  if (
+    !hasValidDateTimeParts(year, month, day, hour, minute, second) ||
+    !hasValidTimezoneOffset(offsetHour, offsetMinute)
+  ) {
+    return NaN;
+  }
+
+  if (z || offsetSign) {
+    return new Date(input).getTime();
+  }
+
+  return createLocalTime(
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    second,
+    parseMilliseconds(ms),
+  );
+};
+
 const parseString = (value: string): number => {
   const input = value.trim();
 
@@ -143,24 +259,28 @@ const parseString = (value: string): number => {
     return NaN;
   }
 
+  if (ISO_8601_PARTS_REGEX.test(input)) {
+    return parseStrictIsoTime(input);
+  }
+
   const dateOnly = DATE_ONLY_REGEX.exec(input);
   if (dateOnly) {
     const [, y, m, d] = dateOnly;
-    return new Date(Number(y), Number(m) - 1, Number(d)).getTime();
+    return createLocalTime(Number(y), Number(m), Number(d));
   }
 
   const dateTime = DATE_TIME_NO_TZ_REGEX.exec(input);
   if (dateTime) {
     const [, y, m, d, h, min, s, ms] = dateTime;
-    return new Date(
+    return createLocalTime(
       Number(y),
-      Number(m) - 1,
+      Number(m),
       Number(d),
       Number(h),
       Number(min),
       Number(s ?? 0),
-      ms ? Number(`0.${ms}`) * 1000 : 0,
-    ).getTime();
+      parseMilliseconds(ms),
+    );
   }
 
   return new Date(input).getTime();
@@ -326,13 +446,10 @@ export class LandscapeDate {
         return new LandscapeDate(this._time + amount * MS_PER_HOUR, this._utc);
       case "day":
       case "days":
-        return new LandscapeDate(this._time + amount * MS_PER_DAY, this._utc);
+        return this.shiftCalendarDays(amount);
       case "week":
       case "weeks":
-        return new LandscapeDate(
-          this._time + amount * MS_PER_DAY * 7,
-          this._utc,
-        );
+        return this.shiftCalendarDays(amount * DAYS_PER_WEEK);
       case "month":
       case "months": {
         const date = new Date(this._time);
@@ -358,8 +475,21 @@ export class LandscapeDate {
     }
   }
 
+  private shiftCalendarDays(amount: number): LandscapeDate {
+    const date = new Date(this._time);
+
+    if (this._utc) {
+      date.setUTCDate(date.getUTCDate() + amount);
+    } else {
+      date.setDate(date.getDate() + amount);
+    }
+
+    return new LandscapeDate(date.getTime(), this._utc);
+  }
+
   diff(other: DateInput, unit?: DiffUnit): number {
-    const difference = this._time - LandscapeDate.from(other)._time;
+    const target = LandscapeDate.from(other);
+    const difference = this._time - target._time;
 
     switch (unit) {
       case "second":
@@ -372,13 +502,21 @@ export class LandscapeDate {
       case "hours":
         return Math.trunc(difference / MS_PER_HOUR);
       case "day":
-      case "days":
-        return Math.trunc(difference / MS_PER_DAY);
+      case "days": {
+        const zoneDelta =
+          (this.getTimezoneOffset() - target.getTimezoneOffset()) *
+          MS_PER_MINUTE;
+        return Math.trunc((difference - zoneDelta) / MS_PER_DAY);
+      }
       case "millisecond":
       case "milliseconds":
       default:
         return difference;
     }
+  }
+
+  private getTimezoneOffset(): number {
+    return this._utc ? 0 : new Date(this._time).getTimezoneOffset();
   }
 
   isAfter(other?: DateInput): boolean {
