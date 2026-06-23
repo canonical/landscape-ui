@@ -3,6 +3,12 @@
 
 ---
 
+## 26.04.1.6
+
+### Patch Changes
+
+- Send mirrorType when creating mirrors and improve source-type/authentication inference for legacy mirrors
+
 ## 26.04.1.3
 
 ### Minor Changes
