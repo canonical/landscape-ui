@@ -54,7 +54,7 @@ describe("handleParams", () => {
     const config = makeConfig({
       method: "get",
       url: "/count",
-      params: { count: 5, enabled: true },
+      params: { count: 5, enabled: true, values: [1, 2, 3] },
     });
 
     const result = handleParams({ config, isOld: true });
@@ -64,6 +64,9 @@ describe("handleParams", () => {
       version: API_VERSION,
       count: "5",
       enabled: "true",
+      "values.1": "1",
+      "values.2": "2",
+      "values.3": "3",
     });
   });
 
@@ -151,7 +154,7 @@ describe("handleParams", () => {
     expect(result.filter).toBe(JSON.stringify(payload));
   });
 
-  it("ignores empty strings, undefined, or empty arrays", () => {
+  it("only ignores undefined", () => {
     const config = makeConfig({
       method: "get",
       params: {
@@ -163,7 +166,7 @@ describe("handleParams", () => {
     });
 
     const result = handleParams({ config, isOld: false });
-    expect(result).toStrictEqual({ valid: "yes" });
+    expect(result).toStrictEqual({ emptyStr: "", emptyArr: "", valid: "yes" });
   });
 
   it("throws when encountering an unsupported type", () => {
@@ -175,7 +178,20 @@ describe("handleParams", () => {
     });
 
     expect(() => handleParams({ config, isOld: false })).toThrow(
-      "Unsupported argument type",
+      "Unsupported argument type. Provided: function for func",
+    );
+  });
+
+  it("throws when encountering an unsupported array item type in legacy mode", () => {
+    const config = makeConfig({
+      method: "get",
+      params: {
+        items: [1, "two", { three: 3 }],
+      },
+    });
+
+    expect(() => handleParams({ config, isOld: true })).toThrow(
+      "Unsupported array item type. Provided: object for items.3",
     );
   });
 

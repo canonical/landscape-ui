@@ -1,7 +1,7 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  ListPublicationsData,
-  ListPublicationsError,
+  PublicationServiceListPublicationsData,
+  PublicationServiceListPublicationsError,
   ListPublicationsResponse,
 } from "@canonical/landscape-openapi";
 import type { UseQueryOptions } from "@tanstack/react-query";
@@ -9,11 +9,11 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
 export function useListPublications(
-  params: ListPublicationsData["query"] = {},
+  params: PublicationServiceListPublicationsData["query"] = {},
   options: Omit<
     UseQueryOptions<
       AxiosResponse<ListPublicationsResponse>,
-      AxiosError<ListPublicationsError>
+      AxiosError<PublicationServiceListPublicationsError>
     >,
     "queryKey" | "queryFn"
   > = {},
@@ -22,7 +22,7 @@ export function useListPublications(
 
   return useSuspenseQuery<
     AxiosResponse<ListPublicationsResponse>,
-    AxiosError<ListPublicationsError>
+    AxiosError<PublicationServiceListPublicationsError>
   >({
     queryKey: ["publications", params],
     queryFn: async () => authFetchDebArchive.get("publications", { params }),
