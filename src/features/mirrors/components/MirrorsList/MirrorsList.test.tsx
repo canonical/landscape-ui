@@ -38,24 +38,16 @@ describe("MirrorsList", () => {
 
   describe("pagination", () => {
     it("shows only the first page of mirrors when there are more than the page size", () => {
-      renderWithProviders(
-        <MirrorsList mirrors={[...mirrors]} />,
-        undefined,
-        "/?pageSize=5",
-      );
+      renderWithProviders(<MirrorsList mirrors={[...mirrors]} />);
 
       expect(screen.getByText(mirrors[0].displayName)).toBeInTheDocument();
       expect(
-        screen.queryByText(mirrors[5].displayName),
+        screen.queryByText(mirrors[20].displayName),
       ).not.toBeInTheDocument();
     });
 
     it("renders pagination controls when mirrors exceed page size", () => {
-      renderWithProviders(
-        <MirrorsList mirrors={[...mirrors]} />,
-        undefined,
-        "/?pageSize=5",
-      );
+      renderWithProviders(<MirrorsList mirrors={[...mirrors]} />);
 
       expect(
         screen.getByRole("navigation", { name: /pagination/i }),
