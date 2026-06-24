@@ -5,6 +5,7 @@ import {
   completedActivitiesExportJob,
   failedActivitiesExportJob,
   processingExportJob,
+  newComplianceExportJob,
 } from "@/tests/mocks/exports";
 
 describe("getStatusIcon", () => {
@@ -30,5 +31,9 @@ describe("getTypeIcon", () => {
     expect(getTypeIcon(completedActivitiesExportJob)).toBe(
       "switcher-environments",
     );
+  });
+
+  it('returns "documents" for report exports', () => {
+    expect(getTypeIcon(newComplianceExportJob)).toBe("documents");
   });
 });

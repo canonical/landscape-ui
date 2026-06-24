@@ -103,7 +103,7 @@ export const newComplianceExportJob: ExportJob = {
   name: "Compliance export 2026-06-24 10:00:00",
   filename: "compliance-export-1.tsv",
   row_count: 0,
-  type: "instance",
+  type: "report",
   created_at: "2026-06-24T10:00:00.000Z",
   status: "processing",
   progress: 0,
@@ -122,4 +122,5 @@ export const DEFAULT_EXPORT_JOBS: ExportJob[] = [
   processingActivitiesExportJob,
   completedActivitiesExportJob,
   failedActivitiesExportJob,
+  newComplianceExportJob,
 ];

@@ -77,6 +77,9 @@ export const handleParams = ({
     } else {
       switch (typeof value) {
         case "string":
+          if (!isOld && value === "") {
+            break;
+          }
           paramsToPass[param] = value;
           break;
 

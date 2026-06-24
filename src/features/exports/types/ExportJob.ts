@@ -1,4 +1,4 @@
-export type ExportJobType = "instance" | "activity";
+export type ExportJobType = "instance" | "activity" | "report";
 
 export type ExportJobStatus = "processing" | "completed" | "failed";
 
