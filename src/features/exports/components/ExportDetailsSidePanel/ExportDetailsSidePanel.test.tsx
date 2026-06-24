@@ -11,10 +11,10 @@ import {
 } from "@/tests/mocks/exports";
 import ExportDetailsSidePanel from "./ExportDetailsSidePanel";
 
-const SIDE_PANEL_URL = "?sidePath=view&name=job-completed";
-const PROCESSING_URL = "?sidePath=view&name=job-processing";
+const SIDE_PANEL_URL = "?sidePath=view&name=2";
+const PROCESSING_URL = "?sidePath=view&name=1";
 const LOADING_URL = "?sidePath=view&name=unknown";
-const FAILED_URL = "?sidePath=view&name=job-failed";
+const FAILED_URL = "?sidePath=view&name=3";
 
 describe("ExportDetailsSidePanel", () => {
   const user = userEvent.setup();
@@ -143,7 +143,7 @@ describe("ExportDetailsSidePanel", () => {
   it("shows the retry button for failed jobs", async () => {
     const failedJob = {
       ...completedExportJob,
-      id: "job-failed",
+      id: 3,
       status: "failed" as const,
       download_ready: false,
     };
