@@ -7,23 +7,61 @@ import {
   useGetPublicationsBySource,
 } from "@/features/publications";
 import type { Local } from "@canonical/landscape-openapi";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  type OperationMetadata,
+} from "@/features/operations";
+import { Icon } from "@canonical/react-components";
+import classes from "./ViewLocalRepositoryDetailsTab.module.scss";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 interface ViewLocalRepositoryDetailsTabProps {
   readonly repository: Local;
+  readonly operationMetadata?: OperationMetadata;
 }
 
 const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   repository,
+  operationMetadata,
 }) => {
   const { publications, isGettingPublications } = useGetPublicationsBySource(
     repository.name,
   );
 
+  const iconName = getOperationStatusIcon(operationMetadata?.status);
+
   return (
     <Blocks>
       <Blocks.Item title="Details">
         <InfoGrid dense>
-          <InfoGrid.Item label="Name" value={repository.displayName} />
+          <InfoGrid.Item label="Name" large value={repository.displayName} />
+
+          <InfoGrid.Item
+            label="Status"
+            large
+            value={
+              <>
+                {!!iconName && (
+                  <Icon name={iconName} className={classes.icon} />
+                )}
+                <OperationStatusCell
+                  operationMetadata={operationMetadata}
+                  type="local"
+                />
+              </>
+            }
+          />
+
+          <InfoGrid.Item
+              label="Last import"
+              value={repository.lastImportTime ? 
+                moment(repository.lastImportTime).format(
+                DISPLAY_DATE_TIME_FORMAT,
+              ) : NO_DATA_TEXT}
+            />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />
 

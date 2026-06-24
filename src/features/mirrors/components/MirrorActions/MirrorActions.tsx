@@ -10,11 +10,13 @@ import { NoPublicationTargetsModal } from "@/features/publication-targets";
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;
   readonly mirrorName: string;
+  readonly inProgress: boolean;
 }
 
 const MirrorActions: FC<MirrorActionsProps> = ({
   mirrorDisplayName,
   mirrorName,
+  inProgress,
 }) => {
   const { setPageParams, createPageParamsSetter } = usePageParams();
 
@@ -74,11 +76,18 @@ const MirrorActions: FC<MirrorActionsProps> = ({
               name: mirrorName,
             }),
           },
-          {
-            icon: "restart",
-            label: "Update",
-            onClick: openUpdateModal,
-          },
+          inProgress
+            ? {
+                icon: "spinner u-animation--spin",
+                label: "Updating",
+                disabled: true,
+                tooltipMessage: "You must wait for this action to be completed to trigger a new update.",
+              }
+            : {
+                icon: "restart",
+                label: "Update",
+                onClick: openUpdateModal,
+              },
           {
             icon: "upload",
             label: "Publish",

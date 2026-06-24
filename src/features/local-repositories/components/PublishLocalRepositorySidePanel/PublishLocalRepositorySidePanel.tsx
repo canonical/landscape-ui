@@ -9,14 +9,14 @@ import { useBoolean } from "usehooks-ts";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 
 const PublishLocalRepositorySidePanel: FC = () => {
-  const { repository, isGettingRepository } = useGetPageLocalRepository();
+  const repository = useGetPageLocalRepository();
   const { publications, isGettingPublications } = useGetPublicationsBySource(
     repository?.name,
   );
 
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingRepository || isGettingPublications) {
+  if (isGettingPublications) {
     return <SidePanel.LoadingState />;
   }
 

@@ -81,7 +81,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
           return (
             <OperationStatusCell
               isGettingOperation={isGettingOperations}
-              operation={operation}
+              operationMetadata={operation?.metadata}
               type="publication"
             />
           );
@@ -90,7 +90,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
           row: { original: publication },
         }: CellProps<Publication>) => {
           const operation = operations[publication.lastOperation ?? ""];
-          return getOperationStatusIcon(operation);
+          return getOperationStatusIcon(operation?.metadata?.status);
         },
       },
       {
@@ -152,9 +152,13 @@ const PublicationsList: FC<PublicationsListProps> = ({
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original } }: CellProps<Publication>) => (
-          <PublicationsListActions publication={original} />
-        ),
+        Cell: ({ row: { original } }: CellProps<Publication>) => {
+          const operation = operations[original.lastOperation ?? ""];
+          return <PublicationsListActions
+            publication={original}
+            inProgress={!!operation && !operation.done}
+          />;
+        },
       },
     ],
     [

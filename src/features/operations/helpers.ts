@@ -1,9 +1,7 @@
-import type { Operation } from "@/features/operations";
+import type { OperationStatus } from "@/features/operations";
 import { ICONS } from "@canonical/react-components";
 
-export const getOperationStatusIcon = (operation: Operation | undefined) => {
-  const { status } = operation?.metadata ?? {};
-
+export const getOperationStatusIcon = (status: OperationStatus | undefined) => {
   if (!status) {
     return null;
   }

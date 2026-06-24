@@ -9,6 +9,7 @@ export { getOperationStatusIcon } from "./helpers";
 export type {
   OperationStatus,
   OperationError,
+  OperationMetadata,
   Operation,
   SuccessfulOperation,
   UnfinishedOperation,

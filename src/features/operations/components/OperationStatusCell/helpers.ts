@@ -18,9 +18,9 @@ export const getOperationTypeTexts = (
       };
     case "local":
       return {
-        inexistent: "No packages have been imported",
+        inexistent: "No packages imported yet",
         successful: "Packages imported",
-        failed: "Import failed",
+        failed: "Package import failed",
         ongoing: "Importing packages",
       };
     case "mirror":

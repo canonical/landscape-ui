@@ -8,10 +8,12 @@ import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
 
 interface LocalRepositoriesListActionsProps {
   readonly repository: Local;
+  readonly inProgress: boolean;
 }
 
 const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
   repository,
+  inProgress,
 }) => {
   const {
     value: isRemovalModalOpen,
@@ -25,8 +27,9 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
     setFalse: closePublishGuard,
   } = useBoolean();
 
-  const { viewAction, actions, destructiveActions } = useGetRepositoryActions({
+  const { viewAction, actions, destructiveAction } = useGetRepositoryActions({
     repository,
+    inProgress,
     openRemovalModal,
     openPublishGuard,
   });
@@ -36,7 +39,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
       <ListActions
         toggleAriaLabel={`${repository.displayName} actions`}
         actions={[viewAction, ...actions]}
-        destructiveActions={destructiveActions}
+        destructiveActions={[destructiveAction]}
       />
 
       <RemoveLocalRepositoryModal

@@ -76,7 +76,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
           return (
             <OperationStatusCell
               isGettingOperation={isGettingOperations}
-              operation={operation}
+              operationMetadata={operation?.metadata}
               type="mirror"
             />
           );
@@ -84,7 +84,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         getCellIcon: ({ row: { original: mirror } }: CellProps<Mirror>) => {
           // eslint-disable-next-line react/prop-types
           const operation = operations[mirror.lastOperation ?? ""];
-          return getOperationStatusIcon(operation);
+          return getOperationStatusIcon(operation?.metadata?.status);
         },
       },
       {
@@ -125,17 +125,20 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.name ? (
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => {
+          const operation = operations[mirror.lastOperation ?? ""];
+          return mirror.name ? (
             <Suspense fallback={<LoadingState inline />}>
               <MirrorActions
                 mirrorDisplayName={mirror.displayName}
                 mirrorName={mirror.name}
+                inProgress={!!operation && !operation.done}
               />
             </Suspense>
           ) : (
             <NoData />
-          ),
+          );
+        },
       },
     ],
     [createPageParamsSetter, isGettingOperations, operations],
