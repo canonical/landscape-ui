@@ -66,10 +66,7 @@ describe("ActivitiesExportForm", () => {
   it("filters attributes by field name", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <ActivitiesExportForm
-        {...defaultProps}
-        exportParams={{ query: "" }}
-      />,
+      <ActivitiesExportForm {...defaultProps} exportParams={{ query: "" }} />,
     );
 
     await user.type(
@@ -89,10 +86,7 @@ describe("ActivitiesExportForm", () => {
   it("moves to the review step and back without losing the selected field", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <ActivitiesExportForm
-        {...defaultProps}
-        exportParams={{ query: "" }}
-      />,
+      <ActivitiesExportForm {...defaultProps} exportParams={{ query: "" }} />,
     );
 
     await user.type(
@@ -118,10 +112,7 @@ describe("ActivitiesExportForm", () => {
   it("queues an activities export and shows a success notification with a status action", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <ActivitiesExportForm
-        {...defaultProps}
-        selectedActivityIds={[1, 2]}
-      />,
+      <ActivitiesExportForm {...defaultProps} selectedActivityIds={[1, 2]} />,
     );
 
     await user.type(
