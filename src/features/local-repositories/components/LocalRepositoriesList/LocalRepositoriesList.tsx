@@ -9,15 +9,12 @@ import usePageParams from "@/hooks/usePageParams";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
 import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
 import LocalRepositoryPublicationsCount from "./components/LocalRepositoryPublicationsCount";
-import {
-  getOperationStatusIcon,
-  OperationStatusCell,
-  useBatchGetOperations,
-} from "@/features/operations";
-import { DEFAULT_POLLING_INTERVAL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { OperationStatusCell } from "@/features/operations";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import classes from "./LocalRepositoriesList.module.scss";
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { OperationProvider } from "@/context/operationStatus";
 
 interface LocalRepositoriesListProps {
   readonly repositories: Local[];
@@ -38,16 +35,6 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
   const operationNames = pagedRepositories
     .filter((repository) => repository.lastOperation)
     .map((repository) => repository.lastOperation ?? "");
-
-  const { operations, isGettingOperations } = useBatchGetOperations(
-    operationNames,
-    {
-      refetchInterval: ({ state }) =>
-        Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? DEFAULT_POLLING_INTERVAL
-          : false,
-    },
-  );
 
   const columns = useMemo<Column<Local>[]>(
     () => [
@@ -71,22 +58,13 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         Header: "status",
-        className: classes.status,
-        Cell: ({ row: { original: repository } }: CellProps<Local>) => {
-          const operation = operations[repository.lastOperation ?? ""];
-          return (
-            <OperationStatusCell
-              isGettingOperation={isGettingOperations}
-              operationMetadata={operation?.metadata}
-              type="local"
-            />
-          );
-        },
-        getCellIcon: ({ row: { original: repository } }: CellProps<Local>) => {
-          // eslint-disable-next-line react/prop-types
-          const operation = operations[repository.lastOperation ?? ""];
-          return getOperationStatusIcon(operation?.metadata.status);
-        },
+        className: `${classes.status} p-table__cell--icon-placeholder`,
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
+          <OperationStatusCell
+            operationName={repository.lastOperation}
+            type="local"
+          />
+        ),
       },
       {
         Header: "Last import",
@@ -110,20 +88,16 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original: repository } }: CellProps<Local>) => {
-          const operation = operations[repository.lastOperation ?? ""];
-          return <LocalRepositoriesListActions
-            repository={repository}
-            inProgress={!!operation && !operation.done}
-          />;
-        },
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
+          <LocalRepositoriesListActions repository={repository} />
+        ),
       },
     ],
-    [createPageParamsSetter, isGettingOperations, operations],
+    [createPageParamsSetter],
   );
 
   return (
-    <>
+    <OperationProvider operationNames={operationNames}>
       <ResponsiveTable
         columns={columns}
         data={pagedRepositories}
@@ -133,7 +107,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         totalItems={repositories.length}
         currentItemCount={pagedRepositories.length}
       />
-    </>
+    </OperationProvider>
   );
 };
 

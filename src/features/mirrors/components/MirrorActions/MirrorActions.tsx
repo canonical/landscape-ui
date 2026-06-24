@@ -6,19 +6,22 @@ import UpdateMirrorModal from "../UpdateMirrorModal";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 import { useListPublications, useListPublicationTargets } from "../..";
 import { NoPublicationTargetsModal } from "@/features/publication-targets";
+import useOperation from "@/hooks/useOperation";
 
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;
   readonly mirrorName: string;
-  readonly inProgress: boolean;
+  readonly operationName?: string;
 }
 
 const MirrorActions: FC<MirrorActionsProps> = ({
   mirrorDisplayName,
   mirrorName,
-  inProgress,
+  operationName,
 }) => {
   const { setPageParams, createPageParamsSetter } = usePageParams();
+  const { isOperationInProgress } = useOperation();
+  const isUpdating = isOperationInProgress(operationName);
 
   const { publicationTargets = [] } = useListPublicationTargets({
     pageSize: 1000,
@@ -76,7 +79,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
               name: mirrorName,
             }),
           },
-          inProgress
+          isUpdating
             ? {
                 icon: "spinner u-animation--spin",
                 label: "Updating",

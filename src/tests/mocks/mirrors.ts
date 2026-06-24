@@ -58,7 +58,7 @@ export const mirrors = [
   {
     name: "mirrors/invalid-LRO-mirror",
     mirrorId: "invalid-LRO-mirror",
-    displayName: "Invalid LRO mirror",
+    displayName: "LRO not found mirror",
     archiveRoot: "https://example.com/repo",
     distribution: "focal",
     components: ["main"],

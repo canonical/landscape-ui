@@ -42,7 +42,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
     },
   }));
 
-  const importInProgress = !!operation && !operation.done;
+  const isImporting = !!operation && !operation.done;
 
   return (
     <>
@@ -61,7 +61,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
         )}
         <ViewRepositoryActionsBlock
           repository={repository}
-          inProgress={importInProgress}
+          isImporting={isImporting}
         />
         <Tabs listClassName={classes.marginBottom} links={links} />
 
@@ -79,7 +79,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
           <Suspense fallback={<LoadingState />}>
             <ViewRepositoryPackagesTab
               repositoryName={repository.name ?? ""}
-              inProgress={importInProgress}
+              isImporting={isImporting}
               key="packages"
             />
           </Suspense>

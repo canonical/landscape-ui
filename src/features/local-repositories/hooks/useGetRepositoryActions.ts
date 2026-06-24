@@ -6,12 +6,12 @@ interface UseGetRepositoryActionsProps {
   readonly repository: Local;
   readonly openRemovalModal: () => void;
   readonly openPublishGuard: () => void;
-  readonly inProgress: boolean;
+  readonly isImporting: boolean;
 }
 
 export const useGetRepositoryActions = ({
   repository,
-  inProgress,
+  isImporting,
   openRemovalModal,
   openPublishGuard,
 }: UseGetRepositoryActionsProps) => {
@@ -40,7 +40,7 @@ export const useGetRepositoryActions = ({
       label: "Edit",
       onClick: openSidePanel("edit"),
     },
-    inProgress
+    isImporting
       ? {
           icon: "spinner u-animation--spin",
           label: "Importing packages",

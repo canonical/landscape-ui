@@ -13,45 +13,33 @@ import {
   getSourceType,
 } from "../../helpers";
 import type { Publication } from "@canonical/landscape-openapi";
-import {
-  DEFAULT_POLLING_INTERVAL,
-  DISPLAY_DATE_TIME_FORMAT,
-} from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import {
-  getOperationStatusIcon,
-  OperationStatusCell,
-  useBatchGetOperations,
-} from "@/features/operations";
+import { OperationStatusCell } from "@/features/operations";
 import classes from "./PublicationsList.module.scss";
+import { OperationProvider } from "@/context/operationStatus";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
-  readonly sourceDisplayNames?: Record<string, string>;
-  readonly publicationTargetDisplayNames?: Record<string, string>;
+  readonly sourceDisplayNames: Record<string, string>;
+  readonly publicationTargetDisplayNames: Record<string, string>;
 }
 
 const PublicationsList: FC<PublicationsListProps> = ({
   publications,
-  sourceDisplayNames = {},
-  publicationTargetDisplayNames = {},
+  sourceDisplayNames,
+  publicationTargetDisplayNames,
 }) => {
   const { query, createPageParamsSetter } = usePageParams();
 
-  const operationNames = publications
-    .filter((publication) => publication.lastOperation)
-    .map((publication) => publication.lastOperation ?? "");
-
-  const { operations, isGettingOperations } = useBatchGetOperations(
-    operationNames,
-    {
-      refetchInterval: ({ state }) =>
-        Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? DEFAULT_POLLING_INTERVAL
-          : false,
-    },
+  const operationNames = useMemo(
+    () =>
+      publications
+        .filter((publication) => publication.lastOperation)
+        .map((publication) => publication.lastOperation ?? ""),
+    [publications],
   );
 
   const columns = useMemo<Column<Publication>[]>(
@@ -75,23 +63,13 @@ const PublicationsList: FC<PublicationsListProps> = ({
       },
       {
         Header: "status",
-        className: classes.status,
-        Cell: ({ row: { original: publication } }: CellProps<Publication>) => {
-          const operation = operations[publication.lastOperation ?? ""];
-          return (
-            <OperationStatusCell
-              isGettingOperation={isGettingOperations}
-              operationMetadata={operation?.metadata}
-              type="publication"
-            />
-          );
-        },
-        getCellIcon: ({
-          row: { original: publication },
-        }: CellProps<Publication>) => {
-          const operation = operations[publication.lastOperation ?? ""];
-          return getOperationStatusIcon(operation?.metadata?.status);
-        },
+        className: `${classes.status} p-table__cell--icon-placeholder`,
+        Cell: ({ row: { original: publication } }: CellProps<Publication>) => (
+          <OperationStatusCell
+            operationName={publication.lastOperation}
+            type="publication"
+          />
+        ),
       },
       {
         accessor: "publishTime",
@@ -152,31 +130,27 @@ const PublicationsList: FC<PublicationsListProps> = ({
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original } }: CellProps<Publication>) => {
-          const operation = operations[original.lastOperation ?? ""];
-          return <PublicationsListActions
-            publication={original}
-            inProgress={!!operation && !operation.done}
-          />;
-        },
+        Cell: ({ row: { original } }: CellProps<Publication>) => (
+          <PublicationsListActions publication={original} />
+        ),
       },
     ],
     [
       createPageParamsSetter,
-      operations,
-      isGettingOperations,
       sourceDisplayNames,
       publicationTargetDisplayNames,
     ],
   );
 
   return (
-    <ResponsiveTable
+    <OperationProvider operationNames={operationNames}>
+      <ResponsiveTable
       columns={columns}
       data={publications}
       emptyMsg={`No publications found with the search: "${query}"`}
       minWidth={1250}
     />
+    </OperationProvider>
   );
 };
 

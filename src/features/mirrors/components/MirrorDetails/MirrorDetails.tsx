@@ -32,8 +32,7 @@ import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
 import {
-  getOperationStatusIcon,
-  OperationStatusCell,
+  OperationStatusContent,
   useGetOperation,
   ViewLogsButton,
 } from "@/features/operations";
@@ -61,13 +60,11 @@ const MirrorDetails: FC = () => {
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
   const mirror = useGetMirror(name).data.data;
-
   const { operation } = useGetOperation(mirror.lastOperation ?? "", {
     enabled: !!mirror.lastOperation,
     refetchInterval: ({ state }) =>
-      state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
+      state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
-
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
 
@@ -116,7 +113,6 @@ const MirrorDetails: FC = () => {
       updateModal: false,
     });
   };
-  const iconName = getOperationStatusIcon(operation?.metadata.status);
 
   return (
     <>
@@ -212,15 +208,10 @@ const MirrorDetails: FC = () => {
                 <InfoGrid.Item
                   label="Status"
                   value={
-                    <>
-                      {!!iconName && (
-                        <Icon name={iconName} className={classes.icon} />
-                      )}
-                      <OperationStatusCell
-                        operationMetadata={operation?.metadata}
-                        type="mirror"
-                      />
-                    </>
+                    <OperationStatusContent
+                      operationMetadata={operation?.metadata}
+                      type="mirror"
+                    />
                   }
                 />
                 <InfoGrid.Item

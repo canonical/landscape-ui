@@ -6,19 +6,19 @@ import { Notification } from "@canonical/react-components";
 
 interface ViewRepositoryPackagesTabProps {
   readonly repositoryName: string;
-  readonly inProgress: boolean;
+  readonly isImporting: boolean;
 }
 
 const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
   repositoryName,
-  inProgress,
+  isImporting,
 }) => {
   const { packages, isGettingRepositoryPackages } =
     useGetRepositoryPackages(repositoryName);
 
   return (
     <>
-      {inProgress && (
+      {isImporting && (
         <Notification
           title="Packages are currently being imported."
           borderless
