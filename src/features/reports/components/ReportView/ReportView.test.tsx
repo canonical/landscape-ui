@@ -269,15 +269,17 @@ describe("ReportView", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("handles download dialog", async () => {
+  it("opens the export panel when Export as TSV is clicked", async () => {
     const { setSidePanelContent } = useSidePanel();
     renderWithProviders(<ReportView instanceIds={instanceIds} />);
 
-    const downloadButton = await screen.findByText("Download as CSV");
-    downloadButton.click();
+    const exportButton = await screen.findByRole("button", {
+      name: "Export as TSV",
+    });
+    exportButton.click();
 
     expect(setSidePanelContent).toHaveBeenCalledWith(
-      "Download report as CSV",
+      "Export report as TSV",
       expect.anything(),
     );
   });
