@@ -18,7 +18,7 @@ export const useGetSingleScriptAttachment = (
 
   const {
     data: response,
-    isLoading,
+    isFetching,
     refetch,
   } = useQuery<AxiosResponse<Blob>, AxiosError<ApiError>>({
     queryKey: ["scripts", "attachment", attachmentId],
@@ -31,7 +31,7 @@ export const useGetSingleScriptAttachment = (
 
   return {
     scriptAttachment: response?.data ?? null,
-    isScriptAttachmentsLoading: isLoading,
+    isScriptAttachmentsLoading: isFetching,
     refetch,
   };
 };

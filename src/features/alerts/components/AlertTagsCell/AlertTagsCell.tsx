@@ -2,7 +2,7 @@ import MultiSelectField from "@/components/form/MultiSelectField";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { MultiSelectItem } from "@canonical/react-components";
-import { Button, Form } from "@canonical/react-components";
+import { ActionButton, Button, Form } from "@canonical/react-components";
 import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -129,9 +129,6 @@ const AlertTagsCell: FC<AlertTagsCellProps> = ({
   }, [formik.values.tags]);
 
   const isDisabled = () => {
-    if (formik.isSubmitting) {
-      return true;
-    }
     return (
       initialTags.length === formik.values.tags.length &&
       initialTags.every((tag) => formik.values.tags.includes(tag))
@@ -163,17 +160,18 @@ const AlertTagsCell: FC<AlertTagsCellProps> = ({
             >
               Revert
             </Button>
-            <Button
+            <ActionButton
               type="button"
               dense
               small
               appearance="positive"
               className="u-no-margin--bottom"
               disabled={isDisabled()}
+              loading={formik.isSubmitting}
               onClick={() => formik.submitForm()}
             >
               Save changes
-            </Button>
+            </ActionButton>
           </div>
         }
       />
