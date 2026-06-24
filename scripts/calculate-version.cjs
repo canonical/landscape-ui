@@ -5,29 +5,39 @@ const { execSync } = require("child_process");
  *
  * Branch -> version shape:
  *   main             -> ${currentCycle}.0.${count}-beta
- *   point/YYYY-MM-DD -> ${currentCycle}.0.${count}-beta
  *   dev              -> ${currentCycle}.0.${count}-dev
- *   release/YY.MM    -> YY.MM.1.${count}          (cycle pinned by branch name)
+ *   release/YY.MM    -> YY.MM.0.${n}[-rc]     (cycle base; point 0)
+ *   point/YY.MM.P    -> YY.MM.P.${n}[-rc]     (point release P within YY.MM)
  *
- * `currentCycle` is the upcoming Ubuntu release we are working toward:
+ * `currentCycle` (main/dev only) is the upcoming Ubuntu release we are working
+ * toward:
  *   Jan-Apr  -> YY.04
  *   May-Oct  -> YY.10
  *   Nov-Dec  -> (YY+1).04
  *
- * `count` is derived from git, not from GITHUB_RUN_NUMBER, so each branch
- * has its own monotonic counter:
- *   main / dev               -> total commits reachable from HEAD
- *   release/* / point/*      -> commits added since the cut from main
- *                               (origin/main..HEAD) — first build = 0
+ * Cycle and point for release/point branches come from the branch NAME, never
+ * the calendar, so a fix backported in November 2026 still ships as 26.04.X,
+ * not 27.04.X.
  *
- * This means cutting release/26.04 produces 26.04.1.0 on the first build,
- * 26.04.1.1 after the first cherry-pick, and so on — independent of how
- * many CI runs have happened on other branches.
+ * The trailing counter `n` for release/point branches is TAG-ANCHORED: it is
+ * the number of *release-worthy* commits added since the branch's `.0` build
+ * tag (`v${cycle}.${point}.0` / `...0-rc`). "Release-worthy" excludes the
+ * housekeeping commit types in SKIP_TYPES (chore/ci/docs/test/style), so a
+ * formatting or CI-only commit does not burn a version number. When no `.0`
+ * tag exists yet — a freshly cut branch, or the first build under this scheme —
+ * the current HEAD *is* the cut: n = 0, and CI tags it `.0`. Every later build
+ * counts up from that anchor, independent of main and immune to main drift.
  *
- * Pinning `release/*` from the branch name (rather than from the calendar)
- * ensures point releases never drift across cycles — a fix backported to
- * release/26.04 in November 2026 still ships as 26.04.1.X, not 27.04.1.X.
+ * `-rc` suffix: every release/point build is a release candidate UNLESS its
+ * branch is listed in the RELEASED_POINT_BRANCHES repo variable (passed in via
+ * env as a comma/whitespace-separated list of branch refs). Promotion to GA is
+ * therefore a one-line variable edit plus a rebuild — no code change.
  */
+
+// Conventional-commit types that do not advance the version on release/point
+// branches. A `fix(ci):` still counts (its type is `fix`); only a `chore(ci):`
+// — type `chore` — is skipped.
+const SKIP_TYPES = /^(chore|ci|docs|test|style)(\([^)]*\))?!?:/i;
 
 function getCurrentCycle(now = new Date()) {
   const year = now.getFullYear();
@@ -51,9 +61,9 @@ function getBranch() {
   return execSync("git rev-parse --abbrev-ref HEAD").toString().trim();
 }
 
-function gitRevCount(spec) {
+function git(args) {
   try {
-    return execSync(`git rev-list --count ${spec}`, {
+    return execSync(`git ${args}`, {
       stdio: ["ignore", "pipe", "ignore"],
     })
       .toString()
@@ -63,42 +73,76 @@ function gitRevCount(spec) {
   }
 }
 
-function getBuildNumber(branch) {
-  // Derived branches get a counter that resets at the cut: commits added on
-  // the branch since it diverged from main. First build of a fresh release
-  // or point branch = 0.
-  if (branch.startsWith("release/") || branch.startsWith("point/")) {
-    const count =
-      gitRevCount("origin/main..HEAD") ?? gitRevCount("main..HEAD");
-    if (count !== null) return count;
-  }
+function totalCommitCount() {
+  return git("rev-list --count HEAD") ?? "0";
+}
 
-  // Long-lived trunks (and any unknown branch) just use total commit count
-  // on the current ref — monotonic and self-contained, no remote required.
-  return gitRevCount("HEAD") ?? "0";
+// release/YY.MM -> point 0 ; point/YY.MM.P -> point P. Returns null for any
+// branch that isn't a calendar release/point branch.
+function parseReleaseBranch(branch) {
+  const release = branch.match(/^release\/(\d{2}\.(?:04|10))$/);
+  if (release) return { cycle: release[1], point: 0 };
+  const point = branch.match(/^point\/(\d{2}\.(?:04|10))\.(\d+)$/);
+  if (point) return { cycle: point[1], point: Number(point[2]) };
+  return null;
+}
+
+// The `.0` build tag is the counter anchor. It may carry the `-rc` suffix from
+// the build that created it; either spelling marks the same cut commit.
+function anchorTag(cycle, point) {
+  const out = git(`tag --list v${cycle}.${point}.0 v${cycle}.${point}.0-rc`);
+  if (!out) return null;
+  const [first] = out
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return first ?? null;
+}
+
+function releaseWorthyCount(base) {
+  const out = git(`log --format=%s ${base}..HEAD`);
+  if (!out) return 0;
+  return out.split("\n").filter((s) => s && !SKIP_TYPES.test(s)).length;
+}
+
+function pointBuildNumber(cycle, point) {
+  const base = anchorTag(cycle, point);
+  if (!base) return 0; // HEAD is the cut; CI tags it `.0`.
+  return releaseWorthyCount(base);
+}
+
+function isReleasedBranch(branch) {
+  return (process.env.RELEASED_POINT_BRANCHES || "")
+    .split(/[\s,]+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .includes(branch);
 }
 
 function getVersion() {
   const branch = getBranch();
-  const buildNum = getBuildNumber(branch);
 
-  if (branch === "main" || branch.startsWith("point/")) {
-    return `${getCurrentCycle()}.0.${buildNum}-beta`;
+  if (branch === "main") {
+    return `${getCurrentCycle()}.0.${totalCommitCount()}-beta`;
   }
   if (branch === "dev") {
-    return `${getCurrentCycle()}.0.${buildNum}-dev`;
-  }
-  if (branch.startsWith("release/")) {
-    const cycle = branch.slice("release/".length);
-    if (!/^\d{2}\.(04|10)$/.test(cycle)) {
-      throw new Error(
-        `Invalid release branch name: '${branch}'. Expected 'release/YY.04' or 'release/YY.10'.`,
-      );
-    }
-    return `${cycle}.1.${buildNum}`;
+    return `${getCurrentCycle()}.0.${totalCommitCount()}-dev`;
   }
 
-  return `0.0.0-draft.${buildNum}`;
+  if (branch.startsWith("release/") || branch.startsWith("point/")) {
+    const parsed = parseReleaseBranch(branch);
+    if (!parsed) {
+      throw new Error(
+        `Invalid release/point branch name: '${branch}'. Expected ` +
+          `'release/YY.04', 'release/YY.10', or 'point/YY.MM.P'.`,
+      );
+    }
+    const { cycle, point } = parsed;
+    const version = `${cycle}.${point}.${pointBuildNumber(cycle, point)}`;
+    return isReleasedBranch(branch) ? version : `${version}-rc`;
+  }
+
+  return `0.0.0-draft.${totalCommitCount()}`;
 }
 
 console.log(getVersion());

@@ -3,6 +3,10 @@ name: Release and PPA Build
 on:
   push:
     branches: [main, dev, "release/**", "point/**"]
+  # Manual trigger so a branch can be (re)built after it is promoted to GA via
+  # the RELEASED_POINT_BRANCHES variable — editing a variable doesn't push a
+  # commit, so without this the branch would keep showing its last -rc build.
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,6 +25,7 @@ jobs:
       version: ${{ steps.calver.outputs.version }}
       dest_branch: ${{ steps.calver.outputs.dest_branch }}
       publish_stable: ${{ steps.calver.outputs.publish_stable }}
+      should_build: ${{ steps.calver.outputs.should_build }}
     steps:
       - uses: actions/checkout@v5
         with: { fetch-depth: 0 }
@@ -42,20 +47,35 @@ jobs:
           # demoting a bad promotion or delaying a fresh cut from going
           # stable immediately.
           STABLE_RELEASE_BRANCH: ${{ vars.STABLE_RELEASE_BRANCH }}
+          # Branches listed here build as GA (no -rc); everything else is a
+          # release candidate. Consumed by calculate-version.cjs.
+          RELEASED_POINT_BRANCHES: ${{ vars.RELEASED_POINT_BRANCHES }}
         run: |
           VERSION=$(node scripts/calculate-version.cjs)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
           # Per-branch destination: every branch publishes to its own ppa-build-*,
-          # so main and point/* no longer collide on a shared target.
+          # so main, release/* and each point/* release have an isolated target.
           case "$GITHUB_REF" in
             refs/heads/main)        DEST="ppa-build" ;;
             refs/heads/dev)         DEST="ppa-build-dev" ;;
-            refs/heads/point/*)     DEST="ppa-build-point" ;;
+            refs/heads/point/*)     DEST="ppa-build-point-${GITHUB_REF#refs/heads/point/}" ;;
             refs/heads/release/*)   DEST="ppa-build-${GITHUB_REF##*/}" ;;
             *)                      DEST="ppa-build-draft" ;;
           esac
           echo "dest_branch=$DEST" >> $GITHUB_OUTPUT
+
+          # Skip the build/publish/tag entirely when this exact version was
+          # already built and tagged. A push that adds only skipped commit types
+          # (chore/ci/docs/test/style) leaves the counter unchanged, so the
+          # version is identical to the last build -> its tag exists -> no-op.
+          # This also keeps every v<version> tag unique.
+          if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            echo "v${VERSION} is already tagged — skipping rebuild/publish."
+          else
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          fi
 
           # Stable promotion. By default the highest release/YY.MM branch on
           # origin is "latest stable" and gets mirrored to ppa-build-stable.
@@ -95,6 +115,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Production Build
+        if: steps.calver.outputs.should_build == 'true'
         run: pnpm run build
         env:
           VITE_APP_VERSION: ${{ steps.calver.outputs.version }}
@@ -104,6 +125,7 @@ jobs:
           VITE_ROOT_PATH: /new_dashboard/
 
       - name: Upload dist artifact
+        if: steps.calver.outputs.should_build == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -111,6 +133,7 @@ jobs:
           retention-days: 5
 
       - name: Prepare PPA Branch
+        if: steps.calver.outputs.should_build == 'true'
         run: |
           # Create a temporary directory to hold build artifacts
           mkdir ../ppa-temp
@@ -126,6 +149,7 @@ jobs:
           rm -rf ../ppa-temp
 
       - name: Deploy to Build Branch
+        if: steps.calver.outputs.should_build == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: ${{ steps.calver.outputs.dest_branch }}
@@ -133,12 +157,26 @@ jobs:
           push_options: "--force"
           commit_message: "Build v${{ steps.calver.outputs.version }} from ${{ github.ref_name }} [${{ github.sha }}]"
 
+      # Tag the source commit once the build is published. The tag is both the
+      # immutable version<->commit record and the anchor the next build counts
+      # from (see calculate-version.cjs). Done after Deploy so a failed publish
+      # never leaves a tag that would suppress a retry.
+      - name: Tag built version
+        if: steps.calver.outputs.should_build == 'true'
+        env:
+          VERSION: ${{ steps.calver.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${VERSION}" -m "Build v${VERSION} from ${GITHUB_REF_NAME}" "${GITHUB_SHA}"
+          git push origin "refs/tags/v${VERSION}"
+
       # When this build represents the current "latest stable" cycle (the
       # highest release/YY.MM on origin, or whatever STABLE_RELEASE_BRANCH
       # overrides it to), also publish to ppa-build-stable so consumers
       # tracking the stable channel pick it up automatically.
       - name: Promote to ppa-build-stable
-        if: steps.calver.outputs.publish_stable == 'true'
+        if: steps.calver.outputs.should_build == 'true' && steps.calver.outputs.publish_stable == 'true'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           branch: ppa-build-stable
@@ -148,6 +186,7 @@ jobs:
 
   build-deb:
     needs: process-release
+    if: needs.process-release.outputs.should_build == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
