@@ -65,8 +65,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
       <Suspense fallback={<LoadingState />}>
         <ActivitiesExportForm
           exportParams={{ query: exportQuery }}
-          activityCount={activityCount}
-          selectedActivityCount={isAllSelected ? undefined : selected.length}
           selectedActivityIds={
             !isAllSelected && selected.length > 0 ? selectedIds : undefined
           }
@@ -121,12 +119,10 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
         <Button
           className="p-segmented-control__button"
           type="button"
-          hasIcon
           disabled={!isAllSelected && selected.length === 0}
           onClick={handleExport}
         >
-          <Icon name="export" />
-          <span>Export</span>
+          <span>Export selection as TSV</span>
         </Button>
         <ConfirmationButton
           className="p-segmented-control__button"

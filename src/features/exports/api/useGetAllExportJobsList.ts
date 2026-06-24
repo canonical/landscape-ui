@@ -17,11 +17,15 @@ interface GetAllExportJobsListParams {
 
 interface GetAllExportJobsListConfig {
   listenToUrlParams?: boolean;
+  enablePolling?: boolean;
 }
 
 export const useGetAllExportJobsList = (
   params: GetAllExportJobsListParams = {},
-  { listenToUrlParams = true }: GetAllExportJobsListConfig = {},
+  {
+    listenToUrlParams = true,
+    enablePolling = true,
+  }: GetAllExportJobsListConfig = {},
 ) => {
   const authFetch = useFetch();
   const { currentPage, pageSize, search, type } = usePageParams();
@@ -51,10 +55,11 @@ export const useGetAllExportJobsList = (
         params: paramsWithPagination,
       }),
     refetchInterval: (query) =>
+      enablePolling &&
       hasProcessingExportJobs(query.state.data?.data.results ?? [])
         ? EXPORT_JOBS_POLL_INTERVAL_MS
         : false,
-    refetchIntervalInBackground: true,
+    refetchIntervalInBackground: enablePolling,
   });
 
   return {

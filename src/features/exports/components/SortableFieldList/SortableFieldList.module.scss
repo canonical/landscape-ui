@@ -36,7 +36,7 @@
 .orderInput {
   min-width: 0;
   text-align: center;
-  width: 3.5rem;
+  width: 5rem;
 }
 
 .orderInputWrapper {
@@ -72,10 +72,11 @@
 // Rendered via React portal on document.body to escape any parent transform/overflow.
 .dragOverlay {
   align-items: center;
-  background: #fff;
-  border: 2px solid #06c;
+  background: var(--vf-color-background-default, #fff);
+  border: 2px solid var(--vf-color-link-default, #06c);
   border-radius: 4px;
   box-shadow: 0 4px 16px rgb(0 0 0 / 18%);
+  color: var(--vf-color-text-default, #000);
   display: inline-flex;
   font-size: 0.875rem;
   gap: $sph--small;
@@ -89,10 +90,10 @@
 }
 
 .dragOverlayBadge {
-  background: #f0f6ff;
-  border: 1px solid #b3d1f5;
+  background: var(--vf-color-background-information-default, #f0f6ff);
+  border: 1px solid var(--vf-color-border-information, #b3d1f5);
   border-radius: 2px;
-  color: #06c;
+  color: var(--vf-color-link-default, #06c);
   font-size: 0.75rem;
   font-weight: 600;
   min-width: 1.25rem;
@@ -116,5 +117,5 @@
 }
 
 .justMoved > :global(td) {
-  animation: flash-blue 1.5s ease-out forwards;
+  animation: flash-blue 0.15s ease-out forwards;
 }
