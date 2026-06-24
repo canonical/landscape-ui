@@ -1,0 +1,67 @@
+name: landscape-ui
+title: Landscape UI
+version: '26.10.0'
+summary: Web UI for Landscape
+description: |
+  Serves the Landscape web interface and proxies API requests to the
+  Landscape backend services.
+website: https://documentation.ubuntu.com/landscape/
+contact: https://discourse.ubuntu.com/c/project/landscape
+license: Proprietary
+issues: https://bugs.launchpad.net/~landscape
+source-code: https://github.com/canonical/landscape-ui
+
+base: core24
+grade: devel
+confinement: devmode
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+
+parts:
+  frontend:
+    plugin: nil
+    source: .
+    build-snaps:
+      - node/24/stable
+    override-build: |
+      set -eux
+      export PATH="/snap/node/current/bin:$PATH"
+      export CI=true
+      npm install -g pnpm
+      pnpm install --frozen-lockfile --ignore-scripts
+      pnpm exec vite build
+      mkdir -p "$CRAFT_PART_INSTALL/dist"
+      cp -r dist/. "$CRAFT_PART_INSTALL/dist/"
+    organize:
+      dist/: var/www/landscape-ui/
+
+  runtime:
+    plugin: nil
+    stage-packages:
+      - nginx
+      - openssl
+      - gettext-base
+
+  nginx-wrapper:
+    plugin: dump
+    source: snap/local/
+    stage:
+      - start-landscape-ui.sh
+      - nginx.conf.tmpl
+      - generate-cert.sh
+
+apps:
+  landscape-ui:
+    daemon: simple
+    command: start-landscape-ui.sh
+    restart-condition: on-failure
+    restart-delay: 5s
+    plugs:
+      - network
+      - network-bind
