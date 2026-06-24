@@ -97,9 +97,9 @@ describe("ReportDonutChart", () => {
 
     fireEvent.mouseEnter(arc);
     expect(arc.getAttribute("class")).toMatch(/arcActive/);
-    expect(
-      screen.getByText("Within 2 days").closest("tr")?.className,
-    ).toMatch(/rowActive/);
+    expect(screen.getByText("Within 2 days").closest("tr")?.className).toMatch(
+      /rowActive/,
+    );
     expect(screen.getByText("60+ days").closest("tr")?.className).toMatch(
       /rowDimmed/,
     );
@@ -117,8 +117,8 @@ describe("ReportDonutChart", () => {
     fireEvent.mouseEnter(
       screen.getByText("60+ days").closest("tr") as HTMLElement,
     );
-    expect(screen.getByTestId("donut-arc-over-60").getAttribute("class")).toMatch(
-      /arcActive/,
-    );
+    expect(
+      screen.getByTestId("donut-arc-over-60").getAttribute("class"),
+    ).toMatch(/arcActive/);
   });
 });

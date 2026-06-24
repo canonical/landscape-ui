@@ -38,7 +38,9 @@ const ReportLegendTable: FC<ReportLegendTableProps> = ({
   activeKey,
   onRowHover,
 }) => (
-  <table className={classNames(classes.table, variant === "bar" && classes.bar)}>
+  <table
+    className={classNames(classes.table, variant === "bar" && classes.bar)}
+  >
     <thead>
       <tr>
         <th scope="col" className={classes.markerCell}>

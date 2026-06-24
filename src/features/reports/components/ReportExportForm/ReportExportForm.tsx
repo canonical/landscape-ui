@@ -7,7 +7,7 @@ import {
   type ExportField,
   type ExportFormValues,
 } from "@/features/exports";
-import { EXPORT_FIELD_GROUPS } from "@/features/instances/components/InstancesExportForm/constants";
+import { EXPORT_FIELD_GROUPS } from "@/features/instances";
 import { CheckboxInput, Select } from "@canonical/react-components";
 import moment from "moment";
 import { useState, type FC } from "react";

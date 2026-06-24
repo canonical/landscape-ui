@@ -7,6 +7,7 @@ export { default as InstancesPageActions } from "./components/InstancesPageActio
 export { default as RecoveryKeyStatus } from "./components/RecoveryKeyStatus";
 export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirmationModal";
 export { FILTERS, ALERT_STATUSES, STATUS_FILTERS } from "./constants";
+export { EXPORT_FIELD_GROUPS } from "./components/InstancesExportForm/constants";
 export {
   getFeatures,
   getInstanceListParams,

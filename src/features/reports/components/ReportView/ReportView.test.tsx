@@ -102,7 +102,19 @@ describe("ReportView", () => {
     renderWithProviders(
       <ReportView
         instanceIds={[
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, UNACCOUNTED_ID_A, UNACCOUNTED_ID_B,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          16,
+          UNACCOUNTED_ID_A,
+          UNACCOUNTED_ID_B,
         ]}
       />,
     );
@@ -245,13 +257,9 @@ describe("ReportView", () => {
       setSelectedInstanceIds([1, 2]);
     });
 
-    await user.click(
-      screen.getByRole("button", { name: "Regenerate report" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Regenerate report" }));
 
-    expect(
-      screen.queryByText("Selection has changed"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Selection has changed")).not.toBeInTheDocument();
     expect(setSidePanelTitle).toHaveBeenCalledWith("Report for 2 instances");
   });
 

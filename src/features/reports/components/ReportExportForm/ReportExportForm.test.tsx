@@ -67,9 +67,7 @@ describe("ReportExportForm", () => {
     await user.selectOptions(select, "30-60");
 
     expect(
-      screen.getByText(
-        /the selected bucket contains no instances/i,
-      ),
+      screen.getByText(/the selected bucket contains no instances/i),
     ).toBeInTheDocument();
   });
 

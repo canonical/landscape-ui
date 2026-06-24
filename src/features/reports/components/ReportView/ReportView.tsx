@@ -210,9 +210,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       count: report.covered_by_upgrade_profiles.count,
       total,
       color: "link",
-      countHref: instancesHref(
-        report.covered_by_upgrade_profiles.computer_ids,
-      ),
+      countHref: instancesHref(report.covered_by_upgrade_profiles.computer_ids),
       onCountActivate: closeSidePanel,
       countAriaLabel: `View the ${report.covered_by_upgrade_profiles.count} instances covered by upgrade profiles`,
     },
