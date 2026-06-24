@@ -31,7 +31,11 @@ describe("MirrorsPage", () => {
     expect(
       await screen.findByRole("heading", { name: "Mirrors" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Ubuntu archive mirror")).toBeInTheDocument();
+
+    expect(
+      await screen.findByText("Ubuntu archive mirror"),
+    ).toBeInTheDocument();
+
     expect(screen.getByRole("button", { name: "Add mirror" })).toBeEnabled();
   });
 

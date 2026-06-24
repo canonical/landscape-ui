@@ -20,24 +20,24 @@ describe("Snap details", () => {
       const { container } = renderWithProviders(
         <SnapDetails installedSnap={snap} />,
       );
-      const getFieldsToCheck = (snap: InstalledSnap) => {
+      const getFieldsToCheck = (installedSnap: InstalledSnap) => {
         return [
-          { label: "Name", value: snap.snap.name },
-          { label: "Channel", value: snap.tracking_channel },
-          { label: "Version", value: snap.version },
-          { label: "Confinement", value: snap.confinement },
+          { label: "Name", value: installedSnap.snap.name },
+          { label: "Channel", value: installedSnap.tracking_channel },
+          { label: "Version", value: installedSnap.version },
+          { label: "Confinement", value: installedSnap.confinement },
           {
             label: "Held until",
-            value: moment(snap.held_until).isValid() ? (
-              moment(snap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+            value: moment(installedSnap.held_until).isValid() ? (
+              moment(installedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
             ) : (
               <NoData />
             ),
           },
-          { label: "Summary", value: snap.snap.summary ?? <NoData /> },
+          { label: "Summary", value: installedSnap.snap.summary ?? <NoData /> },
           {
             label: "Publisher",
-            value: snap.snap.publisher.username,
+            value: installedSnap.snap.publisher.username,
           },
         ];
       };

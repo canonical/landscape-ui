@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { Notification } from "@canonical/react-components";
+import type { PackagesValidationState } from "@/features/operations";
 import LocalRepositoryPackagesList from "../../LocalRepositoryPackagesList";
-import type { PackagesValidationState } from "../../../types";
 
 interface ValidationResultProps {
   readonly validationTask: PackagesValidationState;
@@ -23,7 +23,7 @@ const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
     );
   }
 
-  if (validationTask.error) {
+  if (validationTask.status === "failed") {
     return (
       <Notification
         severity="negative"
@@ -31,7 +31,7 @@ const ValidationResult: FC<ValidationResultProps> = ({ validationTask }) => {
         borderless
       >
         <span>
-          {validationTask.error.message ||
+          {validationTask.error?.message ??
             "An unknown error occurred. Please try again later."}
         </span>
       </Notification>

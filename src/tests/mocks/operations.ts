@@ -1,11 +1,6 @@
-import type {
-  FailedOperation,
-  Operation,
-  SuccessfulOperation,
-  UnfinishedOperation,
-} from "@/features/operations";
+import type { PackagesValidationOperation } from "@/features/operations";
 
-export const idleOperation: UnfinishedOperation = {
+export const idleOperation: PackagesValidationOperation = {
   name: "operations/iiii-dddd-llll",
   metadata: {
     "@type":
@@ -14,8 +9,6 @@ export const idleOperation: UnfinishedOperation = {
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "iiii-dddd-llll",
     status: "idle",
-    progressPercent: 0,
-    resource: "locals/e755a4bd-8044-4529-8b5d-53f1c3887e9e",
   },
   done: false,
   response: {
@@ -24,7 +17,7 @@ export const idleOperation: UnfinishedOperation = {
   },
 };
 
-export const succeededOperation: SuccessfulOperation = {
+export const succeededOperation: PackagesValidationOperation = {
   name: "operations/ssss-cccc-dddd",
   metadata: {
     "@type":
@@ -33,8 +26,6 @@ export const succeededOperation: SuccessfulOperation = {
       "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
     operationId: "ssss-cccc-dddd",
     status: "succeeded",
-    progressPercent: 100,
-    resource: "locals/9c0b813f-6436-42e6-bd26-22b868f474cb",
   },
   done: true,
   response: {
@@ -45,7 +36,7 @@ export const succeededOperation: SuccessfulOperation = {
   },
 };
 
-export const failedOperation: FailedOperation = {
+export const failedOperation: PackagesValidationOperation = {
   name: "operations/ffff-llll-dddd",
   metadata: {
     "@type":
@@ -54,43 +45,16 @@ export const failedOperation: FailedOperation = {
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "ffff-llll-dddd",
     status: "failed",
-    progressPercent: 62,
-    resource: "mirrors/third-party-mirror",
   },
   done: true,
   error: {
     code: 13,
     message: "The operation failed unexpectedly.",
-    details: [
-      "0% [Working]",
-      "0% [Connecting to 10.0.1.13]",
-      "0% [Waiting for headers]",
-      "Get:1 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl-dev amd64 1.0.1f-1ubuntu2.2 [1066 kB]",
-      "0% [1 libssl-dev 2465 B/1066 kB 0%]",
-      "1% [1 libssl-dev 21.9 kB/1066 kB 2%]",
-      "15% [1 libssl-dev 749 kB/1066 kB 70%]",
-      "21% [Working]",
-      "21% [Waiting for headers]",
-      "Get:2 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 i386 1.0.1f-1ubuntu2.2 [779 kB]",
-      "21% [2 libssl1.0.0:i386 1080 B/779 kB 0%]",
-      "36% [Working]",
-      "36% [Waiting for headers]",
-      "Get:3 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 amd64 1.0.1f-1ubuntu2.2 [826 kB]",
-      "36% [3 libssl1.0.0 1080 B/826 kB 0%]",
-      "39% [3 libssl1.0.0 129 kB/826 kB 15%]",
-      "52% [Working]",
-      "52% [Waiting for headers]",
-      "Get:4 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main openssl amd64 1.0.1f-1ubuntu2.2 [488 kB]",
-      "52% [4 openssl 2468 B/488 kB 0%]",
-      "62% [Working]",
-      "62% [Waiting for headers]",
-      "Get:5 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main unity amd64 7.2.1+14.04.20140513-0ubuntu2 [1452 kB]",
-      "62% [5 unity 1078 B/1452 kB 0%]",
-    ],
+    details: [],
   },
 };
 
-export const timeoutOperation: FailedOperation = {
+export const timeoutOperation: PackagesValidationOperation = {
   name: "operations/tttt-mmmm-oooo",
   metadata: {
     "@type":
@@ -99,8 +63,6 @@ export const timeoutOperation: FailedOperation = {
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "tttt-mmmm-oooo",
     status: "failed",
-    progressPercent: 79,
-    resource: "locals/e755a4bd-8044-4529-8b5d-53f1c3887e9e",
   },
   done: true,
   error: {
@@ -111,7 +73,7 @@ export const timeoutOperation: FailedOperation = {
   },
 };
 
-export const inProgressOperation: UnfinishedOperation = {
+export const inProgressOperation: PackagesValidationOperation = {
   name: "operations/pppp-gggg-ssss",
   metadata: {
     "@type":
@@ -120,8 +82,6 @@ export const inProgressOperation: UnfinishedOperation = {
       "Validate import into local repo Noble Security Patches (e755a4bd-8044-4529-8b5d-53f1c3887e9e)",
     operationId: "pppp-gggg-ssss",
     status: "in progress",
-    progressPercent: 38,
-    resource: "locals/e755a4bd-8044-4529-8b5d-53f1c3887e9e",
   },
   done: false,
   response: {
@@ -130,7 +90,7 @@ export const inProgressOperation: UnfinishedOperation = {
   },
 };
 
-export const emptyOperation: SuccessfulOperation = {
+export const emptyOperation: PackagesValidationOperation = {
   name: "operations/mmmm-pppp-tttt",
   metadata: {
     "@type":
@@ -139,8 +99,6 @@ export const emptyOperation: SuccessfulOperation = {
       "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
     operationId: "mmmm-pppp-tttt",
     status: "succeeded",
-    progressPercent: 100,
-    resource: "locals/9c0b813f-6436-42e6-bd26-22b868f474cb",
   },
   done: true,
   response: {
@@ -149,7 +107,7 @@ export const emptyOperation: SuccessfulOperation = {
   },
 };
 
-export const overCountOperation: SuccessfulOperation = {
+export const overCountOperation: PackagesValidationOperation = {
   name: "operations/oooo-vvvv-cccc",
   metadata: {
     "@type":
@@ -158,8 +116,6 @@ export const overCountOperation: SuccessfulOperation = {
       "Validate import into local repo test-local-3 (9c0b813f-6436-42e6-bd26-22b868f474cb)",
     operationId: "oooo-vvvv-cccc",
     status: "succeeded",
-    progressPercent: 100,
-    resource: "locals/9c0b813f-6436-42e6-bd26-22b868f474cb",
   },
   done: true,
   response: {
@@ -271,13 +227,3 @@ export const overCountOperation: SuccessfulOperation = {
     ].join("\n"),
   },
 };
-
-export const operations: Operation[] = [
-  idleOperation,
-  succeededOperation,
-  failedOperation,
-  timeoutOperation,
-  inProgressOperation,
-  emptyOperation,
-  overCountOperation,
-];

@@ -2,8 +2,8 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
-  GetLocalError,
-  GetLocalResponse,
+  LocalServiceGetLocalError,
+  LocalServiceGetLocalResponse,
 } from "@canonical/landscape-openapi";
 
 export const useGetLocalRepository = (name: string) => {
@@ -13,7 +13,10 @@ export const useGetLocalRepository = (name: string) => {
     data: response,
     isPending,
     error,
-  } = useQuery<AxiosResponse<GetLocalResponse>, AxiosError<GetLocalError>>({
+  } = useQuery<
+    AxiosResponse<LocalServiceGetLocalResponse>,
+    AxiosError<LocalServiceGetLocalError>
+  >({
     queryKey: ["local", name],
     queryFn: async () => authFetchDebArchive.get(name),
   });

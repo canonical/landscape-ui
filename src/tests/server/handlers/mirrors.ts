@@ -5,12 +5,11 @@ import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import type {
-  DeleteMirrorResponse,
   ListMirrorPackagesResponse,
-  GetMirrorResponse,
-  UpdateMirrorResponse,
-  CreateMirrorResponse,
-  SyncMirrorResponse,
+  MirrorServiceGetMirrorResponse,
+  MirrorServiceUpdateMirrorResponse,
+  MirrorServiceCreateMirrorResponse,
+  MirrorServiceSyncMirrorResponse,
   BatchGetMirrorsResponse,
   MirrorWritable,
   Mirror,
@@ -51,7 +50,7 @@ const getBatchMirrorsResponse = async (
 };
 
 export default [
-  http.post(`${API_URL_DEB_ARCHIVE}mirrors\\:batchGet`, async ({ request }) => {
+  http.post(`${API_URL_DEB_ARCHIVE}mirrors:batchGet`, async ({ request }) => {
     return getBatchMirrorsResponse(request);
   }),
 
@@ -83,7 +82,7 @@ export default [
 
         if (endpointStatus.status === "variant") {
           return HttpResponse.json(
-            endpointStatus.response as CreateMirrorResponse,
+            endpointStatus.response as MirrorServiceCreateMirrorResponse,
           );
         }
       }
@@ -95,7 +94,7 @@ export default [
         name: `mirrors/${mirrorId}`,
         ...requestBody,
       };
-      return HttpResponse.json<CreateMirrorResponse>(newMirror);
+      return HttpResponse.json<MirrorServiceCreateMirrorResponse>(newMirror);
     },
   ),
 
@@ -107,7 +106,7 @@ export default [
     if (!mirror) {
       return new HttpResponse(null, { status: 404 });
     } else {
-      return HttpResponse.json<GetMirrorResponse>(mirror);
+      return HttpResponse.json<MirrorServiceGetMirrorResponse>(mirror);
     }
   }),
 
@@ -160,12 +159,12 @@ export default [
 
         if (endpointStatus.status === "variant") {
           return HttpResponse.json(
-            endpointStatus.response as UpdateMirrorResponse,
+            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
           );
         }
       }
 
-      return HttpResponse.json<UpdateMirrorResponse>();
+      return HttpResponse.json<MirrorServiceUpdateMirrorResponse>();
     },
   ),
 
@@ -178,16 +177,14 @@ export default [
       const endpointStatus = getEndpointStatus("mirrors/delete");
 
       if (endpointStatus.status === "variant") {
-        return HttpResponse.json(
-          endpointStatus.response as DeleteMirrorResponse,
-        );
+        return HttpResponse.json(endpointStatus.response);
       }
     }
 
     if (!mirror) {
       return new HttpResponse(null, { status: 404 });
     } else {
-      return HttpResponse.json<DeleteMirrorResponse>(mirror);
+      return HttpResponse.json();
     }
   }),
 
@@ -203,7 +200,7 @@ export default [
       if (!mirror) {
         return new HttpResponse(null, { status: 404 });
       } else {
-        return HttpResponse.json<SyncMirrorResponse>();
+        return HttpResponse.json<MirrorServiceSyncMirrorResponse>();
       }
     },
   ),

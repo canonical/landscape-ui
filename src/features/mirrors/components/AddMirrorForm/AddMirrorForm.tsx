@@ -26,7 +26,11 @@ import { getInitialValues } from "./helpers";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import SelectableMirrorContentsBlock from "../SelectableMirrorContentsBlock";
-import { SETTINGS_HELP_TEXT, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
+import {
+  SETTINGS_HELP_TEXT,
+  SOURCE_TYPE_TO_MIRROR_TYPE,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { isArchiveInfoValid } from "../../helpers";
 import * as Yup from "yup";
@@ -36,7 +40,7 @@ import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 const AddMirrorForm: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
-  const { closeSidePanel, setPageParams } = usePageParams();
+  const { closeSidePanel, createPageParamsSetter } = usePageParams();
 
   const ubuntuArchiveQuery = useGetUbuntuArchiveInfo();
   const ubuntuEsmQuery = useGetUbuntuEsmInfo();
@@ -107,6 +111,7 @@ const AddMirrorForm: FC = () => {
       try {
         const { data: newMirror } = await createMirror({
           archiveRoot: getArchiveRoot(values),
+          mirrorType: SOURCE_TYPE_TO_MIRROR_TYPE[values.sourceType],
           components: values.components.map((component) => component.trim()),
           displayName: values.name,
           architectures: values.architectures.map((architecture) =>
@@ -137,14 +142,11 @@ const AddMirrorForm: FC = () => {
           actions: [
             {
               label: "Update mirror",
-              onClick: () => {
-                setPageParams({
-                  sidePath: ["view"],
-                  name: newMirror.name,
-                  updateModal: true,
-                });
-                notify.clear();
-              },
+              onClick: createPageParamsSetter({
+                sidePath: ["view"],
+                name: newMirror.name,
+                updateModal: true,
+              }),
             },
           ],
         });
