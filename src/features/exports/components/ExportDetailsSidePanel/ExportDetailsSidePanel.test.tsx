@@ -4,7 +4,11 @@ import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
-import { completedExportJob, processingExportJob, newExportJob } from "@/tests/mocks/exports";
+import {
+  completedExportJob,
+  processingExportJob,
+  newExportJob,
+} from "@/tests/mocks/exports";
 import ExportDetailsSidePanel from "./ExportDetailsSidePanel";
 
 const SIDE_PANEL_URL = "?sidePath=view&name=job-completed";

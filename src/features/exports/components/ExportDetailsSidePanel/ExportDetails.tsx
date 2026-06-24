@@ -123,7 +123,8 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
                 children: (
                   <>
                     <p>
-                      The export &quot;{job.name}&quot; is still being generated.
+                      The export &quot;{job.name}&quot; is still being
+                      generated.
                     </p>
                     <p>
                       Cancelling it will stop the generation and discard any
