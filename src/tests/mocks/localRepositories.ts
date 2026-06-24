@@ -33,7 +33,7 @@ export const repositories = [
   {
     name: "locals/dddd-eeee-ffff",
     localId: "dddd-eeee-ffff",
-    displayName: "Invalid LRO local",
+    displayName: "LRO not found local",
     comment: "local with an invalid last operation reference",
     defaultDistribution: "jammy",
     defaultComponent: "main",
