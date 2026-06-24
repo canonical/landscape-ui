@@ -3,7 +3,7 @@ export type ExportJobType = "instance" | "activity";
 export type ExportJobStatus = "processing" | "completed" | "failed";
 
 export interface ExportJob {
-  id: string;
+  id: number;
   name: string;
   filename: string;
   type: ExportJobType;

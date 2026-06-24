@@ -228,7 +228,7 @@ export default [
     }
     const body = (await request.json()) as Record<string, unknown>;
     const job: ExportJob = {
-      id: "act-job-new",
+      id: 8,
       name: typeof body.name === "string" ? body.name : "New activities export",
       filename: "activities-export.tsv",
       row_count: 0,

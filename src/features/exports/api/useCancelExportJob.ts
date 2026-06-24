@@ -10,7 +10,7 @@ export const useCancelExportJob = () => {
   const { mutateAsync } = useMutation<
     AxiosResponse<void>,
     AxiosError<ApiError>,
-    string
+    number
   >({
     mutationFn: async (jobId) => authFetch.post(`exports/${jobId}/cancel`),
     onSuccess: async () => {

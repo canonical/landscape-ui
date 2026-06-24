@@ -34,7 +34,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
             className="u-no-margin--bottom u-no-padding--top u-align-text--left"
             onClick={createPageParamsSetter({
               sidePath: ["view"],
-              name: row.original.job.id,
+              name: String(row.original.job.id),
             })}
           >
             {row.original.job.name}
