@@ -111,12 +111,19 @@ function pointBuildNumber(cycle, point) {
   return releaseWorthyCount(base);
 }
 
+// Accept either short (`point/26.04.1`) or fully-qualified
+// (`refs/heads/point/26.04.1`) refs on both sides of the comparison.
+function shortRef(ref) {
+  return ref.trim().replace(/^refs\/heads\//, "");
+}
+
 function isReleasedBranch(branch) {
+  const current = shortRef(branch);
   return (process.env.RELEASED_POINT_BRANCHES || "")
     .split(/[\s,]+/)
-    .map((s) => s.trim())
     .filter(Boolean)
-    .includes(branch);
+    .map(shortRef)
+    .includes(current);
 }
 
 function getVersion() {

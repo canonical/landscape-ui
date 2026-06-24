@@ -102,9 +102,14 @@ jobs:
           echo "publish_stable=$PUBLISH_STABLE" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
+        if: steps.calver.outputs.should_build == 'true'
         run: pnpm install --frozen-lockfile
 
+      # Gated too: a no-op rebuild must not run the version bump, or it could
+      # consume pending changesets / update package.json + CHANGELOG for a
+      # version that is never published.
       - name: Create Release Tag
+        if: steps.calver.outputs.should_build == 'true'
         id: changesets
         uses: changesets/action@v1
         with:
