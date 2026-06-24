@@ -24,12 +24,12 @@ const ubuntuProInfo = {
 const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro"];
 
 const OPERATIONS_LABELS = [
-  "Export",
   "Shut down",
   "Restart",
   "Remove from Landscape",
   "Upgrade",
   "Upgrade distributions",
+  "Export selection as TSV",
   "View report",
   "Run script",
 ];
@@ -254,7 +254,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("button", { name: MENU_LABELS[0] }),
       );
       await userEvent.click(
-        screen.getByRole("menuitem", { name: /^export$/i }),
+        screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
       );
 
       expect(

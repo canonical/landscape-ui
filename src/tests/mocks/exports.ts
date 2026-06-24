@@ -42,6 +42,20 @@ export const failedExportJob: ExportJob = {
   query: null,
 };
 
+export const newExportJob: ExportJob = {
+  id: "job-new",
+  name: "Instances export 2026-06-03 14:12:00",
+  filename: "instances-export-4.tsv",
+  row_count: 0,
+  type: "instance",
+  created_at: "2026-06-03T12:12:00.000Z",
+  status: "processing",
+  progress: 0,
+  download_ready: false,
+  retain_until: "2029-06-03T12:12:00.000Z",
+  query: "tag:production",
+};
+
 export const processingActivitiesExportJob: ExportJob = {
   id: "act-job-processing",
   name: "Activities export 2026-06-03 14:10:00",
@@ -83,3 +97,15 @@ export const failedActivitiesExportJob: ExportJob = {
   retain_until: "2029-06-03T12:06:00.000Z",
   query: null,
 };
+
+// Default fixtures served by the MSW exports handlers so the Exports UI is fully
+// browsable in dev mode (`VITE_MSW_ENABLED`) and resolvable by id in tests.
+export const DEFAULT_EXPORT_JOBS: ExportJob[] = [
+  processingExportJob,
+  completedExportJob,
+  failedExportJob,
+  newExportJob,
+  processingActivitiesExportJob,
+  completedActivitiesExportJob,
+  failedActivitiesExportJob,
+];

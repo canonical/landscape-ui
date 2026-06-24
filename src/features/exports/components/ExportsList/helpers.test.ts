@@ -8,14 +8,12 @@ import {
 } from "@/tests/mocks/exports";
 
 describe("getStatusIcon", () => {
-  it('returns "status-succeeded-small" for completed', () => {
-    expect(getStatusIcon(completedExportJob)).toBe("status-succeeded-small");
+  it('returns "success" for completed', () => {
+    expect(getStatusIcon(completedExportJob)).toBe("success");
   });
 
-  it('returns "status-failed-small" for failed', () => {
-    expect(getStatusIcon(failedActivitiesExportJob)).toBe(
-      "status-failed-small",
-    );
+  it('returns "error" for failed', () => {
+    expect(getStatusIcon(failedActivitiesExportJob)).toBe("error");
   });
 
   it('returns "status-in-progress-small" for processing', () => {

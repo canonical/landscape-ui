@@ -14,7 +14,10 @@ const ExportsContainer: FC = () => {
   const { exportJobs, totalCount, isLoading } = useGetAllExportJobsList();
 
   const { totalCount: unfilteredCount, isLoading: isLoadingUnfiltered } =
-    useGetAllExportJobsList({}, { listenToUrlParams: false });
+    useGetAllExportJobsList(
+      {},
+      { listenToUrlParams: false, enablePolling: false },
+    );
 
   if (isLoadingUnfiltered) {
     return <LoadingState />;

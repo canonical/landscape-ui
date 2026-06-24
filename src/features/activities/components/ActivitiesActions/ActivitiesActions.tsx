@@ -4,7 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
-import { Button, ConfirmationButton, Icon } from "@canonical/react-components";
+import { Button, ConfirmationButton } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 import type { ActivityCommon } from "../../types";
 import { pluralize } from "@/utils/_helpers";
@@ -66,8 +66,6 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
       <Suspense fallback={<LoadingState />}>
         <ActivitiesExportForm
           exportParams={{ query: exportQuery }}
-          activityCount={activityCount}
-          selectedActivityCount={isAllSelected ? undefined : selected.length}
           selectedActivityIds={
             !isAllSelected && selected.length > 0 ? selectedIds : undefined
           }
@@ -124,12 +122,10 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           key="export"
           className="p-segmented-control__button"
           type="button"
-          hasIcon
           disabled={!isAllSelected && selected.length === 0}
           onClick={handleExport}
         >
-          <Icon name="export" />
-          <span>Export</span>
+          <span>Export selection as TSV</span>
         </Button>,
         <ConfirmationButton
           key="approve"
