@@ -1,9 +1,9 @@
-import { API_URL, API_URL_OLD } from "@/constants";
+import { API_URL } from "@/constants";
 import type { ComplianceReport } from "@/features/reports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
 import { createEndpointStatusNetworkError } from "./_constants";
-import { isAction, shouldApplyEndpointStatus } from "./_helpers";
+import { shouldApplyEndpointStatus } from "./_helpers";
 
 export const complianceReport: ComplianceReport = {
   generated_at: "2026-06-11T10:38:00Z",
@@ -55,21 +55,5 @@ export default [
     }
 
     return HttpResponse.json(complianceReport);
-  }),
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "GetCSVComplianceData")) {
-      return;
-    }
-
-    const endpointStatus = getEndpointStatus();
-
-    if (
-      endpointStatus.status === "empty" &&
-      (!endpointStatus.path || endpointStatus.path === "reports")
-    ) {
-      return HttpResponse.json("");
-    }
-
-    return HttpResponse.json("name,status\ninstance-1,ok");
   }),
 ];
