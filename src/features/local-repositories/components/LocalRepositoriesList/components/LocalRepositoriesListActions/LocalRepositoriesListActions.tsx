@@ -5,16 +5,18 @@ import { useBoolean } from "usehooks-ts";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import { useGetRepositoryActions } from "../../../../hooks";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
+import useOperation from "@/hooks/useOperation";
 
 interface LocalRepositoriesListActionsProps {
   readonly repository: Local;
-  readonly inProgress: boolean;
 }
 
 const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
   repository,
-  inProgress,
 }) => {
+  const { isOperationInProgress } = useOperation();
+  const isImporting = isOperationInProgress(repository.lastOperation ?? "");
+
   const {
     value: isRemovalModalOpen,
     setTrue: openRemovalModal,
@@ -29,7 +31,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
 
   const { viewAction, actions, destructiveAction } = useGetRepositoryActions({
     repository,
-    inProgress,
+    isImporting,
     openRemovalModal,
     openPublishGuard,
   });

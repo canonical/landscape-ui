@@ -6,18 +6,18 @@ import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import type { Publication } from "@canonical/landscape-openapi";
+import useOperation from "@/hooks/useOperation";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
-  readonly inProgress: boolean;
 }
 
 const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
-  inProgress,
 }) => {
   const { createPageParamsSetter } = usePageParams();
-  const publicationDisplayName = publication.displayName;
+  const { isOperationInProgress } = useOperation();
+  const isPublishing = isOperationInProgress(publication.lastOperation);
 
   const {
     value: isRemoveModalOpen,
@@ -40,7 +40,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
         name: publication.publicationId,
       }),
     },
-    inProgress
+    isPublishing
       ? {
           icon: "spinner u-animation--spin",
           label: "Publishing",
@@ -65,7 +65,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${publicationDisplayName} actions`}
+        toggleAriaLabel={`${publication.displayName} actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />

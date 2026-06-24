@@ -10,12 +10,12 @@ import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
 
 interface ViewRepositoryActionsBlockProps {
   readonly repository: Local;
-  readonly inProgress: boolean;
+  readonly isImporting: boolean;
 }
 
 const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
   repository,
-  inProgress,
+  isImporting,
 }) => {
   const {
     value: isRemovalModalOpen,
@@ -31,7 +31,7 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
 
   const { actions, destructiveAction } = useGetRepositoryActions({
     repository,
-    inProgress,
+    isImporting,
     openRemovalModal,
     openPublishGuard,
   });

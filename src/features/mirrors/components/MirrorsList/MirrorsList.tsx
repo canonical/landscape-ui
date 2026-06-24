@@ -1,8 +1,5 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import {
-  DEFAULT_POLLING_INTERVAL,
-  DISPLAY_DATE_TIME_FORMAT,
-} from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
@@ -14,11 +11,8 @@ import usePageParams from "@/hooks/usePageParams";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import MirrorActions from "../MirrorActions";
 import LoadingState from "@/components/layout/LoadingState";
-import {
-  useBatchGetOperations,
-  OperationStatusCell,
-  getOperationStatusIcon,
-} from "@/features/operations";
+import { OperationStatusCell } from "@/features/operations";
+import { OperationProvider } from "@/context/operationStatus";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { AssociatedPublicationsCount } from "@/features/publications";
 
@@ -35,18 +29,12 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
     [mirrors, currentPage, pageSize],
   );
 
-  const operationNames = mirrors
-    .filter((mirror) => mirror.lastOperation)
-    .map((mirror) => mirror.lastOperation ?? "");
-
-  const { operations, isGettingOperations } = useBatchGetOperations(
-    operationNames,
-    {
-      refetchInterval: ({ state }) =>
-        Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? DEFAULT_POLLING_INTERVAL
-          : false,
-    },
+  const operationNames = useMemo(
+    () =>
+      mirrors
+        .filter((mirror) => mirror.lastOperation)
+        .map((mirror) => mirror.lastOperation ?? ""),
+    [mirrors],
   );
 
   const columns = useMemo<Column<Mirror>[]>(
@@ -70,22 +58,13 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Status",
-        className: "large-cell",
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          const operation = operations[mirror.lastOperation ?? ""];
-          return (
-            <OperationStatusCell
-              isGettingOperation={isGettingOperations}
-              operationMetadata={operation?.metadata}
-              type="mirror"
-            />
-          );
-        },
-        getCellIcon: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          // eslint-disable-next-line react/prop-types
-          const operation = operations[mirror.lastOperation ?? ""];
-          return getOperationStatusIcon(operation?.metadata?.status);
-        },
+        className: "large-cell p-table__cell--icon-placeholder",
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+          <OperationStatusCell
+            operationName={mirror.lastOperation}
+            type="mirror"
+          />
+        ),
       },
       {
         Header: "Last update",
@@ -123,27 +102,26 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          const operation = operations[mirror.lastOperation ?? ""];
-          return mirror.name ? (
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+          mirror.name ? (
             <Suspense fallback={<LoadingState inline />}>
               <MirrorActions
                 mirrorDisplayName={mirror.displayName}
                 mirrorName={mirror.name}
-                inProgress={!!operation && !operation.done}
+                operationName={mirror.lastOperation}
               />
             </Suspense>
           ) : (
             <NoData />
-          );
-        },
+          )
+        ),
       },
     ],
-    [createPageParamsSetter, isGettingOperations, operations],
+    [createPageParamsSetter],
   );
 
   return (
-    <>
+    <OperationProvider operationNames={operationNames}>
       <ResponsiveTable
         columns={columns}
         data={pagedMirrors}
@@ -157,7 +135,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         currentItemCount={pagedMirrors.length}
         pageSizeLabel="Mirrors per page"
       />
-    </>
+    </OperationProvider>
   );
 };
 

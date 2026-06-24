@@ -8,12 +8,9 @@ import {
 } from "@/features/publications";
 import type { Local } from "@canonical/landscape-openapi";
 import {
-  getOperationStatusIcon,
-  OperationStatusCell,
+  OperationStatusContent,
   type OperationMetadata,
 } from "@/features/operations";
-import { Icon } from "@canonical/react-components";
-import classes from "./ViewLocalRepositoryDetailsTab.module.scss";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
@@ -31,8 +28,6 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
     repository.name,
   );
 
-  const iconName = getOperationStatusIcon(operationMetadata?.status);
-
   return (
     <Blocks>
       <Blocks.Item title="Details">
@@ -43,15 +38,10 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
             label="Status"
             large
             value={
-              <>
-                {!!iconName && (
-                  <Icon name={iconName} className={classes.icon} />
-                )}
-                <OperationStatusCell
-                  operationMetadata={operationMetadata}
-                  type="local"
-                />
-              </>
+              <OperationStatusContent
+                operationMetadata={operationMetadata}
+                type="local"
+              />
             }
           />
 
