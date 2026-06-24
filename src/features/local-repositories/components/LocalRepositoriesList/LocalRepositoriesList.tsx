@@ -41,7 +41,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       {
         accessor: "name",
         Header: "Name",
-        className: classes.name,
+        className: "large-cell",
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <Button
             type="button"
@@ -102,6 +102,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         columns={columns}
         data={pagedRepositories}
         emptyMsg={`No local repositories found with the search: "${search}"`}
+        minWidth={980}
       />
       <TablePagination
         totalItems={repositories.length}

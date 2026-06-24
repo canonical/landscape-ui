@@ -20,8 +20,8 @@ export const getOperationTypeTexts = (
       return {
         inexistent: "No packages imported yet",
         successful: "Packages imported",
-        failed: "Package import failed",
-        ongoing: "Importing packages",
+        failed: "Import failed",
+        ongoing: "Importing",
       };
     case "mirror":
       return {
