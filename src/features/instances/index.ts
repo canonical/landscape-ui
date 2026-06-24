@@ -9,7 +9,10 @@ export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirm
 export { FILTERS, ALERT_STATUSES, STATUS_FILTERS } from "./constants";
 export {
   getFeatures,
+  getInstanceListParams,
+  getOptionQuery,
   getRecoveryKeyRegenerationAttemptMessage,
+  getQuery,
   isRecoveryKeyActivityFailedOrCanceled,
   isRecoveryKeyActivityInProgress,
   shouldShowRecoveryKeyActivityStatus,
@@ -30,3 +33,5 @@ export {
   setSelectedInstanceIds,
   subscribeToSelectedInstanceIds,
 } from "./selectedInstancesStore";
+export type { InstanceListParams } from "./helpers";
+export type { InstancesExportJob } from "./types";

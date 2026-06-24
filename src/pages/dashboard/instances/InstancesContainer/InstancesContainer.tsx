@@ -12,6 +12,9 @@ interface InstancesContainerProps {
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
   readonly onChangeFilter: () => void;
+  readonly isAllSelected: boolean;
+  readonly onSelectAll: () => void;
+  readonly onClearSelection: () => void;
 }
 
 const InstancesContainer = memo(function InstancesContainer({
@@ -21,6 +24,9 @@ const InstancesContainer = memo(function InstancesContainer({
   selectedInstances,
   setSelectedInstances,
   onChangeFilter,
+  isAllSelected,
+  onSelectAll,
+  onClearSelection,
 }: InstancesContainerProps) {
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
@@ -42,6 +48,9 @@ const InstancesContainer = memo(function InstancesContainer({
           selectedInstances={selectedInstances}
           setColumnFilterOptions={setColumnFilterOptions}
           setSelectedInstances={setSelectedInstances}
+          isAllSelected={isAllSelected}
+          onSelectAll={onSelectAll}
+          onClearSelection={onClearSelection}
         />
       )}
 
