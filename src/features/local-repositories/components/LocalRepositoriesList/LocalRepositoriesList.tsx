@@ -1,15 +1,23 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import { TablePagination } from "@/components/layout/TablePagination";
 import { Button } from "@canonical/react-components";
 import { useMemo, type FC } from "react";
 import type { Column, CellProps } from "react-table";
 import type { Local } from "@canonical/landscape-openapi";
 import usePageParams from "@/hooks/usePageParams";
-import { TablePagination } from "@/components/layout/TablePagination";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
 import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
 import { AssociatedPublicationsCount } from "@/features/publications";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  useBatchGetOperations,
+} from "@/features/operations";
+import { DEFAULT_POLLING_INTERVAL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import classes from "./LocalRepositoriesList.module.scss";
+import moment from "moment";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 interface LocalRepositoriesListProps {
   readonly repositories: Local[];
@@ -27,11 +35,26 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
     [repositories, currentPage, pageSize],
   );
 
+  const operationNames = pagedRepositories
+    .filter((repository) => repository.lastOperation)
+    .map((repository) => repository.lastOperation ?? "");
+
+  const { operations, isGettingOperations } = useBatchGetOperations(
+    operationNames,
+    {
+      refetchInterval: ({ state }) =>
+        Object.values(state.data ?? {}).some((operation) => !operation.done)
+          ? DEFAULT_POLLING_INTERVAL
+          : false,
+    },
+  );
+
   const columns = useMemo<Column<Local>[]>(
     () => [
       {
         accessor: "name",
         Header: "Name",
+        className: classes.name,
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <Button
             type="button"
@@ -47,9 +70,31 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         ),
       },
       {
-        Header: "Description",
-        Cell: ({ row: { original: repository } }: CellProps<Local>) =>
-          repository.comment || <NoData />,
+        Header: "status",
+        className: classes.status,
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => {
+          const operation = operations[repository.lastOperation ?? ""];
+          return (
+            <OperationStatusCell
+              isGettingOperation={isGettingOperations}
+              operationMetadata={operation?.metadata}
+              type="local"
+            />
+          );
+        },
+        getCellIcon: ({ row: { original: repository } }: CellProps<Local>) => {
+          // eslint-disable-next-line react/prop-types
+          const operation = operations[repository.lastOperation ?? ""];
+          return getOperationStatusIcon(operation?.metadata.status);
+        },
+      },
+      {
+        Header: "Last import",
+        className: "medium-cell",
+        Cell: ({ row: { original } }: CellProps<Local>) =>
+          original.lastImportTime
+            ? moment(original.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT)
+            : NO_DATA_TEXT,
       },
       {
         Header: "Packages",
@@ -65,12 +110,16 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
-        Cell: ({ row: { original: repository } }: CellProps<Local>) => (
-          <LocalRepositoriesListActions repository={repository} />
-        ),
+        Cell: ({ row: { original: repository } }: CellProps<Local>) => {
+          const operation = operations[repository.lastOperation ?? ""];
+          return <LocalRepositoriesListActions
+            repository={repository}
+            inProgress={!!operation && !operation.done}
+          />;
+        },
       },
     ],
-    [createPageParamsSetter],
+    [createPageParamsSetter, isGettingOperations, operations],
   );
 
   return (

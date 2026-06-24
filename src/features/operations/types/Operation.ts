@@ -1,6 +1,6 @@
 export type OperationStatus = "idle" | "in progress" | "succeeded" | "failed";
 
-interface OperationMetadata {
+export interface OperationMetadata {
   "@type": string;
   description: string;
   operationId: string;

@@ -6,10 +6,12 @@ interface UseGetRepositoryActionsProps {
   readonly repository: Local;
   readonly openRemovalModal: () => void;
   readonly openPublishGuard: () => void;
+  readonly inProgress: boolean;
 }
 
 export const useGetRepositoryActions = ({
   repository,
+  inProgress,
   openRemovalModal,
   openPublishGuard,
 }: UseGetRepositoryActionsProps) => {
@@ -29,7 +31,6 @@ export const useGetRepositoryActions = ({
   const viewAction: Action = {
     icon: "show",
     label: "View details",
-    "aria-label": `View details of "${repository.displayName}" repository`,
     onClick: openSidePanel("view"),
   };
 
@@ -37,36 +38,38 @@ export const useGetRepositoryActions = ({
     {
       icon: "edit",
       label: "Edit",
-      "aria-label": `Edit "${repository.displayName}" repository`,
       onClick: openSidePanel("edit"),
     },
-    {
-      icon: "import",
-      label: "Import packages",
-      "aria-label": `Import packages to "${repository.displayName}" repository`,
-      onClick: openSidePanel("import-packages"),
-    },
+    inProgress
+      ? {
+          icon: "spinner u-animation--spin",
+          label: "Importing packages",
+          disabled: true,
+          tooltipMessage: "You must wait for this action to be completed to import more packages.",
+        }
+      : {
+          icon: "import",
+          label: "Import packages",
+          onClick: openSidePanel("import-packages"),
+        },
     {
       icon: "upload",
       label: "Publish",
-      "aria-label": `Publish "${repository.displayName}" repository`,
       onClick: openPublishGuard,
     },
   ];
 
-  const destructiveActions: Action[] = [
-    {
-      icon: "delete",
-      label: "Remove",
-      "aria-label": `Remove "${repository.displayName}" repository`,
-      onClick: openRemovalModal,
-      appearance: "negative",
-    },
-  ];
+  const destructiveAction: Action = {
+    icon: "delete",
+    label: "Remove",
+    className: "u-text--negative",
+    onClick: openRemovalModal,
+    appearance: "negative",
+  };
 
   return {
     viewAction,
     actions,
-    destructiveActions,
+    destructiveAction,
   };
 };

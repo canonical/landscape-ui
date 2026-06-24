@@ -64,7 +64,7 @@ const PublicationDetails = ({
     return <LoadingState />;
   }
 
-  const iconName = getOperationStatusIcon(operation);
+  const iconName = getOperationStatusIcon(operation?.metadata.status);
 
   return (
     <>
@@ -75,7 +75,6 @@ const PublicationDetails = ({
             title="Publishing failed"
             actions={[
               <ViewLogsButton
-                resource={publication.publicationId}
                 key="view-logs"
               />,
             ]}
@@ -84,7 +83,7 @@ const PublicationDetails = ({
           </Notification>
         )}
         <div className="p-segmented-control__list">
-          {operation && !operation.done ? (
+          {!!operation && !operation.done ? (
             <Tooltip
               message="You must wait for this action to be completed to republish it."
               position="btm-center"
@@ -145,7 +144,7 @@ const PublicationDetails = ({
                     <Icon name={iconName} className={classes.icon} />
                   )}
                   <OperationStatusCell
-                    operation={operation}
+                    operationMetadata={operation?.metadata}
                     type="publication"
                   />
                 </>

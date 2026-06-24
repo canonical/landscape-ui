@@ -2,39 +2,7 @@ import { useGetLocalRepository } from "./useGetLocalRepository";
 import usePageParams from "@/hooks/usePageParams";
 import type { Local } from "@canonical/landscape-openapi";
 
-type GetPageLocalRepositoryReturnType =
-  | {
-      repository: Local;
-      isGettingRepository: false;
-    }
-  | {
-      repository: undefined;
-      isGettingRepository: true;
-    };
-
-export const useGetPageLocalRepository =
-  (): GetPageLocalRepositoryReturnType => {
-    const { name } = usePageParams();
-    const { repository, isGettingRepository, repositoryError } =
-      useGetLocalRepository(`locals/${name}`);
-
-    if (repositoryError) {
-      throw repositoryError;
-    }
-
-    if (isGettingRepository) {
-      return {
-        repository: undefined,
-        isGettingRepository: true,
-      };
-    }
-
-    if (!repository) {
-      throw new Error("Local repository not found");
-    }
-
-    return {
-      repository: repository,
-      isGettingRepository: false,
-    };
-  };
+export const useGetPageLocalRepository = (): Local => {
+  const { name } = usePageParams();
+  return useGetLocalRepository(`locals/${name}`);
+};

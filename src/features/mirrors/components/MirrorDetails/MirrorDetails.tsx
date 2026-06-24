@@ -71,8 +71,6 @@ const MirrorDetails: FC = () => {
       state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
 
-  const iconName = getOperationStatusIcon(operation);
-
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
 
@@ -120,6 +118,7 @@ const MirrorDetails: FC = () => {
       updateModal: false,
     });
   };
+  const iconName = getOperationStatusIcon(operation?.metadata.status);
 
   return (
     <>
@@ -129,7 +128,7 @@ const MirrorDetails: FC = () => {
           <Notification
             severity="negative"
             title="Update failed"
-            actions={[<ViewLogsButton resource={name} key="view-logs" />]}
+            actions={[<ViewLogsButton key="view-logs" />]}
           >
             Your last mirror update was not completed successfully.
           </Notification>
@@ -221,7 +220,7 @@ const MirrorDetails: FC = () => {
                         <Icon name={iconName} className={classes.icon} />
                       )}
                       <OperationStatusCell
-                        operation={operation}
+                        operationMetadata={operation?.metadata}
                         type="mirror"
                       />
                     </>
@@ -258,7 +257,7 @@ const MirrorDetails: FC = () => {
                 />
                 <InfoGrid.Item
                   label="Components"
-                  value={mirror.components?.join(", ")}
+                  value={mirror.components.join(", ")}
                   large
                 />
                 <InfoGrid.Item

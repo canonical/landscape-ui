@@ -9,10 +9,12 @@ import type { Publication } from "@canonical/landscape-openapi";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
+  readonly inProgress: boolean;
 }
 
 const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
+  inProgress,
 }) => {
   const { createPageParamsSetter } = usePageParams();
   const publicationDisplayName = publication.displayName;
@@ -33,25 +35,29 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
-      "aria-label": `View details of "${publicationDisplayName}" publication`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
         name: publication.publicationId,
       }),
     },
-    {
-      icon: "upload",
-      label: "Republish",
-      "aria-label": `Republish "${publicationDisplayName}" publication`,
-      onClick: openRepublishModal,
-    },
+    inProgress
+      ? {
+          icon: "spinner u-animation--spin",
+          label: "Publishing",
+          disabled: true,
+          tooltipMessage: "You must wait for this action to be completed to republish it.",
+        }
+      : {
+          icon: "upload",
+          label: "Republish",
+          onClick: openRepublishModal,
+        },
   ];
 
   const destructiveActions: Action[] = [
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${publicationDisplayName}" publication`,
       onClick: openRemovalModal,
     },
   ];

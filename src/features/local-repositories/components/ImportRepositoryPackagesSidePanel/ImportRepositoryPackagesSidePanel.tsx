@@ -17,14 +17,13 @@ import type { OperationStatus } from "@/features/operations";
 import type { PackagesValidationState } from "../../types";
 import { getPackageList } from "./helpers";
 import ValidationResult from "./ValidationResult/ValidationResult";
-
-const POLL_INTERVAL = 2000;
+import { DEFAULT_POLLING_INTERVAL } from "@/constants";
 
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { popSidePathUntilClear, name, closeSidePanel } = usePageParams();
-  const { repository, isGettingRepository } = useGetPageLocalRepository();
+  const repository = useGetPageLocalRepository();
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =
     useImportRepositoryPackages();
@@ -36,7 +35,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const { operation } = useGetOperation(operationName, {
     enabled: isPolling,
     refetchInterval: ({ state }) =>
-      state.data?.data?.done ? false : POLL_INTERVAL,
+      state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
 
   const getTaskStatus = (): PackagesValidationState | undefined => {
@@ -84,10 +83,6 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
       source: Yup.string().required("This field is required."),
     }),
   });
-
-  if (isGettingRepository) {
-    return <SidePanel.LoadingState />;
-  }
 
   const handleValidate = async () => {
     try {
