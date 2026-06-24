@@ -44,6 +44,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
           message: `${job.name} has been downloaded and removed from the export list.`,
         });
       }
+      popSidePathUntilClear();
     } catch (error) {
       debug(error);
     }

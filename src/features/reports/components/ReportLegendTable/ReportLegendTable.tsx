@@ -1,7 +1,7 @@
-import { Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactNode } from "react";
 import { Link } from "react-router";
+import ReportHelpTooltip from "../ReportHelpTooltip";
 import classes from "./ReportLegendTable.module.scss";
 
 export interface ReportLegendRow {
@@ -96,13 +96,7 @@ const ReportLegendTable: FC<ReportLegendTableProps> = ({
             {row.detail ? (
               <span className={classes.labelWithHelp}>
                 {row.label}
-                <Tooltip message={row.detail} position="top-center">
-                  <i
-                    className="p-icon--help"
-                    role="img"
-                    aria-label={row.detail}
-                  />
-                </Tooltip>
+                <ReportHelpTooltip message={row.detail} />
               </span>
             ) : (
               <span>{row.label}</span>

@@ -134,6 +134,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     ...pendingIds,
   ]);
   const otherIds = [...accountedIds].filter((id) => !classified.has(id));
+  const OTHER_DETAIL =
+    "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days.";
 
   const segmentDefs: {
     key: string;
@@ -177,8 +179,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       label: "Other",
       ids: otherIds,
       color: "grey",
-      detail:
-        "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days.",
+      detail: OTHER_DETAIL,
     },
   ];
 
@@ -229,7 +230,11 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   const handleExportDialog = () => {
     setSidePanelContent(
       "Export report as TSV",
-      <ReportExportForm bucketIds={bucketIds} otherIds={otherIds} />,
+      <ReportExportForm
+        bucketIds={bucketIds}
+        otherIds={otherIds}
+        otherDetail={OTHER_DETAIL}
+      />,
     );
   };
 

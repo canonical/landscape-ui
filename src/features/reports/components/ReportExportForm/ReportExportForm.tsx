@@ -13,6 +13,8 @@ import moment from "moment";
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router";
 import { useExportComplianceTsv } from "../../api/useExportComplianceTsv";
+import ReportHelpTooltip from "../ReportHelpTooltip";
+import classes from "./ReportExportForm.module.scss";
 import {
   BUCKET_OPTIONS,
   INITIAL_EXPORT_VALUES,
@@ -22,11 +24,13 @@ import {
 interface ReportExportFormProps {
   readonly bucketIds: Record<BucketKey, readonly number[]>;
   readonly otherIds: readonly number[];
+  readonly otherDetail?: string;
 }
 
 const ReportExportForm: FC<ReportExportFormProps> = ({
   bucketIds,
   otherIds,
+  otherDetail,
 }) => {
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
@@ -98,13 +102,23 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
           setSelectedBucket(e.target.value as BucketKey);
         }}
       />
-      <CheckboxInput
-        label="Include Other"
-        checked={includeOther}
-        onChange={() => {
-          setIncludeOther((v) => !v);
-        }}
-      />
+      <div className={classes.includeOtherRow}>
+        <CheckboxInput
+          label="Include Other"
+          checked={includeOther}
+          onChange={() => {
+            setIncludeOther((v) => !v);
+          }}
+        />
+        <div className={classes.includeOtherTooltip}>
+          <ReportHelpTooltip
+            message={
+              otherDetail ||
+              "Other includes instances that are not in any of the buckets."
+            }
+          />
+        </div>
+      </div>
       {emptyBucket && (
         <p className="p-form-validation__message">
           The selected bucket contains no instances. Choose a different bucket
