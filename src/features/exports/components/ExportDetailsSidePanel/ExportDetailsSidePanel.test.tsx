@@ -4,12 +4,13 @@ import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
-import { completedExportJob, processingExportJob } from "@/tests/mocks/exports";
+import { completedExportJob, processingExportJob, newExportJob } from "@/tests/mocks/exports";
 import ExportDetailsSidePanel from "./ExportDetailsSidePanel";
 
 const SIDE_PANEL_URL = "?sidePath=view&name=job-completed";
 const PROCESSING_URL = "?sidePath=view&name=job-processing";
 const LOADING_URL = "?sidePath=view&name=unknown";
+const FAILED_URL = "?sidePath=view&name=job-failed";
 
 describe("ExportDetailsSidePanel", () => {
   const user = userEvent.setup();
@@ -18,6 +19,20 @@ describe("ExportDetailsSidePanel", () => {
     renderWithProviders(<ExportDetailsSidePanel />, undefined, LOADING_URL);
 
     expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("shows a not-found state when the export does not exist", async () => {
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, LOADING_URL);
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByRole("heading", { name: /export not found/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/this export no longer exists or the link is invalid/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("renders the job name and details for a completed export", async () => {
@@ -119,5 +134,53 @@ describe("ExportDetailsSidePanel", () => {
     await expectLoadingState();
 
     expect(screen.getByText("tag:production")).toBeInTheDocument();
+  });
+
+  it("shows the retry button for failed jobs", async () => {
+    const failedJob = {
+      ...completedExportJob,
+      id: "job-failed",
+      status: "failed" as const,
+      download_ready: false,
+    };
+    setEndpointStatus({
+      status: "variant",
+      path: "exports/:jobId",
+      response: failedJob,
+    });
+
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, FAILED_URL);
+
+    await expectLoadingState();
+
+    expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+    expect(screen.getByText("Failed")).toBeInTheDocument();
+  });
+
+  it("follows the newly enqueued job after retrying a failed export", async () => {
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, FAILED_URL);
+
+    await expectLoadingState();
+
+    expect(screen.getByRole("button", { name: /retry/i })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /retry/i }));
+
+    expect(
+      await screen.findByRole("heading", { name: newExportJob.name }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows a server-error state when the export fails to load", async () => {
+    setEndpointStatus({ status: "error", path: "exports/:jobId" });
+
+    renderWithProviders(<ExportDetailsSidePanel />, undefined, SIDE_PANEL_URL);
+
+    expect(
+      await screen.findByRole("heading", { name: /unable to load export/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/something went wrong while loading this export/i),
+    ).toBeInTheDocument();
   });
 });

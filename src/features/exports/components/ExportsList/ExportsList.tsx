@@ -78,11 +78,11 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         accessor: "job",
         id: "createdAt",
         Cell: ({ row }: CellProps<ExportRowData>) => (
-          <>
+          <span className="font-monospace">
             {moment(row.original.job.created_at).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
-          </>
+          </span>
         ),
       },
       {
@@ -90,11 +90,11 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         accessor: "job",
         id: "retainUntil",
         Cell: ({ row }: CellProps<ExportRowData>) => (
-          <>
+          <span className="font-monospace">
             {moment(row.original.job.retain_until).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
-          </>
+          </span>
         ),
       },
       {

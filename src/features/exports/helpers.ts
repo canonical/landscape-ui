@@ -1,6 +1,20 @@
 import { pluralize } from "@/utils/_helpers";
 import type { ExportJob } from "./types/ExportJob";
 
+export const buildExportQuery = ({
+  query,
+  selectedIds,
+}: {
+  query?: string;
+  selectedIds?: number[];
+}): string => {
+  if (selectedIds?.length) {
+    return selectedIds.map((id) => `id:${id}`).join(" OR ");
+  }
+
+  return query?.trim() ?? "";
+};
+
 export const getExportScope = ({
   query,
   selectedCount,

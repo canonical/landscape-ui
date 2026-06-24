@@ -22,7 +22,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={1}
       />,
     );
 
@@ -58,7 +57,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={1}
       />,
     );
 
@@ -80,7 +78,7 @@ describe("InstancesExportForm", () => {
     expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
-  it("filters attributes by field name without matching group titles", async () => {
+  it("filters attributes by field name", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <InstancesExportForm
@@ -90,7 +88,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={1}
       />,
     );
 
@@ -106,7 +103,7 @@ describe("InstancesExportForm", () => {
     ).not.toBeInTheDocument();
 
     await user.clear(search);
-    await user.type(search, "primary");
+    await user.type(search, "no-such-attribute");
 
     expect(
       screen.getByText("No attributes match your search."),
@@ -114,6 +111,33 @@ describe("InstancesExportForm", () => {
     expect(
       screen.queryByRole("tab", { name: /primary identity/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("matches a category name and shows all of its attributes", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+      />,
+    );
+
+    const search = screen.getByRole("searchbox", { name: "Search attributes" });
+    await user.type(search, "primary");
+
+    // The category title matches, so the whole group is shown including fields
+    // whose labels do not contain the search term.
+    await openAttributeGroup(user, /primary identity/i);
+    expect(
+      screen.getByRole("checkbox", { name: "Instance name" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Hostname" }),
+    ).toBeInTheDocument();
   });
 
   it("shows attribute validation after clearing every pre-selected field", async () => {
@@ -126,7 +150,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={1}
       />,
     );
 
@@ -160,7 +183,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={1}
       />,
     );
 
@@ -199,7 +221,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={1}
       />,
     );
 
@@ -221,6 +242,42 @@ describe("InstancesExportForm", () => {
     expect(orderInput).toHaveValue(1);
   });
 
+  it("restores focus to the move button after a keyboard reorder so moves can be repeated", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <InstancesExportForm
+        exportParams={{
+          query: "name:prod",
+          archived_only: false,
+          wsl_children: false,
+          wsl_parents: false,
+        }}
+      />,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Weekly export",
+    );
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    const [firstDownButton] = screen.getAllByRole("button", {
+      name: /move .* down/i,
+    });
+    const downLabel = firstDownButton?.getAttribute("aria-label") ?? "";
+
+    await user.click(firstDownButton as HTMLElement);
+
+    // The moved row's own "down" button regains focus at its new position so
+    // the user can keep pressing to move it further down.
+    const focusedDownButton = screen.getByRole("button", { name: downLabel });
+    expect(focusedDownButton).toHaveFocus();
+
+    // A second move keeps focus on the same button (continuous movement).
+    await user.click(focusedDownButton);
+    expect(screen.getByRole("button", { name: downLabel })).toHaveFocus();
+  });
+
   it("queues an export and shows a success notification with a status action", async () => {
     const user = userEvent.setup();
     renderWithProviders(
@@ -231,7 +288,6 @@ describe("InstancesExportForm", () => {
           wsl_children: false,
           wsl_parents: false,
         }}
-        instanceCount={8}
         selectedInstanceIds={[1, 2]}
       />,
     );

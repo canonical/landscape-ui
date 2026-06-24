@@ -1,5 +1,5 @@
+import type { ExportFormValues } from "@/features/exports";
 import { INITIAL_VALUES } from "./constants";
-import type { InstancesExportFormValues } from "./types";
 
 const ACCESSOR_TO_EXPORT_FIELD_ID: Record<string, string | string[]> = {
   title: "title",
@@ -14,23 +14,9 @@ const ACCESSOR_TO_EXPORT_FIELD_ID: Record<string, string | string[]> = {
 
 export const getInitialValues = (
   disabledColumns: string[],
-): InstancesExportFormValues => ({
+): ExportFormValues => ({
   ...INITIAL_VALUES,
   selectedFieldIds: Object.entries(ACCESSOR_TO_EXPORT_FIELD_ID)
     .filter(([accessor]) => !disabledColumns.includes(accessor))
     .flatMap(([, value]) => (Array.isArray(value) ? value : [value])),
 });
-
-export const buildExportQuery = ({
-  query,
-  selectedInstanceIds,
-}: {
-  query?: string;
-  selectedInstanceIds?: number[];
-}) => {
-  if (selectedInstanceIds?.length) {
-    return `id:${selectedInstanceIds.join(" OR id:")}`;
-  }
-
-  return query?.trim();
-};

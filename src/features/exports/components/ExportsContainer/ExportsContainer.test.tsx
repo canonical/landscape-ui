@@ -20,6 +20,8 @@ const exportJobs = [
 
 describe("ExportsContainer", () => {
   it("renders empty state when there are no exports", async () => {
+    setEndpointStatus({ status: "empty", path: "exports" });
+
     renderWithProviders(<ExportsContainer />);
 
     await expectLoadingState();

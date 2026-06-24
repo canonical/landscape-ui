@@ -7,6 +7,7 @@ import { useBoolean } from "usehooks-ts";
 import { useCancelExportJob } from "../../api/useCancelExportJob";
 import { useDiscardExportJob } from "../../api/useDiscardExportJob";
 import { useDownloadExportJob } from "../../api/useDownloadExportJob";
+import { useRetryExportJob } from "../../api/useRetryExportJob";
 import type { ExportJob } from "../../types/ExportJob";
 
 interface ExportsListActionsProps {
@@ -19,6 +20,7 @@ const ExportsListActions: FC<ExportsListActionsProps> = ({ job }) => {
   const { cancelExportJob: onCancel } = useCancelExportJob();
   const { discardExportJob: onDiscard } = useDiscardExportJob();
   const { downloadExportJob: onDownload } = useDownloadExportJob();
+  const { retryExportJob: onRetry } = useRetryExportJob();
 
   const {
     value: isDiscardModalOpen,
@@ -74,13 +76,35 @@ const ExportsListActions: FC<ExportsListActionsProps> = ({ job }) => {
     }
   };
 
-  const downloadActions =
-    job.status === "completed"
+  const handleRetry = async () => {
+    try {
+      await onRetry(job.id);
+      notify.success({
+        title: "TSV generation restarted",
+        message: `${job.name} is being generated again.`,
+      });
+    } catch (error) {
+      debug(error);
+    }
+  };
+
+  const downloadActions = job.download_ready
+    ? [
+        {
+          icon: "begin-downloading" as const,
+          label: "Download",
+          onClick: handleDownload,
+        },
+      ]
+    : [];
+
+  const retryActions =
+    job.status === "failed"
       ? [
           {
-            icon: "begin-downloading" as const,
-            label: "Download",
-            onClick: handleDownload,
+            icon: "restart" as const,
+            label: "Retry",
+            onClick: handleRetry,
           },
         ]
       : [];
@@ -105,7 +129,7 @@ const ExportsListActions: FC<ExportsListActionsProps> = ({ job }) => {
   return (
     <>
       <ListActions
-        actions={downloadActions}
+        actions={[...downloadActions, ...retryActions]}
         destructiveActions={destructiveActions}
         toggleAriaLabel={`Actions for ${job.name}`}
       />
