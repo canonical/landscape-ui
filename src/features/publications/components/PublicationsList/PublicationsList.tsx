@@ -47,6 +47,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "name",
         Header: "name",
+        className: "large-cell",
         Cell: ({ row }: CellProps<Publication>) => (
           <Button
             type="button"
@@ -83,6 +84,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         id: "sourceType",
         accessor: "source",
+        className: "medium-cell",
         Header: "source type",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <>{getSourceType(original.source)}</>
@@ -91,6 +93,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "source",
         Header: "source",
+        className: "large-cell",
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink
             to={

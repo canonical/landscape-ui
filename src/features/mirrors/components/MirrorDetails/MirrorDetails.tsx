@@ -211,6 +211,7 @@ const MirrorDetails: FC = () => {
                     <OperationStatusContent
                       operationMetadata={operation?.metadata}
                       type="mirror"
+                      hasOperation={!!mirror.lastOperation}
                     />
                   }
                 />

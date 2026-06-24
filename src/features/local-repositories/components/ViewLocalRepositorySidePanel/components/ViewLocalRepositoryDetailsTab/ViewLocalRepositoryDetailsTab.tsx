@@ -41,6 +41,7 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
               <OperationStatusContent
                 operationMetadata={operationMetadata}
                 type="local"
+                hasOperation={!!repository.lastOperation}
               />
             }
           />

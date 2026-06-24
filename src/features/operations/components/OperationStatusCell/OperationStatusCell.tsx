@@ -23,6 +23,7 @@ const OperationStatusCell: FC<OperationStatusCellProps> = ({
     <OperationStatusContent
       type={type}
       operationMetadata={operation?.metadata}
+      hasOperation={!!operationName}
     />
   );
 };

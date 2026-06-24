@@ -8,11 +8,13 @@ import { Icon, ICONS } from "@canonical/react-components";
 interface OperationStatusContentProps {
   readonly type: "publication" | "mirror" | "local";
   readonly operationMetadata: OperationMetadata | undefined;
+  readonly hasOperation: boolean;
 }
 
 const OperationStatusContent: FC<OperationStatusContentProps> = ({
   operationMetadata,
   type,
+  hasOperation,
 }) => {
   const { inexistent, successful, failed, ongoing } =
     getOperationTypeTexts(type);
@@ -20,8 +22,17 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
   const resourceIdentifier =
     type === "mirror" ? resource : resource?.split("/").pop();
 
-  if (!status) {
+  if (!hasOperation) {
     return inexistent;
+  }
+
+  if (!status) {
+    return (
+      <>
+        <Icon name={`${ICONS.warning} ${classes.marginRight}`} />
+        <span>Unable to determine status</span>
+      </>
+    );
   }
 
   if (status === "succeeded") {

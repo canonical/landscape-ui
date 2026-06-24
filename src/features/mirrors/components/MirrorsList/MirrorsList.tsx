@@ -15,6 +15,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import { OperationStatusCell } from "@/features/operations";
 import { OperationProvider } from "@/context/operationStatus";
 import { TablePagination } from "@/components/layout/TablePagination";
+import classes from "./MirrorsList.module.scss";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -58,7 +59,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Status",
-        className: "large-cell p-table__cell--icon-placeholder",
+        className: `${classes.status} p-table__cell--icon-placeholder`,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
           <OperationStatusCell
             operationName={mirror.lastOperation}
@@ -68,7 +69,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Last update",
-        className: "medium-cell",
+        className: classes.datetime,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.lastDownloadDate ? (
             moment(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT)
@@ -130,7 +131,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         emptyMsg={
           emptyMsg ?? "No mirrors found according to your search parameters."
         }
-        minWidth={1150}
+        minWidth={1120}
       />
       <TablePagination
         totalItems={mirrors.length}

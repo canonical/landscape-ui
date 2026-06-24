@@ -70,7 +70,7 @@ export const publications = [
   {
     name: "publications/g7h7777e-c7f7-7e77-ab7c-ef7a7c7af7c7",
     publicationId: "g7h7777e-c7f7-7e77-ab7c-ef7a7c7af7c7",
-    displayName: "Invalid LRO publication",
+    displayName: "LRO not found publication",
     publicationTarget:
       "publicationTargets/cccccccc-0000-0000-0000-000000000003",
     source: "locals/bbbb-cccc-dddd",

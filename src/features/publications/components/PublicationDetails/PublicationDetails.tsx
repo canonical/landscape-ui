@@ -138,6 +138,7 @@ const PublicationDetails = ({
                 <OperationStatusContent
                   operationMetadata={operation?.metadata}
                   type="publication"
+                  hasOperation={!!publication.lastOperation}
                 />
               }
             />
