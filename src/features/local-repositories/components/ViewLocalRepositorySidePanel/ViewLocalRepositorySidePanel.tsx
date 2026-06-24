@@ -6,7 +6,7 @@ import classes from "./ViewLocalRepositorySidePanel.module.scss";
 import ViewRepositoryActionsBlock from "./components/ViewRepositoryActionsBlock";
 import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetailsTab";
 import ViewRepositoryPackagesTab from "./components/ViewRepositoryPackagesTab";
-import { useGetLocalRepository } from "../../api/useGetLocalRepository";
+import { useGetLocalRepository } from "../../api";
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
 import { useGetOperation, ViewLogsButton } from "@/features/operations";
 import usePageParams from "@/hooks/usePageParams";
@@ -14,7 +14,7 @@ import usePageParams from "@/hooks/usePageParams";
 const ViewLocalRepositorySidePanel: FC = () => {
   const { name } = usePageParams();
   const [tabId, setTabId] = useState<"details" | "packages">("details");
-  const repository = useGetLocalRepository(`locals/${name}`);
+  const repository = useGetLocalRepository(name);
 
   const { operation, isGettingOperation } = useGetOperation(
     repository.lastOperation ?? "",

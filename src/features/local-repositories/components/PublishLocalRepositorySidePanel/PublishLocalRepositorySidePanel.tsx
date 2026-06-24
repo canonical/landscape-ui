@@ -6,12 +6,14 @@ import SidePanel from "@/components/layout/SidePanel";
 import PublishRepositoryNewForm from "./components/PublishRepositoryNewForm";
 import PublishRepositoryExistingForm from "./components/PublishRepositoryExistingForm";
 import { useBoolean } from "usehooks-ts";
-import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
+import { useGetLocalRepository } from "../../api";
 
 const PublishLocalRepositorySidePanel: FC = () => {
-  const repository = useGetPageLocalRepository();
+  const { name } = usePageParams();
+  const repository = useGetLocalRepository(name);
   const { publications, isGettingPublications } = useGetPublicationsBySource(
-    repository?.name,
+    repository.name,
   );
 
   const { value: useNewPublication, toggle } = useBoolean(true);

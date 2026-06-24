@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
-import { useGetPageLocalRepository, useUpdateLocalRepository } from "../../api";
+import { useGetLocalRepository, useUpdateLocalRepository } from "../../api";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -16,12 +16,11 @@ import Blocks from "@/components/layout/Blocks";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 
 const EditLocalRepositorySidePanel: FC = () => {
-  const repository = useGetPageLocalRepository();
-
+  const { name, popSidePathUntilClear, closeSidePanel } = usePageParams();
+  const repository = useGetLocalRepository(name);
+  const { updateRepository, isUpdatingRepository } = useUpdateLocalRepository();
   const debug = useDebug();
   const { notify } = useNotify();
-  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
-  const { updateRepository, isUpdatingRepository } = useUpdateLocalRepository();
 
   const handleSubmit = async (values: EditLocalRepositoryFormValues) => {
     const localToUpdate = {
