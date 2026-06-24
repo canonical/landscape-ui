@@ -7,9 +7,8 @@ import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { ActionButton, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
+import { useGetLocalRepository, useImportRepositoryPackages } from "../../api";
 import * as Yup from "yup";
-import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
 import { useGetOperation } from "@/features/operations";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralize } from "@/utils/_helpers";
@@ -23,7 +22,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { popSidePathUntilClear, name, closeSidePanel } = usePageParams();
-  const repository = useGetPageLocalRepository();
+  const repository = useGetLocalRepository(name);
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =
     useImportRepositoryPackages();
