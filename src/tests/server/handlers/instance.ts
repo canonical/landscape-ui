@@ -13,6 +13,7 @@ import {
   getMockRecoveryKeyActivity,
   RELEASE_UPGRADE_ACTIVITY,
 } from "@/tests/mocks/activity";
+import { newComplianceExportJob } from "@/tests/mocks/exports";
 import {
   instanceCanceledActivityNoKey,
   instanceCanceledActivityWithKey,
@@ -682,6 +683,26 @@ export default [
           ? body.retain_until
           : moment().add(3, "years").toISOString(),
       query: typeof body.query === "string" ? body.query : null,
+    };
+    return HttpResponse.json(job, { status: 201 });
+  }),
+
+  http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("computers/report:export")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return createEndpointStatusError();
+      }
+    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const job: ExportJob = {
+      ...newComplianceExportJob,
+      name: typeof body.name === "string" ? body.name : newComplianceExportJob.name,
+      retain_until:
+        typeof body.retain_until === "string"
+          ? body.retain_until
+          : newComplianceExportJob.retain_until,
+      query: typeof body.query === "string" ? body.query : newComplianceExportJob.query,
     };
     return HttpResponse.json(job, { status: 201 });
   }),

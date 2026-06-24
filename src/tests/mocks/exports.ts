@@ -98,6 +98,20 @@ export const failedActivitiesExportJob: ExportJob = {
   query: null,
 };
 
+export const newComplianceExportJob: ExportJob = {
+  id: 8,
+  name: "Compliance export 2026-06-24 10:00:00",
+  filename: "compliance-export-1.tsv",
+  row_count: 0,
+  type: "instance",
+  created_at: "2026-06-24T10:00:00.000Z",
+  status: "processing",
+  progress: 0,
+  download_ready: false,
+  retain_until: "2029-06-24T10:00:00.000Z",
+  query: "id:42 OR id:107",
+};
+
 // Default fixtures served by the MSW exports handlers so the Exports UI is fully
 // browsable in dev mode (`VITE_MSW_ENABLED`) and resolvable by id in tests.
 export const DEFAULT_EXPORT_JOBS: ExportJob[] = [

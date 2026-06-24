@@ -19,7 +19,8 @@ import { useState, useSyncExternalStore } from "react";
 import { useGetComplianceReport } from "../../api";
 import type { DonutSegment } from "../ReportDonutChart";
 import ReportDonutChart from "../ReportDonutChart";
-import ReportForm from "../ReportForm";
+import ReportExportForm from "../ReportExportForm";
+import type { BucketKey } from "../ReportExportForm/constants";
 import type { MetricRow } from "../MetricBarTable";
 import MetricBarTable from "../MetricBarTable";
 import classes from "./ReportView.module.scss";
@@ -114,6 +115,14 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     ...fourteenToThirtyIds,
     ...thirtyToSixtyIds,
   ]);
+
+  const bucketIds: Record<BucketKey, readonly number[]> = {
+    "over-60": sixtyPlusIds,
+    "30-60": thirtyToSixtyIds,
+    "14-30": fourteenToThirtyIds,
+    "2-14": twoToFourteenIds,
+    "within-2": withinTwoBucket,
+  };
   // "Other" is the accounted instances not in any named bucket. Derive the
   // universe from the report's own id sets (every accounted instance appears
   // in securely/not-securely-patched and/or the USN sets) rather than from the
@@ -219,10 +228,10 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     },
   ];
 
-  const handleDownloadDialog = () => {
+  const handleExportDialog = () => {
     setSidePanelContent(
-      "Download report as CSV",
-      <ReportForm instanceIds={reportIds} />,
+      "Export report as TSV",
+      <ReportExportForm bucketIds={bucketIds} otherIds={otherIds} />,
     );
   };
 
@@ -267,8 +276,8 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       </p>
       <SidePanelFormButtons
         submitButtonDisabled={false}
-        submitButtonText="Download as CSV"
-        onSubmit={handleDownloadDialog}
+        submitButtonText="Export as TSV"
+        onSubmit={handleExportDialog}
       />
     </>
   );
