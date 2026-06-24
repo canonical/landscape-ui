@@ -11,6 +11,7 @@ import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import MirrorActions from "../MirrorActions";
+import { TablePagination } from "@/components/layout/TablePagination";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -18,7 +19,12 @@ interface MirrorsListProps {
 }
 
 const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
-  const { createPageParamsSetter } = usePageParams();
+  const { createPageParamsSetter, currentPage, pageSize } = usePageParams();
+
+  const pagedMirrors = useMemo(
+    () => mirrors.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [mirrors, currentPage, pageSize],
+  );
 
   const columns = useMemo<Column<Mirror>[]>(
     () => [
@@ -92,13 +98,19 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={mirrors}
-      emptyMsg={
-        emptyMsg ?? "No mirrors found according to your search parameters."
-      }
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedMirrors}
+        emptyMsg={
+          emptyMsg ?? "No mirrors found according to your search parameters."
+        }
+      />
+      <TablePagination
+        totalItems={mirrors.length}
+        currentItemCount={pagedMirrors.length}
+      />
+    </>
   );
 };
 
