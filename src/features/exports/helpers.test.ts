@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  buildExportQuery,
   hasProcessingExportJobs,
   getExportScope,
   getStatusLabel,
@@ -11,6 +12,36 @@ import {
   failedExportJob,
   processingExportJob,
 } from "@/tests/mocks/exports";
+
+describe("buildExportQuery", () => {
+  const FIRST_ID = 11;
+  const SECOND_ID = 42;
+
+  it("returns the trimmed query when there is no selection", () => {
+    expect(buildExportQuery({ query: "  name:prod  ", selectedIds: [] })).toBe(
+      "name:prod",
+    );
+  });
+
+  it("returns an empty string when there is no query or selection", () => {
+    expect(buildExportQuery({})).toBe("");
+  });
+
+  it("builds an id-only query when there is no base query", () => {
+    expect(buildExportQuery({ selectedIds: [1, 2, 3] })).toBe(
+      "id:1 OR id:2 OR id:3",
+    );
+  });
+
+  it("uses only the selected ids when both a query and ids are provided", () => {
+    expect(
+      buildExportQuery({
+        query: "tag:server archived:false",
+        selectedIds: [FIRST_ID, SECOND_ID],
+      }),
+    ).toBe(`id:${FIRST_ID} OR id:${SECOND_ID}`);
+  });
+});
 
 describe("getExportScope", () => {
   const selectionForms = ["selected activity", "selected activities"] as const;

@@ -1,1 +1,3 @@
 export const EXPORT_JOBS_POLL_INTERVAL_MS = 5000;
+
+export const MIN_SERVER_ERROR_STATUS = 500;

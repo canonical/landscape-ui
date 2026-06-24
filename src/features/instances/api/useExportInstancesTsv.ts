@@ -6,9 +6,9 @@ import type { InstancesExportJob } from "../types/InstancesExportJob";
 import type { InstanceListParams } from "../helpers";
 
 interface CreateInstancesExportJobParams extends InstanceListParams {
-  name: string;
-  selected_field_ids: string[];
-  retain_until: string;
+  readonly name: string;
+  readonly selected_field_ids: string[];
+  readonly retain_until: string;
 }
 
 export const useExportInstancesTsv = () => {

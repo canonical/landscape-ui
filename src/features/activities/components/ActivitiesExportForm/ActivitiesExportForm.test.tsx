@@ -9,7 +9,6 @@ type ActivitiesExportFormProps = ComponentProps<typeof ActivitiesExportForm>;
 
 const defaultProps = {
   exportParams: { query: "status:succeeded" },
-  activityCount: 10,
 } satisfies ActivitiesExportFormProps;
 
 const openAttributeGroup = async (
@@ -70,7 +69,6 @@ describe("ActivitiesExportForm", () => {
       <ActivitiesExportForm
         {...defaultProps}
         exportParams={{ query: "" }}
-        activityCount={5}
       />,
     );
 
@@ -94,7 +92,6 @@ describe("ActivitiesExportForm", () => {
       <ActivitiesExportForm
         {...defaultProps}
         exportParams={{ query: "" }}
-        activityCount={5}
       />,
     );
 
@@ -123,7 +120,6 @@ describe("ActivitiesExportForm", () => {
     renderWithProviders(
       <ActivitiesExportForm
         {...defaultProps}
-        activityCount={5}
         selectedActivityIds={[1, 2]}
       />,
     );

@@ -211,10 +211,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
       <Suspense fallback={<LoadingState />}>
         <InstancesExportForm
           exportParams={exportParams}
-          instanceCount={instanceCount}
-          selectedInstanceCount={
-            isAllSelected ? undefined : selectedInstances.length
-          }
           selectedInstanceIds={
             isAllSelected ? undefined : selectedInstances.map(({ id }) => id)
           }
@@ -293,13 +289,13 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
-          <Icon name="export" />
-          <span>Export</span>
+          <Icon name="restart" />
+          <span>Restart</span>
         </>
       ),
-      onClick: handleExport,
+      onClick: openRebootModal,
       hasIcon: true,
-      disabled: !hasInstancesToExport,
+      disabled: !hasSelectedInstances,
     },
     {
       children: (
@@ -315,24 +311,16 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
-          <Icon name="restart" />
-          <span>Restart</span>
+          <Icon name="code" />
+          <span>Run script</span>
         </>
       ),
-      onClick: openRebootModal,
+      onClick: handleRunScript,
       hasIcon: true,
-      disabled: !hasSelectedInstances,
-    },
-    {
-      children: (
-        <>
-          <Icon name="delete" />
-          <span>Remove from Landscape</span>
-        </>
-      ),
-      onClick: openRemoveModal,
-      hasIcon: true,
-      disabled: !hasSelectedInstances,
+      disabled:
+        !hasSelectedInstances ||
+        isGettingInstances ||
+        selectedInstances.every((instance) => !getFeatures(instance).scripts),
     },
     {
       children: (
@@ -362,6 +350,28 @@ const InstancesPageActions = memo(function InstancesPageActions({
         isGettingInstances ||
         !selectedInstances.some((instance) => instance.has_release_upgrades),
     },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Remove from Landscape</span>
+        </>
+      ),
+      onClick: openRemoveModal,
+      hasIcon: true,
+      disabled: !hasSelectedInstances,
+    },
+    {
+      children: (
+        <>
+          <Icon name="export" />
+          <span>Export selection as TSV</span>
+        </>
+      ),
+      onClick: handleExport,
+      hasIcon: true,
+      disabled: !hasInstancesToExport,
+    },
     REPORT_VIEW_ENABLED
       ? {
           children: (
@@ -375,20 +385,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
           disabled: !hasSelectedInstances,
         }
       : {},
-    {
-      children: (
-        <>
-          <Icon name="code" />
-          <span>Run script</span>
-        </>
-      ),
-      onClick: handleRunScript,
-      hasIcon: true,
-      disabled:
-        !hasSelectedInstances ||
-        isGettingInstances ||
-        selectedInstances.every((instance) => !getFeatures(instance).scripts),
-    },
   ].filter((link) => link.children);
 
   return (

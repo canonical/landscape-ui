@@ -7,7 +7,6 @@ import type { ActivitiesExportJob } from "../types/ActivitiesExportJob";
 interface CreateActivitiesExportJobParams {
   readonly name: string;
   readonly query: string;
-  readonly selected_activity_ids: number[];
   readonly selected_field_ids: string[];
   readonly retain_until: string;
 }

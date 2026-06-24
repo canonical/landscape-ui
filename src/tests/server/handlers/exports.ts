@@ -2,6 +2,7 @@ import { API_URL } from "@/constants";
 import type { ExportJob } from "@/features/exports";
 import { PATHS } from "@/libs/routes";
 import { getEndpointStatus } from "@/tests/controllers/controller";
+import { DEFAULT_EXPORT_JOBS } from "@/tests/mocks/exports";
 import { http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
@@ -51,13 +52,15 @@ export default [
         );
       }
     }
-    return HttpResponse.json({ count: 0, results: [] });
+    return HttpResponse.json(
+      generateExportJobsResponse(request, DEFAULT_EXPORT_JOBS),
+    );
   }),
 
-  http.get(`${API_URL}${EXPORTS_PATH}/:jobId`, () => {
+  http.get(`${API_URL}${EXPORTS_PATH}/:jobId`, ({ params }) => {
     if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId`)) {
       const { status, response } = getEndpointStatus();
-      if (status === "error") return createEndpointStatusNetworkError();
+      if (status === "error") return createEndpointStatusError();
       if (
         status === "variant" &&
         response &&
@@ -67,7 +70,29 @@ export default [
         return HttpResponse.json(response as unknown as ExportJob);
       }
     }
-    return new HttpResponse(null, { status: 404 });
+    const job = DEFAULT_EXPORT_JOBS.find((j) => j.id === params.jobId);
+    if (!job) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    return HttpResponse.json(job);
+  }),
+
+  http.post(`${API_URL}${EXPORTS_PATH}/:jobId/retry`, ({ params }) => {
+    if (shouldApplyEndpointStatus(`${EXPORTS_PATH}/:jobId/retry`)) {
+      const { status } = getEndpointStatus();
+      if (status === "error") return createEndpointStatusError();
+    }
+    const job = DEFAULT_EXPORT_JOBS.find((j) => j.id === params.jobId);
+    return HttpResponse.json(
+      {
+        ...(job ?? DEFAULT_EXPORT_JOBS[0]),
+        id: "job-new",
+        status: "processing",
+        progress: 0,
+        download_ready: false,
+      },
+      { status: 202 },
+    );
   }),
 
   http.post(`${API_URL}${EXPORTS_PATH}/:jobId/cancel`, () => {

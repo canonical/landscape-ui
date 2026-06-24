@@ -13,10 +13,12 @@ import type { CellProps, Column, Row, TableRowProps } from "react-table";
 import classes from "./SortableFieldList.module.scss";
 import type { ExportField } from "../../types/ExportForm";
 import { JUST_MOVED_HIGHLIGHT_MS, OVERLAY_CURSOR_OFFSET_PX } from "./constants";
+import { createTransparentDragImage } from "./helpers";
 import {
   useDragOverlayPosition,
   useFlipAnimation,
   usePendingFieldScroll,
+  useRestoreFocusAfterMove,
   useSortableFieldCleanup,
   useSortableFieldRefs,
   useSyncSortableFields,
@@ -28,6 +30,8 @@ interface ReorderRowData extends Record<string, unknown> {
   label: string;
   currentOrder: string;
 }
+
+const TRANSPARENT_DRAG_IMAGE = createTransparentDragImage();
 
 interface SortableFieldListProps {
   readonly fields: ExportField[];
@@ -49,6 +53,12 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
   const justMovedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rowRefsMap = useRef<Map<string, HTMLTableRowElement>>(new Map());
   const pendingScrollRef = useRef<string | null>(null);
+  // After a keyboard arrow-move, restore focus to the same-direction button on
+  // the moved row at its new position so the user can keep moving continuously.
+  const pendingFocusRef = useRef<{
+    fieldId: string;
+    direction: "up" | "down";
+  } | null>(null);
   const flipPositionsRef = useRef<Map<string, number>>(new Map());
   const pendingFlipRef = useRef(false);
   const flipRafIdsRef = useRef<number[]>([]);
@@ -143,12 +153,13 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
     setDraggingFieldId(fieldId);
     e.dataTransfer.effectAllowed = "move";
 
-    // Replace the browser's native (always semi-transparent) drag ghost with a
-    // 1×1 transparent canvas. We render our own fully-opaque overlay instead.
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    e.dataTransfer.setDragImage(canvas, 0, 0);
+    // Suppress the browser's native drag ghost. A preloaded transparent image
+    // is honored reliably across browsers (including macOS Chrome, where a
+    // detached 1×1 canvas is ignored and a globe icon is shown instead). We
+    // render our own fully-opaque overlay for the dragged row.
+    if (TRANSPARENT_DRAG_IMAGE) {
+      e.dataTransfer.setDragImage(TRANSPARENT_DRAG_IMAGE, 0, 0);
+    }
   }, []);
 
   const handleDragEnter = useCallback((index: number) => {
@@ -216,6 +227,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
       capturePositionsForFlip();
       newOrder[index - 1] = curr;
       newOrder[index] = prev;
+      pendingFocusRef.current = { fieldId: curr.id, direction: "up" };
       setOrderedFields(newOrder);
       setOrderDrafts({});
       triggerMoveEffect(curr.id);
@@ -234,6 +246,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
       capturePositionsForFlip();
       newOrder[index] = next;
       newOrder[index + 1] = curr;
+      pendingFocusRef.current = { fieldId: curr.id, direction: "down" };
       setOrderedFields(newOrder);
       setOrderDrafts({});
       triggerMoveEffect(curr.id);
@@ -241,6 +254,10 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
     },
     [orderedFields, triggerMoveEffect, capturePositionsForFlip, onOrderChange],
   );
+
+  // Restore focus to the moved row's same-direction button after a keyboard
+  // arrow-move re-renders the list (see useRestoreFocusAfterMove).
+  useRestoreFocusAfterMove({ orderedFields, pendingFocusRef, rowRefsMap });
 
   const handleOrderInputChange = useCallback(
     (fieldIndex: number, value: string) => {
