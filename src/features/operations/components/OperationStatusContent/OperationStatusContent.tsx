@@ -4,6 +4,7 @@ import classes from "./OperationStatusContent.module.scss";
 import ViewLogsButton from "../ViewLogsButton";
 import { getOperationTypeTexts } from "./helpers";
 import { Icon, ICONS } from "@canonical/react-components";
+import ProgressBar from "@/components/ui/ProgressBar";
 
 interface OperationStatusContentProps {
   readonly type: "publication" | "mirror" | "local";
@@ -23,7 +24,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
     type === "mirror" ? resource : resource?.split("/").pop();
 
   if (!hasOperation) {
-    return inexistent;
+    return <span>{inexistent}</span>;
   }
 
   if (!status) {
@@ -39,7 +40,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
     return (
       <>
         <Icon name={`success-grey ${classes.marginRight}`} />
-        {successful}
+        <span>{successful}</span>
       </>
     );
   }
@@ -57,11 +58,8 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
   return (
     <>
       <Icon name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`} />
-      {ongoing}
-      <div className={classes.progressBar}>
-        <div style={{ width: `${progressPercent}%` }} />
-      </div>
-      <span className="u-text--muted">{progressPercent}%</span>
+      <span>{ongoing}</span>
+      <ProgressBar progressPercent={progressPercent} />
     </>
   );
 };

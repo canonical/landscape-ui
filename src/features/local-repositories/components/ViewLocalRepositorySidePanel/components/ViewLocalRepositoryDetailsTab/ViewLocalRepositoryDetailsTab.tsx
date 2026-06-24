@@ -36,7 +36,6 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
 
           <InfoGrid.Item
             label="Status"
-            large
             value={
               <OperationStatusContent
                 operationMetadata={operationMetadata}
