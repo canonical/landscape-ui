@@ -23,8 +23,7 @@ const ExportDetailsSidePanel: FC = () => {
   if (!job) {
     const status = jobError?.response?.status;
     const isServerError =
-      isError && status !== undefined && status >= MIN_SERVER_ERROR_STATUS;
-
+      isError && (status === undefined || status >= MIN_SERVER_ERROR_STATUS);
     return (
       <>
         <SidePanel.Header>

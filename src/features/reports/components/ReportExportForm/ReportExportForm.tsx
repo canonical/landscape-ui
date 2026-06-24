@@ -57,7 +57,14 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => {
-    if (emptyBucket) return;
+    if (emptyBucket) {
+      notify.info({
+        title: "No instances in bucket",
+        message:
+          "The selected bucket contains no instances. Choose a different bucket or include Other.",
+      });
+      return;
+    }
     try {
       const response = await exportComplianceTsv({
         name: values.name.trim(),
