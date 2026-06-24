@@ -5,13 +5,12 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Input } from "@canonical/react-components";
+import { ActionButton, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
 import * as Yup from "yup";
 import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
 import { useGetOperation } from "@/features/operations";
-import LoadingState from "@/components/layout/LoadingState";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralize } from "@/utils/_helpers";
 import type {
@@ -135,20 +134,19 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               }
             />
 
-            <Button
+            <ActionButton
               disabled={!formik.values.source}
               onClick={handleValidate}
               type="button"
               className={classes.button}
+              loading={
+                isImportingRepositoryPackages ||
+                validationTask?.status === "idle" ||
+                validationTask?.status === "in progress"
+              }
             >
-              {isImportingRepositoryPackages ||
-              validationTask?.status === "idle" ||
-              validationTask?.status === "in progress" ? (
-                <LoadingState inline />
-              ) : (
-                "Fetch packages"
-              )}
-            </Button>
+              Fetch packages
+            </ActionButton>
           </div>
 
           {validationTask?.done && (

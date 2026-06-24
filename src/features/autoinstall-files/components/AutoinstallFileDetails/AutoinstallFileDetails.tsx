@@ -1,4 +1,4 @@
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import { ActionButton, Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import { useAutoinstallFileActions } from "../../hooks";
@@ -24,6 +24,7 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
     openAutoinstallFileDetails,
     openAutoinstallFileEditForm,
     setAutoinstallFileAsDefault,
+    isSettingAutoinstallFileAsDefault,
   } = useAutoinstallFileActions(autoinstallFile);
 
   const viewVersionHistory = () => {
@@ -44,16 +45,17 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
             <span>Edit</span>
           </Button>
 
-          <Button
+          <ActionButton
             type="button"
             className="p-segmented-control__button"
             onClick={setAutoinstallFileAsDefault}
             disabled={autoinstallFile.is_default}
             hasIcon
+            loading={isSettingAutoinstallFileAsDefault}
           >
             <Icon name="starred" />
             <span>Set as default</span>
-          </Button>
+          </ActionButton>
 
           <Button
             type="button"

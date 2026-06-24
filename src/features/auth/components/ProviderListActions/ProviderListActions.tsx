@@ -10,7 +10,7 @@ import { useBoolean } from "usehooks-ts";
 import { useAuthHandle } from "../../hooks";
 import type { IdentityProvider } from "../../types";
 
-const ProviderForm = lazy(async () => import("../ProviderForm"));
+const ProviderEditForm = lazy(async () => import("../ProviderEditForm"));
 
 interface ProviderListActionsProps {
   readonly canBeDisabled: boolean;
@@ -39,11 +39,7 @@ const ProviderListActions: FC<ProviderListActionsProps> = ({
     setSidePanelContent(
       `Edit ${provider.name} provider`,
       <Suspense fallback={<LoadingState />}>
-        <ProviderForm
-          action="edit"
-          canBeDisabled={canBeDisabled}
-          provider={provider}
-        />
+        <ProviderEditForm canBeDisabled={canBeDisabled} provider={provider} />
       </Suspense>,
     );
   };

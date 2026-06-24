@@ -20,7 +20,17 @@ const ubuntuOneProvider: IdentityProvider = {
 describe("ProviderForm", () => {
   it("should render correctly when action is add", async () => {
     renderWithProviders(
-      <ProviderForm action="add" provider={supportedProviders[0]} />,
+      <ProviderForm
+        action="add"
+        provider={supportedProviders[0]}
+        initialValues={{
+          client_id: "",
+          client_secret: "",
+          enabled: false,
+          issuer: "",
+          name: "",
+        }}
+      />,
     );
 
     expect(screen.getByText("Callback URL")).toBeInTheDocument();
@@ -48,6 +58,13 @@ describe("ProviderForm", () => {
         action="edit"
         provider={identityProviders[0]}
         canBeDisabled
+        initialValues={{
+          client_id: singleIdentityProviders[0].configuration.client_id,
+          client_secret: singleIdentityProviders[0].configuration.client_secret,
+          enabled: singleIdentityProviders[0].enabled,
+          issuer: singleIdentityProviders[0].configuration.issuer,
+          name: singleIdentityProviders[0].configuration.name,
+        }}
       />,
     );
 
@@ -75,7 +92,18 @@ describe("ProviderForm", () => {
 
   it("should render enable toggle only for Ubuntu One edit", () => {
     renderWithProviders(
-      <ProviderForm action="edit" provider={ubuntuOneProvider} canBeDisabled />,
+      <ProviderForm
+        action="edit"
+        provider={ubuntuOneProvider}
+        canBeDisabled
+        initialValues={{
+          client_id: "",
+          client_secret: "",
+          enabled: ubuntuOneProvider.enabled,
+          issuer: "",
+          name: "",
+        }}
+      />,
     );
 
     expect(screen.queryByText("Callback URL")).not.toBeInTheDocument();
