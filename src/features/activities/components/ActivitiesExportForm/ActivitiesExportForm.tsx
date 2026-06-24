@@ -67,7 +67,10 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
             label: "View export status",
             onClick: () =>
               navigate(
-                ROUTES.exports.root({ sidePath: ["view"], name: job.id }),
+                ROUTES.exports.root({
+                  sidePath: ["view"],
+                  name: String(job.id),
+                }),
               ),
           },
         ],

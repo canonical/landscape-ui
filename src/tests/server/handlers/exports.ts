@@ -70,7 +70,7 @@ export default [
         return HttpResponse.json(response as unknown as ExportJob);
       }
     }
-    const job = DEFAULT_EXPORT_JOBS.find((j) => j.id === params.jobId);
+    const job = DEFAULT_EXPORT_JOBS.find((j) => String(j.id) === params.jobId);
     if (!job) {
       return new HttpResponse(null, { status: 404 });
     }
@@ -82,11 +82,11 @@ export default [
       const { status } = getEndpointStatus();
       if (status === "error") return createEndpointStatusError();
     }
-    const job = DEFAULT_EXPORT_JOBS.find((j) => j.id === params.jobId);
+    const job = DEFAULT_EXPORT_JOBS.find((j) => String(j.id) === params.jobId);
     return HttpResponse.json(
       {
         ...(job ?? DEFAULT_EXPORT_JOBS[0]),
-        id: "job-new",
+        id: 4,
         status: "processing",
         progress: 0,
         download_ready: false,

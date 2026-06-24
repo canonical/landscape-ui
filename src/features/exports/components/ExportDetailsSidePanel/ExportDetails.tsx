@@ -77,7 +77,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
   const handleRetry = async () => {
     try {
       const { data: newJob } = await onRetry(job.id);
-      setPageParams({ name: newJob.id });
+      setPageParams({ name: String(newJob.id) });
     } catch (error) {
       debug(error);
     }

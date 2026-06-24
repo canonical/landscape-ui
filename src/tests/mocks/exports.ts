@@ -1,7 +1,7 @@
 import type { ExportJob } from "@/features/exports";
 
 export const processingExportJob: ExportJob = {
-  id: "job-processing",
+  id: 1,
   name: "Instances export 2026-06-03 14:10:00",
   filename: "instances-export-1.tsv",
   row_count: 120,
@@ -15,7 +15,7 @@ export const processingExportJob: ExportJob = {
 };
 
 export const completedExportJob: ExportJob = {
-  id: "job-completed",
+  id: 2,
   name: "Instances export 2026-06-03 14:08:00",
   filename: "instances-export-2.tsv",
   row_count: 42,
@@ -29,7 +29,7 @@ export const completedExportJob: ExportJob = {
 };
 
 export const failedExportJob: ExportJob = {
-  id: "job-failed",
+  id: 3,
   name: "Instances export 2026-06-03 14:06:00",
   filename: "instances-export-3.tsv",
   row_count: 12,
@@ -43,7 +43,7 @@ export const failedExportJob: ExportJob = {
 };
 
 export const newExportJob: ExportJob = {
-  id: "job-new",
+  id: 4,
   name: "Instances export 2026-06-03 14:12:00",
   filename: "instances-export-4.tsv",
   row_count: 0,
@@ -57,7 +57,7 @@ export const newExportJob: ExportJob = {
 };
 
 export const processingActivitiesExportJob: ExportJob = {
-  id: "act-job-processing",
+  id: 5,
   name: "Activities export 2026-06-03 14:10:00",
   filename: "activities-export-1.tsv",
   row_count: 50,
@@ -71,7 +71,7 @@ export const processingActivitiesExportJob: ExportJob = {
 };
 
 export const completedActivitiesExportJob: ExportJob = {
-  id: "act-job-completed",
+  id: 6,
   name: "Activities export 2026-06-03 14:08:00",
   filename: "activities-export-2.tsv",
   row_count: 20,
@@ -85,7 +85,7 @@ export const completedActivitiesExportJob: ExportJob = {
 };
 
 export const failedActivitiesExportJob: ExportJob = {
-  id: "act-job-failed",
+  id: 7,
   name: "Activities export 2026-06-03 14:06:00",
   filename: "activities-export-3.tsv",
   row_count: 0,
