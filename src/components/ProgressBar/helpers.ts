@@ -18,7 +18,9 @@ export const formatSecondsRemaining = (seconds: number): string => {
     const minutes = Math.floor(safe / SECONDS_PER_MINUTE);
     const remainderSeconds = safe % SECONDS_PER_MINUTE;
 
-    return remainderSeconds ? `${minutes}m ${remainderSeconds}s` : `${minutes}m`;
+    return remainderSeconds
+      ? `${minutes}m ${remainderSeconds}s`
+      : `${minutes}m`;
   }
 
   return `${safe}s`;
