@@ -40,9 +40,12 @@ describe("MirrorsList", () => {
     it("shows only the first page of mirrors when there are more than the page size", () => {
       renderWithProviders(<MirrorsList mirrors={[...mirrors]} />);
 
+      const lastMirror = mirrors.at(-1);
+      assert(lastMirror);
+
       expect(screen.getByText(mirrors[0].displayName)).toBeInTheDocument();
       expect(
-        screen.queryByText(mirrors[20].displayName),
+        screen.queryByText(lastMirror.displayName),
       ).not.toBeInTheDocument();
     });
 
