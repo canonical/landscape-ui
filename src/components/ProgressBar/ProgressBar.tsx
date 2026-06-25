@@ -29,7 +29,10 @@ const ProgressBar: FC<ProgressBarProps> = ({
         aria-valuemax={MAX_PROGRESS}
         aria-label="Progress"
       >
-        <div className={classes.fill} style={{ width: `${clampedProgress}%` }} />
+        <div
+          className={classes.fill}
+          style={{ width: `${clampedProgress}%` }}
+        />
       </div>
       <span className={classes.percentage}>{clampedProgress}%</span>
       <span className={classes.eta}>{getEtaLabel(secondsRemaining)}</span>
