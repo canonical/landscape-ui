@@ -1,0 +1,612 @@
+@import 'settings';
+$list-status-icon-height: $default-icon-size;
+$list-step-bullet-margin: $sph--x-large;
+
+@mixin vf-p-list-placeholders {
+  // Container for .p-stepped-list and .p-stepped-list--detailed ordered lists;
+  // Defines the layout and resets a custom counter
+  %numbered-step-container {
+    counter-reset: p-stepped-list-counter;
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    padding-left: 0;
+  }
+
+  // List item for .p-stepped-list and .p-stepped-list--detailed ordered lists;
+  // Increments the custom counter
+  %numbered-step-item {
+    counter-increment: p-stepped-list-counter;
+  }
+
+  // Title for .p-stepped-list and .p-stepped-list--detailed ordered lists;
+  // Displays the title and step counter
+  %numbered-step-title {
+    list-style: none;
+    margin-left: 0;
+    padding-left: calc(map-get($settings-text-default, line-height) + $list-step-bullet-margin);
+    position: relative;
+
+    &::before {
+      content: counter(p-stepped-list-counter) '.';
+      display: block;
+      height: map-get($settings-text-default, line-height);
+      left: 0;
+      margin-right: $list-step-bullet-margin;
+      position: absolute;
+      text-align: right;
+      width: map-get($settings-text-default, line-height);
+    }
+  }
+
+  // Styles for .p-list--nested-counter
+  %nested-counter {
+    // Counter is named and it will be reset for each "ol" element.
+    counter-reset: p-list-nested-counter-top;
+
+    li {
+      counter-increment: p-list-nested-counter-top;
+    }
+
+    li::marker {
+      content: counter(p-list-nested-counter-top) '. ';
+    }
+
+    // Counter is named and it will be reset for each nested "ol" element.
+    li ol {
+      counter-reset: p-list-nested-counter-nested;
+    }
+
+    li ol li {
+      counter-increment: p-list-nested-counter-nested;
+    }
+
+    li ol li::marker {
+      content: counter(p-list-nested-counter-top) '.' counter(p-list-nested-counter-nested) '. ';
+    }
+  }
+
+  // Mixin for list items
+  %vf-list-item {
+    padding-bottom: $spv--x-small;
+    padding-top: $spv--x-small;
+
+    // FIXME: we need a better way to handle forms within lists
+    // stylelint-disable selector-max-type
+    form & {
+      padding-bottom: 0;
+      padding-top: 0;
+
+      label {
+        margin-bottom: $spv-nudge-compensation;
+      }
+    }
+    // stylelint-enable selector-max-type
+  }
+
+  %vf-list-item-state-base {
+    @extend %vf-list;
+    background-repeat: no-repeat;
+    background-size: $list-status-icon-height;
+    content: '';
+    display: inline-block;
+    height: $sph--large;
+    top: $spv--small;
+  }
+
+  // Styles for .p-list--divided ordered lists
+  %vf-list-item-ordered {
+    counter-increment: p-list-divided-counter;
+
+    &::marker {
+      content: none;
+      display: none;
+    }
+
+    &::before {
+      color: $colors--theme--text-default;
+      // If .p-list--divided ordered list is not within stepped list, display
+      // counter as unique whole number
+      content: counter(p-list-divided-counter) '.';
+      display: inline-block;
+      text-align: right;
+
+      // If .p-list--divided ordered list is within a stepped list, display
+      // counter as decimal nested under parent number
+      .p-stepped-list &,
+      .p-stepped-list--detailed & {
+        content: counter(p-stepped-list-counter) '.' counter(p-list-divided-counter) '.';
+      }
+    }
+
+    // If .p-list--divided is within another .p-list--divided, display counter
+    // as decimal nested under parent number
+    ol.p-list--divided {
+      counter-reset: p-list-divided-nested-counter;
+
+      .p-list__item {
+        counter-increment: p-list-divided-nested-counter;
+
+        &::before {
+          content: counter(p-list-divided-counter) '.' counter(p-list-divided-nested-counter) '.';
+        }
+      }
+    }
+  }
+
+  %vf-list-item-with-divisor-common-properties {
+    margin: 0;
+    padding-bottom: $sph--large;
+    padding-top: $sph--small;
+  }
+
+  %vf-list-item-bullet {
+    &::before {
+      color: $colors--theme--text-default;
+      content: '•';
+      display: inline-block;
+      text-align: right;
+    }
+  }
+}
+
+@mixin vf-list-item-has-prefix {
+  padding-left: $sp-x-large;
+  position: relative;
+
+  > .p-list--divided,
+  > .p-list--horizontal-section,
+  > .p-list {
+    margin-left: 0;
+  }
+
+  &::before {
+    left: 0;
+    position: absolute;
+    width: $sp-medium;
+  }
+}
+
+@mixin vf-list-item-divided {
+  @extend %vf-list-item-with-divisor-common-properties;
+
+  box-shadow: inset 0px 1px 0px 0px $colors--theme--border-low-contrast;
+
+  &:first-child {
+    box-shadow: none;
+  }
+
+  .p-list--divided > .p-list__item:first-child {
+    box-shadow: inset 0px 1px 0px 0px $colors--theme--border-low-contrast;
+  }
+}
+
+@mixin vf-list-item-horizontal-section {
+  @extend %vf-list-item-with-divisor-common-properties;
+
+  // Allows list item pseudo-elements to be absolutely positioned relative to the list item
+  position: relative;
+}
+
+// Offset a list item icon (tick or cross) away from the divisor above it
+@mixin vf-list-item-icon-divisor-offset {
+  &.is-ticked::before,
+  &.is-crossed::before {
+    top: $spv--medium;
+  }
+}
+
+// Mixin for inline list items
+@mixin vf-inline-list-item {
+  display: inline;
+  list-style: none;
+  margin-right: $sph--large;
+
+  &.last-item,
+  &:last-of-type {
+    margin-right: 0;
+  }
+}
+
+// List styling using list class
+@mixin vf-p-list {
+  .p-list {
+    @extend %vf-clearfix;
+    @extend %vf-list;
+
+    &__item {
+      @extend %vf-list-item;
+    }
+  }
+}
+
+// Sets horizontal list section grid column count and makes list item borders span the full grid width.
+// $columns: Number of columns that the list items should be divided into.
+// $skip-cols: Number of columns at the start of each row to skip
+@mixin list-horizontal-section-row-width($columns, $skip-cols: 0) {
+  --columns: #{$columns + $skip-cols};
+  // List item borders span full grid width, not list item width.
+  // Multiply 100% width by the number of columns to create a border that spans the full grid width.
+  .p-list__item:nth-child(#{$columns}n + 1)::after {
+    background: $colors--theme--border-low-contrast;
+    content: '';
+    height: 1px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    // 100% * columns = total width of all list item columns in a row
+    // (gutter width) * (columns - 1) = total width of all gutters in a row
+    // width = (width of list items) + (width of gutters)
+    width: calc(100% * #{$columns} + #{$columns - 1} * map-get($grid-gutter-widths, default));
+  }
+
+  @if $skip-cols > 0 {
+    @for $i from 1 through $skip-cols {
+      .p-list__item:nth-child(#{$columns}n + #{$i}) {
+        grid-column-start: #{($i + 1)};
+      }
+    }
+  }
+}
+
+@mixin vf-p-list-horizontal-section {
+  $horizontal-list-section-medium-content-width: 66ch;
+  $horizontal-list-section-large-content-width: 100ch;
+
+  .p-list--horizontal-section-wrapper {
+    container-type: inline-size;
+
+    .p-list--horizontal-section {
+      @extend %vf-list;
+      @extend %fixed-width-container;
+
+      display: grid;
+
+      @container (width >= #{$horizontal-list-section-medium-content-width}) {
+        grid-gap: 0 map-get($grid-gutter-widths, default);
+      }
+
+      @container (width < #{$horizontal-list-section-medium-content-width}) {
+        @include list-horizontal-section-row-width($columns: 1);
+      }
+
+      @container (#{$horizontal-list-section-medium-content-width} <= width < #{$horizontal-list-section-large-content-width}) {
+        @include list-horizontal-section-row-width($columns: 2);
+      }
+
+      // We cannot override the default behavior with modifiers, as each container query creates styles for different pseudo-element indices
+      // So, we need to negate variant selectors before applying any styling that does not apply to all variants
+      &:not(.is-25-75) {
+        @container (width >= #{$horizontal-list-section-large-content-width}) {
+          @include list-horizontal-section-row-width($columns: 4);
+        }
+      }
+
+      // --columns is set in the container queries above
+      grid-template-columns: repeat(var(--columns), 1fr);
+
+      .p-list__item {
+        @extend %vf-list-item;
+        @include vf-list-item-icon-divisor-offset;
+        @include vf-list-item-horizontal-section;
+      }
+    }
+
+    .p-list--horizontal-section.is-25-75 {
+      // skip first column on large
+      @container (width >= #{$horizontal-list-section-large-content-width}) {
+        @include list-horizontal-section-row-width($columns: 3, $skip-cols: 1);
+      }
+    }
+  }
+}
+
+// A list with separators between items
+@mixin vf-p-list-divided {
+  .p-list--divided {
+    @extend %vf-list;
+
+    .p-list__item {
+      @extend %vf-list-item;
+      @include vf-list-item-divided;
+      @include vf-list-item-icon-divisor-offset;
+    }
+
+    & & {
+      margin-bottom: 0;
+      margin-left: $sp-x-large;
+      padding-top: $sph--large;
+
+      .p-list__item:last-child {
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  // stylelint-disable selector-max-type -- we want to target ordered lists
+  ol.p-list--divided,
+  ol.p-list--horizontal-section {
+    counter-reset: p-list-divided-counter;
+    list-style: none;
+
+    .p-list__item {
+      @extend %vf-list-item-ordered;
+      @include vf-list-item-has-prefix;
+    }
+  }
+  // stylelint-enable selector-max-type -- we want to target ordered lists
+}
+
+// Displays item with a state icon
+@mixin vf-p-list-item-state {
+  .p-list__item.is-ticked {
+    @include vf-list-item-has-prefix;
+
+    &::before {
+      @extend %vf-list-item-state-base;
+      @include vf-icon-success-grey-themed;
+    }
+  }
+
+  .p-list__item.is-crossed {
+    @include vf-list-item-has-prefix;
+
+    &::before {
+      @extend %vf-list-item-state-base;
+      @include vf-icon-error-grey-themed;
+    }
+  }
+
+  // Displays item with a bullet
+  .p-list__item.has-bullet {
+    @extend %vf-list-item-bullet;
+    @include vf-list-item-has-prefix;
+  }
+}
+
+// Displays a list inline with spacing
+@mixin vf-p-inline-list {
+  .p-inline-list {
+    margin-left: 0;
+    padding-left: 0;
+  }
+
+  .p-inline-list__item {
+    @include vf-inline-list-item;
+  }
+}
+
+// Displays a list inline with items separated by dots
+@mixin vf-p-inline-list-middot {
+  .p-inline-list--middot {
+    margin-left: 0;
+    padding-left: 0;
+
+    .p-inline-list__item {
+      @include vf-inline-list-item;
+      margin-right: $sph--small;
+      position: relative;
+
+      &::after {
+        content: '\2022';
+        line-height: map-get($settings-text-default, line-height);
+        position: relative;
+        right: -0.25rem;
+      }
+
+      &:last-of-type,
+      .last-item {
+        &::after {
+          content: '';
+        }
+      }
+    }
+  }
+}
+
+@mixin vf-p-inline-list-stretch {
+  .p-inline-list--stretch {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 0;
+    padding-left: 0;
+
+    .p-inline-list__item {
+      flex: 1 auto;
+      list-style: none;
+    }
+  }
+}
+
+// Displays a step by step list of instructions
+@mixin vf-p-stepped-list {
+  .p-stepped-list {
+    @extend %vf-clearfix;
+    @extend %numbered-step-container;
+
+    margin-bottom: 0; // spacing has been moved onto __item; this ensures that the heading / paragraph spacing matches that of regular headings / paragraphs
+    margin-left: 0;
+  }
+
+  .p-stepped-list__item {
+    @extend %numbered-step-item;
+
+    // override unecessary col-8 class in markup; layout is handled with css below
+    float: none;
+    margin-left: 0;
+    overflow: visible;
+    padding-bottom: $spv--x-large;
+    position: relative;
+    width: 100%;
+  }
+
+  .p-stepped-list__bullet {
+    display: none;
+  }
+
+  // Indent titles
+  $bullet-width: map-get($settings-text-default, line-height);
+  $bullet-width-mobile: map-get($settings-text-default, line-height);
+
+  .p-stepped-list__title {
+    @extend %numbered-step-title;
+  }
+
+  .p-stepped-list__title + .p-stepped-list__content {
+    margin-left: $bullet-width-mobile + $list-step-bullet-margin;
+    @media (min-width: $threshold-6-12-col) {
+      padding-top: $spv-nudge;
+    }
+
+    @media (min-width: $breakpoint-heading-threshold) {
+      margin-left: $bullet-width + $list-step-bullet-margin;
+    }
+  }
+
+  @for $i from 4 through 1 {
+    // Bullet sizes for each heading level
+    @if $i == 1 {
+      $bullet-width: map-get($settings-text-h1, line-height);
+      $bullet-width-mobile: map-get($settings-text-h1-mobile, line-height);
+    } @else if $i == 2 {
+      $bullet-width: map-get($settings-text-h2, line-height);
+      $bullet-width-mobile: map-get($settings-text-h2-mobile, line-height);
+    } @else if $i == 3 {
+      $bullet-width: map-get($settings-text-h3, line-height);
+      $bullet-width-mobile: map-get($settings-text-h3-mobile, line-height);
+    } @else if $i == 4 {
+      $bullet-width: map-get($settings-text-h4, line-height);
+      $bullet-width-mobile: map-get($settings-text-h4-mobile, line-height);
+    }
+
+    .p-heading--#{$i}.p-stepped-list__title,
+    h#{$i}.p-stepped-list__title {
+      padding-left: $bullet-width-mobile + $list-step-bullet-margin;
+
+      @media (min-width: $breakpoint-heading-threshold) {
+        padding-left: $bullet-width + $list-step-bullet-margin;
+      }
+
+      &::before {
+        height: $bullet-width-mobile;
+        width: $bullet-width-mobile;
+
+        @media (min-width: $breakpoint-heading-threshold) {
+          height: $bullet-width;
+          width: $bullet-width;
+        }
+      }
+    }
+
+    .p-heading--#{$i}.p-stepped-list__title + .p-stepped-list__content,
+    h#{$i}.p-stepped-list__title + .p-stepped-list__content {
+      margin-left: $bullet-width-mobile + $list-step-bullet-margin;
+
+      @media (min-width: $breakpoint-heading-threshold) {
+        margin-left: $bullet-width + $list-step-bullet-margin;
+      }
+    }
+  }
+
+  .p-stepped-list--detailed .p-stepped-list__title + .p-stepped-list__content {
+    @media (min-width: $threshold-6-12-col) {
+      margin-left: 0;
+    }
+  }
+}
+
+@mixin vf-p-stepped-list-detailed {
+  .p-stepped-list--detailed {
+    @extend %numbered-step-container;
+    margin-left: auto;
+
+    @supports (display: grid) {
+      .p-stepped-list__content {
+        @media (min-width: $threshold-4-6-col) {
+          grid-column-end: span 6;
+          margin-top: 0;
+        }
+      }
+
+      .p-stepped-list__title {
+        @media (min-width: $threshold-4-6-col) {
+          grid-column-end: span 6;
+          margin-top: 0;
+        }
+      }
+    }
+
+    .p-stepped-list__item {
+      @extend %numbered-step-item;
+      // TODO use new grid (`%vf-grid-row`)
+      @extend %vf-row;
+      @include vf-b-row-reset;
+
+      @media (min-width: $threshold-6-12-col) {
+        position: relative;
+
+        &::after {
+          background-color: $colors--theme--border-low-contrast;
+          content: '';
+          height: 1px;
+          left: 0;
+          position: absolute;
+          right: 0;
+          top: 0;
+        }
+      }
+    }
+  }
+}
+
+// Adaptor class `is-split` to split the items of a list into two columns
+@mixin vf-p-list-split {
+  [class*='p-list'].is-split {
+    @media (min-width: $threshold-4-6-col) {
+      @supports ((-webkit-columns: 1) or (columns: 1)) {
+        column-gap: $sp-x-large;
+        columns: 2;
+
+        .p-list__item {
+          display: inline-block;
+          width: 100%;
+        }
+      }
+
+      @supports not ((-webkit-columns: 1) or (columns: 1)) {
+        display: flex;
+        flex-wrap: wrap;
+
+        .p-list__item {
+          width: calc(50% - 0.5rem);
+        }
+      }
+
+      &:nth-child(2n-1) {
+        margin-right: $sp-medium;
+      }
+    }
+  }
+}
+
+@mixin vf-p-list-nested-counter {
+  .p-list--nested-counter {
+    @extend %nested-counter;
+  }
+}
+
+@mixin vf-p-lists {
+  @include vf-p-list-placeholders;
+
+  @include vf-p-list;
+  @include vf-p-list-horizontal-section;
+  @include vf-p-list-divided;
+  @include vf-p-list-item-state;
+  @include vf-p-inline-list;
+  @include vf-p-inline-list-middot;
+  @include vf-p-inline-list-stretch;
+  @include vf-p-stepped-list;
+  @include vf-p-stepped-list-detailed;
+  @include vf-p-list-split;
+  @include vf-p-list-nested-counter;
+}

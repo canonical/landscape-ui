@@ -1,0 +1,5 @@
+{
+  "main": "dist/downshift.cjs.cjs",
+  "jsnext:main": "dist/downshift.esm.mjs",
+  "module": "dist/downshift.esm.mjs"
+}
