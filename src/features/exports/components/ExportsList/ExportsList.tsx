@@ -45,7 +45,6 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         Header: "Type",
         accessor: "job",
         id: "type",
-        className: classes.type,
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <>{getTypeLabel(row.original.job)}</>
         ),
