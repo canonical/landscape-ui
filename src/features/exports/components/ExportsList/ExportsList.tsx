@@ -7,12 +7,13 @@ import moment from "moment";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
-import ExportProgressBar from "../ExportProgressBar";
+import ProgressBar from "@/components/ProgressBar";
 import ExportsListActions from "../ExportsListActions";
 import { getStatusLabel, getTypeLabel } from "../../helpers";
 import { getStatusIcon, getTypeIcon } from "./helpers";
 import type { ExportJob } from "../../types/ExportJob";
 import type { ExportRowData } from "./types";
+import classes from "./ExportsList.module.scss";
 
 interface ExportsListProps {
   readonly exportJobs: ExportJob[];
@@ -25,8 +26,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
     () => [
       {
         Header: "Name",
-        accessor: "job",
-        id: "name",
+        accessor: "job.name",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <Button
             type="button"
@@ -45,6 +45,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         Header: "Type",
         accessor: "job",
         id: "type",
+        className: classes.type,
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <>{getTypeLabel(row.original.job)}</>
         ),
@@ -55,11 +56,12 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         Header: "Status",
         accessor: "job",
         id: "status",
+        className: classes.status,
         Cell: ({ row }: CellProps<ExportRowData>) => {
           const { job } = row.original;
           if (job.status === "processing") {
             return (
-              <ExportProgressBar
+              <ProgressBar
                 progress={job.progress}
                 secondsRemaining={job.estimated_seconds_remaining ?? null}
               />
@@ -75,8 +77,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
       },
       {
         Header: "Created",
-        accessor: "job",
-        id: "createdAt",
+        accessor: "job.created_at",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <span className="font-monospace">
             {moment(row.original.job.created_at).format(
@@ -87,8 +88,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
       },
       {
         Header: "Expires",
-        accessor: "job",
-        id: "retainUntil",
+        accessor: "job.retain_until",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <span className="font-monospace">
             {moment(row.original.job.retain_until).format(
