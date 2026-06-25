@@ -1,4 +1,5 @@
-import type { ExportFormValues } from "@/features/exports";
+import type { ExportFieldGroup, ExportFormValues } from "@/features/exports";
+import { EXPORT_FIELD_GROUPS } from "@/features/instances";
 import { INPUT_DATE_FORMAT } from "@/constants";
 import moment from "moment";
 
@@ -12,8 +13,33 @@ export const BUCKET_OPTIONS = [
 
 export type BucketKey = (typeof BUCKET_OPTIONS)[number]["value"];
 
+export const REPORT_EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
+  {
+    title: "Compliance",
+    key: "compliance",
+    fields: [
+      { id: "securely_patched", label: "Securely patched" },
+      { id: "covered_by_upgrade_profile", label: "Covered by upgrade profile" },
+      { id: "contacted_recently", label: "Contacted in last 5 min" },
+      { id: "time_to_patch_days", label: "Time to patch (days)" },
+      { id: "upgrade_profile_schedule", label: "Upgrade profile schedule" },
+      { id: "resolved_cves", label: "Resolved CVEs" },
+      { id: "unresolved_cves", label: "Unresolved CVEs" },
+    ],
+  },
+  ...EXPORT_FIELD_GROUPS,
+];
+
 export const INITIAL_EXPORT_VALUES: ExportFormValues = {
   name: "",
-  selectedFieldIds: [],
+  selectedFieldIds: [
+    "title",
+    "hostname",
+    "securely_patched",
+    "covered_by_upgrade_profile",
+    "contacted_recently",
+    "time_to_patch_days",
+    "upgrade_profile_schedule",
+  ],
   retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
 };

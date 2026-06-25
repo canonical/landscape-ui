@@ -130,13 +130,17 @@ describe("ReportExportForm", () => {
     // Enable by_cve
     await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
 
+    // Verify the CVE note appears
+    expect(
+      screen.getByText(/CVE exports add a cve_id and status column/i),
+    ).toBeInTheDocument();
+
     // Fill ExportForm Step 0
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
       "My compliance export",
     );
     await openAttributeGroup(user, /primary identity/i);
-    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
 
     // Step 1 — submit
@@ -209,5 +213,105 @@ describe("ReportExportForm", () => {
     await waitFor(() => {
       expect(capturedQuery).toBe("id:1 OR id:2 OR id:3 OR id:4");
     });
+  });
+
+  it("renders the Compliance field group with all expected fields", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await openAttributeGroup(user, /compliance/i);
+
+    expect(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Covered by upgrade profile" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Contacted in last 5 min" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Time to patch (days)" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Upgrade profile schedule" }),
+    ).toBeInTheDocument();
+  });
+
+  it("defaults to selecting title, hostname and all compliance fields", async () => {
+    const user = userEvent.setup();
+    let requestBody: Record<string, unknown> = {};
+
+    server.use(
+      http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+        requestBody = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json(
+          {
+            id: 8,
+            name: requestBody.name,
+            filename: "compliance-export-1.tsv",
+            row_count: 0,
+            type: "instance",
+            created_at: new Date().toISOString(),
+            status: "processing",
+            progress: 0,
+            download_ready: false,
+            retain_until: requestBody.retain_until,
+            query: requestBody.query,
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    renderForm();
+
+    // Verify default selections are checked
+    await openAttributeGroup(user, /primary identity/i);
+    expect(screen.getByRole("checkbox", { name: "Hostname" })).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Instance name" }),
+    ).toBeChecked();
+
+    await openAttributeGroup(user, /compliance/i);
+    expect(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Covered by upgrade profile" }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Contacted in last 5 min" }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Time to patch (days)" }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "Upgrade profile schedule" }),
+    ).toBeChecked();
+
+    // Submit and verify the default field IDs are sent
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Default fields export",
+    );
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    await waitFor(() => {
+      expect(requestBody.selected_field_ids).toEqual(
+        expect.arrayContaining([
+          "title",
+          "hostname",
+          "securely_patched",
+          "covered_by_upgrade_profile",
+          "contacted_recently",
+          "time_to_patch_days",
+          "upgrade_profile_schedule",
+        ]),
+      );
+    });
+
+    expect((requestBody.selected_field_ids as string[]).length).toBe(7);
   });
 });

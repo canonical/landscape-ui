@@ -7,7 +7,6 @@ import {
   type ExportField,
   type ExportFormValues,
 } from "@/features/exports";
-import { EXPORT_FIELD_GROUPS } from "@/features/instances";
 import { CheckboxInput, Select } from "@canonical/react-components";
 import moment from "moment";
 import { useState, type FC } from "react";
@@ -18,6 +17,7 @@ import classes from "./ReportExportForm.module.scss";
 import {
   BUCKET_OPTIONS,
   INITIAL_EXPORT_VALUES,
+  REPORT_EXPORT_FIELD_GROUPS,
   type BucketKey,
 } from "./constants";
 
@@ -139,8 +139,17 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
           setByCve((v) => !v);
         }}
       />
+      {byCve && (
+        <p className="u-text--muted">
+          <small>
+            CVE exports add a cve_id and status column and emit one row per
+            instance and CVE. The fields selected below are included on every
+            row.
+          </small>
+        </p>
+      )}
       <ExportForm
-        fieldGroups={EXPORT_FIELD_GROUPS}
+        fieldGroups={REPORT_EXPORT_FIELD_GROUPS}
         initialValues={INITIAL_EXPORT_VALUES}
         isSubmitting={isExportComplianceTsvLoading}
         onGenerate={handleGenerate}
