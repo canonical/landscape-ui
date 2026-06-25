@@ -9,6 +9,7 @@ export const processingExportJob: ExportJob = {
   created_at: "2026-06-03T12:10:00.000Z",
   status: "processing",
   progress: 35,
+  estimated_seconds_remaining: 150,
   download_ready: false,
   retain_until: "2029-06-03T12:10:00.000Z",
   query: "tag:production",
@@ -51,6 +52,7 @@ export const newExportJob: ExportJob = {
   created_at: "2026-06-03T12:12:00.000Z",
   status: "processing",
   progress: 0,
+  estimated_seconds_remaining: null,
   download_ready: false,
   retain_until: "2029-06-03T12:12:00.000Z",
   query: "tag:production",
@@ -65,6 +67,7 @@ export const processingActivitiesExportJob: ExportJob = {
   created_at: "2026-06-03T12:10:00.000Z",
   status: "processing",
   progress: 30,
+  estimated_seconds_remaining: 19800,
   download_ready: false,
   retain_until: "2029-06-03T12:10:00.000Z",
   query: "status:succeeded",
@@ -98,6 +101,69 @@ export const failedActivitiesExportJob: ExportJob = {
   query: null,
 };
 
+// Processing jobs covering every ETA label state in the progress bar:
+// id 4 → "Estimating..." (null), id 5 → hours + minutes, id 1 → minutes + seconds,
+// plus the four below for hours, minutes, seconds and "Almost done".
+export const processingHoursExportJob: ExportJob = {
+  id: 8,
+  name: "Instances export 2026-06-03 14:14:00",
+  filename: "instances-export-8.tsv",
+  row_count: 300,
+  type: "instance",
+  created_at: "2026-06-03T12:14:00.000Z",
+  status: "processing",
+  progress: 45,
+  estimated_seconds_remaining: 7200,
+  download_ready: false,
+  retain_until: "2029-06-03T12:14:00.000Z",
+  query: "tag:production",
+};
+
+export const processingMinutesExportJob: ExportJob = {
+  id: 9,
+  name: "Instances export 2026-06-03 14:16:00",
+  filename: "instances-export-9.tsv",
+  row_count: 200,
+  type: "instance",
+  created_at: "2026-06-03T12:16:00.000Z",
+  status: "processing",
+  progress: 60,
+  estimated_seconds_remaining: 120,
+  download_ready: false,
+  retain_until: "2029-06-03T12:16:00.000Z",
+  query: "tag:production",
+};
+
+export const processingSecondsExportJob: ExportJob = {
+  id: 10,
+  name: "Instances export 2026-06-03 14:18:00",
+  filename: "instances-export-10.tsv",
+  row_count: 80,
+  type: "instance",
+  created_at: "2026-06-03T12:18:00.000Z",
+  status: "processing",
+  progress: 88,
+  estimated_seconds_remaining: 30,
+  download_ready: false,
+  retain_until: "2029-06-03T12:18:00.000Z",
+  query: "tag:production",
+};
+
+export const processingAlmostDoneExportJob: ExportJob = {
+  id: 11,
+  name: "Instances export 2026-06-03 14:20:00",
+  filename: "instances-export-11.tsv",
+  row_count: 60,
+  type: "instance",
+  created_at: "2026-06-03T12:20:00.000Z",
+  status: "processing",
+  progress: 99,
+  estimated_seconds_remaining: 3,
+  download_ready: false,
+  retain_until: "2029-06-03T12:20:00.000Z",
+  query: "tag:production",
+};
+
 // Default fixtures served by the MSW exports handlers so the Exports UI is fully
 // browsable in dev mode (`VITE_MSW_ENABLED`) and resolvable by id in tests.
 export const DEFAULT_EXPORT_JOBS: ExportJob[] = [
@@ -108,4 +174,8 @@ export const DEFAULT_EXPORT_JOBS: ExportJob[] = [
   processingActivitiesExportJob,
   completedActivitiesExportJob,
   failedActivitiesExportJob,
+  processingHoursExportJob,
+  processingMinutesExportJob,
+  processingSecondsExportJob,
+  processingAlmostDoneExportJob,
 ];
