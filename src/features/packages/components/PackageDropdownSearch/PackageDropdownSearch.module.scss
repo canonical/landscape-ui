@@ -5,26 +5,20 @@
   position: relative;
 }
 
+.topRow {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: $spv--small $sph--large;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $colors--theme--border-default;
+  }
+}
+
 .suggestionsContainer {
   max-height: 20rem;
   position: absolute;
   width: 100%;
   z-index: var(--z-dropdown);
-}
-
-.pointer {
-  cursor: pointer;
-  padding: $spv--small;
-}
-
-.highlighted {
-  background-color: $colors--theme--background-alt;
-}
-
-.selectedContainer {
-  align-items: center;
-  background-color: $colors--theme--background-alt;
-  display: flex;
-  justify-content: space-between;
-  margin-top: $spv--medium;
 }

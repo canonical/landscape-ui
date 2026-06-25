@@ -37,7 +37,7 @@ const InstallSnaps: FC = () => {
       });
       closeSidePanel();
       notify.success({
-        message: `You queued ${getSelectionLabel(selectedSnaps, (snap) => `snap ${snap.name}`, `snaps`)} to be installed.`,
+        message: `You queued ${getSelectionLabel(selectedSnaps, (snap) => `snap ${snap.name}`, "snaps")} to be installed.`,
       });
       setSelectedSnaps([]);
     } catch (error) {

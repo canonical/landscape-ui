@@ -9,6 +9,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "vitest";
+import { getFeatures } from "../../helpers";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -20,21 +21,32 @@ const ubuntuProInfo = {
   attached: true,
 } as unknown as UbuntuProInfo;
 
-const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro"];
+const MENU_LABELS = ["Operations", "Grouping", "Ubuntu Pro", "Deb management"];
 
 const OPERATIONS_LABELS = [
   "Shut down",
   "Restart",
   "Remove from Landscape",
-  "Upgrade",
   "Upgrade distributions",
   "View report",
   "Run script",
+  "Remove from Landscape",
 ];
 
 const GROUPING_LABELS = ["Assign access group", "Assign tag"];
 
 const UBUNTU_PRO_LABELS = ["Attach token", "Detach token"];
+
+const DEB_MANAGEMENT_LABELS = [
+  "Apply upgrades (advanced)",
+  "Apply all upgrades",
+  "Apply all security upgrades",
+  "Install",
+  "Uninstall",
+  "Downgrade",
+  "Hold",
+  "Unhold",
+];
 
 describe("InstancesPageActions", () => {
   beforeEach(() => {
@@ -51,7 +63,8 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={selected}
+        toggledInstances={selected}
+        instanceCount={instances.length}
       />,
     );
 
@@ -72,199 +85,213 @@ describe("InstancesPageActions", () => {
     for (const label of UBUNTU_PRO_LABELS) {
       expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
     }
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+    for (const label of DEB_MANAGEMENT_LABELS) {
+      expect(screen.getByRole("menuitem", { name: label })).toBeInTheDocument();
+    }
+
+    for (const button of buttons) {
+      expect(button).not.toHaveAttribute("aria-disabled");
+    }
   });
 
-  describe("Disabled and visible states", () => {
-    it("should disable buttons when no instances selected", () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={[]}
-        />,
-      );
+  it("should disable buttons", () => {
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[]}
+        instanceCount={instances.length}
+      />,
+    );
 
-      const buttons = screen.getAllByRole("button");
+    const buttons = screen.getAllByRole("button");
+    expect(buttons).toHaveLength(MENU_LABELS.length);
 
-      expect(buttons).toHaveLength(MENU_LABELS.length);
-
-      for (const button of buttons) {
-        expect(button).toHaveClass("is-disabled");
-      }
-    });
-
-    it("should disable buttons while getting instances", () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={true}
-          selectedInstances={[]}
-        />,
-      );
-
-      const buttons = screen.getAllByRole("button");
-
-      expect(buttons).toHaveLength(MENU_LABELS.length);
-
-      for (const button of buttons) {
-        expect(button).toHaveClass("is-disabled");
-      }
-    });
-
-    it("'View report' menu item should be visible when feature enabled", async () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={selected}
-        />,
-      );
-
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-
-      const button = screen.getByRole("menuitem", { name: /view report/i });
-      expect(button).toBeInTheDocument();
-    });
-
-    it("'View report' menu item should not be visible when feature disabled", async () => {
-      vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
-
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={selected}
-        />,
-      );
-
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-
-      expect(
-        screen.queryByRole("menuitem", { name: /view report/i }),
-      ).not.toBeInTheDocument();
-    });
-
-    it("'Upgrade' menu item should be enabled without upgrades info", async () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={[
-            {
-              ...ubuntuInstance,
-              upgrades: undefined,
-            },
-          ]}
-        />,
-      );
-
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-
-      const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
-      expect(button).not.toHaveClass("is-disabled");
-    });
-
-    it("'Upgrade' menu item should be disabled if no upgrades are available", async () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={[
-            {
-              ...ubuntuInstance,
-              alerts: [],
-            },
-          ]}
-        />,
-      );
-
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-
-      const button = screen.getByRole("menuitem", { name: /^upgrade$/i });
+    for (const button of buttons) {
+      expect(button).toHaveAttribute("aria-disabled", "true");
       expect(button).toHaveClass("is-disabled");
+    }
+  });
+
+  it("'View report' menu item should be visible when feature enabled", async () => {
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={selected}
+        instanceCount={instances.length}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+
+    const button = screen.getByRole("menuitem", { name: /view report/i });
+    expect(button).toBeInTheDocument();
+  });
+
+  it("'View report' menu item should not be visible when feature disabled", async () => {
+    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={selected}
+        instanceCount={instances.length}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+
+    expect(
+      screen.queryByRole("menuitem", { name: /view report/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("'Upgrade' menu item should be enabled without upgrades info", async () => {
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[
+          {
+            ...ubuntuInstance,
+            upgrades: undefined,
+          },
+        ]}
+        instanceCount={instances.length}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+
+    const button = screen.getByRole("menuitem", {
+      name: "Apply upgrades (advanced)",
     });
+    expect(button).not.toHaveClass("is-disabled");
+  });
 
-    it("'Upgrade distributions' menu item should be disabled if no release upgrades are available", async () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={[
-            {
-              ...ubuntuInstance,
-              has_release_upgrades: false,
-            },
-          ]}
-        />,
-      );
+  it("'Upgrade' menu item should be disabled if no upgrades are available", async () => {
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[
+          {
+            ...ubuntuInstance,
+            alerts: [],
+          },
+        ]}
+        instanceCount={instances.length}
+      />,
+    );
 
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
 
-      const button = screen.getByRole("menuitem", {
-        name: /upgrade distributions/i,
-      });
-      expect(button).toHaveClass("is-disabled");
+    const button = screen.getByRole("menuitem", {
+      name: "Apply upgrades (advanced)",
     });
+    expect(button).toHaveClass("is-disabled");
+  });
 
-    it("'Run script' menu item should be disabled if script feature is disabled", async () => {
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={[{ ...windowsInstance }]}
-        />,
-      );
+  it("should disable package buttons when instances do not have the package feature", async () => {
+    const toggledInstance = instances.find(
+      (instance) => !getFeatures(instance).packages,
+    );
 
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
+    assert(toggledInstance);
 
-      const button = screen.getByRole("menuitem", { name: /run script/i });
-      expect(button).toHaveClass("is-disabled");
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[toggledInstance]}
+        instanceCount={instances.length}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[3] }));
+
+    for (const label of DEB_MANAGEMENT_LABELS) {
+      const menuItem = screen.getByRole("menuitem", { name: label });
+      expect(menuItem).toHaveAttribute("aria-disabled", "true");
+    }
+  });
+
+  it("'Upgrade distributions' menu item should be disabled if no release upgrades are available", async () => {
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[
+          {
+            ...ubuntuInstance,
+            has_release_upgrades: false,
+          },
+        ]}
+        instanceCount={instances.length}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+
+    const button = screen.getByRole("menuitem", {
+      name: /upgrade distributions/i,
     });
+    expect(button).toHaveClass("is-disabled");
+  });
 
-    it("'Detach token' menu item should not be visible if pro licensing is disabled", async () => {
-      setEndpointStatus({ status: "empty", path: "features" });
+  it("'Run script' menu item should be disabled if script feature is disabled", async () => {
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[{ ...windowsInstance }]}
+        instanceCount={instances.length}
+      />,
+    );
 
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={selected}
-        />,
-      );
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
 
-      expect(
-        screen.getByRole("button", { name: /attach token/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: /detach token/i }),
-      ).not.toBeInTheDocument();
-    });
+    const button = screen.getByRole("menuitem", { name: /run script/i });
+    expect(button).toHaveClass("is-disabled");
+  });
 
-    it("'Replace token' menu item should be visible if instance has token", async () => {
-      setEndpointStatus({ status: "empty", path: "features" });
+  it("'Detach token' menu item should not be visible if pro licensing is disabled", async () => {
+    setEndpointStatus({ status: "empty", path: "features" });
 
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={[
-            {
-              ...ubuntuInstance,
-              ubuntu_pro_info: ubuntuProInfo,
-            },
-          ]}
-        />,
-      );
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={selected}
+        instanceCount={instances.length}
+      />,
+    );
 
-      expect(
-        screen.getByRole("button", { name: /replace token/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.queryByRole("button", { name: /attach token/i }),
-      ).not.toBeInTheDocument();
-    });
+    expect(
+      screen.getByRole("button", { name: /attach token/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /detach token/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("'Replace token' menu item should be visible if instance has token", async () => {
+    setEndpointStatus({ status: "empty", path: "features" });
+
+    renderWithProviders(
+      <InstancesPageActions
+        isGettingInstances={false}
+        toggledInstances={[
+          {
+            ...ubuntuInstance,
+            ubuntu_pro_info: ubuntuProInfo,
+          },
+        ]}
+        instanceCount={instances.length}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: /replace token/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /attach token/i }),
+    ).not.toBeInTheDocument();
   });
 
   describe("should proper handle button clicks", () => {
@@ -272,7 +299,8 @@ describe("InstancesPageActions", () => {
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={selected}
+          toggledInstances={selected}
+          instanceCount={instances.length}
         />,
       );
     });
@@ -288,8 +316,6 @@ describe("InstancesPageActions", () => {
       const dialog = screen.getByRole("dialog", {
         name: `Shut down ${pluralize(selected.length, ["instance"], "exact")}`,
       });
-
-      expect(dialog).toBeInTheDocument();
 
       await userEvent.click(
         within(dialog).getByRole("button", { name: /shut down/i }),
@@ -312,8 +338,6 @@ describe("InstancesPageActions", () => {
         name: `Restart ${pluralize(selected.length, ["instance"], "exact")}`,
       });
 
-      expect(dialog).toBeInTheDocument();
-
       await userEvent.click(
         within(dialog).getByRole("button", { name: /restart/i }),
       );
@@ -333,9 +357,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /run script/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /run script/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /run script/i });
     });
 
     it("'View report' menu item", async () => {
@@ -346,24 +368,80 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /view report/i }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Report for ${selected.length} instances`,
-        }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", {
+        name: `Report for ${selected.length} instances`,
+      });
     });
 
-    it("'Upgrade' menu item", async () => {
+    it("'Deb management' button", async () => {
       await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-      await userEvent.click(
-        screen.getByRole("menuitem", { name: /^upgrade$/i }),
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /upgrades/i }),
-      ).toBeInTheDocument();
+      for (const label of DEB_MANAGEMENT_LABELS) {
+        screen.getByRole("menuitem", { name: label });
+      }
+    });
+
+    it("'Upgrade' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /apply upgrades \(advanced\)/i }),
+      );
+
+      screen.getByRole("heading", { name: /upgrade/i });
+    });
+
+    it("'Downgrade' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /downgrade/i }),
+      );
+
+      // uncomment when downgrade form is implementated
+      // screen.getByRole("heading", { name: /downgrade/i });
+    });
+
+    it("'Install' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: /install/ }));
+
+      screen.getByRole("heading", { name: /install/i });
+    });
+
+    it("'Uninstall' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(
+        screen.getByRole("menuitem", { name: /uninstall/i }),
+      );
+
+      screen.getByRole("heading", { name: /uninstall/i });
+    });
+
+    it("'Hold' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: /hold/ }));
+
+      screen.getByRole("heading", { name: /hold/i });
+    });
+
+    it("'Unhold' button", async () => {
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[3] }),
+      );
+      await userEvent.click(screen.getByRole("menuitem", { name: /unhold/i }));
+
+      screen.getByRole("heading", { name: /unhold/i });
     });
 
     it("'Upgrade distributions' menu item", async () => {
@@ -400,9 +478,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /assign access group/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /assign access group/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /assign access group/i });
     });
 
     it("'Assign tags' menu item", async () => {
@@ -413,9 +489,7 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /assign tag/i }),
       );
 
-      expect(
-        screen.getByRole("heading", { name: /assign tags/i }),
-      ).toBeInTheDocument();
+      screen.getByRole("heading", { name: /assign tags/i });
     });
 
     it("'Attach token' menu item", async () => {
@@ -449,12 +523,13 @@ describe("InstancesPageActions", () => {
     renderWithProviders(
       <InstancesPageActions
         isGettingInstances={false}
-        selectedInstances={[
+        toggledInstances={[
           {
             ...ubuntuInstance,
             ubuntu_pro_info: ubuntuProInfo,
           },
         ]}
+        instanceCount={instances.length}
       />,
     );
 
@@ -478,7 +553,8 @@ describe("InstancesPageActions", () => {
       renderWithProviders(
         <InstancesPageActions
           isGettingInstances={false}
-          selectedInstances={instances.slice(startIdx, endIdx)}
+          toggledInstances={instances.slice(startIdx, endIdx)}
+          instanceCount={instances.length}
         />,
       );
 

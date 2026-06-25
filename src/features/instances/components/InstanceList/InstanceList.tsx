@@ -1,10 +1,15 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import ListTitle from "@/components/layout/ListTitle";
+import LoadingState from "@/components/layout/LoadingState";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import StaticLink from "@/components/layout/StaticLink";
 import TruncatedCell from "@/components/layout/TruncatedCell";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DISPLAY_DATE_TIME_FORMAT,
+  SELECT_ALL_INSTANCES_ENABLED,
+} from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
@@ -17,7 +22,7 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
-import { memo, useCallback, useEffect, useId, useMemo } from "react";
+import { useCallback, useEffect, useId, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import {
   createHeaderPropsGetter,
@@ -32,19 +37,27 @@ import type { InstanceColumn } from "./types";
 
 interface InstanceListProps {
   readonly instances: Instance[];
-  readonly instanceCount: number | undefined;
-  readonly selectedInstances: Instance[];
+  readonly instanceCount: number;
+  readonly toggledInstances: Instance[];
   readonly setColumnFilterOptions: (options: ColumnFilterOption[]) => void;
-  readonly setSelectedInstances: (instances: Instance[]) => void;
+  readonly setToggledInstances: (instances: Instance[]) => void;
+  readonly areAllInstancesSelected?: boolean;
+  readonly selectAllInstances: () => void;
+  readonly deselectAllInstances: () => void;
+  readonly isGettingInstances?: boolean;
 }
 
-const InstanceList = memo(function InstanceList({
+const InstanceList = ({
   instances: currentInstances,
   instanceCount,
-  selectedInstances,
+  toggledInstances,
   setColumnFilterOptions,
-  setSelectedInstances,
-}: InstanceListProps) {
+  setToggledInstances,
+  areAllInstancesSelected = false,
+  selectAllInstances,
+  deselectAllInstances,
+  isGettingInstances,
+}: InstanceListProps) => {
   const { disabledColumns, ...filters } = usePageParams();
 
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
@@ -62,70 +75,99 @@ const InstanceList = memo(function InstanceList({
     return false;
   });
 
-  const isSelected = useCallback(
+  const clearSelection = useCallback(() => {
+    deselectAllInstances();
+    setToggledInstances([]);
+  }, [deselectAllInstances, setToggledInstances]);
+
+  const isToggled = useCallback(
     (instance: Instance) =>
-      selectedInstances.some(
-        (selectedInstance) => selectedInstance.id === instance.id,
+      toggledInstances.some(
+        (toggledInstance) => toggledInstance.id === instance.id,
       ),
-    [selectedInstances],
+    [toggledInstances],
   );
 
-  const isNotSelected = useCallback(
-    (instance: Instance) => !isSelected(instance),
-    [isSelected],
+  const isNotToggled = useCallback(
+    (instance: Instance) => !isToggled(instance),
+    [isToggled],
   );
 
-  const deselect = useCallback(
+  const untoggle = useCallback(
     (...instances: Instance[]) => {
-      setSelectedInstances(
-        selectedInstances.filter(
-          (selectedInstance) =>
-            !instances.some((instance) => selectedInstance.id === instance.id),
+      setToggledInstances(
+        toggledInstances.filter(
+          (toggledInstance) =>
+            !instances.some((instance) => toggledInstance.id === instance.id),
         ),
       );
     },
-    [setSelectedInstances, selectedInstances],
+    [setToggledInstances, toggledInstances],
   );
 
-  const select = useCallback(
+  const untoggleAll = useCallback(() => {
+    untoggle(...currentInstances);
+  }, [currentInstances, untoggle]);
+
+  const toggle = useCallback(
     (...instances: Instance[]) => {
-      setSelectedInstances([...selectedInstances, ...instances]);
-    },
-    [setSelectedInstances, selectedInstances],
-  );
+      const untoggledInstances = instances.filter(isNotToggled);
 
-  const selectAll = useCallback(() => {
-    select(...currentInstances.filter(isNotSelected));
-  }, [currentInstances, select, isNotSelected]);
+      if (
+        areAllInstancesSelected &&
+        toggledInstances.length + untoggledInstances.length >= instanceCount
+      ) {
+        clearSelection();
+      } else {
+        setToggledInstances([...toggledInstances, ...untoggledInstances]);
+      }
+    },
+    [
+      setToggledInstances,
+      toggledInstances,
+      isNotToggled,
+      clearSelection,
+      areAllInstancesSelected,
+      instanceCount,
+    ],
+  );
 
   const toggleAll = useCallback(() => {
-    if (currentInstances.some(isSelected)) {
-      deselect(...currentInstances);
-    } else {
-      selectAll();
-    }
-  }, [deselect, selectAll, currentInstances, isSelected]);
+    toggle(...currentInstances);
+  }, [currentInstances, toggle]);
 
-  const columns = useMemo<InstanceColumn[]>(
-    () => [
+  const columns = useMemo<InstanceColumn[]>(() => {
+    return [
       {
         accessor: "title",
         canBeHidden: false,
         optionLabel: "Instance name",
-        Header: (
+        Header: () => (
           <div className={classes.rowHeader}>
             <CheckboxInput
               label={<span className="u-off-screen">Toggle all instances</span>}
               inline
-              onChange={toggleAll}
+              onChange={() => {
+                if (
+                  (areAllInstancesSelected &&
+                    currentInstances.every(isToggled)) ||
+                  (!areAllInstancesSelected && currentInstances.some(isToggled))
+                ) {
+                  untoggleAll();
+                } else {
+                  toggleAll();
+                }
+              }}
               disabled={currentInstances.length === 0}
               checked={
-                currentInstances.every(isSelected) &&
-                currentInstances.length !== 0
+                areAllInstancesSelected
+                  ? currentInstances.every(isNotToggled)
+                  : currentInstances.every(isToggled) &&
+                    !!currentInstances.length
               }
               indeterminate={
-                currentInstances.some(isSelected) &&
-                currentInstances.some(isNotSelected)
+                currentInstances.some(isToggled) &&
+                currentInstances.some(isNotToggled)
               }
             />
             <ListTitle>
@@ -134,48 +176,42 @@ const InstanceList = memo(function InstanceList({
             </ListTitle>
           </div>
         ),
-        Cell: ({ row }: CellProps<Instance>) => {
-          return (
-            <div className={classes.rowHeader}>
-              <CheckboxInput
-                label={
-                  <span className="u-off-screen">{row.original.title}</span>
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => (
+          <div className={classes.rowHeader}>
+            <CheckboxInput
+              label={<span className="u-off-screen">{instance.title}</span>}
+              labelClassName="u-no-margin--bottom u-no-padding--top"
+              checked={areAllInstancesSelected !== isToggled(instance)}
+              onChange={() => {
+                if (isToggled(instance)) {
+                  untoggle(instance);
+                } else {
+                  toggle(instance);
                 }
-                labelClassName="u-no-margin--bottom u-no-padding--top"
-                checked={isSelected(row.original)}
-                onChange={() => {
-                  if (isSelected(row.original)) {
-                    deselect(row.original);
-                  } else {
-                    select(row.original);
-                  }
-                }}
-              />
-              <ListTitle>
-                <StaticLink
-                  to={ROUTES.instances.details.fromInstance(row.original)}
-                >
-                  {row.original.title}
-                </StaticLink>
-                <span className="u-text--muted">
-                  {row.original.hostname || <NoData />}
-                </span>
-              </ListTitle>
-            </div>
-          );
-        },
+              }}
+            />
+            <ListTitle>
+              <StaticLink to={ROUTES.instances.details.fromInstance(instance)}>
+                {instance.title}
+              </StaticLink>
+              <span className="u-text--muted">
+                {instance.hostname || <NoData />}
+              </span>
+            </ListTitle>
+          </div>
+        ),
       },
       {
         accessor: "status",
         canBeHidden: true,
         optionLabel: "Status",
         Header: "Status",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getStatusCellIconAndLabel(original);
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+          const { label } = getStatusCellIconAndLabel(instance);
           return label;
         },
-        getCellIcon: ({ row: { original } }) => {
-          const { icon } = getStatusCellIconAndLabel(original);
+        getCellIcon: ({ row: { original: instance } }) => {
+          const { icon } = getStatusCellIconAndLabel(instance);
           return icon;
         },
       },
@@ -184,12 +220,12 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Upgrades",
         Header: "Upgrades",
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          const { label } = getUpgradesCellIconAndLabel(original);
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+          const { label } = getUpgradesCellIconAndLabel(instance);
           return label;
         },
-        getCellIcon: ({ row: { original } }: CellProps<Instance>) => {
-          const { icon } = getUpgradesCellIconAndLabel(original);
+        getCellIcon: ({ row: { original: instance } }: CellProps<Instance>) => {
+          const { icon } = getUpgradesCellIconAndLabel(instance);
           return icon;
         },
       },
@@ -201,9 +237,9 @@ const InstanceList = memo(function InstanceList({
         getCellIcon: () => {
           return "";
         },
-        Cell: ({ row: { original } }: CellProps<Instance>) => {
-          if (!original.has_release_upgrades) {
-            return <>{original.distribution_info?.description || <NoData />}</>;
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
+          if (!instance.has_release_upgrades) {
+            return <>{instance.distribution_info?.description || <NoData />}</>;
           }
 
           return (
@@ -220,7 +256,7 @@ const InstanceList = memo(function InstanceList({
                 </Tooltip>
               </span>
               <span>
-                {original.distribution_info?.description || <NoData />}
+                {instance.distribution_info?.description || <NoData />}
               </span>
             </span>
           );
@@ -231,8 +267,8 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Tags",
         Header: "Tags",
-        Cell: ({ row: { original, index } }: CellProps<Instance>) => {
-          if (!original.tags.length) {
+        Cell: ({ row: { original: instance, index } }: CellProps<Instance>) => {
+          if (!instance.tags.length) {
             return <NoData />;
           }
 
@@ -242,7 +278,7 @@ const InstanceList = memo(function InstanceList({
 
           return (
             <TruncatedCell
-              content={original.tags.map((tag) => (
+              content={instance.tags.map((tag) => (
                 <span className="truncatedItem" key={tag}>
                   {tag}
                 </span>
@@ -259,8 +295,8 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Availability zone",
         Header: "Availability zone",
-        Cell: ({ row: { original } }: CellProps<Instance>) => (
-          <>{original.cloud_init?.availability_zone ?? <NoData />}</>
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => (
+          <>{instance.cloud_init?.availability_zone ?? <NoData />}</>
         ),
       },
       {
@@ -269,14 +305,14 @@ const InstanceList = memo(function InstanceList({
         optionLabel: "Ubuntu pro",
         Header: "Ubuntu pro expiration",
         className: "large-cell",
-        Cell: ({ row }: CellProps<Instance>) => {
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => {
           if (
-            row.original.ubuntu_pro_info?.attached &&
-            moment(row.original.ubuntu_pro_info.expires).isValid()
+            instance.ubuntu_pro_info?.attached &&
+            moment(instance.ubuntu_pro_info.expires).isValid()
           ) {
             return (
               <span className="font-monospace">
-                {moment(row.original.ubuntu_pro_info.expires).format(
+                {moment(instance.ubuntu_pro_info.expires).format(
                   DISPLAY_DATE_TIME_FORMAT,
                 )}
               </span>
@@ -292,11 +328,11 @@ const InstanceList = memo(function InstanceList({
         optionLabel: "Last ping",
         Header: "Last ping time",
         className: "large-cell",
-        Cell: ({ row }: CellProps<Instance>) => (
+        Cell: ({ row: { original: instance } }: CellProps<Instance>) => (
           <>
-            {moment(row.original.last_ping_time).isValid() ? (
+            {moment(instance.last_ping_time).isValid() ? (
               <span className="font-monospace">
-                {moment(row.original.last_ping_time).format(
+                {moment(instance.last_ping_time).format(
                   DISPLAY_DATE_TIME_FORMAT,
                 )}
               </span>
@@ -306,19 +342,20 @@ const InstanceList = memo(function InstanceList({
           </>
         ),
       },
-    ],
-    [
-      currentInstances,
-      expandedRowIndex,
-      handleExpand,
-      titleId,
-      isSelected,
-      isNotSelected,
-      select,
-      deselect,
-      toggleAll,
-    ],
-  );
+    ];
+  }, [
+    currentInstances,
+    expandedRowIndex,
+    handleExpand,
+    titleId,
+    areAllInstancesSelected,
+    isToggled,
+    isNotToggled,
+    untoggleAll,
+    toggleAll,
+    toggle,
+    untoggle,
+  ]);
 
   useEffect(() => {
     setColumnFilterOptions(getColumnFilterOptions(columns));
@@ -333,39 +370,76 @@ const InstanceList = memo(function InstanceList({
     [disabledColumns, columns],
   );
 
-  const clearSelection = () => {
-    setSelectedInstances([]);
+  if (isGettingInstances) {
+    return <LoadingState />;
+  }
+
+  const emptyMsg = isFilteringInstances
+    ? "No instances found according to your search parameters."
+    : "No instances found";
+
+  const clearToggledInstances = () => {
+    setToggledInstances([]);
   };
 
-  const subhead = !!selectedInstances.length &&
-    instanceCount !== undefined &&
+  const subhead = (areAllInstancesSelected || !!toggledInstances.length) &&
     instanceCount > currentInstances.length && (
       <td colSpan={filteredColumns.length} className="u-no-padding">
-        <div className={classes.subhead}>
+        <ResponsiveTableSubhead>
           <span>
-            {selectedInstances.length} of {instanceCount} instances selected
+            {areAllInstancesSelected
+              ? instanceCount - toggledInstances.length
+              : toggledInstances.length}{" "}
+            of {instanceCount} instances selected
           </span>
-          <div className={classes.buttons}>
-            <Button
-              className="u-no-padding u-no-margin"
-              appearance="link"
-              onClick={clearSelection}
-            >
-              Clear selection
-            </Button>
-          </div>
-        </div>
+          <Button
+            className="u-no-padding u-no-margin"
+            appearance="link"
+            onClick={clearSelection}
+          >
+            Clear selection
+          </Button>
+          {SELECT_ALL_INSTANCES_ENABLED &&
+            ((areAllInstancesSelected && currentInstances.some(isToggled)) ||
+              (!areAllInstancesSelected &&
+                currentInstances.some(isNotToggled))) && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={() => {
+                  if (areAllInstancesSelected) {
+                    untoggleAll();
+                  } else {
+                    toggleAll();
+                  }
+                }}
+              >
+                Select all instances on this page
+              </Button>
+            )}
+          {SELECT_ALL_INSTANCES_ENABLED &&
+            ((!areAllInstancesSelected &&
+              toggledInstances.length < instanceCount) ||
+              (areAllInstancesSelected && toggledInstances.length > 0)) && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={() => {
+                  clearToggledInstances();
+                  selectAllInstances();
+                }}
+              >
+                Select all instances on all pages
+              </Button>
+            )}
+        </ResponsiveTableSubhead>
       </td>
     );
 
   return (
     <ResponsiveTable
       subhead={subhead}
-      emptyMsg={
-        isFilteringInstances
-          ? "No instances found according to your search parameters."
-          : "No instances found"
-      }
+      emptyMsg={emptyMsg}
       ref={getTableRowsRef}
       columns={filteredColumns}
       data={currentInstances}
@@ -375,6 +449,6 @@ const InstanceList = memo(function InstanceList({
       minWidth={1400}
     />
   );
-});
+};
 
 export default InstanceList;

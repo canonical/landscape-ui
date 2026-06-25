@@ -2,15 +2,22 @@ import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
+import type { PackageAction } from "@/features/packages";
+import { PackagesActionForm } from "@/features/packages";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import {
+  hasOneItem,
+  getSelectionLabel,
+  pluralize,
+  capitalize,
+} from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
-import { lazy, memo, Suspense } from "react";
+import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { getFeatures, hasUpgrades } from "../../helpers";
+import { getFeatures, hasSecurityUpgrades, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
@@ -21,6 +28,11 @@ const RunInstanceScriptForm = lazy(
 );
 const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
+);
+const UpgradesSummary = lazy(async () =>
+  import("@/features/upgrades").then((module) => ({
+    default: module.UpgradesSummary,
+  })),
 );
 const ReportView = lazy(
   async () => import("@/pages/dashboard/instances/ReportView"),
@@ -39,13 +51,19 @@ const ReplaceTokenForm = lazy(
 
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
-  readonly selectedInstances: Instance[];
+  readonly toggledInstances: Instance[];
+  readonly instanceCount: number;
+  readonly areAllInstancesSelected?: boolean;
+  readonly query?: string;
 }
 
-const InstancesPageActions = memo(function InstancesPageActions({
+const InstancesPageActions = ({
   isGettingInstances,
-  selectedInstances,
-}: InstancesPageActionsProps) {
+  toggledInstances,
+  areAllInstancesSelected,
+  instanceCount,
+  query,
+}: InstancesPageActionsProps) => {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
 
@@ -83,20 +101,19 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        {selectedInstances.some(
-          (instance) => !getFeatures(instance).scripts,
-        ) ? (
+        {toggledInstances.some((instance) => !getFeatures(instance).scripts) ? (
           <div className={classes.warning}>
             <p>
-              You selected {selectedInstances.length} instances. This script
-              will:
+              You selected{" "}
+              {pluralize(toggledInstances.length, ["instance"], "exact")}. This
+              script will:
             </p>
 
             <ul>
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter(
+                  toggledInstances.filter(
                     (instance) => getFeatures(instance).scripts,
                   ),
                 )}
@@ -104,7 +121,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               <li>
                 not run on{" "}
                 {createInstanceCountString(
-                  selectedInstances.filter(
+                  toggledInstances.filter(
                     (instance) => !getFeatures(instance).scripts,
                   ),
                 )}
@@ -113,7 +130,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
           </div>
         ) : null}
         <RunInstanceScriptForm
-          query={selectedInstances.map(({ id }) => `id:${id}`).join(" OR ")}
+          query={toggledInstances.map(({ id }) => `id:${id}`).join(" OR ")}
         />
       </Suspense>,
     );
@@ -121,11 +138,35 @@ const InstancesPageActions = memo(function InstancesPageActions({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      "Upgrades",
+      `Upgrade ${getSelectionLabel(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades selectedInstances={selectedInstances} />
+        <Upgrades query={query} toggledInstances={toggledInstances} />
       </Suspense>,
       "large",
+    );
+  };
+
+  const handleAllUpgradesRequest = () => {
+    setSidePanelContent(
+      "Apply all upgrades",
+      <Suspense fallback={<LoadingState />}>
+        <UpgradesSummary query={query} isSelectAllUpgradesEnabled />
+      </Suspense>,
+      "medium",
+    );
+  };
+
+  const handleAllSecurityUpgradesRequest = () => {
+    setSidePanelContent(
+      "Apply all security upgrades",
+      <Suspense fallback={<LoadingState />}>
+        <UpgradesSummary
+          query={query}
+          isSelectAllUpgradesEnabled
+          upgradeType="security"
+        />
+      </Suspense>,
+      "medium",
     );
   };
 
@@ -134,18 +175,30 @@ const InstancesPageActions = memo(function InstancesPageActions({
       "Upgrade distributions",
       <Suspense fallback={<LoadingState />}>
         <DistributionUpgrades
-          selectedInstances={selectedInstances.map(({ id }) => id)}
+          selectedInstances={toggledInstances.map(({ id }) => id)}
         />
       </Suspense>,
       "medium",
     );
   };
 
+  const openPackagesActionForm = (action: PackageAction) => {
+    setSidePanelContent(
+      `${capitalize(action)} packages`,
+      <Suspense fallback={<LoadingState />}>
+        <PackagesActionForm
+          instanceIds={toggledInstances.map(({ id }) => id)}
+          action={action}
+        />
+      </Suspense>,
+    );
+  };
+
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, `instances`)}`,
+      `Report for ${getSelectionLabel(toggledInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
+        <ReportView instanceIds={toggledInstances.map(({ id }) => id)} />
       </Suspense>,
       "medium",
     );
@@ -155,7 +208,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Assign access group",
       <Suspense fallback={<LoadingState />}>
-        <AccessGroupChange selected={selectedInstances} />
+        <AccessGroupChange selected={toggledInstances} />
       </Suspense>,
     );
   };
@@ -164,34 +217,139 @@ const InstancesPageActions = memo(function InstancesPageActions({
     setSidePanelContent(
       "Assign tags",
       <Suspense fallback={<LoadingState />}>
-        <TagsAddForm selected={selectedInstances} />
+        <TagsAddForm selected={toggledInstances} />
       </Suspense>,
     );
   };
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
+      `Attach Ubuntu Pro token to ${pluralize(toggledInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={selectedInstances} />
+        <AttachTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
     );
   };
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
+      `Replace Ubuntu Pro token for ${pluralize(toggledInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={selectedInstances} />
+        <ReplaceTokenForm selectedInstances={toggledInstances} />
       </Suspense>,
     );
   };
 
-  const allInstancesHaveToken = selectedInstances.every(
+  const allInstancesHaveToken = toggledInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
   );
+
+  const noInstanceHasUpgrades =
+    !areAllInstancesSelected &&
+    toggledInstances.every(
+      (instance) =>
+        !hasUpgrades(instance.alerts) || !getFeatures(instance).packages,
+    );
+
+  const noInstanceHasPackageFeature =
+    !areAllInstancesSelected &&
+    toggledInstances.every((instance) => !getFeatures(instance).packages);
+
+  const operationsLinks = [
+    {
+      children: (
+        <>
+          <Icon name="power-off" />
+          <span>Shut down</span>
+        </>
+      ),
+      onClick: openShutdownModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="restart" />
+          <span>Restart</span>
+        </>
+      ),
+      onClick: openRebootModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Remove from Landscape</span>
+        </>
+      ),
+      onClick: openRemoveModal,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="arrow-up" />
+          <span>Upgrade distributions</span>
+        </>
+      ),
+      onClick: handleDistributionUpgradesRequest,
+      hasIcon: true,
+      disabled: toggledInstances.every(
+        (instance) => !instance.has_release_upgrades,
+      ),
+    },
+    REPORT_VIEW_ENABLED
+      ? {
+          children: (
+            <>
+              <Icon name="status" />
+              <span>View report</span>
+            </>
+          ),
+          onClick: handleReportView,
+          hasIcon: true,
+        }
+      : {},
+    {
+      children: (
+        <>
+          <Icon name="code" />
+          <span>Run script</span>
+        </>
+      ),
+      onClick: handleRunScript,
+      hasIcon: true,
+      disabled: toggledInstances.every(
+        (instance) => !getFeatures(instance).scripts,
+      ),
+    },
+  ].filter((link) => link.children);
+
+  const groupingLinks = [
+    {
+      children: (
+        <>
+          <Icon name="user-group" />
+          <span>Assign access group</span>
+        </>
+      ),
+      onClick: handleAccessGroupChange,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="tag" />
+          <span>Assign tag</span>
+        </>
+      ),
+      onClick: handleTagsAssign,
+      hasIcon: true,
+    },
+  ];
 
   const proServicesLinks = [
     allInstancesHaveToken
@@ -229,112 +387,119 @@ const InstancesPageActions = memo(function InstancesPageActions({
       : {},
   ].filter((link) => link.children);
 
-  const groupingLinks = [
+  const debManagementLinks = [
     {
       children: (
         <>
-          <Icon name="user-group" />
-          <span>Assign access group</span>
+          <Icon name="arrow-up" />
+          <span>Apply upgrades (advanced)</span>
         </>
       ),
-      onClick: handleAccessGroupChange,
+      onClick: handleUpgradesRequest,
+      disabled: noInstanceHasUpgrades,
       hasIcon: true,
     },
     {
       children: (
         <>
-          <Icon name="tag" />
-          <span>Assign tag</span>
+          <Icon name="arrow-up" />
+          <span>Apply all upgrades</span>
         </>
       ),
-      onClick: handleTagsAssign,
-      hasIcon: true,
-    },
-  ];
-
-  const operationsLinks = [
-    {
-      children: (
-        <>
-          <Icon name="power-off" />
-          <span>Shut down</span>
-        </>
-      ),
-      onClick: openShutdownModal,
+      onClick: handleAllUpgradesRequest,
+      disabled: noInstanceHasUpgrades,
       hasIcon: true,
     },
     {
       children: (
         <>
-          <Icon name="restart" />
-          <span>Restart</span>
+          <Icon name="security" />
+          <span>Apply all security upgrades</span>
         </>
       ),
-      onClick: openRebootModal,
+      onClick: handleAllSecurityUpgradesRequest,
+      disabled:
+        !areAllInstancesSelected &&
+        toggledInstances.every(
+          (instance) =>
+            !hasSecurityUpgrades(instance.alerts) ||
+            !getFeatures(instance).packages,
+        ),
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="begin-downloading" />
+          <span>Install</span>
+        </>
+      ),
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("install");
+      },
       hasIcon: true,
     },
     {
       children: (
         <>
           <Icon name="delete" />
-          <span>Remove from Landscape</span>
+          <span>Uninstall</span>
         </>
       ),
-      onClick: openRemoveModal,
+      onClick: () => {
+        openPackagesActionForm("uninstall");
+      },
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
     },
     {
       children: (
         <>
-          <Icon name="change-version" />
-          <span>Upgrade</span>
+          <Icon name="arrow-down" />
+          <span>Downgrade</span>
         </>
       ),
-      onClick: handleUpgradesRequest,
+      disabled: noInstanceHasPackageFeature,
+      onClick: () => {
+        openPackagesActionForm("downgrade");
+      },
       hasIcon: true,
-      disabled:
-        selectedInstances.every((instance) => !hasUpgrades(instance.alerts)) ||
-        isGettingInstances,
     },
     {
       children: (
         <>
-          <Icon name="arrow-up" />
-          <span>Upgrade distributions</span>
+          <Icon name="pause" />
+          <span>Hold</span>
         </>
       ),
-      onClick: handleDistributionUpgradesRequest,
+      onClick: () => {
+        openPackagesActionForm("hold");
+      },
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
-      disabled:
-        isGettingInstances ||
-        !selectedInstances.some((instance) => instance.has_release_upgrades),
     },
-    REPORT_VIEW_ENABLED
-      ? {
-          children: (
-            <>
-              <Icon name="status" />
-              <span>View report</span>
-            </>
-          ),
-          onClick: handleReportView,
-          hasIcon: true,
-        }
-      : {},
     {
       children: (
         <>
-          <Icon name="code" />
-          <span>Run script</span>
+          <Icon name="play" />
+          <span>Unhold</span>
         </>
       ),
-      onClick: handleRunScript,
+      onClick: () => {
+        openPackagesActionForm("unhold");
+      },
+      disabled: noInstanceHasPackageFeature,
       hasIcon: true,
-      disabled:
-        isGettingInstances ||
-        selectedInstances.every((instance) => !getFeatures(instance).scripts),
     },
-  ].filter((link) => link.children);
+  ];
+
+  const bulkActionDisabled =
+    (!areAllInstancesSelected && toggledInstances.length <= 0) ||
+    (areAllInstancesSelected && toggledInstances.length >= instanceCount) ||
+    isGettingInstances;
+
+  const nonBulkActionDisabled = bulkActionDisabled || areAllInstancesSelected;
 
   return (
     <>
@@ -348,7 +513,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
+            toggleDisabled={nonBulkActionDisabled}
             hasToggleIcon
           />,
           <ContextualMenu
@@ -357,7 +522,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Grouping"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
+            toggleDisabled={nonBulkActionDisabled}
             hasToggleIcon
           />,
           hasOneItem(proServicesLinks) ? (
@@ -366,7 +531,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={0 === selectedInstances.length}
+              disabled={nonBulkActionDisabled}
               hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
@@ -378,36 +543,44 @@ const InstancesPageActions = memo(function InstancesPageActions({
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={0 === selectedInstances.length}
+              toggleDisabled={nonBulkActionDisabled}
               hasToggleIcon
             />
           ),
+          <ContextualMenu
+            key="deb-management"
+            hasToggleIcon
+            links={debManagementLinks}
+            position="right"
+            toggleLabel={<span>Deb management</span>}
+            toggleClassName="u-no-margin--bottom"
+            toggleDisabled={bulkActionDisabled}
+          />,
         ]}
       />
-
       {rebootModalOpen && (
-        <RestartModal close={closeRebootModal} instances={selectedInstances} />
+        <RestartModal close={closeRebootModal} instances={toggledInstances} />
       )}
       {shutdownModalOpen && (
         <ShutDownModal
           close={closeShutdownModal}
-          instances={selectedInstances}
+          instances={toggledInstances}
         />
       )}
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}
           onClose={closeDetachModal}
-          computerIds={selectedInstances.map(({ id }) => id)}
+          computerIds={toggledInstances.map(({ id }) => id)}
         />
       )}
       <InstanceRemoveFromLandscapeModal
         close={closeRemoveModal}
-        instances={selectedInstances}
+        instances={toggledInstances}
         isOpen={removeModalOpen}
       />
     </>
   );
-});
+};
 
 export default InstancesPageActions;
