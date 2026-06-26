@@ -9,13 +9,14 @@ import {
 } from "@/features/exports";
 import { CheckboxInput, Select } from "@canonical/react-components";
 import moment from "moment";
-import { useState, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 import { useNavigate } from "react-router";
 import { useExportComplianceTsv } from "../../api/useExportComplianceTsv";
 import ReportHelpTooltip from "../ReportHelpTooltip";
 import classes from "./ReportExportForm.module.scss";
 import {
   BUCKET_OPTIONS,
+  buildExportDescription,
   INITIAL_EXPORT_VALUES,
   REPORT_EXPORT_FIELD_GROUPS,
   type BucketKey,
@@ -43,6 +44,22 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
   const [includeOther, setIncludeOther] = useState(false);
   const [byCve, setByCve] = useState(false);
 
+  // Hide aggregate CVE columns when byCve=true — they are always empty in that
+  // mode because _build_cve_tsv emits one row per (instance, CVE) and never
+  // populates the resolved_cves/unresolved_cves metrics.
+  const CVE_AGGREGATE_IDS = new Set(["resolved_cves", "unresolved_cves"]);
+  const fieldGroups = useMemo(
+    () =>
+      byCve
+        ? REPORT_EXPORT_FIELD_GROUPS.map((group) => ({
+            ...group,
+            fields: group.fields.filter((f) => !CVE_AGGREGATE_IDS.has(f.id)),
+          })).filter((group) => group.fields.length > 0)
+        : REPORT_EXPORT_FIELD_GROUPS,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [byCve],
+  );
+
   const resolvedIds = [
     ...bucketIds[selectedBucket],
     ...(includeOther ? otherIds : []),
@@ -66,8 +83,10 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
       return;
     }
     try {
+      const description = buildExportDescription(selectedBucket, byCve);
       const response = await exportComplianceTsv({
         name: values.name.trim(),
+        description,
         query,
         by_cve: byCve,
         selected_field_ids: fieldsToExport.map((f) => f.id),
@@ -149,10 +168,15 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
         </p>
       )}
       <ExportForm
-        fieldGroups={REPORT_EXPORT_FIELD_GROUPS}
+        fieldGroups={fieldGroups}
         initialValues={INITIAL_EXPORT_VALUES}
         isSubmitting={isExportComplianceTsvLoading}
         onGenerate={handleGenerate}
+        sortableNote={
+          byCve
+            ? "cve_id and cve_status will always be the first two columns in this export."
+            : undefined
+        }
       />
     </>
   );

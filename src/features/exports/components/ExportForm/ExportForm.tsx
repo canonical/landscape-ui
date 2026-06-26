@@ -11,7 +11,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { useCallback, useMemo, useState, type FC } from "react";
+import { useCallback, useMemo, useState, type FC, type ReactNode } from "react";
 import SortableFieldList from "../SortableFieldList";
 import { VALIDATION_SCHEMA } from "./constants";
 import classes from "./ExportForm.module.scss";
@@ -30,6 +30,7 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
+  readonly sortableNote?: ReactNode;
 }
 
 const ExportForm: FC<ExportFormProps> = ({
@@ -37,6 +38,7 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
+  sortableNote,
 }) => {
   const { closeSidePanel } = useSidePanel();
   const [step, setStep] = useState<StepIndex>(0);
@@ -216,10 +218,17 @@ const ExportForm: FC<ExportFormProps> = ({
         </div>
       </>
     ) : (
-      <SortableFieldList
-        fields={orderedFields}
-        onOrderChange={setOrderedFields}
-      />
+      <>
+        {sortableNote && (
+          <p className="u-text--muted">
+            <small>{sortableNote}</small>
+          </p>
+        )}
+        <SortableFieldList
+          fields={orderedFields}
+          onOrderChange={setOrderedFields}
+        />
+      </>
     );
 
   return (

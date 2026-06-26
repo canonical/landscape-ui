@@ -27,10 +27,10 @@ describe("ExportsList", () => {
     expect(typeCells.length).toBe(3);
   });
 
-  it('renders "Reports" as the type label for report exports', () => {
+  it('renders "Instances in report" as the type label for report exports', () => {
     renderWithProviders(<ExportsList exportJobs={[newComplianceExportJob]} />);
 
-    expect(screen.getByText("Reports")).toBeInTheDocument();
+    expect(screen.getByText("Instances in report")).toBeInTheDocument();
   });
 
   it("renders the status labels", () => {

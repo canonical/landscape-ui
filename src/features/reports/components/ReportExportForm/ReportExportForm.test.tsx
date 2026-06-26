@@ -314,4 +314,177 @@ describe("ReportExportForm", () => {
 
     expect((requestBody.selected_field_ids as string[]).length).toBe(7);
   });
+
+  it("shows Resolved CVEs and Unresolved CVEs in the Compliance group when byCve is off", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await openAttributeGroup(user, /compliance/i);
+
+    expect(
+      screen.getByRole("checkbox", { name: "Resolved CVEs" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Unresolved CVEs" }),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Resolved CVEs and Unresolved CVEs from the Compliance group when byCve is on", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
+    await openAttributeGroup(user, /compliance/i);
+
+    expect(
+      screen.queryByRole("checkbox", { name: "Resolved CVEs" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("checkbox", { name: "Unresolved CVEs" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps other Compliance fields visible when byCve is on", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
+    await openAttributeGroup(user, /compliance/i);
+
+    expect(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Covered by upgrade profile" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Time to patch (days)" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the cve_id/cve_status column note on step 1 when byCve is on", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "CVE export",
+    );
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(
+      screen.getByText(
+        /cve_id and cve_status will always be the first two columns/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("does not show the cve_id/cve_status column note on step 1 when byCve is off", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Instance export",
+    );
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(
+      screen.queryByText(
+        /cve_id and cve_status will always be the first two columns/i,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("sends a human-readable bucket description", async () => {
+    const user = userEvent.setup();
+    let capturedDescription = "";
+
+    server.use(
+      http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+        const body = (await request.json()) as Record<string, unknown>;
+        capturedDescription =
+          typeof body.description === "string" ? body.description : "";
+        return HttpResponse.json(
+          {
+            id: 8,
+            name: body.name,
+            filename: "compliance-export-1.tsv",
+            row_count: 0,
+            type: "report",
+            created_at: new Date().toISOString(),
+            status: "processing",
+            progress: 0,
+            download_ready: false,
+            retain_until: body.retain_until,
+            query: body.query,
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    renderForm();
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Test export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    await waitFor(() => {
+      expect(capturedDescription).toBe(
+        "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days",
+      );
+    });
+  });
+
+  it("appends 'organized by CVE' to description when byCve is on", async () => {
+    const user = userEvent.setup();
+    let capturedDescription = "";
+
+    server.use(
+      http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+        const body = (await request.json()) as Record<string, unknown>;
+        capturedDescription =
+          typeof body.description === "string" ? body.description : "";
+        return HttpResponse.json(
+          {
+            id: 8,
+            name: body.name,
+            filename: "compliance-export-1.tsv",
+            row_count: 0,
+            type: "report",
+            created_at: new Date().toISOString(),
+            status: "processing",
+            progress: 0,
+            download_ready: false,
+            retain_until: body.retain_until,
+            query: body.query,
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    renderForm();
+
+    await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Test export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    await waitFor(() => {
+      expect(capturedDescription).toBe(
+        "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days organized by CVE",
+      );
+    });
+  });
 });

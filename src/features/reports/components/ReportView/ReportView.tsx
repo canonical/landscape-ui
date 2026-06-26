@@ -1,4 +1,3 @@
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   CONTACT_SUPPORT_TEAM_MESSAGE,
@@ -11,7 +10,7 @@ import {
 import { ROUTES } from "@/libs/routes";
 import useSidePanel from "@/hooks/useSidePanel";
 import { pluralize } from "@/utils/_helpers";
-import { Notification } from "@canonical/react-components";
+import { Button, Notification } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
@@ -240,6 +239,16 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
 
   return (
     <>
+      <div className="p-segmented-control">
+        <Button
+          type="button"
+          appearance="positive"
+          className="p-segmented-control__button"
+          onClick={handleExportDialog}
+        >
+          <span>Export as TSV</span>
+        </Button>
+      </div>
       {selectionChanged && (
         <Notification
           severity="information"
@@ -277,11 +286,6 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       <p className="u-text--muted p-text--small">
         {`Report generated ${moment(report.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
       </p>
-      <SidePanelFormButtons
-        submitButtonDisabled={false}
-        submitButtonText="Export as TSV"
-        onSubmit={handleExportDialog}
-      />
     </>
   );
 };

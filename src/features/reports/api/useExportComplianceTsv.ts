@@ -6,6 +6,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 interface CreateComplianceExportParams {
   readonly name: string;
+  readonly description?: string;
   readonly query: string;
   readonly by_cve: boolean;
   readonly selected_field_ids: string[];

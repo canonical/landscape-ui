@@ -215,7 +215,15 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
                 </span>
               }
             />
-            <InfoGrid.Item label="Filter" value={getFilterValue(job)} large />
+            {job.type === "report" ? (
+              <InfoGrid.Item
+                label="Scope"
+                value={job.description ?? null}
+                large
+              />
+            ) : (
+              <InfoGrid.Item label="Filter" value={getFilterValue(job)} large />
+            )}
           </InfoGrid>
         </Blocks.Item>
       </Blocks>

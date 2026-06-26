@@ -51,7 +51,7 @@ export const getTypeLabel = (job: ExportJob): string => {
     case "activity":
       return "Activities";
     case "report":
-      return "Reports";
+      return "Instances in report";
     default:
       return "Instances";
   }

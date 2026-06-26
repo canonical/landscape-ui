@@ -30,6 +30,27 @@ export const REPORT_EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
   ...EXPORT_FIELD_GROUPS,
 ];
 
+const BUCKET_TIME_PHRASES: Record<BucketKey, string> = {
+  "over-60": "more than 60 days",
+  "30-60": "30\u201360 days",
+  "14-30": "14\u201330 days",
+  "2-14": "2\u201314 days",
+  "within-2": "fewer than 2 days",
+};
+
+export const buildExportDescription = (
+  bucket: BucketKey,
+  byCve: boolean,
+): string => {
+  const timePhrase = BUCKET_TIME_PHRASES[bucket];
+  const pendingSuffix =
+    bucket === "over-60"
+      ? ", or have an unapplied USN released within the last 60 days"
+      : "";
+  const cveSuffix = byCve ? " organized by CVE" : "";
+  return `Instances that took ${timePhrase} to apply a USN${pendingSuffix}${cveSuffix}`;
+};
+
 export const INITIAL_EXPORT_VALUES: ExportFormValues = {
   name: "",
   selectedFieldIds: [

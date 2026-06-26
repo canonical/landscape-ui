@@ -15,4 +15,5 @@ export interface ExportJob {
   download_ready: boolean;
   retain_until: string;
   query?: string | null;
+  description?: string | null;
 }

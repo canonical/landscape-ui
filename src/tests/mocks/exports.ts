@@ -110,6 +110,7 @@ export const newComplianceExportJob: ExportJob = {
   download_ready: false,
   retain_until: "2029-06-24T10:00:00.000Z",
   query: "id:42 OR id:107",
+  description: "All instances | 60+ days outstanding",
 };
 
 // Default fixtures served by the MSW exports handlers so the Exports UI is fully
