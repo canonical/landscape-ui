@@ -12,7 +12,8 @@ const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
   const { notify } = useNotify();
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
 
-  const { updateAutoinstallFile } = useUpdateAutoinstallFile();
+  const { updateAutoinstallFile, isAutoinstallFileUpdating } =
+    useUpdateAutoinstallFile();
 
   const openAutoinstallFileDetails = useOpenAutoinstallFileDetails();
 
@@ -44,6 +45,8 @@ const useAutoinstallFileActions = (autoinstallFile: AutoinstallFile) => {
         title: `You have successfully set ${autoinstallFile.filename} as the default autoinstall file`,
       });
     },
+
+    isSettingAutoinstallFileAsDefault: isAutoinstallFileUpdating,
   };
 };
 

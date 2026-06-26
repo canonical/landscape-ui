@@ -20,14 +20,12 @@ async function clickSnapOnTable(name: string) {
   await userEvent.click(snap);
 }
 
-const snapIds = installedSnaps.map((snap) => snap.snap.id);
-
 const props = {
   instanceId: 1,
   installedSnaps: installedSnaps,
-  selectedSnapIds: [],
+  selectedSnaps: [],
   isSnapsLoading: false,
-  setSelectedSnapIds: vi.fn(),
+  setSelectedSnaps: vi.fn(),
 };
 
 describe("SnapsList", () => {
@@ -95,13 +93,13 @@ describe("SnapsList", () => {
       });
       await userEvent.click(toggleAllCheckbox);
 
-      expect(props.setSelectedSnapIds).toHaveBeenCalledWith(snapIds);
-      rerender(<SnapsList {...props} selectedSnapIds={snapIds} />);
+      expect(props.setSelectedSnaps).toHaveBeenCalledWith([...installedSnaps]);
+      rerender(<SnapsList {...props} selectedSnaps={[...installedSnaps]} />);
       const checkedCheckboxes = screen.getAllByRole("checkbox", {
         checked: true,
       });
 
-      expect(checkedCheckboxes).toHaveLength(snapIds.length + 1);
+      expect(checkedCheckboxes).toHaveLength(installedSnaps.length + 1);
     });
 
     it("should select snap when clicking on its row checkbox", async () => {
@@ -113,9 +111,7 @@ describe("SnapsList", () => {
       });
       await userEvent.click(snapCheckbox);
 
-      expect(props.setSelectedSnapIds).toHaveBeenCalledWith([
-        selectedSnap.snap.id,
-      ]);
+      expect(props.setSelectedSnaps).toHaveBeenCalledWith([selectedSnap]);
     });
   });
 

@@ -1,27 +1,17 @@
 import type { FC } from "react";
-import { useEffect } from "react";
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import { Icon, ICONS, Tooltip } from "@canonical/react-components";
 import classes from "./LandscapeActions.module.scss";
-import { redirectToExternalUrl, useAuthHandle } from "@/features/auth";
 import { FEEDBACK_LINK } from "@/constants";
 import classNames from "classnames";
 import { TOOLTIP_MESSAGE } from "./constants";
+import { useAuthHandle } from "@/features/auth";
+import LoadingState from "@/components/layout/LoadingState";
+import { Link } from "react-router";
 
 const LandscapeActions: FC = () => {
   const { getClassicDashboardUrlQuery } = useAuthHandle();
 
-  const {
-    data: getClassicDashboardUrlQueryResult,
-    refetch: refetchClassicDashboardUrl,
-  } = getClassicDashboardUrlQuery({}, { enabled: false });
-
-  useEffect(() => {
-    if (!getClassicDashboardUrlQueryResult) {
-      return;
-    }
-
-    redirectToExternalUrl(getClassicDashboardUrlQueryResult.data.url);
-  }, [getClassicDashboardUrlQueryResult]);
+  const { data, isLoading } = getClassicDashboardUrlQuery();
 
   return (
     <div className={classNames("is-fading-when-collapsed", classes.container)}>
@@ -41,16 +31,16 @@ const LandscapeActions: FC = () => {
             Share your feedback
           </a>
         </li>
-        <li className={classNames("p-list__item", classes.listItem)}>
-          <Button
-            type="button"
-            appearance="link"
-            className="u-no-margin--bottom u-no-padding--top"
-            onClick={refetchClassicDashboardUrl}
-          >
-            <span>Switch to classic dashboard</span>
-          </Button>
-        </li>
+        {isLoading && (
+          <li className={classNames("p-list__item", classes.listItem)}>
+            <LoadingState inline />
+          </li>
+        )}
+        {data && (
+          <li className={classNames("p-list__item", classes.listItem)}>
+            <Link to={data.data.url}>Switch to classic dashboard</Link>
+          </li>
+        )}
       </ul>
     </div>
   );

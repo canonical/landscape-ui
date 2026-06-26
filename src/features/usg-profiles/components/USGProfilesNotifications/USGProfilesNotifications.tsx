@@ -2,7 +2,11 @@ import IgnorableNotifcation from "@/components/layout/IgnorableNotification";
 import { useGetActivities } from "@/features/activities";
 import { USG_PROFILE_ASSOCIATED_INSTANCES_LIMIT } from "../../constants";
 import { hasOneItem } from "@/utils/_helpers";
-import { Button, Notification } from "@canonical/react-components";
+import {
+  ActionButton,
+  Button,
+  Notification,
+} from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -46,7 +50,7 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
     { enabled: !!pendingReports.length },
   );
 
-  const downloadAudit = useUsgProfileDownloadAudit();
+  const { downloadAudit, isDownloadingAudit } = useUsgProfileDownloadAudit();
 
   return (
     <>
@@ -140,7 +144,7 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
         >
           Several of your audits have been successfully generated and are now
           ready for download.{" "}
-          <Button
+          <ActionButton
             appearance="link"
             type="button"
             className="u-no-margin--bottom u-no-padding--top"
@@ -149,9 +153,10 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
                 downloadAudit(activity.result_text);
               }
             }}
+            loading={isDownloadingAudit}
           >
             Download audits
-          </Button>
+          </ActionButton>
         </Notification>
       )}
 
@@ -166,16 +171,17 @@ const USGProfilesNotifications: FC<USGProfilesNotificationsProps> = ({
         >
           Your audit has been successfully generated and is now ready for
           download.{" "}
-          <Button
+          <ActionButton
             appearance="link"
             type="button"
             className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               downloadAudit(activities[0].result_text);
             }}
+            loading={isDownloadingAudit}
           >
             Download audit
-          </Button>
+          </ActionButton>
         </Notification>
       )}
     </>

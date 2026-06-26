@@ -2,8 +2,8 @@ import LoadingState from "@/components/layout/LoadingState";
 import { Button, Form, Icon, ICONS, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useSnaps } from "../../hooks";
+import { useMemo, useState } from "react";
+import { useGetSnapInfo } from "../../api";
 import type { SelectedSnaps } from "../../types";
 import classes from "./AvailableSnapDetails.module.scss";
 
@@ -20,15 +20,12 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
   handleAddToSelectedItems,
   instanceId,
 }) => {
-  const [selectedChannel, setSelectedChannel] = useState<string>("");
+  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
 
-  const { getAvailableSnapInfo } = useSnaps();
-  const { data: availableSnapInfo, isLoading } = getAvailableSnapInfo({
+  const { snapInfo: item, isSnapInfoLoading: isLoading } = useGetSnapInfo({
     instance_id: instanceId,
     name: name,
   });
-
-  const item = availableSnapInfo?.data;
 
   const CHANNEL_OPTIONS = useMemo(() => {
     return item
@@ -47,14 +44,15 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
     setSelectedChannel(channel);
   };
 
-  useEffect(() => {
-    if (CHANNEL_OPTIONS[0]) {
-      setSelectedChannel(CHANNEL_OPTIONS[0].value);
-    }
-  }, [CHANNEL_OPTIONS]);
+  const effectiveChannel = selectedChannel ?? CHANNEL_OPTIONS[0]?.value ?? "";
 
   return (
-    <>
+    <li
+      className={classNames(
+        "p-autocomplete__result p-list__item p-card u-no-margin--bottom u-no-padding--bottom",
+        classes.toBeConfirmedCard,
+      )}
+    >
       {isLoading && <LoadingState />}
       {item && (
         <Form
@@ -70,84 +68,75 @@ const AvailableSnapDetails: FC<AvailableSnapDetailsProps> = ({
                   .find(
                     (channel) =>
                       `${channel.channel.name} - ${channel.channel.architecture}` ===
-                      selectedChannel,
+                      effectiveChannel,
                   )
                   ?.revision.toString() ?? "Unknown revision",
               channel:
                 item["channel-map"].find(
                   (channel) =>
                     `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    selectedChannel,
+                    effectiveChannel,
                 )?.channel.name ?? "Unknown channel",
             });
           }}
         >
-          <li
-            className={classNames(
-              "p-autocomplete__result p-list__item p-card u-no-margin--bottom u-no-padding--bottom",
-              classes.toBeConfirmedCard,
-            )}
-          >
-            <div className={classes.bold}>{item.name}</div>
-            <span>
-              <small className="u-text--muted p-text--small">
-                {item.snap.publisher["display-name"]}
-              </small>
-            </span>
-            <Select
-              label={
-                <span className="u-text--muted p-text--small">Release</span>
-              }
-              required
-              value={selectedChannel}
-              options={CHANNEL_OPTIONS}
-              onChange={(event) => {
-                handleSelectChannel(event.currentTarget.value);
+          <div className={classes.bold}>{item.name}</div>
+          <span>
+            <small className="u-text--muted p-text--small">
+              {item.snap.publisher["display-name"]}
+            </small>
+          </span>
+          <Select
+            label={<span className="u-text--muted p-text--small">Release</span>}
+            required
+            value={effectiveChannel}
+            options={CHANNEL_OPTIONS}
+            onChange={(event) => {
+              handleSelectChannel(event.currentTarget.value);
+            }}
+            help={
+              item["channel-map"].find(
+                (channel) =>
+                  `${channel.channel.name} - ${channel.channel.architecture}` ===
+                  effectiveChannel,
+              )?.confinement === "classic" ? (
+                <span>
+                  <Icon name={ICONS.warning} />
+                  This release requires classic permission.{" "}
+                  <a
+                    href="https://snapcraft.io/docs"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    Learn more
+                  </a>
+                </span>
+              ) : undefined
+            }
+          />
+          <div className={classes.toBeConfirmedCard__buttons}>
+            <Button
+              small
+              type="button"
+              appearance="base"
+              onClick={() => {
+                handleDeleteToBeConfirmedItem();
               }}
-              help={
-                item["channel-map"].find(
-                  (channel) =>
-                    `${channel.channel.name} - ${channel.channel.architecture}` ===
-                    selectedChannel,
-                )?.confinement === "classic" ? (
-                  <span>
-                    <Icon name={ICONS.warning} />
-                    This release requires classic permission.{" "}
-                    <a
-                      href="https://snapcraft.io/docs"
-                      target="_blank"
-                      rel="nofollow noopener noreferrer"
-                    >
-                      Learn more
-                    </a>
-                  </span>
-                ) : undefined
-              }
-            />
-            <div className={classes.toBeConfirmedCard__buttons}>
-              <Button
-                small
-                type="button"
-                appearance="base"
-                onClick={() => {
-                  handleDeleteToBeConfirmedItem();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                small
-                className={classes.toBeConfirmedCard__confirmButton}
-                type="submit"
-                appearance="positive"
-              >
-                Add
-              </Button>
-            </div>
-          </li>
+            >
+              Cancel
+            </Button>
+            <Button
+              small
+              className={classes.toBeConfirmedCard__confirmButton}
+              type="submit"
+              appearance="positive"
+            >
+              Add
+            </Button>
+          </div>
         </Form>
       )}
-    </>
+    </li>
   );
 };
 

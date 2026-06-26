@@ -1,6 +1,24 @@
+import type { MirrorWritable } from "@canonical/landscape-openapi";
+
+type SourceType =
+  | "ubuntu-archive"
+  | "ubuntu-snapshots"
+  | "ubuntu-pro"
+  | "third-party";
+
 export const UBUNTU_ARCHIVE_HOST = "archive.ubuntu.com";
 export const UBUNTU_SNAPSHOTS_HOST = "snapshot.ubuntu.com";
 export const UBUNTU_PRO_HOST = "esm.ubuntu.com";
+
+export const SOURCE_TYPE_TO_MIRROR_TYPE: Record<
+  SourceType,
+  NonNullable<MirrorWritable["mirrorType"]>
+> = {
+  "ubuntu-archive": "UBUNTU_ARCHIVE",
+  "ubuntu-snapshots": "UBUNTU_SNAPSHOTS",
+  "ubuntu-pro": "UBUNTU_PRO",
+  "third-party": "THIRD_PARTY",
+};
 
 export const SETTINGS_HELP_TEXT = {
   preserveSignatures:

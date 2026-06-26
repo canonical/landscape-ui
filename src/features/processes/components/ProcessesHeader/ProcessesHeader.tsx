@@ -3,7 +3,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useProcesses } from "../../hooks";
 import type { UrlParams } from "@/types/UrlParams";
-import { Button } from "@canonical/react-components";
+import { ActionButton } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useParams } from "react-router";
@@ -25,8 +25,10 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   const { killProcessQuery, terminateProcessQuery } = useProcesses();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: terminateProcess } = terminateProcessQuery;
-  const { mutateAsync: killProcess } = killProcessQuery;
+  const { mutateAsync: terminateProcess, isPending: isTerminatingProcess } =
+    terminateProcessQuery;
+  const { mutateAsync: killProcess, isPending: isKillingProcess } =
+    killProcessQuery;
 
   const handleEndProcess = async () => {
     try {
@@ -64,22 +66,24 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
         actions={
           <div className={classNames("p-segmented-control", classes.actions)}>
             <div className="p-segmented-control__list">
-              <Button
+              <ActionButton
                 type="button"
                 className="p-segmented-control__button u-no-margin--bottom"
                 disabled={0 === selectedPids.length}
                 onClick={handleEndProcess}
+                loading={isTerminatingProcess}
               >
                 End process
-              </Button>
-              <Button
+              </ActionButton>
+              <ActionButton
                 type="button"
                 className="p-segmented-control__button u-no-margin--bottom"
                 disabled={0 === selectedPids.length}
                 onClick={handleKillProcess}
+                loading={isKillingProcess}
               >
                 Kill process
-              </Button>
+              </ActionButton>
             </div>
           </div>
         }

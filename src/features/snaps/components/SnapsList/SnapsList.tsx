@@ -6,7 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
 import moment from "moment";
 import type { FC } from "react";
-import { Suspense, useMemo } from "react";
+import { Suspense, useCallback, useMemo } from "react";
 import type { CellProps, Column, Row } from "react-table";
 import type { InstalledSnap } from "../../types";
 import SnapDetails from "../SnapDetails";
@@ -15,45 +15,45 @@ import { handleCellProps } from "./helpers";
 
 interface SnapsListProps {
   readonly installedSnaps: InstalledSnap[];
-  readonly selectedSnapIds: string[];
-  readonly setSelectedSnapIds: (items: string[]) => void;
+  readonly selectedSnaps: InstalledSnap[];
+  readonly setSelectedSnaps: (items: InstalledSnap[]) => void;
   readonly isSnapsLoading: boolean;
 }
 
 const SnapsList: FC<SnapsListProps> = ({
   installedSnaps,
-  selectedSnapIds,
+  selectedSnaps,
   isSnapsLoading,
-  setSelectedSnapIds,
+  setSelectedSnaps,
 }) => {
   const { setSidePanelContent } = useSidePanel();
 
-  const handleSelectionChange = (row: Row<InstalledSnap>) => {
-    if (selectedSnapIds.includes(row.original.snap.id)) {
-      setSelectedSnapIds(
-        selectedSnapIds.filter((id) => id !== row.original.snap.id),
+  const handleSelectionChange = useCallback(
+    (row: Row<InstalledSnap>) => {
+      if (selectedSnaps.includes(row.original)) {
+        setSelectedSnaps(selectedSnaps.filter((s) => s !== row.original));
+      } else {
+        setSelectedSnaps([...selectedSnaps, row.original]);
+      }
+    },
+    [selectedSnaps, setSelectedSnaps],
+  );
+
+  const toggleAll = useCallback(() => {
+    setSelectedSnaps(selectedSnaps.length !== 0 ? [] : [...installedSnaps]);
+  }, [selectedSnaps, installedSnaps, setSelectedSnaps]);
+
+  const handleShowSnapDetails = useCallback(
+    (snap: InstalledSnap) => {
+      setSidePanelContent(
+        `${snap.snap.name} details`,
+        <Suspense fallback={<LoadingState />}>
+          <SnapDetails installedSnap={snap} />
+        </Suspense>,
       );
-    } else {
-      setSelectedSnapIds([...selectedSnapIds, row.original.snap.id]);
-    }
-  };
-
-  const toggleAll = () => {
-    setSelectedSnapIds(
-      selectedSnapIds.length !== 0
-        ? []
-        : installedSnaps.map(({ snap }) => snap.id),
-    );
-  };
-
-  const handleShowSnapDetails = (snap: InstalledSnap) => {
-    setSidePanelContent(
-      `${snap.snap.name} details`,
-      <Suspense fallback={<LoadingState />}>
-        <SnapDetails installedSnap={snap} />
-      </Suspense>,
-    );
-  };
+    },
+    [setSidePanelContent],
+  );
 
   const columns = useMemo<Column<InstalledSnap>[]>(
     () => [
@@ -65,12 +65,12 @@ const SnapsList: FC<SnapsListProps> = ({
               inline
               onChange={toggleAll}
               checked={
-                selectedSnapIds.length === installedSnaps.length &&
+                selectedSnaps.length === installedSnaps.length &&
                 installedSnaps.length !== 0
               }
               indeterminate={
-                selectedSnapIds.length !== 0 &&
-                selectedSnapIds.length < installedSnaps.length
+                selectedSnaps.length !== 0 &&
+                selectedSnaps.length < installedSnaps.length
               }
             />
             <span>Name</span>
@@ -84,7 +84,7 @@ const SnapsList: FC<SnapsListProps> = ({
                 <span className="u-off-screen">{row.original.snap.name}</span>
               }
               inline
-              checked={selectedSnapIds.includes(row.original.snap.id)}
+              checked={selectedSnaps.includes(row.original)}
               onChange={() => {
                 handleSelectionChange(row);
               }}
@@ -159,7 +159,13 @@ const SnapsList: FC<SnapsListProps> = ({
         ),
       },
     ],
-    [selectedSnapIds, installedSnaps],
+    [
+      selectedSnaps,
+      installedSnaps,
+      handleSelectionChange,
+      handleShowSnapDetails,
+      toggleAll,
+    ],
   );
 
   return (
@@ -168,7 +174,9 @@ const SnapsList: FC<SnapsListProps> = ({
       data={installedSnaps}
       getCellProps={handleCellProps}
       emptyMsg={
-        isSnapsLoading ? "Loading..." : "No snaps found from the search"
+        isSnapsLoading
+          ? "Loading..."
+          : "No snaps found according to your search parameters"
       }
       minWidth={1150}
     />
