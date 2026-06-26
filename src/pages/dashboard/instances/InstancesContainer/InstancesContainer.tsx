@@ -4,6 +4,8 @@ import { TablePagination } from "@/components/layout/TablePagination";
 import { InstanceList, InstancesHeader } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
+import usePageParams from "@/hooks/usePageParams";
+import { isInstancesEmptyState } from "./helpers";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
@@ -25,6 +27,21 @@ const InstancesContainer = memo(function InstancesContainer({
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
   >([]);
+
+  const { currentPage, pageSize, search, status } = usePageParams();
+
+  if (
+    isInstancesEmptyState(
+      currentPage,
+      pageSize,
+      isGettingInstances,
+      instanceCount,
+      search,
+      status,
+    )
+  ) {
+    return <></>;
+  }
 
   return (
     <>
