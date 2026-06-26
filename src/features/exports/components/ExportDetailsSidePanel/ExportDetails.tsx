@@ -39,6 +39,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
     try {
       const result = await onDownload(job);
       if (result) {
+        popSidePathUntilClear();
         notify.success({
           title: "TSV download started",
           message: `${job.name} has been downloaded and removed from the export list.`,
