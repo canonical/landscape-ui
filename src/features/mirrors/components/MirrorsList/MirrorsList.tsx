@@ -42,7 +42,6 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
     () => [
       {
         Header: "Mirror name",
-        className: "large-cell",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
           <Button
             type="button"
@@ -79,11 +78,13 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Distribution",
+        className: classes.distribution,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.distribution ?? <NoData />,
       },
       {
         Header: "Packages",
+        className: classes.count,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
             <MirrorPackagesCount mirrorName={mirror.name} />
@@ -93,6 +94,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Publications",
+        className: classes.count,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
             <AssociatedPublicationsCount sourceName={mirror.name} />
@@ -103,7 +105,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       {
         ...LIST_ACTIONS_COLUMN_PROPS,
         accessor: undefined,
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
             <Suspense fallback={<LoadingState inline />}>
               <MirrorActions
@@ -114,8 +116,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
             </Suspense>
           ) : (
             <NoData />
-          )
-        ),
+          ),
       },
     ],
     [createPageParamsSetter],

@@ -47,7 +47,6 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "name",
         Header: "name",
-        className: "large-cell",
         Cell: ({ row }: CellProps<Publication>) => (
           <Button
             type="button"
@@ -75,7 +74,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "publishTime",
         Header: "last published",
-        className: "medium-cell",
+        className: classes.datetime,
         Cell: ({ row: { original } }: CellProps<Publication>) =>
           original.publishTime
             ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
@@ -84,8 +83,8 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         id: "sourceType",
         accessor: "source",
-        className: "medium-cell",
         Header: "source type",
+        className: classes.sourceType,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <>{getSourceType(original.source)}</>
         ),
@@ -93,7 +92,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "source",
         Header: "source",
-        className: "large-cell",
+        className: classes.source,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink
             to={
@@ -116,6 +115,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "publicationTarget",
         Header: "publication target",
+        className: classes.target,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink
             to={ROUTES.repositories.publicationTargets({
@@ -138,21 +138,17 @@ const PublicationsList: FC<PublicationsListProps> = ({
         ),
       },
     ],
-    [
-      createPageParamsSetter,
-      sourceDisplayNames,
-      publicationTargetDisplayNames,
-    ],
+    [createPageParamsSetter, sourceDisplayNames, publicationTargetDisplayNames],
   );
 
   return (
     <OperationProvider operationNames={operationNames}>
       <ResponsiveTable
-      columns={columns}
-      data={publications}
-      emptyMsg={`No publications found with the search: "${query}"`}
-      minWidth={1250}
-    />
+        columns={columns}
+        data={publications}
+        emptyMsg={`No publications found with the search: "${query}"`}
+        minWidth={1250}
+      />
     </OperationProvider>
   );
 };

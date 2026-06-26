@@ -1,10 +1,5 @@
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
-import {
-  createContext,
-  useMemo,
-  type FC,
-  type ReactNode,
-} from "react";
+import { createContext, useMemo, type FC, type ReactNode } from "react";
 import { useBatchGetOperations } from "../features/operations/api";
 import type { Operation } from "../features/operations/types";
 
@@ -50,7 +45,7 @@ export const OperationProvider: FC<OperationProviderProps> = ({
   );
 
   const value = useMemo(
-    () => ({ 
+    () => ({
       operations,
       isGettingOperations,
       isOperationInProgress: (operationName?: string) => {

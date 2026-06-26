@@ -10,15 +10,19 @@ interface OperationStatusContentProps {
   readonly type: "publication" | "mirror" | "local";
   readonly operationMetadata: OperationMetadata | undefined;
   readonly hasOperation: boolean;
+  readonly isTableCell?: boolean;
 }
 
 const OperationStatusContent: FC<OperationStatusContentProps> = ({
   operationMetadata,
   type,
   hasOperation,
+  isTableCell = false,
 }) => {
-  const { inexistent, successful, failed, ongoing } =
-    getOperationTypeTexts(type);
+  const { inexistent, successful, failed, ongoing } = getOperationTypeTexts(
+    type,
+    isTableCell,
+  );
   const { status, resource, progressPercent = 0 } = operationMetadata ?? {};
   const resourceIdentifier =
     type === "mirror" ? resource : resource?.split("/").pop();
@@ -31,7 +35,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
     return (
       <>
         <Icon name={`${ICONS.warning} ${classes.marginRight}`} />
-        <span>Unable to determine status</span>
+        <span>Unable to determine</span>
       </>
     );
   }
@@ -57,9 +61,15 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
 
   return (
     <>
-      <Icon name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`} />
-      <span>{ongoing}</span>
-      <ProgressBar progressPercent={progressPercent} />
+      <Icon
+        name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`}
+      />
+      <span className={classes.marginRight}>{ongoing}</span>
+      {isTableCell ? (
+        <span className="u-text--muted">{progressPercent}%</span>
+      ) : (
+        <ProgressBar progressPercent={progressPercent} />
+      )}
     </>
   );
 };

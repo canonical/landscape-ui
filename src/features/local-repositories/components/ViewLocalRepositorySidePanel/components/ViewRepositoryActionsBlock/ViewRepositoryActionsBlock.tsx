@@ -57,15 +57,14 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
               <span className={action.className}>{action.label}</span>
             </Button>
           );
-          
+
           return action.tooltipMessage ? (
-            <Tooltip
-              message={action.tooltipMessage}
-              position="btm-center"
-            >
+            <Tooltip message={action.tooltipMessage} position="btm-center">
               {button}
             </Tooltip>
-          ) : (button);
+          ) : (
+            button
+          );
         })}
         collapseFrom="sm"
         menuPosition="left"

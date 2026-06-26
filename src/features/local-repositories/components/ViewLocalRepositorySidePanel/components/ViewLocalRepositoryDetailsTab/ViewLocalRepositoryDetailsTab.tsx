@@ -13,7 +13,6 @@ import {
 } from "@/features/operations";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 
 interface ViewLocalRepositoryDetailsTabProps {
   readonly repository: Local;
@@ -46,12 +45,15 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
           />
 
           <InfoGrid.Item
-              label="Last import"
-              value={repository.lastImportTime ? 
-                moment(repository.lastImportTime).format(
-                DISPLAY_DATE_TIME_FORMAT,
-              ) : NO_DATA_TEXT}
-            />
+            label="Last import"
+            value={
+              repository.lastImportTime
+                ? moment(repository.lastImportTime).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  )
+                : null
+            }
+          />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />
 

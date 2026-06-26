@@ -54,7 +54,9 @@ const PublicationDetails = ({
     {
       enabled: !!publication.lastOperation,
       refetchInterval: ({ state }) =>
-        state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
+        state.error || state.data?.data?.done
+          ? false
+          : DEFAULT_POLLING_INTERVAL,
     },
   );
 
@@ -69,11 +71,7 @@ const PublicationDetails = ({
           <Notification
             severity="negative"
             title="Publishing failed"
-            actions={[
-              <ViewLogsButton
-                key="view-logs"
-              />,
-            ]}
+            actions={[<ViewLogsButton key="view-logs" />]}
           >
             Your last publication was not completed successfully.
           </Notification>

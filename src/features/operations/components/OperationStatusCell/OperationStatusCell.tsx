@@ -24,6 +24,7 @@ const OperationStatusCell: FC<OperationStatusCellProps> = ({
       type={type}
       operationMetadata={operation?.metadata}
       hasOperation={!!operationName}
+      isTableCell
     />
   );
 };

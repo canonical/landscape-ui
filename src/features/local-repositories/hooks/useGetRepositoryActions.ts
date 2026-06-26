@@ -45,7 +45,8 @@ export const useGetRepositoryActions = ({
           icon: "spinner u-animation--spin",
           label: "Importing packages",
           disabled: true,
-          tooltipMessage: "You must wait for this action to be completed to import more packages.",
+          tooltipMessage:
+            "You must wait for this action to be completed to import more packages.",
         }
       : {
           icon: "import",
