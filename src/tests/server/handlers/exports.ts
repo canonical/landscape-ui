@@ -42,7 +42,7 @@ export default [
     if (shouldApplyEndpointStatus(EXPORTS_PATH)) {
       const { status, response } = getEndpointStatus(EXPORTS_PATH);
       if (status === "error") throw createEndpointStatusNetworkError();
-      if (status === "loading") return new Promise(() => undefined);
+      if (status === "loading") return new Promise<never>(() => undefined);
       if (status === "empty") {
         return HttpResponse.json({ count: 0, results: [] });
       }

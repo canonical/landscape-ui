@@ -153,6 +153,9 @@ describe("InstancesPageActions", () => {
         <InstancesPageActions
           isGettingInstances={false}
           selectedInstances={selected}
+          instanceCount={selected.length}
+          isAllSelected={false}
+          exportParams={exportParams}
         />,
       );
 
