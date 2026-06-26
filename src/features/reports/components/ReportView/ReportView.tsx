@@ -134,7 +134,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   ]);
   const otherIds = [...accountedIds].filter((id) => !classified.has(id));
   const OTHER_DETAIL =
-    "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days.";
+    "Instances with a USN outstanding for under 60 days, or that last applied a USN more than 60 days ago.";
 
   const segmentDefs: {
     key: string;

@@ -83,7 +83,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
       return;
     }
     try {
-      const description = buildExportDescription(selectedBucket, byCve);
+      const description = buildExportDescription(selectedBucket, includeOther, byCve);
       const response = await exportComplianceTsv({
         name: values.name.trim(),
         description,

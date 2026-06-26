@@ -40,6 +40,7 @@ const BUCKET_TIME_PHRASES: Record<BucketKey, string> = {
 
 export const buildExportDescription = (
   bucket: BucketKey,
+  includeOther: boolean,
   byCve: boolean,
 ): string => {
   const timePhrase = BUCKET_TIME_PHRASES[bucket];
@@ -47,8 +48,11 @@ export const buildExportDescription = (
     bucket === "over-60"
       ? ", or have an unapplied USN released within the last 60 days"
       : "";
+  const otherSuffix = includeOther
+    ? ", including other unclassified instances"
+    : "";
   const cveSuffix = byCve ? " organized by CVE" : "";
-  return `Instances that took ${timePhrase} to apply a USN${pendingSuffix}${cveSuffix}`;
+  return `Instances that took ${timePhrase} to apply a USN${pendingSuffix}${otherSuffix}${cveSuffix}`;
 };
 
 export const INITIAL_EXPORT_VALUES: ExportFormValues = {

@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
 import server from "@/tests/server";
+import { complianceReport } from "@/tests/server/handlers/reports";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -19,6 +20,12 @@ const BUCKET_IDS: Record<BucketKey, readonly number[]> = {
   "within-2": [1, 2, 3, 4],
 };
 const OTHER_IDS: readonly number[] = [];
+// Securely-patched IDs not in the over-60 bucket represent real "other" instances
+// for a parent that opens the export form with the default bucket selected.
+const OTHER_IDS_WITH_CONTENT: readonly number[] =
+  complianceReport.securely_patched.computer_ids.filter(
+    (id) => !BUCKET_IDS["over-60"].includes(id),
+  );
 
 const renderForm = () =>
   renderWithProviders(
@@ -395,6 +402,57 @@ describe("ReportExportForm", () => {
         /cve_id and cve_status will always be the first two columns/i,
       ),
     ).not.toBeInTheDocument();
+  });
+
+  it("appends 'including other unclassified instances' to description when Include Other is checked", async () => {
+    const user = userEvent.setup();
+    let capturedDescription = "";
+
+    server.use(
+      http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+        const body = (await request.json()) as Record<string, unknown>;
+        capturedDescription =
+          typeof body.description === "string" ? body.description : "";
+        return HttpResponse.json(
+          {
+            id: 8,
+            name: body.name,
+            filename: "compliance-export-1.tsv",
+            row_count: 0,
+            type: "report",
+            created_at: new Date().toISOString(),
+            status: "processing",
+            progress: 0,
+            download_ready: false,
+            retain_until: body.retain_until,
+            query: body.query,
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    renderWithProviders(
+      <ReportExportForm
+        bucketIds={BUCKET_IDS}
+        otherIds={OTHER_IDS_WITH_CONTENT}
+      />,
+    );
+
+    await user.click(screen.getByRole("checkbox", { name: "Include Other" }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Test export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    await waitFor(() => {
+      expect(capturedDescription).toBe(
+        "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days, including other unclassified instances",
+      );
+    });
   });
 
   it("sends a human-readable bucket description", async () => {
