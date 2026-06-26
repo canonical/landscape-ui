@@ -43,8 +43,8 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
           title: "TSV download started",
           message: `${job.name} has been downloaded and removed from the export list.`,
         });
+        popSidePathUntilClear();
       }
-      popSidePathUntilClear();
     } catch (error) {
       debug(error);
     }
