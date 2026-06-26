@@ -2,7 +2,7 @@ name: Integration Tests
 
 on:
   pull_request:
-    branches: [dev]
+    branches: [main]
     paths-ignore:
       - "docs/**"
       - "feature-plans/**"

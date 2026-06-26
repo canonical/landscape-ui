@@ -44,7 +44,7 @@ Start the stack with the schema bootstrapping arguments matching CI:
 
 ```bash
 # In your landscape-packaging/docker/ui-dev/ directory
-LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password pwd" make up
+LANDSCAPE_BOOTSTRAP_SCHEMA_ARGS="--with-computers --with-free-disk-space --with-free-memory-and-swap --with-load-averages --with-temperatures --with-network-traffic --with-active-processes --with-packages --with-package-activities --with-script-activities --with-users-and-groups --with-cpu-usage --with-ceph-usage --with-compute-usage --with-swift-usage --with-user-and-group-activities --with-custom-graph --with-scripts --with-account-password foo" make up
 ```
 
 Wait for both services to respond:
