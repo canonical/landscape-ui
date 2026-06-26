@@ -41,8 +41,8 @@ const TablePagination: FC<TablePaginationProps> = ({
     }
   };
 
-  const setPageSize = (pageSize: number) => {
-    setPageParams({ pageSize });
+  const setPageSize = (newPageSize: number) => {
+    setPageParams({ pageSize: newPageSize });
   };
 
   return (
