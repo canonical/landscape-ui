@@ -18,7 +18,7 @@ import { useDownloadExportJob } from "../../api/useDownloadExportJob";
 import { useRetryExportJob } from "../../api/useRetryExportJob";
 import { getStatusLabel, getTypeLabel } from "../../helpers";
 import type { ExportJob } from "../../types/ExportJob";
-import ExportProgressBar from "../ExportProgressBar";
+import ProgressBar from "@/components/ProgressBar";
 import { getFilterValue } from "./helpers";
 
 interface ExportDetailsProps {
@@ -178,7 +178,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
               label="Status"
               value={
                 job.status === "processing" ? (
-                  <ExportProgressBar
+                  <ProgressBar
                     progress={job.progress}
                     secondsRemaining={job.estimated_seconds_remaining ?? null}
                     fullWidth

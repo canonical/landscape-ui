@@ -46,7 +46,7 @@ describe("ExportsList", () => {
     expect(screen.getByText("35%")).toBeInTheDocument();
   });
 
-  it("renders sortable header columns", () => {
+  it("renders header columns", () => {
     renderWithProviders(<ExportsList exportJobs={exportJobs} />);
 
     expect(screen.getByText("Name")).toBeInTheDocument();

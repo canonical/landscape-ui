@@ -33,8 +33,11 @@ export const useDownloadExportJob = () => {
           { responseType: "blob" },
         );
         const writable = await handle.createWritable();
-        await writable.write(response.data);
-        await writable.close();
+        try {
+          await writable.write(response.data);
+        } finally {
+          await writable.close();
+        }
         return job;
       }
 
