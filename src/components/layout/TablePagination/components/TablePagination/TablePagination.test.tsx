@@ -43,7 +43,7 @@ describe("TablePagination", () => {
       renderWithProviders(<TablePagination {...props} />);
 
       await userEvent.selectOptions(
-        screen.getByRole("combobox", { name: "Items per page" }),
+        screen.getByRole("combobox", { name: "Instances per page" }),
         PAGE_SIZE_OPTIONS[1].label,
       );
 

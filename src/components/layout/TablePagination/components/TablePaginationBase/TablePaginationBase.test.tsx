@@ -71,7 +71,7 @@ describe("TablePaginationBase", () => {
     const [, pageSizeOption] = PAGE_SIZE_OPTIONS;
 
     await userEvent.selectOptions(
-      screen.getByRole("combobox", { name: "Items per page" }),
+      screen.getByRole("combobox", { name: "Instances per page" }),
       pageSizeOption.label,
     );
 

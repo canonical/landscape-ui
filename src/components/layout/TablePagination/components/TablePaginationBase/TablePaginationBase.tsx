@@ -26,7 +26,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
   paginate,
   setPageSize,
   currentPage,
-  pageSizeLabel = "Items per page",
+  pageSizeLabel = "Instances per page",
 }) => {
   const totalPages = useTotalPages(totalItems, pageSize);
 
