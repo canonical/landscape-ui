@@ -62,7 +62,7 @@ describe("ExportsContainer", () => {
     expect(screen.getByRole("button", { name: /type/i })).toBeInTheDocument();
   });
 
-  it('renders report exports with the "Instances in report" type label', async () => {
+  it('renders report exports with the "Report" type label', async () => {
     setEndpointStatus({
       status: "variant",
       path: "exports",
@@ -74,6 +74,6 @@ describe("ExportsContainer", () => {
     await expectLoadingState();
 
     expect(screen.getByText(newComplianceExportJob.name)).toBeInTheDocument();
-    expect(screen.getByText("Instances in report")).toBeInTheDocument();
+    expect(screen.getByText("Report")).toBeInTheDocument();
   });
 });

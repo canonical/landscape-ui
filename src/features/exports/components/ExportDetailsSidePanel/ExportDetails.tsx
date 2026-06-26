@@ -84,7 +84,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
     }
   };
 
-  const countLabel = getTypeLabel(job);
+  const countLabel = getTypeLabel(job, "details");
 
   return (
     <>

@@ -115,7 +115,7 @@ describe("getTypeLabel", () => {
     expect(getTypeLabel(completedActivitiesExportJob)).toBe("Activities");
   });
 
-  it('returns "Instances in report" for report exports', () => {
-    expect(getTypeLabel(newComplianceExportJob)).toBe("Instances in report");
+  it('returns "Report" for report exports', () => {
+    expect(getTypeLabel(newComplianceExportJob)).toBe("Report");
   });
 });
