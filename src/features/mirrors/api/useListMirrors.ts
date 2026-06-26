@@ -19,13 +19,15 @@ export function useListMirrors(
   > = {},
 ) {
   const authFetchDebArchive = useFetchDebArchive();
+  const queryParams = { pageSize: 1000, ...params };
 
   return useSuspenseQuery<
     AxiosResponse<MirrorServiceListMirrorsResponse>,
     AxiosError<MirrorServiceListMirrorsError>
   >({
-    queryKey: ["mirrors", params],
-    queryFn: async () => authFetchDebArchive.get("mirrors", { params }),
+    queryKey: ["mirrors", queryParams],
+    queryFn: async () =>
+      authFetchDebArchive.get("mirrors", { params: queryParams }),
     ...options,
   });
 }
