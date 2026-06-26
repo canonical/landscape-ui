@@ -176,7 +176,8 @@ export const newComplianceExportJob: ExportJob = {
   download_ready: false,
   retain_until: "2029-06-24T10:00:00.000Z",
   query: "id:42 OR id:107",
-  description: "All instances | 60+ days outstanding",
+  description:
+    "Instances that took 14-30 days to apply a USN, including other unclassified instances, organized by CVE",
 };
 
 // Default fixtures served by the MSW exports handlers so the Exports UI is fully
