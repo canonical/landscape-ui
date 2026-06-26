@@ -5,10 +5,7 @@ interface ProgressBarProps {
   readonly progressPercent: number;
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({
-  progressPercent,
-}) => {
-
+const ProgressBar: FC<ProgressBarProps> = ({ progressPercent }) => {
   return (
     <>
       <div className={classes.progressBar}>

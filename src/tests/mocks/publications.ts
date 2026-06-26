@@ -73,7 +73,7 @@ export const publications = [
     displayName: "LRO not found publication",
     publicationTarget:
       "publicationTargets/cccccccc-0000-0000-0000-000000000003",
-    source: "locals/bbbb-cccc-dddd",
+    source: "locals/cccc-dddd-eeee",
     distribution: "noble",
     label: "Local publication",
     origin: "Canonical",

@@ -109,7 +109,11 @@ describe("PublicationsList", () => {
 
   it("shows empty message with search query", () => {
     renderWithProviders(
-      <PublicationsList publications={[]} />,
+      <PublicationsList
+        publications={[]}
+        sourceDisplayNames={{}}
+        publicationTargetDisplayNames={{}}
+      />,
       undefined,
       "/?query=test-publication",
     );

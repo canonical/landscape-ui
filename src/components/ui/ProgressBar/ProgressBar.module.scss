@@ -5,8 +5,9 @@
   background-color: $colors--theme--background-active;
   display: inline-flex;
   height: $spv--small;
-  margin: 0 $sph--small;
+  margin-right: $spv--small;
   width: 4rem;
+  vertical-align: center;
 
   > div {
     background-color: $colors--theme--link-default;

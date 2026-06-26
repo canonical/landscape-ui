@@ -38,7 +38,7 @@ describe("PublicationTargetList", () => {
     renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     await waitFor(() => {
-      expect(screen.getAllByText("1 publication")).toHaveLength(3);
+      expect(screen.getAllByText("1 publication")).toHaveLength(2);
     });
     expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });

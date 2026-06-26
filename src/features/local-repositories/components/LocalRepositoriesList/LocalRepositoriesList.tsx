@@ -41,7 +41,6 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       {
         accessor: "name",
         Header: "Name",
-        className: "large-cell",
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <Button
             type="button"
@@ -57,7 +56,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         ),
       },
       {
-        Header: "status",
+        Header: "Status",
         className: `${classes.status} p-table__cell--icon-placeholder`,
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <OperationStatusCell
@@ -68,7 +67,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         Header: "Last import",
-        className: "medium-cell",
+        className: classes.datetime,
         Cell: ({ row: { original } }: CellProps<Local>) =>
           original.lastImportTime
             ? moment(original.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT)
@@ -76,12 +75,14 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       },
       {
         Header: "Packages",
+        className: classes.count,
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoryPackagesCount repository={repository} />
         ),
       },
       {
         Header: "Publications",
+        className: classes.count,
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
           <LocalRepositoryPublicationsCount repository={repository} />
         ),

@@ -52,9 +52,7 @@ const ViewLocalRepositorySidePanel: FC = () => {
           <Notification
             severity="negative"
             title="Package import failed"
-            actions={[
-              <ViewLogsButton key="view-logs" />,
-            ]}
+            actions={[<ViewLogsButton key="view-logs" />]}
           >
             Your last package import was not completed successfully.
           </Notification>
