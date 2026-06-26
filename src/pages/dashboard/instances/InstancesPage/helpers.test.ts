@@ -83,6 +83,20 @@ describe("InstancesPage helpers", () => {
     expect(query).toBe(windowsOption.query);
   });
 
+  it("returns undefined when no filters are active", () => {
+    const query = getQuery({
+      os: "",
+      status: "",
+      contractExpiryDays: "",
+      query: "",
+      tags: [],
+      accessGroups: [],
+      availabilityZones: [],
+    });
+
+    expect(query).toBeUndefined();
+  });
+
   it("builds list params that preserve archived and WSL filters", () => {
     expect(
       getInstanceListParams({

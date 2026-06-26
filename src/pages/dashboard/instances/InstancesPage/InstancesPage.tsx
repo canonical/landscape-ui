@@ -40,7 +40,6 @@ const InstancesPage: FC = () => {
   useEffect(() => {
     setSelectedInstances([]);
     setIsAllSelected(false);
-    setIsAllSelected(false);
   }, [query]);
 
   // Mirror the selection into an external store so side panel content (whose
