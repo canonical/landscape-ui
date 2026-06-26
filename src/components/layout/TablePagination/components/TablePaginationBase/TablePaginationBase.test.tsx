@@ -68,10 +68,10 @@ describe("TablePaginationBase", () => {
   it("should change the page size", async () => {
     render(<TablePaginationBase {...props} currentPage={2} />);
 
-    const pageSizeOption = PAGE_SIZE_OPTIONS[1];
+    const [, pageSizeOption] = PAGE_SIZE_OPTIONS;
 
     await userEvent.selectOptions(
-      screen.getByRole("combobox", { name: "Instances per page" }),
+      screen.getByRole("combobox", { name: "Items per page" }),
       pageSizeOption.label,
     );
 

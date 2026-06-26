@@ -109,6 +109,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       <TablePagination
         totalItems={mirrors.length}
         currentItemCount={pagedMirrors.length}
+        pageSizeLabel="Mirrors per page"
       />
     </>
   );
