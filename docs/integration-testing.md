@@ -172,7 +172,7 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
     run: |
       BRANCH="${{ github.head_ref || github.ref_name }}"
       if git ls-remote --exit-code --heads \
-           "https://x-access-token:${{ steps.token.outputs.token }}@github.com/canonical/landscape-packaging.git" \
+           "https://x-access-token:${{ steps.get_token.outputs.token }}@github.com/canonical/landscape-packaging.git" \
            "$BRANCH" >/dev/null 2>&1; then
         echo "ref=$BRANCH" >> $GITHUB_OUTPUT
       else

@@ -95,9 +95,8 @@ jobs:
         env:
           TOKEN: ${{ steps.get_token.outputs.token }}
         run: |
+          trap 'git config --global --unset-all url."https://x-access-token:${TOKEN}@github.com/".insteadOf || true' EXIT
           git submodule update --init --recursive
-          git config --global --unset-all \
-            url."https://x-access-token:${TOKEN}@github.com/".insteadOf
 
       - name: Set up Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
@@ -124,12 +123,10 @@ jobs:
           git config --global \
             url."https://x-access-token:${PROTO_TOKEN}@github.com/canonical/landscape-proto".insteadOf \
             "https://github.com/canonical/landscape-proto"
+          trap 'git config --global --unset-all url."https://x-access-token:${PROTO_TOKEN}@github.com/canonical/landscape-proto".insteadOf || true' EXIT
           cd .landscape-packaging/landscape-go
           GOPRIVATE="github.com/canonical/*" go mod vendor
           echo "Vendored $(find vendor -name '*.go' | wc -l) Go source files"
-          # Unset the PAT-bearing rewrite so the secret does not persist in ~/.gitconfig.
-          git config --global --unset-all \
-            url."https://x-access-token:${PROTO_TOKEN}@github.com/canonical/landscape-proto".insteadOf
 
       - name: Create landscape-server bind-mount directories
         run: |
