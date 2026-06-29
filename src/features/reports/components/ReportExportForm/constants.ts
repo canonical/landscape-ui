@@ -65,6 +65,8 @@ export const INITIAL_EXPORT_VALUES: ExportFormValues = {
     "contacted_recently",
     "time_to_patch_days",
     "upgrade_profile_schedule",
+    "resolved_cves",
+    "unresolved_cves",
   ],
   retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
 };
