@@ -440,7 +440,10 @@ export class LandscapeDate {
         return new LandscapeDate(this._time + amount * 1000, this._utc);
       case "minute":
       case "minutes":
-        return new LandscapeDate(this._time + amount * MS_PER_MINUTE, this._utc);
+        return new LandscapeDate(
+          this._time + amount * MS_PER_MINUTE,
+          this._utc,
+        );
       case "hour":
       case "hours":
         return new LandscapeDate(this._time + amount * MS_PER_HOUR, this._utc);
@@ -520,12 +523,14 @@ export class LandscapeDate {
   }
 
   isAfter(other?: DateInput): boolean {
-    const target = other === undefined ? LandscapeDate.now() : LandscapeDate.from(other);
+    const target =
+      other === undefined ? LandscapeDate.now() : LandscapeDate.from(other);
     return this._time > target._time;
   }
 
   isBefore(other?: DateInput): boolean {
-    const target = other === undefined ? LandscapeDate.now() : LandscapeDate.from(other);
+    const target =
+      other === undefined ? LandscapeDate.now() : LandscapeDate.from(other);
     return this._time < target._time;
   }
 
@@ -538,7 +543,7 @@ export class LandscapeDate {
   }
 
   toISOString(): string {
-    return new Date(this._time).toISOString();
+    return this.isValid() ? new Date(this._time).toISOString() : "";
   }
 
   format(pattern?: string): string {
@@ -572,7 +577,7 @@ export class LandscapeDate {
     )}T${pad(fields.H)}:${pad(fields.Mi)}:${pad(fields.S)}`;
 
     if (this._utc) {
-      return `${base}+00:00`;
+      return `${base}Z`;
     }
 
     const offsetMinutes = new Date(this._time).getTimezoneOffset();
@@ -590,7 +595,9 @@ export class LandscapeDate {
       return Math.floor(Date.UTC(f.Y, f.Mo, f.D) / MS_PER_DAY);
     };
 
-    const reference = this._utc ? LandscapeDate.now().utc() : LandscapeDate.now();
+    const reference = this._utc
+      ? LandscapeDate.now().utc()
+      : LandscapeDate.now();
     const delta = dayIndex(this) - dayIndex(reference);
 
     let pattern: string | undefined;
