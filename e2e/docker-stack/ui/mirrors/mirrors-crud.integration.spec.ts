@@ -170,7 +170,10 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test("captures the mirror resource name for afterAll cleanup", async ({ request }) => {
+  test("captures the mirror resource name for afterAll cleanup", async ({
+    request,
+  }) => {
+    const token = await getAuthToken(request);
     const listRes = await request.get("/v1beta1/mirrors", {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -179,7 +182,9 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
       `GET /v1beta1/mirrors failed: ${listRes.status()}`,
     ).toBe(true);
     const body = (await listRes.json()) as DebarchiveMirrorList;
-    const created = body.results?.find((m) => m.displayName === mirrorDisplayName);
+    const created = body.results?.find(
+      (m) => m.displayName === mirrorDisplayName,
+    );
     expect(
       created?.name,
       `Created mirror "${mirrorDisplayName}" was not found in API list`,
