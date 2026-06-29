@@ -11,13 +11,13 @@ import server from "@/tests/server";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
+import { http, HttpResponse } from "msw";
 
 const selected = instances.slice(0, 2);
 const ubuntuProInfo = {
@@ -149,15 +149,7 @@ describe("InstancesPageActions", () => {
         ),
       );
 
-      renderWithProviders(
-        <InstancesPageActions
-          isGettingInstances={false}
-          selectedInstances={selected}
-          instanceCount={selected.length}
-          isAllSelected={false}
-          exportParams={exportParams}
-        />,
-      );
+      renderPageActions();
 
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),

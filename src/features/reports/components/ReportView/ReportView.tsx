@@ -234,6 +234,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
         otherIds={otherIds}
         otherDetail={OTHER_DETAIL}
       />,
+      "medium",
     );
   };
 

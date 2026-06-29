@@ -38,7 +38,7 @@ describe("InstancesExportForm", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("tab", {
-        name: /granular metadata & deep diagnostics/i,
+        name: /advanced infrastructure & cloud/i,
       }),
     ).toBeInTheDocument();
     await openAttributeGroup(user, /business logic/i);
@@ -94,7 +94,6 @@ describe("InstancesExportForm", () => {
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "host");
 
-    await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Hostname" }),
     ).toBeInTheDocument();
@@ -131,7 +130,6 @@ describe("InstancesExportForm", () => {
 
     // The category title matches, so the whole group is shown including fields
     // whose labels do not contain the search term.
-    await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Instance name" }),
     ).toBeInTheDocument();

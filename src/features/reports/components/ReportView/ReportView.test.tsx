@@ -289,6 +289,7 @@ describe("ReportView", () => {
     expect(setSidePanelContent).toHaveBeenCalledWith(
       "Export report as TSV",
       expect.anything(),
+      "medium",
     );
   });
 });

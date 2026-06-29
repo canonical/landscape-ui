@@ -40,7 +40,7 @@ const renderForm = (
     initialValues: ExportFormValues;
     onGenerate: (args: {
       values: ExportFormValues;
-      fieldsToExport: { id: string; label: string }[];
+      fieldsToExport: { id: string; label: string; groupTitle?: string }[];
     }) => Promise<void>;
   }> = {},
 ) => {
@@ -113,6 +113,41 @@ describe("ExportForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("auto-expands matching groups so fields are visible without clicking the group header", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    expect(
+      screen.queryByRole("checkbox", { name: "Hostname" }),
+    ).not.toBeInTheDocument();
+
+    await user.type(
+      screen.getByRole("searchbox", { name: "Search attributes" }),
+      "host",
+    );
+
+    expect(
+      screen.getByRole("checkbox", { name: "Hostname" }),
+    ).toBeInTheDocument();
+  });
+
+  it("auto-expands groups matched by group title so all their fields are visible", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(
+      screen.getByRole("searchbox", { name: "Search attributes" }),
+      "compliance",
+    );
+
+    expect(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "Time to patch (days)" }),
+    ).toBeInTheDocument();
+  });
+
   it("selects and deselects all fields in a group from the group checkbox", async () => {
     const user = userEvent.setup();
     const onGenerate = vi.fn().mockResolvedValue(undefined);
@@ -139,8 +174,12 @@ describe("ExportForm", () => {
           selectedFieldIds: ["hostname", "title"],
         }),
         fieldsToExport: [
-          { id: "hostname", label: "Hostname" },
-          { id: "title", label: "Instance name" },
+          { id: "hostname", label: "Hostname", groupTitle: "Primary Identity" },
+          {
+            id: "title",
+            label: "Instance name",
+            groupTitle: "Primary Identity",
+          },
         ],
       });
     });
@@ -206,10 +245,74 @@ describe("ExportForm", () => {
           retainUntil: INITIAL_VALUES.retainUntil,
         }),
         fieldsToExport: [
-          { id: "hostname", label: "Hostname" },
-          { id: "securely_patched", label: "Securely patched" },
+          { id: "hostname", label: "Hostname", groupTitle: "Primary Identity" },
+          {
+            id: "securely_patched",
+            label: "Securely patched",
+            groupTitle: "Compliance",
+          },
         ],
       });
+    });
+  });
+
+  it("shows group badges and reset button on step 2", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Badge test",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    await openAttributeGroup(user, /compliance/i);
+    await user.click(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Primary Identity")).toBeInTheDocument();
+    expect(screen.getByText("Compliance")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /reset to default order/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("reset to default order restores group-declaration sequence after manual reorder", async () => {
+    const user = userEvent.setup();
+    const onGenerate = vi.fn().mockResolvedValue(undefined);
+
+    renderForm({ onGenerate });
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Reset test",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    await user.click(
+      screen.getByRole("button", { name: /move hostname down/i }),
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: /reset to default order/i }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    await waitFor(() => {
+      expect(onGenerate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          fieldsToExport: [
+            expect.objectContaining({ id: "hostname" }),
+            expect.objectContaining({ id: "title" }),
+          ],
+        }),
+      );
     });
   });
 });

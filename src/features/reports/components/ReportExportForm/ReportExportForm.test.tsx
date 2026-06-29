@@ -315,11 +315,13 @@ describe("ReportExportForm", () => {
           "contacted_recently",
           "time_to_patch_days",
           "upgrade_profile_schedule",
+          "resolved_cves",
+          "unresolved_cves",
         ]),
       );
     });
 
-    expect((requestBody.selected_field_ids as string[]).length).toBe(7);
+    expect((requestBody.selected_field_ids as string[]).length).toBe(9);
   });
 
   it("shows Resolved CVEs and Unresolved CVEs in the Compliance group when byCve is off", async () => {
