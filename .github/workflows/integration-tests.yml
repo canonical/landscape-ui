@@ -139,7 +139,15 @@ jobs:
             -o "${COMPOSE_DEST}"
           curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/checksums.txt" \
             -o /tmp/docker-compose-checksums.txt
-          grep " ${COMPOSE_ASSET}$" /tmp/docker-compose-checksums.txt | sed "s# ${COMPOSE_ASSET}\$#  ${COMPOSE_DEST}#" | sha256sum -c -
+          # docker's checksums.txt uses GNU binary-mode format: "<hash> *<asset>".
+          # Extract the hash for our asset and rebuild a check line pointing at the
+          # downloaded binary so sha256sum -c verifies the right file.
+          EXPECTED_SHA=$(grep -E " \*?${COMPOSE_ASSET}$" /tmp/docker-compose-checksums.txt | awk '{print $1}')
+          if [ -z "${EXPECTED_SHA}" ]; then
+            echo "No checksum found for ${COMPOSE_ASSET} in checksums.txt"
+            exit 1
+          fi
+          echo "${EXPECTED_SHA}  ${COMPOSE_DEST}" | sha256sum -c -
           chmod +x "${COMPOSE_DEST}"
           docker compose version
 
