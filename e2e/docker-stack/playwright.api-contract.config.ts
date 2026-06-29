@@ -27,7 +27,7 @@ export default defineConfig({
     cwd: "../../",
     command: "vite --mode e2e.selfHosted",
     url: BASE_URL,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 120_000,
     stdout: "pipe",
     stderr: "pipe",

@@ -33,7 +33,7 @@ A single workflow, **Integration Tests** (`.github/workflows/integration-tests.y
 
 | Event               | Behaviour                                                 |
 | ------------------- | --------------------------------------------------------- |
-| PR → `dev`          | Runs on code changes (docs/markdown/debian paths ignored) |
+| PR → `main`         | Runs on code changes (docs/markdown/debian paths ignored) |
 | Push → `main`       | Runs on code changes (same path filter)                   |
 | Nightly 02:00 UTC   | Always runs — catches upstream backend regressions        |
 | `workflow_dispatch` | Manual; accepts `packaging_ref` input                     |
@@ -141,13 +141,13 @@ Reports are written to `playwright-integration-report/` and `playwright-integrat
 | Separate `playwright.integration.config.ts`                 | Avoids conflicts with MSW-backed `playwright.config.ts` (`webServer`, `testDir`, `baseURL`)                                                                                                                                                                                                                                        |
 | `workers: 1`                                                | Shared mutable backend; tests must not race against each other                                                                                                                                                                                                                                                                     |
 | `globalSetup` writes `storageState`                         | Individual tests reuse the authenticated session; login is tested once explicitly                                                                                                                                                                                                                                                  |
-| **`vite --mode e2e` (dev server, not `vite preview`)**      | The dev server activates Vite's proxy (`/api` → `localhost:9091`), making all API calls same-origin. Required for session cookie auth: `GET /api/v2/me` uses `publicFetch` (no `withCredentials`), so cookies are only sent when the request is same-origin. `vite preview` serves cross-origin, breaking authentication silently. |
+| **`vite --mode e2e.selfHosted` / `vite --mode e2e.saas` (dev server, not `vite preview`)** | The dev server activates Vite's proxy (`/api` → `localhost:9091`), making all API calls same-origin. Required for session cookie auth: `GET /api/v2/me` uses `publicFetch` (no `withCredentials`), so cookies are only sent when the request is same-origin. `vite preview` serves cross-origin, breaking authentication silently. |
 | `*.saas.integration.spec.ts` naming                         | Excluded from self-hosted config via `testIgnore`; picked up only by `playwright.integration.saas.config.ts`. The naming convention is self-documenting and requires no per-test config.                                                                                                                                           |
 | Relative API URLs in `.env.e2e`                             | `/api/v2/`, `/api/`, `/v1beta1/` route through the Vite proxy. `VITE_API_PROXY_TARGET` and `VITE_API_DEBARCHIVE_PROXY_TARGET` configure the targets.                                                                                                                                                                               |
 | Explicit service list in `docker compose up`                | Starts only services needed for standalone mode; avoids building debarchive unless explicitly included.                                                                                                                                                                                                                            |
 | GitHub App token instead of PAT                             | Short-lived (≤1 h), scoped to specific repos, no human credentials. SSH submodule URLs rewritten to HTTPS via `url.insteadOf` after checkout.                                                                                                                                                                                      |
 | `docker wait landscape-builder` (not `docker compose wait`) | `docker compose wait` resolves the project by file path and fails when the working directory differs between steps. `docker wait` operates on the container name directly.                                                                                                                                                         |
-| `landscape-go` vendor directory generated in CI             | `vendor/` is gitignored in landscape-go. Regenerated via `GOPRIVATE=... go mod vendor` using `LANDSCAPE_PROTO_PAT`. See [debarchive-feature-context.md](debarchive-feature-context.md).                                                                                                                                            |
+| `landscape-go` vendor directory generated in CI             | `vendor/` is gitignored in landscape-go. Regenerated via `GOPRIVATE=... go mod vendor` using `LANDSCAPE_PROTO_TOKEN`. See [debarchive-feature-context.md](debarchive-feature-context.md).                                                                                                                                            |
 
 ## Phase 2 — complete ✅
 
@@ -206,7 +206,7 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
   Once all four gates pass, the service contract is stable enough that a standalone
   `compose.ci.yaml` won't need frequent updates.
 
-- **Migrate `LANDSCAPE_PROTO_PAT` to App install.** When the `landscape-packager` App is
+- **Migrate `LANDSCAPE_PROTO_TOKEN` to App install.** When the `landscape-packager` App is
   installed on `canonical/landscape-proto`, add it to `repositories:` in the token step and
   remove the `git config url.insteadOf` line for landscape-proto (~4 lines).
 
@@ -224,7 +224,7 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
   - Outbound HTTPS access to `github.com`, `ghcr.io`, `proxy.golang.org`
 
   _Registration:_
-  - Create a runner group in the `marqode/landscape-ui` repository settings
+  - Create a runner group in this repository's settings
     (**Settings → Actions → Runners → New self-hosted runner**)
   - Install the GitHub Actions runner agent; configure as a service so it survives reboots
   - Label the runner (e.g. `self-hosted`, `Linux`, `landscape-ci`) — labels must match the
@@ -248,7 +248,7 @@ See [debarchive-feature-context.md](debarchive-feature-context.md) for all Phase
   _Security note:_ Self-hosted runners on public repositories can execute arbitrary code
   from fork PRs unless pull-request workflows are restricted to approved contributors.
   Since this workflow requires organisation secrets (`LANDSCAPE_PACKAGER_PRIVATE_KEY`,
-  `LANDSCAPE_PROTO_PAT`), it is already protected — the secrets are only available on
+  `LANDSCAPE_PROTO_TOKEN`), it is already protected — the secrets are only available on
   the `pull_request` trigger from non-fork branches, and the `workflow_dispatch`/`push`
   triggers require write access. Confirm this holds before enabling the runner on any
   fork-accessible workflow.

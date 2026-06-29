@@ -145,10 +145,10 @@ test.describe("publication targets CRUD (real debarchive)", () => {
         await page.getByLabel(/bucket name/i).fill("ci-test-bucket");
         await page
           .getByLabel(/aws access key id/i)
-          .fill("AKIAIOSFODNN7EXAMPLE");
+          .fill("EXAMPLE_ACCESS_KEY_ID");
         await page
           .getByLabel(/aws secret access key/i)
-          .fill("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY");
+          .fill("EXAMPLE_SECRET_ACCESS_KEY");
 
         await page
           .getByRole("complementary", { name: "Side panel" })

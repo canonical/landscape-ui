@@ -12,7 +12,7 @@ For architecture details and roadmap, see [docs/integration-testing.md](../../do
 
 The **Integration Tests** workflow (`.github/workflows/integration-tests.yml`) runs automatically on:
 
-- PRs targeting `dev` (code changes only — docs/markdown paths are ignored)
+- PRs targeting `main` (code changes only — docs/markdown paths are ignored)
 - Pushes to `main`
 - Nightly at 02:00 UTC (catches upstream backend regressions)
 
