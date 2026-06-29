@@ -8,7 +8,10 @@ import usePageParams from "@/hooks/usePageParams";
 import { getSourceType } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DEFAULT_POLLING_INTERVAL,
+  DISPLAY_DATE_TIME_FORMAT,
+} from "@/constants";
 import { boolToLabel } from "@/utils/output";
 import {
   AssociatedPublicationsList,
@@ -30,8 +33,6 @@ import {
 } from "@/features/operations";
 import MirrorDetailsActionBlock from "./components/MirrorDetailsActionBlock";
 
-const POLLING_INTERVAL = 2000;
-
 const MirrorDetails: FC = () => {
   const { name } = usePageParams();
   const [tabId, setTabId] = useState<"details" | "packages">("details");
@@ -42,7 +43,7 @@ const MirrorDetails: FC = () => {
     {
       enabled: !!mirror.lastOperation,
       refetchInterval: ({ state }) =>
-        state.data?.data?.done ? false : POLLING_INTERVAL,
+        state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
     },
   );
   const { publications, isGettingPublications } =
@@ -77,7 +78,7 @@ const MirrorDetails: FC = () => {
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        {!!operation && !!operation.error && (
+        {!!operation?.error && (
           <Notification
             severity="negative"
             title="Update failed"
@@ -120,7 +121,10 @@ const MirrorDetails: FC = () => {
                       {!!iconName && (
                         <Icon name={iconName} className={classes.icon} />
                       )}
-                      <OperationStatusCell operation={operation} />
+                      <OperationStatusCell
+                        operation={operation}
+                        type="mirror"
+                      />
                     </>
                   }
                 />

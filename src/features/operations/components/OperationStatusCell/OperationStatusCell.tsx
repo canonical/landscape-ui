@@ -3,42 +3,49 @@ import type { FC } from "react";
 import classes from "./OperationStatusCell.module.scss";
 import ViewLogsButton from "../ViewLogsButton";
 import LoadingState from "@/components/layout/LoadingState";
+import { getOperationTypeTexts } from "./helpers";
 
 interface OperationStatusCellProps {
   readonly operation: Operation | undefined;
   readonly isGettingOperation?: boolean;
+  readonly type: "publication" | "mirror" | "local";
 }
 
 const OperationStatusCell: FC<OperationStatusCellProps> = ({
   operation,
   isGettingOperation = false,
+  type,
 }) => {
   if (isGettingOperation) {
     return <LoadingState inline />;
   }
 
+  const { inexistent, successful, failed, ongoing } =
+    getOperationTypeTexts(type);
   const { status, resource, progressPercent = 0 } = operation?.metadata ?? {};
+  const resourceIdentifier =
+    type === "mirror" ? resource : resource?.split("/").pop();
 
   if (!status) {
-    return "Not yet updated";
+    return inexistent;
   }
 
   if (status === "succeeded") {
-    return "Updated";
+    return successful;
   }
 
   if (status === "failed") {
     return (
       <>
-        <span className={classes.failedText}>Update failed</span>
-        <ViewLogsButton resource={resource} />
+        <span className={classes.failedText}>{failed}</span>
+        <ViewLogsButton resource={resourceIdentifier} />
       </>
     );
   }
 
   return (
     <>
-      Updating
+      {ongoing}
       <div className={classes.progressBar}>
         <div style={{ width: `${progressPercent}%` }} />
       </div>

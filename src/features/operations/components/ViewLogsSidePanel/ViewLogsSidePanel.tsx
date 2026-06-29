@@ -1,34 +1,46 @@
 import SidePanel from "@/components/layout/SidePanel";
 import usePageParams from "@/hooks/usePageParams";
-import {
-  Button,
-  CodeSnippet,
-  Icon,
-  Notification,
-} from "@canonical/react-components";
-import { useEffect, useMemo, useRef, useState, type FC } from "react";
-import { useGetOperation } from "../../api";
+import { Button, CodeSnippet, Icon } from "@canonical/react-components";
+import { useEffect, useRef, useState, type FC } from "react";
+import { useGetOperation, useGetOperationResource } from "../../api";
 import classes from "./ViewLogsSidePanel.module.scss";
-import { useGetMirror } from "@/features/mirrors";
+import EmptyState from "@/components/layout/EmptyState";
 
 const COPIED_FEEDBACK_TIMEOUT = 2000;
 
-const ViewLogsSidePanel: FC = () => {
+interface ViewLogsSidePanelProps {
+  readonly resourceType: "mirrors" | "publications" | "locals";
+}
+
+const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
   const { name } = usePageParams();
-  const mirror = useGetMirror(name).data.data;
+  const resourceIdentifier =
+    resourceType === "mirrors" ? name : `${resourceType}/${name}`;
+  const resource = useGetOperationResource(resourceIdentifier);
   const { operation, isGettingOperation } = useGetOperation(
-    mirror.lastOperation ?? "",
-    { enabled: !!mirror.lastOperation },
+    resource.lastOperation ?? "",
+    { enabled: !!resource.lastOperation },
   );
-  const logs = operation?.error?.details?.join("\n") ?? "";
+
+  const { error: { details } = {}, metadata: { operationId } = {} } =
+    operation ?? {};
+
+  const logs = details?.join("\n") ?? "";
+
+  const getOperationType = () => {
+    switch (resourceType) {
+      case "publications":
+        return "Publication";
+      case "mirrors":
+        return "Update";
+      case "locals":
+        return "Import";
+    }
+  };
+  const operationType = getOperationType();
 
   const [copied, setCopied] = useState(false);
   const copiedTimeoutRef = useRef<number | undefined>(undefined);
-
-  const url = useMemo(() => {
-    const blob = new Blob([logs], { type: "text/plain" });
-    return URL.createObjectURL(blob);
-  }, [logs]);
 
   useEffect(() => {
     return () => {
@@ -36,11 +48,19 @@ const ViewLogsSidePanel: FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    return () => {
-      URL.revokeObjectURL(url);
-    };
-  }, [url]);
+  const fileName = resource.displayName.replaceAll(" ", "-");
+
+  const handleDownload = () => {
+    const blob = new Blob([logs], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${fileName}_${operationId}.log`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleCopy = async () => {
     try {
@@ -55,33 +75,23 @@ const ViewLogsSidePanel: FC = () => {
     }
   };
 
-  const title = (
-    <SidePanel.Header>Update logs for {mirror.displayName}</SidePanel.Header>
-  );
-
-  if (!mirror.lastOperation) {
-    return (
-      <>
-        {title}
-        <SidePanel.Content>
-          <Notification
-            severity="negative"
-            title="The selected mirror hasn't had any update attempts yet."
-          />
-        </SidePanel.Content>
-      </>
-    );
-  }
-
-  if (isGettingOperation) {
+  if (resource.lastOperation && isGettingOperation) {
     return <SidePanel.LoadingState />;
   }
 
   return (
     <>
-      {title}
+      <SidePanel.Header>
+        {operationType} logs for {resource.displayName}
+      </SidePanel.Header>
       <SidePanel.Content>
-        {logs ? (
+        {!logs ? (
+          <EmptyState
+            icon="file"
+            title="Logs not found"
+            body="It seems that the logs you're looking for don't exist."
+          />
+        ) : (
           <>
             <div className={classes.actionRow}>
               <Button
@@ -94,14 +104,16 @@ const ViewLogsSidePanel: FC = () => {
                 <Icon name={copied ? "success" : "copy"} />
                 <span>{copied ? "Copied" : "Copy"}</span>
               </Button>
-              <a
-                className="p-button--base has-icon u-no-margin--bottom"
-                href={url}
-                download={`${name}.log`}
+              <Button
+                appearance="base"
+                className="u-no-margin--bottom"
+                hasIcon
+                onClick={handleDownload}
+                type="button"
               >
                 <Icon name="begin-downloading" />
                 <span>Download</span>
-              </a>
+              </Button>
             </div>
             <CodeSnippet
               blocks={[
@@ -114,11 +126,6 @@ const ViewLogsSidePanel: FC = () => {
               className={classes.code}
             />
           </>
-        ) : (
-          <Notification
-            severity="negative"
-            title="The last update attempt for the selected mirror had no logs."
-          />
         )}
       </SidePanel.Content>
     </>
