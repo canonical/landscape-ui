@@ -71,9 +71,13 @@ test.describe("Instances API Contract", () => {
     ).toBeTruthy();
 
     // Restore
-    await request.put(`/api/v2/computers/${instanceId}`, {
+    const restoreRes = await request.put(`/api/v2/computers/${instanceId}`, {
       data: { title: originalTitle },
       headers: { Authorization: `Bearer ${token}` },
     });
+    expect(
+      restoreRes.ok(),
+      `Restore PUT failed: ${restoreRes.status()} ${await restoreRes.text()}`,
+    ).toBeTruthy();
   });
 });

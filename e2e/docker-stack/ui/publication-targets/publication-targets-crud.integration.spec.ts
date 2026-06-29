@@ -15,9 +15,9 @@
  *   3. Delete — the RemoveTargetModal removes the target and the row
  *      disappears from the table.
  *
- * Tests MUST run in order (workers=1 / serial describe) because each test
- * depends on state left by the previous one. The shared `targetDisplayName`
- * variable tracks the current display name across tests.
+ * This spec uses a single test with ordered test.step blocks because each step
+ * depends on state created by the previous one (create → edit → delete).
+ * Keep workers=1 in the integration Playwright config to avoid backend races.
  *
  * SEEDED DATA
  * ───────────
@@ -34,8 +34,8 @@
  *
  * CLEANUP
  * ───────
- * Test 3 deletes the target via the UI. afterAll performs a best-effort API
- * cleanup in case test 3 did not run (e.g. earlier failure).
+ * The final step deletes the target via the UI. A finally block performs a
+ * best-effort API cleanup in case the delete step did not complete.
  */
 import {
   expect,

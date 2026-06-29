@@ -180,12 +180,12 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
       `GET /v1beta1/mirrors failed: ${listRes.status()}`,
     ).toBe(true);
     const body = (await listRes.json()) as DebarchiveMirrorList;
-    const created = body.results?.find(
-      (m) => m.displayName === mirrorDisplayName,
-    );
-    if (created?.name) {
-      mirrorName = created.name;
-    }
+    const created = body.results?.find((m) => m.displayName === mirrorDisplayName);
+    expect(
+      created?.name,
+      `Created mirror "${mirrorDisplayName}" was not found in API list`,
+    ).toBeTruthy();
+    mirrorName = created?.name ?? "";
   });
 
   test("edits the created mirror display name", async ({ page }) => {
