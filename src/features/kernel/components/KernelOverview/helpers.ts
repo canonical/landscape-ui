@@ -44,7 +44,7 @@ export const getLivepatchCoverageIcon = (
   const today = date();
   const diffDays = expiry.diff(today, "days");
 
-  if (diffDays < 0 || !livepatchEnabled || !date(expiryDate).isValid()) {
+  if (diffDays < 0 || !livepatchEnabled || !expiry.isValid()) {
     return "status-failed-small";
   } else if (diffDays < 7) {
     return "status-waiting-small";
@@ -68,6 +68,6 @@ export const getLivepatchCoverageDisplayValue = (
   if (diffDays < 0) {
     return "Expired";
   } else {
-    return `Expires on ${date(expiryDate).format(DISPLAY_DATE_FORMAT)}`;
+    return `Expires on ${expiry.format(DISPLAY_DATE_FORMAT)}`;
   }
 };
