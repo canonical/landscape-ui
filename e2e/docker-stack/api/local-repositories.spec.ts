@@ -18,9 +18,11 @@ async function getAuthToken(request: APIRequestContext): Promise<string> {
   return body.token;
 }
 
-function validateLocalShape(repo: Local): repo is Local {
+function validateLocalShape(repo: unknown): asserts repo is Local {
+  expect(repo).not.toBeNull();
+  expect(typeof repo).toBe("object");
   expect(repo).toHaveProperty("name");
-  return true;
+  expect((repo as { name?: unknown }).name).toEqual(expect.any(String));
 }
 
 test.describe("Local Repositories API Contract", () => {
