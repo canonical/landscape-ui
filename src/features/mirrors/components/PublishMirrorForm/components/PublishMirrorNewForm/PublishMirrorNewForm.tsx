@@ -25,7 +25,7 @@ import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import type { PublishNewFormValues } from "@/features/publications";
-import MultiSelectField from "@/components/form/MultiSelectField/MultiSelectField";
+import MultiSelectField from "@/components/form/MultiSelectField";
 
 interface PublishMirrorNewFormProps {
   readonly mirror: Mirror;
@@ -167,6 +167,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
               type="text"
               label="Distribution"
               required
+              error={getFormikError(formik, "distribution")}
               {...formik.getFieldProps("distribution")}
             />
           )}
