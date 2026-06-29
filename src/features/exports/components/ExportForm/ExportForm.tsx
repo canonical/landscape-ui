@@ -52,7 +52,9 @@ const ExportForm: FC<ExportFormProps> = ({
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       const selectedFields = fieldGroups
-        .flatMap((group) => group.fields)
+        .flatMap((group) =>
+          group.fields.map((field) => ({ ...field, groupTitle: group.title })),
+        )
         .filter((field) => values.selectedFieldIds.includes(field.id));
 
       if (step === 0) {
@@ -165,6 +167,31 @@ const ExportForm: FC<ExportFormProps> = ({
 
   const selectedFieldIdsError = getFormikError(formik, "selectedFieldIds");
 
+  const renderFieldGroups = () => {
+    if (!filteredFieldGroups.length) {
+      return (
+        <p className={classes.emptyState}>No attributes match your search.</p>
+      );
+    }
+
+    if (attributeSearch.trim()) {
+      return filteredFieldGroups.map((group) => {
+        const section = accordionSections.find((s) => s.key === group.key);
+        if (!section) return null;
+        return (
+          <Accordion
+            key={group.key}
+            expanded={group.key}
+            sections={[section]}
+            titleElement="h5"
+          />
+        );
+      });
+    }
+
+    return <Accordion sections={accordionSections} titleElement="h5" />;
+  };
+
   const stepContent =
     step === 0 ? (
       <>
@@ -206,13 +233,7 @@ const ExportForm: FC<ExportFormProps> = ({
               {selectedFieldIdsError}
             </p>
           )}
-          {filteredFieldGroups.length ? (
-            <Accordion sections={accordionSections} titleElement="h5" />
-          ) : (
-            <p className={classes.emptyState}>
-              No attributes match your search.
-            </p>
-          )}
+          {renderFieldGroups()}
         </div>
       </>
     ) : (
