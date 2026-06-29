@@ -13,21 +13,27 @@ export const BUCKET_OPTIONS = [
 
 export type BucketKey = (typeof BUCKET_OPTIONS)[number]["value"];
 
+const COMPLIANCE_FIELD_GROUP: ExportFieldGroup = {
+  title: "Compliance",
+  key: "compliance",
+  fields: [
+    { id: "securely_patched", label: "Securely patched" },
+    { id: "covered_by_upgrade_profile", label: "Covered by upgrade profile" },
+    { id: "contacted_recently", label: "Contacted in last 5 min" },
+    { id: "time_to_patch_days", label: "Time to patch (days)" },
+    { id: "upgrade_profile_schedule", label: "Upgrade profile schedule" },
+    { id: "resolved_cves", label: "Resolved CVEs" },
+    { id: "unresolved_cves", label: "Unresolved CVEs" },
+  ],
+};
+
+const [primaryIdentityGroup, ...remainingInstanceGroups] = EXPORT_FIELD_GROUPS;
+
 export const REPORT_EXPORT_FIELD_GROUPS: readonly ExportFieldGroup[] = [
-  {
-    title: "Compliance",
-    key: "compliance",
-    fields: [
-      { id: "securely_patched", label: "Securely patched" },
-      { id: "covered_by_upgrade_profile", label: "Covered by upgrade profile" },
-      { id: "contacted_recently", label: "Contacted in last 5 min" },
-      { id: "time_to_patch_days", label: "Time to patch (days)" },
-      { id: "upgrade_profile_schedule", label: "Upgrade profile schedule" },
-      { id: "resolved_cves", label: "Resolved CVEs" },
-      { id: "unresolved_cves", label: "Unresolved CVEs" },
-    ],
-  },
-  ...EXPORT_FIELD_GROUPS,
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  primaryIdentityGroup!,
+  COMPLIANCE_FIELD_GROUP,
+  ...remainingInstanceGroups,
 ];
 
 const BUCKET_TIME_PHRASES: Record<BucketKey, string> = {
