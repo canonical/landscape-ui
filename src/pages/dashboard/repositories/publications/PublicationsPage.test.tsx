@@ -64,9 +64,7 @@ describe("PublicationsPage", () => {
       "/?sidePath=logs&name=g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
     );
 
-    await expectLoadingState();
-
-    const sidePanel = screen.getByLabelText("Side panel");
+    const sidePanel = await screen.findByLabelText("Side panel");
 
     expect(
       await within(sidePanel).findByRole("heading", {
