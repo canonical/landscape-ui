@@ -255,7 +255,7 @@ test.describe("publication targets CRUD (real debarchive)", () => {
           page.getByRole("row").filter({ hasText: currentDisplayName }),
         ).not.toBeVisible({ timeout: 15_000 });
 
-        targetResourceName = "";
+        // Keep targetResourceName set for finally cleanup (no-op if already deleted).
       });
     } finally {
       // Best-effort cleanup in case delete step did not complete.

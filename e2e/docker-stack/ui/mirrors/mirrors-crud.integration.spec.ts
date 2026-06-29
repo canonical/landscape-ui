@@ -294,7 +294,6 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
       page.getByRole("row").filter({ hasText: mirrorDisplayName }),
     ).not.toBeVisible({ timeout: 15_000 });
 
-    // Mark as cleaned up so afterAll is a no-op.
-    mirrorName = "";
+    // Keep mirrorName set so afterAll can perform best-effort cleanup (no-op if already deleted).
   });
 });
