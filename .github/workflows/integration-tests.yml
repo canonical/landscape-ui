@@ -264,10 +264,10 @@ jobs:
       - name: Wait for debarchive to be ready and seeded
         working-directory: .landscape-packaging/docker/ui-dev
         run: |
-          echo "Waiting for debarchive to respond (pre-built CI image, ~10-30s expected)..."
+          echo "Waiting for debarchive to become healthy (pre-built CI image, ~10-30s expected)..."
           timeout 120 bash -c \
-            'until curl -sf -I -o /dev/null --max-time 5 http://localhost:8000/; do
-               echo "$(date): debarchive not ready yet, retrying in 10s..."
+            'until [ "$(docker inspect --format="{{.State.Health.Status}}" landscape-debarchive 2>/dev/null || true)" = "healthy" ]; do
+               echo "$(date): debarchive not healthy yet, retrying in 10s..."
                docker inspect --format="status={{.State.Status}} health={{.State.Health.Status}}" landscape-debarchive 2>/dev/null || true
                sleep 10
              done' || {
