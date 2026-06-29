@@ -43,6 +43,7 @@ import {
   type Page,
   type APIRequestContext,
 } from "@playwright/test";
+import { getAuthToken } from "../../helpers/auth";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -55,11 +56,6 @@ let mirrorDisplayName = "";
 let mirrorName = "";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-
-interface AuthUser {
-  token: string;
-  [key: string]: unknown;
-}
 
 interface DebarchiveMirror {
   name: string;
@@ -77,18 +73,6 @@ async function dismissWelcomePopup(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
   });
-}
-
-/** Fetch the landscape v2 JWT for authenticated API calls. */
-async function getAuthToken(request: APIRequestContext): Promise<string> {
-  const res = await request.get("/api/v2/me");
-  expect(res.ok(), `GET /api/v2/me failed: ${res.status()}`).toBe(true);
-  const body = (await res.json()) as AuthUser;
-  expect(
-    typeof body.token,
-    "GET /api/v2/me did not return a token — is the session cookie valid?",
-  ).toBe("string");
-  return body.token;
 }
 
 /** Delete a debarchive mirror by resource name if it exists. No-op if not found. */

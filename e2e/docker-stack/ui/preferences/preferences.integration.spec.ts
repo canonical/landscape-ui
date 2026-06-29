@@ -27,32 +27,16 @@
  * `Authorization: Bearer <token>`.
  */
 import { expect, test, type APIRequestContext } from "@playwright/test";
+import { getAuthToken } from "../../helpers/auth";
 
 // Re-use the session authenticated in global-setup.
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-interface AuthUser {
-  token: string;
-  [key: string]: unknown;
-}
-
 interface Preferences {
   title: string;
   [key: string]: unknown;
-}
-
-/** Fetch the JWT for subsequent authenticated API calls. */
-async function getAuthToken(request: APIRequestContext): Promise<string> {
-  const res = await request.get("/api/v2/me");
-  expect(res.ok(), `GET /api/v2/me failed: ${res.status()}`).toBe(true);
-  const body = (await res.json()) as AuthUser;
-  expect(
-    typeof body.token,
-    "GET /api/v2/me did not return a token — is the session cookie valid?",
-  ).toBe("string");
-  return body.token;
 }
 
 /** Fetch current org preferences. */
