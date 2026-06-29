@@ -81,7 +81,10 @@ export default function useUsers() {
       ...queryParams,
       query: queryParams?.query || undefined,
     };
-    return useQuery<AxiosResponse<ApiPaginatedResponse<User>>, AxiosError<ApiError>>({
+    return useQuery<
+      AxiosResponse<ApiPaginatedResponse<User>>,
+      AxiosError<ApiError>
+    >({
       queryKey: ["users", { ...params }],
       queryFn: async () => authFetch.get("users", { params }),
       ...config,
