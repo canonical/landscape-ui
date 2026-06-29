@@ -68,7 +68,7 @@ interface DebarchiveMirror {
 }
 
 interface DebarchiveMirrorList {
-  results: DebarchiveMirror[];
+  mirrors: DebarchiveMirror[];
   [key: string]: unknown;
 }
 
@@ -107,7 +107,7 @@ async function cleanupMirror(
   if (!listRes.ok()) return;
 
   const body = (await listRes.json()) as DebarchiveMirrorList;
-  const exists = body.results?.some((m) => m.name === resourceName);
+  const exists = body.mirrors?.some((m) => m.name === resourceName);
   if (!exists) return;
 
   await request.delete(`/v1beta1/${resourceName}`, {
@@ -182,7 +182,7 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
       `GET /v1beta1/mirrors failed: ${listRes.status()}`,
     ).toBe(true);
     const body = (await listRes.json()) as DebarchiveMirrorList;
-    const created = body.results?.find(
+    const created = body.mirrors?.find(
       (m) => m.displayName === mirrorDisplayName,
     );
     expect(
