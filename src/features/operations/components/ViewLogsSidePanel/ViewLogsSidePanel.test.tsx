@@ -20,7 +20,7 @@ assert(failedMirror, "Missing mock mirror with a failed operation");
 
 describe("ViewLogsSidePanel", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("renders loading state when fetching", () => {

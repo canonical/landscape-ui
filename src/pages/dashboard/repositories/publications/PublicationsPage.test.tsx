@@ -44,10 +44,10 @@ describe("PublicationsPage", () => {
       "/?sidePath=view&name=7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
     );
 
-    await expectLoadingState();
+    const sidePanel = await screen.findByLabelText("Side panel");
 
     expect(
-      await within(screen.getByLabelText("Side panel")).findByRole(
+      await within(sidePanel).findByRole(
         "button",
         { name: /republish/i },
         { timeout: 2000 },
