@@ -24,7 +24,8 @@ export const useGetInstalledSnaps = (
   > = {},
 ) => {
   const authFetch = useFetch();
-  const { instance_id, ...queryParams } = params;
+  const { instance_id, ...rest } = params;
+  const queryParams = { ...rest, search: rest.search || undefined };
 
   const { data, isLoading } = useQuery<
     AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,

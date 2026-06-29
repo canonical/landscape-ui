@@ -29,8 +29,9 @@ export const useGetDistributionUpgradeTargets = (
     queryKey: ["distributionUpgradeTargets", computerIds],
     queryFn: async () =>
       authFetch.get("computers/release-upgrade-targets", {
-        params: { computer_ids: idsParam },
+        params: { computer_ids: idsParam || undefined },
       }),
+    enabled: computerIds.length > 0,
     ...options,
   });
 

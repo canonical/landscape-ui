@@ -29,9 +29,11 @@ export const useGetAvailableSnaps = (
   >({
     queryKey: ["snaps", "available", { ...params }],
     queryFn: async () =>
-      authFetch.get(
-        `computers/${params.instance_id}/snaps/available?name_startswith=${encodeURIComponent(params.query)}`,
-      ),
+      authFetch.get(`computers/${params.instance_id}/snaps/available`, {
+        params: {
+          name_startswith: params.query || undefined,
+        },
+      }),
     ...options,
   });
 
