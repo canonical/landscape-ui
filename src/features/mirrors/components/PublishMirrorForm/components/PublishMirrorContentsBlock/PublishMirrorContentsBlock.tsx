@@ -19,7 +19,7 @@ const PublishMirrorContentsBlock: FC<PublishMirrorContentsBlockProps> = ({
       />
       <ReadOnlyField
         label="Components"
-        value={mirror.components.join(", ")}
+        value={mirror.components?.join(", ")}
         tooltipMessage={"The components are defined by the mirror."}
       />
       <ReadOnlyField

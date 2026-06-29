@@ -131,6 +131,16 @@ export default [
             endpointStatus.response as ListMirrorPackagesResponse,
           );
         }
+
+        if (endpointStatus.status === "empty") {
+          return HttpResponse.json<ListMirrorPackagesResponse>({
+            mirrorPackages: [],
+          });
+        }
+
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
       }
 
       const mirror = mirrors.find(

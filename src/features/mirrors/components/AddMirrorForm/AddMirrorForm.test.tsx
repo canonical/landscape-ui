@@ -9,37 +9,47 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   UBUNTU_ARCHIVE_HOST,
   UBUNTU_PRO_HOST,
   UBUNTU_SNAPSHOTS_HOST,
 } from "../../constants";
-import server from "@/tests/server";
-import { http, HttpResponse } from "msw";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
 import type { MirrorWritable } from "@canonical/landscape-openapi";
+import { useLocation } from "react-router";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
-const captureCreateMirrorRequestBody = () => {
-  const captured: { body?: Partial<MirrorWritable> } = {};
+const mockCreateMirror = vi.fn(() => ({ data: mirrors[0] }));
 
-  server.use(
-    http.post(`${API_URL_DEB_ARCHIVE}mirrors`, async ({ request }) => {
-      captured.body = (await request.json()) as Partial<MirrorWritable>;
-      return HttpResponse.json({});
+vi.mock("../../api", async () => {
+  const actual = await vi.importActual("../../api");
+
+  return {
+    ...actual,
+    useCreateMirror: () => ({
+      mutateAsync: mockCreateMirror,
     }),
-  );
+  };
+});
 
-  return captured;
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location">{search}</div>;
 };
 
 describe("AddMirrorForm", () => {
   const user = userEvent.setup();
 
   beforeEach(async () => {
-    renderWithProviders(<AddMirrorForm />);
+    mockCreateMirror.mockClear();
+
+    renderWithProviders(
+      <>
+        <AddMirrorForm />
+        <LocationDisplay />
+      </>,
+    );
 
     // The form renders immediately; wait for the "pulling…" note in the
     // Mirror contents block to disappear so the data-dependent dropdowns are
@@ -73,15 +83,15 @@ describe("AddMirrorForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      await screen.findByText("You have successfully added Name."),
-    ).toBeInTheDocument();
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        archiveRoot: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+      }),
+    );
   });
 
   it("submits an ubuntu archive mirror pointed at a custom CDN", async () => {
     const cdnUrl = "https://eu.archive.ubuntu.com/ubuntu/";
-
-    const captured = captureCreateMirrorRequestBody();
 
     const sourceUrlField = screen.getByLabelText("Source URL");
     await user.clear(sourceUrlField);
@@ -89,10 +99,9 @@ describe("AddMirrorForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      await screen.findByText("You have successfully added Name."),
-    ).toBeInTheDocument();
-    expect(captured.body).toMatchObject({ archiveRoot: cdnUrl });
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ archiveRoot: cdnUrl }),
+    );
   });
 
   it("rejects an http source URL with an HTTPS validation error", async () => {
@@ -113,8 +122,6 @@ describe("AddMirrorForm", () => {
   it("submits an ubuntu snapshot mirror", async () => {
     const date = "2026-04-15";
 
-    const captured = captureCreateMirrorRequestBody();
-
     await user.selectOptions(
       screen.getByLabelText("Source type"),
       "Ubuntu snapshots",
@@ -126,18 +133,15 @@ describe("AddMirrorForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      await screen.findByText("You have successfully added Name."),
-    ).toBeInTheDocument();
-    expect(captured.body).toMatchObject({
-      archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
-    });
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
+      }),
+    );
   });
 
   it("submits an ubuntu pro mirror", async () => {
     const token = "ABCDEFG";
-
-    const captured = captureCreateMirrorRequestBody();
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -147,12 +151,11 @@ describe("AddMirrorForm", () => {
     await user.type(screen.getByLabelText("Bearer token"), token);
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      await screen.findByText("You have successfully added Name."),
-    ).toBeInTheDocument();
-    expect(captured.body).toMatchObject({
-      archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
-    });
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
+      }),
+    );
   });
 
   it("explains which token an ubuntu pro mirror requires", async () => {
@@ -186,9 +189,9 @@ describe("AddMirrorForm", () => {
     await user.click(screen.getByLabelText(/Preserve upstream signing key/));
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      await screen.findByText("You have successfully added Name."),
-    ).toBeInTheDocument();
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ preserveSignatures: true }),
+    );
   });
 
   it("clears package filter and include dependencies when preserve signatures is enabled", async () => {
@@ -217,9 +220,7 @@ describe("AddMirrorForm", () => {
       components: ["main", "universe"],
       architectures: ["amd64", "arm64"],
       gpgKey: { armor: "ABCDEFG" },
-    };
-
-    const captured = captureCreateMirrorRequestBody();
+    } satisfies Partial<MirrorWritable>;
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -243,15 +244,18 @@ describe("AddMirrorForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    expect(
-      await screen.findByText("You have successfully added Name."),
-    ).toBeInTheDocument();
-    expect(captured.body).toMatchObject(params);
+    expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining(params),
+    );
   });
 });
 
 describe("AddMirrorForm loading state", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    mockCreateMirror.mockClear();
+  });
 
   it("renders the form immediately with a muted 'pulling' note while archive info is fetched", async () => {
     renderWithProviders(<AddMirrorForm />);

@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import usePageParams from "@/hooks/usePageParams";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { renderWithProviders } from "@/tests/render";
-import { describe, expect, assert } from "vitest";
+import { beforeEach, describe, expect, assert } from "vitest";
 import PublishMirrorForm from "./PublishMirrorForm";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import userEvent from "@testing-library/user-event";
@@ -73,6 +73,10 @@ const preserveSignaturesMirror = mirrors.find(
 
 describe("PublishMirrorForm", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("publishes to a new publication", async () => {
     renderWithProviders(
@@ -151,7 +155,7 @@ describe("PublishMirrorForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("passes settings checkboxes to createPublication", async () => {
+  it("passes settings to createPublication", async () => {
     renderWithProviders(
       <PublishMirrorForm />,
       undefined,
@@ -166,15 +170,18 @@ describe("PublishMirrorForm", () => {
     await user.click(
       screen.getByRole("checkbox", { name: /hash based indexing/i }),
     );
+
     await user.click(
-      screen.getByRole("checkbox", { name: /automatic installation/i }),
+      screen.getByRole("button", { name: /installs and upgrades/i }),
     );
     await user.click(
-      screen.getByRole("checkbox", { name: /automatic upgrades/i }),
+      await screen.findByRole("option", { name: /automatic upgrades only/i }),
     );
     await user.click(screen.getByRole("checkbox", { name: /skip bz2/i }));
     await user.click(
-      screen.getByRole("checkbox", { name: /skip content indexing/i }),
+      screen.getByRole("checkbox", {
+        name: /skip generating content indexes/i,
+      }),
     );
 
     await user.click(screen.getByRole("button", { name: "Publish mirror" }));
@@ -184,7 +191,7 @@ describe("PublishMirrorForm", () => {
         expect.objectContaining({
           body: expect.objectContaining({
             acquireByHash: true,
-            notAutomatic: false,
+            notAutomatic: true,
             butAutomaticUpgrades: true,
             skipBz2: true,
             skipContents: true,
@@ -204,7 +211,7 @@ describe("PublishMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Publish mirror" }));
 
     expect(
-      await screen.findByText("This field is required."),
+      await screen.findByText("This field is required"),
     ).toBeInTheDocument();
     expect(mockCreatePublication).not.toHaveBeenCalled();
   });

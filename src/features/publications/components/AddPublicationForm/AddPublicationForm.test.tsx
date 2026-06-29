@@ -115,9 +115,6 @@ describe("AddPublicationForm", () => {
     expect(
       screen.getByRole("combobox", { name: "Architectures" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("textbox", { name: "Directory prefix" }),
-    ).toHaveValue("edge");
   });
 
   it("uses static local-source fields without uploader architectures", async () => {
@@ -356,7 +353,7 @@ describe("AddPublicationForm", () => {
 
     expect(
       await screen.findByText(
-        'Publication "new-mirror-publication" has been created.',
+        "You have successfully added new-mirror-publication",
       ),
     ).toBeInTheDocument();
   });

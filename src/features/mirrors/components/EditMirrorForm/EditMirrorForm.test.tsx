@@ -54,7 +54,7 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText(
-        `You have successfully edited ${mirror.displayName}.`,
+        `You have successfully edited ${mirror.displayName}`,
       ),
     ).toBeInTheDocument();
   });
@@ -96,7 +96,7 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText(
-        `You have successfully edited ${mirror.displayName}.`,
+        `You have successfully edited ${mirror.displayName}`,
       ),
     ).toBeInTheDocument();
     expect(capturedBody).toMatchObject({ gpgKey: { armor: "ABCDEF" } });
@@ -139,7 +139,7 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText(
-        `You have successfully edited ${mirror.displayName}.`,
+        `You have successfully edited ${mirror.displayName}`,
       ),
     ).toBeInTheDocument();
     expect(capturedBody).not.toHaveProperty("gpgKey");
@@ -224,7 +224,7 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText(
-        `You have successfully edited ${mirror.displayName}.`,
+        `You have successfully edited ${mirror.displayName}`,
       ),
     ).toBeInTheDocument();
   });
@@ -256,7 +256,7 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText(
-        `You have successfully edited ${mirror.displayName}.`,
+        `You have successfully edited ${mirror.displayName}`,
       ),
     ).toBeInTheDocument();
   });
@@ -297,7 +297,7 @@ describe("EditMirrorForm", () => {
 
     expect(
       await screen.findByText(
-        `You have successfully edited ${mirror.displayName}.`,
+        `You have successfully edited ${mirror.displayName}`,
       ),
     ).toBeInTheDocument();
     expect(capturedBody).toMatchObject({
