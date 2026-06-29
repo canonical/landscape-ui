@@ -118,9 +118,9 @@ test.describe("publication targets CRUD (real debarchive)", () => {
   }) => {
     await dismissWelcomePopup(page);
 
-    const createdDisplayName = `CI Test Target ${Date.now()}`;
-    const updatedDisplayName = "CI Test Target Updated";
-    let currentDisplayName = createdDisplayName;
+const createdDisplayName = `CI Test Target ${Date.now()}`;
+const updatedDisplayName = `${createdDisplayName} Updated`;
+let currentDisplayName = createdDisplayName;
     let targetResourceName = "";
 
     try {

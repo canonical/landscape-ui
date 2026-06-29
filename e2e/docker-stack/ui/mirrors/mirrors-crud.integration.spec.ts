@@ -211,7 +211,7 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
 
   test("edits the created mirror display name", async ({ page }) => {
     await dismissWelcomePopup(page);
-    const updatedDisplayName = "CI Test Mirror Updated";
+const updatedDisplayName = `${mirrorDisplayName} Updated`;
 
     await page.goto("/repositories/mirrors");
     await page.waitForLoadState("networkidle");
