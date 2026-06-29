@@ -12,7 +12,7 @@ import { getQuery } from "./helpers";
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
 
-  const { instances, instancesCount, isGettingInstances } = useGetInstances({
+  const { instances, instancesCount, isGettingInstances, isInstanceLoading } = useGetInstances({
     query: getQuery(filters),
     archived_only: filters.status === "archived",
     with_alerts: true,
@@ -46,10 +46,10 @@ const InstancesPage: FC = () => {
         <InstancesContainer
           instanceCount={instancesCount}
           instances={instances}
-          isGettingInstances={isGettingInstances}
           selectedInstances={selectedInstances}
           setSelectedInstances={setSelectedInstances}
           onChangeFilter={clearSelection}
+          isInstanceLoading={isInstanceLoading}
         />
       </PageContent>
     </PageMain>

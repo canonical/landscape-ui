@@ -5,21 +5,21 @@ import { InstanceList, InstancesHeader } from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
 import usePageParams from "@/hooks/usePageParams";
-import { isInstancesEmptyState } from "./helpers";
+import { isInstanceLoadingState, isInstancesEmptyState } from "./helpers";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
   readonly instances: Instance[];
-  readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
   readonly onChangeFilter: () => void;
+  readonly isInstanceLoading: boolean,
 }
 
 const InstancesContainer = memo(function InstancesContainer({
   instanceCount,
   instances,
-  isGettingInstances,
+  isInstanceLoading,
   selectedInstances,
   setSelectedInstances,
   onChangeFilter,
@@ -34,10 +34,10 @@ const InstancesContainer = memo(function InstancesContainer({
     isInstancesEmptyState(
       currentPage,
       pageSize,
-      isGettingInstances,
       instanceCount,
       search,
       status,
+      isInstanceLoading,
     )
   ) {
     return <></>;
@@ -50,7 +50,7 @@ const InstancesContainer = memo(function InstancesContainer({
         onChangeFilter={onChangeFilter}
       />
 
-      {isGettingInstances ? (
+      {isInstanceLoadingState(currentPage, pageSize, isInstanceLoading) ? (
         <LoadingState />
       ) : (
         <InstanceList

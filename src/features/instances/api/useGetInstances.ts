@@ -54,6 +54,7 @@ export const useGetInstances = (
     isError,
     isFetching,
     isPending,
+    isLoading,
     error,
     refetch,
   } = useQuery<
@@ -73,6 +74,7 @@ export const useGetInstances = (
     isErrorInstances: isError,
     isFetchingInstances: isFetching,
     isGettingInstances: isPending,
+    isInstanceLoading: isLoading,
     refetchInstances: refetch,
   };
 };
