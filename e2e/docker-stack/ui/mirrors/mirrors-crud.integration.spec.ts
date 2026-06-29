@@ -91,12 +91,12 @@ async function getAuthToken(request: APIRequestContext): Promise<string> {
   return body.token;
 }
 
-/** Delete a debarchive mirror by slug if it exists. No-op if not found. */
+/** Delete a debarchive mirror by resource name if it exists. No-op if not found. */
 async function cleanupMirror(
   request: APIRequestContext,
-  slug: string,
+  resourceName: string,
 ): Promise<void> {
-  if (!slug) return;
+  if (!resourceName) return;
 
   const token = await getAuthToken(request);
 
@@ -107,10 +107,10 @@ async function cleanupMirror(
   if (!listRes.ok()) return;
 
   const body = (await listRes.json()) as DebarchiveMirrorList;
-  const exists = body.results?.some((m) => m.name === slug);
+  const exists = body.results?.some((m) => m.name === resourceName);
   if (!exists) return;
 
-  await request.delete(`/v1beta1/${slug}`, {
+  await request.delete(`/v1beta1/${resourceName}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
@@ -170,8 +170,7 @@ test.describe.serial("mirrors CRUD (real debarchive)", () => {
     ).toBeVisible({ timeout: 15_000 });
   });
 
-  test("captures the mirror slug for afterAll cleanup", async ({ request }) => {
-    const token = await getAuthToken(request);
+  test("captures the mirror resource name for afterAll cleanup", async ({ request }) => {
     const listRes = await request.get("/v1beta1/mirrors", {
       headers: { Authorization: `Bearer ${token}` },
     });

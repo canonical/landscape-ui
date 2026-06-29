@@ -61,23 +61,25 @@ test.describe("Instances API Contract", () => {
     const originalTitle = listBody.results[0].title;
     const newTitle = `Updated ${Date.now()}`;
 
-    const putRes = await request.put(`/api/v2/computers/${instanceId}`, {
-      data: { title: newTitle },
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(
-      putRes.ok(),
-      `PUT failed: ${putRes.status()} ${await putRes.text()}`,
-    ).toBeTruthy();
-
-    // Restore
-    const restoreRes = await request.put(`/api/v2/computers/${instanceId}`, {
-      data: { title: originalTitle },
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(
-      restoreRes.ok(),
-      `Restore PUT failed: ${restoreRes.status()} ${await restoreRes.text()}`,
-    ).toBeTruthy();
+    try {
+      const putRes = await request.put(`/api/v2/computers/${instanceId}`, {
+        data: { title: newTitle },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(
+        putRes.ok(),
+        `PUT failed: ${putRes.status()} ${await putRes.text()}`,
+      ).toBeTruthy();
+    } finally {
+      // Restore even if the update assertion fails, to keep the environment idempotent.
+      const restoreRes = await request.put(`/api/v2/computers/${instanceId}`, {
+        data: { title: originalTitle },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(
+        restoreRes.ok(),
+        `Restore PUT failed: ${restoreRes.status()} ${await restoreRes.text()}`,
+      ).toBeTruthy();
+    }
   });
 });
