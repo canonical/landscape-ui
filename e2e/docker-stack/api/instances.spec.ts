@@ -1,10 +1,35 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
+
+interface AuthUser {
+  token: string;
+  [key: string]: unknown;
+}
+
+/** Fetch the JWT for subsequent authenticated API calls. */
+async function getAuthToken(request: APIRequestContext): Promise<string> {
+  const res = await request.get("/api/v2/me");
+  expect(res.ok(), `GET /api/v2/me failed: ${res.status()}`).toBe(true);
+  const body = (await res.json()) as AuthUser;
+  expect(
+    typeof body.token,
+    "GET /api/v2/me did not return a token — is the session cookie valid?",
+  ).toBe("string");
+  return body.token;
+}
 
 test.describe("Instances API Contract", () => {
+  let token = "";
+
+  test.beforeAll(async ({ request }) => {
+    token = await getAuthToken(request);
+  });
+
   test("GET /api/v2/computers returns valid list shape", async ({
     request,
   }) => {
-    const res = await request.get("/api/v2/computers");
+    const res = await request.get("/api/v2/computers", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     expect(res.ok()).toBeTruthy();
 
     const body = await res.json();
@@ -17,7 +42,9 @@ test.describe("Instances API Contract", () => {
   });
 
   test("PUT /api/v2/computers/:id updates instance", async ({ request }) => {
-    const listRes = await request.get("/api/v2/computers");
+    const listRes = await request.get("/api/v2/computers", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     expect(listRes.ok()).toBeTruthy();
     const listBody = await listRes.json();
 
@@ -36,6 +63,7 @@ test.describe("Instances API Contract", () => {
 
     const putRes = await request.put(`/api/v2/computers/${instanceId}`, {
       data: { title: newTitle },
+      headers: { Authorization: `Bearer ${token}` },
     });
     expect(
       putRes.ok(),
@@ -45,6 +73,7 @@ test.describe("Instances API Contract", () => {
     // Restore
     await request.put(`/api/v2/computers/${instanceId}`, {
       data: { title: originalTitle },
+      headers: { Authorization: `Bearer ${token}` },
     });
   });
 });
