@@ -3,7 +3,7 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Input, Select, Textarea } from "@canonical/react-components";
+import { Form, Input, type MultiSelectItem, Select, Textarea } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import useNotify from "@/hooks/useNotify";
@@ -13,13 +13,13 @@ import {
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
-  VALIDATION_SCHEMA_NEW,
 } from "@/features/publications";
-import PublishMirrorContentsBlock from "../PublishMirrorContentsBlock";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import type { PublishNewFormValues } from "@/features/publications";
+import MultiSelectField from "@/components/form/MultiSelectField/MultiSelectField";
+import { VALIDATION_SCHEMA_NEW_MIRROR } from "./constants";
 
 interface PublishMirrorNewFormProps {
   readonly mirror: Mirror;
@@ -39,7 +39,11 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
     usePublishPublication();
 
   const formik = useFormik({
-    initialValues: getInitialValues(publicationTargets[0]?.name),
+    initialValues: {
+      ...getInitialValues(publicationTargets[0]?.name),
+      distribution: mirror.distribution,
+      architectures: mirror.architectures,
+    },
 
     onSubmit: async (values: PublishNewFormValues) => {
       const { notAutomatic, butAutomaticUpgrades } =
@@ -51,7 +55,8 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
             displayName: values.name,
             publicationTarget: values.publicationTarget,
             source: mirror.name ?? "",
-            distribution: mirror.distribution,
+            distribution: values.distribution,
+            architectures: values.architectures,
             acquireByHash: values.hashIndexing,
             notAutomatic,
             butAutomaticUpgrades,
@@ -79,7 +84,7 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       }
     },
 
-    validationSchema: VALIDATION_SCHEMA_NEW,
+    validationSchema: VALIDATION_SCHEMA_NEW_MIRROR,
     validateOnMount: true,
   });
 
@@ -90,6 +95,21 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
       disabled: !name,
     }),
   );
+
+  const architectureOptions = mirror.architectures?.map((architecture) => ({
+    label: architecture,
+    value: architecture,
+  })) ?? [];
+
+  const handleArchitectureChange = async (
+    items: MultiSelectItem[],
+  ): Promise<void> => {
+    await formik.setFieldTouched("architectures", true);
+    await formik.setFieldValue(
+      "architectures",
+      items.map(({ value }) => String(value)),
+    );
+  };
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -128,7 +148,39 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           )}
         </Blocks.Item>
 
-        <PublishMirrorContentsBlock mirror={mirror} />
+        <Blocks.Item title="Contents">
+          {mirror.preserveSignatures ? (
+            <ReadOnlyField
+              label="Distribution"
+              value={formik.values.distribution ?? ""}
+              tooltipMessage="You can't change the distribution of a signature-preserving mirror."
+            />
+          ) : (
+            <Input
+              type="text"
+              label="Distribution"
+              required
+              {...formik.getFieldProps("distribution")}
+            />
+          )}
+          <ReadOnlyField
+            label="Components"
+            value={mirror.components.join(", ")}
+            tooltipMessage="The components are defined by the mirror."
+          />
+          <MultiSelectField
+            variant="condensed"
+            hasSelectedItemsFirst={false}
+            label="Architectures"
+            required
+            items={architectureOptions}
+            selectedItems={architectureOptions.filter(({ value }) =>
+              formik.values.architectures?.includes(value),
+            )}
+            onItemsUpdate={handleArchitectureChange}
+            error={getFormikError(formik, "architectures")}
+          />
+        </Blocks.Item>
 
         <PublicationSettingsBlock formik={formik} />
       </Blocks>
