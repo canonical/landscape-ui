@@ -128,6 +128,33 @@ describe("MirrorDetails", () => {
     expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
   });
 
+  it("strips embedded credentials from the Source URL", async () => {
+    const proMirror = mirrors.find(
+      ({ mirrorType }) => mirrorType === "UBUNTU_PRO",
+    );
+
+    assert(proMirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${proMirror.name}`,
+    );
+
+    await expectLoadingState();
+
+    const link = screen.getByRole("link", {
+      name: "https://esm.ubuntu.com/infra/ubuntu/",
+    });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://esm.ubuntu.com/infra/ubuntu/",
+    );
+    expect(screen.queryByText(/s3cr3t-token/)).not.toBeInTheDocument();
+  });
+
   it("opens UpdateMirrorModal if updateModal param is true", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>

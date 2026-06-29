@@ -170,6 +170,29 @@ describe("EditMirrorForm", () => {
     ).toBeInTheDocument();
   });
 
+  it("strips embedded credentials from the read-only Source URL", async () => {
+    const proMirror = mirrors.find(
+      ({ mirrorType }) => mirrorType === "UBUNTU_PRO",
+    );
+
+    assert(proMirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
+      undefined,
+      `?sidePath=edit&name=${encodeURIComponent(proMirror.name)}`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByText("https://esm.ubuntu.com/infra/ubuntu/"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/s3cr3t-token/)).not.toBeInTheDocument();
+  });
+
   it("shows preserve signatures as disabled", async () => {
     const mirror = mirrors.find(({ preserveSignatures }) => preserveSignatures);
 

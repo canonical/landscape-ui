@@ -94,3 +94,19 @@ export function shouldShowAuthentication(mirror: Mirror): boolean {
 
   return getSourceType(mirror) === MIRROR_TYPE_LABELS.THIRD_PARTY;
 }
+
+// Strip any embedded credentials (e.g. the Ubuntu Pro bearer token in
+// `https://bearer:<token>@…`) so they are never shown when displaying an
+// archive root. Parses via the URL API and clears the userinfo; the URL is
+// otherwise returned in its normalized form. Returns the input unchanged if
+// it can't be parsed as an absolute URL.
+export function getStrippedUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.username = "";
+    parsed.password = "";
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}

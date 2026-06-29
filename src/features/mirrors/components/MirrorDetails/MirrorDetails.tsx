@@ -5,7 +5,11 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useGetMirror, useListPublicationTargets } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
-import { getSourceType, shouldShowAuthentication } from "./helpers";
+import {
+  getSourceType,
+  getStrippedUrl,
+  shouldShowAuthentication,
+} from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import moment from "moment";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
@@ -151,11 +155,11 @@ const MirrorDetails: FC = () => {
                   label="Source URL"
                   value={
                     <a
-                      href={mirror.archiveRoot}
+                      href={getStrippedUrl(mirror.archiveRoot)}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {mirror.archiveRoot}
+                      {getStrippedUrl(mirror.archiveRoot)}
                     </a>
                   }
                   large

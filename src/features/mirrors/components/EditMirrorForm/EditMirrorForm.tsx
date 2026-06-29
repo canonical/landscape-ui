@@ -14,6 +14,7 @@ import GpgKeyField from "@/components/form/GpgKeyField";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   getSourceType,
+  getStrippedUrl,
   shouldShowAuthentication,
 } from "../MirrorDetails/helpers";
 import { SETTINGS_HELP_TEXT } from "../../constants";
@@ -102,7 +103,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Source URL"
-                value={mirror.archiveRoot}
+                value={getStrippedUrl(mirror.archiveRoot)}
                 tooltipMessage="You can’t change the source URL after the mirror is created."
               />
               <CheckboxInputWithHelp
