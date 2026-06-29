@@ -31,7 +31,7 @@ export const useGetInstalledSnaps = (
     AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["snaps", "installed", { ...params }],
+    queryKey: ["snaps", "installed", { instance_id, ...queryParams }],
     queryFn: async () =>
       authFetch.get(`computers/${instance_id}/snaps/installed`, {
         params: queryParams,

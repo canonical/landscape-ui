@@ -31,7 +31,6 @@ export const useGetDistributionUpgradeTargets = (
       authFetch.get("computers/release-upgrade-targets", {
         params: { computer_ids: idsParam || undefined },
       }),
-    enabled: computerIds.length > 0,
     ...options,
   });
 
