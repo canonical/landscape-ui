@@ -127,29 +127,20 @@ jobs:
             .landscape-packaging/landscape-server/build \
             .landscape-packaging/landscape-server/var/log
 
-      # Ensures docker compose wait and full schema validation are available.
-      # Installs to ~/.docker/cli-plugins to avoid permission issues on the runner.
-      - name: Install Docker Compose v2.36+
+      # compose.yaml uses the env_file `format: raw` attribute (on the services
+      # started here via the x-server-env-file anchor), which requires Docker
+      # Compose >= 2.30. ubuntu-latest preinstalls a newer version (2.38+), so we
+      # rely on it and only assert the floor — failing loudly if a future runner
+      # image ever regresses below it.
+      - name: Verify Docker Compose >= 2.30
         run: |
-          COMPOSE_VERSION="v2.36.0"
-          COMPOSE_ASSET="docker-compose-linux-x86_64"
-          COMPOSE_DEST=~/.docker/cli-plugins/docker-compose
-          mkdir -p ~/.docker/cli-plugins
-          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/${COMPOSE_ASSET}" \
-            -o "${COMPOSE_DEST}"
-          curl -fsSL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/checksums.txt" \
-            -o /tmp/docker-compose-checksums.txt
-          # docker's checksums.txt uses GNU binary-mode format: "<hash> *<asset>".
-          # Extract the hash for our asset and rebuild a check line pointing at the
-          # downloaded binary so sha256sum -c verifies the right file.
-          EXPECTED_SHA=$(grep -E " \*?${COMPOSE_ASSET}$" /tmp/docker-compose-checksums.txt | awk '{print $1}')
-          if [ -z "${EXPECTED_SHA}" ]; then
-            echo "No checksum found for ${COMPOSE_ASSET} in checksums.txt"
+          need=2.30.0
+          have=$(docker compose version --short)
+          if [ "$(printf '%s\n%s\n' "$need" "$have" | sort -V | head -1)" != "$need" ]; then
+            echo "docker compose $have < $need — runner image regressed; pin an install step here"
             exit 1
           fi
-          echo "${EXPECTED_SHA}  ${COMPOSE_DEST}" | sha256sum -c -
-          chmod +x "${COMPOSE_DEST}"
-          docker compose version
+          echo "docker compose $have satisfies >= $need"
 
       # initial_sync is a Docker Desktop-only extension not in the open-source schema.
       # The landscape-ui service is not started in CI so removing it has no effect.
