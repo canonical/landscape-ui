@@ -65,10 +65,7 @@ export default [
     if (shouldApplyEndpointStatus("mirrors")) {
       const endpointStatus = getEndpointStatus("mirrors");
 
-      if (
-        endpointStatus.status === "error" &&
-        endpointStatus.path === "mirrors"
-      ) {
+      if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
 

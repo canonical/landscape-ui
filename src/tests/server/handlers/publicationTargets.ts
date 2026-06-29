@@ -146,10 +146,7 @@ export default [
     if (shouldApplyEndpointStatus("publicationTargets")) {
       const endpointStatus = getEndpointStatus("publicationTargets");
 
-      if (
-        endpointStatus.status === "error" &&
-        endpointStatus.path === "publicationTargets"
-      ) {
+      if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
 
