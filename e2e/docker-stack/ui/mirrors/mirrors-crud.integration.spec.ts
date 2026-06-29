@@ -120,6 +120,23 @@ async function cleanupMirror(
 test.describe.serial("mirrors CRUD (real debarchive)", () => {
   test.afterAll(async ({ request }) => {
     // Best-effort cleanup in case test 3 did not run.
+    if (!mirrorName && mirrorDisplayName) {
+      try {
+        const token = await getAuthToken(request);
+        const listRes = await request.get("/v1beta1/mirrors", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (listRes.ok()) {
+          const body = (await listRes.json()) as DebarchiveMirrorList;
+          mirrorName =
+            body.mirrors?.find((m) => m.displayName === mirrorDisplayName)
+              ?.name ?? "";
+        }
+      } catch {
+        // best-effort cleanup only
+      }
+    }
+
     await cleanupMirror(request, mirrorName);
   });
 

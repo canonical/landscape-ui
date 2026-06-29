@@ -259,6 +259,24 @@ test.describe("publication targets CRUD (real debarchive)", () => {
       });
     } finally {
       // Best-effort cleanup in case delete step did not complete.
+      if (!targetResourceName) {
+        try {
+          const token = await getAuthToken(request);
+          const listRes = await request.get("/v1beta1/publicationTargets", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (listRes.ok()) {
+            const body = (await listRes.json()) as PublicationTargetListResponse;
+            targetResourceName =
+              (body.publicationTargets ?? []).find(
+                (t) => t.displayName === createdDisplayName,
+              )?.name ?? "";
+          }
+        } catch {
+          // best-effort cleanup only
+        }
+      }
+
       await cleanupTarget(request, targetResourceName);
     }
   });
