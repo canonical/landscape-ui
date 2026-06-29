@@ -3,8 +3,8 @@ import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
 const figureRequestParams = (config: InternalAxiosRequestConfig) =>
   ["get", "delete"].includes(config.method ?? "get")
-    ? config.params
-    : config.data;
+    ? (config.params as Record<string, unknown>)
+    : (config.data as Record<string, unknown>);
 
 const initParamsToPass = ({
   config,
@@ -25,6 +25,9 @@ interface HandleParamsProps {
   isOld: boolean;
 }
 
+export const isArray = (value: unknown): value is unknown[] =>
+  Array.isArray(value);
+
 export const handleParams = ({
   config,
   isOld,
@@ -39,40 +42,71 @@ export const handleParams = ({
   for (const param of Object.keys(requestParams)) {
     const value = requestParams[param];
 
-    if ("string" === typeof value) {
-      if ("" !== value || config.method === "put") {
-        paramsToPass[param] = value;
-      }
-    } else if (Array.isArray(value)) {
-      if (0 !== value.length) {
-        if (isOld) {
-          value.forEach((data, index) => {
-            if ("string" === typeof data && "" !== data) {
-              paramsToPass[`${param}.${index + 1}`] = data;
-            } else if ("number" === typeof data) {
-              paramsToPass[`${param}.${index + 1}`] = `${data}`;
-            }
-          });
-        } else {
-          if (["put", "post", "patch"].includes(config.method ?? "get")) {
-            paramsToPass[param] = value;
-          } else {
-            paramsToPass[param] = value.toString();
+    if (isArray(value)) {
+      if (isOld) {
+        for (const [index, data] of value.entries()) {
+          const paramName = `${param}.${index + 1}`;
+
+          switch (typeof data) {
+            case "string":
+              paramsToPass[paramName] = data;
+              break;
+
+            case "number":
+              paramsToPass[paramName] = data.toString();
+              break;
+
+            default:
+              throw new Error(
+                `Unsupported array item type. Provided: ${typeof data} for ${paramName}`,
+              );
           }
         }
-      } else if (!isOld && config.method === "put") {
-        paramsToPass[param] = value;
+      } else {
+        switch (config.method) {
+          case "patch":
+          case "post":
+          case "put":
+            paramsToPass[param] = value;
+            break;
+
+          default:
+            paramsToPass[param] = value.toString();
+        }
       }
-    } else if (["number", "boolean"].includes(typeof value)) {
-      paramsToPass[param] =
-        isOld && config.method === "get" ? `${value}` : value;
-    } else if (typeof value === "object") {
-      paramsToPass[param] =
-        isOld || "get" === config.method ? JSON.stringify(value) : value;
-    } else if ("" !== value && undefined !== value) {
-      throw new Error(
-        `Unsupported argument type. Provided: ${value} for ${param}`,
-      );
+    } else {
+      switch (typeof value) {
+        case "string":
+          paramsToPass[param] = value;
+          break;
+
+        case "number":
+        case "boolean":
+          if (isOld && config.method === "get") {
+            paramsToPass[param] = value.toString();
+          } else {
+            paramsToPass[param] = value;
+          }
+
+          break;
+
+        case "object":
+          if (isOld || config.method === "get") {
+            paramsToPass[param] = JSON.stringify(value);
+          } else {
+            paramsToPass[param] = value;
+          }
+
+          break;
+
+        case "undefined":
+          break;
+
+        default:
+          throw new Error(
+            `Unsupported argument type. Provided: ${typeof value} for ${param}`,
+          );
+      }
     }
   }
 
@@ -85,35 +119,34 @@ export const hasOneItem = <T>(array: readonly T[]): array is readonly [T] => {
 
 export const pluralize = (
   count: number,
-  singularForm: string,
-  pluralForm?: string,
+  [singularForm, pluralForm = `${singularForm}s`]: readonly [
+    singular: string,
+    plural?: string,
+  ],
+  countType: "none" | "exact" | "limited" = "none",
 ) => {
-  return count === 1 ? singularForm : (pluralForm ?? `${singularForm}s`);
+  const form = count === 1 ? singularForm : pluralForm;
+
+  switch (countType) {
+    case "none":
+      return form;
+    case "exact":
+      return `${count.toLocaleString()} ${form}`;
+    case "limited":
+      return `${count.toLocaleString()}+ ${form}`;
+  }
 };
 
-export const pluralizeWithCount = (
-  count: number,
-  singularForm: string,
-  pluralForm?: string,
-) => {
-  return `${count.toLocaleString()} ${pluralize(count, singularForm, pluralForm)}`;
-};
-
-export const pluralizeNew = (
-  count = 0,
-  singularForm: string,
-  options: { pluralForm?: string; showCount?: "exact" | "limited" } = {},
-) =>
-  `${options.showCount ? `${count}${options.showCount === "limited" ? "+" : ""} ` : ""}${count === 1 ? singularForm : (options.pluralForm ?? `${singularForm}s`)}`;
-
-export const pluralizeArray = <T>(
+export const getSelectionLabel = <T>(
   items: readonly T[],
-  getSingularForm: (item: T) => string,
+  getItemLabel: (item: T) => string,
   pluralForm: string,
 ) => {
-  return hasOneItem(items)
-    ? getSingularForm(items[0])
-    : `${items.length.toLocaleString()} ${pluralForm}`;
+  if (hasOneItem(items)) {
+    return getItemLabel(items[0]);
+  } else {
+    return `${items.length.toLocaleString()} ${pluralForm}`;
+  }
 };
 
 export const capitalize = <T extends string>(s: T) =>

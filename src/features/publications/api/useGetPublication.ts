@@ -1,7 +1,7 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  GetPublicationError,
-  GetPublicationResponse,
+  PublicationServiceGetPublicationError,
+  PublicationServiceGetPublicationResponse,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
@@ -10,8 +10,8 @@ export const useGetPublication = (publicationId: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isLoading, error } = useQuery<
-    AxiosResponse<GetPublicationResponse>,
-    AxiosError<GetPublicationError>
+    AxiosResponse<PublicationServiceGetPublicationResponse>,
+    AxiosError<PublicationServiceGetPublicationError>
   >({
     queryKey: ["publications", publicationId],
     queryFn: async () =>

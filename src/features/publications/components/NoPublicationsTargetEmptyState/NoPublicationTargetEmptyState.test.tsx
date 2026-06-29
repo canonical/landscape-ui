@@ -6,7 +6,7 @@ import { type FC } from "react";
 import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import NoPublicationTargetEmptyState from "./NoPublicationTargetEmptyState";
-import { DOCUMENTATION_URL } from "./constants";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 
 const LocationProbe: FC = () => {
   const location = useLocation();
@@ -29,7 +29,7 @@ describe("NoPublicationTargetEmptyState", () => {
       screen.getByRole("link", {
         name: /learn more about repository mirroring/i,
       }),
-    ).toHaveAttribute("href", DOCUMENTATION_URL);
+    ).toHaveAttribute("href", DEBARCHIVE_DOCUMENTATION_URL);
     expect(
       screen.getByRole("button", { name: /add publication target/i }),
     ).toBeInTheDocument();

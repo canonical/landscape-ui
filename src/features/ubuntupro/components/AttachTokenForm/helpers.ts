@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type { NotificationMethodArgs } from "@/types/Notification";
 
 export const getAttachFormNotification = (
@@ -24,6 +24,6 @@ export const getAttachFormNotification = (
 
   return {
     title: `You queued token attachment for ${selectedInstancesLength} instances.`,
-    message: `The token will be added to ${pluralizeWithCount(withoutToken, "instance")} and replace the existing one on ${pluralizeWithCount(withToken, "instance")}. You can track progress in Activities.`,
+    message: `The token will be added to ${pluralize(withoutToken, ["instance"], "exact")} and replace the existing one on ${pluralize(withToken, ["instance"], "exact")}. You can track progress in Activities.`,
   };
 };

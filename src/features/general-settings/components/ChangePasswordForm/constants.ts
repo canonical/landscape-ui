@@ -1,7 +1,10 @@
 import * as Yup from "yup";
-import { passwordValidationSchema } from "@/components/form/PasswordConstraints";
+import {
+  passwordValidationSchema,
+  REQUIRED_FIELD_MESSAGE,
+} from "@/components/form/PasswordConstraints";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
-  currentPassword: Yup.string().required("This field is required"),
+  currentPassword: Yup.string().required(REQUIRED_FIELD_MESSAGE),
   newPassword: passwordValidationSchema.password,
 });

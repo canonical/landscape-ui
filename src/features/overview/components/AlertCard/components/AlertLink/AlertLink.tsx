@@ -8,7 +8,7 @@ import { Button } from "@canonical/react-components";
 const LinkLabel: FC<{ readonly count: number }> = ({ count }) => (
   <>
     <span className={classes.instancesNumber}>{count}</span>{" "}
-    {pluralize(count, "instance")}
+    {pluralize(count, ["instance"])}
   </>
 );
 

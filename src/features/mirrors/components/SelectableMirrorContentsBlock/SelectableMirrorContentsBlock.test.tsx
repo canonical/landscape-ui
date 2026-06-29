@@ -90,7 +90,7 @@ describe("SelectableMirrorContentsBlock", () => {
           name: "",
           sourceType: "ubuntu-pro",
           sourceUrl: "",
-          proService: proService.mirror_type,
+          proService: proService.mirror_url,
           token: "",
         }}
       />,

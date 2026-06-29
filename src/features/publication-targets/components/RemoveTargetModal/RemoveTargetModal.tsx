@@ -40,11 +40,11 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
       if (!target.name) return;
 
       closeSidePanel();
-      await removeTarget({ name: target.name });
+      await removeTarget(target.name);
 
       notify.success({
-        message: `You have successfully removed ${target.displayName}`,
-        title: "Publication target removed",
+        title: `You have successfully removed ${target.displayName}`,
+        message: "The publication target has been removed from Landscape.",
       });
     } catch (error) {
       debug(error);

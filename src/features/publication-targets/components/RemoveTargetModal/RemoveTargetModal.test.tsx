@@ -1,31 +1,29 @@
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import { publications } from "@/tests/mocks/publications";
-import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import type { Mock } from "vitest";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import RemoveTargetModal from "./RemoveTargetModal";
 
-vi.mock("../../api/useGetPublicationsByTarget", () => ({
-  default: vi.fn(),
-}));
-
-import useGetPublicationsByTarget from "../../api/useGetPublicationsByTarget";
-
-// Target with publications (prod-s3-us-east)
-const [targetWithPublications, targetWithoutPublications] = publicationTargets;
-if (!targetWithPublications || !targetWithoutPublications) {
-  throw new Error("Test targets are missing");
-}
-if (!publications[0]) {
-  throw new Error("Test publications are missing");
-}
-
+const targetWithPublications = publicationTargets.find((target) =>
+  publications.some(
+    ({ publicationTarget }) => publicationTarget === target.name,
+  ),
+);
+const targetWithoutPublications = publicationTargets.find(
+  (target) =>
+    !publications.some(
+      ({ publicationTarget }) => publicationTarget === target.name,
+    ),
+);
 const [firstPublication] = publications;
+
+assert(targetWithPublications, "Expected publication target test fixture");
+assert(targetWithoutPublications, "Expected publication target test fixture");
+assert(firstPublication, "Expected publication target test fixture");
 
 const defaultClose = vi.fn();
 
@@ -34,14 +32,10 @@ describe("RemoveTargetModal", () => {
 
   beforeEach(() => {
     defaultClose.mockReset();
+    setEndpointStatus("default");
   });
 
-  it("renders the irreversible warning", () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: publications,
-      isGettingPublications: false,
-    });
-
+  it("renders the irreversible warning", async () => {
     renderWithProviders(
       <RemoveTargetModal
         isOpen={true}
@@ -51,16 +45,11 @@ describe("RemoveTargetModal", () => {
     );
 
     expect(
-      screen.getByText(/this action is irreversible/i),
+      await screen.findByText(/this action is irreversible/i),
     ).toBeInTheDocument();
   });
 
-  it("renders Cancel and Remove target buttons", () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: publications,
-      isGettingPublications: false,
-    });
-
+  it("renders Cancel and Remove target buttons", async () => {
     renderWithProviders(
       <RemoveTargetModal
         isOpen={true}
@@ -69,18 +58,15 @@ describe("RemoveTargetModal", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /cancel/i }),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /remove target/i }),
     ).toBeInTheDocument();
   });
 
-  it("shows the publications table with explanatory text when target has publications", () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: publications,
-      isGettingPublications: false,
-    });
-
+  it("shows the publications table with explanatory text when target has publications", async () => {
     renderWithProviders(
       <RemoveTargetModal
         isOpen={true}
@@ -90,22 +76,17 @@ describe("RemoveTargetModal", () => {
     );
 
     expect(
-      screen.getByText(/currently being used by the following publications/i),
+      await screen.findByText(
+        /currently being used by the following publications/i,
+      ),
     ).toBeInTheDocument();
-    // publications table column header
     expect(screen.getByText("Publication")).toBeInTheDocument();
-    // first publication's label
     expect(
       screen.getByText(firstPublication.displayName ?? ""),
     ).toBeInTheDocument();
   });
 
-  it("hides the publications section when target has no publications", () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
+  it("hides the publications section when target has no publications", async () => {
     renderWithProviders(
       <RemoveTargetModal
         isOpen={true}
@@ -115,17 +96,15 @@ describe("RemoveTargetModal", () => {
     );
 
     expect(
+      await screen.findByText(/this action is irreversible/i),
+    ).toBeInTheDocument();
+    expect(
       screen.queryByText(/currently being used by the following publications/i),
     ).not.toBeInTheDocument();
     expect(screen.queryByText("Publication")).not.toBeInTheDocument();
   });
 
   it("calls close when Cancel is clicked", async () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     renderWithProviders(
       <RemoveTargetModal
         isOpen={true}
@@ -134,22 +113,39 @@ describe("RemoveTargetModal", () => {
       />,
     );
 
-    await user.click(screen.getByRole("button", { name: /cancel/i }));
+    await user.click(await screen.findByRole("button", { name: /cancel/i }));
 
     expect(defaultClose).toHaveBeenCalled();
   });
 
   it("submits the deletion after typing the confirmation text", async () => {
-    server.use(
-      http.delete(
-        `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
-        () => new HttpResponse(null, { status: 204 }),
-      ),
+    renderWithProviders(
+      <RemoveTargetModal
+        isOpen={true}
+        close={defaultClose}
+        target={targetWithPublications}
+      />,
     );
 
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
+    await user.type(
+      screen.getByPlaceholderText(
+        `remove ${targetWithPublications.displayName}`,
+      ),
+      `remove ${targetWithPublications.displayName}`,
+    );
+    await user.click(screen.getByRole("button", { name: /remove target/i }));
+
+    expect(
+      await screen.findByText(
+        `You have successfully removed ${targetWithPublications.displayName}`,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows an error notification when deletion fails", async () => {
+    setEndpointStatus({
+      status: "error",
+      path: "publicationTargets/delete",
     });
 
     renderWithProviders(
@@ -169,47 +165,11 @@ describe("RemoveTargetModal", () => {
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
     expect(
-      await screen.findByText(/successfully removed/i),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 
-  it("shows an error notification when deletion fails", async () => {
-    server.use(
-      http.delete(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
-        HttpResponse.json({ message: "deletion failed" }, { status: 500 }),
-      ),
-    );
-
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
-    renderWithProviders(
-      <RemoveTargetModal
-        isOpen={true}
-        close={defaultClose}
-        target={targetWithPublications}
-      />,
-    );
-
-    await user.type(
-      screen.getByPlaceholderText(
-        `remove ${targetWithPublications.displayName}`,
-      ),
-      `remove ${targetWithPublications.displayName}`,
-    );
-    await user.click(screen.getByRole("button", { name: /remove target/i }));
-
-    expect(await screen.findByText("deletion failed")).toBeInTheDocument();
-  });
-
   it("does nothing on submit when target has no name", async () => {
-    (useGetPublicationsByTarget as Mock).mockReturnValue({
-      publications: [],
-      isGettingPublications: false,
-    });
-
     const targetWithoutName = { ...targetWithPublications, name: "" };
 
     renderWithProviders(
@@ -226,6 +186,10 @@ describe("RemoveTargetModal", () => {
     );
     await user.click(screen.getByRole("button", { name: /remove target/i }));
 
-    expect(screen.queryByText(/removed successfully/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        `You have successfully removed ${targetWithoutName.displayName}`,
+      ),
+    ).not.toBeInTheDocument();
   });
 });

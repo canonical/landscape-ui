@@ -5,24 +5,13 @@ import { describe, expect, it } from "vitest";
 import UpgradeProfilesPage from "./UpgradeProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
-import type * as actualModule from "@/features/profiles";
-
-vi.mock("@/features/profiles", async () => {
-  const actual = await vi.importActual<typeof actualModule>(
-    "@/features/profiles",
-  );
-
-  return {
-    ...actual,
-    ProfilesContainer: () => <div>Package profiles table</div>,
-  };
-});
 
 describe("UpgradeProfilesPage", () => {
   const [selectedUpgradeProfile] = upgradeProfiles;
 
   it("has a button to add a profile", async () => {
     renderWithProviders(<UpgradeProfilesPage />);
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
     const user = userEvent.setup();
 
     await user.click(
@@ -47,7 +36,6 @@ describe("UpgradeProfilesPage", () => {
       `/?sidePath=edit&name=${selectedUpgradeProfile.id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${selectedUpgradeProfile.title}`,

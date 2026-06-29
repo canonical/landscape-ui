@@ -12,22 +12,20 @@ const EnvError: FC = () => {
       title="Environment Error"
       body={
         <>
-          <p>
-            <span>
-              {isSaas && "This feature is not available in SaaS mode."}
-              {isSelfHosted &&
-                "This feature is not available in Self Hosted mode."}
-            </span>
-          </p>
-          <Link
-            to={ROUTES.root.root()}
-            replace
-            className="p-button--positive u-no-margin--bottom"
-          >
-            Go back to the home page
-          </Link>
+          {isSaas && "This feature is not available in SaaS mode."}
+          {isSelfHosted && "This feature is not available in Self Hosted mode."}
         </>
       }
+      cta={[
+        <Link
+          to={ROUTES.root.root()}
+          replace
+          className="p-button--positive u-no-margin--bottom"
+          key="home-link"
+        >
+          Go back to the home page
+        </Link>,
+      ]}
       icon="warning-grey"
     />
   );

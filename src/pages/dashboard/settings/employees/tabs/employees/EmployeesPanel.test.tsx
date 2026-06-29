@@ -1,16 +1,18 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { employees } from "@/tests/mocks/employees";
 import { expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import EmployeesPanel from "./EmployeesPanel";
 import { EMPTY_STATE } from "./constants";
-import { employees } from "@/tests/mocks/employees";
 
 describe("EmployeesPanel", () => {
-  it("renders list of employees", async () => {
+  beforeEach(() => {
     setEndpointStatus("default");
+  });
 
+  it("renders list of employees", async () => {
     renderWithProviders(<EmployeesPanel />);
 
     await expectLoadingState();
@@ -32,10 +34,16 @@ describe("EmployeesPanel", () => {
   });
 
   it("renders employee limit notification when limit is reached", async () => {
-    vi.mock("./constants", () => ({
-      EMPLOYEE_LIMIT: 0,
-      EMPTY_STATE: { title: "No employees", body: "No employees found" },
-    }));
+    setEndpointStatus({
+      status: "variant",
+      path: "employees",
+      response: {
+        count: 100_000,
+        next: null,
+        previous: null,
+        results: employees.slice(0, 1),
+      },
+    });
 
     renderWithProviders(<EmployeesPanel />);
 

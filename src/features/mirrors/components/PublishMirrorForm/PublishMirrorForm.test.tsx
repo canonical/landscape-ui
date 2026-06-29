@@ -1,12 +1,23 @@
-import { renderWithProviders } from "@/tests/render";
-import { afterEach, describe, expect, assert } from "vitest";
-import PublishMirrorForm from "./PublishMirrorForm";
+import LoadingState from "@/components/layout/LoadingState";
+import usePageParams from "@/hooks/usePageParams";
 import { mirrors } from "@/tests/mocks/mirrors";
+import { renderWithProviders } from "@/tests/render";
+import { describe, expect, assert } from "vitest";
+import PublishMirrorForm from "./PublishMirrorForm";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import userEvent from "@testing-library/user-event";
 import { screen, waitFor } from "@testing-library/react";
 import { publications } from "@/tests/mocks/publications";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import { Suspense } from "react";
+
+const TestComponent = () => {
+  const { lastSidePathSegment } = usePageParams();
+
+  if (lastSidePathSegment === "publish") {
+    return <PublishMirrorForm />;
+  }
+};
 
 const mockPublicationName = "publications/publication";
 
@@ -63,35 +74,31 @@ const preserveSignaturesMirror = mirrors.find(
 describe("PublishMirrorForm", () => {
   const user = userEvent.setup();
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("publishes to a new publication", async () => {
     renderWithProviders(
-      <PublishMirrorForm />,
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
       undefined,
-      `?name=${mirrors[0].name}`,
+      `?sidePath=publish&name=${mirrors[0].name}`,
     );
 
     await user.type(
-      screen.getByRole("textbox", { name: "Publication name" }),
+      await screen.findByRole("textbox", { name: "Publication name" }),
       "My publication",
     );
-
     await user.click(screen.getByRole("button", { name: "Publish mirror" }));
 
-    await waitFor(() => {
-      expect(mockCreatePublication).toHaveBeenCalledOnce();
-    });
-
-    await waitFor(() => {
-      expect(mockPublishPublication).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({
-          publicationName: mockPublicationName,
-        }),
-      );
-    });
+    expect(
+      await screen.findByText(
+        `You have marked ${mirrors[0].displayName} to be published`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "A publication has been created and an activity has been queued to publish it to the designated target.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("locks signing key field if source preserves signatures", async () => {
@@ -120,31 +127,28 @@ describe("PublishMirrorForm", () => {
 
   it("publishes to an existing publication", async () => {
     renderWithProviders(
-      <PublishMirrorForm />,
+      <Suspense fallback={<LoadingState />}>
+        <TestComponent />
+      </Suspense>,
       undefined,
-      `?name=${mirrors[0].name}`,
+      `?sidePath=publish&name=${mirrors[0].name}`,
     );
 
     await user.click(
-      screen.getByRole("radio", { name: "Existing publication" }),
+      await screen.findByRole("radio", { name: "Existing publication" }),
     );
-
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Publication" }),
-      publications[0].name,
-    );
-
     await user.click(screen.getByRole("button", { name: "Publish mirror" }));
 
-    await waitFor(() => {
-      expect(mockPublishPublication).toHaveBeenCalledExactlyOnceWith(
-        expect.objectContaining({
-          publicationName: publications[0].name,
-        }),
-      );
-    });
-
-    expect(mockCreatePublication).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(
+        `You have marked ${mirrors[0].displayName} to be published`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "An activity has been queued to publish the selected publication to the designated target.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("passes settings checkboxes to createPublication", async () => {

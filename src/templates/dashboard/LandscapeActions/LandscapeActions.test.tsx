@@ -1,6 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import LandscapeActions from "./LandscapeActions";
 import { FEEDBACK_LINK } from "@/constants";
 
@@ -21,17 +20,15 @@ describe("LandscapeActions", () => {
       screen.getByRole("link", { name: "Share your feedback" }),
     ).toHaveProperty("href", FEEDBACK_LINK);
     expect(
-      screen.getByRole("button", { name: "Switch to classic dashboard" }),
+      await screen.findByRole("link", {
+        name: "Switch to classic dashboard",
+      }),
     ).toBeInTheDocument();
   });
 
-  it("should be redirected to old dashboard", async () => {
-    await userEvent.click(
-      screen.getByRole("button", { name: "Switch to classic dashboard" }),
-    );
-
-    expect(redirectToExternalUrl).toHaveBeenCalledWith(
-      "https://old-dashboard-url",
-    );
+  it("should have the old dashboard url", async () => {
+    expect(
+      await screen.findByRole("link", { name: "Switch to classic dashboard" }),
+    ).toHaveAttribute("href", "https://old-dashboard-url");
   });
 });

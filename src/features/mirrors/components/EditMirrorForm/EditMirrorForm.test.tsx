@@ -36,7 +36,7 @@ describe("EditMirrorForm", () => {
 
   it("edits an ubuntu archive mirror", async () => {
     const mirror = mirrors.find(
-      ({ archiveRoot }) => new URL(archiveRoot).host === UBUNTU_ARCHIVE_HOST,
+      ({ mirrorType }) => mirrorType === "UBUNTU_ARCHIVE",
     );
 
     assert(mirror);
@@ -61,10 +61,7 @@ describe("EditMirrorForm", () => {
 
   it("edits a third party mirror", async () => {
     const mirror = mirrors.find(
-      (m) =>
-        ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
-          new URL(m.archiveRoot).host,
-        ) && "gpgKey" in m,
+      (m) => m.mirrorType === "THIRD_PARTY" && "gpgKey" in m,
     );
 
     assert(mirror);
@@ -107,10 +104,7 @@ describe("EditMirrorForm", () => {
 
   it("preserves existing GPG key when checkbox is checked", async () => {
     const mirror = mirrors.find(
-      (m) =>
-        ![UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST, UBUNTU_PRO_HOST].includes(
-          new URL(m.archiveRoot).host,
-        ) && "gpgKey" in m,
+      (m) => m.mirrorType === "THIRD_PARTY" && "gpgKey" in m,
     );
 
     assert(mirror);
@@ -136,9 +130,7 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    // Keep current GPG key checkbox is checked by default
     expect(screen.getByLabelText("Keep current GPG key")).toBeChecked();
-    // Textarea should be hidden
     expect(
       screen.queryByLabelText("Verification GPG key"),
     ).not.toBeInTheDocument();
@@ -168,7 +160,7 @@ describe("EditMirrorForm", () => {
 
     await expectLoadingState();
 
-    const checkbox = screen.getByLabelText("Preserve upstream signing key");
+    const checkbox = screen.getByLabelText(/Preserve upstream signing key/);
     expect(checkbox).toBeChecked();
     expect(checkbox).toBeDisabled();
   });

@@ -66,7 +66,6 @@ const ApiCredentialsTables: FC<ApiCredentialsTablesProps> = ({
     );
 
     const data = [
-      { label: "Name", value: accountCredentials?.account_name },
       { label: "Title", value: accountCredentials?.account_title },
       { label: "Identity", value: <code>{user.identity}</code> },
       {

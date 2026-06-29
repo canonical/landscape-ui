@@ -25,22 +25,11 @@ const UbuntuProEmptyState: FC<UbuntuProEmptyStateProps> = ({ instance }) => {
   return (
     <EmptyState
       title="No Ubuntu Pro entitlement"
-      body={
-        <>
-          <p>
-            This computer is not currently attached to an Ubuntu Pro
-            entitlement, which provides additional security updates and other
-            benefits from Canonical.
-          </p>
-          <a
-            href="https://ubuntu.com/pro"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Learn more about Ubuntu Pro
-          </a>
-        </>
-      }
+      body="This computer is not currently attached to an Ubuntu Pro entitlement, which provides additional security updates and other benefits from Canonical."
+      link={{
+        href: "https://ubuntu.com/pro",
+        text: "Learn more about Ubuntu Pro",
+      }}
       cta={[
         <Button
           key="attach-ubuntu-pro"

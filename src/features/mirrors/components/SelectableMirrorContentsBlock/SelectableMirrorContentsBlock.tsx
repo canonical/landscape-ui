@@ -32,7 +32,7 @@ const SelectableMirrorContentsBlock: FC<SelectableMirrorContentsBlockProps> = ({
 
       case "ubuntu-pro": {
         const proService = ubuntuEsmInfo.find(
-          ({ mirror_type }) => mirror_type === formik.values.proService,
+          ({ mirror_url }) => mirror_url === formik.values.proService,
         );
 
         return proService ? proService.distributions : [];

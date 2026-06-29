@@ -7,7 +7,6 @@ export type FilterType = Pick<
   | "contractExpiryDays"
   | "fromDate"
   | "os"
-  | "search"
   | "status"
   | "tags"
   | "toDate"

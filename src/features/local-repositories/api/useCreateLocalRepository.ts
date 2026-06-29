@@ -3,8 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
   LocalWritable,
-  CreateLocalError,
-  CreateLocalResponse,
+  LocalServiceCreateLocalError,
+  LocalServiceCreateLocalResponse,
 } from "@canonical/landscape-openapi";
 
 export const useCreateLocalRepository = () => {
@@ -12,9 +12,9 @@ export const useCreateLocalRepository = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<CreateLocalResponse>,
-    AxiosError<CreateLocalError>,
-    LocalWritable
+    AxiosResponse<LocalServiceCreateLocalResponse>,
+    AxiosError<LocalServiceCreateLocalError>,
+    Omit<LocalWritable, "name">
   >({
     mutationKey: ["local", "create"],
     mutationFn: async (params) => authFetchDebArchive.post("locals", params),

@@ -1,29 +1,18 @@
 import { renderWithProviders } from "@/tests/render";
-import { afterEach, describe } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ComponentProps } from "react";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UpdateMirrorModal from "./UpdateMirrorModal";
-
-const mockSyncMirror = vi.fn();
-
-vi.mock("../../api", async () => {
-  const actual = await vi.importActual("../../api");
-
-  return {
-    ...actual,
-    useSyncMirror: () => ({
-      mutateAsync: mockSyncMirror,
-    }),
-  };
-});
+import { mirrors } from "@/tests/mocks/mirrors";
 
 describe("UpdateMirrorModal", () => {
+  const close = vi.fn();
   const props: ComponentProps<typeof UpdateMirrorModal> = {
-    close: () => undefined,
+    close,
     isOpen: true,
-    mirrorDisplayName: "Mirror display name",
-    mirrorName: "mirrors/name",
+    mirrorDisplayName: mirrors[0].displayName,
+    mirrorName: mirrors[0].name,
   };
 
   const user = userEvent.setup();
@@ -45,6 +34,11 @@ describe("UpdateMirrorModal", () => {
 
     await user.click(screen.getByRole("button", { name: /update mirror/i }));
 
-    expect(mockSyncMirror).toHaveBeenCalledTimes(1);
+    expect(
+      await screen.findByText(
+        `You have marked ${props.mirrorDisplayName} to be updated`,
+      ),
+    ).toBeInTheDocument();
+    expect(close).toHaveBeenCalled();
   });
 });

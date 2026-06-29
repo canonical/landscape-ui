@@ -6,6 +6,9 @@ import { mirrors } from "@/tests/mocks/mirrors";
 import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import { expectLoadingState } from "@/tests/helpers";
+import { API_URL_DEB_ARCHIVE } from "@/constants";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 describe("MirrorDetails", () => {
   it("renders the mirror display name once loaded", async () => {
@@ -22,7 +25,54 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders mirror details for a mirror with preserve signatures enabled", async () => {
+  it("renders GPG key fingerprint", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[2].name}`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByRole("heading", { name: "Authentication" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Verification GPG Key")).toBeInTheDocument();
+    expect(
+      screen.getByText(mirrors[2].gpgKey?.fingerprint),
+    ).toBeInTheDocument();
+  });
+
+  it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {
+    const legacyMirror = { ...mirrors[2], mirrorType: undefined };
+
+    server.use(
+      http.get(`${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`, () =>
+        HttpResponse.json(legacyMirror),
+      ),
+    );
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[2].name}`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.getByRole("heading", { name: "Authentication" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(mirrors[2].gpgKey?.fingerprint),
+    ).toBeInTheDocument();
+  });
+
+  it("displays preserve signatures status", async () => {
     const mirrorWithPreserveSignatures = mirrors.find(
       ({ preserveSignatures }) => preserveSignatures,
     );

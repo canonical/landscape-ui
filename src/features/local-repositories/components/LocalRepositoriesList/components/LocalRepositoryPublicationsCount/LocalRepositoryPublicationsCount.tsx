@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import type { Local } from "@canonical/landscape-openapi";
 import { useGetPublicationsBySource } from "@/features/publications";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 
@@ -31,7 +31,7 @@ const LocalRepositoryPublicationsCount: FC<
         query: `source:${repository.name}`,
       })}
     >
-      {pluralizeWithCount(publications.length, "publication")}
+      {pluralize(publications.length, ["publication"], "exact")}
     </StaticLink>
   );
 };

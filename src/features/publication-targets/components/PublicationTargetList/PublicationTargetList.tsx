@@ -1,5 +1,5 @@
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import NoData, { NO_DATA_TEXT } from "@/components/layout/NoData";
+import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { TablePagination } from "@/components/layout/TablePagination";
 import usePageParams from "@/hooks/usePageParams";
@@ -12,7 +12,7 @@ import type { PublicationTarget } from "@canonical/landscape-openapi";
 import PublicationTargetListActions from "../PublicationTargetListActions";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
-import { pluralizeNew } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import LoadingState from "@/components/layout/LoadingState";
 
 interface PublicationTargetListProps {
@@ -42,9 +42,7 @@ const PublicationsCountCell: FC<PublicationsCountCellProps> = ({
         search: `?query=${encodeURIComponent(`publicationTargetId:${publicationTargetId}`)}`,
       }}
     >
-      {pluralizeNew(publications.length, "publication", {
-        showCount: "exact",
-      })}
+      {pluralize(publications.length, ["publication"], "exact")}
     </StaticLink>
   );
 };
@@ -82,7 +80,7 @@ const PublicationTargetList: FC<PublicationTargetListProps> = ({ targets }) => {
             })}
             aria-label={`View details for ${row.original.displayName}`}
           >
-            {row.original.displayName || NO_DATA_TEXT}
+            {row.original.displayName}
           </Button>
         ),
       },

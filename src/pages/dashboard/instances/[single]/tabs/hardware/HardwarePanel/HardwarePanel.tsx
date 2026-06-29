@@ -17,13 +17,7 @@ const HardwarePanel: FC<HardwarePanelProps> = ({ instance }) => {
       <EmptyState
         title="Hardware information unavailable"
         icon="connected"
-        body={
-          <>
-            <p className="u-no-margin--bottom">
-              Your hardware reporting monitor may be turned off.
-            </p>
-          </>
-        }
+        body="Your hardware reporting monitor may be turned off."
       />
     );
   }

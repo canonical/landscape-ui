@@ -1,7 +1,7 @@
 import Flow from "@/components/layout/Flow";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import type { FormikContextType } from "formik";
 import moment from "moment";
 import { phrase } from "../helpers";
@@ -58,10 +58,7 @@ export default function useUsgProfileFormConfirmationStep<
                       value={
                         formik.values.delivery_time === "asap"
                           ? "As soon as possible"
-                          : `Delayed by ${pluralizeWithCount(
-                              formik.values.restart_deliver_delay,
-                              "hour",
-                            )}`
+                          : `Delayed by ${pluralize(formik.values.restart_deliver_delay, ["hour"], "exact")}`
                       }
                     />
 
@@ -70,10 +67,7 @@ export default function useUsgProfileFormConfirmationStep<
                       large
                       value={
                         formik.values.randomize_delivery === true
-                          ? `Yes, over ${pluralizeWithCount(
-                              formik.values.deliver_delay_window,
-                              "minute",
-                            )}`
+                          ? `Yes, over ${pluralize(formik.values.deliver_delay_window, ["minute"], "exact")}`
                           : "No"
                       }
                     />
