@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="/assets/90b59210-Ubuntu-Italic[wdth,wght]-latin-v0.896a.woff2"
+    />
+    <link href="/assets/d5fc1819-UbuntuMono[wght]-latin-v0.869.woff2" />
+    <link href="/assets/f1ea362b-Ubuntu[wdth,wght]-latin-v0.896a.woff2" />
+    <title>Landscape</title>
+    <script type="module" crossorigin src="/assets/index-C1XCByz9.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/chunk-CMxvf4Kt.js">
+    <link rel="modulepreload" crossorigin href="/assets/preload-helper-zJ_50EbN.js">
+    <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-BGORY6w-.js">
+    <link rel="modulepreload" crossorigin href="/assets/dist-CoEpzLMj.js">
+    <link rel="modulepreload" crossorigin href="/assets/chunk-QUQL4437-DMe0uX2Q.js">
+    <link rel="modulepreload" crossorigin href="/assets/constants-BN7446Bz.js">
+    <link rel="stylesheet" crossorigin href="/assets/dist-1XkBqRBD.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-CnrxjDS2.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      (() => {
+        const saved = localStorage.getItem("_landscape_dark_theme");
+        const systemDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        const shouldDark = saved === "true" || (!saved && systemDark);
+        if (shouldDark) {
+          document.body.classList.add("is-dark");
+          document.body.style.colorScheme = "dark";
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+import"./AuthTemplate-fjPHO1Kd.js";

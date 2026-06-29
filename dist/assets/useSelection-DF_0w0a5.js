@@ -1,0 +1,1 @@
+import{o as e}from"./chunk-CMxvf4Kt.js";import{r as t}from"./jsx-runtime-BGORY6w-.js";var n=e(t(),1),r=(e,t)=>{let[r,i]=(0,n.useState)(e),[a,o]=(0,n.useState)([]);return e!==r&&!t&&(o([]),i(e)),{selectedItems:a,setSelectedItems:o}};export{r as t};
