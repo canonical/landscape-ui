@@ -102,12 +102,12 @@ describe("strict ISO 8601 parsing", () => {
     expect(date("2024-03-15T99:30:00Z", date.ISO_8601, true).isValid()).toBe(
       false,
     );
-    expect(date("2024-03-15T10:30:00+25:00", date.ISO_8601, true).isValid()).toBe(
-      false,
-    );
-    expect(date("2024-03-15T10:30:00+02:99", date.ISO_8601, true).isValid()).toBe(
-      false,
-    );
+    expect(
+      date("2024-03-15T10:30:00+25:00", date.ISO_8601, true).isValid(),
+    ).toBe(false);
+    expect(
+      date("2024-03-15T10:30:00+02:99", date.ISO_8601, true).isValid(),
+    ).toBe(false);
   });
 
   it("parses ISO input without strict mode", () => {
@@ -157,7 +157,7 @@ describe("formatting tokens", () => {
   });
 
   it("formats default local and UTC output", () => {
-    expect(subject.format()).toBe("2024-03-05T09:07:08+00:00");
+    expect(subject.format()).toBe("2024-03-05T09:07:08Z");
     expect(date("2024-03-05T09:07:08").format()).toMatch(
       /^2024-03-05T09:07:08[+-]\d{2}:\d{2}$/,
     );
@@ -189,20 +189,24 @@ describe("utc and local modes", () => {
   it("utc(true) keeps the wall-clock time", () => {
     const subject = date("2024-03-15T14:00:00");
     const keptLocal = subject.utc(true);
-    expect(keptLocal.format("YYYY-MM-DDTHH:mm:ss")).toBe(
-      "2024-03-15T14:00:00",
-    );
+    expect(keptLocal.format("YYYY-MM-DDTHH:mm:ss")).toBe("2024-03-15T14:00:00");
   });
 
   it("switches back to local mode", () => {
     const utc = date("2024-03-15T14:00:00Z").utc();
-    expect(utc.local().format()).toMatch(/^2024-03-15T\d{2}:00:00[+-]\d{2}:\d{2}$/);
+    expect(utc.local().format()).toMatch(
+      /^2024-03-15T\d{2}:00:00[+-]\d{2}:\d{2}$/,
+    );
   });
 
   it("toISOString always returns UTC", () => {
     expect(date("2024-03-15T10:30:00Z").toISOString()).toBe(
       "2024-03-15T10:30:00.000Z",
     );
+  });
+
+  it("toISOString returns empty string for invalid dates", () => {
+    expect(date("not-a-date").toISOString()).toBe("");
   });
 });
 
@@ -284,12 +288,12 @@ describe("arithmetic", () => {
     expect(subject.add(1, "week").format("YYYY-MM-DD")).toBe("2024-03-22");
     expect(subject.add(1, "month").format("YYYY-MM-DD")).toBe("2024-04-15");
     expect(subject.add(1, "year").format("YYYY-MM-DD")).toBe("2025-03-15");
-    expect(date("2024-03-15T10:00:00").add(1, "month").format("YYYY-MM-DD")).toBe(
-      "2024-04-15",
-    );
-    expect(date("2024-03-15T10:00:00").add(1, "year").format("YYYY-MM-DD")).toBe(
-      "2025-03-15",
-    );
+    expect(
+      date("2024-03-15T10:00:00").add(1, "month").format("YYYY-MM-DD"),
+    ).toBe("2024-04-15");
+    expect(
+      date("2024-03-15T10:00:00").add(1, "year").format("YYYY-MM-DD"),
+    ).toBe("2025-03-15");
   });
 
   it("preserves local wall-clock time when adding days across DST", () => {
@@ -298,9 +302,14 @@ describe("arithmetic", () => {
 
     try {
       const beforeDstChange = date("2024-03-24T10:00:00");
-      const afterDstChange = beforeDstChange.add(DAYS_ACROSS_DST_CHANGE, "days");
+      const afterDstChange = beforeDstChange.add(
+        DAYS_ACROSS_DST_CHANGE,
+        "days",
+      );
 
-      expect(afterDstChange.format("YYYY-MM-DDTHH:mm")).toBe("2024-04-07T10:00");
+      expect(afterDstChange.format("YYYY-MM-DDTHH:mm")).toBe(
+        "2024-04-07T10:00",
+      );
       expect(afterDstChange.diff(beforeDstChange, "days")).toBe(
         DAYS_ACROSS_DST_CHANGE,
       );
