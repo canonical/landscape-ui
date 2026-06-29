@@ -77,10 +77,10 @@ describe("PublicationsList", () => {
     expect(screen.getAllByText("Mirror")).toHaveLength(mirrorsCount);
     expect(screen.getAllByText("Local repository")).toHaveLength(localsCount);
     expect(
-      screen.getByRole("link", {
+      screen.getAllByRole("link", {
         name: sourceDisplayNames[publication.source],
       }),
-    ).toBeInTheDocument();
+    ).toHaveLength(2);
     expect(
       screen.getByRole("link", {
         name: publicationTargetDisplayNames[publication.publicationTarget],

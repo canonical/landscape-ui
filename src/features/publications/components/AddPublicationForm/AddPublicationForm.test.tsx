@@ -191,7 +191,7 @@ describe("AddPublicationForm", () => {
     expect(screen.getByText("distribution 1")).toBeInTheDocument();
   });
 
-  it("hides signing key field when local repository is selected", async () => {
+  it("shows signing key field when local repository is selected", async () => {
     const user = userEvent.setup();
 
     renderForm();
@@ -199,8 +199,8 @@ describe("AddPublicationForm", () => {
     await selectLocalSource(user);
 
     expect(
-      screen.queryByRole("textbox", { name: "Signing GPG key" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
+    ).toBeInTheDocument();
   });
 
   it("shows validation error when all architectures are deselected", async () => {

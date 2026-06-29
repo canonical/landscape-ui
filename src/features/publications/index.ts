@@ -18,5 +18,9 @@ export {
   getInstallsAndUpgradesValues,
   getInitialValues,
 } from "./helpers";
-export { VALIDATION_SCHEMA_NEW, VALIDATION_SCHEMA_EXISTING, REQUIRED_FIELD_MESSAGE } from "./constants";
+export {
+  VALIDATION_SCHEMA_NEW,
+  VALIDATION_SCHEMA_EXISTING,
+  VALIDATION_SCHEMA_NEW_MIRROR,
+} from "./constants";
 export type { PublishNewFormValues } from "./types";
