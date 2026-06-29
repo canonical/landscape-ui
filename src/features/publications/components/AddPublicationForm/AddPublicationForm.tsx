@@ -243,9 +243,10 @@ const AddPublicationForm: FC = () => {
             <ReadOnlyField
               label="Distribution"
               value={formik.values.distribution}
-              tooltipMessage={isLocalSourceType
-                ? "The distribution is defined by the source repository."
-                : "The distribution can't be changed for signature-preserving mirrors."
+              tooltipMessage={
+                isLocalSourceType
+                  ? "The distribution is defined by the source repository."
+                  : "The distribution can't be changed for signature-preserving mirrors."
               }
             />
           ) : (
@@ -261,9 +262,10 @@ const AddPublicationForm: FC = () => {
           <ReadOnlyField
             label={isLocalSourceType ? "Component" : "Components"}
             value={selectedSource?.components?.join(", ")}
-            tooltipMessage={isLocalSourceType
-              ? "The component is defined by the source repository."
-              : "The components are defined by the source mirror."
+            tooltipMessage={
+              isLocalSourceType
+                ? "The component is defined by the source repository."
+                : "The components are defined by the source mirror."
             }
           />
 

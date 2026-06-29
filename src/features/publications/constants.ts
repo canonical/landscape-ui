@@ -18,6 +18,11 @@ export const VALIDATION_SCHEMA_NEW = Yup.object().shape({
   skipContentIndexing: Yup.boolean(),
 });
 
+export const VALIDATION_SCHEMA_NEW_MIRROR = VALIDATION_SCHEMA_NEW.shape({
+  distribution: Yup.string().required(REQUIRED_FIELD_MESSAGE),
+  architectures: Yup.array().of(Yup.string()).min(1, REQUIRED_FIELD_MESSAGE),
+});
+
 export const VALIDATION_SCHEMA_EXISTING = Yup.object().shape({
   name: Yup.string().required(REQUIRED_FIELD_MESSAGE),
 });

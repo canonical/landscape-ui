@@ -3,7 +3,13 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Form, Input, type MultiSelectItem, Select, Textarea } from "@canonical/react-components";
+import {
+  Form,
+  Input,
+  type MultiSelectItem,
+  Select,
+  Textarea,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import useNotify from "@/hooks/useNotify";
@@ -13,13 +19,13 @@ import {
   PublicationSettingsBlock,
   useCreatePublication,
   usePublishPublication,
+  VALIDATION_SCHEMA_NEW_MIRROR,
 } from "@/features/publications";
 import type { Mirror, PublicationTarget } from "@canonical/landscape-openapi";
 import type { SelectOption } from "@/types/SelectOption";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import type { PublishNewFormValues } from "@/features/publications";
 import MultiSelectField from "@/components/form/MultiSelectField/MultiSelectField";
-import { VALIDATION_SCHEMA_NEW_MIRROR } from "./constants";
 
 interface PublishMirrorNewFormProps {
   readonly mirror: Mirror;
@@ -96,10 +102,11 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
     }),
   );
 
-  const architectureOptions = mirror.architectures?.map((architecture) => ({
-    label: architecture,
-    value: architecture,
-  })) ?? [];
+  const architectureOptions =
+    mirror.architectures?.map((architecture) => ({
+      label: architecture,
+      value: architecture,
+    })) ?? [];
 
   const handleArchitectureChange = async (
     items: MultiSelectItem[],

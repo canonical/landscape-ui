@@ -76,7 +76,7 @@ export const publications = [
     publicationId: "g9h9999e-c9f9-9e99-ab9c-ef9a9c9af9c9",
     displayName: "second local publication",
     publicationTarget:
-      "publicationTargets/dddddddd-0000-0000-0000-000000000004",
+      "publicationTargets/cccccccc-0000-0000-0000-000000000003",
     source: "locals/bbbb-cccc-dddd",
     distribution: "noble",
     label: "Local publication",
@@ -94,7 +94,7 @@ export const publications = [
     name: "publications/821d6c3f-0c4e-4d8e-8f2f-99d4f2d9a123",
     publicationId: "821d6c3f-0c4e-4d8e-8f2f-99d4f2d9a123",
     publicationTarget:
-      "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+      "publicationTargets/bbbbbbbb-0000-0000-0000-000000000002",
     source: "mirrors/ubuntu-archive-mirror",
     displayName: "custom publication",
     distribution: "custom",

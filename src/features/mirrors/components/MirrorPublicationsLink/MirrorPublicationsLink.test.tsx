@@ -29,7 +29,7 @@ describe("MirrorPublicationsLink", () => {
       </Suspense>,
     );
 
-    expect(await screen.findByText("1 publication")).toBeInTheDocument();
+    expect(await screen.findByText("2 publications")).toBeInTheDocument();
   });
 
   it("renders a link with a limited count", async () => {
