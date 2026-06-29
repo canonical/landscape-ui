@@ -26,9 +26,7 @@ const EventsLogList: FC<EventsLogListProps> = ({ eventsLog }) => {
         className: "large-cell",
         Cell: ({ row }: CellProps<EventLog>) => (
           <span className="font-monospace">
-            {date(row.original.creation_time).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            )}
+            {date(row.original.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}
           </span>
         ),
       },

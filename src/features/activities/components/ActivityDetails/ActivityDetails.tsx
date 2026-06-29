@@ -79,9 +79,7 @@ const ActivityDetails: FC<ActivityDetailsProps> = ({ activityId }) => {
         />
         <InfoGrid.Item
           label="Created at"
-          value={date(activity.creation_time).format(
-            DISPLAY_DATE_TIME_FORMAT,
-          )}
+          value={date(activity.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}
         />
 
         {typeof activity.delivery_time === "string" && (

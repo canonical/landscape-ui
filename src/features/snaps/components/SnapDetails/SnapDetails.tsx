@@ -24,9 +24,7 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
           label="Held until"
           value={
             date(installedSnap.held_until).isValid()
-              ? date(installedSnap.held_until).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )
+              ? date(installedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
               : null
           }
         />

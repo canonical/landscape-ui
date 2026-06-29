@@ -10,8 +10,7 @@ export const deliveryValidationSchema = {
       schema.required("This field is required.").test({
         name: "is-in-future",
         message: "You have to enter a valid date and time in the future.",
-        test: (value) =>
-          date(value).isValid() && date(value).isAfter(date()),
+        test: (value) => date(value).isValid() && date(value).isAfter(date()),
       }),
   }),
 };

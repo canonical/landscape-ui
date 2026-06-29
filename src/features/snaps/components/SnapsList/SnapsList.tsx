@@ -119,9 +119,7 @@ const SnapsList: FC<SnapsListProps> = ({
             {date(row.original.held_until).isValid() ? (
               <span className="font-monospace">
                 {" "}
-                {date(row.original.held_until).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
+                {date(row.original.held_until).format(DISPLAY_DATE_TIME_FORMAT)}
               </span>
             ) : (
               <NoData />
