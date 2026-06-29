@@ -13,7 +13,7 @@ interface InstancesContainerProps {
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
   readonly onChangeFilter: () => void;
-  readonly isInstanceLoading: boolean,
+  readonly isInstanceLoading: boolean;
 }
 
 const InstancesContainer = memo(function InstancesContainer({
@@ -40,7 +40,7 @@ const InstancesContainer = memo(function InstancesContainer({
       isInstanceLoading,
     )
   ) {
-    return <></>;
+    return <>This is the empty state place holder</>;
   }
 
   return (
