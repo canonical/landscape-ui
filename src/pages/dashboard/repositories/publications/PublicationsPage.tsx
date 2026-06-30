@@ -14,16 +14,25 @@ const PublicationDetailsSidePanel = lazy(
     import("@/features/publications/components/PublicationDetailsSidePanel"),
 );
 
+const ViewLogsSidePanel = lazy(
+  async () => import("@/features/operations/components/ViewLogsSidePanel"),
+);
+
 const PublicationsPage: FC = () => {
   const { sidePath, lastSidePathSegment, popSidePathUntilClear } =
     usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", ["add", "add-target", "view"]);
+  useSetDynamicFilterValidation("sidePath", ["add", "view", "logs"]);
+
   return (
     <PageMain>
       <PublicationsContainer />
 
-      <SidePanel isOpen={!!sidePath.length} onClose={popSidePathUntilClear}>
+      <SidePanel
+        isOpen={!!sidePath.length}
+        onClose={popSidePathUntilClear}
+        size={lastSidePathSegment === "logs" ? "medium" : "small"}
+      >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <SidePanel.Header>Add publication</SidePanel.Header>
@@ -35,6 +44,11 @@ const PublicationsPage: FC = () => {
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <PublicationDetailsSidePanel />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "logs" && (
+          <SidePanel.Suspense key="logs">
+            <ViewLogsSidePanel resourceType="publications" />
           </SidePanel.Suspense>
         )}
       </SidePanel>
