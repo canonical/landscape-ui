@@ -1,16 +1,14 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-import type {
-  OperationServiceGetOperationError,
-  OperationServiceGetOperationResponse,
-} from "@canonical/landscape-openapi";
+import type { OperationServiceGetOperationError } from "@canonical/landscape-openapi";
+import type { Operation } from "../types";
 
 export const useGetOperation = (
   name: string,
   config: Omit<
     UseQueryOptions<
-      AxiosResponse<OperationServiceGetOperationResponse>,
+      AxiosResponse<Operation>,
       AxiosError<OperationServiceGetOperationError>
     >,
     "queryKey" | "queryFn"
@@ -23,10 +21,10 @@ export const useGetOperation = (
     isPending,
     error,
   } = useQuery<
-    AxiosResponse<OperationServiceGetOperationResponse>,
+    AxiosResponse<Operation>,
     AxiosError<OperationServiceGetOperationError>
   >({
-    queryKey: ["local", name],
+    queryKey: ["operation", name],
     queryFn: async () => authFetchDebArchive.get(name),
     ...config,
   });

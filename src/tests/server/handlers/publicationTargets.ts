@@ -136,7 +136,7 @@ export default [
   ),
 
   http.post(
-    `${API_URL_DEB_ARCHIVE}publicationTargets:batchGet`,
+    `${API_URL_DEB_ARCHIVE}publicationTargets\\:batchGet`,
     async ({ request }) => {
       return getBatchPublicationTargetsResponse(request);
     },
