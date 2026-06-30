@@ -6,31 +6,27 @@
 }
 
 .selectedColumnsHeader {
-  align-items: flex-start;
+  align-items: baseline;
   display: flex;
+  gap: $sph--large;
   justify-content: space-between;
   margin-bottom: $spv--medium;
 }
 
 .selectedColumnsIntro {
+  flex: 1;
   margin-bottom: 0;
+}
+
+.resetButton {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nameCell {
   align-items: center;
   display: flex;
   gap: $sph--small;
-}
-
-.groupBadge {
-  background: var(--vf-color-background-alt, #f5f5f5);
-  border: 1px solid var(--vf-color-border-default, #d9d9d9);
-  border-radius: 2px;
-  color: var(--vf-color-text-muted, #666);
-  font-size: 0.688rem;
-  margin-left: auto;
-  padding: 0 $sph--x-small;
-  white-space: nowrap;
 }
 
 .dragHandle {
