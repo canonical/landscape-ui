@@ -5,7 +5,7 @@ import type {
   RemoveInstancesParams,
   SanitizeInstanceParams,
 } from "@/features/instances";
-import type { GetGroupsParams, GetUserGroupsParams } from "@/hooks/useUsers";
+import type { GetGroupsParams, GetUserGroupsParams } from "@/features/users";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
