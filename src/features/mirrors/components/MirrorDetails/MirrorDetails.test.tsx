@@ -273,25 +273,4 @@ describe("MirrorDetails", () => {
     expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
   });
 
-  it("renders mirror details for a mirror with preserve signatures disabled", async () => {
-    const mirrorWithoutPreserveSignatures = mirrors.find(
-      ({ preserveSignatures }) => !preserveSignatures,
-    );
-
-    assert(mirrorWithoutPreserveSignatures);
-
-    renderWithProviders(
-      <Suspense fallback={<LoadingState />}>
-        <MirrorDetails />
-      </Suspense>,
-      undefined,
-      `?name=${mirrorWithoutPreserveSignatures.name}`,
-    );
-
-    await expectLoadingState();
-
-    const label = screen.getByText("Preserve upstream signing key");
-    expect(label).toBeInTheDocument();
-    expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
-  });
 });
