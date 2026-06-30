@@ -1,7 +1,7 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   ConfirmationButton,
@@ -57,8 +57,8 @@ const PackageProfileConstraintsEditFormActions: FC<
       setSelectedIds([]);
 
       notify.success({
-        message: `${selectedIds.length} "${profile.title}" profile's ${pluralize(selectedIds.length, "constraint")} removed successfully`,
-        title: `Package profile ${pluralize(selectedIds.length, "constraint")} removed`,
+        message: `${selectedIds.length} "${profile.title}" profile's ${pluralize(selectedIds.length, ["constraint"])} removed successfully`,
+        title: `Package profile ${pluralize(selectedIds.length, ["constraint"])} removed`,
       });
     } catch (error) {
       debug(error);
@@ -86,13 +86,13 @@ const PackageProfileConstraintsEditFormActions: FC<
         className="has-icon u-no-margin--right u-no-margin--bottom"
         type="button"
         disabled={selectedIds.length === 0 || formik.values.id !== 0}
-        aria-label={`Remove selected ${pluralize(selectedIds.length, "constraint")}`}
+        aria-label={`Remove selected ${pluralize(selectedIds.length, ["constraint"])}`}
         confirmationModalProps={{
-          title: `Remove ${pluralize(selectedIds.length, "constraint")}`,
+          title: `Remove ${pluralize(selectedIds.length, ["constraint"])}`,
           children: (
             <p>
               This will remove{" "}
-              {pluralizeWithCount(selectedIds.length, "constraint")}.
+              {pluralize(selectedIds.length, ["constraint"], "exact")}.
             </p>
           ),
           confirmButtonLabel: "Remove",

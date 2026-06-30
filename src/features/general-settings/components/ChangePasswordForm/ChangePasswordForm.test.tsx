@@ -4,6 +4,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it } from "vitest";
 import ChangePasswordForm from "./ChangePasswordForm";
+import { REQUIRED_FIELD_MESSAGE } from "@/components/form/PasswordConstraints";
 
 describe("ChangePasswordForm", () => {
   afterEach(() => {
@@ -31,7 +32,7 @@ describe("ChangePasswordForm", () => {
 
     await userEvent.click(saveButton);
 
-    expect(screen.getAllByText("This field is required")).toHaveLength(2);
+    expect(screen.getAllByText(REQUIRED_FIELD_MESSAGE)).toHaveLength(2);
   });
 
   it("does not show new password inline error for non-required validation failures", async () => {
@@ -46,9 +47,12 @@ describe("ChangePasswordForm", () => {
     await userEvent.click(saveButton);
 
     // When the password has non-required errors, the inline error is not shown
-    // (only "This field is required" triggers the inline error on new-password)
+    // (only REQUIRED_FIELD_MESSAGE triggers the inline error on new-password)
     expect(
-      screen.queryByText("This field is required"),
+      screen.queryByText("Password must contain at least one uppercase letter"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Password must contain at least one number"),
     ).not.toBeInTheDocument();
   });
 

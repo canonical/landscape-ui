@@ -15,7 +15,7 @@ import {
   REBOOT_OR_SHUT_DOWN_VALIDATION_SCHEMA,
 } from "../../constants";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 
 interface RestartModalProps {
   readonly close: () => void;
@@ -30,7 +30,7 @@ const RestartModal: FC<RestartModalProps> = ({ instances, close }) => {
 
   const { restartInstances, isRestartingInstances } = useRestartInstances();
 
-  const title = pluralizeArray(
+  const title = getSelectionLabel(
     instances,
     (instance) => instance.title,
     "instances",

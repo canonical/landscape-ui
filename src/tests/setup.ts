@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { cleanup } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
 import {
@@ -12,6 +12,12 @@ import "./matcher";
 import server from "./server";
 
 expect.extend(matchers);
+
+// Async DOM waits (findBy*, waitFor, waitForElementToBeRemoved) default to
+// 1000ms, which is too tight under the full coverage run on CI — especially on
+// the merge-queue branch where workers contend for CPU. Give them more headroom
+// so load-sensitive tests don't flake (and silently drop the PR from the queue).
+configure({ asyncUtilTimeout: 5000 });
 
 interface ResizeObserverInstance {
   observe: ReturnType<typeof vi.fn>;

@@ -3,24 +3,17 @@ import Blocks from "@/components/layout/Blocks";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import {
-  Form,
-  Icon,
-  Input,
-  Select,
-  Tooltip,
-} from "@canonical/react-components";
+import { Form, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { useMemo, type FC } from "react";
-import {
-  SETTINGS_HELP_TEXT,
-  VALIDATION_SCHEMA_EXISTING,
-} from "../../constants";
 import useNotify from "@/hooks/useNotify";
-import classes from "../../PublishLocalRepositorySidePanel.module.scss";
 import type { SelectOption } from "@/types/SelectOption";
 import type { Local, Publication } from "@canonical/landscape-openapi";
-import { usePublishPublication } from "@/features/publications";
+import {
+  PublicationSettingsBlock,
+  usePublishPublication,
+  VALIDATION_SCHEMA_EXISTING,
+} from "@/features/publications";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import PublishRepositoryContentsBlock from "../PublishRepositoryContentsBlock";
 
@@ -41,10 +34,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
   const handleSubmit = async (values: { name: string }) => {
     try {
-      await publishPublication({
-        publicationName: values.name,
-        body: { forceOverwrite: true },
-      });
+      await publishPublication({ name: values.name });
 
       closeSidePanel();
 
@@ -79,6 +69,12 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
     ({ name }) => name === formik.values.name,
   );
 
+  // This should never happen because this form is only enabled when there are
+  // publications, but handling it reduces the cyclomatic complexity.
+  if (!publication) {
+    throw new Error("Selected publication not found");
+  }
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Blocks>
@@ -93,7 +89,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Publication target"
-            value={publication?.publicationTarget ?? ""}
+            value={publication.publicationTarget}
             tooltipMessage={
               "The publication target is defined by the publication."
             }
@@ -101,89 +97,14 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Signing GPG key"
-            value={publication?.gpgKey?.armor ?? ""}
+            value={publication.gpgKey?.armor}
             tooltipMessage={"The GPG key is defined by the publication."}
           />
         </Blocks.Item>
 
         <PublishRepositoryContentsBlock repository={repository} />
 
-        <Blocks.Item title="Settings">
-          <Input
-            type="checkbox"
-            label={
-              <>
-                <span className={classes.settingLabel}>
-                  Hash based indexing
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.acquireByHash}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </>
-            }
-            checked={publication?.acquireByHash ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>
-                  Automatic installation
-                </span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.notAutomatic}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={publication?.notAutomatic ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label={
-              <span>
-                <span className={classes.settingLabel}>Automatic upgrades</span>
-                <Tooltip
-                  message={SETTINGS_HELP_TEXT.butAutomaticUpgrades}
-                  position="top-center"
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
-            checked={publication?.butAutomaticUpgrades ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip bz2"
-            checked={publication?.skipBz2 ?? false}
-            disabled
-          />
-
-          <Input
-            type="checkbox"
-            label="Skip content indexing"
-            checked={publication?.skipContents ?? false}
-            disabled
-          />
-        </Blocks.Item>
+        <PublicationSettingsBlock publication={publication} />
       </Blocks>
 
       <SidePanelFormButtons

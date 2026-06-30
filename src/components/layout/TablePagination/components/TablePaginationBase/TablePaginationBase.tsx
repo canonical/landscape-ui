@@ -1,4 +1,4 @@
-import { pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import { Button, Icon, Select } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
@@ -15,6 +15,7 @@ interface TablePaginationBaseProps {
   readonly paginate: (page: number) => void;
   readonly setPageSize: (itemsNumber: number) => void;
   readonly totalItems?: number | undefined;
+  readonly pageSizeLabel?: string;
 }
 
 const TablePaginationBase: FC<TablePaginationBaseProps> = ({
@@ -25,6 +26,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
   paginate,
   setPageSize,
   currentPage,
+  pageSizeLabel = "Instances per page",
 }) => {
   const totalPages = useTotalPages(totalItems, pageSize);
 
@@ -60,7 +62,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
           )}
         >
           Showing {currentItemCount} of{" "}
-          {pluralizeWithCount(totalItems, "result")}
+          {pluralize(totalItems, ["result"], "exact")}
         </p>
       )}
 
@@ -68,7 +70,7 @@ const TablePaginationBase: FC<TablePaginationBaseProps> = ({
         <div className={classes.paginationContainer}>
           <Select
             name="pageSize"
-            label="Instances per page"
+            label={pageSizeLabel}
             labelClassName="u-off-screen"
             className="u-no-margin--bottom"
             options={PAGE_SIZE_OPTIONS}

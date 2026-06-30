@@ -1,10 +1,12 @@
 import buttonClasses from "@/components/form/SidePanelFormButtons/SidePanelFormButtons.module.scss";
+import ReadOnlyField from "@/components/form/ReadOnlyField";
 import useAuth from "@/hooks/useAuth";
+import useAuthAccounts from "@/hooks/useAuthAccounts";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Preferences } from "@/types/Preferences";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Input } from "@canonical/react-components";
+import { ActionButton, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { ChangeEvent, FC } from "react";
 import { useOrgSettings } from "../../hooks";
@@ -26,6 +28,7 @@ const EditOrganisationPreferencesForm: FC<
   EditOrganisationPreferencesFormProps
 > = ({ organisationPreferences }) => {
   const { setUser, user } = useAuth();
+  const { currentAccount } = useAuthAccounts();
   const debug = useDebug();
   const { notify } = useNotify();
   const { changeOrganisationPreferences } = useOrgSettings();
@@ -102,6 +105,12 @@ const EditOrganisationPreferencesForm: FC<
 
   return (
     <Form noValidate onSubmit={formik.handleSubmit}>
+      <ReadOnlyField
+        label="Account name"
+        value={currentAccount.name}
+        tooltipMessage="The account name is set when the account is created and can't be changed later. It's used when registering clients with Landscape."
+      />
+
       <Input
         label="Organization's name"
         type="text"
@@ -144,14 +153,15 @@ const EditOrganisationPreferencesForm: FC<
       </p>
 
       <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
-        <Button
+        <ActionButton
           className="u-no-margin--bottom"
           appearance="positive"
           type="submit"
-          disabled={formik.isSubmitting || !formik.dirty}
+          disabled={!formik.dirty}
+          loading={formik.isSubmitting}
         >
           Save changes
-        </Button>
+        </ActionButton>
       </div>
     </Form>
   );

@@ -8,7 +8,7 @@ import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import type {
-  FilesystemTargetLinkMethod,
+  FilesystemTarget,
   PublicationTarget,
 } from "@canonical/landscape-openapi";
 import useNotify from "@/hooks/useNotify";
@@ -77,7 +77,7 @@ const getFilesystemInitialValues = (
 });
 
 const getInitialValues = (target: PublicationTarget): EditTargetFormValues => {
-  const base = { ...EMPTY_VALUES, displayName: target.displayName ?? "" };
+  const base = { ...EMPTY_VALUES, displayName: target.displayName };
   if (target.s3) return getS3InitialValues(target, base);
   if (target.swift) return getSwiftInitialValues(target, base);
   return getFilesystemInitialValues(target, base);
@@ -118,7 +118,7 @@ const buildSwiftPayload = (values: EditTargetFormValues) => ({
 const buildFilesystemPayload = (values: EditTargetFormValues) => ({
   path: values.path,
   ...(values.linkMethod && {
-    linkMethod: values.linkMethod as FilesystemTargetLinkMethod,
+    linkMethod: values.linkMethod as FilesystemTarget["linkMethod"],
   }),
 });
 
@@ -159,8 +159,8 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
         closeSidePanel();
 
         notify.success({
-          title: "Publication target edited",
-          message: `You have successfully edited ${values.displayName}`,
+          title: `You have successfully edited ${values.displayName}`,
+          message: "The publication target details have been updated.",
         });
       } catch (error) {
         debug(error);

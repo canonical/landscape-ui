@@ -7,7 +7,14 @@ import useEnv from "@/hooks/useEnv";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Form, Input, Link, Select } from "@canonical/react-components";
+import {
+  ActionButton,
+  Button,
+  Form,
+  Input,
+  Link,
+  Select,
+} from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
@@ -193,14 +200,15 @@ const EditUserForm: FC<EditUserFormProps> = ({ userDetails }) => {
         />
       )}
       <div className={`${buttonClasses.buttons} ${classes.buttons}`}>
-        <Button
+        <ActionButton
           className="u-no-margin--bottom"
           appearance="positive"
           type="submit"
-          disabled={formik.isSubmitting || !formik.dirty}
+          disabled={!formik.dirty}
+          loading={formik.isSubmitting}
         >
           Save changes
-        </Button>
+        </ActionButton>
       </div>
     </Form>
   );

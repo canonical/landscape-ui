@@ -1,25 +1,19 @@
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { publicationTargets } from "@/tests/mocks/publicationTargets";
-import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import EditTargetForm from "./EditTargetForm";
 
 const [s3TargetFull, s3TargetMinimal, swiftTarget, filesystemTarget] =
   publicationTargets;
 
-if (!s3TargetFull?.s3 || !s3TargetMinimal?.s3) {
-  throw new Error("Test targets must have S3 config");
-}
-if (!swiftTarget?.swift) {
-  throw new Error("Test target must have Swift config");
-}
-if (!filesystemTarget?.filesystem) {
-  throw new Error("Test target must have Filesystem config");
-}
+assert(s3TargetFull?.s3, "Test target must have S3 config");
+assert(s3TargetMinimal?.s3, "Test target must have S3 config");
+assert(swiftTarget?.swift, "Test target must have Swift config");
+assert(filesystemTarget?.filesystem, "Test target must have Filesystem config");
 
 const s3Full = s3TargetFull.s3;
 const { swift } = swiftTarget;
@@ -27,6 +21,10 @@ const { filesystem } = filesystemTarget;
 
 describe("EditTargetForm", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
 
   describe("S3 target", () => {
     it("pre-populates the display_name field", () => {
@@ -97,7 +95,9 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(
+          `You have successfully edited ${s3TargetFull.displayName}`,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -145,7 +145,9 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(
+          `You have successfully edited ${swiftTarget.displayName}`,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -158,7 +160,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
 
@@ -199,7 +201,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
 
@@ -271,7 +273,7 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
   });
@@ -292,36 +294,38 @@ describe("EditTargetForm", () => {
       await user.click(screen.getByRole("button", { name: /save/i }));
 
       expect(
-        await screen.findByText(/publication target edited/i),
+        await screen.findByText(/You have successfully edited/i),
       ).toBeInTheDocument();
     });
   });
 
   describe("error handling", () => {
     it("shows an error notification when S3 edit fails", async () => {
-      server.use(
-        http.patch(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
-          HttpResponse.json({ message: "edit failed" }, { status: 500 }),
-        ),
-      );
+      setEndpointStatus({
+        status: "error",
+        path: "publicationTargets/update",
+      });
 
       renderWithProviders(<EditTargetForm target={s3TargetFull} />);
       await user.click(screen.getByRole("button", { name: /save/i }));
 
-      expect(await screen.findByText("edit failed")).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
 
     it("shows an error notification when Swift edit fails", async () => {
-      server.use(
-        http.patch(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, () =>
-          HttpResponse.json({ message: "swift edit failed" }, { status: 500 }),
-        ),
-      );
+      setEndpointStatus({
+        status: "error",
+        path: "publicationTargets/update",
+      });
 
       renderWithProviders(<EditTargetForm target={swiftTarget} />);
       await user.click(screen.getByRole("button", { name: /save/i }));
 
-      expect(await screen.findByText("swift edit failed")).toBeInTheDocument();
+      expect(
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+      ).toBeInTheDocument();
     });
   });
 });

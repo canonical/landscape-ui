@@ -3,11 +3,11 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { useSnaps } from "../../hooks";
+import { useSnapAction } from "../../api";
 import type { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";
 
@@ -18,12 +18,11 @@ const InstallSnaps: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { snapsActionQuery } = useSnaps();
+  const { snapAction, isSnapActionPending: installSnapsLoading } =
+    useSnapAction();
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: installSnaps, isPending: installSnapsLoading } =
-    snapsActionQuery;
 
   const handleSubmit = async () => {
     if (selectedSnaps.length === 0) {
@@ -35,7 +34,7 @@ const InstallSnaps: FC = () => {
     }
 
     try {
-      await installSnaps({
+      await snapAction({
         computer_ids: [instanceId],
         snaps: selectedSnaps.map((snap) => ({
           name: snap.name,
@@ -46,7 +45,7 @@ const InstallSnaps: FC = () => {
       });
       closeSidePanel();
       notify.success({
-        message: `You queued ${pluralizeArray(selectedSnaps, (snap) => `snap ${snap.name}`, `snaps`)} to be installed.`,
+        message: `You queued ${getSelectionLabel(selectedSnaps, (snap) => `snap ${snap.name}`, `snaps`)} to be installed.`,
       });
       setSelectedSnaps([]);
     } catch (error) {

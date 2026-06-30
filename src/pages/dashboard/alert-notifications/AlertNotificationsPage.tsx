@@ -9,12 +9,10 @@ import {
 } from "@/features/alert-notifications";
 import { useGetPendingInstances } from "@/features/instances";
 import { ROUTES } from "@/libs/routes";
-import { Button } from "@canonical/react-components";
 import type { FC } from "react";
-import { useNavigate } from "react-router";
+import { Link } from "react-router";
 
 const AlertNotificationsPage: FC = () => {
-  const navigate = useNavigate();
   const { getAlertsSummaryQuery } = useAlertsSummary();
 
   const {
@@ -34,30 +32,31 @@ const AlertNotificationsPage: FC = () => {
 
   const alerts = getAlertsSummaryQueryResult?.data.alerts_summary || [];
 
+  if (
+    (hasPendingInstancesAlert && isGettingPendingInstances) ||
+    getAlertsSummaryQueryLoading
+  ) {
+    return <LoadingState />;
+  }
+
   return (
     <PageMain>
       <PageHeader title="Alerts" />
       <PageContent>
-        {getAlertsSummaryQueryLoading ||
-        (hasPendingInstancesAlert && isGettingPendingInstances) ? (
-          <LoadingState />
-        ) : !alerts.length ? (
+        {!alerts.length ? (
           <EmptyState
             title="No subscribed alerts found"
             icon="connected"
-            body={<p>You are not subscribed to any alerts yet.</p>}
+            body="You are not subscribed to any alerts yet."
             cta={[
-              <Button
-                appearance="positive"
+              <Link
                 key="go-to-alerts-page"
-                onClick={() =>
-                  navigate(ROUTES.account.alerts(), { replace: true })
-                }
-                type="button"
-                aria-label="Go to alerts page"
+                to={ROUTES.account.alerts()}
+                replace
+                className="p-button--positive u-no-margin--bottom"
               >
                 Go to alerts
-              </Button>,
+              </Link>,
             ]}
           />
         ) : (

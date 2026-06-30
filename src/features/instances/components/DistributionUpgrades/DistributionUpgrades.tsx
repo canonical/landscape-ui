@@ -4,7 +4,7 @@ import { useCreateDistributionUpgrades } from "@/features/instances";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { pluralize, pluralizeWithCount } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import {
   Button,
   CheckboxInput,
@@ -96,12 +96,8 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
       closeSidePanel();
 
       notify.success({
-        title: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} queued`,
-        message: `Distribution ${pluralize(finalEligibleIds.length, "upgrade")} for ${pluralizeWithCount(
-          finalEligibleIds.length,
-          "instance has",
-          "instances have",
-        )} been queued in Activities.`,
+        title: `Distribution ${pluralize(finalEligibleIds.length, ["upgrade"])} queued`,
+        message: `Distribution ${pluralize(finalEligibleIds.length, ["upgrade"])} for ${pluralize(finalEligibleIds.length, ["instance has", "instances have"], "exact")} been queued in Activities.`,
         actions: [
           {
             label: "View details",
@@ -180,7 +176,7 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
               });
             }}
           >
-            {pluralizeWithCount(row.original.count, "instance")}
+            {pluralize(row.original.count, ["instance"], "exact")}
           </Button>
         ),
       },

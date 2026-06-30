@@ -1,12 +1,5 @@
 import useNotify from "@/hooks/useNotify";
-import {
-  CheckboxInput,
-  ConfirmationModal,
-  Form,
-  Icon,
-  Input,
-  Tooltip,
-} from "@canonical/react-components";
+import { ConfirmationModal, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import {
@@ -24,6 +17,7 @@ import {
 } from "./helpers";
 import { useDeactivateEmployee } from "../../api";
 import useDebug from "@/hooks/useDebug";
+import CheckboxInputWithHelp from "@/components/form/CheckboxInputWithHelp";
 
 interface DeactivateEmployeeModalProps {
   readonly employee: Employee;
@@ -126,22 +120,9 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
 
         <b>Additional actions</b>
         <div>
-          <CheckboxInput
-            label={
-              <span>
-                <span className={classes.title}>
-                  Sanitize associated instances
-                </span>
-                <Tooltip
-                  position="top-center"
-                  message={SANITIZATION_TOOLTIP_MESSAGE}
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Sanitize associated instances"
+            tooltipMessage={SANITIZATION_TOOLTIP_MESSAGE}
             {...formik.getFieldProps("sanitizeInstances")}
             onChange={async (e) => {
               formik.getFieldProps("sanitizeInstances").onChange(e);
@@ -174,22 +155,9 @@ const DeactivateEmployeeModal: FC<DeactivateEmployeeModalProps> = ({
             </div>
           )}
 
-          <CheckboxInput
-            label={
-              <span>
-                <span className={classes.title}>
-                  Remove associated instances from Landscape
-                </span>
-                <Tooltip
-                  position="top-center"
-                  message={REMOVE_FROM_LANDSCAPE_TOOLTIP_MESSAGE}
-                  positionElementClassName={classes.tooltipPositionElement}
-                >
-                  <Icon name="help" aria-hidden />
-                  <span className="u-off-screen">Help</span>
-                </Tooltip>
-              </span>
-            }
+          <CheckboxInputWithHelp
+            label="Remove associated instances from Landscape"
+            tooltipMessage={REMOVE_FROM_LANDSCAPE_TOOLTIP_MESSAGE}
             {...formik.getFieldProps("removeFromLandscape")}
             onChange={async (e) => {
               formik.getFieldProps("removeFromLandscape").onChange(e);

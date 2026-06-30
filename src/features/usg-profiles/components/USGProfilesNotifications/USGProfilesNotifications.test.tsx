@@ -18,7 +18,7 @@ vi.mock("@/features/activities", () => ({
 
 const downloadAudit = vi.fn();
 vi.mock("../../hooks/useUsgProfileDownloadAudit", () => ({
-  useUsgProfileDownloadAudit: () => downloadAudit,
+  useUsgProfileDownloadAudit: () => ({ downloadAudit }),
 }));
 
 const pathname = "current/path/";

@@ -1,0 +1,240 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [main, "release/**", "point/**"]
+  merge_group:
+    types: [checks_requested]
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: pnpm eslint --cache
+
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Prettier
+        run: pnpm prettier --check src
+
+  stylelint:
+    name: Stylelint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Stylelint
+        run: pnpm stylelint "src/**/*.module.scss"
+
+  e2e-tests:
+    name: Playwright (${{ matrix.name }})
+    runs-on: [self-hosted, Linux, large]
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0
+    environment: dev
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: saas
+            name: SaaS
+            self_hosted_env: "false"
+            msw_enabled: "false"
+          - target: self-hosted
+            name: self-hosted
+            self_hosted_env: "true"
+            msw_enabled: "false"
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+      VITE_APP_TITLE: Landscape
+      VITE_ROOT_PATH: /
+      VITE_REPORT_VIEW_ENABLED: true
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: true
+      VITE_APP_VERSION: "26.04.0.12"
+      VITE_APP_COMMIT: "abcd123"
+      VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
+      VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
+      DEBUG: "pw:webserver"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build the project
+        run: pnpm run build:e2e
+        env:
+          VITE_ROOT_PATH: /
+          VITE_MSW_ENABLED: ${{ matrix.msw_enabled }}
+          VITE_SELF_HOSTED_ENV: ${{ matrix.self_hosted_env }}
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run ${{ matrix.name }} tests
+        run: pnpm exec playwright test --project=${{ matrix.target }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.target }}
+          path: playwright-report
+          retention-days: 30
+
+  unit-tests:
+    name: Vitest
+    runs-on: [self-hosted, Linux, large]
+    permissions:
+      contents: read
+      pull-requests: write
+    environment: dev
+    env:
+      VITE_API_URL: ${{ vars.API_URL }}
+      VITE_API_URL_OLD: ${{ vars.API_URL_OLD }}
+      VITE_API_URL_DEB_ARCHIVE: ${{ vars.API_URL_DEB_ARCHIVE }}
+      VITE_API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET }}
+      VITE_APP_TITLE: Landscape
+      VITE_ROOT_PATH: /new_dashboard/
+      VITE_REPORT_VIEW_ENABLED: false
+      VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
+      VITE_APP_VERSION: "26.04.0.12"
+      VITE_APP_COMMIT: ${{ github.sha }}
+      VITE_SELF_HOSTED_ENV: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run tests with coverage
+        run: pnpm exec vitest run --coverage
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitest-report
+          path: ${{ github.workspace }}/reports
+          retention-days: 30
+
+  verify:
+    name: Changeset
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+
+      - name: Verify changeset present
+        if: github.event.pull_request.base.ref
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: | # js
+          git fetch origin "$BASE_REF" --depth=1
+
+          # Only look at *added* .md files under .changeset/, excluding the
+          # static README. Empty changesets count — they still create a file.
+          ADDED=$(git diff --name-only --diff-filter=A "origin/$BASE_REF"...HEAD \
+            -- '.changeset/*.md' \
+            | grep -vE '^\.changeset/README\.md$' || true)
+
+          if [ -z "$ADDED" ]; then
+            echo "::error::No changeset added under .changeset/. Run 'pnpm changeset' and commit the resulting file."
+            echo
+            echo "If your change genuinely does not warrant a CHANGELOG entry, add an empty changeset:"
+            echo "  pnpm changeset --empty"
+            exit 1
+          fi
+
+          echo "Changeset(s) added in this PR:"
+          echo "$ADDED"

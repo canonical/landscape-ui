@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useListPublications } from "../../api";
-import { pluralizeNew } from "@/utils/_helpers";
+import { pluralize } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 
@@ -30,9 +30,11 @@ const MirrorPublicationsLink: FC<MirrorPublicationsLinkProps> = ({
         search: `?query=${encodeURIComponent(`source:${mirrorName}`)}`,
       }}
     >
-      {pluralizeNew(data.data.publications.length, "publication", {
-        showCount: data.data.nextPageToken ? "limited" : "exact",
-      })}
+      {pluralize(
+        data.data.publications.length,
+        ["publication"],
+        data.data.nextPageToken ? "limited" : "exact",
+      )}
     </StaticLink>
   );
 };

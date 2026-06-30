@@ -11,7 +11,7 @@ import type { FC } from "react";
 import { INITIAL_VALUES, VALIDATION_SCHEMA } from "./constants";
 import { getAccessGroupOptions } from "./helpers";
 import type { AccessGroupChangeFormValues } from "./types";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 import { getFormikError } from "@/utils/formikErrors";
 
 interface AccessGroupChangeProps {
@@ -46,7 +46,7 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
 
       notify.success({
         title: "Access group changed",
-        message: `Access group for ${pluralizeArray(selected, (instance) => `"${instance.title}" instance`, `instances`)} successfully changed to ${accessGroupOptions.find(({ value }) => value === access_group)?.label ?? ""}`,
+        message: `Access group for ${getSelectionLabel(selected, (instance) => `"${instance.title}" instance`, `instances`)} successfully changed to ${accessGroupOptions.find(({ value }) => value === access_group)?.label ?? ""}`,
       });
     } catch (error) {
       debug(error);

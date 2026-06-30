@@ -6,7 +6,7 @@ import { useGetSingleActivity } from "@/features/activities";
 import useDebug from "@/hooks/useDebug";
 import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
-import { Button, Input, Notification } from "@canonical/react-components";
+import { ActionButton, Input, Notification } from "@canonical/react-components";
 import { useFormik } from "formik";
 import moment from "moment";
 import { useEffect, useState, type FC } from "react";
@@ -42,7 +42,7 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
   const { getUsgProfileReport, isUsgProfileReportLoading } =
     useGetUsgProfileReport();
 
-  const downloadAudit = useUsgProfileDownloadAudit();
+  const { downloadAudit, isDownloadingAudit } = useUsgProfileDownloadAudit();
 
   const [status, setStatus] = useState<Status>({ type: "okay" });
 
@@ -213,16 +213,17 @@ const USGProfileDownloadAuditForm: FC<USGProfileDownloadAuditFormProps> = ({
           }}
         >
           It has been successfully generated and is now available for download.{" "}
-          <Button
+          <ActionButton
             appearance="link"
             type="button"
             className="u-no-margin--bottom u-no-padding--top"
             onClick={() => {
               downloadAudit(status.report_uri);
             }}
+            loading={isDownloadingAudit}
           >
             Download audit
-          </Button>
+          </ActionButton>
         </Notification>
       )}
 

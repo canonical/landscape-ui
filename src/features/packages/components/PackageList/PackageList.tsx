@@ -255,6 +255,7 @@ const PackageList: FC<PackageListProps> = ({
           return handleCellProps(cell, columns.length);
         }}
         emptyMsg={emptyMsg}
+        minWidth={1150}
       />
     </>
   );

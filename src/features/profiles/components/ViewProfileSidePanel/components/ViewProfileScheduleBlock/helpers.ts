@@ -1,8 +1,9 @@
-import { hasProperty, pluralizeWithCount } from "@/utils/_helpers";
+import { hasProperty, pluralize } from "@/utils/_helpers";
 import {
   getTriggerText,
   isRebootProfile,
   isScriptProfile,
+  parseSchedule,
   isUsgProfile,
   isUpgradeProfile,
 } from "../../../../helpers";
@@ -40,7 +41,7 @@ const getUpgradeSchedule = (profile: UpgradeProfile) => {
   const atMinute = parseInt(profile.at_minute);
 
   if (every === "hour") {
-    scheduleMessage += `hour at ${pluralizeWithCount(atMinute, "minute")}`;
+    scheduleMessage += `hour at ${pluralize(atMinute, ["minute"], "exact")}`;
 
     if (on_days) {
       scheduleMessage += ` on ${getScheduledDays(on_days)}`;
@@ -60,28 +61,6 @@ const getUpgradeSchedule = (profile: UpgradeProfile) => {
   return scheduleMessage;
 };
 
-const parseSchedule = (schedule: string) => {
-  const map = new Map(
-    schedule.split(";").map((part) => {
-      const [key, value] = part.split("=", 2) as [string, string | undefined];
-
-      return [key.toUpperCase(), value];
-    }),
-  );
-
-  const freq = map.get("FREQ")?.toLowerCase() ?? "";
-  const at_hour = parseInt(map.get("BYHOUR") ?? "");
-  const at_minute = parseInt(map.get("BYMINUTE") ?? "");
-  const on_days = (map.get("BYDAY") ?? "").split(",");
-
-  return {
-    freq,
-    at_hour,
-    at_minute,
-    on_days,
-  };
-};
-
 const getRebootSchedule = (profile: RebootProfile): string => {
   const { freq, on_days, at_hour, at_minute } = parseSchedule(profile.schedule);
 
@@ -94,7 +73,7 @@ const getRebootSchedule = (profile: RebootProfile): string => {
   return `${days} at ${at_hour}:${at_minute} UTC`;
 };
 
-export const getScheduleMessage = (profile: Profile) => {
+export const getScheduleMessage = (profile: Profile): string | null => {
   if (isRebootProfile(profile)) {
     return getRebootSchedule(profile);
   }
@@ -107,6 +86,8 @@ export const getScheduleMessage = (profile: Profile) => {
   if (isScriptProfile(profile)) {
     return getTriggerText(profile, true);
   }
+
+  return null;
 };
 
 export const getLastRunData = (profile: Profile) => {

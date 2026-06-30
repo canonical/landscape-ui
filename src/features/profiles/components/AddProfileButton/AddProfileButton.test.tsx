@@ -1,62 +1,63 @@
 import { renderWithProviders } from "@/tests/render";
+import { withProfilesContext } from "@/tests/mocks/profilesContext";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useLocation } from "react-router";
+import { describe, expect, it } from "vitest";
 import AddProfileButton from "./AddProfileButton";
-import usePageParams from "@/hooks/usePageParams";
-import useProfiles from "@/hooks/useProfiles";
 
-vi.mock("@/hooks/usePageParams", () => ({
-  default: vi.fn(),
-}));
+const LocationDisplay = () => {
+  const { search } = useLocation();
 
-vi.mock("@/hooks/useProfiles", () => ({
-  default: vi.fn(),
-}));
-
-const mockCreatePageParamsSetter = vi.fn();
-const mockUsePageParams = vi.mocked(usePageParams);
-const mockUseProfiles = vi.mocked(useProfiles);
+  return <div data-testid="location-display">{search}</div>;
+};
 
 describe("AddProfileButton", () => {
-  const openAddSidePanel = vi.fn();
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-
-    mockCreatePageParamsSetter.mockReturnValue(openAddSidePanel);
-
-    mockUsePageParams.mockReturnValue({
-      createPageParamsSetter: mockCreatePageParamsSetter,
-    } as unknown as ReturnType<typeof usePageParams>);
-
-    mockUseProfiles.mockReturnValue({
-      isProfileLimitReached: false,
-    } as ReturnType<typeof useProfiles>);
-  });
-
-  it("displays specific appearance for scripts header", async () => {
-    renderWithProviders(<AddProfileButton isInsideScriptHeader />);
+  it("displays specific appearance for scripts header", () => {
+    renderWithProviders(
+      <AddProfileButton isInsideScriptHeader />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext(),
+    );
 
     expect(
       screen.getByRole("button", { name: /add profile/i }),
     ).not.toHaveClass("p-button--positive");
   });
 
-  it("opens add side panel on click", async () => {
-    renderWithProviders(<AddProfileButton />);
+  it("opens add side panel", async () => {
+    const user = userEvent.setup();
 
-    await userEvent.click(screen.getByRole("button", { name: /add profile/i }));
+    renderWithProviders(
+      <>
+        <AddProfileButton />
+        <LocationDisplay />
+      </>,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext(),
+    );
 
-    expect(openAddSidePanel).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole("button", { name: /add profile/i }));
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=add",
+    );
   });
 
   it("disables button when profile limit is reached", () => {
-    mockUseProfiles.mockReturnValue({
-      isProfileLimitReached: true,
-    } as ReturnType<typeof useProfiles>);
-
-    renderWithProviders(<AddProfileButton />);
+    renderWithProviders(
+      <AddProfileButton />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({
+        isProfileLimitReached: true,
+      }),
+    );
 
     const button = screen.getByRole("button", { name: /add profile/i });
 

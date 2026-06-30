@@ -1,6 +1,7 @@
 import { alerts } from "@/tests/mocks/alerts";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import type { MultiSelectItem } from "@canonical/react-components";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -192,7 +193,7 @@ describe("AlertTagsCell", () => {
     await user.click(screen.getByRole("checkbox", { name: "Tag 1" }));
     await user.click(screen.getByRole("button", { name: "Save changes" }));
     expect(
-      await screen.findByText('The endpoint status is set to "error".'),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 });

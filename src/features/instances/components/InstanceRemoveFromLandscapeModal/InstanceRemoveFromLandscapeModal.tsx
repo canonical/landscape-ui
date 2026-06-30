@@ -2,7 +2,7 @@ import TextConfirmationModal from "@/components/form/TextConfirmationModal";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { InstanceWithoutRelation } from "@/types/Instance";
-import { pluralize, pluralizeArray } from "@/utils/_helpers";
+import { pluralize, getSelectionLabel } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useRemoveInstancesFromLandscape } from "../../api";
 
@@ -22,7 +22,7 @@ const InstanceRemoveFromLandscapeModal: FC<
   const { removeInstancesFromLandscape, isRemovingInstancesFromLandscape } =
     useRemoveInstancesFromLandscape();
 
-  const label = pluralizeArray(
+  const label = getSelectionLabel(
     instances,
     (instance) => instance.title,
     `instances`,
@@ -38,7 +38,7 @@ const InstanceRemoveFromLandscapeModal: FC<
 
       notify.success({
         title: `You have successfully removed ${label} from Landscape.`,
-        message: pluralizeArray(
+        message: getSelectionLabel(
           instances,
           (instance) =>
             `${instance.title} has been removed from Landscape. To manage it again, you will need to re-register it in Landscape.`,
@@ -67,11 +67,10 @@ const InstanceRemoveFromLandscapeModal: FC<
       onConfirm={removeFromLandscape}
     >
       <p>
-        {pluralize(
-          instances.length,
+        {pluralize(instances.length, [
           "This will delete all associated data and free up one license slot for another computer to be registered. You can re-register it to Landscape at any time.",
           `This will delete all associated data and free up ${instances.length} license slots for other computers to be registered. You can re-register them to Landscape at any time.`,
-        )}
+        ])}
       </p>
     </TextConfirmationModal>
   );

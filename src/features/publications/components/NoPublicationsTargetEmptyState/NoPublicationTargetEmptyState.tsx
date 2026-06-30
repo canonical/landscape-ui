@@ -1,6 +1,6 @@
 import EmptyState from "@/components/layout/EmptyState";
 import { Button, Icon } from "@canonical/react-components";
-import { DOCUMENTATION_URL } from "./constants";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 import { useNavigate } from "react-router";
 import { ROUTES } from "@/libs/routes";
 
@@ -17,21 +17,11 @@ const NoPublicationTargetEmptyState = () => {
   return (
     <EmptyState
       title="You must first add a publication target in order to add a publication"
-      body={
-        <>
-          <p>
-            On this page you will find all publications created when publishing
-            a mirror or a local repository.
-          </p>
-          <a
-            href={DOCUMENTATION_URL}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            Learn more about repository mirroring.
-          </a>
-        </>
-      }
+      body="On this page you will find all publications created when publishing a mirror or a local repository."
+      link={{
+        href: DEBARCHIVE_DOCUMENTATION_URL,
+        text: "Learn more about repository mirroring",
+      }}
       cta={[
         <Button
           appearance="positive"

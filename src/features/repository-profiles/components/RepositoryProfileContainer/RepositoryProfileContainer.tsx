@@ -7,9 +7,9 @@ import type { AxiosResponse } from "axios";
 import type { FC } from "react";
 import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
-import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
 import RepositoryProfileList from "../RepositoryProfileList";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch/HeaderWithSearch";
+import { AddProfileButton } from "@/features/profiles";
 
 interface RepositoryProfileContainerProps {
   readonly unfilteredRepositoryProfilesResult: UseQueryResult<
@@ -43,19 +43,12 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
     return (
       <EmptyState
         title="No repository profiles found"
-        body={
-          <>
-            <p>You haven’t added any repository profiles yet.</p>
-            <a
-              href="https://ubuntu.com/landscape/docs/manage-repositories-web-portal"
-              target="_blank"
-              rel="nofollow noopener noreferrer"
-            >
-              How to manage repositories in Landscape
-            </a>
-          </>
-        }
-        cta={[<RepositoryProfileAddButton key="add" />]}
+        body="You haven’t added any repository profiles yet."
+        link={{
+          href: "https://ubuntu.com/landscape/docs/manage-repositories-web-portal",
+          text: "How to manage repositories in Landscape",
+        }}
+        cta={[<AddProfileButton key="add" />]}
       />
     );
   }

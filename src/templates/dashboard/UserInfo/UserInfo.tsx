@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
-import { Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import classes from "./UserInfo.module.scss";
 import classNames from "classnames";
 import { Link, useLocation } from "react-router";
@@ -21,7 +21,10 @@ const UserInfo: FC = () => {
 
   const [expandedAccountSettings, setExpandedAccountSettings] = useState(false);
 
-  const { mutateAsync: deleteSessionCookies } = handleLogoutQuery;
+  const {
+    mutateAsync: deleteSessionCookies,
+    isPending: isDeletingSessionCookies,
+  } = handleLogoutQuery;
 
   const handleLogout = async () => {
     try {
@@ -156,7 +159,7 @@ const UserInfo: FC = () => {
           </Link>
         </li>
         <li className="p-side-navigation__item">
-          <Button
+          <ActionButton
             type="button"
             appearance="base"
             className={classNames(
@@ -165,6 +168,7 @@ const UserInfo: FC = () => {
               classes.button,
             )}
             onClick={handleLogout}
+            loading={isDeletingSessionCookies}
           >
             <Icon
               name="logout"
@@ -178,7 +182,7 @@ const UserInfo: FC = () => {
             >
               Sign out
             </span>
-          </Button>
+          </ActionButton>
         </li>
       </ul>
       <span className={classes.versionInfo}>

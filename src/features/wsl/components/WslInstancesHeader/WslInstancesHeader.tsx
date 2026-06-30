@@ -1,4 +1,4 @@
-import { PageParamFilter, TableFilterChips } from "@/components/filter";
+import { PageParamFilter } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
@@ -9,8 +9,8 @@ import type {
   InstanceChild,
   WindowsInstanceWithoutRelation,
 } from "@/types/Instance";
-import { pluralizeArray } from "@/utils/_helpers";
-import { Button, Icon } from "@canonical/react-components";
+import { getSelectionLabel } from "@/utils/_helpers";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -38,7 +38,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const { reapplyWslProfile } = useReapplyWslProfile();
+  const { reapplyWslProfile, isReapplyingWslProfile } = useReapplyWslProfile();
 
   const {
     value: isReinstallModalOpen,
@@ -70,7 +70,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
       );
 
       notify.success({
-        title: `You have successfully queued ${pluralizeArray(selectedWslInstances, (instance) => `"${instance.name}"`, `instances`)} to be installed.`,
+        title: `You have successfully queued ${getSelectionLabel(selectedWslInstances, (instance) => `"${instance.name}"`, `instances`)} to be installed.`,
         message: "An activity has been queued to install it.",
       });
     } catch (error) {
@@ -111,7 +111,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
               <div className="p-segmented-control">
                 <div className="p-segmented-control__list">
                   {hasWslProfiles && (
-                    <Button
+                    <ActionButton
                       type="button"
                       onClick={install}
                       className="p-segmented-control__button u-no-margin--bottom"
@@ -123,10 +123,11 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                             wslInstance.compliance !== "uninstalled",
                         )
                       }
+                      loading={isReapplyingWslProfile}
                     >
                       <Icon name="begin-downloading" />
                       <span>Install</span>
-                    </Button>
+                    </ActionButton>
                   )}
 
                   {hasWslProfiles && (
@@ -200,8 +201,6 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
           </div>
         }
       />
-
-      <TableFilterChips filtersToDisplay={["search"]} />
 
       <WslInstanceReinstallModal
         close={closeReinstallModal}

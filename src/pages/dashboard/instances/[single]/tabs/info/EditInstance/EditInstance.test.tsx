@@ -2,6 +2,7 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { ubuntuInstance } from "@/tests/mocks/instance";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import EditInstance from "./EditInstance";
@@ -131,7 +132,7 @@ describe("EditInstance", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     expect(
-      await screen.findByText('The endpoint status is set to "error".'),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 
@@ -152,7 +153,7 @@ describe("EditInstance", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     expect(
-      await screen.findByText('The endpoint status is set to "error".'),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
   });
 

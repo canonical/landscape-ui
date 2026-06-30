@@ -1,4 +1,10 @@
-import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
+import {
+  ActionButton,
+  Button,
+  Icon,
+  ICONS,
+  Tooltip,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import useDebug from "@/hooks/useDebug";
@@ -53,7 +59,7 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
       <div className={classes.attachmentActions}>
         {scriptId ? (
           <Tooltip message="Download" position="top-center">
-            <Button
+            <ActionButton
               className={classNames(
                 "u-no-margin--bottom u-no-margin--right",
                 classes.actionButton,
@@ -61,12 +67,12 @@ const AttachmentFile: FC<AttachmentFileProps> = ({
               hasIcon
               type="button"
               onClick={handleDownload}
-              disabled={isScriptAttachmentsLoading}
+              loading={isScriptAttachmentsLoading}
               appearance="base"
               aria-label={`Download ${filename}`}
             >
               <Icon name="begin-downloading" />
-            </Button>
+            </ActionButton>
           </Tooltip>
         ) : null}
         {onInitialAttachmentDelete ? (

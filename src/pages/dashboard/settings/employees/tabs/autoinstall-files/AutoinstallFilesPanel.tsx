@@ -49,11 +49,7 @@ const AutoinstallFilesPanel: FC = () => {
       <EmptyState
         icon="file"
         title="No autoinstall files found"
-        body={
-          <p className="u-no-margin--bottom">
-            You haven&#39;t added any autoinstall files yet.
-          </p>
-        }
+        body="You haven't added any autoinstall files yet."
         cta={[
           <Button
             key="add-autoinstall-file"

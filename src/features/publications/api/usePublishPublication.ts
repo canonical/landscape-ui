@@ -1,29 +1,28 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  PublishPublicationData,
-  PublishPublicationError,
-  PublishPublicationResponse,
+  PublishPublicationRequest,
+  PublicationServicePublishPublicationError,
+  PublicationServicePublishPublicationResponse,
 } from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-interface PublishPublicationParams {
-  publicationName: PublishPublicationData["path"]["name"];
-  body: PublishPublicationData["body"];
-}
-
 export const usePublishPublication = () => {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
+  const body: Omit<PublishPublicationRequest, "name"> = {
+    forceOverwrite: true,
+    forceCleanup: true,
+  };
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<PublishPublicationResponse>,
-    AxiosError<PublishPublicationError>,
-    PublishPublicationParams
+    AxiosResponse<PublicationServicePublishPublicationResponse>,
+    AxiosError<PublicationServicePublishPublicationError>,
+    Pick<PublishPublicationRequest, "name">
   >({
     mutationKey: ["publications", "publish"],
-    mutationFn: async ({ publicationName, body }) =>
-      authFetchDebArchive.post(`${publicationName}:publish`, body),
+    mutationFn: async ({ name }) =>
+      authFetchDebArchive.post(`${name}:publish`, body),
     onSuccess: async () =>
       queryClient.invalidateQueries({ queryKey: ["publications"] }),
   });

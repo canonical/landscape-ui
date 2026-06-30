@@ -1,17 +1,29 @@
-import { HOMEPAGE_PATH } from "@/constants";
+import { CONTACT_SUPPORT_TEAM_MESSAGE, HOMEPAGE_PATH } from "@/constants";
+import type { AuthContextProps } from "@/context/auth";
 import type { EnvContextState } from "@/context/env";
 import type { AuthStateResponse } from "@/features/auth";
+import useAuth from "@/hooks/useAuth";
 import useEnv from "@/hooks/useEnv";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import OidcAuthPage from "./OidcAuthPage";
 
 const safeRedirect = vi.fn();
 const navigate = vi.fn();
 const setUser = vi.fn();
+const setSearchParams = vi.fn();
+let searchParams = "";
 
 vi.mock("@/hooks/useEnv");
+vi.mock("@/hooks/useAuth");
+vi.mock("react-router", async () => ({
+  ...(await vi.importActual("react-router")),
+  useNavigate: () => navigate,
+  useSearchParams: () => [new URLSearchParams(searchParams), setSearchParams],
+}));
 
 const mockSelfHosted: EnvContextState = {
   envLoading: false,
@@ -31,272 +43,252 @@ const mockSaas: EnvContextState = {
   displayDisaStigBanner: false,
 };
 
-vi.mocked(useEnv).mockReturnValue(mockSaas);
+type CallbackAuthState = Extract<AuthStateResponse, { token: string }>;
 
-const mockTestParams = (response: AuthStateResponse | Error) => {
-  vi.doMock("react-router", async () => ({
-    ...(await vi.importActual("react-router")),
-    useSearchParams: () => [
-      new URLSearchParams({
-        enabled: "true",
-        code: "mock-code",
-        state: "mock-state",
-      }),
-    ],
-    useNavigate: () => navigate,
-  }));
+const authStateBase: CallbackAuthState = {
+  ...authUser,
+  return_to: null,
+  self_hosted: false,
+  identity_source: "",
+  attach_code: null,
+  invitation_id: null,
+};
 
-  vi.doMock("@/features/auth", async () => {
-    const actual = await vi.importActual("@/features/auth");
-    return {
-      ...actual,
-      useGetOidcAuth: () => {
-        if (response instanceof Error) {
-          return { authData: undefined, isLoading: false, error: response };
-        }
-        return { authData: response, isLoading: false, error: null };
-      },
-    };
-  });
+const buildAuthState = (overrides: Partial<typeof authStateBase> = {}) => ({
+  ...authStateBase,
+  ...overrides,
+});
 
-  vi.doMock("@/hooks/useAuth", async () => ({
-    default: () => ({
-      setUser,
-      safeRedirect,
-    }),
-  }));
+const mockAuthContext: AuthContextProps = {
+  authLoading: false,
+  authorized: true,
+  hasAccounts: true,
+  logout: vi.fn(),
+  redirectToExternalUrl: vi.fn(),
+  safeRedirect,
+  setUser,
+  user: authUser,
+  isFeatureEnabled: () => false,
 };
 
 describe("OidcAuthPage", () => {
   beforeEach(() => {
-    vi.resetModules();
+    setEndpointStatus("default");
+    searchParams = "code=mock-code&state=mock-state";
     vi.clearAllMocks();
+    vi.mocked(useEnv).mockReturnValue(mockSaas);
+    vi.mocked(useAuth).mockReturnValue(mockAuthContext);
   });
 
-  it("should render error message when there is no search params", async () => {
-    mockTestParams(new Error("No params"));
-    const { default: Component } = await import("./OidcAuthPage");
-
-    renderWithProviders(<Component />);
+  it("renders the fallback state when there are no search params", async () => {
+    searchParams = "";
+    renderWithProviders(<OidcAuthPage />);
 
     expect(
-      await screen.findByText(
-        "Something went wrong. Please try again or contact our support team.",
-      ),
+      await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE),
     ).toBeInTheDocument();
-
     expect(
       screen.getByRole("link", { name: "Back to login" }),
     ).toBeInTheDocument();
   });
 
-  describe("with additional test params", () => {
-    const responsesToMock: (AuthStateResponse | Error)[] = [
-      new Error("Test error"),
-      {
-        ...authUser,
+  it("renders the fallback state when the auth request fails", async () => {
+    setEndpointStatus({ status: "error", path: "auth/handle-code" });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    expect(
+      await screen.findByText(CONTACT_SUPPORT_TEAM_MESSAGE),
+    ).toBeInTheDocument();
+  });
+
+  it("requests an external redirect when return_to is external", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
         return_to: {
           external: true,
           url: "https://example.com",
         },
-      },
-      {
-        ...authUser,
-        return_to: {
-          external: false,
-          url: "/dashboard",
-        },
-      },
-      {
-        ...authUser,
-        return_to: null,
-      },
-      {
-        ...authUser,
-        invitation_id: "test-secure-id",
-      },
-    ];
-
-    beforeEach(async ({ task: { id } }) => {
-      vi.doUnmock("@/features/auth");
-      vi.resetModules();
-
-      const taskId = Number(id.substring(id.length - 1));
-
-      assert(responsesToMock[taskId]);
-      mockTestParams(responsesToMock[taskId]);
-
-      const { default: Component } = await import("./OidcAuthPage");
-      renderWithProviders(<Component />);
+      }),
     });
 
-    it("should render error message when an error occurs", async () => {
-      expect(
-        screen.getByText(
-          "Something went wrong. Please try again or contact our support team.",
-        ),
-      ).toBeInTheDocument();
+    renderWithProviders(<OidcAuthPage />);
 
-      expect(
-        screen.getByRole("link", { name: "Back to login" }),
-      ).toBeInTheDocument();
-    });
-
-    it("should request external redirect when return_to is external", async () => {
+    await waitFor(() => {
       expect(safeRedirect).toHaveBeenCalledWith("https://example.com", {
         external: true,
         replace: true,
       });
     });
+  });
 
-    it("should redirect to internal URL when return_to is not external", async () => {
+  it("redirects to the internal return_to URL", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
+        return_to: {
+          external: false,
+          url: "/dashboard",
+        },
+      }),
+    });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    await waitFor(() => {
       expect(safeRedirect).toHaveBeenCalledWith("/dashboard", {
         external: false,
         replace: true,
       });
     });
+  });
 
-    it("should redirect to internal URL when return_to is not provided", async () => {
+  it("redirects to the homepage when return_to is not provided", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState(),
+    });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    await waitFor(() => {
       expect(safeRedirect).toHaveBeenCalledWith(HOMEPAGE_PATH, {
         external: false,
         replace: true,
       });
     });
+  });
 
-    it("should redirect to invitation when invitation_id is present", async () => {
+  it("redirects to the invitation page when invitation_id is present", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
+        invitation_id: "test-secure-id",
+      }),
+    });
+
+    renderWithProviders(<OidcAuthPage />);
+
+    await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith(
         "/accept-invitation/test-secure-id",
-        { replace: true },
+        {
+          replace: true,
+        },
       );
     });
   });
 
-  describe("with an attach_code", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-      vi.resetModules();
+  it("redirects to the attach page when attach_code is present", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
+        attach_code: "123123",
+      }),
     });
 
-    it("should redirect to attach page when attach_code is present", async () => {
-      mockTestParams({
-        ...authUser,
-        attach_code: "123123",
-        return_to: null,
-      });
-      const { default: Component } = await import("./OidcAuthPage");
+    renderWithProviders(<OidcAuthPage />);
 
-      renderWithProviders(<Component />);
-
-      expect(navigate).toHaveBeenCalledWith(`/attach`, {
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/attach", {
         replace: true,
         state: { success: true },
       });
     });
   });
 
-  describe("SaaS environment", () => {
-    beforeEach(() => {
-      vi.resetModules();
-      vi.mocked(useEnv).mockReturnValue(mockSaas);
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: false }),
-      }));
-      vi.doMock("@/constants", async (importOriginal) => ({
-        ...(await importOriginal()),
-        GENERIC_DOMAIN: "localhost",
-      }));
-    });
-
-    it("should redirect to create-account when user has no accounts and GENERIC_DOMAIN matches hostname", async () => {
-      mockTestParams({
-        ...authUser,
+  it("redirects SaaS users with no accounts to no-access by default", async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
         accounts: [],
         current_account: "",
-        return_to: null,
-      });
-
-      const { default: Component } = await import("./OidcAuthPage");
-      renderWithProviders(<Component />);
-
-      expect(navigate).toHaveBeenCalledWith("/create-account", {
-        replace: true,
-      });
+      }),
     });
 
-    it("should redirect to no-access when user has no accounts and GENERIC_DOMAIN does not match hostname", async () => {
-      vi.resetModules();
+    renderWithProviders(<OidcAuthPage />);
 
-      const { default: useEnvFresh } = await import("@/hooks/useEnv");
-      vi.mocked(useEnvFresh).mockReturnValue(mockSaas);
-
-      vi.doMock("@/constants", async (importOriginal) => ({
-        ...(await importOriginal()),
-        GENERIC_DOMAIN: "example.com",
-      }));
-
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: false }),
-      }));
-
-      mockTestParams({
-        ...authUser,
-        accounts: [],
-        current_account: "",
-        return_to: null,
-      });
-
-      const { default: Component } = await import("./OidcAuthPage");
-      renderWithProviders(<Component />);
-
+    await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith("/no-access", { replace: true });
     });
   });
 
-  describe("Self-hosted environment", () => {
-    beforeEach(() => {
-      vi.resetModules();
-      vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: false }),
-      }));
-    });
+  it("redirects public SaaS users with no accounts to create-account", async () => {
+    const currentLocation = window.location;
 
-    it("should redirect to create-account when user has no accounts and accountExists is false", async () => {
-      mockTestParams({
-        ...authUser,
+    vi.spyOn(window, "location", "get").mockReturnValue({
+      ...currentLocation,
+      hostname: "landscape.canonical.com",
+    } as Location);
+
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
         accounts: [],
         current_account: "",
-        return_to: null,
-      });
+      }),
+    });
 
-      const { default: Component } = await import("./OidcAuthPage");
-      renderWithProviders(<Component />);
+    renderWithProviders(<OidcAuthPage />);
 
+    await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith("/create-account", {
         replace: true,
       });
     });
+  });
 
-    it("should redirect to no-access when accountExists is true", async () => {
-      vi.resetModules();
+  it("redirects self-hosted users with no accounts to create-account when no standalone account exists", async () => {
+    vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
 
-      const { default: useEnvFresh } = await import("@/hooks/useEnv");
-      vi.mocked(useEnvFresh).mockReturnValue(mockSelfHosted);
+    setEndpointStatus([
+      {
+        status: "variant",
+        path: "auth/handle-code",
+        response: buildAuthState({
+          accounts: [],
+          current_account: "",
+        }),
+      },
+      {
+        status: "variant",
+        path: "standalone-account",
+        response: { exists: false },
+      },
+    ]);
 
-      vi.doMock("@/features/account-creation", () => ({
-        useGetStandaloneAccount: () => ({ accountExists: true }),
-      }));
+    renderWithProviders(<OidcAuthPage />);
 
-      mockTestParams({
-        ...authUser,
+    await waitFor(() => {
+      expect(navigate).toHaveBeenCalledWith("/create-account", {
+        replace: true,
+      });
+    });
+  });
+
+  it("redirects self-hosted users with no accounts to no-access when a standalone account exists", async () => {
+    vi.mocked(useEnv).mockReturnValue(mockSelfHosted);
+
+    setEndpointStatus({
+      status: "variant",
+      path: "auth/handle-code",
+      response: buildAuthState({
         accounts: [],
         current_account: "",
-        return_to: null,
-      });
+      }),
+    });
 
-      const { default: Component } = await import("./OidcAuthPage");
-      renderWithProviders(<Component />);
+    renderWithProviders(<OidcAuthPage />);
 
+    await waitFor(() => {
       expect(navigate).toHaveBeenCalledWith("/no-access", {
         replace: true,
       });

@@ -2,6 +2,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import { IS_DEV_ENV } from "@/constants";
 import { Button } from "@canonical/react-components";
 import type { FallbackRender } from "@sentry/react";
+import classes from "./FallbackComponent.module.scss";
 
 export const FallbackComponent: FallbackRender = (errorData) => {
   const { error, resetError, componentStack } = errorData;
@@ -14,27 +15,18 @@ export const FallbackComponent: FallbackRender = (errorData) => {
 
   return (
     <EmptyState
+      className={classes.emptyState}
       body={
         <>
           <p className="u-no-margin--bottom">
             Please try again or contact our support team.
           </p>
           {IS_DEV_ENV && (
-            <pre
-              style={{
-                backgroundColor: "#f4f4f4",
-                border: "1px solid #e0e0e0",
-                borderRadius: "4px",
-                marginTop: "1rem",
-                maxHeight: "200px",
-                overflow: "auto",
-                padding: "1rem",
-              }}
-            >
+            <pre className={classes.errorDetails}>
               <strong>Error:</strong> {errorMessage}
               <br />
-              <strong>Stack trace:</strong>
               <br />
+              <strong>Stack trace:</strong>
               {componentStack}
             </pre>
           )}

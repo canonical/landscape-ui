@@ -16,7 +16,7 @@ import {
   REBOOT_OR_SHUT_DOWN_VALIDATION_SCHEMA,
 } from "../../constants";
 import { useOpenActivityDetailsPanel } from "@/features/activities";
-import { pluralizeArray } from "@/utils/_helpers";
+import { getSelectionLabel } from "@/utils/_helpers";
 
 interface ShutDownModalProps {
   readonly close: () => void;
@@ -31,7 +31,7 @@ const ShutDownModal: FC<ShutDownModalProps> = ({ instances, close }) => {
 
   const { shutDownInstances, isShuttingDownInstances } = useShutDownInstances();
 
-  const title = pluralizeArray(
+  const title = getSelectionLabel(
     instances,
     (instance) => instance.title,
     "instances",

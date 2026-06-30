@@ -6,6 +6,7 @@ import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import { useListMirrors } from "@/features/mirrors";
 import { MirrorsList } from "@/features/mirrors";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import { Button, Icon, ICONS } from "@canonical/react-components";
@@ -27,6 +28,10 @@ const PublishMirrorForm = lazy(
   async () => import("@/features/mirrors/components/PublishMirrorForm"),
 );
 
+const ViewLogsSidePanel = lazy(
+  async () => import("@/features/operations/components/ViewLogsSidePanel"),
+);
+
 const MirrorsPage: FC = () => {
   const {
     search,
@@ -36,11 +41,16 @@ const MirrorsPage: FC = () => {
     createPageParamsSetter,
   } = usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "edit",
+    "publish",
+    "view",
+    "logs",
+  ]);
 
   const { data } = useListMirrors({
     filter: search ? `display_name=${JSON.stringify(`${search}*`)}` : undefined,
-    pageSize: 20,
   });
 
   const openAddMirrorForm = createPageParamsSetter({
@@ -76,12 +86,12 @@ const MirrorsPage: FC = () => {
       : {
           children: (
             <EmptyState
-              title="You don't have any mirrors yet."
-              body={
-                <>
-                  <p>This feature allows you to mirror Debian repositories.</p>
-                </>
-              }
+              title="You don’t have any mirrors yet"
+              body="This feature allows you to mirror Debian repositories."
+              link={{
+                href: DEBARCHIVE_DOCUMENTATION_URL,
+                text: "Learn more about repository mirroring",
+              }}
               cta={buttons}
             />
           ),
@@ -110,6 +120,11 @@ const MirrorsPage: FC = () => {
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <MirrorDetails />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "logs" && (
+          <SidePanel.Suspense key="logs">
+            <ViewLogsSidePanel resourceType="mirrors" />
           </SidePanel.Suspense>
         )}
       </SidePanel>

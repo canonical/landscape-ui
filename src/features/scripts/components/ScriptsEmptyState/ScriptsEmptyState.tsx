@@ -23,20 +23,11 @@ const ScriptsEmptyState: FC = () => {
     <EmptyState
       title="No scripts found"
       icon="connected"
-      body={
-        <>
-          <p className="u-no-margin--bottom">
-            You haven’t added any scripts yet.
-          </p>
-          <a
-            href="https://ubuntu.com/landscape/docs/managing-computers"
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            How to manage instances in Landscape
-          </a>
-        </>
-      }
+      body="You haven’t added any scripts yet."
+      link={{
+        href: "https://ubuntu.com/landscape/docs/managing-computers",
+        text: "How to manage instances in Landscape",
+      }}
       cta={[
         <Button
           appearance="positive"

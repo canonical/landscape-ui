@@ -5,18 +5,11 @@ import { DOCUMENTATION_LINK } from "./constants";
 const ActivitiesEmptyState: FC = () => {
   return (
     <EmptyState
-      body={
-        <>
-          <p>There are no activities yet.</p>
-          <a
-            href={DOCUMENTATION_LINK}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-          >
-            How to manage computers in Landscape
-          </a>
-        </>
-      }
+      body="There are no activities yet."
+      link={{
+        href: DOCUMENTATION_LINK,
+        text: "How to manage computers in Landscape",
+      }}
       icon="switcher-environments"
       title="No activities found"
     />

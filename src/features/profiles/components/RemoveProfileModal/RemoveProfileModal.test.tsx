@@ -3,15 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ProfileTypes } from "../../helpers";
 import RemoveProfileModal from "./RemoveProfileModal";
-import useProfiles from "@/hooks/useProfiles";
 import { profiles } from "@/tests/mocks/profiles";
+import { withProfilesContext } from "@/tests/mocks/profilesContext";
 import { renderWithProviders } from "@/tests/render";
-
-vi.mock("@/hooks/useProfiles", () => ({
-  default: vi.fn(),
-}));
-
-const mockUseProfiles = vi.mocked(useProfiles);
 
 const [baseProfile] = profiles;
 
@@ -21,11 +15,6 @@ describe("RemoveProfileModal", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    mockUseProfiles.mockReturnValue({
-      removeProfile,
-      isRemovingProfile: false,
-    } as unknown as ReturnType<typeof useProfiles>);
   });
 
   it("submits archive and shows success notification", async () => {
@@ -36,6 +25,10 @@ describe("RemoveProfileModal", () => {
         opened
         closeModal={closeModal}
       />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({ removeProfile }),
     );
 
     expect(screen.getByText("Archive script profile")).toBeInTheDocument();
@@ -48,7 +41,9 @@ describe("RemoveProfileModal", () => {
       name: baseProfile.name,
     });
 
-    expect(screen.getByText("Script profile archived")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Script profile archived"),
+    ).toBeInTheDocument();
     expect(closeModal).toHaveBeenCalled();
   });
 
@@ -60,6 +55,10 @@ describe("RemoveProfileModal", () => {
         opened
         closeModal={closeModal}
       />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({ removeProfile }),
     );
 
     expect(screen.getByText("Remove repository profile")).toBeInTheDocument();
@@ -72,7 +71,9 @@ describe("RemoveProfileModal", () => {
       name: baseProfile.name,
     });
 
-    expect(screen.getByText("Repository profile removed")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Repository profile removed"),
+    ).toBeInTheDocument();
     expect(closeModal).toHaveBeenCalled();
   });
 
@@ -87,6 +88,10 @@ describe("RemoveProfileModal", () => {
         opened
         closeModal={closeModal}
       />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({ removeProfile }),
     );
 
     await userEvent.type(screen.getByRole("textbox"), "remove Profile One");
@@ -97,11 +102,6 @@ describe("RemoveProfileModal", () => {
   });
 
   it("disables confirm button while request is pending", () => {
-    mockUseProfiles.mockReturnValue({
-      removeProfile,
-      isRemovingProfile: true,
-    } as unknown as ReturnType<typeof useProfiles>);
-
     renderWithProviders(
       <RemoveProfileModal
         profile={baseProfile}
@@ -109,6 +109,12 @@ describe("RemoveProfileModal", () => {
         opened
         closeModal={closeModal}
       />,
+      undefined,
+      undefined,
+      undefined,
+      withProfilesContext({
+        isRemovingProfile: true,
+      }),
     );
 
     const loadingButton = screen.getByRole("button", {

@@ -1,6 +1,6 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import type {
+  PublicationServiceListPublicationsError,
   ListPublicationsResponse,
   Publication,
 } from "@canonical/landscape-openapi";
@@ -17,7 +17,10 @@ export default function useGetPublicationsByTarget(
 ): UseGetPublicationsByTargetReturnType {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
+  const { data, isLoading } = useQuery<
+    Publication[],
+    AxiosError<PublicationServiceListPublicationsError>
+  >({
     queryKey: ["publications", { publicationTargetId }],
     enabled: publicationTargetId !== undefined,
     queryFn: async () => {

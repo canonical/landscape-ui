@@ -46,7 +46,7 @@ describe("RepublishPublicationModal", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "This publication has been queued for republishing to the designated target.",
+        "An activity has been queued to republish it to the designated target.",
       ),
     ).toBeInTheDocument();
   });
@@ -58,7 +58,7 @@ describe("RepublishPublicationModal", () => {
       publication,
     };
 
-    setEndpointStatus({ status: "error", path: "publications/publish" });
+    setEndpointStatus({ status: "error", path: "publications" });
 
     renderWithProviders(<RepublishPublicationModal {...props} />);
 

@@ -159,7 +159,7 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
         (invalidInstanceIds.length === selectedInstances.length ? (
           createPortal(
             <Modal
-              title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, "instance")}`}
+              title={`Token attachment unavailable for the selected ${pluralize(selectedInstances.length, ["instance"])}`}
               close={closeValidationModal}
               buttonRow={
                 <Button
@@ -173,12 +173,11 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
             >
               <p>
                 Your Ubuntu Pro token can&apos;t be attached to the selected{" "}
-                {pluralize(selectedInstances.length, "instance")} because{" "}
-                {pluralize(
-                  selectedInstances.length,
+                {pluralize(selectedInstances.length, ["instance"])} because{" "}
+                {pluralize(selectedInstances.length, [
                   "it doesn't",
                   "they don't",
-                )}{" "}
+                ])}{" "}
                 support this feature. This could be because the Landscape Client
                 is out of date.
               </p>
@@ -212,8 +211,8 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
                     count={withToken}
                     singular="instance"
                   />{" "}
-                  will override {pluralize(withToken, "its", "their")} existing
-                  token
+                  will override {pluralize(withToken, ["its", "their"])}{" "}
+                  existing token
                 </li>
               )}
               <li>
@@ -222,8 +221,8 @@ const TokenFormBase: FC<TokenFormBaseProps> = ({
                   singular="instance"
                 />{" "}
                 will be skipped as{" "}
-                {pluralize(invalidInstanceIds.length, "it does", "they do")} not
-                support Ubuntu Pro management
+                {pluralize(invalidInstanceIds.length, ["it does", "they do"])}{" "}
+                not support Ubuntu Pro management
               </li>
             </ul>
           </ConfirmationModal>

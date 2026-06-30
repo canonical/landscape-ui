@@ -1,5 +1,7 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import PasswordConstraints from "@/components/form/PasswordConstraints";
+import PasswordConstraints, {
+  REQUIRED_FIELD_MESSAGE,
+} from "@/components/form/PasswordConstraints";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -7,8 +9,8 @@ import { Form, Input, PasswordToggle } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import { useUserGeneralSettings } from "../../hooks";
-import { VALIDATION_SCHEMA } from "./constants";
 import { getFormikError } from "@/utils/formikErrors";
+import { VALIDATION_SCHEMA } from "./constants";
 
 interface FormProps {
   currentPassword: string;
@@ -61,10 +63,8 @@ const ChangePasswordForm: FC = () => {
         autoComplete="new-password"
         data-testid="new-password"
         error={
-          formik.touched.newPassword &&
-          formik.errors.newPassword &&
-          formik.errors.newPassword === "This field is required"
-            ? formik.errors.newPassword
+          getFormikError(formik, "newPassword") === REQUIRED_FIELD_MESSAGE
+            ? REQUIRED_FIELD_MESSAGE
             : undefined
         }
         {...formik.getFieldProps("newPassword")}

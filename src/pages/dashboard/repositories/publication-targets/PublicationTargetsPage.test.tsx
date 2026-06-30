@@ -4,8 +4,14 @@ import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PublicationTargetsPage from "./PublicationTargetsPage";
 import userEvent from "@testing-library/user-event";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 
 describe("PublicationTargetsPage", () => {
+  afterEach(() => {
+    setEndpointStatus({ status: "default", path: "publicationTargets" });
+  });
+
   it("renders the page title", () => {
     renderWithProviders(<PublicationTargetsPage />);
 
@@ -19,6 +25,26 @@ describe("PublicationTargetsPage", () => {
 
     expect(
       await screen.findByRole("button", { name: /add publication target/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders empty state when there are no publication targets", async () => {
+    setEndpointStatus({ status: "empty", path: "publicationTargets" });
+
+    renderWithProviders(<PublicationTargetsPage />);
+
+    expect(
+      await screen.findByText("You don’t have any publication targets yet"),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("link", {
+        name: /learn more about repository mirroring/i,
+      }),
+    ).toHaveAttribute("href", DEBARCHIVE_DOCUMENTATION_URL);
+
+    expect(
+      screen.getByRole("button", { name: /add publication target/i }),
     ).toBeInTheDocument();
   });
 

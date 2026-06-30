@@ -42,10 +42,10 @@ describe("ResponsiveTable", () => {
     expect(screen.getByText("Running")).toBeInTheDocument();
   });
 
-  it("applies the default minWidth (1024px) to the table", () => {
+  it("applies the default minWidth (950px) to the table", () => {
     render(<ResponsiveTable columns={columns} data={data} />);
     const table = screen.getByRole("table");
-    expect(table).toHaveStyle({ minWidth: "1024px" });
+    expect(table).toHaveStyle({ minWidth: "950px" });
   });
 
   it("respects a custom minWidth prop", () => {

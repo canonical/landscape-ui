@@ -1,6 +1,6 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type {
-  BatchGetPublicationTargetsError,
+  PublicationTargetServiceBatchGetPublicationTargetsError,
   BatchGetPublicationTargetsResponse,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ export const useBatchGetPublicationTargets = (names: string[]) => {
 
   const { data, isLoading } = useQuery<
     Record<string, string>,
-    AxiosError<BatchGetPublicationTargetsError>
+    AxiosError<PublicationTargetServiceBatchGetPublicationTargetsError>
   >({
     queryKey: ["publicationTargets", "batch", names],
     queryFn: async () => {

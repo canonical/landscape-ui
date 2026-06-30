@@ -11,3 +11,14 @@
 .heading {
   margin-top: 1.5rem;
 }
+
+.maskedInput {
+  /* Mask the entered bearer token without type="password", which browsers
+   * autofill (and offer to generate passwords for) even with autocomplete="off". */
+  /* stylelint-disable-next-line property-no-unknown */
+  -webkit-text-security: disc;
+}
+
+.tooltip {
+  z-index: var(--z-tooltip);
+}
