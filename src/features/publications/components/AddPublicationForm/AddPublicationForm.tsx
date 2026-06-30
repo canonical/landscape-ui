@@ -48,7 +48,7 @@ const AddPublicationForm: FC = () => {
   const formik = useFormik<FormProps>({
     initialValues: {
       ...getInitialValues(),
-      sourceType: "",
+      sourceType: SOURCE_TYPE_MIRROR,
       source: "",
       distribution: "",
       architectures: [],
@@ -65,7 +65,7 @@ const AddPublicationForm: FC = () => {
         notify.success({
           title: `You have successfully added ${values.name}`,
           message:
-            "The publication has been created and is now available to be published.",
+            "The publication has been created and marked to be published.",
         });
       } catch (error) {
         debug(error);
@@ -102,17 +102,16 @@ const AddPublicationForm: FC = () => {
     [locals],
   );
 
-  const selectableSources = useMemo(() => {
-    if (formik.values.sourceType === SOURCE_TYPE_MIRROR) {
-      return mirrorSources;
-    }
+  const isLocalSourceType =
+    formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY;
 
-    if (formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY) {
+  const selectableSources = useMemo(() => {
+    if (isLocalSourceType) {
       return localSources;
     }
 
-    return [];
-  }, [formik.values.sourceType, localSources, mirrorSources]);
+    return mirrorSources;
+  }, [isLocalSourceType, localSources, mirrorSources]);
 
   const sourceOptions = useMemo(
     () => [
@@ -126,12 +125,7 @@ const AddPublicationForm: FC = () => {
     ({ value }) => value === formik.values.source,
   );
 
-  const isLocalSourceType =
-    formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY;
-
-  const isGettingSources =
-    formik.values.sourceType === SOURCE_TYPE_LOCAL_REPOSITORY &&
-    isGettingLocals;
+  const isGettingSources = isLocalSourceType && isGettingLocals;
 
   const publicationTargetOptions = useMemo<SelectOption[]>(
     () => [
@@ -212,7 +206,7 @@ const AddPublicationForm: FC = () => {
           <Select
             label="Source"
             required
-            disabled={!formik.values.sourceType || isGettingSources}
+            disabled={isGettingSources}
             options={sourceOptions}
             error={getFormikError(formik, "source")}
             {...formik.getFieldProps("source")}
@@ -228,15 +222,20 @@ const AddPublicationForm: FC = () => {
             {...formik.getFieldProps("publicationTarget")}
           />
 
-          {selectedSource?.sourceType === SOURCE_TYPE_MIRROR &&
-            selectedSource.preserveSignatures === false && (
-              <Textarea
-                label="Signing GPG key"
-                rows={4}
-                {...formik.getFieldProps("signingKey")}
-                error={getFormikError(formik, "signingKey")}
-              />
-            )}
+          {!selectedSource?.preserveSignatures ? (
+            <Textarea
+              label="Signing GPG key"
+              rows={4}
+              {...formik.getFieldProps("signingKey")}
+              error={getFormikError(formik, "signingKey")}
+            />
+          ) : (
+            <ReadOnlyField
+              label="Signing GPG key"
+              value={formik.values.signingKey}
+              tooltipMessage="The signing key can't be changed for signature-preserving mirrors."
+            />
+          )}
         </Blocks.Item>
 
         <Blocks.Item title="Contents">
@@ -244,7 +243,11 @@ const AddPublicationForm: FC = () => {
             <ReadOnlyField
               label="Distribution"
               value={formik.values.distribution}
-              tooltipMessage="The distribution is defined by the selected source."
+              tooltipMessage={
+                isLocalSourceType
+                  ? "The distribution is defined by the source repository."
+                  : "The distribution can't be changed for signature-preserving mirrors."
+              }
             />
           ) : (
             <Input
@@ -259,7 +262,11 @@ const AddPublicationForm: FC = () => {
           <ReadOnlyField
             label={isLocalSourceType ? "Component" : "Components"}
             value={selectedSource?.components?.join(", ")}
-            tooltipMessage={`The ${isLocalSourceType ? "component is" : "components are"} defined by the selected source.`}
+            tooltipMessage={
+              isLocalSourceType
+                ? "The component is defined by the source repository."
+                : "The components are defined by the source mirror."
+            }
           />
 
           {!isLocalSourceType && (
