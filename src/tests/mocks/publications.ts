@@ -107,6 +107,6 @@ export const publications = [
     multiDist: false,
     skipBz2: false,
     skipContents: false,
-    publishTime: new Date("March 12, 2026"),
+    publishTime: new Date("March 1, 2026"),
   },
 ] as const satisfies Publication[];
