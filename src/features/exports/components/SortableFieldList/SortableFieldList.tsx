@@ -1,4 +1,10 @@
-import { Button, Icon, Input, ModularTable } from "@canonical/react-components";
+import {
+  Button,
+  Chip,
+  Icon,
+  Input,
+  ModularTable,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import {
   useCallback,
@@ -28,6 +34,7 @@ interface ReorderRowData extends Record<string, unknown> {
   index: number;
   fieldId: string;
   label: string;
+  groupTitle: string | undefined;
   currentOrder: string;
 }
 
@@ -73,6 +80,10 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
 
   const orderedFieldsRef = useRef(orderedFields);
   const draggingFieldIdRef = useRef(draggingFieldId);
+  // Capture the field list as it exists on first render so Reset can always
+  // return to the group-declaration order, regardless of how many moves the
+  // parent state has accumulated since then.
+  const initialFieldsRef = useRef<ExportField[]>(fields);
 
   // Stable per-row ref callbacks, cached by fieldId, so the row's ref doesn't
   // churn (null then re-set) on every render.
@@ -94,6 +105,12 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
     justMovedTimerRef,
   });
   usePendingFieldScroll({ orderedFields, pendingScrollRef, rowRefsMap });
+
+  const handleResetOrder = useCallback(() => {
+    setOrderedFields([...initialFieldsRef.current]);
+    setOrderDrafts({});
+    onOrderChange([...initialFieldsRef.current]);
+  }, [onOrderChange]);
 
   const triggerMoveEffect = useCallback((fieldId: string) => {
     if (justMovedTimerRef.current) clearTimeout(justMovedTimerRef.current);
@@ -338,11 +355,19 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
         Header: "Attribute name",
         accessor: "fieldId",
         Cell: ({ row }: CellProps<ReorderRowData>) => {
-          const { label } = row.original;
+          const { label, groupTitle } = row.original;
           return (
             <div className={classes.nameCell}>
               <i className={"p-icon--drag " + classes.dragHandle} />
               <span>{label}</span>
+              {groupTitle && (
+                <Chip
+                  value={groupTitle}
+                  isReadOnly
+                  isDense
+                  className="u-no-margin--bottom"
+                />
+              )}
             </div>
           );
         },
@@ -421,6 +446,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
         index,
         fieldId: field.id,
         label: field.label,
+        groupTitle: field.groupTitle,
         currentOrder: orderDrafts[index] ?? String(index + 1),
       })),
     [orderDrafts, orderedFields],
@@ -484,10 +510,20 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
 
   return (
     <div className={classes.selectedColumns}>
-      <p className={classes.selectedColumnsIntro}>
-        Review and reorder the columns for your export. Drag rows or use the
-        controls to change the order.
-      </p>
+      <div className={classes.selectedColumnsHeader}>
+        <p className={classes.selectedColumnsIntro}>
+          Review and reorder the columns for your export. Drag rows or use the
+          controls to change the order.
+        </p>
+        <Button
+          type="button"
+          className={`u-no-margin--bottom ${classes.resetButton}`}
+          onClick={handleResetOrder}
+        >
+          <i className="p-icon--restart" />
+          <span> Reset order</span>
+        </Button>
+      </div>
       <ModularTable
         columns={reorderColumns}
         data={reorderData}
