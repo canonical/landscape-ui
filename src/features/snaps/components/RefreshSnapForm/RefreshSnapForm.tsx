@@ -77,7 +77,7 @@ const RefreshSnapForm: FC<RefreshSnapFormProps> = ({ installedSnaps }) => {
       <SidePanelFormButtons
         submitButtonText="Refresh"
         submitButtonAppearance="positive"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );
