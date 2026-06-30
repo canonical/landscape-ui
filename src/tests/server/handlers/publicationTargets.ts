@@ -147,7 +147,7 @@ export default [
       const endpointStatus = getEndpointStatus("publicationTargets");
 
       if (endpointStatus.status === "error") {
-        throw createEndpointStatusError();
+        return createEndpointStatusError();
       }
 
       if (endpointStatus.status === "empty") {

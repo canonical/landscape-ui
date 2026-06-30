@@ -15,9 +15,6 @@ import type {
 } from "@canonical/landscape-openapi";
 import { succeededOperation } from "@/tests/mocks/operations";
 
-const matchesPublicationsPath = (endpointPath?: string) =>
-  !endpointPath || endpointPath.includes("publications");
-
 const getPublicationParam = (requestPublicationName: string) => {
   const decodedPublicationName = decodeURIComponent(requestPublicationName);
 
@@ -126,10 +123,7 @@ export default [
         return HttpResponse.json(endpointStatus.response);
       }
 
-      if (
-        endpointStatus.status === "error" &&
-        matchesPublicationsPath(endpointStatus.path)
-      ) {
+      if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
 
@@ -148,10 +142,7 @@ export default [
     if (shouldApplyEndpointStatus("publications")) {
       const endpointStatus = getEndpointStatus("publications");
 
-      if (
-        endpointStatus.status === "error" &&
-        matchesPublicationsPath(endpointStatus.path)
-      ) {
+      if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
     }
@@ -165,10 +156,7 @@ export default [
       if (shouldApplyEndpointStatus("publications")) {
         const endpointStatus = getEndpointStatus("publications");
 
-        if (
-          endpointStatus.status === "error" &&
-          matchesPublicationsPath(endpointStatus.path)
-        ) {
+        if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
         }
       }
@@ -181,10 +169,7 @@ export default [
     if (shouldApplyEndpointStatus("publications")) {
       const endpointStatus = getEndpointStatus("publications");
 
-      if (
-        endpointStatus.status === "error" &&
-        matchesPublicationsPath(endpointStatus.path)
-      ) {
+      if (endpointStatus.status === "error") {
         throw createEndpointStatusError();
       }
     }
@@ -198,10 +183,7 @@ export default [
       if (shouldApplyEndpointStatus("publications")) {
         const endpointStatus = getEndpointStatus("publications");
 
-        if (
-          endpointStatus.status === "error" &&
-          matchesPublicationsPath(endpointStatus.path)
-        ) {
+        if (endpointStatus.status === "error") {
           throw createEndpointStatusError();
         }
       }

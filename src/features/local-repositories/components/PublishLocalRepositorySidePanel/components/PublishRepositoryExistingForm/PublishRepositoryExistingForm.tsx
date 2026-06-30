@@ -97,7 +97,7 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
 
           <ReadOnlyField
             label="Signing GPG key"
-            value={publication?.gpgKey?.armor}
+            value={publication.gpgKey?.armor}
             tooltipMessage={"The GPG key is defined by the publication."}
           />
         </Blocks.Item>

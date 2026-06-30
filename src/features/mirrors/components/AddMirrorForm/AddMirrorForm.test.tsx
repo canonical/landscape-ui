@@ -86,6 +86,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -100,7 +101,10 @@ describe("AddMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({ archiveRoot: cdnUrl }),
+      expect.objectContaining({
+        archiveRoot: cdnUrl,
+        mirrorType: "UBUNTU_ARCHIVE",
+      }),
     );
   });
 
@@ -129,6 +133,7 @@ describe("AddMirrorForm", () => {
 
     fireEvent.change(screen.getByLabelText("Snapshot date"), {
       target: { value: date },
+      mirrorType: "UBUNTU_SNAPSHOTS",
     });
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
@@ -154,6 +159,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
+        mirrorType: "UBUNTU_PRO",
       }),
     );
   });

@@ -35,7 +35,7 @@ describe("PublicationDetailsSidePanel", () => {
 
     renderPanel();
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
   it("renders the publication display name and details once loaded", async () => {
