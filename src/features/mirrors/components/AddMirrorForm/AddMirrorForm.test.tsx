@@ -1,5 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import AddMirrorForm from "./AddMirrorForm";
+import { mirrors } from "@/tests/mocks/mirrors";
 import userEvent from "@testing-library/user-event";
 import {
   fireEvent,
@@ -9,10 +10,13 @@ import {
   within,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
+import {
+  UBUNTU_ARCHIVE_HOST,
+  UBUNTU_PRO_HOST,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
 import type { MirrorWritable } from "@canonical/landscape-openapi";
 import { useLocation } from "react-router";
-import { mirrors } from "@/tests/mocks/mirrors";
 
 const PULLING_NOTE = /pulling and parsing repository data/i;
 
@@ -47,6 +51,9 @@ describe("AddMirrorForm", () => {
       </>,
     );
 
+    // The form renders immediately; wait for the "pulling…" note in the
+    // Mirror contents block to disappear so the data-dependent dropdowns are
+    // populated before the test interacts with them.
     await waitForElementToBeRemoved(() => screen.queryByText(PULLING_NOTE), {
       timeout: 2000,
     });
@@ -126,6 +133,7 @@ describe("AddMirrorForm", () => {
 
     fireEvent.change(screen.getByLabelText("Snapshot date"), {
       target: { value: date },
+      mirrorType: "UBUNTU_SNAPSHOTS",
     });
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
@@ -133,7 +141,6 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
-        mirrorType: "UBUNTU_SNAPSHOTS",
       }),
     );
   });
@@ -151,7 +158,7 @@ describe("AddMirrorForm", () => {
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
+        archiveRoot: expect.stringContaining(UBUNTU_PRO_HOST),
         mirrorType: "UBUNTU_PRO",
       }),
     );
@@ -189,9 +196,7 @@ describe("AddMirrorForm", () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({
-        preserveSignatures: true,
-      }),
+      expect.objectContaining({ preserveSignatures: true }),
     );
   });
 

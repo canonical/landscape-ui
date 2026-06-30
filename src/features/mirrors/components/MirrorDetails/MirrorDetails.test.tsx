@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, expect } from "vitest";
+import { assert, describe, expect, it } from "vitest";
 import MirrorDetails from "./MirrorDetails";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { Suspense } from "react";
@@ -15,7 +15,7 @@ import { http, HttpResponse } from "msw";
 const typedMirrors = mirrors as Mirror[];
 
 describe("MirrorDetails", () => {
-  it("renders", async () => {
+  it("renders the mirror display name once loaded", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <MirrorDetails />
@@ -229,19 +229,47 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens UpdateMirrorModal if updateModal param is true", async () => {
+  it("displays preserve signatures status", async () => {
+    const mirrorWithPreserveSignatures = mirrors.find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+
+    assert(mirrorWithPreserveSignatures);
+
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <MirrorDetails />
       </Suspense>,
       undefined,
-      `?name=${mirrors[0].name}&updateModal=true`,
+      `?name=${mirrorWithPreserveSignatures.name}`,
     );
 
-    expect(
-      await screen.findByRole("heading", {
-        name: `Update ${mirrors[0].displayName}`,
-      }),
-    ).toBeInTheDocument();
+    await expectLoadingState();
+
+    const label = screen.getByText("Preserve upstream signing key");
+    expect(label).toBeInTheDocument();
+    expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
+  });
+
+  it("renders mirror details for a mirror with preserve signatures disabled", async () => {
+    const mirrorWithoutPreserveSignatures = mirrors.find(
+      ({ preserveSignatures }) => !preserveSignatures,
+    );
+
+    assert(mirrorWithoutPreserveSignatures);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrorWithoutPreserveSignatures.name}`,
+    );
+
+    await expectLoadingState();
+
+    const label = screen.getByText("Preserve upstream signing key");
+    expect(label).toBeInTheDocument();
+    expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
   });
 });

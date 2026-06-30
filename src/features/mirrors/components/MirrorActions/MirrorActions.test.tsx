@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe } from "vitest";
+import { describe, it } from "vitest";
 import MirrorActions from "./MirrorActions";
 
 describe("MirrorActions", () => {

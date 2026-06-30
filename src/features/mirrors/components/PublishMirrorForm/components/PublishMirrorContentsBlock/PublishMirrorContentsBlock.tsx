@@ -14,7 +14,7 @@ const PublishMirrorContentsBlock: FC<PublishMirrorContentsBlockProps> = ({
     <Blocks.Item title="Contents">
       <ReadOnlyField
         label="Distribution"
-        value={mirror.distribution ?? ""}
+        value={mirror.distribution}
         tooltipMessage={"The distribution is defined by the mirror."}
       />
       <ReadOnlyField
