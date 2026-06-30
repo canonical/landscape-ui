@@ -74,7 +74,6 @@ describe("ActivitiesExportForm", () => {
       "creator",
     );
 
-    await openAttributeGroup(user, /audit & time/i);
     expect(
       screen.getByRole("checkbox", { name: "Creator" }),
     ).toBeInTheDocument();
