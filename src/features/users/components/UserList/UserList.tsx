@@ -12,14 +12,8 @@ import { lazy, Suspense, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
 import classes from "./UserList.module.scss";
 
-const EditUserForm = lazy(
-  async () =>
-    import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
-);
-const UserDetails = lazy(
-  async () =>
-    import("@/pages/dashboard/instances/[single]/tabs/users/UserDetails"),
-);
+const EditUserForm = lazy(async () => import("../EditUserForm"));
+const UserDetails = lazy(async () => import("../UserDetails"));
 
 interface UserListProps {
   readonly users: User[];

@@ -1,29 +1,29 @@
-import { Form, Input, Select } from "@canonical/react-components";
-import { useFormik } from "formik";
-import type { FC } from "react";
-import * as Yup from "yup";
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import MultiSelectField from "@/components/form/MultiSelectField";
+import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import useUsers from "@/hooks/useUsers";
-import type { User } from "@/types/User";
-import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
+import type { User } from "@/types/User";
 import { getFormikError } from "@/utils/formikErrors";
-
-interface FormProps {
-  name: string;
-  username: string;
-  password: string;
-  confirmPassword: string;
-  location: string;
-  homePhoneNumber: string;
-  workPhoneNumber: string;
-  primaryGroupValue: string;
-  additionalGroupValue: string[];
-}
+import { Form, Input, Select } from "@canonical/react-components";
+import { useFormik } from "formik";
+import type { FC } from "react";
+import { useParams } from "react-router";
+import {
+  useAddUserToGroup,
+  useEditUser,
+  useGetGroups,
+  useGetUserGroups,
+  useRemoveUserFromGroup,
+} from "../../api";
+import { editUserValidationSchema } from "./constants";
+import {
+  getEditUserInitialValues,
+  getGroupDifferences,
+  getGroupNamesByGids,
+} from "./helpers";
+import type { EditUserFormValues } from "./types";
 
 interface EditUserFormProps {
   readonly user: User;
@@ -34,101 +34,60 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const {
-    editUserQuery,
-    getGroupsQuery,
-    getUserGroupsQuery,
-    addUserToGroupQuery,
-    removeUserFromGroupQuery,
-  } = useUsers();
+  const { editUser, isEditingUser } = useEditUser();
+  const { addUserToGroup, isAddingUserToGroup } = useAddUserToGroup();
+  const { removeUserFromGroup, isRemovingUserFromGroup } =
+    useRemoveUserFromGroup();
 
   const instanceId = Number(urlInstanceId);
 
-  const { data, isLoading: isLoadingGroups } = getGroupsQuery({
+  const { groups: groupsData, isLoadingGroups } = useGetGroups({
     computer_id: instanceId,
   });
-  const { data: userGroupsData } = getUserGroupsQuery({
+  const { userGroups: userGroupsData } = useGetUserGroups({
     username: user.username,
     computer_id: instanceId,
   });
-  const { mutateAsync: editUserMutation } = editUserQuery;
-  const { mutateAsync: addUserToGroupMutation } = addUserToGroupQuery;
-  const { mutateAsync: removeUserFromGroupMutation } = removeUserFromGroupQuery;
 
-  const groupsData = data?.data.groups ?? [];
   const groups = groupsData.map((group) => ({
     label: group.name,
     value: String(group.gid),
   }));
   const initialUserAdditionalGroups =
-    userGroupsData?.data.groups.map((group) => String(group.gid)) || [];
+    userGroupsData?.map((group) => String(group.gid)) || [];
 
-  const formik = useFormik<FormProps>({
-    initialValues: {
-      name: user.name ?? "",
-      username: user.username,
-      password: "",
-      confirmPassword: "",
-      location: user.location ?? "",
-      homePhoneNumber: user.home_phone ?? "",
-      workPhoneNumber: user.work_phone ?? "",
-      primaryGroupValue: String(user.primary_gid),
-      additionalGroupValue: initialUserAdditionalGroups,
-    },
-    validationSchema: Yup.object().shape({
-      username: Yup.string().required("This field is required"),
-      name: Yup.string(),
-      password: Yup.string(),
-      confirmPassword: Yup.string().when("password", ([password], schema) => {
-        return password && password.length > 0
-          ? schema
-              .trim()
-              .required("Confirm password is required")
-              .oneOf([Yup.ref("password"), ""], "Passwords must match")
-          : schema.notRequired();
-      }),
-      location: Yup.string(),
-      homePhoneNumber: Yup.string(),
-      workPhoneNumber: Yup.string(),
-      primaryGroupValue: Yup.string().required("This field is required"),
-      additionalGroupValue: Yup.array().of(Yup.string()),
-    }),
+  const formik = useFormik<EditUserFormValues>({
+    initialValues: getEditUserInitialValues(user, initialUserAdditionalGroups),
+    validationSchema: editUserValidationSchema,
     onSubmit: async (values) => {
-      const groupsToBeAdded = values.additionalGroupValue.filter(
-        (group) => !initialUserAdditionalGroups.includes(group),
+      const { groupsToBeAdded, groupsToBeRemoved } = getGroupDifferences(
+        values.additionalGroupValue,
+        initialUserAdditionalGroups,
       );
-      const groupsToBeRemoved = initialUserAdditionalGroups.filter(
-        (group) => !values.additionalGroupValue.includes(group),
-      );
-      const groupNames = groupsData
-        .filter((g) => groupsToBeAdded.includes(String(g.gid)))
-        .map((g) => g.name);
+      const groupNames = getGroupNamesByGids(groupsData, groupsToBeAdded);
+      const usernames = [values.username];
       try {
         const promises = [];
         if (groupsToBeAdded.length) {
           promises.push(
-            addUserToGroupMutation({
+            addUserToGroup({
               computer_id: instanceId,
               groupnames: groupNames,
-
-              usernames: [values.username],
-              action: "add",
+              usernames,
             }),
           );
         }
         if (groupsToBeRemoved.length) {
           promises.push(
-            removeUserFromGroupMutation({
+            removeUserFromGroup({
               computer_id: instanceId,
               groupnames: groupNames,
-
-              usernames: [values.username],
-              action: "remove",
+              usernames,
             }),
           );
         }
         promises.push(
-          editUserMutation({
+          editUser({
             computer_ids: [instanceId],
             name: values.name,
             username: values.username,
@@ -222,7 +181,9 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonDisabled={
+          isEditingUser || isAddingUserToGroup || isRemovingUserFromGroup
+        }
         submitButtonText="Save changes"
       />
     </Form>
