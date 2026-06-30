@@ -2,19 +2,36 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { boolToLabel } from "@/utils/output";
 import type { Publication } from "@canonical/landscape-openapi";
-import { Button, Icon, ICONS } from "@canonical/react-components";
+import {
+  Button,
+  Icon,
+  ICONS,
+  Notification,
+  Tooltip,
+} from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import { getInstallsAndUpgradesText, getSourceType } from "../../helpers";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DISPLAY_DATE_TIME_FORMAT,
+  DEFAULT_POLLING_INTERVAL,
+} from "@/constants";
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  useGetOperation,
+  ViewLogsButton,
+} from "@/features/operations";
+import LoadingState from "@/components/layout/LoadingState";
+import classes from "./PublicationDetails.module.scss";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
-  readonly sourceDisplayName?: string;
-  readonly publicationTargetDisplayName?: string;
+  readonly sourceDisplayName: string;
+  readonly publicationTargetDisplayName: string;
 }
 
 const PublicationDetails = ({
@@ -34,32 +51,70 @@ const PublicationDetails = ({
     setFalse: closeRepublishModal,
   } = useBoolean();
 
+  const { operation, isGettingOperation } = useGetOperation(
+    publication.lastOperation ?? "",
+    {
+      enabled: !!publication.lastOperation,
+      refetchInterval: ({ state }) =>
+        state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
+    },
+  );
+
+  if (publication.lastOperation && isGettingOperation) {
+    return <LoadingState />;
+  }
+
+  const iconName = getOperationStatusIcon(operation);
+
   return (
     <>
-      <div
-        className="p-segmented-control"
-        style={{
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div className="p-segmented-control__list">
-          <Button
-            type="button"
-            className="p-segmented-control__button"
-            onClick={openRepublishModal}
-            hasIcon
-            aria-label={`Republish ${publication.displayName}`}
+      <div className="p-segmented-control u-sv2">
+        {!!operation?.error && (
+          <Notification
+            severity="negative"
+            title="Publishing failed"
+            actions={[
+              <ViewLogsButton
+                resource={publication.publicationId}
+                key="view-logs"
+              />,
+            ]}
           >
-            <Icon name="upload" />
-            <span>Republish</span>
-          </Button>
-
+            Your last publication was not completed successfully.
+          </Notification>
+        )}
+        <div className="p-segmented-control__list">
+          {operation && !operation.done ? (
+            <Tooltip
+              message="You must wait for this action to be completed to republish it."
+              position="btm-center"
+            >
+              <Button
+                type="button"
+                hasIcon
+                className="p-segmented-control__button"
+                disabled
+              >
+                <Icon name="spinner" className="u-animation--spin" />
+                <span>Publishing</span>
+              </Button>
+            </Tooltip>
+          ) : (
+            <Button
+              type="button"
+              className="p-segmented-control__button"
+              onClick={openRepublishModal}
+              hasIcon
+            >
+              <Icon name="upload" />
+              <span>Republish</span>
+            </Button>
+          )}
           <Button
             type="button"
             className="p-segmented-control__button"
             onClick={openRemoveModal}
             hasIcon
-            aria-label={`Remove ${publication.displayName}`}
           >
             <Icon name={`${ICONS.delete}--negative`} />
             <span className="u-text--negative">Remove</span>
@@ -70,22 +125,34 @@ const PublicationDetails = ({
       <Blocks>
         <Blocks.Item title="Details">
           <InfoGrid dense>
-            <InfoGrid.Item label="Name" large value={publication.displayName} />
-
-            <InfoGrid.Item
-              label="Source type"
-              value={getSourceType(publication.source)}
-            />
-
-            <InfoGrid.Item label="Source" value={sourceDisplayName} />
-
+            <InfoGrid.Item label="Name" value={publication.displayName} />
             <InfoGrid.Item
               label="Publication target"
               value={publicationTargetDisplayName}
             />
 
             <InfoGrid.Item
-              label="Date published"
+              label="Source type"
+              value={getSourceType(publication.source)}
+            />
+            <InfoGrid.Item label="Source" value={sourceDisplayName} />
+
+            <InfoGrid.Item
+              label="Status"
+              value={
+                <>
+                  {!!iconName && (
+                    <Icon name={iconName} className={classes.icon} />
+                  )}
+                  <OperationStatusCell
+                    operation={operation}
+                    type="publication"
+                  />
+                </>
+              }
+            />
+            <InfoGrid.Item
+              label="Last published"
               value={
                 publication.publishTime
                   ? moment(publication.publishTime).format(

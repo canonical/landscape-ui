@@ -13,10 +13,8 @@ import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackag
 import { useGetOperation } from "@/features/operations";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralize } from "@/utils/_helpers";
-import type {
-  OperationStatus,
-  PackagesValidationState,
-} from "@/features/operations";
+import type { OperationStatus } from "@/features/operations";
+import type { PackagesValidationState } from "../../types";
 import { getPackageList } from "./helpers";
 import ValidationResult from "./ValidationResult/ValidationResult";
 
