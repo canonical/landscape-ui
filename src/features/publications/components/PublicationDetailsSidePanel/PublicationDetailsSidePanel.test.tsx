@@ -5,7 +5,7 @@ import { screen } from "@testing-library/react";
 import { assert, describe, expect, it } from "vitest";
 import PublicationDetailsSidePanel from "./PublicationDetailsSidePanel";
 import server from "@/tests/server";
-import { http } from "msw";
+import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 const [publication] = publications;
@@ -29,6 +29,7 @@ describe("PublicationDetailsSidePanel", () => {
         `${API_URL_DEB_ARCHIVE}publications/:publicationName`,
         async () => {
           await pendingRequest;
+          return HttpResponse.json({});
         },
       ),
     );
