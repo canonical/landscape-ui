@@ -1,9 +1,12 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScriptsContainer from "./ScriptsContainer";
 
 describe("Scripts Empty State", () => {
@@ -80,5 +83,36 @@ describe("Scripts Empty State", () => {
       "No scripts found according to your search parameters.",
     );
     expect(emptyStateTitle).toBeInTheDocument();
+  });
+});
+
+describe("Scripts request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}scripts`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: scripts,
+          count: scripts.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search entirely when the page param is empty", async () => {
+    renderWithProviders(<ScriptsContainer />, undefined, "/scripts");
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

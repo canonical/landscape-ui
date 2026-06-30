@@ -248,6 +248,80 @@ Documented implication:
 - if you only need default, empty, or shared error behavior, prefer `setEndpointStatus(...)`
 - if the current shared handlers cannot express the needed case, add the capability to the handler or fixture layer instead of scattering ad hoc network stubs through tests
 
+### Asserting Outgoing Request Params (request-payload regression tests)
+
+Sometimes the thing under test is not the response but the **outgoing request** —
+for example proving that an empty `search`/`query` is dropped (`param || undefined`)
+and never reaches the backend, or that a request does not fire at all under some
+condition. For this, capture the request inside a **scoped `server.use(...)`
+override in the test**, not in the shared handler:
+
+```tsx
+import { API_URL } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+describe("MyContainer request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}my-endpoint`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ results: [], count: 0 });
+      }),
+    );
+  });
+
+  it("omits search when the page param is empty", async () => {
+    renderWithProviders(<MyContainer />, undefined, "/");
+
+    await vi.waitFor(() => expect(capturedUrl).toBeDefined());
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
+  });
+});
+```
+
+This mirrors the established `describe("payload shape")` block in
+`src/features/publication-targets/components/AddPublicationTargetForm/AddPublicationTargetForm.test.tsx`
+(which captures `await request.json()` for POST bodies).
+
+Why the capture lives in the test, not the shared handler:
+
+- **It is an assertion, not fixture behavior.** Shared handlers exist to return
+  realistic default responses for the whole suite. Recording a request URL is one
+  test's concern; baking it into the handler means a mutable capture variable in
+  module scope written by every test.
+- **`server.use(...)` is auto-scoped.** `src/tests/setup.ts` runs
+  `server.resetHandlers()` after each test, so the override and capture exist only
+  for that block. A handler-level change would be global and permanent.
+- **The captured value must live in test scope anyway** to be asserted, so handler
+  capture would still need a shared mutable export — strictly worse.
+
+When to put behavior in the handler instead:
+
+- If the **fake backend should respond differently based on a param** (filtering,
+  pagination, search matching), that is genuine shared API-contract behavior — add
+  it to the handler under `src/tests/server/handlers/` (see how `publications.ts`
+  honors `filter` / `display_name`), not to an inline test override.
+
+When to drive the hook with a minimal consumer:
+
+- If a guard is **defensive and no real consumer exercises the empty-value path**
+  (e.g. a hook whose only callers never pass an empty `query`), render a tiny inline
+  `FC` that calls the hook with the empty value via `renderWithProviders` (full
+  providers incl. `FetchProvider`), then assert the captured request. This stays
+  within the "test hooks through a rendered component" rule while still
+  deterministically reaching the guard.
+
+
 ## Forms And Formik-Based Components
 
 Formik-backed units often use `createFormik(...)` from `src/tests/formik.ts` instead of mounting a full form.
