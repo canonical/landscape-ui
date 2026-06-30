@@ -3,7 +3,7 @@ import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import { useAuthHandle } from "@/features/auth";
 
-const REGISTER_PATH = "/account/standalone/how-to-register";
+const REGISTER_PATH = "/how-to-register";
 
 const InstanceEmptyState: FC = () => {
   const { getClassicDashboardUrlQuery } = useAuthHandle();
