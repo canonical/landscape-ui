@@ -1,7 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { REPORT_VIEW_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -10,11 +9,17 @@ import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import { getFeatures, hasUpgrades } from "../../helpers";
+import {
+  getFeatures,
+  hasUpgrades,
+  type InstanceListParams,
+} from "../../helpers";
+import { getExportTitle } from "./helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
+const InstancesExportForm = lazy(async () => import("../InstancesExportForm"));
 
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
@@ -23,7 +28,7 @@ const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
 );
 const ReportView = lazy(
-  async () => import("@/pages/dashboard/instances/ReportView"),
+  async () => import("@/features/reports/components/ReportView"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
@@ -38,13 +43,19 @@ const ReplaceTokenForm = lazy(
 );
 
 interface InstancesPageActionsProps {
+  readonly exportParams: InstanceListParams;
+  readonly instanceCount: number | undefined;
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
+  readonly isAllSelected: boolean;
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
+  exportParams,
+  instanceCount,
   isGettingInstances,
   selectedInstances,
+  isAllSelected,
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
@@ -78,6 +89,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
       <PluralizeWithBoldCount count={instances.length} singular="instance" />
     );
   };
+  const hasSelectedInstances = selectedInstances.length > 0;
+  const hasInstancesToExport = isAllSelected || hasSelectedInstances;
 
   const handleRunScript = async () => {
     setSidePanelContent(
@@ -187,6 +200,25 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
+  const handleExport = () => {
+    setSidePanelContent(
+      getExportTitle({
+        isAllSelected,
+        selectedCount: selectedInstances.length,
+        instanceCount,
+      }),
+      <Suspense fallback={<LoadingState />}>
+        <InstancesExportForm
+          exportParams={exportParams}
+          selectedInstanceIds={
+            isAllSelected ? undefined : selectedInstances.map(({ id }) => id)
+          }
+        />
+      </Suspense>,
+      "medium",
+    );
+  };
+
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
@@ -256,32 +288,38 @@ const InstancesPageActions = memo(function InstancesPageActions({
     {
       children: (
         <>
-          <Icon name="power-off" />
-          <span>Shut down</span>
-        </>
-      ),
-      onClick: openShutdownModal,
-      hasIcon: true,
-    },
-    {
-      children: (
-        <>
           <Icon name="restart" />
           <span>Restart</span>
         </>
       ),
       onClick: openRebootModal,
       hasIcon: true,
+      disabled: !hasSelectedInstances,
     },
     {
       children: (
         <>
-          <Icon name="delete" />
-          <span>Remove from Landscape</span>
+          <Icon name="power-off" />
+          <span>Shut down</span>
         </>
       ),
-      onClick: openRemoveModal,
+      onClick: openShutdownModal,
       hasIcon: true,
+      disabled: !hasSelectedInstances,
+    },
+    {
+      children: (
+        <>
+          <Icon name="code" />
+          <span>Run script</span>
+        </>
+      ),
+      onClick: handleRunScript,
+      hasIcon: true,
+      disabled:
+        !hasSelectedInstances ||
+        isGettingInstances ||
+        selectedInstances.every((instance) => !getFeatures(instance).scripts),
     },
     {
       children: (
@@ -293,6 +331,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: handleUpgradesRequest,
       hasIcon: true,
       disabled:
+        !hasSelectedInstances ||
         selectedInstances.every((instance) => !hasUpgrades(instance.alerts)) ||
         isGettingInstances,
     },
@@ -306,10 +345,33 @@ const InstancesPageActions = memo(function InstancesPageActions({
       onClick: handleDistributionUpgradesRequest,
       hasIcon: true,
       disabled:
+        !hasSelectedInstances ||
         isGettingInstances ||
         !selectedInstances.some((instance) => instance.has_release_upgrades),
     },
-    REPORT_VIEW_ENABLED
+    {
+      children: (
+        <>
+          <Icon name="delete" />
+          <span>Remove from Landscape</span>
+        </>
+      ),
+      onClick: openRemoveModal,
+      hasIcon: true,
+      disabled: !hasSelectedInstances,
+    },
+    {
+      children: (
+        <>
+          <Icon name="export" />
+          <span>Export selection as TSV</span>
+        </>
+      ),
+      onClick: handleExport,
+      hasIcon: true,
+      disabled: !hasInstancesToExport,
+    },
+    isFeatureEnabled("instance-reports")
       ? {
           children: (
             <>
@@ -319,21 +381,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
           ),
           onClick: handleReportView,
           hasIcon: true,
+          disabled: !hasSelectedInstances,
         }
       : {},
-    {
-      children: (
-        <>
-          <Icon name="code" />
-          <span>Run script</span>
-        </>
-      ),
-      onClick: handleRunScript,
-      hasIcon: true,
-      disabled:
-        isGettingInstances ||
-        selectedInstances.every((instance) => !getFeatures(instance).scripts),
-    },
   ].filter((link) => link.children);
 
   return (
@@ -348,7 +398,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
             position="right"
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={0 === selectedInstances.length}
+            toggleDisabled={!hasInstancesToExport}
             hasToggleIcon
           />,
           <ContextualMenu

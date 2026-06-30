@@ -1,5 +1,6 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
+import type { ExportJob } from "@/features/exports";
 import type {
   DistributionUpgradeTarget,
   RemoveInstancesParams,
@@ -12,6 +13,7 @@ import {
   getMockRecoveryKeyActivity,
   RELEASE_UPGRADE_ACTIVITY,
 } from "@/tests/mocks/activity";
+import { newComplianceExportJob } from "@/tests/mocks/exports";
 import {
   instanceCanceledActivityNoKey,
   instanceCanceledActivityWithKey,
@@ -31,6 +33,7 @@ import type {
   PendingInstance,
 } from "@/types/Instance";
 import type { GroupsResponse, Group } from "@/types/User";
+import moment from "moment";
 import { delay, http, HttpResponse } from "msw";
 import {
   generatePaginatedResponse,
@@ -362,7 +365,13 @@ export default [
     return HttpResponse.json(activities[0]);
   }),
 
-  http.get(`${API_URL}computers/:computerId`, async ({ request }) => {
+  http.get(`${API_URL}computers/:computerId`, async ({ params, request }) => {
+    // The real route only matches integer ids (`/computers/<int:computer_id>`),
+    // letting static paths like `computers/report` reach their own handlers.
+    if (!/^\d+$/.test(String(params.computerId))) {
+      return;
+    }
+
     if (shouldApplyEndpointStatus("computers/:computerId")) {
       const { status } = getEndpointStatus();
       if (status === "error") {
@@ -649,5 +658,56 @@ export default [
   http.post(`${API_URL}computers\\:delete`, async () => {
     await delay();
     return HttpResponse.json();
+  }),
+
+  http.post(`${API_URL}computers/exports`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("computers/exports")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return createEndpointStatusError();
+      }
+    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const job: ExportJob = {
+      id: 4,
+      name: typeof body.name === "string" ? body.name : "New export",
+      filename: "instances-export.tsv",
+      row_count: 0,
+      type: "instance",
+      created_at: new Date().toISOString(),
+      status: "processing",
+      progress: 0,
+      download_ready: false,
+      retain_until:
+        typeof body.retain_until === "string"
+          ? body.retain_until
+          : moment().add(3, "years").toISOString(),
+      query: typeof body.query === "string" ? body.query : null,
+    };
+    return HttpResponse.json(job, { status: 201 });
+  }),
+
+  http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("computers/report:export")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") {
+        return createEndpointStatusError();
+      }
+    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const job: ExportJob = {
+      ...newComplianceExportJob,
+      name:
+        typeof body.name === "string" ? body.name : newComplianceExportJob.name,
+      retain_until:
+        typeof body.retain_until === "string"
+          ? body.retain_until
+          : newComplianceExportJob.retain_until,
+      query:
+        typeof body.query === "string"
+          ? body.query
+          : newComplianceExportJob.query,
+    };
+    return HttpResponse.json(job, { status: 201 });
   }),
 ];

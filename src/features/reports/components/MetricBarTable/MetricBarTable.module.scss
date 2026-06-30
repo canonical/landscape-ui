@@ -1,0 +1,26 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Track uses the Figma #f7f7f7 (background-alt, theme-aware) and the exact
+   Figma bar height of 24px. */
+.track {
+  background-color: $colors--theme--background-alt;
+  height: 1.5rem;
+  width: 100%;
+}
+
+.fill {
+  height: 100%;
+}
+
+.positive {
+  background-color: $color-positive;
+}
+
+.link {
+  background-color: $colors--theme--link-default;
+}
+
+.neutral {
+  background-color: $colors--theme--text-muted;
+}

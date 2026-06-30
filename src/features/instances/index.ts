@@ -7,9 +7,13 @@ export { default as InstancesPageActions } from "./components/InstancesPageActio
 export { default as RecoveryKeyStatus } from "./components/RecoveryKeyStatus";
 export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirmationModal";
 export { FILTERS, ALERT_STATUSES, STATUS_FILTERS } from "./constants";
+export { EXPORT_FIELD_GROUPS } from "./components/InstancesExportForm/constants";
 export {
   getFeatures,
+  getInstanceListParams,
+  getOptionQuery,
   getRecoveryKeyRegenerationAttemptMessage,
+  getQuery,
   isRecoveryKeyActivityFailedOrCanceled,
   isRecoveryKeyActivityInProgress,
   shouldShowRecoveryKeyActivityStatus,
@@ -25,3 +29,10 @@ export type { Status, RecoveryKey, DistributionUpgradeTarget } from "./types";
 export { default as useInstanceSearchHelpTerms } from "./components/InstancesHeader/hooks/useInstanceSearchHelpTerms";
 export { default as RestartModal } from "./components/RestartModal";
 export { default as ShutDownModal } from "./components/ShutDownModal";
+export {
+  getSelectedInstanceIds,
+  setSelectedInstanceIds,
+  subscribeToSelectedInstanceIds,
+} from "./selectedInstancesStore";
+export type { InstanceListParams } from "./helpers";
+export type { InstancesExportJob } from "./types";

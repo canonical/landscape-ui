@@ -77,6 +77,13 @@ export const handleParams = ({
     } else {
       switch (typeof value) {
         case "string":
+          if (
+            !isOld &&
+            ["get", "delete"].includes(config.method ?? "get") &&
+            value === ""
+          ) {
+            break;
+          }
           paramsToPass[param] = value;
           break;
 

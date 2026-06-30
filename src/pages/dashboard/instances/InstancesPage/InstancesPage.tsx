@@ -2,15 +2,22 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances } from "@/features/instances";
+import {
+  getInstanceListParams,
+  InstancesPageActions,
+  setSelectedInstanceIds,
+  useGetInstances,
+} from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { useCallback, useState, type FC } from "react";
+import { useCallback, useEffect, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
+  const instanceListParams = getInstanceListParams({ filters, wsl });
+  const { query } = filters;
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     query: getQuery(filters),
@@ -26,7 +33,28 @@ const InstancesPage: FC = () => {
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
 
+  // Clear the selection when the search query changes (e.g. following a report
+  // deep link), matching how header filter changes reset it.
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  useEffect(() => {
+    setSelectedInstances([]);
+    setIsAllSelected(false);
+  }, [query]);
+
+  // Mirror the selection into an external store so side panel content (whose
+  // props are frozen when the panel opens) can detect selection changes.
+  useEffect(() => {
+    setSelectedInstanceIds(selectedInstances.map(({ id }) => id));
+  }, [selectedInstances]);
+
   const clearSelection = useCallback(() => {
+    setSelectedInstances([]);
+    setIsAllSelected(false);
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setIsAllSelected(true);
     setSelectedInstances([]);
   }, []);
 
@@ -37,8 +65,11 @@ const InstancesPage: FC = () => {
         actions={[
           <InstancesPageActions
             key="actions"
+            instanceCount={instancesCount}
+            exportParams={instanceListParams}
             isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
+            isAllSelected={isAllSelected}
           />,
         ]}
       />
@@ -49,6 +80,9 @@ const InstancesPage: FC = () => {
           isGettingInstances={isGettingInstances}
           selectedInstances={selectedInstances}
           setSelectedInstances={setSelectedInstances}
+          isAllSelected={isAllSelected}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
           onChangeFilter={clearSelection}
         />
       </PageContent>

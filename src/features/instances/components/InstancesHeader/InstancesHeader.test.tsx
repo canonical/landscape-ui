@@ -16,9 +16,7 @@ const props: ComponentProps<typeof InstancesHeader> = {
   onChangeFilter: vi.fn(),
 };
 
-describe("InstancesHeader", async () => {
-  const user = userEvent.setup();
-
+describe("InstancesHeader", () => {
   it("should render without crashing", () => {
     renderWithProviders(<InstancesHeader {...props} />);
 
@@ -27,6 +25,7 @@ describe("InstancesHeader", async () => {
   });
 
   it("should display all filter options", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<InstancesHeader {...props} />);
 
     await user.click(screen.getByRole("button", { name: /filters/i }));
@@ -61,6 +60,7 @@ describe("InstancesHeader", async () => {
   });
 
   it("shows search help when help button is clicked", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<InstancesHeader {...props} />);
 
     const helpButton = screen.getByRole("button", { name: /search help/i });

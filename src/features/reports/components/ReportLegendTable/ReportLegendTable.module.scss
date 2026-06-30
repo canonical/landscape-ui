@@ -1,0 +1,90 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Nest the element rules under the local `.table` class. CSS modules do not
+   scope bare element selectors, so a top-level `th`/`td` would compile to a
+   global rule and leak table styling across the whole app. */
+.table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th {
+    color: $colors--theme--text-default;
+    font-size: 0.75rem;
+    font-weight: 550;
+    letter-spacing: 0.07em;
+    line-height: 1rem;
+    padding: 0 0.5rem 0.75rem;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 0.5rem;
+    vertical-align: middle;
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: 0;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
+  }
+}
+
+/* Fixed widths for the marker and count columns (count matches the Figma 96px
+   column and comfortably fits the values + the "INSTANCES" header, so the
+   global overflow:hidden never clips). The label column is auto, so it absorbs
+   the remaining space and the table is always exactly 100% wide — no horizontal
+   overflow — while long labels still truncate with the inherited ellipsis. */
+.markerCell {
+  white-space: nowrap;
+  width: 1.5rem;
+}
+
+.labelCell {
+  width: auto;
+}
+
+.labelWithHelp {
+  align-items: center;
+  display: inline-flex;
+  gap: $sp-x-small;
+}
+
+.countCell {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  width: 6rem;
+}
+
+.bar .markerCell {
+  width: 40%;
+}
+
+.countZero {
+  color: $colors--theme--text-muted;
+}
+
+.countCell a {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hover coordination: the hovered row stays full strength with a bolder label
+   while the rest dim, so the matching donut segment reads clearly. */
+.rowActive td {
+  transition: opacity 100ms ease;
+}
+
+.rowActive .labelCell {
+  font-weight: 500;
+}
+
+.rowDimmed {
+  opacity: 0.45;
+  transition: opacity 100ms ease;
+}

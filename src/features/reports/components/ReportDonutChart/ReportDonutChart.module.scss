@@ -1,0 +1,101 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* Severity scale using only the Figma palette: green (#0E8420), green at 50%,
+   orange (#CC7900), orange at 50%, red (#C7162B). Red is the worst (60+ days)
+   bucket; grey is the unclassified remainder. The Vanilla tokens resolve to
+   the same Figma hex values. */
+$segment-green: $color-positive;
+$segment-green-light: rgba($color-positive, 0.5);
+$segment-orange: $color-caution;
+$segment-orange-light: rgba($color-caution, 0.5);
+$segment-red: $color-negative;
+
+.layout {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $sp-medium;
+}
+
+.chart {
+  flex: 0 0 192px;
+  width: 192px;
+}
+
+.svg {
+  display: block;
+  height: 192px;
+  width: 192px;
+}
+
+.legend {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+/* The track matches the panel background so the gaps between segments read as
+   transparent rather than as a grey ring. */
+.track {
+  stroke: $colors--theme--background-default;
+}
+
+.centerNumber {
+  dominant-baseline: middle;
+  fill: $colors--theme--text-default;
+  font-size: 14px;
+  text-anchor: middle;
+}
+
+.centerSubLabel {
+  dominant-baseline: middle;
+  fill: $colors--theme--text-muted;
+  font-size: 6px;
+  text-anchor: middle;
+}
+
+.dot {
+  border-radius: 50%;
+  display: inline-block;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+/* The hovered segment grows slightly to stand out. */
+.arc {
+  transition: stroke-width 120ms ease;
+}
+
+.arcActive {
+  stroke-width: 13px;
+}
+
+.green {
+  background-color: $segment-green;
+  stroke: $segment-green;
+}
+
+.greenLight {
+  background-color: $segment-green-light;
+  stroke: $segment-green-light;
+}
+
+.orangeLight {
+  background-color: $segment-orange-light;
+  stroke: $segment-orange-light;
+}
+
+.orange {
+  background-color: $segment-orange;
+  stroke: $segment-orange;
+}
+
+.red {
+  background-color: $segment-red;
+  stroke: $segment-red;
+}
+
+.grey {
+  background-color: $colors--theme--text-muted;
+  stroke: $colors--theme--text-muted;
+}
