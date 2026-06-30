@@ -8,6 +8,7 @@ import {
   AssociatedPublicationsList,
   useGetPublicationsBySource,
 } from "@/features/publications";
+import LoadingState from "@/components/layout/SidePanel/LoadingState";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;
@@ -26,7 +27,8 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
   const { notify } = useNotify();
   const { closeSidePanel } = usePageParams();
 
-  const { publications } = useGetPublicationsBySource(mirrorName);
+  const { publications, isGettingPublications } =
+    useGetPublicationsBySource(mirrorName);
 
   const { mutateAsync: deleteMirror, isPending: isDeletingMirror } =
     useDeleteMirror(mirrorName);
@@ -48,6 +50,28 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
     }
   };
 
+  const content = !publications.length ? (
+    <p>
+      This action will remove the mirror from Landscape and it won’t be
+      available to be published in the future.{" "}
+      <strong>This action is irreversible.</strong>
+    </p>
+  ) : (
+    <>
+      <p>This mirror is associated with the following publications:</p>
+      <AssociatedPublicationsList
+        publications={publications}
+        openInNewTab
+        showSources={false}
+      />
+      <p>
+        After removal you won’t be able to update any of these publications, but
+        they will continue to be available.{" "}
+        <strong>This action is irreversible.</strong>
+      </p>
+    </>
+  );
+
   return (
     <TextConfirmationModal
       isOpen={isOpen}
@@ -60,27 +84,7 @@ const RemoveMirrorModal: FC<RemoveMirrorModalProps> = ({
       confirmButtonLoading={isDeletingMirror}
       renderInPortal
     >
-      {publications.length ? (
-        <>
-          <p>This mirror is associated with the following publications:</p>
-          <AssociatedPublicationsList
-            publications={publications}
-            openInNewTab
-            showSources={false}
-          />
-          <p>
-            After removal you won’t be able to update any of these publications,
-            but they will continue to be available.{" "}
-            <strong>This action is irreversible.</strong>
-          </p>
-        </>
-      ) : (
-        <p>
-          This action will remove the mirror from Landscape and it won’t be
-          available to be published in the future.{" "}
-          <strong>This action is irreversible.</strong>
-        </p>
-      )}
+      {isGettingPublications ? <LoadingState /> : content}
     </TextConfirmationModal>
   );
 };

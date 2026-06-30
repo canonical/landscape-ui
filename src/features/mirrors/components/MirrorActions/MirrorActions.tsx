@@ -4,8 +4,10 @@ import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import RemoveMirrorModal from "../RemoveMirrorModal";
-import { useListPublications, useListPublicationTargets } from "../..";
-import { NoPublicationTargetsModal } from "@/features/publication-targets";
+import {
+  NoPublicationTargetsModal,
+  useGetPublicationTargets,
+} from "@/features/publication-targets";
 
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;
@@ -17,15 +19,8 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   mirrorName,
 }) => {
   const { setPageParams, createPageParamsSetter } = usePageParams();
-
-  const { publicationTargets = [] } = useListPublicationTargets({
-    pageSize: 1000,
-  }).data.data;
-
-  const { publications = [] } = useListPublications({
-    filter: `source="${mirrorName}"`,
-    pageSize: 1000,
-  }).data.data;
+  const { publicationTargets, isGettingPublicationTargets } =
+    useGetPublicationTargets();
 
   const {
     value: isUpdateModalOpen,
@@ -44,7 +39,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   } = useBoolean();
 
   const tryPublish = () => {
-    if (publicationTargets.length || publications.length) {
+    if (publicationTargets.length) {
       setPageParams({
         sidePath: ["publish"],
         name: mirrorName,
@@ -83,6 +78,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
             icon: "upload",
             label: "Publish",
             onClick: tryPublish,
+            disabled: isGettingPublicationTargets,
           },
         ]}
         destructiveActions={[
