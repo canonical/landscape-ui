@@ -159,13 +159,18 @@ export default [
     async ({ params, request }) => {
       await delay();
 
-      const endpointStatus = getEndpointStatus();
+      if (shouldApplyEndpointStatus("mirrors/update")) {
+        const endpointStatus = getEndpointStatus("mirrors/update");
 
-      if (
-        endpointStatus.status === "error" &&
-        endpointStatus.path === "mirrors/:mirrorId"
-      ) {
-        throw createEndpointStatusError();
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (endpointStatus.status === "variant") {
+          return HttpResponse.json(
+            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
+          );
+        }
       }
 
       const mirrorIndex = mirrors.findIndex(
@@ -177,16 +182,6 @@ export default [
       }
 
       await request.json();
-
-      if (shouldApplyEndpointStatus("mirrors/update")) {
-        const endpointStatus = getEndpointStatus("mirrors/update");
-
-        if (endpointStatus.status === "variant") {
-          return HttpResponse.json(
-            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
-          );
-        }
-      }
 
       return HttpResponse.json<MirrorServiceUpdateMirrorResponse>();
     },
