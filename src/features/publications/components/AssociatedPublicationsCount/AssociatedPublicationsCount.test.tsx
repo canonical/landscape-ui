@@ -4,7 +4,7 @@ import AssociatedPublicationsCount from "./AssociatedPublicationsCount";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 
-describe("LocalRepositoryPublicationsCount", () => {
+describe("AssociatedPublicationsCount", () => {
   it("renders loading state while fetching publications", () => {
     renderWithProviders(
       <AssociatedPublicationsCount sourceName={repositories[0].name} />,
@@ -20,7 +20,7 @@ describe("LocalRepositoryPublicationsCount", () => {
 
     expect(await screen.findByRole("link")).toHaveAttribute(
       "href",
-      expect.stringContaining(repositories[0].name),
+      expect.stringContaining(encodeURIComponent(repositories[0].name)),
     );
     expect(screen.getByText(/1 publication/i)).toBeInTheDocument();
   });
