@@ -35,3 +35,4 @@ src/**/*.module.scss.d.ts
 /playwright-report/
 /playwright/
 .cert
+.worktrees/
