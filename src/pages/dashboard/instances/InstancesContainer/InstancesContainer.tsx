@@ -1,7 +1,11 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { InstanceList, InstancesHeader } from "@/features/instances";
+import {
+  InstanceList,
+  InstancesHeader,
+  InstancesEmptyState,
+} from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
 import usePageParams from "@/hooks/usePageParams";
@@ -40,7 +44,7 @@ const InstancesContainer = memo(function InstancesContainer({
       isInstanceLoading,
     )
   ) {
-    return <>This is the empty state place holder</>;
+    return <InstancesEmptyState />;
   }
 
   return (

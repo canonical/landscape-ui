@@ -6,27 +6,17 @@ export const isInstanceLoadingState = (
   isInstanceLoading: boolean,
 ) => currentPage === 1 && pageSize === DEFAULT_PAGE_SIZE && isInstanceLoading;
 
-
-
 export const isInstancesEmptyState = (
   currentPage: number,
   pageSize: number,
-  instanceCount: number | undefined,
+  instanceCount = 0,
   search: string,
   status: string,
   isInstanceLoading: boolean,
-) => {
-  // If count is unavailable, avoid rendering an empty state based on incomplete data.
-  if (instanceCount === undefined) {
-    return true;
-  }
-
-  return (
-    currentPage === 1 &&
-    pageSize === DEFAULT_PAGE_SIZE &&
-    !isInstanceLoading &&
-    instanceCount === 0 &&
-    !search &&
-    !status
-  );
-};
+) =>
+  currentPage === 1 &&
+  pageSize === DEFAULT_PAGE_SIZE &&
+  !isInstanceLoading &&
+  instanceCount === 0 &&
+  !search &&
+  !status;
