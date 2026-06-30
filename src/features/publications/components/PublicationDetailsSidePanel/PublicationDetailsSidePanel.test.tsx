@@ -9,7 +9,9 @@ import { http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 const [publication] = publications;
-const publicationId = publication?.publicationId;
+assert(publication);
+const { publicationId } = publication;
+assert(publicationId);
 
 const renderPanel = () =>
   renderWithProviders(
@@ -46,7 +48,7 @@ describe("PublicationDetailsSidePanel", () => {
       await screen.findByRole("heading", { name: publication.displayName }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText((publication.architectures ?? []).join(", ")),
+      await screen.findByText((publication.architectures ?? []).join(", ")),
     ).toBeInTheDocument();
   });
 
