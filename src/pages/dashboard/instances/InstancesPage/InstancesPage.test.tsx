@@ -1,9 +1,65 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it } from "vitest";
+import { screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import InstancesPage from "./InstancesPage";
 
+const useGetInstances = vi.hoisted(() => vi.fn());
+const instancesContainerSpy = vi.hoisted(() => vi.fn());
+
+vi.mock("@/features/instances", async (importOriginal) => ({
+  ...(await importOriginal()),
+  useGetInstances,
+  InstancesPageActions: () => <div data-testid="instances-page-actions" />,
+}));
+
+vi.mock("../InstancesContainer", () => ({
+  default: (props: unknown) => {
+    instancesContainerSpy(props);
+    return <div data-testid="instances-container" />;
+  },
+}));
+
 describe("InstancesPage", () => {
-  it("renders", () => {
+  beforeEach(() => {
+    useGetInstances.mockReturnValue({
+      instances: [],
+      instancesCount: 0,
+      isGettingInstances: false,
+      isInstanceLoading: false,
+    });
+    instancesContainerSpy.mockClear();
+  });
+
+  it("renders heading and container", () => {
     renderWithProviders(<InstancesPage />);
+
+    expect(
+      screen.getByRole("heading", { name: "Instances" }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("instances-page-actions")).toBeInTheDocument();
+    expect(screen.getByTestId("instances-container")).toBeInTheDocument();
+  });
+
+  it("passes count and loading state to InstancesContainer", () => {
+    useGetInstances.mockReturnValue({
+      instances: [],
+      instancesCount: undefined,
+      isGettingInstances: true,
+      isInstanceLoading: true,
+    });
+
+    renderWithProviders(<InstancesPage />);
+
+    expect(instancesContainerSpy).toHaveBeenCalledTimes(1);
+
+    const firstCallFirstArg = instancesContainerSpy.mock.calls[0]?.[0] as
+      | {
+          instanceCount: number | undefined;
+          isInstanceLoading: boolean;
+        }
+      | undefined;
+
+    expect(firstCallFirstArg?.instanceCount).toBeUndefined();
+    expect(firstCallFirstArg?.isInstanceLoading).toBe(true);
   });
 });

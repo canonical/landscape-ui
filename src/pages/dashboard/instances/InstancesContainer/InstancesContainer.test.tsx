@@ -11,9 +11,9 @@ const props: Omit<
   ComponentProps<typeof InstancesContainer>,
   "setSelectedInstances"
 > = {
-  instances: [],
-  instanceCount: 0,
-  isGettingInstances: false,
+  instances: [ubuntuInstance],
+  instanceCount: 1,
+  isInstanceLoading: false,
   selectedInstances: [],
   onChangeFilter: vi.fn(),
 };
@@ -105,10 +105,15 @@ describe("InstancesContainer", () => {
         screen.getByRole("columnheader", { name: label }),
       ).toBeInTheDocument();
 
-      if (canBeHidden) {
-        expect(screen.getByLabelText(checkboxLabel)).toBeEnabled();
+      const [columnCheckbox] = screen.getAllByLabelText(checkboxLabel);
+      if (!columnCheckbox) {
+        throw new Error(`Could not find column checkbox: ${checkboxLabel}`);
+      }
 
-        await userEvent.click(screen.getByLabelText(checkboxLabel));
+      if (canBeHidden) {
+        expect(columnCheckbox).toBeEnabled();
+
+        await userEvent.click(columnCheckbox);
 
         selectedColumnCount -= 1;
 
@@ -116,7 +121,7 @@ describe("InstancesContainer", () => {
           screen.queryByRole("columnheader", { name: label }),
         ).not.toBeInTheDocument();
       } else {
-        expect(screen.getByLabelText(checkboxLabel)).toBeDisabled();
+        expect(columnCheckbox).toBeDisabled();
       }
 
       expect(
@@ -169,5 +174,32 @@ describe("InstancesContainer", () => {
 
     expect(setSelectedInstances).toHaveBeenCalledTimes(1);
     expect(setSelectedInstances).toHaveBeenCalledWith([mockInstance]);
+  });
+
+  it("shows loading state while instances are loading", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={undefined}
+        isInstanceLoading
+        setSelectedInstances={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+  });
+
+  it("shows empty state when there are no instances and not loading", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isInstanceLoading={false}
+        setSelectedInstances={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("No instances found")).toBeInTheDocument();
   });
 });
