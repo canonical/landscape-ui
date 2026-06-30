@@ -13,10 +13,19 @@ import {
   getSourceType,
 } from "../../helpers";
 import type { Publication } from "@canonical/landscape-openapi";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DEFAULT_POLLING_INTERVAL,
+  DISPLAY_DATE_TIME_FORMAT,
+} from "@/constants";
 import moment from "moment";
 import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  useBatchGetOperations,
+} from "@/features/operations";
+import classes from "./PublicationsList.module.scss";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
@@ -30,6 +39,21 @@ const PublicationsList: FC<PublicationsListProps> = ({
   publicationTargetDisplayNames = {},
 }) => {
   const { query, createPageParamsSetter } = usePageParams();
+
+  const operationNames = publications
+    .filter((publication) => publication.lastOperation)
+    .map((publication) => publication.lastOperation ?? "");
+
+  const { operations, isGettingOperations } = useBatchGetOperations(
+    operationNames,
+    {
+      refetchInterval: ({ state }) =>
+        Object.values(state.data ?? {}).some((operation) => !operation.done)
+          ? DEFAULT_POLLING_INTERVAL
+          : false,
+    },
+  );
+
   const columns = useMemo<Column<Publication>[]>(
     () => [
       {
@@ -48,6 +72,35 @@ const PublicationsList: FC<PublicationsListProps> = ({
             {row.original.displayName}
           </Button>
         ),
+      },
+      {
+        Header: "status",
+        className: classes.status,
+        Cell: ({ row: { original: publication } }: CellProps<Publication>) => {
+          const operation = operations[publication.lastOperation ?? ""];
+          return (
+            <OperationStatusCell
+              isGettingOperation={isGettingOperations}
+              operation={operation}
+              type="publication"
+            />
+          );
+        },
+        getCellIcon: ({
+          row: { original: publication },
+        }: CellProps<Publication>) => {
+          const operation = operations[publication.lastOperation ?? ""];
+          return getOperationStatusIcon(operation);
+        },
+      },
+      {
+        accessor: "publishTime",
+        Header: "last published",
+        className: "medium-cell",
+        Cell: ({ row: { original } }: CellProps<Publication>) =>
+          original.publishTime
+            ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
+            : NO_DATA_TEXT,
       },
       {
         id: "sourceType",
@@ -98,21 +151,19 @@ const PublicationsList: FC<PublicationsListProps> = ({
         ),
       },
       {
-        accessor: "publishTime",
-        Header: "Date published",
-        Cell: ({ row: { original } }: CellProps<Publication>) =>
-          original.publishTime
-            ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
-            : NO_DATA_TEXT,
-      },
-      {
         ...LIST_ACTIONS_COLUMN_PROPS,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <PublicationsListActions publication={original} />
         ),
       },
     ],
-    [createPageParamsSetter, sourceDisplayNames, publicationTargetDisplayNames],
+    [
+      createPageParamsSetter,
+      operations,
+      isGettingOperations,
+      sourceDisplayNames,
+      publicationTargetDisplayNames,
+    ],
   );
 
   return (
@@ -120,6 +171,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       columns={columns}
       data={publications}
       emptyMsg={`No publications found with the search: "${query}"`}
+      minWidth={1250}
     />
   );
 };

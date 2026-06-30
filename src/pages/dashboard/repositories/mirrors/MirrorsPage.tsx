@@ -28,6 +28,10 @@ const PublishMirrorForm = lazy(
   async () => import("@/features/mirrors/components/PublishMirrorForm"),
 );
 
+const ViewLogsSidePanel = lazy(
+  async () => import("@/features/operations/components/ViewLogsSidePanel"),
+);
+
 const MirrorsPage: FC = () => {
   const {
     search,
@@ -37,7 +41,13 @@ const MirrorsPage: FC = () => {
     createPageParamsSetter,
   } = usePageParams();
 
-  useSetDynamicFilterValidation("sidePath", ["add", "edit", "publish", "view"]);
+  useSetDynamicFilterValidation("sidePath", [
+    "add",
+    "edit",
+    "publish",
+    "view",
+    "logs",
+  ]);
 
   const { data } = useListMirrors({
     filter: search ? `display_name=${JSON.stringify(`${search}*`)}` : undefined,
@@ -110,6 +120,11 @@ const MirrorsPage: FC = () => {
         {lastSidePathSegment === "view" && (
           <SidePanel.Suspense key="view">
             <MirrorDetails />
+          </SidePanel.Suspense>
+        )}
+        {lastSidePathSegment === "logs" && (
+          <SidePanel.Suspense key="logs">
+            <ViewLogsSidePanel resourceType="mirrors" />
           </SidePanel.Suspense>
         )}
       </SidePanel>

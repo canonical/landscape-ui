@@ -1,6 +1,13 @@
 import { useEffect, useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel/SidePanel";
-import { Button, Icon, ICONS, Tabs } from "@canonical/react-components";
+import {
+  Button,
+  Icon,
+  ICONS,
+  Notification,
+  Tabs,
+  Tooltip,
+} from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { useGetMirror, useListPublicationTargets } from "../../api";
@@ -8,7 +15,10 @@ import usePageParams from "@/hooks/usePageParams";
 import { getSourceType, shouldShowAuthentication } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DEFAULT_POLLING_INTERVAL,
+  DISPLAY_DATE_TIME_FORMAT,
+} from "@/constants";
 import UpdateMirrorModal from "../UpdateMirrorModal";
 import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
@@ -21,6 +31,12 @@ import {
 import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
+import {
+  getOperationStatusIcon,
+  OperationStatusCell,
+  useGetOperation,
+  ViewLogsButton,
+} from "@/features/operations";
 
 const MirrorDetails: FC = () => {
   const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
@@ -45,6 +61,14 @@ const MirrorDetails: FC = () => {
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
   const mirror = useGetMirror(name).data.data;
+
+  const { operation } = useGetOperation(mirror.lastOperation ?? "", {
+    enabled: !!mirror.lastOperation,
+    refetchInterval: ({ state }) =>
+      state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
+  });
+
+  const iconName = getOperationStatusIcon(operation);
 
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
@@ -99,6 +123,15 @@ const MirrorDetails: FC = () => {
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
+        {!!operation?.error && (
+          <Notification
+            severity="negative"
+            title="Update failed"
+            actions={[<ViewLogsButton resource={name} key="view-logs" />]}
+          >
+            Your last mirror update was not completed successfully.
+          </Notification>
+        )}
         <div className="p-segmented-control">
           <Button
             type="button"
@@ -109,15 +142,32 @@ const MirrorDetails: FC = () => {
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
-          <Button
-            type="button"
-            hasIcon
-            className="p-segmented-control__button"
-            onClick={openUpdateModal}
-          >
-            <Icon name="restart" />
-            <span>Update</span>
-          </Button>
+          {operation && !operation.done ? (
+            <Tooltip
+              message="You must wait for this action to be completed to trigger a new update."
+              position="btm-center"
+            >
+              <Button
+                type="button"
+                hasIcon
+                className="p-segmented-control__button"
+                disabled
+              >
+                <Icon name="spinner" className="u-animation--spin" />
+                <span>Updating</span>
+              </Button>
+            </Tooltip>
+          ) : (
+            <Button
+              type="button"
+              hasIcon
+              className="p-segmented-control__button"
+              onClick={openUpdateModal}
+            >
+              <Icon name="restart" />
+              <span>Update</span>
+            </Button>
+          )}
           <Button
             type="button"
             hasIcon
@@ -160,7 +210,20 @@ const MirrorDetails: FC = () => {
                   }
                   large
                 />
-
+                <InfoGrid.Item
+                  label="Status"
+                  value={
+                    <>
+                      {!!iconName && (
+                        <Icon name={iconName} className={classes.icon} />
+                      )}
+                      <OperationStatusCell
+                        operation={operation}
+                        type="mirror"
+                      />
+                    </>
+                  }
+                />
                 <InfoGrid.Item
                   label="Preserve upstream signing key"
                   value={boolToLabel(mirror.preserveSignatures)}

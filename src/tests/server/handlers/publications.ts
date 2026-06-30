@@ -9,10 +9,8 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
-import type {
-  Publication,
-  PublicationServicePublishPublicationResponse,
-} from "@canonical/landscape-openapi";
+import type { Publication } from "@canonical/landscape-openapi";
+import type { Operation } from "@/features/operations";
 import { succeededOperation } from "@/tests/mocks/operations";
 
 const getPublicationParam = (requestPublicationName: string) => {
@@ -104,13 +102,15 @@ const getDeletePublicationResponse = () => {
   return HttpResponse.json({}, { status: 200 });
 };
 
-const getPublishPublicationResponse =
-  (): StrictResponse<PublicationServicePublishPublicationResponse> => {
-    return HttpResponse.json(
-      { ...succeededOperation, response: undefined },
-      { status: 200 },
-    );
-  };
+const getPublishPublicationResponse = (): StrictResponse<Operation> => {
+  return HttpResponse.json(
+    {
+      ...succeededOperation,
+      response: { ...succeededOperation.response, output: undefined },
+    },
+    { status: 200 },
+  );
+};
 
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}publications`, async ({ request }) => {
