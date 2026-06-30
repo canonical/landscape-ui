@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { afterEach } from "vitest";
+import { afterEach, vi } from "vitest";
 import InstancesContainer from "./InstancesContainer";
 import { ubuntuInstance } from "@/tests/mocks/instance";
 
@@ -16,6 +16,9 @@ const props: Omit<
   isGettingInstances: false,
   selectedInstances: [],
   onChangeFilter: vi.fn(),
+  isAllSelected: false,
+  onSelectAll: vi.fn(),
+  onClearSelection: vi.fn(),
 };
 
 const columns = [

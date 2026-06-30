@@ -1,4 +1,5 @@
 import useDebug from "@/hooks/useDebug";
+import { downloadBlob } from "@/utils/browserDownload";
 import { useGetUsgProfileAuditDownload } from "../api";
 
 type USGProfileDownloadMode = "audit" | "tailoring";
@@ -102,11 +103,6 @@ export const useUsgProfileDownload = (mode: USGProfileDownloadMode) => {
 
         const fileToDownload = decodedBlob ?? data;
 
-        const url = URL.createObjectURL(fileToDownload);
-        const link = document.createElement("a");
-
-        link.href = url;
-
         const headerFilename = getFilenameFromContentDisposition(
           headers["content-disposition"],
         );
@@ -117,16 +113,10 @@ export const useUsgProfileDownload = (mode: USGProfileDownloadMode) => {
           pathFilename ??
           (mode === "tailoring" ? "tailoring-file" : "download");
 
-        link.download = withExtension(
-          resolvedFilename,
-          fileToDownload.type,
-          mode,
+        downloadBlob(
+          fileToDownload,
+          withExtension(resolvedFilename, fileToDownload.type, mode),
         );
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
       } catch (error) {
         debug(error);
       }
