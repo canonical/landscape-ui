@@ -41,7 +41,6 @@ const MirrorsPage: FC = () => {
 
   const { data } = useListMirrors({
     filter: search ? `display_name=${JSON.stringify(`${search}*`)}` : undefined,
-    pageSize: 20,
   });
 
   const openAddMirrorForm = createPageParamsSetter({

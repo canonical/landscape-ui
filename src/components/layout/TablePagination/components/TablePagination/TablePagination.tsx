@@ -10,6 +10,7 @@ interface TablePaginationProps {
   readonly className?: string;
   readonly handleClearSelection?: () => void;
   readonly currentItemCount?: number;
+  readonly pageSizeLabel?: string;
 }
 
 const TablePagination: FC<TablePaginationProps> = ({
@@ -17,6 +18,7 @@ const TablePagination: FC<TablePaginationProps> = ({
   className = "",
   currentItemCount = 0,
   handleClearSelection,
+  pageSizeLabel,
 }) => {
   const { currentPage, pageSize, setPageParams } = usePageParams();
   const totalPages = useTotalPages(totalItems, pageSize);
@@ -39,8 +41,8 @@ const TablePagination: FC<TablePaginationProps> = ({
     }
   };
 
-  const setPageSize = (pageSize: number) => {
-    setPageParams({ pageSize });
+  const setPageSize = (newPageSize: number) => {
+    setPageParams({ pageSize: newPageSize });
   };
 
   return (
@@ -52,6 +54,7 @@ const TablePagination: FC<TablePaginationProps> = ({
       paginate={paginate}
       setPageSize={setPageSize}
       totalItems={totalItems}
+      pageSizeLabel={pageSizeLabel}
     />
   );
 };
