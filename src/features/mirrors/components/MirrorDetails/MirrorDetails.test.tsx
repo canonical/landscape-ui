@@ -272,5 +272,4 @@ describe("MirrorDetails", () => {
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
   });
-
 });

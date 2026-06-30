@@ -20,7 +20,9 @@ const renderPanel = () =>
 
 describe("PublicationDetailsSidePanel", () => {
   it("shows a loading state while the publication is being fetched", () => {
-    const pendingRequest = new Promise<void>(() => {});
+    const pendingRequest = new Promise<void>((_resolve, _reject) => {
+      // Intentionally never resolves to simulate a pending request
+    });
 
     server.use(
       http.get(
