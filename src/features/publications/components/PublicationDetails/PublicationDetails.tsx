@@ -20,13 +20,11 @@ import {
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import {
-  getOperationStatusIcon,
-  OperationStatusCell,
+  OperationStatusContent,
   useGetOperation,
   ViewLogsButton,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
-import classes from "./PublicationDetails.module.scss";
 
 interface PublicationDetailsProps {
   readonly publication: Publication;
@@ -56,15 +54,15 @@ const PublicationDetails = ({
     {
       enabled: !!publication.lastOperation,
       refetchInterval: ({ state }) =>
-        state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
+        state.error || state.data?.data?.done
+          ? false
+          : DEFAULT_POLLING_INTERVAL,
     },
   );
 
   if (publication.lastOperation && isGettingOperation) {
     return <LoadingState />;
   }
-
-  const iconName = getOperationStatusIcon(operation);
 
   return (
     <>
@@ -73,18 +71,13 @@ const PublicationDetails = ({
           <Notification
             severity="negative"
             title="Publishing failed"
-            actions={[
-              <ViewLogsButton
-                resource={publication.publicationId}
-                key="view-logs"
-              />,
-            ]}
+            actions={[<ViewLogsButton key="view-logs" />]}
           >
             Your last publication was not completed successfully.
           </Notification>
         )}
         <div className="p-segmented-control__list">
-          {operation && !operation.done ? (
+          {!!operation && !operation.done ? (
             <Tooltip
               message="You must wait for this action to be completed to republish it."
               position="btm-center"
@@ -140,15 +133,11 @@ const PublicationDetails = ({
             <InfoGrid.Item
               label="Status"
               value={
-                <>
-                  {!!iconName && (
-                    <Icon name={iconName} className={classes.icon} />
-                  )}
-                  <OperationStatusCell
-                    operation={operation}
-                    type="publication"
-                  />
-                </>
+                <OperationStatusContent
+                  operationMetadata={operation?.metadata}
+                  type="publication"
+                  hasOperation={!!publication.lastOperation}
+                />
               }
             />
             <InfoGrid.Item

@@ -12,7 +12,7 @@ import {
   INITIAL_VALUES,
   VALIDATION_SCHEMA,
 } from "./constants";
-import { useCreateLocalRepository } from "../../api/useCreateLocalRepository";
+import { useCreateLocalRepository } from "../../api";
 import Blocks from "@/components/layout/Blocks";
 
 const AddLocalRepositorySidePanel: FC = () => {

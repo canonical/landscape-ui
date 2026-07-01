@@ -1,80 +1,110 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import LocalRepositoriesListActions from "./LocalRepositoriesListActions";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as hooks from "../../../../hooks";
+import { OperationProvider } from "@/context/operationStatus";
+import { useLocation } from "react-router";
+
+const [repository, repositoryImporting] = repositories;
+
+const ComponentWithLocation = () => {
+  const location = useLocation();
+  return (
+    <>
+      <LocalRepositoriesListActions repository={repository} />
+      <div data-testid="location">{location.search}</div>
+    </>
+  );
+};
 
 describe("LocalRepositoriesListActions", () => {
-  const mockViewAction = {
-    label: "View details",
-    onClick: vi.fn(),
-    icon: "show",
-  };
-
-  const mockAction = {
-    label: "Edit",
-    onClick: vi.fn(),
-    icon: "edit",
-  };
-
-  const mockDestructiveAction = {
-    label: "Remove",
-    onClick: vi.fn(),
-    icon: "delete",
-    appearance: "negative",
-  };
-
-  beforeEach(() => {
-    vi.spyOn(hooks, "useGetRepositoryActions").mockReturnValue({
-      viewAction: mockViewAction,
-      actions: [mockAction],
-      destructiveActions: [mockDestructiveAction],
-    });
-  });
-
-  it("renders actions menu button", () => {
-    renderWithProviders(
-      <LocalRepositoriesListActions repository={repositories[0]} />,
-    );
-
-    expect(
-      screen.getByRole("button", { name: /repo 1 actions/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("opens menu when toggled", async () => {
+  it("opens menu with repository actions", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <LocalRepositoriesListActions repository={repositories[0]} />,
+      <LocalRepositoriesListActions repository={repository} />,
     );
 
-    const toggleButton = screen.getByRole("button", {
-      name: /repo 1 actions/i,
-    });
-    await user.click(toggleButton);
-
-    expect(screen.getByText("Edit")).toBeInTheDocument();
-  });
-
-  it("renders removal modal when close is called", () => {
-    renderWithProviders(
-      <LocalRepositoriesListActions repository={repositories[0]} />,
+    await user.click(
+      await screen.findByRole("button", {
+        name: `${repository.displayName} actions`,
+      }),
     );
 
     expect(
-      screen.queryByRole("heading", { name: /remove repo 1/i }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("passes repository display name to aria label", () => {
-    renderWithProviders(
-      <LocalRepositoriesListActions repository={repositories[1]} />,
-    );
-
-    expect(
-      screen.getByRole("button", { name: /repo 2 actions/i }),
+      screen.getByRole("menuitem", { name: "View details" }),
     ).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: "Edit" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Import packages" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Publish" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: "Remove" }),
+    ).toBeInTheDocument();
+  });
+
+  it("disables import button while importing packages", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <OperationProvider operationNames={["operations/pppp-gggg-ssss"]}>
+        <LocalRepositoriesListActions repository={repositoryImporting} />
+      </OperationProvider>,
+    );
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: `${repositoryImporting.displayName} actions`,
+      }),
+    );
+
+    expect(
+      screen.queryByRole("menuitem", { name: "Import packages" }),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByRole("menuitem", { name: "Importing packages" }),
+    ).toHaveAttribute("aria-disabled", "true");
+  });
+
+  it("opens removal modal when remove is clicked", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(
+      <LocalRepositoriesListActions repository={repository} />,
+    );
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: `${repository.displayName} actions`,
+      }),
+    );
+
+    await user.click(await screen.findByRole("menuitem", { name: "Remove" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: `Remove ${repository.displayName}`,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens publish side panel when publish is clicked", async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ComponentWithLocation />);
+
+    await user.click(
+      await screen.findByRole("button", {
+        name: `${repository.displayName} actions`,
+      }),
+    );
+
+    await user.click(await screen.findByRole("menuitem", { name: "Publish" }));
+
+    const location = await screen.findByTestId("location");
+    expect(location).toHaveTextContent("sidePath=publish");
+    expect(location).toHaveTextContent(`name=${repository.localId}`);
   });
 });

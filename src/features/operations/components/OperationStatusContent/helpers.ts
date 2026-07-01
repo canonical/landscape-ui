@@ -7,6 +7,7 @@ interface OperationTypeTexts {
 
 export const getOperationTypeTexts = (
   type: "publication" | "mirror" | "local",
+  isTableCell = false,
 ): OperationTypeTexts => {
   switch (type) {
     case "publication":
@@ -18,10 +19,10 @@ export const getOperationTypeTexts = (
       };
     case "local":
       return {
-        inexistent: "No packages have been imported",
+        inexistent: "No packages imported yet",
         successful: "Packages imported",
         failed: "Import failed",
-        ongoing: "Importing packages",
+        ongoing: isTableCell ? "Importing packages" : "Importing",
       };
     case "mirror":
       return {

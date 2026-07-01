@@ -6,6 +6,7 @@ import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import type { Publication } from "@canonical/landscape-openapi";
+import useOperation from "@/hooks/useOperation";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -15,6 +16,8 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
 }) => {
   const { createPageParamsSetter } = usePageParams();
+  const { isOperationInProgress } = useOperation();
+  const isPublishing = isOperationInProgress(publication.lastOperation);
   const publicationDisplayName = publication.displayName;
 
   const {
@@ -39,12 +42,18 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
         name: publication.publicationId,
       }),
     },
-    {
-      icon: "upload",
-      label: "Republish",
-      "aria-label": `Republish "${publicationDisplayName}" publication`,
-      onClick: openRepublishModal,
-    },
+    isPublishing
+      ? {
+          icon: "spinner u-animation--spin",
+          label: "Publishing",
+          disabled: true,
+        }
+      : {
+          icon: "upload",
+          label: "Republish",
+          "aria-label": `Republish "${publicationDisplayName}" publication`,
+          onClick: openRepublishModal,
+        },
   ];
 
   const destructiveActions: Action[] = [

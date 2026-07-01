@@ -13,45 +13,33 @@ import {
   getSourceType,
 } from "../../helpers";
 import type { Publication } from "@canonical/landscape-openapi";
-import {
-  DEFAULT_POLLING_INTERVAL,
-  DISPLAY_DATE_TIME_FORMAT,
-} from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import {
-  getOperationStatusIcon,
-  OperationStatusCell,
-  useBatchGetOperations,
-} from "@/features/operations";
+import { OperationStatusCell } from "@/features/operations";
 import classes from "./PublicationsList.module.scss";
+import { OperationProvider } from "@/context/operationStatus";
 
 interface PublicationsListProps {
   readonly publications: Publication[];
-  readonly sourceDisplayNames?: Record<string, string>;
-  readonly publicationTargetDisplayNames?: Record<string, string>;
+  readonly sourceDisplayNames: Record<string, string>;
+  readonly publicationTargetDisplayNames: Record<string, string>;
 }
 
 const PublicationsList: FC<PublicationsListProps> = ({
   publications,
-  sourceDisplayNames = {},
-  publicationTargetDisplayNames = {},
+  sourceDisplayNames,
+  publicationTargetDisplayNames,
 }) => {
   const { query, createPageParamsSetter } = usePageParams();
 
-  const operationNames = publications
-    .filter((publication) => publication.lastOperation)
-    .map((publication) => publication.lastOperation ?? "");
-
-  const { operations, isGettingOperations } = useBatchGetOperations(
-    operationNames,
-    {
-      refetchInterval: ({ state }) =>
-        Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? DEFAULT_POLLING_INTERVAL
-          : false,
-    },
+  const operationNames = useMemo(
+    () =>
+      publications
+        .filter((publication) => publication.lastOperation)
+        .map((publication) => publication.lastOperation ?? ""),
+    [publications],
   );
 
   const columns = useMemo<Column<Publication>[]>(
@@ -75,28 +63,18 @@ const PublicationsList: FC<PublicationsListProps> = ({
       },
       {
         Header: "status",
-        className: classes.status,
-        Cell: ({ row: { original: publication } }: CellProps<Publication>) => {
-          const operation = operations[publication.lastOperation ?? ""];
-          return (
-            <OperationStatusCell
-              isGettingOperation={isGettingOperations}
-              operation={operation}
-              type="publication"
-            />
-          );
-        },
-        getCellIcon: ({
-          row: { original: publication },
-        }: CellProps<Publication>) => {
-          const operation = operations[publication.lastOperation ?? ""];
-          return getOperationStatusIcon(operation);
-        },
+        className: `${classes.status} p-table__cell--icon-placeholder`,
+        Cell: ({ row: { original: publication } }: CellProps<Publication>) => (
+          <OperationStatusCell
+            operationName={publication.lastOperation}
+            type="publication"
+          />
+        ),
       },
       {
         accessor: "publishTime",
         Header: "last published",
-        className: "medium-cell",
+        className: classes.datetime,
         Cell: ({ row: { original } }: CellProps<Publication>) =>
           original.publishTime
             ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
@@ -106,6 +84,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
         id: "sourceType",
         accessor: "source",
         Header: "source type",
+        className: classes.sourceType,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <>{getSourceType(original.source)}</>
         ),
@@ -113,6 +92,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "source",
         Header: "source",
+        className: classes.source,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink
             to={
@@ -135,6 +115,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
       {
         accessor: "publicationTarget",
         Header: "publication target",
+        className: classes.target,
         Cell: ({ row: { original } }: CellProps<Publication>) => (
           <StaticLink
             to={ROUTES.repositories.publicationTargets({
@@ -157,22 +138,18 @@ const PublicationsList: FC<PublicationsListProps> = ({
         ),
       },
     ],
-    [
-      createPageParamsSetter,
-      operations,
-      isGettingOperations,
-      sourceDisplayNames,
-      publicationTargetDisplayNames,
-    ],
+    [createPageParamsSetter, sourceDisplayNames, publicationTargetDisplayNames],
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={publications}
-      emptyMsg={`No publications found with the search: "${query}"`}
-      minWidth={1250}
-    />
+    <OperationProvider operationNames={operationNames}>
+      <ResponsiveTable
+        columns={columns}
+        data={publications}
+        emptyMsg={`No publications found with the search: "${query}"`}
+        minWidth={1250}
+      />
+    </OperationProvider>
   );
 };
 

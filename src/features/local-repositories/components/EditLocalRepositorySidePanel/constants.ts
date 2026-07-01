@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 
 export interface EditLocalRepositoryFormValues {
-  displayName?: string;
+  displayName: string;
   description?: string;
 }
 

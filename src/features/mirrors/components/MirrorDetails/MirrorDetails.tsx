@@ -32,8 +32,7 @@ import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
 import {
-  getOperationStatusIcon,
-  OperationStatusCell,
+  OperationStatusContent,
   useGetOperation,
   ViewLogsButton,
 } from "@/features/operations";
@@ -61,15 +60,11 @@ const MirrorDetails: FC = () => {
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
   const mirror = useGetMirror(name).data.data;
-
   const { operation } = useGetOperation(mirror.lastOperation ?? "", {
     enabled: !!mirror.lastOperation,
     refetchInterval: ({ state }) =>
-      state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
+      state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
-
-  const iconName = getOperationStatusIcon(operation);
-
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
 
@@ -127,7 +122,7 @@ const MirrorDetails: FC = () => {
           <Notification
             severity="negative"
             title="Update failed"
-            actions={[<ViewLogsButton resource={name} key="view-logs" />]}
+            actions={[<ViewLogsButton key="view-logs" />]}
           >
             Your last mirror update was not completed successfully.
           </Notification>
@@ -213,15 +208,11 @@ const MirrorDetails: FC = () => {
                 <InfoGrid.Item
                   label="Status"
                   value={
-                    <>
-                      {!!iconName && (
-                        <Icon name={iconName} className={classes.icon} />
-                      )}
-                      <OperationStatusCell
-                        operation={operation}
-                        type="mirror"
-                      />
-                    </>
+                    <OperationStatusContent
+                      operationMetadata={operation?.metadata}
+                      type="mirror"
+                      hasOperation={!!mirror.lastOperation}
+                    />
                   }
                 />
                 <InfoGrid.Item
@@ -255,7 +246,7 @@ const MirrorDetails: FC = () => {
                 />
                 <InfoGrid.Item
                   label="Components"
-                  value={mirror.components?.join(", ")}
+                  value={mirror.components.join(", ")}
                   large
                 />
                 <InfoGrid.Item
