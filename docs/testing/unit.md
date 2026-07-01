@@ -312,14 +312,23 @@ When to put behavior in the handler instead:
   it to the handler under `src/tests/server/handlers/` (see how `publications.ts`
   honors `filter` / `display_name`), not to an inline test override.
 
-When to drive the hook with a minimal consumer:
+Do NOT fabricate a consumer for an unreachable guard:
 
-- If a guard is **defensive and no real consumer exercises the empty-value path**
-  (e.g. a hook whose only callers never pass an empty `query`), render a tiny inline
-  `FC` that calls the hook with the empty value via `renderWithProviders` (full
-  providers incl. `FetchProvider`), then assert the captured request. This stays
-  within the "test hooks through a rendered component" rule while still
-  deterministically reaching the guard.
+- **First confirm a real consumer can actually produce the guarded value.** Trace
+  the hook's callers. If the value comes from the URL or a search box
+  (`usePageParams()` returns `""` for a cleared search), a regression is reachable —
+  test it **through that real component** by driving the search box / URL, e.g.
+  `ScriptsContainer.test.tsx` clearing the filter.
+- If **no real consumer ever passes the empty/guarded value** (e.g. a hook whose
+  only callers always send a non-empty `query`, or filter client-side and never
+  forward the param at all), then the guard is purely defensive and **unreachable
+  from the UI**. Do **not** write an inline `FC` that calls the hook with a value no
+  real code produces — that asserts an impossible scenario and tests the test, not
+  the app. Leave the one-line guard in as harmless normalization and add no test.
+
+The rule of thumb: a request-param regression test is only worth writing when a
+user action can drive the empty value onto the wire. "The PR touched this file" is
+not the same as "a regression is reachable here."
 
 
 ## Forms And Formik-Based Components
