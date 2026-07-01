@@ -239,9 +239,12 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
             setConfirmationModalProps(null);
             confirmationModalProps.close?.();
           }}
-          onConfirm={(event) => {
+          onConfirm={async (event) => {
+            // Keep the modal mounted until the async action settles so the
+            // confirm button's loading/disabled state stays meaningful; only
+            // clear on success (on error the modal stays open to retry).
+            await confirmationModalProps.onConfirm?.(event);
             setConfirmationModalProps(null);
-            confirmationModalProps.onConfirm?.(event);
           }}
         >
           {confirmationModalProps.children}
