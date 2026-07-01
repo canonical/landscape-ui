@@ -1,4 +1,3 @@
-import { Buffer } from "buffer";
 import type { ScriptFormValues } from "./types";
 import type { CreateScriptAttachmentParams } from "./api";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
