@@ -1,4 +1,5 @@
 import { PageParamFilter, TableFilterChips } from "@/components/filter";
+import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescriptionButton";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import usePageParams from "@/hooks/usePageParams";
@@ -77,15 +78,23 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
           onClear={handleClear}
         />
         <div className={classes.actions}>
-          <div className={classes.filters}>
-            <PageParamFilter
-              pageParamKey="status"
-              label="Status"
-              options={ACTIVITY_STATUS_OPTIONS}
-            />
-            <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
-            <ActivitiesDateFilter />
-          </div>
+          <ResponsiveTableFilters
+            collapseFrom="xl"
+            filters={[
+              <PageParamFilter
+                key="status"
+                pageParamKey="status"
+                label="Status"
+                options={ACTIVITY_STATUS_OPTIONS}
+              />,
+              <ActivityTypeFilter
+                key="type"
+                label="Type"
+                options={ACTIVITY_TYPE_OPTIONS}
+              />,
+              <ActivitiesDateFilter key="date-range" label="Date range" />,
+            ]}
+          />
 
           {IS_PANEL && <ActivitiesActions selected={selected} />}
         </div>
