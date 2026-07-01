@@ -3,10 +3,23 @@ import type { CreateScriptAttachmentParams } from "./api";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 
+const uint8ToBase64 = (bytes: Uint8Array): string => {
+  let binary = "";
+  const CHUNK_SIZE = 0x8000; // 32KB chunks
+
+  for (let i = 0; i < bytes.length; i += CHUNK_SIZE) {
+    const chunk = bytes.subarray(i, i + CHUNK_SIZE);
+    binary += String.fromCharCode(...Array.from(chunk));
+  }
+
+  return btoa(binary);
+};
+
 export const getEncodedCode = (code: string) => {
   const escapedCode = JSON.parse(JSON.stringify(code).replace(/\\r/g, ""));
 
-  return Buffer.from(escapedCode).toString("base64");
+  const bytes = new TextEncoder().encode(escapedCode);
+  return uint8ToBase64(bytes);
 };
 
 export const getCreateScriptParams = (values: ScriptFormValues) => {
@@ -55,12 +68,14 @@ export const getCreateAttachmentsPromises = async ({
 
   const buffers = await Promise.all(bufferPromises);
 
-  return buffers.map(async (buffer, index) =>
-    createScriptAttachment({
-      file: `${fileNames[index]}$$${Buffer.from(buffer).toString("base64")}`,
+  return buffers.map(async (buffer, index) => {
+    const bytes = new Uint8Array(buffer);
+
+    return createScriptAttachment({
+      file: `${fileNames[index]}$$${uint8ToBase64(bytes)}`,
       script_id,
-    }),
-  );
+    });
+  });
 };
 
 export const removeFileExtension = (filename: string): string => {
