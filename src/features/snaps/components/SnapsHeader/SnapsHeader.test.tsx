@@ -6,8 +6,7 @@ import { renderWithProviders } from "@/tests/render";
 
 const props = {
   handleClearSelection: vi.fn(),
-  selectedSnapIds: [],
-  installedSnaps: [],
+  selectedSnaps: [],
 };
 
 describe("SnapsHeader", () => {

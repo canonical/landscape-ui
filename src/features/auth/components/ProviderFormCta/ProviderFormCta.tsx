@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
-import { Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
 import classes from "./ProviderFormCta.module.scss";
@@ -9,9 +9,10 @@ const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
 
 interface ProviderFormCtaProps {
   readonly action: "add" | "edit";
+  readonly loading?: boolean;
 }
 
-const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action }) => {
+const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action, loading }) => {
   const { closeSidePanel, setSidePanelContent } = useSidePanel();
 
   const handleBack = () => {
@@ -45,13 +46,14 @@ const ProviderFormCta: FC<ProviderFormCtaProps> = ({ action }) => {
       >
         Cancel
       </Button>
-      <Button
+      <ActionButton
         type="submit"
         appearance="positive"
         className="u-no-margin--bottom"
+        loading={loading}
       >
         {action === "edit" ? "Save changes" : "Add ID provider"}
-      </Button>
+      </ActionButton>
     </div>
   );
 };

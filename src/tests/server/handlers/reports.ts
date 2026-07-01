@@ -1,7 +1,15 @@
 import { API_URL_OLD } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
-import { isAction } from "./_helpers";
+import { isAction, shouldApplyEndpointStatus } from "./_helpers";
+
+const usnTimeToFix = {
+  "2": [],
+  "14": [],
+  "30": [],
+  "60": [],
+  pending: [],
+};
 
 export default [
   http.get(API_URL_OLD, ({ request }) => {
@@ -9,15 +17,38 @@ export default [
       return;
     }
 
-    const endpointStatus = getEndpointStatus();
+    if (shouldApplyEndpointStatus("reports")) {
+      const endpointStatus = getEndpointStatus();
 
-    if (
-      endpointStatus.status === "empty" &&
-      (!endpointStatus.path || endpointStatus.path === "reports")
-    ) {
-      return HttpResponse.json("");
+      if (endpointStatus.status === "empty") {
+        return HttpResponse.json("");
+      }
     }
 
     return HttpResponse.json("name,status\ninstance-1,ok");
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "GetComputersNotUpgraded")) {
+      return;
+    }
+
+    return HttpResponse.json([]);
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "GetNotPingingComputers")) {
+      return;
+    }
+
+    return HttpResponse.json([]);
+  }),
+
+  http.get(API_URL_OLD, ({ request }) => {
+    if (!isAction(request, "GetUSNTimeToFix")) {
+      return;
+    }
+
+    return HttpResponse.json(usnTimeToFix);
   }),
 ];

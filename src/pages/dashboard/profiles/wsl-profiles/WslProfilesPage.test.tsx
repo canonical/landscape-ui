@@ -5,22 +5,11 @@ import { describe, expect, it } from "vitest";
 import WslProfilesPage from "./WslProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
-import type * as actualModule from "@/features/profiles";
-
-vi.mock("@/features/profiles", async () => {
-  const actual = await vi.importActual<typeof actualModule>(
-    "@/features/profiles",
-  );
-
-  return {
-    ...actual,
-    ProfilesContainer: () => <div>WSL profiles table</div>,
-  };
-});
 
 describe("WslProfilesPage", () => {
   it("has a button to add a profile", async () => {
     renderWithProviders(<WslProfilesPage />, undefined, "/profiles/wsl");
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
     const user = userEvent.setup();
 
     await user.click(
@@ -44,7 +33,6 @@ describe("WslProfilesPage", () => {
       `/?sidePath=edit&name=${wslProfiles[0].name}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${wslProfiles[0].title}`,

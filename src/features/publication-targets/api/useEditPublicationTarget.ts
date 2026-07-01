@@ -1,12 +1,12 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
   FilesystemTarget,
-  PublicationTarget,
   S3Target,
   SwiftTarget,
+  PublicationTargetServiceUpdatePublicationTargetError,
+  PublicationTargetServiceUpdatePublicationTargetResponse,
 } from "@canonical/landscape-openapi";
 
 interface EditPublicationTargetParams {
@@ -22,8 +22,8 @@ export default function useEditPublicationTarget() {
   const queryClient = useQueryClient();
 
   const editPublicationTargetQuery = useMutation<
-    AxiosResponse<PublicationTarget>,
-    AxiosError<ApiError>,
+    AxiosResponse<PublicationTargetServiceUpdatePublicationTargetResponse>,
+    AxiosError<PublicationTargetServiceUpdatePublicationTargetError>,
     EditPublicationTargetParams
   >({
     mutationKey: ["publication-targets", "edit"],

@@ -1,8 +1,8 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import usePageParams from "@/hooks/usePageParams";
-import type { ApiError } from "@/types/api/ApiError";
 import type {
   ListPublicationsResponse,
+  PublicationServiceListPublicationsError,
   Publication,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
@@ -35,7 +35,10 @@ export const useGetPublications = () => {
 
   const filter = buildFilter(query);
 
-  const { data, isLoading } = useQuery<Publication[], AxiosError<ApiError>>({
+  const { data, isLoading } = useQuery<
+    Publication[],
+    AxiosError<PublicationServiceListPublicationsError>
+  >({
     queryKey: ["publications", "all", filter],
     queryFn: async () => {
       let pageToken: string | undefined;

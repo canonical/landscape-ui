@@ -69,5 +69,5 @@ export const getQuery = ({
     );
   }
 
-  return queryParts.join(" ");
+  return queryParts.join(" ") || undefined;
 };

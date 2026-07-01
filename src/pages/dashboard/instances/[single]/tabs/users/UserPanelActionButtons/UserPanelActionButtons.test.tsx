@@ -4,6 +4,7 @@ import { PATHS, ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { users } from "@/tests/mocks/user";
 import { renderWithProviders } from "@/tests/render";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, vi } from "vitest";
@@ -387,7 +388,7 @@ describe("UserPanelActionButtons", () => {
       );
 
       expect(
-        await screen.findByText('The endpoint status is set to "error".'),
+        await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
       ).toBeInTheDocument();
     });
 

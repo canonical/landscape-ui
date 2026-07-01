@@ -102,4 +102,19 @@ describe("InstancesPage helpers", () => {
 
     expect(query).toBe(windowsOption.query);
   });
+
+  it("returns undefined when no filters are active", () => {
+    const query = getQuery({
+      os: "",
+      status: "",
+      contractExpiryDays: "",
+      query: "",
+      tags: [],
+      upgrades: [],
+      accessGroups: [],
+      availabilityZones: [],
+    });
+
+    expect(query).toBeUndefined();
+  });
 });

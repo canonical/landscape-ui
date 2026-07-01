@@ -160,6 +160,7 @@ const InvitesPanel: FC = () => {
             data={invitations}
             getCellProps={handleCellProps}
             emptyMsg="You have no unclaimed invitations."
+            minWidth={1150}
           />
         </>
       )}

@@ -1,11 +1,11 @@
+import { HOMEPAGE_PATH } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AccountCreationSelfHostedForm from "./AccountCreationSelfHostedForm";
 
-const createStandaloneAccountMock = vi.fn();
-const signInMock = vi.fn();
 const setUserMock = vi.fn();
 const navigateMock = vi.fn();
 
@@ -18,29 +18,18 @@ vi.mock("@/hooks/useAuth", () => ({
   default: () => ({ setUser: setUserMock }),
 }));
 
-vi.mock("../../api", () => ({
-  useCreateStandaloneAccount: () => ({
-    createStandaloneAccount: createStandaloneAccountMock,
-    isCreatingStandaloneAccount: false,
-  }),
-}));
-
-vi.mock("@/features/auth", async () => {
-  const actual = await vi.importActual("@/features/auth");
-  return {
-    ...actual,
-    useLogin: () => ({
-      login: signInMock,
-      isLoggingIn: false,
-    }),
-  };
-});
-
 describe("AccountCreationSelfHostedForm", () => {
-  const user = userEvent.setup();
-
   beforeEach(() => {
     vi.clearAllMocks();
+    setEndpointStatus({
+      status: "variant",
+      path: "standalone-account",
+      response: { exists: false },
+    });
+  });
+
+  afterEach(() => {
+    setEndpointStatus("default");
   });
 
   it("renders the form correctly", () => {
@@ -58,6 +47,7 @@ describe("AccountCreationSelfHostedForm", () => {
   });
 
   it("correctly disables button based on form validity", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
     const submitButton = screen.getByRole("button", { name: "Create account" });
@@ -75,6 +65,7 @@ describe("AccountCreationSelfHostedForm", () => {
   });
 
   it("shows validation error for invalid email", async () => {
+    const user = userEvent.setup();
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
     await user.type(screen.getByLabelText("Email address"), "invalid-email");
@@ -87,8 +78,7 @@ describe("AccountCreationSelfHostedForm", () => {
   });
 
   it("submits the form calls create and login", async () => {
-    createStandaloneAccountMock.mockResolvedValue({});
-    signInMock.mockResolvedValue({ data: { current_account: "test" } });
+    const user = userEvent.setup();
 
     renderWithProviders(<AccountCreationSelfHostedForm />);
 
@@ -102,16 +92,10 @@ describe("AccountCreationSelfHostedForm", () => {
     const submitButton = screen.getByRole("button", { name: "Create account" });
     await user.click(submitButton);
 
-    expect(createStandaloneAccountMock).toHaveBeenCalledWith({
-      name: "John Doe",
-      email: "john.doe@example.com",
-      password: "Password1234",
-    });
-
     await vi.waitFor(() => {
-      expect(signInMock).toHaveBeenCalledWith({
-        email: "john.doe@example.com",
-        password: "Password1234",
+      expect(setUserMock).toHaveBeenCalled();
+      expect(navigateMock).toHaveBeenCalledWith(HOMEPAGE_PATH, {
+        replace: true,
       });
     });
   });

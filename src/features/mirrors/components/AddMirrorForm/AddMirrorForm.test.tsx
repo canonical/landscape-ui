@@ -6,10 +6,11 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
-import type { CreateMirrorData } from "@canonical/landscape-openapi";
+import type { MirrorWritable } from "@canonical/landscape-openapi";
 import { useLocation } from "react-router";
 import { mirrors } from "@/tests/mocks/mirrors";
 
@@ -46,9 +47,6 @@ describe("AddMirrorForm", () => {
       </>,
     );
 
-    // The form renders immediately; wait for the "pulling…" note in the
-    // Mirror contents block to disappear so the data-dependent dropdowns are
-    // populated before the test interacts with them.
     await waitForElementToBeRemoved(() => screen.queryByText(PULLING_NOTE), {
       timeout: 2000,
     });
@@ -72,8 +70,6 @@ describe("AddMirrorForm", () => {
   });
 
   it("submits an ubuntu archive mirror with the default https URL", async () => {
-    // Default sourceType is "Ubuntu archive"; the Source URL field is
-    // editable and prefilled with the canonical archive URL over HTTPS.
     expect(screen.getByLabelText("Source URL")).toHaveValue(
       `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
     );
@@ -83,6 +79,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -99,6 +96,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: cdnUrl,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -111,7 +109,6 @@ describe("AddMirrorForm", () => {
 
     const sourceUrlField = screen.getByLabelText("Source URL");
     await user.type(sourceUrlField, "http://insecure.example.com/");
-    // validateOnBlur is true on the form; tab out to trigger validation.
     await user.tab();
 
     expect(
@@ -136,6 +133,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
+        mirrorType: "UBUNTU_SNAPSHOTS",
       }),
     );
   });
@@ -148,12 +146,42 @@ describe("AddMirrorForm", () => {
       "Ubuntu Pro",
     );
 
-    await user.type(screen.getByLabelText("Token"), token);
+    await user.type(screen.getByLabelText("Bearer token"), token);
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
-      expect.objectContaining({}),
+      expect.objectContaining({
+        archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
+        mirrorType: "UBUNTU_PRO",
+      }),
     );
+  });
+
+  it("explains which token an ubuntu pro mirror requires", async () => {
+    await user.selectOptions(
+      screen.getByLabelText("Source type"),
+      "Ubuntu Pro",
+    );
+
+    const tokenInput = screen.getByLabelText("Bearer token");
+    expect(tokenInput).toBeInTheDocument();
+
+    // The explanatory copy now lives in a tooltip on the field label.
+    const helpIcon = document
+      .querySelector(`label[for="${tokenInput.id}"]`)
+      ?.querySelector(".p-icon--help");
+    assert(helpIcon);
+    await user.hover(helpIcon);
+
+    const tooltip = await screen.findByRole("tooltip");
+    expect(
+      within(tooltip).getByText(
+        /this is not your ubuntu pro subscription token/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(tooltip).getByText("/etc/apt/auth.conf.d/90ubuntu-advantage"),
+    ).toBeInTheDocument();
   });
 
   it("submits a mirror with preserve signatures enabled", async () => {
@@ -188,11 +216,12 @@ describe("AddMirrorForm", () => {
   it("submits a third-party mirror", async () => {
     const params = {
       archiveRoot: "https://archive.ubuntu.com/",
+      mirrorType: "THIRD_PARTY",
       distribution: "focal",
       components: ["main", "universe"],
       architectures: ["amd64", "arm64"],
       gpgKey: { armor: "ABCDEFG" },
-    } satisfies Partial<CreateMirrorData["body"]>;
+    } satisfies Partial<MirrorWritable>;
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),
@@ -200,7 +229,6 @@ describe("AddMirrorForm", () => {
     );
 
     await user.type(screen.getByLabelText("Source URL"), params.archiveRoot);
-
     await user.type(screen.getByLabelText("Distribution"), params.distribution);
     await user.type(
       screen.getByLabelText("Components"),
@@ -214,6 +242,7 @@ describe("AddMirrorForm", () => {
       screen.getByLabelText("Verification GPG key"),
       params.gpgKey.armor,
     );
+
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
@@ -232,10 +261,8 @@ describe("AddMirrorForm loading state", () => {
   it("renders the form immediately with a muted 'pulling' note while archive info is fetched", async () => {
     renderWithProviders(<AddMirrorForm />);
 
-    // The note appears straight away under the "Mirror contents" heading.
     expect(screen.getByText(PULLING_NOTE)).toBeInTheDocument();
 
-    // The note disappears once the queries resolve.
     await waitForElementToBeRemoved(() => screen.queryByText(PULLING_NOTE), {
       timeout: 2000,
     });
@@ -245,24 +272,20 @@ describe("AddMirrorForm loading state", () => {
   it("lets users fill the Name field while archive info is still loading and preserves the value after hydration", async () => {
     renderWithProviders(<AddMirrorForm />);
 
-    // Sanity: still loading.
     expect(screen.getByText(PULLING_NOTE)).toBeInTheDocument();
 
-    // Name and Source type are interactable while loading.
     const nameField = screen.getByLabelText("Name");
     expect(nameField).toBeEnabled();
     expect(screen.getByLabelText("Source type")).toBeEnabled();
 
     await user.type(nameField, "early-mirror");
     expect(nameField).toHaveValue("early-mirror");
-    // The user's typed Name survives hydration.
     expect(screen.getByLabelText("Name")).toHaveValue("early-mirror");
   });
 
   it("disables the Distribution dropdown while archive info is loading and re-enables it once data arrives", async () => {
     renderWithProviders(<AddMirrorForm />);
 
-    // While loading, the Distribution select is rendered but disabled.
     const distributionField = screen.getByLabelText("Distribution");
     expect(distributionField).toBeDisabled();
 
@@ -270,7 +293,6 @@ describe("AddMirrorForm loading state", () => {
       timeout: 2000,
     });
 
-    // After hydration, the Distribution dropdown is interactive again.
     await waitFor(() => {
       expect(screen.getByLabelText("Distribution")).not.toBeDisabled();
     });
@@ -285,8 +307,6 @@ describe("AddMirrorForm loading state", () => {
       "Third party",
     );
 
-    // Third-party doesn't depend on the archive/ESM info, so the loading
-    // affordance shouldn't appear under the Mirror contents heading.
     expect(screen.queryByText(PULLING_NOTE)).not.toBeInTheDocument();
   });
 });

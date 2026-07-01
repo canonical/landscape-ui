@@ -20,7 +20,17 @@ const SupportedProviderList: FC = () => {
     setSidePanelContent(
       `Add ${provider.provider_label} identity provider`,
       <Suspense fallback={<LoadingState />}>
-        <ProviderForm action="add" provider={provider} />
+        <ProviderForm
+          action="add"
+          provider={provider}
+          initialValues={{
+            client_id: "",
+            client_secret: "",
+            enabled: false,
+            issuer: "",
+            name: "",
+          }}
+        />
       </Suspense>,
     );
   };

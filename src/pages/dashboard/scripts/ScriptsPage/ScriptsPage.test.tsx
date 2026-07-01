@@ -80,25 +80,17 @@ describe("ScriptsPage", () => {
     ).toBeInTheDocument();
   });
 
-  it("should trigger navigation to legacy portal when clicking the link", async () => {
-    const assignSpy = vi.fn();
-    vi.spyOn(window, "location", "get").mockReturnValue({
-      ...window.location,
-      assign: assignSpy,
-    });
-
+  it("should link to the legacy portal scripts page", async () => {
     vi.mocked(useAuth).mockReturnValue(mockAuth);
     renderWithProviders(<ScriptsPage />);
 
-    const legacyPortalButton = screen.getByRole("button", {
+    const legacyPortalLink = await screen.findByRole("link", {
       name: /the legacy web portal/i,
     });
-    await userEvent.click(legacyPortalButton);
 
-    await waitFor(() => {
-      expect(assignSpy).toHaveBeenCalledWith(
-        expect.stringContaining("/scripts"),
-      );
-    });
+    expect(legacyPortalLink).toHaveAttribute(
+      "href",
+      "https://old-dashboard-url/scripts",
+    );
   });
 });

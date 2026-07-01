@@ -42,23 +42,23 @@ export const handleCellProps =
     lastUsnIndex?: number;
     showSelectAllButton?: boolean;
   }) =>
-  // eslint-disable-next-line complexity
   ({ column, row: { index } }: Cell<Usn>) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
+    const isExpandedDetailsRow =
+      expandedCell?.row === index - 1 &&
+      ["computers_count", "release_packages"].includes(expandedCell.column);
+    const isExpandedColumnCell =
+      expandedCell?.column === column.id && expandedCell.row === index;
 
     if (
       (showSelectAllButton && index === 0) ||
       (isUsnsLoading && index === lastUsnIndex) ||
-      (expandedCell?.row === index - 1 &&
-        ["computers_count", "release_packages"].includes(expandedCell.column))
+      isExpandedDetailsRow
     ) {
       if (column.id === "usn") {
         cellProps.colSpan = 4;
-        if (
-          expandedCell?.row === index - 1 &&
-          ["computers_count", "release_packages"].includes(expandedCell.column)
-        ) {
+        if (isExpandedDetailsRow) {
           cellProps.className = classes.innerTable;
         }
       } else {
@@ -70,23 +70,21 @@ export const handleCellProps =
     } else if (column.id === "cves") {
       cellProps["aria-label"] = "CVE(s)";
 
-      if (expandedCell?.column === column.id && expandedCell.row === index) {
+      if (isExpandedColumnCell) {
         cellProps.className = "expandedCell";
       }
     } else if (column.id === "date") {
       cellProps["aria-label"] = "Date published";
     } else if (column.id === "computers_count") {
       cellProps["aria-label"] = "Affected instances";
-      cellProps.className =
-        expandedCell?.column === column.id && expandedCell.row === index
-          ? classes.expanded
-          : classes.row;
+      cellProps.className = isExpandedColumnCell
+        ? classes.expanded
+        : classes.row;
     } else if (column.id === "release_packages") {
       cellProps["aria-label"] = "Affected packages";
-      cellProps.className =
-        expandedCell?.column === column.id && expandedCell.row === index
-          ? classes.expanded
-          : classes.row;
+      cellProps.className = isExpandedColumnCell
+        ? classes.expanded
+        : classes.row;
     }
 
     return cellProps;
@@ -97,8 +95,12 @@ export const handleRowProps =
   ({ index }: Row<Usn>) => {
     const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> =
       {};
+    const isExpandedCveRow =
+      expandedCell &&
+      expandedCell.column === "cves" &&
+      expandedCell.row === index;
 
-    if (expandedCell?.column === "cves" && expandedCell.row === index) {
+    if (isExpandedCveRow) {
       rowProps.className = "expandedRow";
     }
 

@@ -8,7 +8,7 @@ import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
 import type {
-  FilesystemTargetLinkMethod,
+  FilesystemTarget,
   PublicationTarget,
 } from "@canonical/landscape-openapi";
 import useNotify from "@/hooks/useNotify";
@@ -118,7 +118,7 @@ const buildSwiftPayload = (values: EditTargetFormValues) => ({
 const buildFilesystemPayload = (values: EditTargetFormValues) => ({
   path: values.path,
   ...(values.linkMethod && {
-    linkMethod: values.linkMethod as FilesystemTargetLinkMethod,
+    linkMethod: values.linkMethod as FilesystemTarget["linkMethod"],
   }),
 });
 

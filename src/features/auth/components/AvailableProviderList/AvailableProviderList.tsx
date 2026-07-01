@@ -1,4 +1,4 @@
-import { Button, Icon } from "@canonical/react-components";
+import { ActionButton, Icon } from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
@@ -57,9 +57,12 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
     params.attach_code = code;
   }
 
-  const { oidcUrlLocation } = useGetOidcUrlQuery(params, {
-    enabled: providerId !== 0,
-  });
+  const { oidcUrlLocation, isOidcUrlQueryLoading } = useGetOidcUrlQuery(
+    params,
+    {
+      enabled: providerId !== 0,
+    },
+  );
 
   useEffect(() => {
     if (!oidcUrlLocation) {
@@ -108,10 +111,10 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
       >
         {isUbuntuOneEnabled && (
           <li className="p-list__item">
-            <Button
+            <ActionButton
               type="button"
               hasIcon
-              disabled={isUbuntuOneLoading}
+              loading={isUbuntuOneLoading}
               onClick={() => {
                 setIsUbuntuOneRequested(true);
               }}
@@ -122,14 +125,15 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
                 className={classes.icon}
               />
               <span>Sign in with Ubuntu One</span>
-            </Button>
+            </ActionButton>
           </li>
         )}
         {isStandaloneOidcEnabled && (
           <li className="p-list__item">
-            <Button
+            <ActionButton
               type="button"
               hasIcon
+              loading={isOidcUrlQueryLoading && providerId === -1}
               onClick={() => {
                 setProviderId(-1);
               }}
@@ -140,14 +144,15 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
                 className={classes.icon}
               />
               <span>Sign in with Enterprise Login</span>
-            </Button>
+            </ActionButton>
           </li>
         )}
         {oidcProviders.map((provider) => (
           <li key={provider.id} className="p-list__item">
-            <Button
+            <ActionButton
               type="button"
               hasIcon
+              loading={isOidcUrlQueryLoading && providerId === provider.id}
               onClick={() => {
                 setProviderId(provider.id);
               }}
@@ -158,7 +163,7 @@ export const AvailableProviderList: FC<AvailableProviderListProps> = ({
                 className={classes.icon}
               />
               <span>{`Sign in with ${provider.name}`}</span>
-            </Button>
+            </ActionButton>
           </li>
         ))}
       </ul>

@@ -4,15 +4,8 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import RepositoryProfileList from "./RepositoryProfileList";
-import { pluralize } from "@/utils/_helpers";
-
-vi.mock("@/hooks/useRoles", () => ({
-  default: vi.fn(() => ({
-    getAccessGroupQuery: vi.fn(() => ({ data: { data: accessGroups } })),
-  })),
-}));
 
 const LocationDisplay = () => {
   const { search } = useLocation();
@@ -21,6 +14,7 @@ const LocationDisplay = () => {
 
 describe("RepositoryProfileList", () => {
   const user = userEvent.setup();
+
   it("renders table headers and rows", async () => {
     renderWithProviders(
       <RepositoryProfileList repositoryProfiles={repositoryProfiles} />,
@@ -45,27 +39,12 @@ describe("RepositoryProfileList", () => {
     }
   });
 
-  it("renders applied count for each profile row", async () => {
-    const [firstProfile] = repositoryProfiles;
-    renderWithProviders(
-      <RepositoryProfileList repositoryProfiles={[firstProfile]} />,
-    );
-
-    const table = screen.getByRole("table");
-    const row = within(table).getByRole("row", {
-      name: (name) =>
-        name.toLowerCase().includes(firstProfile.title.toLowerCase()),
-    });
-
-    expect(
-      await within(row).findByText(
-        pluralize(firstProfile.applied_count ?? 0, ["instance"], "exact"),
-      ),
-    ).toBeInTheDocument();
-  });
-
   it("sets sidePath=view and name in URL when clicking a profile title", async () => {
     const [firstProfile] = repositoryProfiles;
+    const accessGroup = accessGroups.find(
+      (group) => group.name === firstProfile.access_group,
+    )?.title;
+
     renderWithProviders(
       <>
         <RepositoryProfileList repositoryProfiles={repositoryProfiles} />
@@ -73,11 +52,23 @@ describe("RepositoryProfileList", () => {
       </>,
     );
 
-    await user.click(
-      await screen.findByRole("button", { name: firstProfile.title }),
-    );
+    const table = screen.getByRole("table");
+    const row = within(table).getByRole("row", {
+      name: (name) =>
+        name.toLowerCase().includes(firstProfile.title.toLowerCase()),
+    });
+    assert(accessGroup);
 
-    expect(screen.getByTestId("location")).toHaveTextContent("sidePath=view");
+    expect(await within(row).findByText(accessGroup)).toBeInTheDocument();
+
+    const profileButton = within(row).getByRole("button", {
+      name: firstProfile.title,
+    });
+    await user.click(profileButton);
+
+    expect(await screen.findByTestId("location")).toHaveTextContent(
+      "sidePath=view",
+    );
     expect(screen.getByTestId("location")).toHaveTextContent(
       `name=${firstProfile.name}`,
     );

@@ -1,23 +1,22 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
-import type { ApiError } from "@/types/api/ApiError";
+import type {
+  PublicationTargetServiceDeletePublicationTargetError,
+  PublicationTargetServiceDeletePublicationTargetData,
+} from "@canonical/landscape-openapi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
-
-interface RemovePublicationTargetParams {
-  name: string;
-}
 
 export default function useRemovePublicationTarget() {
   const authFetchDebArchive = useFetchDebArchive();
   const queryClient = useQueryClient();
 
   const removePublicationTargetQuery = useMutation<
-    AxiosResponse<void>,
-    AxiosError<ApiError>,
-    RemovePublicationTargetParams
+    AxiosResponse,
+    AxiosError<PublicationTargetServiceDeletePublicationTargetError>,
+    PublicationTargetServiceDeletePublicationTargetData["path"]["publicationTarget"]
   >({
     mutationKey: ["publication-targets", "remove"],
-    mutationFn: async ({ name }) => authFetchDebArchive.delete(name),
+    mutationFn: async (name) => authFetchDebArchive.delete(name),
     onSuccess: async () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["publication-targets"] }),

@@ -332,7 +332,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Ubuntu pro",
         Header: "Ubuntu pro expiration",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({ row }: CellProps<Instance>) => {
           if (
             row.original.ubuntu_pro_info?.attached &&
@@ -355,7 +355,7 @@ const InstanceList = memo(function InstanceList({
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({ row }: CellProps<Instance>) => (
           <>
             {moment(row.original.last_ping_time).isValid() ? (
