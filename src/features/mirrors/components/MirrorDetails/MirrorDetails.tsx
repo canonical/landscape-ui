@@ -10,7 +10,7 @@ import {
 } from "@canonical/react-components";
 import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
-import { useGetMirror, useListPublicationTargets } from "../../api";
+import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { getSourceType, shouldShowAuthentication } from "./helpers";
 import MirrorPackagesCount from "../MirrorPackagesCount";
@@ -23,7 +23,10 @@ import UpdateMirrorModal from "../UpdateMirrorModal";
 import { useBoolean } from "usehooks-ts";
 import RemoveMirrorModal from "../RemoveMirrorModal";
 import { boolToLabel } from "@/utils/output";
-import { NoPublicationTargetsModal } from "@/features/publication-targets";
+import {
+  NoPublicationTargetsModal,
+  useGetPublicationTargets,
+} from "@/features/publication-targets";
 import {
   AssociatedPublicationsList,
   useGetPublicationsBySource,
@@ -73,12 +76,11 @@ const MirrorDetails: FC = () => {
   const { publications, isGettingPublications } =
     useGetPublicationsBySource(name);
 
-  const { publicationTargets = [] } = useListPublicationTargets({
-    pageSize: 1000,
-  }).data.data;
+  const { publicationTargets, isGettingPublicationTargets } =
+    useGetPublicationTargets();
 
   const tryPublish = () => {
-    if (publicationTargets.length || publications.length) {
+    if (publicationTargets.length) {
       setPageParams({
         sidePath: [...sidePath, "publish"],
       });
@@ -173,6 +175,7 @@ const MirrorDetails: FC = () => {
             hasIcon
             className="p-segmented-control__button"
             onClick={tryPublish}
+            disabled={isGettingPublicationTargets}
           >
             <Icon name="upload" />
             <span>Publish</span>
