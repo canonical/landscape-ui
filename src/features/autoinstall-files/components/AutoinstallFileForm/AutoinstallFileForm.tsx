@@ -98,10 +98,10 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
           file.is_default === formik.initialValues.is_default;
 
         if (isUnchanged) {
-          notify.info({
-            title: "No changes to save",
-            message: "Update the file before saving.",
-          });
+          formik.setFieldError(
+            "contents",
+            "No changes to save. Update the file before saving.",
+          );
           return;
         }
       }
