@@ -4,6 +4,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import {
   EditUserForm,
+  ThemeSwitcher,
   UserInfo,
   useUserGeneralSettings,
 } from "@/features/general-settings";
@@ -53,7 +54,10 @@ const GeneralSettings: FC = () => {
           <EditUserForm userDetails={userDetails} />
         )}
         {!user?.has_password && userDetails && (
-          <UserInfo userDetails={userDetails} />
+          <>
+            <UserInfo userDetails={userDetails} />
+            <ThemeSwitcher />
+          </>
         )}
       </PageContent>
     </PageMain>
