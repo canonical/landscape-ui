@@ -1,11 +1,14 @@
+import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling";
+import { MAX_HOURS_IN_DAY, MAX_MINUTES_IN_HOUR } from "@/constants";
+import type { ProfileDay } from "@/features/profiles";
 import * as Yup from "yup";
 import type {
-  UpgradeProfileDay,
+  FormProps,
   UpgradeProfileFrequency,
   UpgradeProfileType,
 } from "../../types";
-import { MAX_HOURS_IN_DAY, MAX_MINUTES_IN_HOUR } from "@/constants";
-import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling";
+import { INITIAL_VALUES } from "./constants";
+import type { SingleUpgradeProfileFormProps } from "./types";
 
 export const getValidationSchema = (action: "add" | "edit") => {
   return Yup.object().shape({
@@ -33,7 +36,7 @@ export const getValidationSchema = (action: "add" | "edit") => {
       "This field is required.",
     ),
     on_days: Yup.array()
-      .of(Yup.string<UpgradeProfileDay>())
+      .of(Yup.string<ProfileDay>())
       .when("every", {
         is: "week",
         then: (schema) => schema.min(1, "At least one day must be selected."),
@@ -49,4 +52,28 @@ export const getValidationSchema = (action: "add" | "edit") => {
       "This field is required.",
     ),
   });
+};
+
+export const getInitialValues = (
+  props: SingleUpgradeProfileFormProps,
+): FormProps => {
+  const profile = props.action === "edit" ? props.profile : undefined;
+
+  return props.action === "edit" && profile
+    ? {
+        access_group: profile.access_group,
+        all_computers: profile.all_computers,
+        at_hour: profile.at_hour ? parseInt(profile.at_hour) : ("" as const),
+        at_minute: parseInt(profile.at_minute),
+        autoremove: profile.autoremove,
+        deliver_delay_window: parseInt(profile.deliver_delay_window),
+        deliver_within: parseInt(profile.deliver_within),
+        every: profile.every,
+        on_days: profile.on_days ?? [],
+        randomize_delivery: profile.deliver_delay_window !== "0",
+        tags: profile.tags,
+        title: profile.title,
+        upgrade_type: profile.upgrade_type,
+      }
+    : INITIAL_VALUES;
 };

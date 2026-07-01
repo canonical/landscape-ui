@@ -2,10 +2,9 @@ import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 import type {
-  ImportLocalPackagesError,
-  ImportLocalPackagesData,
-  LocalServiceImportLocalPackagesBody,
-  ImportLocalPackagesResponse,
+  ImportLocalPackagesRequest,
+  LocalServiceImportLocalPackagesError,
+  LocalServiceImportLocalPackagesResponse,
 } from "@canonical/landscape-openapi";
 
 export const useImportRepositoryPackages = () => {
@@ -13,9 +12,9 @@ export const useImportRepositoryPackages = () => {
   const queryClient = useQueryClient();
 
   const { mutateAsync, isPending } = useMutation<
-    AxiosResponse<ImportLocalPackagesResponse>,
-    AxiosError<ImportLocalPackagesError>,
-    LocalServiceImportLocalPackagesBody & ImportLocalPackagesData["path"]
+    AxiosResponse<LocalServiceImportLocalPackagesResponse>,
+    AxiosError<LocalServiceImportLocalPackagesError>,
+    ImportLocalPackagesRequest
   >({
     mutationKey: ["locals", "packages", "import"],
     mutationFn: async ({ name, ...params }) =>

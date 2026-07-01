@@ -78,7 +78,7 @@ describe("PublishRepositoryExistingForm", () => {
     expect(screen.getByText("Contents")).toBeInTheDocument();
   });
 
-  it("renders settings checkboxes", () => {
+  it("renders settings block", () => {
     renderWithProviders(
       <PublishRepositoryExistingForm
         repository={repositories[0]}
@@ -86,10 +86,8 @@ describe("PublishRepositoryExistingForm", () => {
       />,
     );
 
+    expect(screen.getByText("Installs and upgrades")).toBeInTheDocument();
     expect(screen.getByLabelText(/hash based indexing/i)).toBeInTheDocument();
-    expect(
-      screen.getByLabelText(/automatic installation/i),
-    ).toBeInTheDocument();
   });
 
   it("renders publish button", () => {

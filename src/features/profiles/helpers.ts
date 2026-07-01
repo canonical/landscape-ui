@@ -35,6 +35,30 @@ export const getTriggerText = (profile: ScriptProfile, long = false) => {
   }
 };
 
+export const parseSchedule = (schedule: string) => {
+  const map = new Map(
+    schedule.split(";").map((part) => {
+      const [key, value] = part.split("=", 2) as [string, string | undefined];
+
+      return [key.toUpperCase(), value];
+    }),
+  );
+
+  const freq = map.get("FREQ")?.toLowerCase() ?? "";
+  const at_hour = parseInt(map.get("BYHOUR") ?? "", 10);
+  const at_minute = parseInt(map.get("BYMINUTE") ?? "", 10);
+  const on_days = (map.get("BYDAY") ?? "")
+    .split(",")
+    .map((d) => d.toLowerCase());
+
+  return {
+    freq,
+    at_hour,
+    at_minute,
+    on_days,
+  };
+};
+
 export function isScriptProfile(profile: Profile): profile is ScriptProfile {
   return "script_id" in profile;
 }

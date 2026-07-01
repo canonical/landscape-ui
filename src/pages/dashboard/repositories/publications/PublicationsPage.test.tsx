@@ -44,10 +44,35 @@ describe("PublicationsPage", () => {
       "/?sidePath=view&name=7b1d5c2f-0c4e-4d8e-8f2f-99d4f2d9a123",
     );
 
+    const sidePanel = await screen.findByLabelText("Side panel");
+
     expect(
-      await within(screen.getByLabelText("Side panel")).findByRole("button", {
-        name: /republish/i,
+      await within(sidePanel).findByRole(
+        "button",
+        { name: /republish/i },
+        { timeout: 2000 },
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the logs side panel when sidePath=logs is in the URL", async () => {
+    setScreenSize("xxl");
+
+    renderWithProviders(
+      <PublicationsPage />,
+      undefined,
+      "/?sidePath=logs&name=g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
+    );
+
+    const sidePanel = await screen.findByLabelText("Side panel");
+
+    expect(
+      await within(sidePanel).findByRole("heading", {
+        name: /Publication logs for local publication/i,
       }),
+    ).toBeInTheDocument();
+    expect(
+      within(sidePanel).getByRole("button", { name: /copy/i }),
     ).toBeInTheDocument();
   });
 });

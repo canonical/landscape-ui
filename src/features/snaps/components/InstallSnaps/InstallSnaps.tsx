@@ -7,7 +7,7 @@ import { getSelectionLabel } from "@/utils/_helpers";
 import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { useSnaps } from "../../hooks";
+import { useSnapAction } from "../../api";
 import type { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";
 
@@ -18,16 +18,15 @@ const InstallSnaps: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { closeSidePanel } = useSidePanel();
-  const { snapsActionQuery } = useSnaps();
+  const { snapAction, isSnapActionPending: installSnapsLoading } =
+    useSnapAction();
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: installSnaps, isPending: installSnapsLoading } =
-    snapsActionQuery;
 
   const handleSubmit = async () => {
     try {
-      await installSnaps({
+      await snapAction({
         computer_ids: [instanceId],
         snaps: selectedSnaps.map((snap) => ({
           name: snap.name,

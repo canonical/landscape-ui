@@ -8,8 +8,6 @@ export const publicationTargets: PublicationTarget[] = [
     s3: {
       region: "us-east-1",
       bucket: "landscape-prod-packages",
-      awsAccessKeyId: "AKIAIOSFODNN7EXAMPLE",
-      awsSecretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
       prefix: "ubuntu/",
       acl: "private",
       storageClass: "STANDARD",
@@ -25,8 +23,6 @@ export const publicationTargets: PublicationTarget[] = [
     s3: {
       region: "eu-west-1",
       bucket: "landscape-staging-packages",
-      awsAccessKeyId: "AKIAIOSFODNN7EXAMPLE2",
-      awsSecretAccessKey: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY2",
       disableMultiDel: true,
       forceSigV2: false,
     },
@@ -37,8 +33,6 @@ export const publicationTargets: PublicationTarget[] = [
     displayName: "swift-internal",
     swift: {
       container: "landscape-packages",
-      username: "admin",
-      password: "supersecret",
       authUrl: "https://keystone.example.com/v3",
       tenant: "landscape",
     },

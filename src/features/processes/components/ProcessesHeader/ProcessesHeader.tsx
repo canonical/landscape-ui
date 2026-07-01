@@ -4,7 +4,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useProcesses } from "../../hooks";
 import type { UrlParams } from "@/types/UrlParams";
-import { Button } from "@canonical/react-components";
+import { ActionButton } from "@canonical/react-components";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import classes from "./ProcessesHeader.module.scss";
@@ -25,8 +25,10 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
   const { killProcessQuery, terminateProcessQuery } = useProcesses();
 
   const instanceId = Number(urlInstanceId);
-  const { mutateAsync: terminateProcess } = terminateProcessQuery;
-  const { mutateAsync: killProcess } = killProcessQuery;
+  const { mutateAsync: terminateProcess, isPending: isTerminatingProcess } =
+    terminateProcessQuery;
+  const { mutateAsync: killProcess, isPending: isKillingProcess } =
+    killProcessQuery;
 
   const handleEndProcess = async () => {
     try {
@@ -66,22 +68,24 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
             collapseFrom="lg"
             className={classes.actions}
             buttons={[
-              <Button
+              <ActionButton
                 key="end-process"
                 type="button"
                 disabled={0 === selectedPids.length}
                 onClick={handleEndProcess}
+                loading={isTerminatingProcess}
               >
                 End process
-              </Button>,
-              <Button
+              </ActionButton>,
+              <ActionButton
                 key="kill-process"
                 type="button"
                 disabled={0 === selectedPids.length}
                 onClick={handleKillProcess}
+                loading={isKillingProcess}
               >
                 Kill process
-              </Button>,
+              </ActionButton>,
             ]}
           />
         }

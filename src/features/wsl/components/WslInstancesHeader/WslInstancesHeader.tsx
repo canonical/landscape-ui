@@ -11,7 +11,7 @@ import type {
   WindowsInstanceWithoutRelation,
 } from "@/types/Instance";
 import { getSelectionLabel } from "@/utils/_helpers";
-import { Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -39,7 +39,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const { reapplyWslProfile } = useReapplyWslProfile();
+  const { reapplyWslProfile, isReapplyingWslProfile } = useReapplyWslProfile();
 
   const {
     value: isReinstallModalOpen,
@@ -113,7 +113,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
               buttons={[
                 ...(hasWslProfiles
                   ? [
-                      <Button
+                      <ActionButton
                         key="install"
                         type="button"
                         onClick={install}
@@ -125,10 +125,11 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                               wslInstance.compliance !== "uninstalled",
                           )
                         }
+                        loading={isReapplyingWslProfile}
                       >
                         <Icon name="begin-downloading" />
                         <span>Install</span>
-                      </Button>,
+                      </ActionButton>,
                       <Button
                         key="reinstall"
                         type="button"

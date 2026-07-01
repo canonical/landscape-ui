@@ -5,9 +5,7 @@ import { BREAKPOINT_PX } from "@/constants";
 export const expectLoadingState = async (): Promise<void> => {
   const loadingSpinner = await screen.findByRole("status");
   expect(loadingSpinner).toHaveTextContent("Loading...");
-  await waitForElementToBeRemoved(loadingSpinner, {
-    timeout: 2000,
-  });
+  await waitForElementToBeRemoved(loadingSpinner);
 };
 
 export const expectErrorNotification = async (): Promise<void> => {

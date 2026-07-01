@@ -4,6 +4,7 @@ import type { ComponentProps } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import DetachTokenModal from "./DetachTokenModal";
 
 describe("DetachTokenModal", () => {
@@ -202,7 +203,7 @@ describe("DetachTokenModal", () => {
     await user.click(screen.getByRole("button", { name: /^detach$/i }));
 
     expect(
-      await screen.findByText('The endpoint status is set to "error".'),
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
     ).toBeInTheDocument();
     expect(onClose).toHaveBeenCalled();
   });

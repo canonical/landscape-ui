@@ -5,22 +5,11 @@ import { describe, expect, it } from "vitest";
 import RemovalProfilesPage from "./RemovalProfilesPage";
 import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
-import type * as actualModule from "@/features/profiles";
-
-vi.mock("@/features/profiles", async () => {
-  const actual = await vi.importActual<typeof actualModule>(
-    "@/features/profiles",
-  );
-
-  return {
-    ...actual,
-    ProfilesContainer: () => <div>Removal profiles table</div>,
-  };
-});
 
 describe("RemovalProfilesPage", () => {
   it("has a button to add a profile", async () => {
     renderWithProviders(<RemovalProfilesPage />);
+    expect(await screen.findByRole("searchbox")).toBeInTheDocument();
 
     const user = userEvent.setup();
 
@@ -46,7 +35,6 @@ describe("RemovalProfilesPage", () => {
       `/?sidePath=edit&name=${removalProfiles[0].id}`,
     );
 
-    await expectLoadingState();
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("heading", {
         name: `Edit ${removalProfiles[0].title}`,

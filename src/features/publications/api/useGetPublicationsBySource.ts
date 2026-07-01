@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 import type {
   Publication,
-  ListPublicationsError,
+  PublicationServiceListPublicationsError,
   ListPublicationsResponse,
 } from "@canonical/landscape-openapi";
 
@@ -12,7 +12,7 @@ export const useGetPublicationsBySource = (source?: string) => {
 
   const { data, isLoading } = useQuery<
     Publication[],
-    AxiosError<ListPublicationsError>
+    AxiosError<PublicationServiceListPublicationsError>
   >({
     queryKey: ["publications", source],
     enabled: !!source,

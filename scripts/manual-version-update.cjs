@@ -24,7 +24,8 @@ if (!newVersion) {
   process.exit(1);
 }
 
-const cleanVersion = newVersion.replace("-beta", "").replace("-dev", "");
+// Strip any pre-release suffix so package.json keeps a clean numeric CalVer.
+const cleanVersion = newVersion.replace(/-(beta|dev|rc)$/, "");
 const projectRoot = path.resolve(__dirname, "..");
 const pkgPath = path.join(projectRoot, "package.json");
 const changelogPath = path.join(projectRoot, "CHANGELOG.md");
@@ -131,6 +132,9 @@ function prependChangelog(filePath, section) {
   }
   const lines = existing.split("\n");
   const before = lines.slice(0, dividerIdx + 1).join("\n");
-  const rest = lines.slice(dividerIdx + 1).join("\n").replace(/^\n+/, "");
+  const rest = lines
+    .slice(dividerIdx + 1)
+    .join("\n")
+    .replace(/^\n+/, "");
   fs.writeFileSync(filePath, `${before}\n\n${section}${rest}`);
 }

@@ -20,7 +20,6 @@ const DashboardTemplate: FC<DashboardTemplateProps> = ({ children }) => {
         <ApplicationIdContext value={applicationId}>
           <main className={classNames("l-main", classes.wrapper)}>
             <div className={classes.pageContent}>{children}</div>
-            {/* {children} */}
           </main>
         </ApplicationIdContext>
       </SidePanelProvider>

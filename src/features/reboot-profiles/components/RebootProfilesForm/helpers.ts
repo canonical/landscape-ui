@@ -3,13 +3,9 @@ import {
   MAX_HOURS_IN_DAY,
   MAX_MINUTES_IN_HOUR,
 } from "@/constants";
+import { parseSchedule, type ProfileDay } from "@/features/profiles";
 import * as Yup from "yup";
-import { parseSchedule } from "../../helpers";
-import type {
-  FormProps,
-  RebootProfileDay,
-  RebootProfilesFormProps,
-} from "./types";
+import type { FormProps, RebootProfilesFormProps } from "./types";
 import { randomizationValidationSchema } from "@/components/form/DeliveryScheduling";
 
 export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
@@ -37,7 +33,7 @@ export const getValidationSchema = (action: "add" | "edit" | "duplicate") => {
       .min(0, "'Expires after' must be at least 0."),
     tags: Yup.array().of(Yup.string()),
     on_days: Yup.array()
-      .of(Yup.string<RebootProfileDay>())
+      .of(Yup.string<ProfileDay>())
       .min(1, "At least one day must be selected."),
   });
 };

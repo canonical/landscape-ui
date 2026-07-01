@@ -7,9 +7,9 @@ import type { AxiosResponse } from "axios";
 import type { FC } from "react";
 import { useRepositoryProfiles } from "../../api";
 import type { RepositoryProfile } from "../../types";
-import RepositoryProfileAddButton from "../RepositoryProfileAddButton";
 import RepositoryProfileList from "../RepositoryProfileList";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch/HeaderWithSearch";
+import { AddProfileButton } from "@/features/profiles";
 
 interface RepositoryProfileContainerProps {
   readonly unfilteredRepositoryProfilesResult: UseQueryResult<
@@ -48,7 +48,7 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
           href: "https://ubuntu.com/landscape/docs/manage-repositories-web-portal",
           text: "How to manage repositories in Landscape",
         }}
-        cta={[<RepositoryProfileAddButton key="add" />]}
+        cta={[<AddProfileButton key="add" />]}
       />
     );
   }

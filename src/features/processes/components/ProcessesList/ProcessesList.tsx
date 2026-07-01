@@ -28,6 +28,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
     () => [
       {
         accessor: "name",
+        className: "large-cell",
         Header: (
           <>
             <CheckboxInput
@@ -91,7 +92,7 @@ const ProcessesList: FC<ProcessesListProps> = ({
       {
         accessor: "start_time",
         Header: "Started at",
-        className: "date-cell",
+        className: "large-cell",
         Cell: ({ row }: CellProps<Process>) => (
           <span className="font-monospace">
             {moment(row.original.start_time).format(DISPLAY_DATE_TIME_FORMAT)}
