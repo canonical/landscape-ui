@@ -24,6 +24,7 @@ interface TableFilterChipsProps {
   readonly statusOptions?: SelectOption[];
   readonly tagOptions?: SelectOption[];
   readonly typeOptions?: SelectOption[];
+  readonly upgradesOptions?: SelectOption[];
   readonly wslOptions?: SelectOption[];
 }
 
@@ -37,6 +38,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
   statusOptions,
   tagOptions,
   typeOptions,
+  upgradesOptions,
   wslOptions,
 }) => {
   const { setPageParams, ...pageParams } = usePageParams();
@@ -54,6 +56,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     query,
     passRateFrom,
     passRateTo,
+    upgrades,
     wsl,
   } = pageParams;
 
@@ -101,6 +104,16 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
         label: "OS",
         item: getItem(osOptions, os),
         clear: createClearer({ os: "" }),
+      },
+    },
+    {
+      condition: filtersToDisplay.includes("upgrades"),
+      value: {
+        label: "Upgrades",
+        multiple: true as const,
+        items: getItems(upgradesOptions, upgrades),
+        remove: createRemover("upgrades", filterItem),
+        clear: createClearer({ upgrades: [] }),
       },
     },
     {
@@ -211,6 +224,7 @@ const TableFilterChips: FC<TableFilterChipsProps> = ({
     query: "",
     passRateFrom: 0,
     passRateTo: 100,
+    upgrades: [],
     wsl: [],
   });
 

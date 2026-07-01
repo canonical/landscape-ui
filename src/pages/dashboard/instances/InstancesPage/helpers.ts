@@ -16,6 +16,7 @@ interface GetQueryProps {
   query: string;
   status: string;
   tags: string[];
+  upgrades: string[];
 }
 
 export const getQuery = ({
@@ -26,6 +27,7 @@ export const getQuery = ({
   query,
   status,
   tags,
+  upgrades,
 }: GetQueryProps) => {
   const queryParts: string[] = [];
 
@@ -49,6 +51,10 @@ export const getQuery = ({
 
   if (tags.length) {
     queryParts.push(`tag:${tags.join(" OR tag:")}`);
+  }
+
+  if (upgrades.length) {
+    queryParts.push(upgrades.map((upgrade) => `alert:${upgrade}`).join(" OR "));
   }
 
   if (accessGroups.length) {

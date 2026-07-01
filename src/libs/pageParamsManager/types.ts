@@ -25,6 +25,7 @@ export interface PageParams {
   tab: string;
   tags: string[];
   toDate: string;
+  upgrades: string[];
   passRateTo: number;
   passRateFrom: number;
   type: string;
