@@ -20,7 +20,9 @@ describe("AssociatedPublicationsCount", () => {
 
     expect(await screen.findByRole("link")).toHaveAttribute(
       "href",
-      expect.stringContaining(encodeURIComponent(repositories[0].name)),
+      expect.stringContaining(
+        encodeURIComponent(`source:${repositories[0].name}`),
+      ),
     );
     expect(screen.getByText(/1 publication/i)).toBeInTheDocument();
   });

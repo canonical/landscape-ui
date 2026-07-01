@@ -8,7 +8,7 @@ import {
   AssociatedPublicationsList,
   useGetPublicationsBySource,
 } from "@/features/publications";
-import LoadingState from "@/components/layout/SidePanel/LoadingState";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface RemoveMirrorModalProps {
   readonly close: () => void;
