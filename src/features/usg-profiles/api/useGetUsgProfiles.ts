@@ -26,6 +26,8 @@ export const useGetUsgProfiles = (
 ) => {
   const authFetch = useFetch();
 
+  const queryParams = { ...params, search: params?.search || undefined };
+
   const {
     data: response,
     isLoading,
@@ -34,9 +36,9 @@ export const useGetUsgProfiles = (
     AxiosResponse<ApiPaginatedResponse<USGProfile>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["usgProfiles", params],
+    queryKey: ["usgProfiles", queryParams],
     queryFn: async ({ signal }) =>
-      authFetch.get("usg-profiles", { params, signal }),
+      authFetch.get("usg-profiles", { params: queryParams, signal }),
     ...options,
   });
 
