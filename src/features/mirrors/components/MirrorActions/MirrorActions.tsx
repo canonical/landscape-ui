@@ -79,7 +79,6 @@ const MirrorActions: FC<MirrorActionsProps> = ({
                 icon: "spinner u-animation--spin",
                 label: "Updating",
                 disabled: true,
-                tooltipMessage: "You must wait for this action to be completed to trigger a new update.",
               }
             : {
                 icon: "restart",
