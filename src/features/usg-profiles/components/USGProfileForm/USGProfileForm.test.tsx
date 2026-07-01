@@ -2,7 +2,7 @@ import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
 import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import moment from "moment";
+import date from "@/libs/date";
 import { type ComponentProps } from "react";
 import { describe, it } from "vitest";
 import USGProfileForm from "./USGProfileForm";
@@ -25,7 +25,7 @@ describe("USGProfileForm", () => {
       randomize_delivery: false,
       restart_deliver_delay: 0,
       deliver_delay_window: 0,
-      start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+      start_date: date().format(INPUT_DATE_TIME_FORMAT),
       start_type: "on-a-date",
       tags: [],
       tailoring_file: null,

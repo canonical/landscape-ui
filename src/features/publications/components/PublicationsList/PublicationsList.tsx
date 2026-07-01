@@ -17,7 +17,7 @@ import {
   DEFAULT_POLLING_INTERVAL,
   DISPLAY_DATE_TIME_FORMAT,
 } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import {
@@ -99,7 +99,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
         className: "medium-cell",
         Cell: ({ row: { original } }: CellProps<Publication>) =>
           original.publishTime
-            ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
+            ? date(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
             : NO_DATA_TEXT,
       },
       {

@@ -1,4 +1,4 @@
-import moment from "moment/moment";
+import date from "@/libs/date";
 import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
 import NoData from "@/components/layout/NoData";
@@ -44,7 +44,7 @@ export const getAccessGroup = (
 };
 
 export const getCreationTime = (time: string) => {
-  return moment(time)
+  return date(time)
     .utc()
     .calendar({
       sameElse: `${DISPLAY_DATE_TIME_FORMAT} [UTC]`,

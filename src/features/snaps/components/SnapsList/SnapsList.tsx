@@ -4,7 +4,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import useSidePanel from "@/hooks/useSidePanel";
 import { Button, CheckboxInput, Tooltip } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { Suspense, useCallback, useMemo } from "react";
 import type { CellProps, Column, Row } from "react-table";
@@ -116,12 +116,10 @@ const SnapsList: FC<SnapsListProps> = ({
         className: "large-cell",
         Cell: ({ row }: CellProps<InstalledSnap>) => (
           <>
-            {moment(row.original.held_until).isValid() ? (
+            {date(row.original.held_until).isValid() ? (
               <span className="font-monospace">
                 {" "}
-                {moment(row.original.held_until).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )}
+                {date(row.original.held_until).format(DISPLAY_DATE_TIME_FORMAT)}
               </span>
             ) : (
               <NoData />

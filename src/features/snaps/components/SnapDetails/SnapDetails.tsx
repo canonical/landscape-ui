@@ -1,6 +1,6 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import type { InstalledSnap } from "../../types";
 import SnapsActions from "../SnapsActions";
@@ -23,10 +23,8 @@ const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
         <InfoGrid.Item
           label="Held until"
           value={
-            moment(installedSnap.held_until).isValid()
-              ? moment(installedSnap.held_until).format(
-                  DISPLAY_DATE_TIME_FORMAT,
-                )
+            date(installedSnap.held_until).isValid()
+              ? date(installedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
               : null
           }
         />

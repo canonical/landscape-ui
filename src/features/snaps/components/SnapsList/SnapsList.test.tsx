@@ -4,7 +4,7 @@ import { installedSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import moment from "moment";
+import date from "@/libs/date";
 import { describe, expect, vi } from "vitest";
 import SnapsList from "./SnapsList";
 import { setScreenSize } from "@/tests/helpers";
@@ -150,8 +150,8 @@ describe("SnapsList", () => {
         { label: "Confinement", value: selectedSnap.confinement },
         {
           label: "Held until",
-          value: moment(selectedSnap.held_until).isValid() ? (
-            moment(selectedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
+          value: date(selectedSnap.held_until).isValid() ? (
+            date(selectedSnap.held_until).format(DISPLAY_DATE_TIME_FORMAT)
           ) : (
             <NoData />
           ),

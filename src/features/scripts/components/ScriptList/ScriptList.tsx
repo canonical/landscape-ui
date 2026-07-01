@@ -12,7 +12,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import { ROUTES } from "@/libs/routes";
 import type { SelectOption } from "@/types/SelectOption";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC, ReactElement } from "react";
 import { lazy, Suspense, useCallback, useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -144,7 +144,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         }: CellProps<Script>): ReactElement<Element> => (
           <div>
             <div className="font-monospace">
-              {moment(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+              {date(original.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
             </div>
             <div className="u-text--muted p-text--small u-no-margin--bottom">
               {original.created_by.name}
@@ -161,7 +161,7 @@ const ScriptList: FC<ScriptListProps> = ({ scripts }) => {
         }: CellProps<Script>): ReactElement<Element> => (
           <div>
             <div className="font-monospace">
-              {moment(original.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
+              {date(original.last_edited_at).format(DISPLAY_DATE_TIME_FORMAT)}
             </div>
             <div className="u-text--muted p-text--small u-no-margin--bottom">
               {original.last_edited_by.name}

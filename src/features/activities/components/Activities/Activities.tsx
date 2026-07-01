@@ -5,7 +5,7 @@ import { TablePagination } from "@/components/layout/TablePagination";
 import { BREAKPOINT_PX, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ROUTES } from "@/libs/routes";
 import { Button, CheckboxInput } from "@canonical/react-components";
-import moment from "moment/moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useCallback, useMemo } from "react";
 import { Link } from "react-router";
@@ -151,7 +151,7 @@ const Activities: FC<ActivitiesProps> = ({
           className: "large-cell",
           Cell: ({ row }: CellProps<ActivityCommon>) => (
             <span className="font-monospace">
-              {moment(row.original.creation_time).format(
+              {date(row.original.creation_time).format(
                 DISPLAY_DATE_TIME_FORMAT,
               )}
             </span>

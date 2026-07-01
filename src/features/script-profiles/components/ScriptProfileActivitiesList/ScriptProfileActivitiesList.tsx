@@ -1,7 +1,7 @@
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ACTIVITY_STATUSES, type ActivityCommon } from "@/features/activities";
 import { ModularTable } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import { type FC, useMemo } from "react";
 import { Link } from "react-router";
 import type { CellProps, Column } from "react-table";
@@ -24,7 +24,7 @@ const ScriptProfileActivitiesList: FC<ScriptProfileActivitiesListProps> = ({
             className="font-monospace"
             to={ROUTES.activities.root({ query: `parent-id:${activity.id}` })}
           >
-            {moment(activity.creation_time)
+            {date(activity.creation_time)
               .utc()
               .format(DISPLAY_DATE_TIME_FORMAT)}
           </Link>

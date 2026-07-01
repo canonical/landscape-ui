@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import moment from "moment";
+import date from "@/libs/date";
 import { MAX_DELIVERY_DELAY_WINDOW } from "@/constants";
 
 export const deliveryValidationSchema = {
@@ -10,8 +10,7 @@ export const deliveryValidationSchema = {
       schema.required("This field is required.").test({
         name: "is-in-future",
         message: "You have to enter a valid date and time in the future.",
-        test: (value) =>
-          moment(value).isValid() && moment(value).isAfter(moment()),
+        test: (value) => date(value).isValid() && date(value).isAfter(date()),
       }),
   }),
 };
