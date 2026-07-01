@@ -9,6 +9,15 @@ import { createEndpointStatusNetworkError } from "./_constants";
 const matchesFeaturesPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("features");
 
+// The reports side panel ships on by default in production, so the MSW mock
+// always reports `instance-reports` as enabled — even when the features
+// endpoint is otherwise emptied — so "View report" is available whenever
+// developing or testing against MSW. To test the disabled state, override the
+// features endpoint with `server.use(...)` returning the feature as disabled.
+const alwaysEnabledFeatures = features.filter(
+  (feature) => feature.key === "instance-reports",
+);
+
 export default [
   http.get(`${API_URL}features`, () => {
     const endpointStatus = getEndpointStatus();
@@ -19,7 +28,7 @@ export default [
     ) {
       return HttpResponse.json(
         generatePaginatedResponse<Feature>({
-          data: [],
+          data: alwaysEnabledFeatures,
           offset: 0,
           limit: 20,
         }),

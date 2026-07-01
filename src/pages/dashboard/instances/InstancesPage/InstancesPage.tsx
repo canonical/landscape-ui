@@ -2,15 +2,20 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances } from "@/features/instances";
+import {
+  InstancesPageActions,
+  setSelectedInstanceIds,
+  useGetInstances,
+} from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { useCallback, useState, type FC } from "react";
+import { useCallback, useEffect, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
 import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
+  const { query } = filters;
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     query: getQuery(filters),
@@ -25,6 +30,21 @@ const InstancesPage: FC = () => {
   });
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
+
+  // Clear the selection when the search query changes (e.g. following a report
+  // deep link), matching how header filter changes reset it. Resetting state
+  // during render (React's documented pattern) avoids an extra commit.
+  const [trackedQuery, setTrackedQuery] = useState(query);
+  if (trackedQuery !== query) {
+    setTrackedQuery(query);
+    setSelectedInstances([]);
+  }
+
+  // Mirror the selection into an external store so side panel content (whose
+  // props are frozen when the panel opens) can detect selection changes.
+  useEffect(() => {
+    setSelectedInstanceIds(selectedInstances.map(({ id }) => id));
+  }, [selectedInstances]);
 
   const clearSelection = useCallback(() => {
     setSelectedInstances([]);
