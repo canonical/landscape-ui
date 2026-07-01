@@ -15,7 +15,7 @@ import {
   Icon,
   ICONS,
 } from "@canonical/react-components";
-import { useFormik } from "formik";
+import { type FormikHelpers, useFormik } from "formik";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -69,7 +69,22 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
     }
   };
 
-  const handleSubmit = async (values: { roles: string[] }) => {
+  const handleSubmit = async (
+    values: { roles: string[] },
+    { setFieldError }: FormikHelpers<{ roles: string[] }>,
+  ) => {
+    const isUnchanged =
+      values.roles.length === currentAdministrator.roles.length &&
+      values.roles.every((role) => currentAdministrator.roles.includes(role));
+
+    if (isUnchanged) {
+      setFieldError(
+        "roles",
+        "No changes to save. Update the administrator roles before saving.",
+      );
+      return;
+    }
+
     try {
       await editAdministrator({ id: administrator.id, roles: values.roles });
 
@@ -87,9 +102,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   const formik = useFormik({
     initialValues: { roles: [] as string[] },
     validationSchema: Yup.object().shape({
-      roles: Yup.array()
-        .of(Yup.string())
-        .min(1, "At least one role is required"),
+      roles: Yup.array().of(Yup.string()),
     }),
     onSubmit: handleSubmit,
   });
@@ -149,13 +162,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          formik.isSubmitting ||
-          (formik.values.roles.length === currentAdministrator.roles.length &&
-            formik.values.roles.every((role) =>
-              currentAdministrator.roles.includes(role),
-            ))
-        }
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

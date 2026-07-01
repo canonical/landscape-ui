@@ -351,7 +351,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
       )}
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
         onCancel={popSidePathUntilClear}
       />

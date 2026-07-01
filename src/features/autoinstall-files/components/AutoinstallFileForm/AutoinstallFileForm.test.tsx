@@ -64,8 +64,9 @@ describe("AutoinstallFileForm", () => {
     expect(submitButton).toBeInTheDocument();
   });
 
-  it("should show a disabled button when first creating a form", async () => {
+  it("keeps submit enabled but blocks invalid submission on create", async () => {
     const props = createAutoinstallFileProps();
+    const user = userEvent.setup();
     renderWithProviders(<AutoinstallFileForm {...props} />);
 
     expect(
@@ -76,7 +77,13 @@ describe("AutoinstallFileForm", () => {
       name: props.buttonText,
     });
 
-    expect(submitButton).toHaveAttribute("aria-disabled", "true");
+    expect(submitButton).toBeEnabled();
+    await user.click(submitButton);
+
+    expect(await screen.findAllByText("This field is required")).toHaveLength(
+      2,
+    );
+    expect(props.onSubmit).not.toHaveBeenCalled();
   });
 
   it("populates filename from uploaded file when creating", async () => {
@@ -125,17 +132,11 @@ describe("AutoinstallFileForm", () => {
       <AutoinstallFileForm {...createAutoinstallFileWithContentsProps()} />,
     );
 
-    expect(screen.getByRole("button", { name: "Add" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(screen.getByRole("button", { name: "Add" })).toBeEnabled();
 
     await user.type(screen.getByTestId("mock-monaco"), "\n# changed");
 
-    expect(screen.getByRole("button", { name: "Add" })).not.toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(screen.getByRole("button", { name: "Add" })).toBeEnabled();
   });
 
   it("submits successfully after validation", async () => {

@@ -240,7 +240,7 @@ const WslProfileAddSidePanel: FC = () => {
           <SidePanelFormButtons
             submitButtonText="Add WSL profile"
             submitButtonAriaLabel="Add a new WSL profile"
-            submitButtonDisabled={formik.isSubmitting}
+            submitButtonLoading={formik.isSubmitting}
             onCancel={closeSidePanel}
           />
         </Form>

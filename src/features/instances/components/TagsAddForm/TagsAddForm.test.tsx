@@ -27,14 +27,17 @@ describe("TagsAddForm", async () => {
       ).toBeInTheDocument();
     });
 
-    it("should disable submit button when no tags are selected", async () => {
+    it("keeps submit enabled and shows validation feedback when no tags are selected", async () => {
       renderWithProviders(<TagsAddForm selected={instances} />);
       await expectLoadingState();
 
       const assignButton = screen.getByRole("button", { name: /assign/i });
 
-      expect(assignButton).toHaveAttribute("aria-disabled", "true");
+      expect(assignButton).toBeEnabled();
       await userEvent.click(assignButton);
+      expect(
+        await screen.findByText(/select at least one tag to assign/i),
+      ).toBeInTheDocument();
       expect(screen.queryByText(/tags assigned/i)).not.toBeInTheDocument();
 
       await Promise.all(
@@ -43,7 +46,6 @@ describe("TagsAddForm", async () => {
           .map((checkbox) => userEvent.click(checkbox)),
       );
 
-      expect(assignButton).not.toHaveAttribute("aria-disabled");
       expect(assignButton).toBeEnabled();
       await userEvent.click(assignButton);
 
@@ -91,9 +93,13 @@ describe("TagsAddForm", async () => {
       // Toggle all off by clicking header checkbox again
       await userEvent.click(checkbox);
 
-      // Submit button should be disabled again
+      // Submit stays enabled, but empty submit should be blocked.
       const assignButton = screen.getByRole("button", { name: /assign/i });
-      expect(assignButton).toHaveAttribute("aria-disabled", "true");
+      expect(assignButton).toBeEnabled();
+      await userEvent.click(assignButton);
+      expect(
+        await screen.findByText(/select at least one tag to assign/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -256,13 +262,20 @@ describe("TagsAddForm", async () => {
     // Use fireEvent to call toggle even on the disabled/checked checkbox
     fireEvent.change(appserversCheckbox, { target: { checked: false } });
 
-    // Assign button remains disabled since selectedTags is still empty
+    // Assign remains enabled, but submit is blocked when selectedTags is empty.
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /assign/i })).toHaveAttribute(
-        "aria-disabled",
-        "true",
-      );
+      expect(screen.getByRole("button", { name: /assign/i })).toBeEnabled();
     });
+
+    await userEvent.click(screen.getByRole("button", { name: /assign/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/select at least one tag to assign/i),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
   it("should disable checkbox for tags that all selected instances already have", async () => {

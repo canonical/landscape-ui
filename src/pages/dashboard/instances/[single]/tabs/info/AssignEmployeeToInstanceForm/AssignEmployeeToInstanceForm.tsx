@@ -87,7 +87,7 @@ const AssignEmployeeToInstanceForm: FC<AssignEmployeeToInstanceFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={isAssociating}
+        submitButtonLoading={isAssociating}
         submitButtonText="Associate"
         submitButtonAppearance="positive"
       />

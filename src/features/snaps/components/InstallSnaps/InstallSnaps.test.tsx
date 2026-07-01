@@ -1,6 +1,6 @@
 import { PATHS } from "@/libs/routes";
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import InstallSnaps from "./InstallSnaps";
@@ -52,7 +52,13 @@ describe("InstallSnaps", () => {
       name: /install/i,
     });
 
-    expect(installButton).toHaveAttribute("aria-disabled", "true");
+    expect(installButton).toBeEnabled();
+
+    await userEvent.click(installButton);
+    expect(
+      await screen.findByText(/select at least one snap to install/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/you queued/i)).not.toBeInTheDocument();
 
     await userEvent.type(searchBox, "Snap 2");
     const firstMatchingSnap = await screen.findByText("Snap 2");
@@ -85,10 +91,12 @@ describe("InstallSnaps", () => {
     const addButton = await screen.findByRole("button", { name: /add/i });
     await userEvent.click(addButton);
 
-    const installButton = screen.getByRole("button", {
-      name: /install snaps/i,
-    });
-    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
+    const installButton = await waitFor(() =>
+      screen.getByRole("button", {
+        name: /install snaps/i,
+      }),
+    );
+    expect(installButton).toBeEnabled();
     await userEvent.click(installButton);
 
     expect(await screen.findByText(/you queued/i)).toBeInTheDocument();

@@ -25,6 +25,14 @@ const InstallSnaps: FC = () => {
   const instanceId = Number(urlInstanceId);
 
   const handleSubmit = async () => {
+    if (selectedSnaps.length === 0) {
+      notify.error({
+        title: "No snaps selected",
+        message: "Select at least one snap to install.",
+      });
+      return;
+    }
+
     try {
       await snapAction({
         computer_ids: [instanceId],
@@ -57,9 +65,7 @@ const InstallSnaps: FC = () => {
         }}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={
-          selectedSnaps.length === 0 || confirming || installSnapsLoading
-        }
+        submitButtonLoading={confirming || installSnapsLoading}
         cancelButtonDisabled={installSnapsLoading}
         submitButtonText="Install snaps"
         submitButtonAppearance="positive"

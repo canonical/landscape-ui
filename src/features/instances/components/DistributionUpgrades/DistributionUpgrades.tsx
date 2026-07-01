@@ -74,6 +74,18 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   const { createDistributionUpgrades, isCreatingDistributionUpgrades } =
     useCreateDistributionUpgrades();
 
+  const handleOpenModal = () => {
+    if (finalEligibleIds.length === 0) {
+      notify.error({
+        title: "No eligible instances",
+        message: "Select at least one eligible instance to upgrade.",
+      });
+      return;
+    }
+
+    openModal();
+  };
+
   const handleConfirm = async () => {
     try {
       const { data: activity } = await createDistributionUpgrades({
@@ -177,7 +189,13 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
   }
 
   return (
-    <Form noValidate onSubmit={openModal}>
+    <Form
+      noValidate
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleOpenModal();
+      }}
+    >
       <Notification severity="caution" title="Warning">
         When upgrading distributions, misbehaved packages may require user input
         which can cause the upgrade to fail. Test the upgrade on a test system
@@ -187,14 +205,9 @@ const DistributionUpgrades: FC<DistributionUpgradesProps> = ({
       <ModularTable columns={columns} data={tableData} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          isGettingDistributionUpgradeTargets ||
-          isCreatingDistributionUpgrades ||
-          finalEligibleIds.length === 0
-        }
         submitButtonLoading={isCreatingDistributionUpgrades}
         submitButtonText="Upgrade distributions"
-        onSubmit={openModal}
+        onSubmit={handleOpenModal}
       />
 
       {showConfirmModal && (

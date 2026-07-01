@@ -32,7 +32,7 @@ describe("PackagesInstallForm", () => {
       ).toBeInTheDocument();
     });
 
-    it("install button is disabled when no packages selected", () => {
+    it("keeps install button enabled and blocks empty submission", async () => {
       renderWithProviders(
         <PackagesInstallForm />,
         {},
@@ -43,7 +43,13 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).toHaveAttribute("aria-disabled", "true");
+      expect(installButton).toBeEnabled();
+
+      await user.click(installButton);
+
+      expect(
+        await screen.findByText(/select at least one package to install/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -69,7 +75,6 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).not.toHaveAttribute("aria-disabled");
       expect(installButton).toBeEnabled();
     });
 
@@ -141,6 +146,11 @@ describe("PackagesInstallForm", () => {
     const installButton = screen.getByRole("button", {
       name: "Install packages",
     });
-    expect(installButton).toHaveAttribute("aria-disabled", "true");
+    expect(installButton).toBeEnabled();
+
+    await user.click(installButton);
+    expect(
+      await screen.findByText(/select at least one package to install/i),
+    ).toBeInTheDocument();
   });
 });

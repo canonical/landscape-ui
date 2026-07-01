@@ -81,7 +81,9 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     initialValues: { source: "" },
     onSubmit: handleSubmit,
     validationSchema: Yup.object().shape({
-      source: Yup.string().required("This field is required."),
+      source: Yup.string()
+        .required("This field is required.")
+        .matches(/^(https?|file):\/\/.+/, "Please enter a valid URL."),
     }),
   });
 
@@ -90,6 +92,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   }
 
   const handleValidate = async () => {
+    if (!formik.values.source || formik.errors.source) {
+      formik.setFieldTouched("source", true);
+      return;
+    }
+
     try {
       setOperationName("");
 
@@ -105,14 +112,14 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     }
   };
 
-  const canImport =
-    validationTask?.error?.code === 4 ||
-    (validationTask?.status === "succeeded" && !!validationTask.count);
-
   const packagesCount =
     validationTask && validationTask.count > 0
       ? pluralize(validationTask.count, ["package"], "exact")
       : "packages";
+
+  const shouldDisableImportButton =
+    (!!validationTask?.error && validationTask.error.code !== 4) ||
+    (validationTask?.done && validationTask?.count === 0);
 
   return (
     <>
@@ -130,6 +137,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               help={
                 "In order to upload packages, provide a URL for Landscape to fetch the packages from."
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                }
+              }}
             />
 
             <ActionButton
@@ -152,7 +164,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
           )}
 
           <SidePanelFormButtons
-            submitButtonDisabled={!canImport}
+            submitButtonDisabled={shouldDisableImportButton}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}

@@ -73,7 +73,9 @@ describe("USGProfileForm", () => {
   });
 
   it("should require a minimum interval of 7 days", async () => {
-    renderWithProviders(<USGProfileForm {...props} />);
+    const mutate = vi.fn();
+
+    renderWithProviders(<USGProfileForm {...props} mutate={mutate} />);
 
     await userEvent.selectOptions(
       screen.getByRole("combobox", { name: "Schedule" }),
@@ -95,8 +97,38 @@ describe("USGProfileForm", () => {
       await screen.findByText("Enter an interval of at least 7 days."),
     ).toBeInTheDocument();
 
-    expect(
-      await screen.findByRole("button", { name: "Submit" }),
-    ).toHaveAttribute("aria-disabled", "true");
+    const submitButton = await screen.findByRole("button", { name: "Submit" });
+    expect(submitButton).toBeEnabled();
+
+    await userEvent.click(submitButton);
+
+    expect(mutate).not.toHaveBeenCalled();
+  });
+
+  it("should block submit when required fields are invalid", async () => {
+    const mutate = vi.fn();
+
+    renderWithProviders(
+      <USGProfileForm
+        {...props}
+        mutate={mutate}
+        initialValues={{
+          ...props.initialValues,
+          title: "",
+          benchmark: undefined,
+          mode: undefined,
+        }}
+      />,
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: props.submitButtonText }),
+    );
+
+    expect(mutate).not.toHaveBeenCalled();
+    const requiredErrors = await screen.findAllByText(
+      "This field is required.",
+    );
+    expect(requiredErrors.length).toBeGreaterThan(0);
   });
 });

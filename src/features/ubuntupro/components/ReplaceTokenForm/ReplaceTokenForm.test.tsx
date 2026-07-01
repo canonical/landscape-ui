@@ -35,11 +35,11 @@ describe("ReplaceTokenForm", () => {
     expect(link).toHaveAttribute("target", "_blank");
   });
 
-  it("disables submit button when form is pristine", () => {
+  it("keeps submit button enabled when form is pristine", () => {
     renderWithProviders(<ReplaceTokenForm {...props} />);
 
     const submitButton = screen.getByRole("button", { name: /replace/i });
-    expect(submitButton).toHaveAttribute("aria-disabled", "true");
+    expect(submitButton).toBeEnabled();
   });
 
   it("renders cancel button", () => {

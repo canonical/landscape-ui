@@ -1,14 +1,20 @@
 import { PATHS } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
+import useSidePanel from "@/hooks/useSidePanel";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
 import WslInstanceInstallForm from "./WslInstanceInstallForm";
+
+vi.mock("@/hooks/useSidePanel");
 
 afterEach(() => {
   setEndpointStatus("default");
 });
+
+const closeSidePanel = vi.fn();
+const setSidePanelContent = vi.fn();
 
 const renderForm = () =>
   renderWithProviders(
@@ -19,6 +25,23 @@ const renderForm = () =>
   );
 
 describe("WslInstanceInstallForm", () => {
+  beforeEach(() => {
+    closeSidePanel.mockReset();
+    setSidePanelContent.mockReset();
+    vi.mocked(useSidePanel, { partial: true }).mockReturnValue({
+      closeSidePanel,
+      setSidePanelContent,
+    });
+  });
+
+  it("closes side panel when instance id is missing", async () => {
+    renderWithProviders(<WslInstanceInstallForm />);
+
+    await waitFor(() => {
+      expect(closeSidePanel).toHaveBeenCalled();
+    });
+  });
+
   it("renders correct form fields when a provided instance type is selected", () => {
     const { container } = renderForm();
 
