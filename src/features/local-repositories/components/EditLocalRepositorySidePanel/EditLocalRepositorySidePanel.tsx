@@ -25,7 +25,7 @@ const EditLocalRepositorySidePanel: FC = () => {
   const handleSubmit = async (values: EditLocalRepositoryFormValues) => {
     const localToUpdate = {
       name: repository.name,
-      displayName: values.displayName ?? repository.displayName,
+      displayName: values.displayName,
       comment: values.description ?? repository.comment,
       defaultDistribution: repository.defaultDistribution,
       defaultComponent: repository.defaultComponent,

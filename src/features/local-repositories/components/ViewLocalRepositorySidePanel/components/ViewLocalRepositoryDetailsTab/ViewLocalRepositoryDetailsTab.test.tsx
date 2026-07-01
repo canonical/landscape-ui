@@ -6,46 +6,63 @@ import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { succeededOperation } from "@/tests/mocks/operations";
 import type { Local } from "@canonical/landscape-openapi";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
+
+const [repository] = repositories;
 
 describe("ViewLocalRepositoryDetailsTab", () => {
   it("renders details block with repository information", () => {
     const { container } = renderWithProviders(
       <ViewLocalRepositoryDetailsTab
-        repository={repositories[0]}
+        repository={repository}
         operationMetadata={succeededOperation.metadata}
       />,
     );
 
     expect(screen.getByText("Details")).toBeInTheDocument();
 
-    expect(container).toHaveInfoItem("Name", "Local with no description");
+    expect(container).toHaveInfoItem("Name", repository.displayName);
     expect(container).toHaveInfoItem("Status", "Packages imported");
-    expect(container).toHaveInfoItem("Last import", "Jun 01, 2024, 09:00");
+    expect(container).toHaveInfoItem(
+      "Last import",
+      moment(repository.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT),
+    );
     expect(container).toHaveInfoItem("Description", NO_DATA_TEXT);
-    expect(container).toHaveInfoItem("Default distribution", "noble");
-    expect(container).toHaveInfoItem("Default component", "main");
+    expect(container).toHaveInfoItem(
+      "Default distribution",
+      repository.defaultDistribution,
+    );
+    expect(container).toHaveInfoItem(
+      "Default component",
+      repository.defaultComponent,
+    );
   });
 
   it("renders description when present and fallback for last import", () => {
-    const repository = (repositories as Local[]).find(
+    const noImportRepository = (repositories as Local[]).find(
       (repo) => !repo.lastImportTime,
     );
-    assert(repository, "Need a mock repository with no last import time");
+    assert(
+      noImportRepository,
+      "Need a mock repository with no last import time",
+    );
+    assert(
+      noImportRepository.comment,
+      "Need a mock repository with a description",
+    );
 
     const { container } = renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repository} />,
+      <ViewLocalRepositoryDetailsTab repository={noImportRepository} />,
     );
 
     expect(container).toHaveInfoItem("Last import", NO_DATA_TEXT);
-    expect(container).toHaveInfoItem(
-      "Description",
-      "local with no package import attempts",
-    );
+    expect(container).toHaveInfoItem("Description", noImportRepository.comment);
   });
 
   it("renders used in block", async () => {
     renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
+      <ViewLocalRepositoryDetailsTab repository={repository} />,
     );
 
     expect(screen.getByText("Used in")).toBeInTheDocument();

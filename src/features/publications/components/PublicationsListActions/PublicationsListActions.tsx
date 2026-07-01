@@ -18,6 +18,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   const { createPageParamsSetter } = usePageParams();
   const { isOperationInProgress } = useOperation();
   const isPublishing = isOperationInProgress(publication.lastOperation);
+  const publicationDisplayName = publication.displayName;
 
   const {
     value: isRemoveModalOpen,
@@ -35,6 +36,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
+      "aria-label": `View details of "${publicationDisplayName}" publication`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
         name: publication.publicationId,
@@ -45,11 +47,11 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
           icon: "spinner u-animation--spin",
           label: "Publishing",
           disabled: true,
-          tooltipMessage: "You must wait for this action to be completed to republish it.",
         }
       : {
           icon: "upload",
           label: "Republish",
+          "aria-label": `Republish "${publicationDisplayName}" publication`,
           onClick: openRepublishModal,
         },
   ];
@@ -58,6 +60,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "delete",
       label: "Remove",
+      "aria-label": `Remove "${publicationDisplayName}" publication`,
       onClick: openRemovalModal,
     },
   ];
@@ -65,7 +68,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${publication.displayName} actions`}
+        toggleAriaLabel={`${publicationDisplayName} actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />

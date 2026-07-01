@@ -10,11 +10,38 @@ import type {
   LocalWritable,
 } from "@canonical/landscape-openapi";
 import { idleOperation } from "@/tests/mocks/operations";
+import { getEndpointStatus } from "@/tests/controllers/controller";
+import { shouldApplyEndpointStatus } from "./_helpers";
+import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+
+const applyEndpointStatus = () => {
+  const endpointStatus = getEndpointStatus("locals");
+
+  if (endpointStatus.status === "error") {
+    return ENDPOINT_STATUS_API_ERROR;
+  }
+
+  if (endpointStatus.status === "empty") {
+    return HttpResponse.json({});
+  }
+
+  if (endpointStatus.status === "loading") {
+    return HttpResponse.json({
+      isFetching: true,
+      isLoading: true,
+      isPending: true,
+    });
+  }
+};
 
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
     const url = new URL(request.url);
     const search = url.searchParams.get("filter")?.split("=").pop() ?? "";
+
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
 
     if (!search) {
       return HttpResponse.json({ locals: repositories });
@@ -32,6 +59,10 @@ export default [
     async ({ request }) => {
       const { displayName: namePosted } = await request.json();
 
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus();
+      }
+
       return HttpResponse.json(
         repositories.find(({ displayName }) => namePosted === displayName),
       );
@@ -42,6 +73,10 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals\\:batchGet`,
     async ({ request }) => {
       const { names } = await request.json();
+
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus();
+      }
 
       return HttpResponse.json({
         locals: repositories.filter(({ name }) => names.includes(name ?? "")),
@@ -60,12 +95,20 @@ export default [
   http.patch(`${API_URL_DEB_ARCHIVE}locals/:repository`, ({ params }) => {
     const { repository } = params;
 
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
+
     return HttpResponse.json(
       repositories.find(({ localId }) => localId === repository),
     );
   }),
 
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository`, () => {
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
+
     return HttpResponse.json(repositories[0]);
   }),
 
@@ -79,6 +122,11 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();
+
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus();
+      }
+
       let id = "oooo-vvvv-cccc";
 
       if (url === "failed") {
@@ -108,8 +156,4 @@ export default [
       return HttpResponse.json({ ...idleOperation, name: `operations/${id}` });
     },
   ),
-
-  http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
-    return HttpResponse.json(paginatedPackages[0]);
-  }),
 ];
