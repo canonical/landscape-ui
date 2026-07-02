@@ -43,7 +43,7 @@ describe("InstancesEmptyState", () => {
 
     expect(docsLink).toHaveAttribute(
       "href",
-      "https://ubuntu.com/landscape/docs/managing-computers",
+      "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/classic-web-portal/manage-computers/",
     );
   });
 

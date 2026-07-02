@@ -45,22 +45,12 @@ const InstanceList = memo(function InstanceList({
   setColumnFilterOptions,
   setSelectedInstances,
 }: InstanceListProps) {
-  const { disabledColumns, ...filters } = usePageParams();
+  const { disabledColumns } = usePageParams();
 
   const { expandedRowIndex, getTableRowsRef, handleExpand } =
     useExpandableRow();
 
   const titleId = useId();
-
-  const isFilteringInstances = Object.values(filters).some((filter) => {
-    if (typeof filter === "string") {
-      return filter.length > 0;
-    } else if (Array.isArray(filter)) {
-      return filter.length > 0;
-    }
-
-    return false;
-  });
 
   const isSelected = useCallback(
     (instance: Instance) =>
