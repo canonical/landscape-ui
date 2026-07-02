@@ -98,10 +98,6 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
           file.is_default === formik.initialValues.is_default;
 
         if (isUnchanged) {
-          formik.setFieldError(
-            "contents",
-            "No changes to save. Update the file before saving.",
-          );
           return;
         }
       }
@@ -163,6 +159,14 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     inputRef.current?.click();
   };
 
+  const isUnchanged =
+    !IS_CREATING &&
+    formik.values.contents === formik.initialValues.contents &&
+    formik.values.filename === formik.initialValues.filename &&
+    formik.values.is_default === formik.initialValues.is_default;
+
+  const showUnchangedError = isUnchanged && formik.submitCount > 0;
+
   return (
     <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
       <span>{description}</span>
@@ -210,6 +214,10 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         error={getFormikError(formik, "contents")}
         required
         language={AUTOINSTALL_FILE_LANGUAGE}
+        warning={
+          showUnchangedError &&
+          "No changes to save. Update the file before saving."
+        }
         headerContent={
           <Button
             className="u-no-margin--bottom"

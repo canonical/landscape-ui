@@ -15,7 +15,7 @@ import {
   Icon,
   ICONS,
 } from "@canonical/react-components";
-import { type FormikHelpers, useFormik } from "formik";
+import { useFormik } from "formik";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -29,10 +29,6 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 }) => {
   const [currentAdministrator, setCurrentAdministrator] =
     useState(administrator);
-
-  useEffect(() => {
-    setCurrentAdministrator(administrator);
-  }, [administrator]);
 
   const { notify } = useNotify();
   const debug = useDebug();
@@ -69,19 +65,12 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
     }
   };
 
-  const handleSubmit = async (
-    values: { roles: string[] },
-    { setFieldError }: FormikHelpers<{ roles: string[] }>,
-  ) => {
+  const handleSubmit = async (values: { roles: string[] }) => {
     const isUnchanged =
       values.roles.length === currentAdministrator.roles.length &&
       values.roles.every((role) => currentAdministrator.roles.includes(role));
 
     if (isUnchanged) {
-      setFieldError(
-        "roles",
-        "No changes to save. Update the administrator roles before saving.",
-      );
       return;
     }
 
@@ -110,6 +99,14 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   useEffect(() => {
     formik.setValues({ roles: currentAdministrator.roles });
   }, [currentAdministrator]);
+
+  const isUnchanged =
+    formik.values.roles.length === currentAdministrator.roles.length &&
+    formik.values.roles.every((role) =>
+      currentAdministrator.roles.includes(role),
+    );
+
+  const showUnchangedError = isUnchanged && formik.submitCount > 0;
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
@@ -148,6 +145,10 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         variant="condensed"
         label="Roles"
         items={roleOptions}
+        warning={
+          showUnchangedError &&
+          "No changes to save. Update the administrator roles before saving."
+        }
         selectedItems={roleOptions.filter(({ value }) =>
           formik.values.roles.includes(value),
         )}

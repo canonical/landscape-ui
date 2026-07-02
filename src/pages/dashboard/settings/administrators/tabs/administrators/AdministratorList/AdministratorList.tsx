@@ -44,7 +44,10 @@ const AdministratorList: FC<AdministratorListProps> = ({
   const handleAdministratorClick = (administrator: Administrator) => {
     setSidePanelContent(
       administrator.name,
-      <EditAdministratorForm administrator={administrator} />,
+      <EditAdministratorForm
+        key={administrator.id}
+        administrator={administrator}
+      />,
     );
   };
 
