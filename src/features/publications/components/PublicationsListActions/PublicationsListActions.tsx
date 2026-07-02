@@ -36,7 +36,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
-      "aria-label": `View details of "${publicationDisplayName}" publication`,
+      "aria-label": `View details of "${publicationDisplayName}"`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
         name: publication.publicationId,
@@ -46,12 +46,13 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
       ? {
           icon: "spinner u-animation--spin",
           label: "Publishing",
+          "aria-label": `Publishing "${publicationDisplayName}"`,
           disabled: true,
         }
       : {
           icon: "upload",
           label: "Republish",
-          "aria-label": `Republish "${publicationDisplayName}" publication`,
+          "aria-label": `Republish "${publicationDisplayName}"`,
           onClick: openRepublishModal,
         },
   ];
@@ -60,7 +61,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${publicationDisplayName}" publication`,
+      "aria-label": `Remove "${publicationDisplayName}"`,
       onClick: openRemovalModal,
     },
   ];
@@ -68,7 +69,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${publicationDisplayName} actions`}
+        toggleAriaLabel={`${publicationDisplayName} publication actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />

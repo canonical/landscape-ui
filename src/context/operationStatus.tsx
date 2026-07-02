@@ -48,7 +48,11 @@ export const OperationProvider: FC<OperationProviderProps> = ({
       operations,
       isGettingOperations,
       isOperationInProgress: (operationName?: string) => {
-        const operation = operations[operationName ?? ""];
+        if (!operationName) {
+          return false;
+        }
+
+        const operation = operations[operationName];
         return !!operation && !operation.done;
       },
     }),
