@@ -1,7 +1,6 @@
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
 import { createContext, useMemo, type FC, type ReactNode } from "react";
-import { useBatchGetOperations } from "../features/operations/api";
-import type { Operation } from "../features/operations/types";
+import { useBatchGetOperations, type Operation } from "../features/operations";
 
 interface OperationContextProps {
   operations: Record<string, Operation>;

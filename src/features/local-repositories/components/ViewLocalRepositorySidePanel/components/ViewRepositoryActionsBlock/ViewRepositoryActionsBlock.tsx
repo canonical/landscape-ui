@@ -59,7 +59,11 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
           );
 
           return action.tooltipMessage ? (
-            <Tooltip message={action.tooltipMessage} position="btm-center">
+            <Tooltip
+              message={action.tooltipMessage}
+              position="btm-center"
+              key={action.label}
+            >
               {button}
             </Tooltip>
           ) : (

@@ -65,7 +65,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
           name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`}
         />
         <div className={classes.progressContainer}>
-          <span className={classes.marginRight} id="lro-progress">
+          <span className={classes.marginRight} id={`${resource}-progress`}>
             {ongoing}
           </span>
           {isTableCell ? (
@@ -75,7 +75,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
           ) : (
             <ProgressBar
               progressPercent={progressPercent}
-              labelledBy="lro-progress"
+              labelledBy={`${resource}-progress`}
             />
           )}
         </div>
