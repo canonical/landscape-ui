@@ -32,15 +32,37 @@ const InstancesContainer = memo(function InstancesContainer({
     ColumnFilterOption[]
   >([]);
 
-  const { currentPage, pageSize, search, status } = usePageParams();
+  const {
+    currentPage,
+    pageSize,
+    query,
+    status,
+    os,
+    groupBy,
+    contractExpiryDays,
+    accessGroups,
+    availabilityZones,
+    tags,
+    wsl,
+  } = usePageParams();
+
+  const isFilteringInstances =
+    !!query ||
+    !!status ||
+    !!os ||
+    !!groupBy ||
+    !!contractExpiryDays ||
+    accessGroups.length > 0 ||
+    availabilityZones.length > 0 ||
+    tags.length > 0 ||
+    wsl.length > 0;
 
   if (
     isInstancesEmptyState(
       currentPage,
       pageSize,
       instanceCount,
-      search,
-      status,
+      isFilteringInstances,
       isInstanceLoading,
     )
   ) {

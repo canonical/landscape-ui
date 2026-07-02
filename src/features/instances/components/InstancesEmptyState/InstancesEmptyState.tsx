@@ -12,14 +12,13 @@ const InstanceEmptyState: FC = () => {
     ? `${data.data.url}${REGISTER_PATH}`
     : undefined;
 
-
-    return (
+  return (
     <EmptyState
       title="No instances found"
       icon="connected"
       body="You don't have any instances registered to Landscape yet."
       link={{
-        href: "https://ubuntu.com/landscape/docs/managing-computers",
+        href: "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/classic-web-portal/manage-computers/",
         text: "How to manage instances in Landscape",
       }}
       cta={

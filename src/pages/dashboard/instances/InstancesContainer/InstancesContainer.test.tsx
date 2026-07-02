@@ -202,4 +202,25 @@ describe("InstancesContainer", () => {
 
     expect(screen.getByText("No instances found")).toBeInTheDocument();
   });
+
+  it("shows table empty message for filtered empty results", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isInstanceLoading={false}
+        setSelectedInstances={() => undefined}
+      />,
+      undefined,
+      "/instances?query=random-filter",
+    );
+
+    expect(
+      screen.getByText(
+        "No instances found according to your search parameters.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+  });
 });

@@ -9,14 +9,13 @@ export const isInstanceLoadingState = (
 export const isInstancesEmptyState = (
   currentPage: number,
   pageSize: number,
-  instanceCount = 0,
-  search: string,
-  status: string,
+  instanceCount: number | undefined,
+  isFilteringInstances: boolean,
   isInstanceLoading: boolean,
 ) =>
   currentPage === 1 &&
   pageSize === DEFAULT_PAGE_SIZE &&
+  instanceCount !== undefined &&
   !isInstanceLoading &&
   instanceCount === 0 &&
-  !search &&
-  !status;
+  !isFilteringInstances;

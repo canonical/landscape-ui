@@ -361,11 +361,7 @@ const InstanceList = memo(function InstanceList({
   return (
     <ResponsiveTable
       subhead={subhead}
-      emptyMsg={
-        isFilteringInstances
-          ? "No instances found according to your search parameters."
-          : "No instances found"
-      }
+      emptyMsg="No instances found according to your search parameters."
       ref={getTableRowsRef}
       columns={filteredColumns}
       data={currentInstances}
