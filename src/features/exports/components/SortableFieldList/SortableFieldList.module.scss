@@ -6,14 +6,21 @@
 }
 
 .selectedColumnsHeader {
-  align-items: flex-start;
+  align-items: baseline;
   display: flex;
+  gap: $sph--large;
   justify-content: space-between;
   margin-bottom: $spv--medium;
 }
 
 .selectedColumnsIntro {
+  flex: 1;
   margin-bottom: 0;
+}
+
+.resetButton {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .nameCell {

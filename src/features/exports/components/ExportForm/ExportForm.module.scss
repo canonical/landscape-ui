@@ -21,6 +21,11 @@
   margin-top: $spv--small;
 }
 
+.searchGroups > :global(.p-accordion),
+.fieldGroupsWrapper > :global(.p-accordion) {
+  border-top: 1px solid;
+}
+
 :global(.p-accordion__tab) {
   padding-right: $sph--x-large !important;
 }

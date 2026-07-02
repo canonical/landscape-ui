@@ -53,7 +53,7 @@ describe("SortableFieldList", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: /reset to default order/i }),
+      screen.getByRole("button", { name: /reset order/i }),
     ).toBeInTheDocument();
   });
 
@@ -70,9 +70,7 @@ describe("SortableFieldList", () => {
     );
     onOrderChange.mockClear();
 
-    await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     expect(onOrderChange).toHaveBeenCalledWith(FIELDS);
   });
@@ -95,9 +93,7 @@ describe("SortableFieldList", () => {
       screen.getByRole("spinbutton", { name: /order for hostname/i }),
     ).toHaveValue(2);
 
-    await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     expect(
       screen.getByRole("spinbutton", { name: /order for hostname/i }),
@@ -175,9 +171,7 @@ describe("SortableFieldList", () => {
       screen.getByRole("spinbutton", { name: /order for status/i }),
     ).toHaveValue(1);
 
-    await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     expect(
       screen.getByRole("spinbutton", { name: /order for hostname/i }),

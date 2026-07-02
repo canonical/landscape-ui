@@ -1,4 +1,10 @@
-import { Button, Icon, Input, ModularTable } from "@canonical/react-components";
+import {
+  Button,
+  Chip,
+  Icon,
+  Input,
+  ModularTable,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import {
   useCallback,
@@ -355,7 +361,12 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
               <i className={"p-icon--drag " + classes.dragHandle} />
               <span>{label}</span>
               {groupTitle && (
-                <span className={classes.groupBadge}>{groupTitle}</span>
+                <Chip
+                  value={groupTitle}
+                  isReadOnly
+                  isDense
+                  className="u-no-margin--bottom"
+                />
               )}
             </div>
           );
@@ -506,11 +517,11 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
         </p>
         <Button
           type="button"
-          className="u-no-margin--bottom"
+          className={`u-no-margin--bottom ${classes.resetButton}`}
           onClick={handleResetOrder}
         >
           <i className="p-icon--restart" />
-          <span>Reset to default order</span>
+          <span> Reset order</span>
         </Button>
       </div>
       <ModularTable
