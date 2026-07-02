@@ -65,8 +65,13 @@ const ExportForm: FC<ExportFormProps> = ({
         return;
       }
 
-      const fieldsToExport = orderedFields.length
-        ? orderedFields
+      const selectedFieldIdSet = new Set(selectedFields.map((field) => field.id));
+      const orderedSelectedFields = orderedFields.filter((field) =>
+        selectedFieldIdSet.has(field.id),
+      );
+
+      const fieldsToExport = orderedSelectedFields.length
+        ? orderedSelectedFields
         : selectedFields;
 
       await onGenerate({ values, fieldsToExport });
