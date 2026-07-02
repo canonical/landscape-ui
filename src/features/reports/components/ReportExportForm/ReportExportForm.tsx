@@ -47,17 +47,19 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
   // Hide aggregate CVE columns when byCve=true — they are always empty in that
   // mode because _build_cve_tsv emits one row per (instance, CVE) and never
   // populates the resolved_cves/unresolved_cves metrics.
-  const CVE_AGGREGATE_IDS = new Set(["resolved_cves", "unresolved_cves"]);
+  const cveAggregateIds = useMemo(
+    () => new Set(["resolved_cves", "unresolved_cves"]),
+    [],
+  );
   const fieldGroups = useMemo(
     () =>
       byCve
         ? REPORT_EXPORT_FIELD_GROUPS.map((group) => ({
             ...group,
-            fields: group.fields.filter((f) => !CVE_AGGREGATE_IDS.has(f.id)),
+            fields: group.fields.filter((f) => !cveAggregateIds.has(f.id)),
           })).filter((group) => group.fields.length > 0)
         : REPORT_EXPORT_FIELD_GROUPS,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [byCve],
+    [byCve, cveAggregateIds],
   );
 
   const resolvedIds = [

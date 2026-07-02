@@ -12,7 +12,14 @@ export const setSelectedInstanceIds = (ids: readonly number[]): void => {
   // Copy and freeze so callers can't mutate the store's snapshot in place
   // (which would change state without notifying useSyncExternalStore listeners).
   // The readonly types make any such mutation a compile-time error.
-  selectedInstanceIds = Object.freeze([...ids]);
+  const next = Object.freeze([...ids]);
+  const prev = selectedInstanceIds;
+  const isSame =
+    prev.length === next.length && prev.every((id, index) => id === next[index]);
+
+  if (isSame) return;
+
+  selectedInstanceIds = next;
   listeners.forEach((listener) => {
     listener();
   });
