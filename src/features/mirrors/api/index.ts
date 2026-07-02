@@ -1,6 +1,5 @@
 export * from "./useListMirrors";
 export * from "./useListMirrorPackages";
-export * from "./useListPublications";
 export * from "./useDeleteMirror";
 export * from "./useUpdateMirror";
 export * from "./useSyncMirror";
@@ -9,4 +8,3 @@ export * from "./useGetUbuntuEsmInfo";
 export * from "./useCreateMirror";
 export * from "./useGetMirror";
 export * from "./useBatchGetMirrors";
-export * from "./useListPublicationTargets";

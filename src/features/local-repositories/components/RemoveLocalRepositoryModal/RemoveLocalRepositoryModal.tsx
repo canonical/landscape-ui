@@ -44,7 +44,6 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
         openInNewTab
         showSources={false}
       />
-      <br />
       <p>
         After removal you won&apos;t be able to update any of these
         publications, but they will continue to be available.{" "}
