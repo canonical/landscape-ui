@@ -21,6 +21,7 @@ export const publications = [
     skipBz2: false,
     skipContents: false,
     publishTime: new Date("March 12, 2026"),
+    lastOperation: "operations/ssss-cccc-dddd",
   },
   {
     name: "publications/c9f6355e-c8f3-4e73-ab4c-ef6a4c8af4c0",
@@ -43,7 +44,8 @@ export const publications = [
       armor: "-----BEGIN PGP PRIVATE KEY BLOCK-----...",
       fingerprint: "38683D0347E42FDA",
     },
-    publishTime: new Date("March 12, 2026"),
+    publishTime: new Date("December 1, 2025"),
+    lastOperation: "operations/pppp-gggg-ssss",
   },
   {
     name: "publications/g8h8888e-c8f8-8e88-ab8c-ef8a8c8af8c8",
@@ -63,5 +65,6 @@ export const publications = [
     skipBz2: true,
     skipContents: true,
     publishTime: new Date("April 20, 2026"),
+    lastOperation: "operations/publication-ffff-llll-dddd",
   },
 ] as const satisfies Publication[];
