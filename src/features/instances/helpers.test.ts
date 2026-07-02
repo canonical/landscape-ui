@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FILTERS } from "@/features/instances";
+import { FILTERS } from "./constants";
 import { getInstanceListParams, getOptionQuery, getQuery } from "./helpers";
 
 const windowsOption = FILTERS.os.options.find(

@@ -151,7 +151,7 @@ export const getQuery = ({
   query,
   status,
   tags,
-}: GetInstanceQueryProps): string | undefined => {
+}: GetInstanceQueryProps) => {
   const queryParts: string[] = [];
   const osQuery = os ? getOptionQuery(FILTERS.os, os) : "";
   const statusQuery = status ? getOptionQuery(FILTERS.status, status) : "";
@@ -191,7 +191,7 @@ export const getQuery = ({
     );
   }
 
-  return queryParts.length ? queryParts.join(" ") : undefined;
+  return queryParts.join(" ") || undefined;
 };
 
 export const getInstanceListParams = ({

@@ -12,7 +12,6 @@ import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { useCallback, useEffect, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
-import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
@@ -20,15 +19,12 @@ const InstancesPage: FC = () => {
   const { query } = filters;
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
-    query: getQuery(filters),
-    archived_only: filters.status === "archived",
+    ...instanceListParams,
     with_alerts: true,
     with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    wsl_children: wsl.includes("child"),
-    wsl_parents: wsl.includes("parent"),
   });
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);

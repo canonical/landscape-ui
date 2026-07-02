@@ -13,7 +13,6 @@ export {
   getInstanceListParams,
   getOptionQuery,
   getRecoveryKeyRegenerationAttemptMessage,
-  getQuery,
   isRecoveryKeyActivityFailedOrCanceled,
   isRecoveryKeyActivityInProgress,
   shouldShowRecoveryKeyActivityStatus,
