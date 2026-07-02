@@ -1,17 +1,17 @@
-import type { CalendarFormats, DateInput } from "./LandscapeDate";
-import { ISO_8601, LandscapeDate } from "./LandscapeDate";
+import type { CalendarFormats, DateInput } from "./ChronoDate";
+import { ISO_8601, ChronoDate } from "./ChronoDate";
 
 interface DateFactory {
   (
     input?: DateInput,
     format?: typeof ISO_8601,
     strict?: boolean,
-  ): LandscapeDate;
+  ): ChronoDate;
   ISO_8601: typeof ISO_8601;
 }
 
 /**
- * Date factory used by the Landscape UI date helper.
+ * Date factory providing the entry point over ChronoDate.
  *
  * Usage:
  *   date()                          // now
@@ -24,14 +24,14 @@ const date = ((
   strict?: boolean,
 ) => {
   if (format === ISO_8601) {
-    return LandscapeDate.parseStrictISO(String(input), strict);
+    return ChronoDate.parseStrictISO(String(input), strict);
   }
 
-  return LandscapeDate.from(input);
+  return ChronoDate.from(input);
 }) as DateFactory;
 
 date.ISO_8601 = ISO_8601;
 
 export default date;
-export { LandscapeDate, ISO_8601 };
+export { ChronoDate, ISO_8601 };
 export type { CalendarFormats, DateInput };
