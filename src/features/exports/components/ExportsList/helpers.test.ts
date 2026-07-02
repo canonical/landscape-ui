@@ -34,6 +34,6 @@ describe("getTypeIcon", () => {
   });
 
   it('returns "documents" for report exports', () => {
-    expect(getTypeIcon(newComplianceExportJob)).toBe("documents");
+    expect(getTypeIcon(newComplianceExportJob)).toBe("file");
   });
 });

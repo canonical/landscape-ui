@@ -17,7 +17,7 @@ export const getTypeIcon = (job: ExportJob): string => {
     case "activity":
       return "switcher-environments";
     case "report":
-      return "documents";
+      return "file";
     default:
       return "machines";
   }
