@@ -57,12 +57,19 @@ function isUpToDate(instance: Instance) {
   return !hasUpgrades(instance);
 }
 
+export const forceEmptyInstances = true;
+
 function matchComputersQuery(
   query: string,
   endpointStatus: ReturnType<typeof getEndpointStatus>,
   limit: number,
   offset: number,
 ): HttpResponse | null {
+  if (forceEmptyInstances) {
+    return HttpResponse.json(
+      generatePaginatedResponse<Instance>({ data: [], limit, offset }),
+    );
+  }
   if (
     endpointStatus.status === "empty" &&
     endpointStatus.path === "computers-pro-empty" &&
