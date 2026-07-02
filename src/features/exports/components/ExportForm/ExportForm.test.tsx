@@ -157,7 +157,7 @@ describe("ExportForm", () => {
     );
 
     expect(
-      screen.getByRole("checkbox", { name: /agent logs/i }),
+      screen.getByRole("checkbox", { name: /compliance/i }),
     ).toBeDisabled();
   });
 
@@ -173,7 +173,7 @@ describe("ExportForm", () => {
 
     await openAttributeGroup(user, /compliance/i);
     expect(
-      screen.getByRole("checkbox", { name: /compliance select all/i }),
+      screen.getByRole("checkbox", { name: /compliance/i }),
     ).not.toBeDisabled();
   });
 

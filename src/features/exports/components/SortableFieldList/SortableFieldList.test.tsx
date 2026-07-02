@@ -47,13 +47,17 @@ describe("SortableFieldList", () => {
     expect(screen.queryByText("Primary Identity")).not.toBeInTheDocument();
   });
 
-  it("shows the Reset order button", () => {
+  it("shows the Reset to default order button", () => {
     renderWithProviders(
       <SortableFieldList fields={FIELDS} onOrderChange={vi.fn()} />,
     );
 
     expect(
-      screen.getByRole("button", { name: /reset order/i }), async () => {
+      screen.getByRole("button", { name: /reset order/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("calls onOrderChange with original fields when Reset is clicked", async () => {
     const user = userEvent.setup();
     const onOrderChange = vi.fn();
 
@@ -66,9 +70,7 @@ describe("SortableFieldList", () => {
     );
     onOrderChange.mockClear();
 
-    await user.click(
-      screen.getByRole("button", { name: /reset order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     expect(onOrderChange).toHaveBeenCalledWith(FIELDS);
   });
@@ -91,9 +93,7 @@ describe("SortableFieldList", () => {
       screen.getByRole("spinbutton", { name: /order for hostname/i }),
     ).toHaveValue(2);
 
-    await user.click(
-      screen.getByRole("button", { name: /reset order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     expect(
       screen.getByRole("spinbutton", { name: /order for hostname/i }),
@@ -171,9 +171,7 @@ describe("SortableFieldList", () => {
       screen.getByRole("spinbutton", { name: /order for status/i }),
     ).toHaveValue(1);
 
-    await user.click(
-      screen.getByRole("button", { name: /reset order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     expect(
       screen.getByRole("spinbutton", { name: /order for hostname/i }),

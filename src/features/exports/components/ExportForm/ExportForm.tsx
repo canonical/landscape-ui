@@ -233,7 +233,11 @@ const ExportForm: FC<ExportFormProps> = ({
       );
     }
 
-    return <Accordion sections={accordionSections} titleElement="h5" />;
+    return (
+      <div className={classes.fieldGroupsWrapper}>
+        <Accordion sections={accordionSections} titleElement="h5" />
+      </div>
+    );
   };
 
   const stepContent =
