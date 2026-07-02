@@ -35,7 +35,6 @@
     "formik": "2.4.9",
     "moment": "2.30.1",
     "monaco-editor": "0.55.1",
-    "path-to-regexp": "8.4.2",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-router": "7.16.0",
