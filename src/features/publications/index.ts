@@ -11,6 +11,7 @@ export { default as PublicationDetails } from "./components/PublicationDetails";
 export { default as PublicationDetailsSidePanel } from "./components/PublicationDetailsSidePanel";
 export { default as AssociatedPublicationsList } from "./components/AssociatedPublicationsList";
 export { default as PublicationSettingsBlock } from "./components/PublicationSettingsBlock";
+export { default as AssociatedPublicationsCount } from "./components/AssociatedPublicationsCount";
 export {
   getSourceName,
   getSourceType,

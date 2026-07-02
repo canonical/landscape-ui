@@ -9,7 +9,6 @@ import moment from "moment";
 import { Suspense, useMemo, type FC } from "react";
 import type { CellProps, Column } from "react-table";
 import { LIST_ACTIONS_COLUMN_PROPS } from "@/components/layout/ListActions";
-import MirrorPublicationsLink from "../MirrorPublicationsLink";
 import NoData from "@/components/layout/NoData";
 import usePageParams from "@/hooks/usePageParams";
 import MirrorPackagesCount from "../MirrorPackagesCount";
@@ -21,6 +20,7 @@ import {
   getOperationStatusIcon,
 } from "@/features/operations";
 import { TablePagination } from "@/components/layout/TablePagination";
+import { AssociatedPublicationsCount } from "@/features/publications";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -115,9 +115,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         Header: "Publications",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
-            <Suspense fallback={<LoadingState inline />}>
-              <MirrorPublicationsLink mirrorName={mirror.name} />
-            </Suspense>
+            <AssociatedPublicationsCount sourceName={mirror.name} />
           ) : (
             <NoData />
           ),
