@@ -2,11 +2,7 @@ import type { CalendarFormats, DateInput } from "./ChronoDate";
 import { ISO_8601, ChronoDate } from "./ChronoDate";
 
 interface DateFactory {
-  (
-    input?: DateInput,
-    format?: typeof ISO_8601,
-    strict?: boolean,
-  ): ChronoDate;
+  (input?: DateInput, format?: typeof ISO_8601, strict?: boolean): ChronoDate;
   ISO_8601: typeof ISO_8601;
 }
 

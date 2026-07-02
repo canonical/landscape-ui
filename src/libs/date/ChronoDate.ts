@@ -127,13 +127,7 @@ export interface CalendarFormats {
   sameElse: string;
 }
 
-export type DateInput =
-  | ChronoDate
-  | Date
-  | string
-  | number
-  | null
-  | undefined;
+export type DateInput = ChronoDate | Date | string | number | null | undefined;
 
 interface DateFields {
   Y: number;
@@ -442,10 +436,7 @@ export class ChronoDate {
         return new ChronoDate(this._time + amount * 1000, this._utc);
       case "minute":
       case "minutes":
-        return new ChronoDate(
-          this._time + amount * MS_PER_MINUTE,
-          this._utc,
-        );
+        return new ChronoDate(this._time + amount * MS_PER_MINUTE, this._utc);
       case "hour":
       case "hours":
         return new ChronoDate(this._time + amount * MS_PER_HOUR, this._utc);
@@ -597,9 +588,7 @@ export class ChronoDate {
       return Math.floor(Date.UTC(f.Y, f.Mo, f.D) / MS_PER_DAY);
     };
 
-    const reference = this._utc
-      ? ChronoDate.now().utc()
-      : ChronoDate.now();
+    const reference = this._utc ? ChronoDate.now().utc() : ChronoDate.now();
     const delta = dayIndex(this) - dayIndex(reference);
 
     let pattern: string | undefined;
