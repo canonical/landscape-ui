@@ -5,7 +5,7 @@ import { useGetRepositoryActions } from "../../../../hooks/useGetRepositoryActio
 import { useBoolean } from "usehooks-ts";
 import { Button, Icon, Tooltip } from "@canonical/react-components";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
-import classes from "../../ViewLocalRepositorySidePanel.module.scss";
+import classes from "./ViewRepositoryActionsBlock.module.scss";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
 
 interface ViewRepositoryActionsBlockProps {

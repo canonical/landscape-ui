@@ -18,14 +18,16 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
 
   return (
     <>
-      {isImporting && (
-        <Notification
-          title="Packages are currently being imported."
-          borderless
-          severity="caution"
-          className="u-no-margin--bottom"
-        />
-      )}
+      <div aria-live="polite" aria-relevant="additions removals">
+        {isImporting && (
+          <Notification
+            title="Packages are currently being imported."
+            borderless
+            severity="caution"
+            className="u-no-margin--bottom"
+          />
+        )}
+      </div>
       {isGettingRepositoryPackages ? (
         <LoadingState />
       ) : (

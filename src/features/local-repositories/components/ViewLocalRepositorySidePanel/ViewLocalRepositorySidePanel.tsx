@@ -2,7 +2,6 @@ import { Suspense, useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import { Tabs, Notification } from "@canonical/react-components";
-import classes from "./ViewLocalRepositorySidePanel.module.scss";
 import ViewRepositoryActionsBlock from "./components/ViewRepositoryActionsBlock";
 import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetailsTab";
 import ViewRepositoryPackagesTab from "./components/ViewRepositoryPackagesTab";
@@ -48,20 +47,22 @@ const ViewLocalRepositorySidePanel: FC = () => {
     <>
       <SidePanel.Header>{repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        {!!operation?.error && (
-          <Notification
-            severity="negative"
-            title="Package import failed"
-            actions={[<ViewLogsButton key="view-logs" />]}
-          >
-            Your last package import was not completed successfully.
-          </Notification>
-        )}
+        <div aria-live="polite" aria-relevant="additions">
+          {!!operation?.error && (
+            <Notification
+              severity="negative"
+              title="Package import failed"
+              actions={[<ViewLogsButton key="view-logs" />]}
+            >
+              Your last package import was not completed successfully.
+            </Notification>
+          )}
+        </div>
         <ViewRepositoryActionsBlock
           repository={repository}
           isImporting={isImporting}
         />
-        <Tabs listClassName={classes.marginBottom} links={links} />
+        <Tabs links={links} />
 
         {tabId === "details" && (
           <Suspense fallback={<LoadingState />}>

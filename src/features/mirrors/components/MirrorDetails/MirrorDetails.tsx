@@ -31,7 +31,6 @@ import {
   AssociatedPublicationsList,
   useGetPublicationsBySource,
 } from "@/features/publications";
-import classes from "./MirrorDetails.module.scss";
 import MirrorPackagesList from "../MirrorPackagesList";
 import LoadingState from "@/components/layout/LoadingState";
 import {
@@ -120,15 +119,17 @@ const MirrorDetails: FC = () => {
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        {!!operation?.error && (
-          <Notification
-            severity="negative"
-            title="Update failed"
-            actions={[<ViewLogsButton key="view-logs" />]}
-          >
-            Your last mirror update was not completed successfully.
-          </Notification>
-        )}
+        <div aria-live="polite" aria-relevant="additions">
+          {!!operation?.error && (
+            <Notification
+              severity="negative"
+              title="Update failed"
+              actions={[<ViewLogsButton key="view-logs" />]}
+            >
+              Your last mirror update was not completed successfully.
+            </Notification>
+          )}
+        </div>
         <div className="p-segmented-control">
           <Button
             type="button"
@@ -185,7 +186,7 @@ const MirrorDetails: FC = () => {
             <span className="u-text--negative">Remove</span>
           </Button>
         </div>
-        <Tabs listClassName={classes.marginBottom} links={links} />
+        <Tabs links={links} />
         {tabId === "details" && (
           <Blocks>
             <Blocks.Item title="Details">

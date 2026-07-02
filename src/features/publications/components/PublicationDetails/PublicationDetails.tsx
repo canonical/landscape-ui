@@ -66,7 +66,7 @@ const PublicationDetails = ({
 
   return (
     <>
-      <div className="p-segmented-control u-sv2">
+      <div aria-live="polite" aria-relevant="additions">
         {!!operation?.error && (
           <Notification
             severity="negative"
@@ -76,6 +76,8 @@ const PublicationDetails = ({
             Your last publication was not completed successfully.
           </Notification>
         )}
+      </div>
+      <div className="p-segmented-control u-sv2">
         <div className="p-segmented-control__list">
           {!!operation && !operation.done ? (
             <Tooltip

@@ -3,10 +3,9 @@
 
 .progressBar {
   background-color: $colors--theme--background-active;
-  display: inline-flex;
+  display: flex;
   height: $spv--small;
   margin-right: $spv--small;
-  vertical-align: center;
   width: 4rem;
 
   > div {

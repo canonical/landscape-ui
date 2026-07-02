@@ -24,54 +24,66 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
     isTableCell,
   );
   const { status, resource, progressPercent = 0 } = operationMetadata ?? {};
-  const resourceIdentifier =
-    type === "mirror" ? resource : resource?.split("/").pop();
+  const resourceId = type === "mirror" ? resource : resource?.split("/").pop();
 
-  if (!hasOperation) {
-    return <span>{inexistent}</span>;
-  }
+  const getContent = () => {
+    if (!hasOperation) {
+      return <span>{inexistent}</span>;
+    }
 
-  if (!status) {
+    if (!status) {
+      return (
+        <>
+          <Icon name={`${ICONS.warning} ${classes.marginRight}`} />
+          <span>Unable to determine</span>
+        </>
+      );
+    }
+
+    if (status === "succeeded") {
+      return (
+        <>
+          <Icon name={`success-grey ${classes.marginRight}`} />
+          <span>{successful}</span>
+        </>
+      );
+    }
+
+    if (status === "failed") {
+      return (
+        <>
+          <Icon name={`${ICONS.error} ${classes.marginRight}`} />
+          <span className={classes.marginRight}>{failed}</span>
+          <ViewLogsButton resource={resourceId} />
+        </>
+      );
+    }
+
     return (
       <>
-        <Icon name={`${ICONS.warning} ${classes.marginRight}`} />
-        <span>Unable to determine</span>
+        <Icon
+          name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`}
+        />
+        <div className={classes.progressContainer}>
+          <span className={classes.marginRight} id="lro-progress">
+            {ongoing}
+          </span>
+          {isTableCell ? (
+            <span className="u-text--muted" aria-live="off">
+              {progressPercent}%
+            </span>
+          ) : (
+            <ProgressBar
+              progressPercent={progressPercent}
+              labelledBy="lro-progress"
+            />
+          )}
+        </div>
       </>
     );
-  }
+  };
 
-  if (status === "succeeded") {
-    return (
-      <>
-        <Icon name={`success-grey ${classes.marginRight}`} />
-        <span>{successful}</span>
-      </>
-    );
-  }
-
-  if (status === "failed") {
-    return (
-      <>
-        <Icon name={`${ICONS.error} ${classes.marginRight}`} />
-        <span className={classes.marginRight}>{failed}</span>
-        <ViewLogsButton resource={resourceIdentifier} />
-      </>
-    );
-  }
-
-  return (
-    <>
-      <Icon
-        name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`}
-      />
-      <span className={classes.marginRight}>{ongoing}</span>
-      {isTableCell ? (
-        <span className="u-text--muted">{progressPercent}%</span>
-      ) : (
-        <ProgressBar progressPercent={progressPercent} />
-      )}
-    </>
-  );
+  return <span aria-live="polite">{getContent()}</span>;
 };
 
 export default OperationStatusContent;

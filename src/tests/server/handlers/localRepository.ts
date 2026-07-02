@@ -32,6 +32,10 @@ const applyEndpointStatus = () => {
       isPending: true,
     });
   }
+
+  if (endpointStatus.status === "variant") {
+    return HttpResponse.json(endpointStatus.response ?? {});
+  }
 };
 
 export default [
