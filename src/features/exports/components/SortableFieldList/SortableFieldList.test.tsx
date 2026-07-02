@@ -47,17 +47,13 @@ describe("SortableFieldList", () => {
     expect(screen.queryByText("Primary Identity")).not.toBeInTheDocument();
   });
 
-  it("shows the Reset to default order button", () => {
+  it("shows the Reset order button", () => {
     renderWithProviders(
       <SortableFieldList fields={FIELDS} onOrderChange={vi.fn()} />,
     );
 
     expect(
-      screen.getByRole("button", { name: /reset to default order/i }),
-    ).toBeInTheDocument();
-  });
-
-  it("calls onOrderChange with original fields when Reset is clicked", async () => {
+      screen.getByRole("button", { name: /reset order/i }), async () => {
     const user = userEvent.setup();
     const onOrderChange = vi.fn();
 
@@ -71,7 +67,7 @@ describe("SortableFieldList", () => {
     onOrderChange.mockClear();
 
     await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
+      screen.getByRole("button", { name: /reset order/i }),
     );
 
     expect(onOrderChange).toHaveBeenCalledWith(FIELDS);
@@ -96,7 +92,7 @@ describe("SortableFieldList", () => {
     ).toHaveValue(2);
 
     await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
+      screen.getByRole("button", { name: /reset order/i }),
     );
 
     expect(
@@ -176,7 +172,7 @@ describe("SortableFieldList", () => {
     ).toHaveValue(1);
 
     await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
+      screen.getByRole("button", { name: /reset order/i }),
     );
 
     expect(
