@@ -353,6 +353,71 @@ describe("ReportExportForm", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("blocks submit when byCve hides the only selected attributes", async () => {
+    const user = userEvent.setup();
+    let requestCount = 0;
+
+    server.use(
+      http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+        requestCount += 1;
+        const body = (await request.json()) as Record<string, unknown>;
+        return HttpResponse.json(
+          {
+            id: 8,
+            name: body.name,
+            filename: "compliance-export-1.tsv",
+            row_count: 0,
+            type: "report",
+            created_at: new Date().toISOString(),
+            status: "processing",
+            progress: 0,
+            download_ready: false,
+            retain_until: body.retain_until,
+            query: body.query,
+          },
+          { status: 201 },
+        );
+      }),
+    );
+
+    renderForm();
+
+    await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "CVE hidden-only export",
+    );
+
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
+    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+
+    await openAttributeGroup(user, /compliance/i);
+    await user.click(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: "Covered by upgrade profile" }),
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: "Contacted in last 5 min" }),
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: "Time to patch (days)" }),
+    );
+    await user.click(
+      screen.getByRole("checkbox", { name: "Upgrade profile schedule" }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    expect(requestCount).toBe(0);
+    expect(
+      screen.queryByText("TSV export in progress"),
+    ).not.toBeInTheDocument();
+  });
+
   it("keeps other Compliance fields visible when byCve is on", async () => {
     const user = userEvent.setup();
     renderForm();

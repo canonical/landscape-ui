@@ -307,6 +307,64 @@ describe("ExportForm", () => {
     });
   });
 
+  it("filters stale ordered fields when fieldGroups change on step 1", async () => {
+    const user = userEvent.setup();
+    const onGenerate = vi.fn().mockResolvedValue(undefined);
+
+    const { rerender } = renderWithProviders(
+      <ExportForm
+        fieldGroups={FIELD_GROUPS}
+        initialValues={INITIAL_VALUES}
+        isSubmitting={false}
+        onGenerate={onGenerate}
+      />,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Dynamic groups export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    await openAttributeGroup(user, /compliance/i);
+    await user.click(
+      screen.getByRole("checkbox", { name: "Securely patched" }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    const cveFieldGroups: readonly ExportFieldGroup[] = [
+      FIELD_GROUPS[0]!,
+      {
+        ...FIELD_GROUPS[1]!,
+        fields: [{ id: "time_to_patch_days", label: "Time to patch (days)" }],
+      },
+    ];
+
+    rerender(
+      <ExportForm
+        fieldGroups={cveFieldGroups}
+        initialValues={INITIAL_VALUES}
+        isSubmitting={false}
+        onGenerate={onGenerate}
+      />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    await waitFor(() => {
+      expect(onGenerate).toHaveBeenCalledWith({
+        values: expect.objectContaining({
+          name: "Dynamic groups export",
+          selectedFieldIds: ["hostname", "securely_patched"],
+        }),
+        fieldsToExport: [
+          { id: "hostname", label: "Hostname", groupTitle: "Primary Identity" },
+        ],
+      });
+    });
+  });
+
   it("shows group badges and reset button on step 2", async () => {
     const user = userEvent.setup();
     renderForm();

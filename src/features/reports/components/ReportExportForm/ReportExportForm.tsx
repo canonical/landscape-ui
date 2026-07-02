@@ -84,6 +84,14 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
       });
       return;
     }
+
+    if (fieldsToExport.length === 0) {
+      notify.info({
+        title: "No attributes selected",
+        message: "Select at least one attribute to include in the export.",
+      });
+      return;
+    }
     try {
       const description = buildExportDescription(
         selectedBucket,
