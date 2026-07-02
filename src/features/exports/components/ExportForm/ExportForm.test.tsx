@@ -135,17 +135,68 @@ describe("ExportForm", () => {
     const user = userEvent.setup();
     renderForm();
 
+    // Group-title matching was removed; only field labels are matched.
+    // Searching a group name that doesn't appear in any field label yields no results.
     await user.type(
       screen.getByRole("searchbox", { name: "Search attributes" }),
       "compliance",
     );
 
     expect(
-      screen.getByRole("checkbox", { name: "Securely patched" }),
+      screen.getByText("No attributes match your search."),
     ).toBeInTheDocument();
+  });
+
+  it("disables group select-all checkbox while search is active", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(
+      screen.getByRole("searchbox", { name: "Search attributes" }),
+      "secure",
+    );
+
     expect(
-      screen.getByRole("checkbox", { name: "Time to patch (days)" }),
+      screen.getByRole("checkbox", { name: /agent logs/i }),
+    ).toBeDisabled();
+  });
+
+  it("re-enables group select-all checkbox when search is cleared", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    const searchInput = screen.getByRole("searchbox", {
+      name: "Search attributes",
+    });
+    await user.type(searchInput, "securely");
+    await user.clear(searchInput);
+
+    await openAttributeGroup(user, /compliance/i);
+    expect(
+      screen.getByRole("checkbox", { name: /compliance select all/i }),
+    ).not.toBeDisabled();
+  });
+
+  it("sorts search results: starts-with matches appear before contains matches", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    // "name" matches "Instance name" (contains) from Primary Identity
+    // and "Export name" is the form field — only "Instance name" is an attribute.
+    // Use "patch" which matches two fields in Compliance at equal rank (both contain).
+    // Use "host" which matches "Hostname" with starts-with rank in Primary Identity.
+    await user.type(
+      screen.getByRole("searchbox", { name: "Search attributes" }),
+      "host",
+    );
+
+    expect(
+      screen.getByRole("checkbox", { name: "Hostname" }),
     ).toBeInTheDocument();
+    // Compliance group has no matching fields → not rendered.
+    expect(
+      screen.queryByRole("tab", { name: /compliance/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("selects and deselects all fields in a group from the group checkbox", async () => {
@@ -275,11 +326,11 @@ describe("ExportForm", () => {
     expect(screen.getByText("Primary Identity")).toBeInTheDocument();
     expect(screen.getByText("Compliance")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /reset to default order/i }),
+      screen.getByRole("button", { name: /reset order/i }),
     ).toBeInTheDocument();
   });
 
-  it("reset to default order restores group-declaration sequence after manual reorder", async () => {
+  it("reset order restores group-declaration sequence after manual reorder", async () => {
     const user = userEvent.setup();
     const onGenerate = vi.fn().mockResolvedValue(undefined);
 
@@ -298,9 +349,7 @@ describe("ExportForm", () => {
       screen.getByRole("button", { name: /move hostname down/i }),
     );
 
-    await user.click(
-      screen.getByRole("button", { name: /reset to default order/i }),
-    );
+    await user.click(screen.getByRole("button", { name: /reset order/i }));
 
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 

@@ -21,6 +21,10 @@
   margin-top: $spv--small;
 }
 
+.searchGroups > :global(.p-accordion) {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+}
+
 :global(.p-accordion__tab) {
   padding-right: $sph--x-large !important;
 }

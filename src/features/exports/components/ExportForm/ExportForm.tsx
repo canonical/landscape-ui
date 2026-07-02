@@ -110,10 +110,6 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     return fieldGroups.flatMap((group) => {
-      if (group.title.toLowerCase().includes(normalizedSearch)) {
-        return [group];
-      }
-
       const matchingFields = group.fields.filter((field) =>
         field.label.toLowerCase().includes(normalizedSearch),
       );
@@ -135,6 +131,8 @@ const ExportForm: FC<ExportFormProps> = ({
       !allSelected &&
       groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
 
+    const isSearching = !!attributeSearch.trim();
+
     return {
       key: group.key,
       title: (
@@ -143,8 +141,9 @@ const ExportForm: FC<ExportFormProps> = ({
           checked={allSelected}
           indeterminate={someSelected}
           aria-label={`${group.title} select all`}
+          disabled={isSearching}
           onChange={() => {
-            toggleGroupSelect(group.fields);
+            if (!isSearching) toggleGroupSelect(group.fields);
           }}
         />
       ),
@@ -175,18 +174,63 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     if (attributeSearch.trim()) {
-      return filteredFieldGroups.map((group) => {
-        const section = accordionSections.find((s) => s.key === group.key);
-        if (!section) return null;
-        return (
-          <Accordion
-            key={group.key}
-            expanded={group.key}
-            sections={[section]}
-            titleElement="h5"
-          />
+      const needle = attributeSearch.trim().toLowerCase();
+      const rank = (label: string) => {
+        const hay = label.toLowerCase();
+        if (hay === needle) return 0;
+        if (hay.startsWith(needle)) return 1;
+        return 2;
+      };
+
+      const sortedGroups = [...filteredFieldGroups]
+        .map((group) => ({
+          ...group,
+          fields: [...group.fields].sort(
+            (a, b) => rank(a.label) - rank(b.label),
+          ),
+        }))
+        .sort(
+          (a, b) =>
+            Math.min(...a.fields.map((f) => rank(f.label))) -
+            Math.min(...b.fields.map((f) => rank(f.label))),
         );
-      });
+
+      return (
+        <div className={classes.searchGroups}>
+          {sortedGroups.map((group) => {
+            const section = accordionSections.find((s) => s.key === group.key);
+            if (!section) return null;
+            return (
+              <Accordion
+                key={group.key}
+                expanded={group.key}
+                sections={[
+                  {
+                    ...section,
+                    content: (
+                      <div className={classes.optionList}>
+                        {group.fields.map((field) => (
+                          <CheckboxInput
+                            key={field.id}
+                            checked={formik.values.selectedFieldIds.includes(
+                              field.id,
+                            )}
+                            label={field.label}
+                            onChange={() => {
+                              toggleField(field.id);
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ),
+                  },
+                ]}
+                titleElement="h5"
+              />
+            );
+          })}
+        </div>
+      );
     }
 
     return <Accordion sections={accordionSections} titleElement="h5" />;
