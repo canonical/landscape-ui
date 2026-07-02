@@ -1,21 +1,19 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import type { Local } from "@canonical/landscape-openapi";
 import { useGetPublicationsBySource } from "@/features/publications";
 import { pluralize } from "@/utils/_helpers";
 import StaticLink from "@/components/layout/StaticLink";
 import { ROUTES } from "@/libs/routes";
 
-interface LocalRepositoryPublicationsCountProps {
-  readonly repository: Local;
+interface AssociatedPublicationsCountProps {
+  readonly sourceName: string;
 }
 
-const LocalRepositoryPublicationsCount: FC<
-  LocalRepositoryPublicationsCountProps
-> = ({ repository }) => {
-  const { publications, isGettingPublications } = useGetPublicationsBySource(
-    repository.name,
-  );
+const AssociatedPublicationsCount: FC<AssociatedPublicationsCountProps> = ({
+  sourceName,
+}) => {
+  const { publications, isGettingPublications } =
+    useGetPublicationsBySource(sourceName);
 
   if (isGettingPublications) {
     return <LoadingState inline />;
@@ -28,7 +26,7 @@ const LocalRepositoryPublicationsCount: FC<
   return (
     <StaticLink
       to={ROUTES.repositories.publications({
-        query: `source:${repository.name}`,
+        query: `source:${sourceName}`,
       })}
     >
       {pluralize(publications.length, ["publication"], "exact")}
@@ -36,4 +34,4 @@ const LocalRepositoryPublicationsCount: FC<
   );
 };
 
-export default LocalRepositoryPublicationsCount;
+export default AssociatedPublicationsCount;
