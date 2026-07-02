@@ -1,5 +1,8 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import {
+  DEFAULT_POLLING_INTERVAL,
+  DISPLAY_DATE_TIME_FORMAT,
+} from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
@@ -17,8 +20,7 @@ import {
   OperationStatusCell,
   getOperationStatusIcon,
 } from "@/features/operations";
-
-const POLL_INTERVAL = 2000;
+import { TablePagination } from "@/components/layout/TablePagination";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -26,18 +28,23 @@ interface MirrorsListProps {
 }
 
 const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
-  const { createPageParamsSetter } = usePageParams();
+  const { createPageParamsSetter, currentPage, pageSize } = usePageParams();
+
+  const pagedMirrors = useMemo(
+    () => mirrors.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+    [mirrors, currentPage, pageSize],
+  );
 
   const operationNames = mirrors
     .filter((mirror) => mirror.lastOperation)
     .map((mirror) => mirror.lastOperation ?? "");
 
-  const { operations: operations, isGettingOperations } = useBatchGetOperations(
+  const { operations, isGettingOperations } = useBatchGetOperations(
     operationNames,
     {
       refetchInterval: ({ state }) =>
         Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? POLL_INTERVAL
+          ? DEFAULT_POLLING_INTERVAL
           : false,
     },
   );
@@ -70,6 +77,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
             <OperationStatusCell
               isGettingOperation={isGettingOperations}
               operation={operation}
+              type="mirror"
             />
           );
         },
@@ -134,14 +142,21 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
   );
 
   return (
-    <ResponsiveTable
-      columns={columns}
-      data={mirrors}
-      emptyMsg={
-        emptyMsg ?? "No mirrors found according to your search parameters."
-      }
-      minWidth={1150}
-    />
+    <>
+      <ResponsiveTable
+        columns={columns}
+        data={pagedMirrors}
+        emptyMsg={
+          emptyMsg ?? "No mirrors found according to your search parameters."
+        }
+        minWidth={1150}
+      />
+      <TablePagination
+        totalItems={mirrors.length}
+        currentItemCount={pagedMirrors.length}
+        pageSizeLabel="Mirrors per page"
+      />
+    </>
   );
 };
 

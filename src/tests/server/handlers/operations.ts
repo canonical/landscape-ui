@@ -1,17 +1,46 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { Operation } from "@/features/operations";
 import {
-  failedOperation,
   inProgressOperation,
-  emptyOperation,
   succeededOperation,
-  overCountOperation,
-  timeoutOperation,
-  idleOperation,
   operations,
 } from "@/tests/mocks/operations";
-import { http, delay, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
 
 let progress = inProgressOperation.metadata.progressPercent;
+
+export const resetLroProgress = () => {
+  progress = inProgressOperation.metadata.progressPercent;
+};
+
+const getOperationResponse = (operation: Operation) => {
+  if (operation.metadata.operationId === "pppp-gggg-ssss") {
+    progress += 10;
+
+    if (progress >= 100) {
+      progress = inProgressOperation.metadata.progressPercent;
+
+      return {
+        ...succeededOperation,
+        name: operation.name,
+        metadata: {
+          ...operation.metadata,
+          progressPercent: 100,
+          status: succeededOperation.metadata.status,
+        },
+      };
+    }
+
+    return {
+      ...operation,
+      metadata: {
+        ...operation.metadata,
+        progressPercent: progress,
+      },
+    };
+  }
+  return operation;
+};
 
 export default [
   http.post<never, { names: string[] }>(
@@ -23,73 +52,29 @@ export default [
         operations: operations
           .filter(({ name }) => names.includes(name ?? ""))
           .map((operation) => {
-            if (operation.metadata.operationId === "pppp-gggg-ssss") {
-              progress += 10;
-
-              if (progress >= 100) {
-                progress = inProgressOperation.metadata.progressPercent;
-
-                return {
-                  ...succeededOperation,
-                  name: operation.name,
-                };
-              }
-
-              return {
-                ...operation,
-                metadata: {
-                  ...operation.metadata,
-                  progressPercent: progress,
-                },
-              };
-            }
-            return operation;
+            return getOperationResponse(operation);
           }),
       });
     },
   ),
 
-  http.get(`${API_URL_DEB_ARCHIVE}operations/:operationId`, ({ params }) => {
-    const { operationId } = params;
-    delay(1000);
+  http.get(
+    `${API_URL_DEB_ARCHIVE}operations/:operationId`,
+    async ({ params }) => {
+      const { operationId } = params;
 
-    if (operationId === "ffff-llll-dddd") {
-      return HttpResponse.json(failedOperation);
-    }
+      const operation = operations.find(
+        (op) => op.metadata.operationId === operationId,
+      );
 
-    if (operationId === "iiii-dddd-llll") {
-      return HttpResponse.json(idleOperation);
-    }
-
-    if (operationId === "tttt-mmmm-oooo") {
-      return HttpResponse.json(timeoutOperation);
-    }
-
-    if (operationId === "pppp-gggg-ssss") {
-      progress += 10;
-
-      if (progress >= 100) {
-        progress = inProgressOperation.metadata.progressPercent;
-        return HttpResponse.json(succeededOperation);
+      if (operation) {
+        return HttpResponse.json(getOperationResponse(operation));
       }
 
-      return HttpResponse.json({
-        ...inProgressOperation,
-        metadata: {
-          ...inProgressOperation.metadata,
-          progressPercent: progress,
-        },
-      });
-    }
-
-    if (operationId === "mmmm-pppp-tttt") {
-      return HttpResponse.json(emptyOperation);
-    }
-
-    if (operationId === "ssss-cccc-dddd") {
-      return HttpResponse.json(succeededOperation);
-    }
-
-    return HttpResponse.json(overCountOperation);
-  }),
+      return HttpResponse.json(
+        { error: "Operation not found" },
+        { status: 404 },
+      );
+    },
+  ),
 ];

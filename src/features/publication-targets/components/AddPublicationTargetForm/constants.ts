@@ -1,4 +1,4 @@
-import type { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
+import type { FilesystemTarget } from "@canonical/landscape-openapi";
 
 export type TargetType = "s3" | "swift" | "filesystem";
 
@@ -32,7 +32,7 @@ export interface SwiftFormValues {
 
 export interface FilesystemFormValues {
   path: string;
-  linkMethod: FilesystemTargetLinkMethod;
+  linkMethod: FilesystemTarget["linkMethod"];
 }
 
 export interface AddPublicationTargetFormValues {

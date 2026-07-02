@@ -12,11 +12,7 @@ interface SnapDetailsProps {
 const SnapDetails: FC<SnapDetailsProps> = ({ installedSnap }) => {
   return (
     <>
-      <SnapsActions
-        selectedSnapIds={[installedSnap.snap.id]}
-        installedSnaps={[installedSnap]}
-        sidePanel
-      />
+      <SnapsActions selectedSnaps={[installedSnap]} sidePanel />
       <InfoGrid spaced>
         <InfoGrid.Item label="Name" large value={installedSnap.snap.name} />
 

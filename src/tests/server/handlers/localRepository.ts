@@ -5,7 +5,7 @@ import {
   repositories,
 } from "@/tests/mocks/localRepositories";
 import type {
-  LocalServiceImportLocalPackagesBody,
+  ImportLocalPackagesRequest,
   BatchGetLocalsRequest,
   LocalWritable,
 } from "@canonical/landscape-openapi";
@@ -75,7 +75,7 @@ export default [
     });
   }),
 
-  http.post<never, LocalServiceImportLocalPackagesBody>(
+  http.post<never, ImportLocalPackagesRequest>(
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();

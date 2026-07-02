@@ -1,6 +1,6 @@
 import useDebug from "@/hooks/useDebug";
 import AuthTemplate from "@/templates/auth";
-import { Button, Form } from "@canonical/react-components";
+import { ActionButton, Form } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type FC, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
@@ -85,14 +85,14 @@ const OTPInputContainer: FC = () => {
           error={getFormikError(formik, "code")}
         />
         <div className={classes.buttonContainer}>
-          <Button
+          <ActionButton
             className="u-no-margin--bottom"
             type="submit"
             appearance="positive"
-            disabled={formik.isSubmitting || isVerifying}
+            loading={formik.isSubmitting || isVerifying}
           >
             Next
-          </Button>
+          </ActionButton>
         </div>
       </Form>
     </AuthTemplate>

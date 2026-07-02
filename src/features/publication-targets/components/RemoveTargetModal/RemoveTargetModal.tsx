@@ -40,7 +40,7 @@ const RemoveTargetModal: FC<RemoveTargetModalProps> = ({
       if (!target.name) return;
 
       closeSidePanel();
-      await removeTarget({ name: target.name });
+      await removeTarget(target.name);
 
       notify.success({
         title: `You have successfully removed ${target.displayName}`,

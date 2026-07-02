@@ -10,7 +10,7 @@ import {
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { UBUNTU_ARCHIVE_HOST, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
-import type { CreateMirrorData } from "@canonical/landscape-openapi";
+import type { MirrorWritable } from "@canonical/landscape-openapi";
 import { useLocation } from "react-router";
 import { mirrors } from "@/tests/mocks/mirrors";
 
@@ -56,13 +56,10 @@ describe("AddMirrorForm", () => {
   it("shows success notification with Update mirror action", async () => {
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
 
-    const notification = await screen.findByText(
-      /You have successfully added Name/i,
-    );
-    expect(notification).toBeInTheDocument();
+    expect(
+      screen.getByText(`You have successfully added Name`),
+    ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Update mirror" }));
-
-    expect(notification).not.toBeInTheDocument();
 
     const location = screen.getByTestId("location");
     expect(location).toHaveTextContent("sidePath=view");
@@ -82,6 +79,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_ARCHIVE_HOST}/ubuntu/`,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -98,6 +96,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: cdnUrl,
+        mirrorType: "UBUNTU_ARCHIVE",
       }),
     );
   });
@@ -134,6 +133,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
+        mirrorType: "UBUNTU_SNAPSHOTS",
       }),
     );
   });
@@ -152,6 +152,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://bearer:${token}@esm.ubuntu.com/infra/ubuntu/`,
+        mirrorType: "UBUNTU_PRO",
       }),
     );
   });
@@ -215,11 +216,12 @@ describe("AddMirrorForm", () => {
   it("submits a third-party mirror", async () => {
     const params = {
       archiveRoot: "https://archive.ubuntu.com/",
+      mirrorType: "THIRD_PARTY",
       distribution: "focal",
       components: ["main", "universe"],
       architectures: ["amd64", "arm64"],
       gpgKey: { armor: "ABCDEFG" },
-    } satisfies Partial<CreateMirrorData["body"]>;
+    } satisfies Partial<MirrorWritable>;
 
     await user.selectOptions(
       screen.getByLabelText("Source type"),

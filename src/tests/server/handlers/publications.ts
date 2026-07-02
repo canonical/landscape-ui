@@ -10,8 +10,8 @@ import {
 } from "./_helpers";
 import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
 import type { Publication } from "@canonical/landscape-openapi";
-import { succeededOperation } from "@/tests/mocks/operations";
 import type { Operation } from "@/features/operations";
+import { succeededOperation } from "@/tests/mocks/operations";
 
 const getPublicationParam = (requestPublicationName: string) => {
   const decodedPublicationName = decodeURIComponent(requestPublicationName);
