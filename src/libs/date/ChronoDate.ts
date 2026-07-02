@@ -1,10 +1,12 @@
 /**
- * LandscapeDate is a small wrapper around the native `Date` object. It
- * centralizes the date behavior and call style the Landscape UI relies on.
+ * ChronoDate is a small, dependency-free wrapper around the native `Date`
+ * object. It centralizes date behavior behind a small, consistent call style.
  *
- * It intentionally implements only the subset used in this codebase, delegating
- * to native `Date` for arithmetic, comparison and serialization and
+ * It intentionally implements only a focused subset of date operations,
+ * delegating to native `Date` for arithmetic, comparison and serialization and
  * adding a small token-based formatter that the native APIs do not provide.
+ *
+ * Locale is English-only by design.
  */
 
 const MONTHS_SHORT = [
@@ -126,7 +128,7 @@ export interface CalendarFormats {
 }
 
 export type DateInput =
-  | LandscapeDate
+  | ChronoDate
   | Date
   | string
   | number
@@ -310,7 +312,7 @@ const FORMAT_TOKENS: Record<string, (fields: DateFields) => string> = {
   a: (f) => (f.H < HOURS_PER_HALF_DAY ? "am" : "pm"),
 };
 
-export class LandscapeDate {
+export class ChronoDate {
   private readonly _time: number;
   private readonly _utc: boolean;
 
@@ -319,40 +321,40 @@ export class LandscapeDate {
     this._utc = utc;
   }
 
-  static now(): LandscapeDate {
-    return new LandscapeDate(Date.now(), false);
+  static now(): ChronoDate {
+    return new ChronoDate(Date.now(), false);
   }
 
-  static from(input: DateInput): LandscapeDate {
+  static from(input: DateInput): ChronoDate {
     if (input === undefined) {
-      return LandscapeDate.now();
+      return ChronoDate.now();
     }
 
     if (input === null) {
-      return new LandscapeDate(NaN, false);
+      return new ChronoDate(NaN, false);
     }
 
-    if (input instanceof LandscapeDate) {
-      return new LandscapeDate(input._time, input._utc);
+    if (input instanceof ChronoDate) {
+      return new ChronoDate(input._time, input._utc);
     }
 
     if (input instanceof Date) {
-      return new LandscapeDate(input.getTime(), false);
+      return new ChronoDate(input.getTime(), false);
     }
 
     if (typeof input === "number") {
-      return new LandscapeDate(input, false);
+      return new ChronoDate(input, false);
     }
 
-    return new LandscapeDate(parseString(input), false);
+    return new ChronoDate(parseString(input), false);
   }
 
-  static parseStrictISO(value: string, strict?: boolean): LandscapeDate {
+  static parseStrictISO(value: string, strict?: boolean): ChronoDate {
     if (strict && !ISO_8601_REGEX.test(value.trim())) {
-      return new LandscapeDate(NaN, false);
+      return new ChronoDate(NaN, false);
     }
 
-    return new LandscapeDate(parseString(value), false);
+    return new ChronoDate(parseString(value), false);
   }
 
   private fields(): DateFields {
@@ -399,7 +401,7 @@ export class LandscapeDate {
     return new Date(this._time);
   }
 
-  utc(keepLocalTime = false): LandscapeDate {
+  utc(keepLocalTime = false): ChronoDate {
     if (keepLocalTime && !this._utc) {
       const date = new Date(this._time);
       const time = Date.UTC(
@@ -412,41 +414,41 @@ export class LandscapeDate {
         date.getMilliseconds(),
       );
 
-      return new LandscapeDate(time, true);
+      return new ChronoDate(time, true);
     }
 
-    return new LandscapeDate(this._time, true);
+    return new ChronoDate(this._time, true);
   }
 
-  local(): LandscapeDate {
-    return new LandscapeDate(this._time, false);
+  local(): ChronoDate {
+    return new ChronoDate(this._time, false);
   }
 
-  add(amount: number, unit: AddUnit): LandscapeDate {
+  add(amount: number, unit: AddUnit): ChronoDate {
     return this.shift(amount, unit);
   }
 
-  subtract(amount: number, unit: AddUnit): LandscapeDate {
+  subtract(amount: number, unit: AddUnit): ChronoDate {
     return this.shift(-amount, unit);
   }
 
-  private shift(amount: number, unit: AddUnit): LandscapeDate {
+  private shift(amount: number, unit: AddUnit): ChronoDate {
     switch (unit) {
       case "millisecond":
       case "milliseconds":
-        return new LandscapeDate(this._time + amount, this._utc);
+        return new ChronoDate(this._time + amount, this._utc);
       case "second":
       case "seconds":
-        return new LandscapeDate(this._time + amount * 1000, this._utc);
+        return new ChronoDate(this._time + amount * 1000, this._utc);
       case "minute":
       case "minutes":
-        return new LandscapeDate(
+        return new ChronoDate(
           this._time + amount * MS_PER_MINUTE,
           this._utc,
         );
       case "hour":
       case "hours":
-        return new LandscapeDate(this._time + amount * MS_PER_HOUR, this._utc);
+        return new ChronoDate(this._time + amount * MS_PER_HOUR, this._utc);
       case "day":
       case "days":
         return this.shiftCalendarDays(amount);
@@ -461,7 +463,7 @@ export class LandscapeDate {
         } else {
           date.setMonth(date.getMonth() + amount);
         }
-        return new LandscapeDate(date.getTime(), this._utc);
+        return new ChronoDate(date.getTime(), this._utc);
       }
       case "year":
       case "years": {
@@ -471,14 +473,14 @@ export class LandscapeDate {
         } else {
           date.setFullYear(date.getFullYear() + amount);
         }
-        return new LandscapeDate(date.getTime(), this._utc);
+        return new ChronoDate(date.getTime(), this._utc);
       }
       default:
-        return new LandscapeDate(this._time, this._utc);
+        return new ChronoDate(this._time, this._utc);
     }
   }
 
-  private shiftCalendarDays(amount: number): LandscapeDate {
+  private shiftCalendarDays(amount: number): ChronoDate {
     const date = new Date(this._time);
 
     if (this._utc) {
@@ -487,11 +489,11 @@ export class LandscapeDate {
       date.setDate(date.getDate() + amount);
     }
 
-    return new LandscapeDate(date.getTime(), this._utc);
+    return new ChronoDate(date.getTime(), this._utc);
   }
 
   diff(other: DateInput, unit?: DiffUnit): number {
-    const target = LandscapeDate.from(other);
+    const target = ChronoDate.from(other);
     const difference = this._time - target._time;
 
     switch (unit) {
@@ -524,22 +526,22 @@ export class LandscapeDate {
 
   isAfter(other?: DateInput): boolean {
     const target =
-      other === undefined ? LandscapeDate.now() : LandscapeDate.from(other);
+      other === undefined ? ChronoDate.now() : ChronoDate.from(other);
     return this._time > target._time;
   }
 
   isBefore(other?: DateInput): boolean {
     const target =
-      other === undefined ? LandscapeDate.now() : LandscapeDate.from(other);
+      other === undefined ? ChronoDate.now() : ChronoDate.from(other);
     return this._time < target._time;
   }
 
   isSameOrAfter(other: DateInput): boolean {
-    return this._time >= LandscapeDate.from(other)._time;
+    return this._time >= ChronoDate.from(other)._time;
   }
 
   isSameOrBefore(other: DateInput): boolean {
-    return this._time <= LandscapeDate.from(other)._time;
+    return this._time <= ChronoDate.from(other)._time;
   }
 
   toISOString(): string {
@@ -590,14 +592,14 @@ export class LandscapeDate {
   }
 
   calendar(formats: CalendarFormats): string {
-    const dayIndex = (date: LandscapeDate): number => {
+    const dayIndex = (date: ChronoDate): number => {
       const f = date.fields();
       return Math.floor(Date.UTC(f.Y, f.Mo, f.D) / MS_PER_DAY);
     };
 
     const reference = this._utc
-      ? LandscapeDate.now().utc()
-      : LandscapeDate.now();
+      ? ChronoDate.now().utc()
+      : ChronoDate.now();
     const delta = dayIndex(this) - dayIndex(reference);
 
     let pattern: string | undefined;

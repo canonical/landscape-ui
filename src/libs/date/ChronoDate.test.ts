@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
-import date, { LandscapeDate } from "./index";
+import date, { ChronoDate } from "./index";
 
 const FIXED_NOW = new Date("2024-03-15T10:30:00Z").getTime();
 const DAYS_ACROSS_DST_CHANGE = 14;
@@ -8,7 +8,7 @@ const ONE_MINUTE_MS = 60_000;
 const ONE_HOUR_MS = 3_600_000;
 const PARSED_MILLISECONDS = 456;
 
-describe("LandscapeDate factory", () => {
+describe("ChronoDate factory", () => {
   it("returns the current time when called with no arguments", () => {
     vi.useFakeTimers();
     vi.setSystemTime(FIXED_NOW);
@@ -38,7 +38,7 @@ describe("LandscapeDate factory", () => {
     expect(date(native).getTime()).toBe(native.getTime());
   });
 
-  it("clones another LandscapeDate preserving the utc mode", () => {
+  it("clones another ChronoDate preserving the utc mode", () => {
     const utc = date("2024-01-02T03:04:05Z").utc();
     const clone = date(utc);
     expect(clone.format("HH:mm")).toBe(utc.format("HH:mm"));
@@ -381,12 +381,12 @@ describe("calendar", () => {
   });
 });
 
-describe("LandscapeDate class export", () => {
+describe("ChronoDate class export", () => {
   it("exposes a now() helper", () => {
     vi.useFakeTimers();
     vi.setSystemTime(FIXED_NOW);
 
-    expect(LandscapeDate.now().getTime()).toBe(FIXED_NOW);
+    expect(ChronoDate.now().getTime()).toBe(FIXED_NOW);
 
     vi.useRealTimers();
   });
