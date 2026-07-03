@@ -1,4 +1,3 @@
-import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import LoadingState from "@/components/layout/LoadingState";
 import {
   CONTACT_SUPPORT_TEAM_MESSAGE,
@@ -11,7 +10,7 @@ import {
 import { ROUTES } from "@/libs/routes";
 import useSidePanel from "@/hooks/useSidePanel";
 import { pluralize } from "@/utils/_helpers";
-import { Notification } from "@canonical/react-components";
+import { Button, Notification } from "@canonical/react-components";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
@@ -22,6 +21,7 @@ import ReportDonutChart from "../ReportDonutChart";
 import ReportForm from "../ReportForm";
 import type { MetricRow } from "../MetricBarTable";
 import MetricBarTable from "../MetricBarTable";
+import { derivePatchBuckets } from "./helpers";
 import classes from "./ReportView.module.scss";
 
 interface ReportViewProps {
@@ -79,99 +79,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
 
   const { total } = report;
 
-  // Every instance lands in exactly one bucket, worst first: instances with
-  // USNs outstanding for over 60 days take priority, the rest are split by the
-  // longest time they took to apply a USN (the fixed_in buckets are
-  // cumulative). Whatever the server cannot place in a named interval — USNs
-  // still unpatched for under 60 days, or patched after more than 60 days — is
-  // reported honestly as "Other". We carry the exact computer ids per bucket so
-  // the deep link matches the report's count precisely.
-  const pendingIds = report.usn_pending_over_60_days.computer_ids;
-  const withinTwoIds = report.usn_fixed_in["2"].computer_ids;
-  const withinFourteenIds = report.usn_fixed_in["14"].computer_ids;
-  const withinThirtyIds = report.usn_fixed_in["30"].computer_ids;
-  const withinSixtyIds = report.usn_fixed_in["60"].computer_ids;
-  const pendingSet = new Set(pendingIds);
-  const withinTwoSet = new Set(withinTwoIds);
-  const withinFourteenSet = new Set(withinFourteenIds);
-  const withinThirtySet = new Set(withinThirtyIds);
-
-  const sixtyPlusIds = pendingIds;
-  const withinTwoBucket = withinTwoIds.filter((id) => !pendingSet.has(id));
-  const twoToFourteenIds = withinFourteenIds.filter(
-    (id) => !withinTwoSet.has(id) && !pendingSet.has(id),
-  );
-  const fourteenToThirtyIds = withinThirtyIds.filter(
-    (id) => !withinFourteenSet.has(id) && !pendingSet.has(id),
-  );
-  const thirtyToSixtyIds = withinSixtyIds.filter(
-    (id) => !withinThirtySet.has(id) && !pendingSet.has(id),
-  );
-  const classified = new Set([
-    ...sixtyPlusIds,
-    ...withinTwoBucket,
-    ...twoToFourteenIds,
-    ...fourteenToThirtyIds,
-    ...thirtyToSixtyIds,
-  ]);
-  // "Other" is the accounted instances not in any named bucket. Derive the
-  // universe from the report's own id sets (every accounted instance appears
-  // in securely/not-securely-patched and/or the USN sets) rather than from the
-  // raw selection, which may include instances the server didn't account for.
-  const accountedIds = new Set<number>([
-    ...report.securely_patched.computer_ids,
-    ...report.not_securely_patched.computer_ids,
-    ...withinSixtyIds,
-    ...pendingIds,
-  ]);
-  const otherIds = [...accountedIds].filter((id) => !classified.has(id));
-
-  const segmentDefs: {
-    key: string;
-    label: string;
-    ids: readonly number[];
-    color: DonutSegment["color"];
-    detail?: string;
-  }[] = [
-    {
-      key: "over-60",
-      label: "60+ days outstanding",
-      ids: sixtyPlusIds,
-      color: "red",
-    },
-    {
-      key: "30-60",
-      label: "30–60 days",
-      ids: thirtyToSixtyIds,
-      color: "orange",
-    },
-    {
-      key: "14-30",
-      label: "14–30 days",
-      ids: fourteenToThirtyIds,
-      color: "orangeLight",
-    },
-    {
-      key: "2-14",
-      label: "2–14 days",
-      ids: twoToFourteenIds,
-      color: "greenLight",
-    },
-    {
-      key: "within-2",
-      label: "Within 2 days",
-      ids: withinTwoBucket,
-      color: "green",
-    },
-    {
-      key: "other",
-      label: "Other",
-      ids: otherIds,
-      color: "grey",
-      detail:
-        "Instances that took more than 60 days to apply a USN, or have an unapplied USN released within the last 60 days.",
-    },
-  ];
+  const segmentDefs = derivePatchBuckets(report);
 
   const patchSegments: DonutSegment[] = segmentDefs.map((segment) => ({
     key: segment.key,
@@ -226,6 +134,15 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
 
   return (
     <>
+      <div className={classes.actions}>
+        <Button
+          appearance="positive"
+          className="u-no-margin--bottom"
+          onClick={handleDownloadDialog}
+        >
+          Download as CSV
+        </Button>
+      </div>
       {selectionChanged && (
         <Notification
           severity="information"
@@ -263,11 +180,6 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       <p className="u-text--muted p-text--small">
         {`Report generated ${moment(report.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
       </p>
-      <SidePanelFormButtons
-        submitButtonDisabled={false}
-        submitButtonText="Download as CSV"
-        onSubmit={handleDownloadDialog}
-      />
     </>
   );
 };

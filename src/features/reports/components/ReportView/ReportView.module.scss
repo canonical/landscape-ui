@@ -1,6 +1,14 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
+/* Informational side panel: the primary action sits at the top, right-aligned,
+   per the side panel convention. */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: $spv--large;
+}
+
 .section {
   margin-bottom: $spv--large;
 }

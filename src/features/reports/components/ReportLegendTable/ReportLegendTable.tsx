@@ -1,10 +1,14 @@
-import { Tooltip } from "@canonical/react-components";
+import { ModularTable, Tooltip } from "@canonical/react-components";
 import classNames from "classnames";
-import type { FC, ReactNode } from "react";
+import type { FC, HTMLProps, ReactNode } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router";
+import type { CellProps, Column, Row, TableRowProps } from "react-table";
 import classes from "./ReportLegendTable.module.scss";
 
-export interface ReportLegendRow {
+// Extends `Record<string, unknown>` so it satisfies ModularTable's data
+// constraint (react-table's generic requires an index signature).
+export interface ReportLegendRow extends Record<string, unknown> {
   readonly key: string;
   readonly marker: ReactNode;
   readonly label: string;
@@ -37,96 +41,104 @@ const ReportLegendTable: FC<ReportLegendTableProps> = ({
   rows,
   activeKey,
   onRowHover,
-}) => (
-  <table
-    className={classNames(classes.table, variant === "bar" && classes.bar)}
-  >
-    <thead>
-      <tr>
-        <th scope="col" className={classes.markerCell}>
-          {markerHeader}
-        </th>
-        <th scope="col" className={classes.labelCell}>
-          {labelHeader}
-        </th>
-        <th scope="col" className={classes.countCell}>
-          {countHeader}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {rows.map((row) => (
-        <tr
-          key={row.key}
-          className={classNames({
-            [classes.rowActive]: activeKey === row.key,
-            [classes.rowDimmed]: activeKey != null && activeKey !== row.key,
-          })}
-          onMouseEnter={
-            onRowHover
-              ? () => {
-                  onRowHover(row.key);
-                }
-              : undefined
-          }
-          onMouseLeave={
-            onRowHover
-              ? () => {
-                  onRowHover(null);
-                }
-              : undefined
-          }
-          onFocus={
-            onRowHover
-              ? () => {
-                  onRowHover(row.key);
-                }
-              : undefined
-          }
-          onBlur={
-            onRowHover
-              ? () => {
-                  onRowHover(null);
-                }
-              : undefined
-          }
-        >
-          <td className={classes.markerCell}>{row.marker}</td>
-          <td className={classes.labelCell}>
-            {row.detail ? (
-              <span className={classes.labelWithHelp}>
-                {row.label}
-                <Tooltip message={row.detail} position="top-center">
-                  <i
-                    className="p-icon--help"
-                    role="img"
-                    aria-label={row.detail}
-                  />
-                </Tooltip>
-              </span>
-            ) : (
-              <span>{row.label}</span>
-            )}
-          </td>
-          <td className={classes.countCell}>
-            {row.countHref && row.count > 0 ? (
-              <Link
-                to={row.countHref}
-                aria-label={row.countAriaLabel}
-                onClick={row.onCountActivate}
-              >
-                {row.count.toLocaleString()}
-              </Link>
-            ) : (
-              <span className={row.count === 0 ? classes.countZero : undefined}>
-                {row.count.toLocaleString()}
-              </span>
-            )}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-);
+}) => {
+  const columns = useMemo<Column<ReportLegendRow>[]>(
+    () => [
+      {
+        id: "marker",
+        Header: markerHeader ?? "",
+        className: classes.markerCell,
+        Cell: ({ row: { original } }: CellProps<ReportLegendRow>) => (
+          <>{original.marker}</>
+        ),
+      },
+      {
+        id: "label",
+        Header: labelHeader,
+        className: classes.labelCell,
+        Cell: ({ row: { original } }: CellProps<ReportLegendRow>) =>
+          original.detail ? (
+            <span className={classes.labelWithHelp}>
+              {original.label}
+              <Tooltip message={original.detail} position="top-center">
+                <i
+                  className="p-icon--help"
+                  role="img"
+                  aria-label={original.detail}
+                />
+              </Tooltip>
+            </span>
+          ) : (
+            <span>{original.label}</span>
+          ),
+      },
+      {
+        id: "count",
+        Header: countHeader,
+        className: classes.countCell,
+        Cell: ({ row: { original } }: CellProps<ReportLegendRow>) =>
+          original.countHref && original.count > 0 ? (
+            <Link
+              to={original.countHref}
+              aria-label={original.countAriaLabel}
+              onClick={original.onCountActivate}
+            >
+              {original.count.toLocaleString()}
+            </Link>
+          ) : (
+            <span
+              className={original.count === 0 ? classes.countZero : undefined}
+            >
+              {original.count.toLocaleString()}
+            </span>
+          ),
+      },
+    ],
+    [markerHeader, labelHeader, countHeader],
+  );
+
+  const data = useMemo(() => [...rows], [rows]);
+
+  // Hover coordination with the donut chart: the hovered row stays full
+  // strength while the rest dim, so the matching segment reads clearly. Keyboard
+  // focus mirrors the hover so the highlight is reachable without a pointer.
+  const getRowProps = (
+    row: Row<ReportLegendRow>,
+  ): Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> => {
+    const { key } = row.original;
+    const rowProps: Partial<TableRowProps & HTMLProps<HTMLTableRowElement>> = {
+      className: classNames({
+        [classes.rowActive]: activeKey === key,
+        [classes.rowDimmed]: activeKey != null && activeKey !== key,
+      }),
+    };
+
+    if (onRowHover) {
+      rowProps.onMouseEnter = () => {
+        onRowHover(key);
+      };
+      rowProps.onMouseLeave = () => {
+        onRowHover(null);
+      };
+      rowProps.onFocus = () => {
+        onRowHover(key);
+      };
+      rowProps.onBlur = () => {
+        onRowHover(null);
+      };
+    }
+
+    return rowProps;
+  };
+
+  return (
+    <ModularTable
+      className={classNames(classes.table, variant === "bar" && classes.bar)}
+      columns={columns}
+      data={data}
+      getRowProps={getRowProps}
+    />
+  );
+};
 
 export default ReportLegendTable;

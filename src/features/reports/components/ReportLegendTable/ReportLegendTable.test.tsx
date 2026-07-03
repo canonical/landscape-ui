@@ -120,6 +120,27 @@ describe("ReportLegendTable", () => {
     expect(screen.getAllByRole("img")).toHaveLength(1);
   });
 
+  it("reports row hover so the donut can highlight the matching segment", async () => {
+    const user = userEvent.setup();
+    const onRowHover = vi.fn();
+    renderWithProviders(
+      <ReportLegendTable
+        variant="dot"
+        labelHeader="Status"
+        countHeader="Instances"
+        rows={rows}
+        onRowHover={onRowHover}
+      />,
+    );
+
+    const firstRow = screen.getByText("First").closest("tr") as HTMLElement;
+    await user.hover(firstRow);
+    expect(onRowHover).toHaveBeenLastCalledWith("a");
+
+    await user.unhover(firstRow);
+    expect(onRowHover).toHaveBeenLastCalledWith(null);
+  });
+
   it("renders a header label for the marker column when given", () => {
     renderWithProviders(
       <ReportLegendTable

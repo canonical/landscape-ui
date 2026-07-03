@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { useEffect, useRef } from "react";
 import useReports from "@/hooks/useReports";
 import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -38,6 +39,14 @@ interface ReportFormProps {
 const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
   const { getCsvComplianceData } = useReports();
 
+  // The submit handler triggers `refetch`, but the query hook that creates it
+  // needs the form values and so must be set up after the form. A ref bridges
+  // the two so the handler always calls the latest refetch — no forward
+  // reference, and the query still reads the values chosen at submit time.
+  const refetchRef = useRef<
+    (() => Promise<{ data?: { data?: string } }>) | null
+  >(null);
+
   const formik = useFormik({
     initialValues: { range: DEFAULT_RANGE_DAYS, reportByCve: true },
     validationSchema: Yup.object({
@@ -47,11 +56,8 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
       reportByCve: Yup.boolean(),
     }),
     onSubmit: async () => {
-      // `refetch` is declared just below: the query must read the latest form
-      // values, so the hook is set up after the form it depends on.
-      // eslint-disable-next-line no-use-before-define
-      const { data } = await refetch();
-      downloadCSV(data?.data ?? "", "report.csv");
+      const result = await refetchRef.current?.();
+      downloadCSV(result?.data?.data ?? "", "report.csv");
     },
   });
 
@@ -66,6 +72,12 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
     },
     { enabled: false },
   );
+
+  // Keep the ref pointing at the latest refetch so the submit handler above
+  // (defined before this hook) always calls the current one.
+  useEffect(() => {
+    refetchRef.current = refetch;
+  }, [refetch]);
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
