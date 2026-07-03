@@ -22,10 +22,6 @@ import {
 import { hasOneItem } from "@/utils/_helpers";
 import { isArchiveInfoValid } from "../../helpers";
 
-export function getStrippedUrl(url: string): string {
-  return url.replace(/\/[^\\/@]*@/, "/");
-}
-
 export function getInitialSourceType({
   ubuntuArchiveInfo,
   ubuntuEsmInfo,
@@ -132,7 +128,7 @@ export const getInitialUbuntuProValues = (
     sourceType: "ubuntu-pro",
     token: "",
     sourceUrl: `https://${UBUNTU_PRO_HOST}/`,
-    proService: firstValidProService ? firstValidProService.mirror_type : "",
+    proService: firstValidProService ? firstValidProService.mirror_url : "",
   };
 };
 

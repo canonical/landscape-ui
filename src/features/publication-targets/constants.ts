@@ -1,4 +1,4 @@
-import type { FilesystemTargetLinkMethod } from "@canonical/landscape-openapi";
+import type { FilesystemTarget } from "@canonical/landscape-openapi";
 import * as Yup from "yup";
 
 export interface EditTargetFormValues {
@@ -29,7 +29,7 @@ export interface EditTargetFormValues {
   tenantDomainId: string;
   // Filesystem
   path: string;
-  linkMethod: FilesystemTargetLinkMethod;
+  linkMethod: FilesystemTarget["linkMethod"];
 }
 
 export const EMPTY_VALUES: EditTargetFormValues = {

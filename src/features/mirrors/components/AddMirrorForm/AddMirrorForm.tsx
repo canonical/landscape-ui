@@ -5,9 +5,11 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   CheckboxInput,
   Form,
+  Icon,
   Input,
   Select,
   Textarea,
+  Tooltip,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import { type ComponentProps, type FC, useEffect, useRef } from "react";
@@ -24,7 +26,11 @@ import { getInitialValues } from "./helpers";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
 import SelectableMirrorContentsBlock from "../SelectableMirrorContentsBlock";
-import { SETTINGS_HELP_TEXT, UBUNTU_SNAPSHOTS_HOST } from "../../constants";
+import {
+  SETTINGS_HELP_TEXT,
+  SOURCE_TYPE_TO_MIRROR_TYPE,
+  UBUNTU_SNAPSHOTS_HOST,
+} from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import { isArchiveInfoValid } from "../../helpers";
 import * as Yup from "yup";
@@ -48,6 +54,23 @@ const AddMirrorForm: FC = () => {
   // archive and ESM info responses come back.
   const isMirrorContentsLoading =
     ubuntuArchiveQuery.isPending || ubuntuEsmQuery.isPending;
+
+  const getArchiveRoot = (values: FormProps) => {
+    switch (values.sourceType) {
+      case "ubuntu-snapshots":
+        return `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${values.snapshotDate}`;
+
+      case "ubuntu-pro": {
+        const archiveRoot = new URL(values.proService);
+        archiveRoot.username = "bearer";
+        archiveRoot.password = values.token;
+        return archiveRoot.href;
+      }
+
+      default:
+        return values.sourceUrl;
+    }
+  };
 
   const formik = useFormik<FormProps>({
     initialValues: getInitialValues({
@@ -86,13 +109,9 @@ const AddMirrorForm: FC = () => {
 
     onSubmit: async (values) => {
       try {
-        const archiveRoot =
-          values.sourceType === "ubuntu-snapshots"
-            ? `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${values.snapshotDate}`
-            : values.sourceUrl;
-
         const { data: newMirror } = await createMirror({
-          archiveRoot,
+          archiveRoot: getArchiveRoot(values),
+          mirrorType: SOURCE_TYPE_TO_MIRROR_TYPE[values.sourceType],
           components: values.components.map((component) => component.trim()),
           displayName: values.name,
           architectures: values.architectures.map((architecture) =>
@@ -139,7 +158,7 @@ const AddMirrorForm: FC = () => {
 
   const proServiceOptions: SelectOption[] = ubuntuEsmInfo.map((proService) => ({
     label: proService.label,
-    value: proService.mirror_type,
+    value: proService.mirror_url,
     disabled: !isArchiveInfoValid(proService),
   }));
 
@@ -250,7 +269,28 @@ const AddMirrorForm: FC = () => {
               {formik.values.sourceType === "ubuntu-pro" && (
                 <Input
                   type="text"
-                  label="Token"
+                  className={classes.maskedInput}
+                  autoComplete="off"
+                  label={
+                    <>
+                      <span>Bearer token </span>
+                      <Tooltip
+                        message={
+                          <>
+                            Use the bearer token for the Pro service you want to
+                            mirror. This is not your Ubuntu Pro subscription
+                            token. For ESM repositories, your token is found in{" "}
+                            <code>/etc/apt/auth.conf.d/90ubuntu-advantage</code>
+                            .
+                          </>
+                        }
+                        position="top-center"
+                        tooltipClassName={classes.tooltip}
+                      >
+                        <Icon name="help" />
+                      </Tooltip>
+                    </>
+                  }
                   required
                   {...formik.getFieldProps("token")}
                   error={getFormikError(formik, "token")}

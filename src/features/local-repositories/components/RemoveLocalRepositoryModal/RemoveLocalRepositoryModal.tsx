@@ -44,7 +44,6 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
         openInNewTab
         showSources={false}
       />
-      <br />
       <p>
         After removal you won&apos;t be able to update any of these
         publications, but they will continue to be available.{" "}
@@ -55,7 +54,7 @@ const RemoveLocalRepositoryModal: FC<RemoveLocalRepositoryModalProps> = ({
 
   const handleRemoveLocalRepository = async () => {
     try {
-      await removeRepository({ name: repository.name ?? "" });
+      await removeRepository(repository.name ?? "");
 
       closeSidePanel();
 

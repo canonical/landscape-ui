@@ -72,59 +72,66 @@ const withExtension = (
 
 export const useUsgProfileDownload = (mode: USGProfileDownloadMode) => {
   const debug = useDebug();
-  const { getUsgProfileAuditDownload } = useGetUsgProfileAuditDownload();
+  const { getUsgProfileAuditDownload, isUsgProfileAuditDownloadLoading } =
+    useGetUsgProfileAuditDownload();
 
-  return async (path: string | null, filename?: string) => {
-    if (!path) {
-      debug(new Error("Could not download file because no path was provided."));
-      return;
-    }
-
-    try {
-      const { data, headers } = await getUsgProfileAuditDownload({
-        path,
-      });
-
-      if (data.type.includes("text/html")) {
-        throw new Error(
-          "Received HTML instead of the expected downloadable file.",
+  return {
+    downloadAudit: async (path: string | null, filename?: string) => {
+      if (!path) {
+        debug(
+          new Error("Could not download file because no path was provided."),
         );
+        return;
       }
 
-      const decodedBlob = decodeBase64ToBlob(
-        await data.text(),
-        mode === "tailoring" ? "application/xml" : "text/csv;charset=utf-8",
-      );
+      try {
+        const { data, headers } = await getUsgProfileAuditDownload({
+          path,
+        });
 
-      const fileToDownload = decodedBlob ?? data;
+        if (data.type.includes("text/html")) {
+          throw new Error(
+            "Received HTML instead of the expected downloadable file.",
+          );
+        }
 
-      const url = URL.createObjectURL(fileToDownload);
-      const link = document.createElement("a");
+        const decodedBlob = decodeBase64ToBlob(
+          await data.text(),
+          mode === "tailoring" ? "application/xml" : "text/csv;charset=utf-8",
+        );
 
-      link.href = url;
+        const fileToDownload = decodedBlob ?? data;
 
-      const headerFilename = getFilenameFromContentDisposition(
-        headers["content-disposition"],
-      );
-      const pathFilename = getFilenameFromPath(path);
-      const resolvedFilename =
-        filename ??
-        headerFilename ??
-        pathFilename ??
-        (mode === "tailoring" ? "tailoring-file" : "download");
+        const url = URL.createObjectURL(fileToDownload);
+        const link = document.createElement("a");
 
-      link.download = withExtension(
-        resolvedFilename,
-        fileToDownload.type,
-        mode,
-      );
+        link.href = url;
 
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      debug(error);
-    }
+        const headerFilename = getFilenameFromContentDisposition(
+          headers["content-disposition"],
+        );
+        const pathFilename = getFilenameFromPath(path);
+        const resolvedFilename =
+          filename ??
+          headerFilename ??
+          pathFilename ??
+          (mode === "tailoring" ? "tailoring-file" : "download");
+
+        link.download = withExtension(
+          resolvedFilename,
+          fileToDownload.type,
+          mode,
+        );
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        debug(error);
+      }
+    },
+
+    isDownloadingAudit: isUsgProfileAuditDownloadLoading,
   };
 };

@@ -10,7 +10,7 @@ import type {
   WindowsInstanceWithoutRelation,
 } from "@/types/Instance";
 import { getSelectionLabel } from "@/utils/_helpers";
-import { Button, Icon } from "@canonical/react-components";
+import { ActionButton, Button, Icon } from "@canonical/react-components";
 import type { FC } from "react";
 import { lazy, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -38,7 +38,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
   const { notify } = useNotify();
   const { setSidePanelContent } = useSidePanel();
 
-  const { reapplyWslProfile } = useReapplyWslProfile();
+  const { reapplyWslProfile, isReapplyingWslProfile } = useReapplyWslProfile();
 
   const {
     value: isReinstallModalOpen,
@@ -111,7 +111,7 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
               <div className="p-segmented-control">
                 <div className="p-segmented-control__list">
                   {hasWslProfiles && (
-                    <Button
+                    <ActionButton
                       type="button"
                       onClick={install}
                       className="p-segmented-control__button u-no-margin--bottom"
@@ -123,10 +123,11 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
                             wslInstance.compliance !== "uninstalled",
                         )
                       }
+                      loading={isReapplyingWslProfile}
                     >
                       <Icon name="begin-downloading" />
                       <span>Install</span>
-                    </Button>
+                    </ActionButton>
                   )}
 
                   {hasWslProfiles && (

@@ -1,0 +1,57 @@
+name: Changeset Version (main)
+
+# main is no longer a publish target — betas ship from point/* and stable from
+# release/*. main is the integration trunk, so all it needs from Changesets is
+# to keep consuming its accumulated .changeset/*.md files: this maintains the
+# canonical CHANGELOG and, crucially, clears the backlog so freshly-cut slices
+# inherit only the changes added since the last baseline rather than the entire
+# history. No build, no ppa-build-* push happens here.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Serialize so back-to-back pushes don't race each other updating the
+# Version Packages PR.
+concurrency:
+  group: changeset-version-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+
+      - uses: pnpm/action-setup@v4
+        with: { version: 10 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Calculate Version
+        id: calver
+        run: |
+          VERSION=$(node scripts/calculate-version.cjs)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Maintains the "Version Packages" PR for main. Merging it consumes the
+      # pending changesets into CHANGELOG.md and bumps package.json. No
+      # `publish:` command, so nothing is shipped and no tag is created.
+      - name: Maintain Version Packages PR
+        uses: changesets/action@v1
+        with:
+          version: node scripts/manual-version-update.cjs ${{ steps.calver.outputs.version }}
+          commit: "chore: version bump to ${{ steps.calver.outputs.version }}"
+          title: "Version Packages (${{ steps.calver.outputs.version }})"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

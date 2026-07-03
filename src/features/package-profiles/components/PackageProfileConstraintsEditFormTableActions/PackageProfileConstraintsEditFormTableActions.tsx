@@ -1,7 +1,12 @@
 import classNames from "classnames";
 import type { FormikContextType } from "formik";
 import type { FC } from "react";
-import { Button, Icon, Tooltip } from "@canonical/react-components";
+import {
+  ActionButton,
+  Button,
+  Icon,
+  Tooltip,
+} from "@canonical/react-components";
 import type { Constraint } from "../../types";
 import classes from "./PackageProfileConstraintsEditFormTableActions.module.scss";
 
@@ -15,7 +20,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
 > = ({ constraint, formik }) => {
   return formik.values.id === constraint.id ? (
     <>
-      <Button
+      <ActionButton
         type="button"
         appearance="base"
         hasIcon
@@ -27,6 +32,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
           formik.handleSubmit();
         }}
         aria-label={`Save changes to ${constraint.package} constraint`}
+        loading={formik.isSubmitting}
       >
         <Tooltip tooltipClassName={classes.tooltip} message="Save changes">
           <Icon
@@ -34,7 +40,7 @@ const PackageProfileConstraintsEditFormTableActions: FC<
             className="u-no-margin--left u-no-margin--right"
           />
         </Tooltip>
-      </Button>
+      </ActionButton>
       <Button
         type="button"
         appearance="base"

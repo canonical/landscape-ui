@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { useEffect } from "react";
-import { Button, Form } from "@canonical/react-components";
+import { ActionButton, Button, Form } from "@canonical/react-components";
 import MultiSelectField from "@/components/form/MultiSelectField";
 import useAdministrators from "@/hooks/useAdministrators";
 import useDebug from "@/hooks/useDebug";
@@ -88,7 +88,7 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
             >
               Revert
             </Button>
-            <Button
+            <ActionButton
               type="button"
               dense
               small
@@ -100,10 +100,11 @@ const AdministratorRolesCell: FC<AdministratorRolesCellProps> = ({
                   formik.values.roles.includes(role),
                 )
               }
+              loading={formik.isSubmitting}
               onClick={() => formik.submitForm()}
             >
               Save changes
-            </Button>
+            </ActionButton>
           </div>
         }
       />

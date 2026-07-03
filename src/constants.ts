@@ -47,3 +47,4 @@ export const MAX_PASSWORD_LENGTH = 50;
 export const DEFAULT_MODAL_PAGE_SIZE = 10;
 export const GENERIC_DOMAIN = "landscape.canonical.com";
 export const MASKED_VALUE = "****************";
+export const DEFAULT_POLLING_INTERVAL = 2000;

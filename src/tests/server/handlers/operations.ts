@@ -1,44 +1,80 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
+import type { Operation } from "@/features/operations";
 import {
-  failedOperation,
   inProgressOperation,
-  emptyOperation,
   succeededOperation,
-  overCountOperation,
-  timeoutOperation,
-  idleOperation,
+  operations,
 } from "@/tests/mocks/operations";
-import { http, delay, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
+
+let progress = inProgressOperation.metadata.progressPercent;
+
+export const resetLroProgress = () => {
+  progress = inProgressOperation.metadata.progressPercent;
+};
+
+const getOperationResponse = (operation: Operation) => {
+  if (operation.metadata.operationId === "pppp-gggg-ssss") {
+    progress += 10;
+
+    if (progress >= 100) {
+      progress = inProgressOperation.metadata.progressPercent;
+
+      return {
+        ...succeededOperation,
+        name: operation.name,
+        metadata: {
+          ...operation.metadata,
+          progressPercent: 100,
+          status: succeededOperation.metadata.status,
+        },
+      };
+    }
+
+    return {
+      ...operation,
+      metadata: {
+        ...operation.metadata,
+        progressPercent: progress,
+      },
+    };
+  }
+  return operation;
+};
 
 export default [
-  http.get(`${API_URL_DEB_ARCHIVE}operations/:operationId`, ({ params }) => {
-    const { operationId } = params;
-    delay(1000);
+  http.post<never, { names: string[] }>(
+    `${API_URL_DEB_ARCHIVE}operations\\:batchGet`,
+    async ({ request }) => {
+      const { names } = await request.json();
 
-    if (operationId === "ffff-llll-dddd") {
-      return HttpResponse.json(failedOperation);
-    }
+      return HttpResponse.json({
+        operations: operations
+          .filter(({ name }) => names.includes(name ?? ""))
+          .map((operation) => {
+            return getOperationResponse(operation);
+          }),
+      });
+    },
+  ),
 
-    if (operationId === "iiii-dddd-llll") {
-      return HttpResponse.json(idleOperation);
-    }
+  http.get(
+    `${API_URL_DEB_ARCHIVE}operations/:operationId`,
+    async ({ params }) => {
+      const { operationId } = params;
 
-    if (operationId === "tttt-mmmm-oooo") {
-      return HttpResponse.json(timeoutOperation);
-    }
+      const operation = operations.find(
+        (op) => op.metadata.operationId === operationId,
+      );
 
-    if (operationId === "pppp-gggg-ssss") {
-      return HttpResponse.json(inProgressOperation);
-    }
+      if (operation) {
+        return HttpResponse.json(getOperationResponse(operation));
+      }
 
-    if (operationId === "mmmm-pppp-tttt") {
-      return HttpResponse.json(emptyOperation);
-    }
-
-    if (operationId === "ssss-cccc-dddd") {
-      return HttpResponse.json(succeededOperation);
-    }
-
-    return HttpResponse.json(overCountOperation);
-  }),
+      return HttpResponse.json(
+        { error: "Operation not found" },
+        { status: 404 },
+      );
+    },
+  ),
 ];

@@ -31,7 +31,7 @@ const PublicationTargetsPage: FC = () => {
     usePageParams();
   const { publicationTargets, count, isGettingPublicationTargets } =
     useGetPublicationTargets({
-      search,
+      filter: search,
     });
 
   useSetDynamicFilterValidation("sidePath", ["view", "add", "edit"]);
