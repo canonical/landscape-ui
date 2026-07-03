@@ -13,7 +13,7 @@ const props: Omit<
 > = {
   instances: [ubuntuInstance],
   instanceCount: 1,
-  isInstanceLoading: false,
+  isGettingInstances: false,
   selectedInstances: [],
   onChangeFilter: vi.fn(),
 };
@@ -105,10 +105,10 @@ describe("InstancesContainer", () => {
         screen.getByRole("columnheader", { name: label }),
       ).toBeInTheDocument();
 
-      const [columnCheckbox] = screen.getAllByLabelText(checkboxLabel);
-      if (!columnCheckbox) {
-        throw new Error(`Could not find column checkbox: ${checkboxLabel}`);
-      }
+      const [columnCheckbox] = screen.getAllByLabelText(checkboxLabel) as [
+        HTMLElement,
+        ...HTMLElement[],
+      ];
 
       if (canBeHidden) {
         expect(columnCheckbox).toBeEnabled();
@@ -181,7 +181,7 @@ describe("InstancesContainer", () => {
       <InstancesContainer
         {...props}
         instanceCount={undefined}
-        isInstanceLoading
+        isGettingInstances
         setSelectedInstances={() => undefined}
       />,
     );
@@ -195,7 +195,7 @@ describe("InstancesContainer", () => {
         {...props}
         instanceCount={0}
         instances={[]}
-        isInstanceLoading={false}
+        isGettingInstances={false}
         setSelectedInstances={() => undefined}
       />,
     );
@@ -209,7 +209,7 @@ describe("InstancesContainer", () => {
         {...props}
         instanceCount={0}
         instances={[]}
-        isInstanceLoading={false}
+        isGettingInstances={false}
         setSelectedInstances={() => undefined}
       />,
       undefined,
@@ -222,5 +222,26 @@ describe("InstancesContainer", () => {
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+  });
+
+  it("shows global empty state when only groupBy is set", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isGettingInstances={false}
+        setSelectedInstances={() => undefined}
+      />,
+      undefined,
+      "/instances?groupBy=status",
+    );
+
+    expect(screen.getByText("No instances found")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "No instances found according to your search parameters.",
+      ),
+    ).not.toBeInTheDocument();
   });
 });

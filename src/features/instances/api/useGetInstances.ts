@@ -40,7 +40,7 @@ export const useGetInstances = (
   const authFetch = useFetch();
   const { currentPage, pageSize } = usePageParams();
 
-  params =
+  const paramsWithPagination =
     (config?.listenToUrlParams ?? true)
       ? {
           limit: pageSize,
@@ -54,16 +54,17 @@ export const useGetInstances = (
     isError,
     isFetching,
     isPending,
-    isLoading,
     error,
     refetch,
   } = useQuery<
     AxiosResponse<ApiPaginatedResponse<Instance>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["instances", params],
+    queryKey: ["instances", paramsWithPagination],
     queryFn: async () =>
-      authFetch.get("computers", { params: { ...params, root_only: false } }),
+      authFetch.get("computers", {
+        params: { ...paramsWithPagination, root_only: false },
+      }),
     ...options,
   });
 
@@ -74,7 +75,6 @@ export const useGetInstances = (
     isErrorInstances: isError,
     isFetchingInstances: isFetching,
     isGettingInstances: isPending,
-    isInstanceLoading: isLoading,
     refetchInstances: refetch,
   };
 };

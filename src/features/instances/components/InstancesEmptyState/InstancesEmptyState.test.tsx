@@ -1,32 +1,9 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import InstancesEmptyState from "./InstancesEmptyState";
 
-const getClassicDashboardUrlQuery = vi.hoisted(() => vi.fn());
-
-vi.mock("@/features/auth", async (importOriginal) => ({
-  ...(await importOriginal()),
-  useAuthHandle: () => ({
-    getClassicDashboardUrlQuery,
-  }),
-}));
-
 describe("InstancesEmptyState", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  beforeEach(() => {
-    getClassicDashboardUrlQuery.mockReturnValue({
-      data: {
-        data: {
-          url: "https://old-dashboard-url",
-        },
-      },
-    });
-  });
-
   it("renders empty-state title, body, and docs link", () => {
     renderWithProviders(<InstancesEmptyState />);
 
@@ -47,21 +24,11 @@ describe("InstancesEmptyState", () => {
     );
   });
 
-  it("renders register button when classic dashboard URL is available", () => {
+  it("does not render register link", () => {
     renderWithProviders(<InstancesEmptyState />);
 
     expect(
-      screen.getByRole("button", { name: "Register instance" }),
-    ).toBeInTheDocument();
-  });
-
-  it("does not render register button when classic dashboard URL is unavailable", () => {
-    getClassicDashboardUrlQuery.mockReturnValue({ data: undefined });
-
-    renderWithProviders(<InstancesEmptyState />);
-
-    expect(
-      screen.queryByRole("button", { name: "Register instance" }),
+      screen.queryByRole("link", { name: "Register a new instance" }),
     ).not.toBeInTheDocument();
   });
 });

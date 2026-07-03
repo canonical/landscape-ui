@@ -25,7 +25,6 @@ describe("InstancesPage", () => {
       instances: [],
       instancesCount: 0,
       isGettingInstances: false,
-      isInstanceLoading: false,
     });
     instancesContainerSpy.mockClear();
   });
@@ -45,7 +44,6 @@ describe("InstancesPage", () => {
       instances: [],
       instancesCount: undefined,
       isGettingInstances: true,
-      isInstanceLoading: true,
     });
 
     renderWithProviders(<InstancesPage />);
@@ -55,11 +53,11 @@ describe("InstancesPage", () => {
     const firstCallFirstArg = instancesContainerSpy.mock.calls[0]?.[0] as
       | {
           instanceCount: number | undefined;
-          isInstanceLoading: boolean;
+          isGettingInstances: boolean;
         }
       | undefined;
 
     expect(firstCallFirstArg?.instanceCount).toBeUndefined();
-    expect(firstCallFirstArg?.isInstanceLoading).toBe(true);
+    expect(firstCallFirstArg?.isGettingInstances).toBe(true);
   });
 });
