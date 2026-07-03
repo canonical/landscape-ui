@@ -3,12 +3,19 @@
 
 .listItem {
   cursor: pointer;
+  display: flex;
+  gap: $sph--large;
+  justify-content: space-between;
   padding: $sph--small $spv--large;
 
   &.disabled {
     color: $colors--theme--text-muted;
     cursor: not-allowed;
   }
+}
+
+.computerCount {
+  flex-shrink: 0;
 }
 
 .highlighted {

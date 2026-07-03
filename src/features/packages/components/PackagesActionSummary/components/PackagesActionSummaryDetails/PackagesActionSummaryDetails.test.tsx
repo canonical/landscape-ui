@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PackagesActionSummaryDetails from "./PackagesActionSummaryDetails";
-import { packageInstances, selectedPackages } from "@/tests/mocks/packages";
+import { packageInstances, selectedPackages } from "@/tests/mocks/packagesOld";
 import userEvent from "@testing-library/user-event";
 
 const [selectedPackage] = selectedPackages;

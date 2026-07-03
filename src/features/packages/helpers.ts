@@ -28,14 +28,14 @@ export const mapActionToPast = (action: PackageAction) => {
 
 export const mapActionToSearch = (action: PackageAction) => {
   switch (action) {
+    case "downgrade":
+    case "hold":
     case "uninstall":
       return "installed";
-    case "downgrade":
-      return "installed";
+    case "install":
+      return "available";
     case "unhold":
       return "held";
-    default:
-      return "available";
   }
 };
 

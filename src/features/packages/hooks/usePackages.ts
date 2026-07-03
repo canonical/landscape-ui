@@ -10,7 +10,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type {
   DowngradePackageVersion,
   InstancePackage,
-  Package,
+  PackageOld,
 } from "../types";
 
 export interface GetPackagesParams {
@@ -82,11 +82,11 @@ export default function usePackages() {
   const authFetch = useFetch();
 
   const getPackagesQuery: QueryFnType<
-    AxiosResponse<ApiPaginatedResponse<Package>>,
+    AxiosResponse<ApiPaginatedResponse<PackageOld>>,
     GetPackagesParams
   > = (queryParams, config = {}) => {
     return useQuery<
-      AxiosResponse<ApiPaginatedResponse<Package>>,
+      AxiosResponse<ApiPaginatedResponse<PackageOld>>,
       AxiosError<ApiError>
     >({
       queryKey: ["packages", queryParams],

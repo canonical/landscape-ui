@@ -1,4 +1,4 @@
-import { selectedPackages } from "@/tests/mocks/packages";
+import { selectedPackages } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

@@ -1,8 +1,5 @@
 import BoldSubstring from "@/components/form/BoldSubstring";
 import LoadingState from "@/components/layout/LoadingState";
-import type { Package } from "@/features/packages";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
-import { hasOneItem } from "@/utils/_helpers";
 import type {
   InfiniteData,
   UseInfiniteQueryResult,
@@ -12,24 +9,25 @@ import classNames from "classnames";
 import type { ControllerStateAndHelpers } from "downshift";
 import type { FC } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
-import type { SelectedPackage } from "../../../../types";
+import type { Package } from "../../../../types";
 import classes from "./PackageDropdownSearchList.module.scss";
+import type { SearchPackagesResponse } from "../../../../api/useSearchPackages";
+import { pluralize } from "@/utils/_helpers";
+import TooltipCell from "@/components/layout/TooltipCell";
 
 interface PackageDropdownSearchListProps {
   readonly downshiftOptions: ControllerStateAndHelpers<Package>;
   readonly exact: boolean;
-  readonly hasOneInstance: boolean;
   readonly queryResult: UseInfiniteQueryResult<
-    InfiniteData<AxiosResponse<ApiPaginatedResponse<Package>>>
+    InfiniteData<AxiosResponse<SearchPackagesResponse>>
   > & { isError: false };
   readonly search: string;
-  readonly selectedPackages: SelectedPackage[];
+  readonly selectedPackages: Package[];
 }
 
 const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   downshiftOptions,
   exact,
-  hasOneInstance,
   queryResult,
   search,
   selectedPackages,
@@ -50,7 +48,7 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
     return <LoadingState />;
   }
 
-  const results = queryResult.data.pages.flatMap((page) => page.data.results);
+  const results = queryResult.data.pages.flatMap((page) => page.data.packages);
 
   if (results.length) {
     return (
@@ -63,6 +61,10 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
           {results.map((item: Package, index: number) => {
             const disabled = selectedPackages.some(({ id }) => item.id === id);
 
+            const props = disabled
+              ? {}
+              : downshiftOptions.getItemProps({ item, index });
+
             return (
               <li
                 className={classNames("p-list__item", classes.listItem, {
@@ -70,24 +72,23 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
                     downshiftOptions.highlightedIndex === index,
                   [classes.disabled]: disabled,
                 })}
-                key={item.name}
-                {...(disabled
-                  ? []
-                  : downshiftOptions.getItemProps({
-                      item,
-                      index,
-                    }))}
+                key={`${item.name}-${item.version}`}
+                {...props}
               >
-                <div className="u-truncate" data-testid="dropdownElement">
-                  <BoldSubstring text={item.name} substring={search} />
+                <div className="u-truncate font-monospace">
+                  <TooltipCell
+                    message={`${item.name} ${item.version}`}
+                    position="top-center"
+                  >
+                    <BoldSubstring text={item.name} substring={search} />{" "}
+                    {item.version}
+                  </TooltipCell>
                 </div>
-                {hasOneInstance && hasOneItem(item.computers) && (
-                  <div>
-                    <small className="u-text-muted">
-                      {item.computers[0].available_version}
-                    </small>
-                  </div>
-                )}
+                <div
+                  className={classNames("u-text--muted", classes.computerCount)}
+                >
+                  {pluralize(item.computers.count, ["instance"], "exact")}
+                </div>
               </li>
             );
           })}
@@ -99,11 +100,11 @@ const PackageDropdownSearchList: FC<PackageDropdownSearchListProps> = ({
   }
 
   if (!exact) {
-    return <div className={classes.empty}>No packages found</div>;
+    return <div className={classes.empty}>No packages found.</div>;
   }
 
   if (search) {
-    return <div className={classes.empty}>Package not found</div>;
+    return <div className={classes.empty}>Package not found.</div>;
   }
 };
 

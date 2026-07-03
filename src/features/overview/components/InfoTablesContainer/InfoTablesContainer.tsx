@@ -6,7 +6,7 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Activity, ActivityCommon } from "@/features/activities";
 import { useApproveActivities, useGetActivities } from "@/features/activities";
 import { useGetInstances } from "@/features/instances";
-import type { Package } from "@/features/packages";
+import type { PackageOld } from "@/features/packages";
 import { usePackages } from "@/features/packages";
 import { useUsns } from "@/features/usns";
 import useDebug from "@/hooks/useDebug";
@@ -118,8 +118,8 @@ const InfoTablesContainer: FC = () => {
   );
   const {
     data: packageDataRes = {
-      data: { results: [] as Package[], count: 0 },
-    } as AxiosResponse<ApiPaginatedResponse<Package>>,
+      data: { results: [] as PackageOld[], count: 0 },
+    } as AxiosResponse<ApiPaginatedResponse<PackageOld>>,
     refetch: refetchPackages,
     isFetching: isFetchingPackages,
   } = getPackagesQuery(
@@ -172,7 +172,7 @@ const InfoTablesContainer: FC = () => {
     }
   };
 
-  const getUpgradesTableData = (): (Instance | Package | Usn)[] => {
+  const getUpgradesTableData = (): (Instance | PackageOld | Usn)[] => {
     switch (currentUpgradesTab) {
       case "instances":
         return instancesWithUpgrades;
@@ -200,7 +200,7 @@ const InfoTablesContainer: FC = () => {
   );
 
   const upgradesTableColumns = useMemo<
-    Column<Instance | Package | Usn>[]
+    Column<Instance | PackageOld | Usn>[]
   >(() => {
     switch (currentUpgradesTab) {
       case "instances":
@@ -239,7 +239,7 @@ const InfoTablesContainer: FC = () => {
           {
             Header: "Affected Instances",
             accessor: "computers",
-            Cell: ({ row }: CellProps<Package>): ReactNode =>
+            Cell: ({ row }: CellProps<PackageOld>): ReactNode =>
               pluralize(row.original.computers.length, ["instance"], "exact"),
             className: classes.lastCol,
           },

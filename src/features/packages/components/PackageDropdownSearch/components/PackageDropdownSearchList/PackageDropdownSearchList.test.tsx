@@ -1,5 +1,5 @@
-import type { Package, SelectedPackage } from "@/features/packages";
-import { packages } from "@/tests/mocks/packages";
+import type { PackageOld, SelectedPackage } from "@/features/packages";
+import { packagesOld } from "@/tests/mocks/packagesOld";
 import { renderWithProviders } from "@/tests/render";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type {
@@ -15,23 +15,23 @@ import PackageDropdownSearchList from "./PackageDropdownSearchList";
 import classes from "./PackageDropdownSearchList.module.scss";
 
 type QueryResultType = UseInfiniteQueryResult<
-  InfiniteData<AxiosResponse<ApiPaginatedResponse<Package>>>
+  InfiniteData<AxiosResponse<ApiPaginatedResponse<PackageOld>>>
 > & { isError: false };
 
 const mockDownshift = {
   highlightedIndex: -1,
   getItemProps: vi.fn(),
-} as unknown as ControllerStateAndHelpers<Package>;
+} as unknown as ControllerStateAndHelpers<PackageOld>;
 
 const mockQueryResult = {
   data: {
     pages: [
       {
         data: {
-          count: packages.length,
+          count: packagesOld.length,
           next: null,
           previous: null,
-          results: packages,
+          results: packagesOld,
         },
         status: 200,
         statusText: "OK",
@@ -66,7 +66,7 @@ describe("PackageDropdownSearchList", () => {
   it("renders list of packages when query is completed", () => {
     renderWithProviders(<PackageDropdownSearchList {...props} />);
 
-    for (const pkg of packages) {
+    for (const pkg of packagesOld) {
       screen.getByText(pkg.name);
     }
   });

@@ -1,16 +1,11 @@
-import useFetch from "@/hooks/useFetch";
-import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { pluralize } from "@/utils/_helpers";
 import { SearchBox, Switch } from "@canonical/react-components";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import classNames from "classnames";
 import Downshift from "downshift";
 import type { FC } from "react";
 import { useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
-import type { GetPackagesParams } from "../../hooks";
-import type { Package, PackageAction, SelectedVersion } from "../../types";
-import type { SelectedPackage } from "../../types";
+import type { Package, PackageAction } from "../../types";
 import PackageDropdownSearchCount from "./components/PackageDropdownSearchCount";
 import PackageDropdownSearchItem from "./components/PackageDropdownSearchItem";
 import PackageDropdownSearchList from "./components/PackageDropdownSearchList";
@@ -22,11 +17,14 @@ import {
 import classes from "./PackageDropdownSearch.module.scss";
 import { mapActionToQueryParams, mapActionToSearch } from "../../helpers";
 import PackageSearchDowngradeItem from "./components/PackageSearchDowngradeItem";
+import type { SearchPackagesRequest } from "../../api/useSearchPackages";
+import useSearchPackages from "../../api/useSearchPackages";
+import { FilterState } from "../../types/FilterState";
 
 interface PackageDropdownSearchProps {
   readonly instanceIds: number[];
-  readonly selectedPackages: SelectedPackage[];
-  readonly setSelectedPackages: (packages: SelectedPackage[]) => void;
+  readonly selectedPackages: Package[];
+  readonly setSelectedPackages: (packages: Package[]) => void;
   readonly action: PackageAction;
 }
 
@@ -36,48 +34,33 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
   setSelectedPackages,
   action,
 }) => {
-  const authFetch = useFetch();
-
   const [search, setSearch] = useDebounceValue("", DEBOUNCE_DELAY);
   const [inputValue, setInputValue] = useState("");
   const { value: exact, toggle: toggleExact } = useBoolean();
 
   const { value: isOpen, setFalse: close, setTrue: open } = useBoolean();
 
-  const query = instanceIds.map((id) => `id:${id}`).join(" OR ");
   const { available, installed, upgrade, held } =
     mapActionToQueryParams(action);
 
-  const queryParams: GetPackagesParams = {
-    query,
-    available: available,
-    installed: installed,
-    upgrade: upgrade,
-    held: held,
+  const computerQuery = instanceIds.map((id) => `id:${id}`).join(" OR ");
+
+  const queryParams: SearchPackagesRequest = {
+    computer_query: computerQuery,
+    available: available ? FilterState.TRUE : FilterState.FALSE,
+    installed: installed ? FilterState.TRUE : FilterState.FALSE,
+    upgrade: upgrade ? FilterState.TRUE : FilterState.FALSE,
+    held: held ? FilterState.TRUE : FilterState.FALSE,
     limit: QUERY_LIMIT,
   };
 
   if (exact) {
     queryParams.names = [search];
   } else {
-    queryParams.search = search;
+    queryParams.text = search;
   }
 
-  const packagesQueryResult = useInfiniteQuery({
-    queryKey: ["packages", queryParams],
-    queryFn: async ({ pageParam }) => {
-      return authFetch.get<ApiPaginatedResponse<Package>>("packages", {
-        params: { ...queryParams, offset: pageParam * QUERY_LIMIT },
-      });
-    },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, _allPages, lastPageParam) => {
-      const nextPageParam = lastPageParam + 1;
-
-      if (lastPage.data.count > nextPageParam * QUERY_LIMIT) {
-        return nextPageParam;
-      }
-    },
+  const packagesQueryResult = useSearchPackages(queryParams, {
     enabled: !(exact && !search),
   });
 
@@ -105,10 +88,7 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
       return;
     }
 
-    setSelectedPackages([
-      ...selectedPackages,
-      { name: item.name, id: item.id, versions: [] },
-    ]);
+    setSelectedPackages([...selectedPackages, item]);
     clearSearchBox();
     close();
   };
@@ -173,7 +153,6 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                 <PackageDropdownSearchList
                   downshiftOptions={downshiftOptions}
                   exact={exact}
-                  hasOneInstance={instanceIds.length === 1}
                   queryResult={packagesQueryResult}
                   search={search}
                   selectedPackages={selectedPackages}
@@ -184,23 +163,19 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
         )}
       </Downshift>
 
-      <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
-        {!!selectedPackages.length &&
-          selectedPackages.map((selectedPackage, index) => {
+      <div
+        className={classNames(
+          "p-text--small-caps",
+          "u-no-padding",
+          classes.header,
+        )}
+      >{`Packages to ${action}`}</div>
+
+      {selectedPackages.length ? (
+        <ul className="p-list p-autocomplete__result-list u-no-margin--bottom">
+          {selectedPackages.map((selectedPackage, index) => {
             const handleDelete = () => {
               setSelectedPackages(selectedPackages.toSpliced(index, 1));
-            };
-
-            const handleUpdateVersions = (versions: SelectedVersion[]) => {
-              setSelectedPackages([
-                ...selectedPackages.slice(0, index),
-                {
-                  name: selectedPackage.name,
-                  id: selectedPackage.id,
-                  versions: versions,
-                },
-                ...selectedPackages.slice(index + 1),
-              ]);
             };
 
             return action == "downgrade" ? (
@@ -208,21 +183,20 @@ const PackageDropdownSearch: FC<PackageDropdownSearchProps> = ({
                 key={`${selectedPackage.id}${index}`}
                 selectedPackage={selectedPackage}
                 onDelete={handleDelete}
-                onUpdateVersions={handleUpdateVersions}
-                query={query}
+                query={computerQuery}
               />
             ) : (
               <PackageDropdownSearchItem
                 key={`${selectedPackage.id}${index}`}
                 selectedPackage={selectedPackage}
                 onDelete={handleDelete}
-                onUpdateVersions={handleUpdateVersions}
-                query={query}
-                action={action}
               />
             );
           })}
-      </ul>
+        </ul>
+      ) : (
+        <div>No packages have been added yet.</div>
+      )}
     </div>
   );
 };

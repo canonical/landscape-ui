@@ -1,979 +1,272 @@
-import type {
-  AvailableVersion,
-  DowngradePackageVersion,
-  DowngradeVersion,
-  InstancePackage,
-  Package,
-  PackageInstance,
-  SelectedPackage,
-} from "@/features/packages";
-import type { PackageUpgrade } from "@/features/upgrades";
+import type { PackageChangePlanSummaryItem } from "@/features/packages";
+import { Package, TargetState } from "@/features/packages";
 
 export const packages = [
-  {
-    id: 15,
+  new Package({
     name: "libthai0",
     summary: "Thai language support library",
-    computers: [
-      {
-        id: 1,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 2,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 3,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 4,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 5,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-      {
-        id: 6,
-        status: "installed",
-        current_version: "0.1.9-1",
-        available_version: "0.1.9-1-1",
-      },
-    ],
-  },
-  {
-    id: 58667,
+    version: "0.1.9-1",
+    computerCount: 6,
+  }),
+  new Package({
     name: "binutils-common",
     summary: "Common files for the GNU assembler, linker and binary utilities",
-    computers: [
-      {
-        id: 20,
-        status: "security",
-        current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu2.4",
-      },
-      {
-        id: 1,
-        status: "security",
-        current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 9779,
+    version: "2.38-4ubuntu2.3",
+    computerCount: 2,
+  }),
+  new Package({
     name: "libbinutils",
     summary: "GNU binary utilities (private shared library)",
-    computers: [
-      {
-        id: 20,
-        status: "security",
-        current_version: "2.38-4ubuntu2.3",
-        available_version: "2.38-4ubuntu2.4",
-      },
-      {
-        id: 1,
-        status: "installed",
-        current_version: null,
-        available_version: null,
-      },
-    ],
-  },
-  {
-    id: 174788,
+    version: "2.38-4ubuntu2.3",
+    computerCount: 2,
+  }),
+  new Package({
+    name: "package-with-very-long-name-that-should-be-truncated-in-the-ui",
+    summary:
+      "This package has a very long name and should be truncated in the UI",
+    version:
+      "1.2.3.4.5.6.7.8.9.10.11.12.13.14.15.16.17.18.19.20.21.22.23.24.25.26.27.28.29",
+    computerCount: 1,
+  }),
+  new Package({
     name: "accountsservice",
     summary: "query and manipulate user account information",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "0.6.55-0ubuntu11",
-        available_version: "0.6.55-0ubuntu12~20.04.6",
-      },
-    ],
-  },
-  {
-    id: 141906,
+    version: "0.6.55-0ubuntu11",
+    computerCount: 1,
+  }),
+  new Package({
     name: "alsa-ucm-conf",
     summary: "ALSA Use Case Manager configuration files",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "1.2.2-1",
-        available_version: "1.2.2-1ubuntu0.13",
-      },
-      {
-        id: 1,
-        status: "installed",
-        current_version: "1.2.2-1",
-        available_version: "1.2.2-1ubuntu0.13",
-      },
-    ],
-  },
-  {
-    id: 117729,
+    version: "1.2.2-1",
+    computerCount: 2,
+  }),
+  new Package({
+    name: "apt",
+    version: "2.3.1",
+    computerCount: 23,
+  }),
+  new Package({
+    name: "apt",
+    version: "1.4.8",
+    computerCount: 7,
+  }),
+  new Package({
+    name: "apt-venv",
+    version: "2.1.0",
+    computerCount: 42,
+  }),
+  new Package({
+    name: "apt-venv",
+    version: "2.2.3",
+    computerCount: 15,
+  }),
+  new Package({
+    name: "apt-doc",
+    version: "2.0.9",
+    computerCount: 38,
+  }),
+  new Package({
+    name: "apt-src",
+    version: "2.3.0",
+    computerCount: 29,
+  }),
+  new Package({
+    name: "apt-src",
+    version: "2.3.2",
+    computerCount: 4,
+  }),
+  new Package({
     name: "base-files",
     summary: "Debian base system miscellaneous files",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "11ubuntu5",
-        available_version: "11ubuntu5.7",
-      },
-      {
-        id: 1,
-        status: "held",
-        current_version: "11ubuntu5",
-        available_version: "11ubuntu5.7",
-      },
-    ],
-  },
-  {
-    id: 119557,
+    version: "11ubuntu5",
+    computerCount: 2,
+  }),
+  new Package({
     name: "bash",
     summary: "GNU Bourne Again SHell",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "5.0-6ubuntu1",
-        available_version: "5.0-6ubuntu1.2",
-      },
-    ],
-  },
-  {
-    id: 112691,
+    version: "5.0-6ubuntu1",
+    computerCount: 2,
+  }),
+  new Package({
     name: "bcache-tools",
     summary: "bcache userspace tools",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "1.0.8-3",
-        available_version: "1.0.8-3ubuntu0.1",
-      },
-    ],
-  },
-  {
-    id: 114990,
+    version: "1.0.8-3",
+    computerCount: 1,
+  }),
+  new Package({
     name: "bind9-dnsutils",
     summary: "Clients provided with BIND 9",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "1:9.16.1-0ubuntu2.1",
-        available_version: "1:9.16.1-0ubuntu2.16",
-      },
-    ],
-  },
-  {
-    id: 107211,
+    version: "1:9.16.1-0ubuntu2.1",
+    computerCount: 1,
+  }),
+  new Package({
     name: "bind9-libs",
     summary: "Shared Libraries used by BIND 9",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "1:9.16.1-0ubuntu2.1",
-        available_version: "1:9.16.1-0ubuntu2.16",
-      },
-    ],
-  },
-  {
-    id: 160136,
+    version: "1:9.16.1-0ubuntu2.1",
+    computerCount: 1,
+  }),
+  new Package({
     name: "bsdutils",
     summary: "basic utilities from 4.4BSD-Lite",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "1:2.34-0.1ubuntu9",
-        available_version: "1:2.34-0.1ubuntu9.4",
-      },
-    ],
-  },
-  {
-    id: 115909,
+    version: "1:2.34-0.1ubuntu9",
+    computerCount: 1,
+  }),
+  new Package({
     name: "busybox-static",
     summary: "Standalone rescue shell with tons of builtin utilities",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "1:1.30.1-4ubuntu6",
-        available_version: "1:1.30.1-4ubuntu6.4",
-      },
-    ],
-  },
-  {
-    id: 111339,
+    version: "1:1.30.1-4ubuntu6",
+    computerCount: 1,
+  }),
+  new Package({
     name: "ca-certificates",
     summary: "Common CA certificates",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "20190110ubuntu1",
-        available_version: "20230311ubuntu0.20.04.1",
-      },
-    ],
-  },
-  {
-    id: 114533,
+    version: "20190110ubuntu1",
+    computerCount: 1,
+  }),
+  new Package({
     name: "cloud-init",
     summary: "initialization and customization tool for cloud instances",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "20.1-10-g71af48df-0ubuntu5",
-        available_version: "23.3.3-0ubuntu0~20.04.1",
-      },
-    ],
-  },
-  {
-    id: 158772,
+    version: "20.1-10-g71af48df-0ubuntu5",
+    computerCount: 1,
+  }),
+  new Package({
     name: "cloud-initramfs-dyn-netconf",
     summary: "write a network interface file in /run for BOOTIF",
-    computers: [
-      {
-        id: 21,
-        status: "installed",
-        current_version: "0.45ubuntu1",
-        available_version: "0.45ubuntu2",
-      },
-    ],
-  },
-  {
-    id: 158773,
+    version: "0.45ubuntu1",
+    computerCount: 1,
+  }),
+  new Package({
     name: "cpio",
     summary: "GNU cpio -- a program to manage archives of files",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2.13+dfsg-2",
-        available_version: "2.13+dfsg-2ubuntu0.3",
-      },
-    ],
-  },
-  {
-    id: 104505,
+    version: "2.13+dfsg-2",
+    computerCount: 1,
+  }),
+  new Package({
+    name: "cron-apt",
+    version: "2.1.4",
+    computerCount: 11,
+  }),
+  new Package({
     name: "cryptsetup",
     summary: "disk encryption support - startup scripts",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2:2.2.2-3ubuntu2",
-        available_version: "2:2.2.2-3ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 164749,
+    version: "2:2.2.2-3ubuntu2",
+    computerCount: 1,
+  }),
+  new Package({
     name: "cryptsetup-bin",
     summary: "disk encryption support - command line tools",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2:2.2.2-3ubuntu2",
-        available_version: "2:2.2.2-3ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 146052,
+    version: "2:2.2.2-3ubuntu2",
+    computerCount: 1,
+  }),
+  new Package({
     name: "cryptsetup-run",
     summary: "transitional dummy package for cryptsetup",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "2:2.2.2-3ubuntu2",
-        available_version: "2:2.2.2-3ubuntu2.4",
-      },
-    ],
-  },
-  {
-    id: 117735,
+    version: "2:2.2.2-3ubuntu2",
+    computerCount: 1,
+  }),
+  new Package({
     name: "curl",
     summary: "command line tool for transferring data with URL syntax",
-    computers: [
-      {
-        id: 21,
-        status: "security",
-        current_version: "7.68.0-1ubuntu2",
-        available_version: "7.68.0-1ubuntu2.21",
-      },
-    ],
-  },
-  {
-    id: 99999,
+    version: "7.68.0-1ubuntu2",
+    computerCount: 1,
+  }),
+  new Package({
     name: "no-upgrades-pkg",
     summary: "package without available upgrades",
-    computers: [
-      {
-        id: 999,
-        status: "installed",
-        current_version: "1.0.0",
-        available_version: null,
-      },
-    ],
-  },
+    version: "1.0.0",
+    computerCount: 1,
+  }),
 ] as const satisfies Package[];
 
-export const getInstancePackages = (instanceId: number): InstancePackage[] => {
-  return packages
-    .filter(({ computers }) => computers.some(({ id }) => id === instanceId))
-    .flatMap(({ computers, ...commonProps }) =>
-      computers
-        .filter(({ id }) => id === instanceId)
-        .map((instanceProps) => ({ ...instanceProps, ...commonProps })),
-    );
-};
-
-export const downgradePackageVersions = [
+export const packageChangePlanSummaryItems = [
   {
-    id: 1,
-    name: "libthai0",
-    summary: "Thai language support library",
-    version: "0.1.8-2",
-  },
-  {
-    id: 2,
-    name: "libthai0",
-    summary: "Thai language support library",
-    version: "0.1.7-3",
-  },
-] as const satisfies DowngradePackageVersion[];
-
-export const packageInstances: PackageInstance[] = [
-  {
-    name: "instance 1",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 2",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 3",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 4",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 5",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 6",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 7",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 8",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 9",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 10",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 11",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-  {
-    name: "instance 12",
-    installed_version: "0.1.9-1",
-    latest_available_version: "1.0.1",
-  },
-];
-
-export const upgradePackages: PackageUpgrade[] = [
-  {
-    id: 1,
-    name: "libthai0",
-    details: "Thai language support library",
-    affected_instance_count: 6,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "0.1.9-1",
-      newest: "0.1.9-1-1",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 2,
-    name: "libthai0",
-    details: "Thai language support library",
-    affected_instance_count: 6,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "0.1.9-1",
-      newest: "0.1.9-1-2",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 3,
-    name: "binutils-common",
-    details: "Common files for the GNU assembler, linker and binary utilities",
-    affected_instance_count: 2,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "2.38-4ubuntu2.3",
-      newest: "2.38-4ubuntu2.4",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 4,
-    name: "libbinutils",
-    details: "GNU binary utilities (private shared library)",
-    affected_instance_count: 1,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "2.38-4ubuntu2.3",
-      newest: "2.38-4ubuntu2.4",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 5,
-    name: "accountsservice",
-    details: "query and manipulate user account information",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "0.6.55-0ubuntu11",
-      newest: "0.6.55-0ubuntu12~20.04.6",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 6,
-    name: "alsa-ucm-conf",
-    details: "ALSA Use Case Manager configuration files",
-    affected_instance_count: 2,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1.2.2-1",
-      newest: "1.2.2-1ubuntu0.13",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 7,
-    name: "base-files",
-    details: "Debian base system miscellaneous files",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "11ubuntu5",
-      newest: "11ubuntu5.7",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 8,
-    name: "bash",
-    details: "GNU Bourne Again SHell",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "5.0-6ubuntu1",
-      newest: "5.0-6ubuntu1.2",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 9,
-    name: "bcache-tools",
-    details: "bcache userspace tools",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1.0.8-3",
-      newest: "1.0.8-3ubuntu0.1",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 10,
-    name: "bind9-dnsutils",
-    details: "Clients provided with BIND 9",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1:9.16.1-0ubuntu2.1",
-      newest: "1:9.16.1-0ubuntu2.16",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 11,
-    name: "bind9-libs",
-    details: "Shared Libraries used by BIND 9",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1:9.16.1-0ubuntu2.1",
-      newest: "1:9.16.1-0ubuntu2.16",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 12,
-    name: "bsdutils",
-    details: "basic utilities from 4.4BSD-Lite",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1:2.34-0.1ubuntu9",
-      newest: "1:2.34-0.1ubuntu9.4",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 13,
-    name: "busybox-static",
-    details: "Standalone rescue shell with tons of builtin utilities",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1:1.30.1-4ubuntu6",
-      newest: "1:1.30.1-4ubuntu6.4",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 14,
-    name: "ca-certificates",
-    details: "Common CA certificates",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "20190110ubuntu1",
-      newest: "20230311ubuntu0.20.04.1",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 15,
-    name: "cloud-init",
-    details: "initialization and customization tool for cloud instances",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "20.1-10-g71af48df-0ubuntu5",
-      newest: "23.3.3-0ubuntu0~20.04.1",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 16,
-    name: "cloud-initramfs-dyn-netconf",
-    details: "write a network interface file in /run for BOOTIF",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "0.45ubuntu1",
-      newest: "0.45ubuntu2",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 17,
-    name: "cpio",
-    details: "GNU cpio -- a program to manage archives of files",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "2.13+dfsg-2",
-      newest: "2.13+dfsg-2ubuntu0.3",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 18,
-    name: "cryptsetup",
-    details: "disk encryption support - startup scripts",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "2:2.2.2-3ubuntu2",
-      newest: "2:2.2.2-3ubuntu2.4",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 19,
-    name: "cryptsetup-bin",
-    details: "disk encryption support - command line tools",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "2:2.2.2-3ubuntu2",
-      newest: "2:2.2.2-3ubuntu2.4",
-    },
-
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 20,
-    name: "cryptsetup-run",
-    details: "transitional dummy package for cryptsetup",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "2:2.2.2-3ubuntu2",
-      newest: "2:2.2.2-3ubuntu2.4",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 21,
-    name: "curl",
-    details: "command line tool for transferring data with URL syntax",
-    affected_instance_count: 1,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "7.68.0-1ubuntu2",
-      newest: "7.68.0-1ubuntu2.21",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 22,
-    name: "architectures",
-    details:
-      "Qui quia veritatis amet repellat cupiditate quo deserunt reiciendis totam.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "2.3.0",
-      newest: "2.4.6",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 23,
-    name: "architectures",
-    details:
-      "Qui quia veritatis amet repellat cupiditate quo deserunt reiciendis totam.",
-    affected_instance_count: 10123,
-    os: "Ubuntu 20.04",
-    versions: {
-      current: "1.3.0",
-      newest: "1.4.6",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 24,
-    name: "assistant",
-    details: "Eaque velit consequatur eaque rem qui voluptatem.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 25,
-    name: "cotton",
-    details:
-      "Voluptatem autem eius modi explicabo saepe possimus rerum culpa et.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 26,
-    name: "cross-platform",
-    details: "Explicabo ducimus reprehenderit velit est ut quibusdam.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-  {
-    id: 27,
-    name: "ergonomic",
-    details: "Molestiae nemo tenetur debitis maiores tempore possimus.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "high",
-    priority: "critical",
-  },
-  {
-    id: 28,
-    name: "malawi",
-    details: "Id facere qui.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "critical",
-    priority: "critical",
-  },
-  {
-    id: 29,
-    name: "new",
-    details: "Temporibus adipisci exercitationem est et sunt ea id impedit.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "high",
-    priority: "critical",
-  },
-  {
-    id: 30,
-    name: "pants",
-    details: "Illo sapiente incidunt non voluptatem.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: "3809-2",
-    cve: "2021-3733",
-    severity: "medium",
-    priority: "negligible",
-  },
-  {
-    id: 31,
-    name: "paradigm",
-    details: "Soluta reprehenderit hic et.",
-    affected_instance_count: 80987,
-    os: "Ubuntu 22.04",
-    versions: {
-      current: "1.2.1",
-      newest: "1.2.2-1ubuntu0.11",
-    },
-    usn: null,
-    cve: null,
-    severity: null,
-    priority: null,
-  },
-];
-
-export const availableVersions = [
-  { name: "1.0.1", num_computers: 5 },
-  { name: "1.0.2", num_computers: 3 },
-  { name: "0.1.9-1", num_computers: 8 },
-  { name: "2.0.0", num_computers: 2 },
-] as const satisfies AvailableVersion[];
-
-export const downgradeVersions = [
-  { name: "2.0.1", num_computers: 5, downgrades: availableVersions },
-  { name: "2.0.2", num_computers: 3, downgrades: availableVersions },
-  { name: "1.0.1", num_computers: 1, downgrades: [] },
-] as const satisfies DowngradeVersion[];
-
-export const selectedPackages = [
-  {
-    name: "libthai0",
-    id: 15,
-    versions: availableVersions.map(({ name }) => ({ name: name })),
-  },
-  {
-    name: "libbinutils",
-    id: 9779,
-    versions: [{ name: "2.38-4ubuntu2.3" }],
-  },
-  {
-    id: 58667,
-    name: "binutils-common",
-    versions: [{ name: "2.38-4ubuntu2.3" }, { name: "2.38-4ubuntu2.4" }],
-  },
-  {
-    id: 174788,
-    name: "accountsservice",
-    versions: [
-      { name: "0.6.55-0ubuntu11" },
-      { name: "0.6.55-0ubuntu12~20.04.6" },
+    package_id: packages[0].id,
+    package_name: packages[0].name,
+    package_version: packages[0].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 5 },
+      { state: TargetState.NOT_APPLICABLE, count: 1 },
     ],
   },
   {
-    id: 141906,
-    name: "alsa-ucm-conf",
-    versions: [{ name: "1.2.2-1" }, { name: "1.2.2-1ubuntu0.13" }],
-  },
-  {
-    id: 117729,
-    name: "base-files",
-    versions: [{ name: "11ubuntu5" }, { name: "11ubuntu5.7" }],
-  },
-  {
-    id: 119557,
-    name: "bash",
-    versions: [{ name: "5.0-6ubuntu1" }, { name: "5.0-6ubuntu1.2" }],
-  },
-  {
-    id: 112691,
-    name: "bcache-tools",
-    versions: [{ name: "1.0.8-3" }, { name: "1.0.8-3ubuntu0.1" }],
-  },
-  {
-    id: 114990,
-    name: "bind9-dnsutils",
-    versions: [
-      { name: "1:9.16.1-0ubuntu2.1" },
-      { name: "1:9.16.1-0ubuntu2.16" },
+    package_id: packages[1].id,
+    package_name: packages[1].name,
+    package_version: packages[1].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 8 },
+      { state: TargetState.NOT_APPLICABLE, count: 13 },
     ],
   },
   {
-    id: 160136,
-    name: "bsdutils",
-    versions: [{ name: "1:2.34-0.1ubuntu9" }, { name: "1:2.34-0.1ubuntu9.4" }],
+    package_id: packages[2].id,
+    package_name: packages[2].name,
+    package_version: packages[2].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 57 },
+      { state: TargetState.NOT_APPLICABLE, count: 11 },
+    ],
   },
-] as const satisfies SelectedPackage[];
+  {
+    package_id: packages[3].id,
+    package_name: packages[3].name,
+    package_version: packages[3].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 328 },
+      { state: TargetState.NOT_APPLICABLE, count: 119 },
+    ],
+  },
+  {
+    package_id: packages[4].id,
+    package_name: packages[4].name,
+    package_version: packages[4].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 565 },
+      { state: TargetState.NOT_APPLICABLE, count: 90 },
+    ],
+  },
+  {
+    package_id: packages[5].id,
+    package_name: packages[5].name,
+    package_version: packages[5].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 71 },
+      { state: TargetState.NOT_APPLICABLE, count: 12 },
+    ],
+  },
+  {
+    package_id: packages[6].id,
+    package_name: packages[6].name,
+    package_version: packages[6].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 34 },
+      { state: TargetState.NOT_APPLICABLE, count: 6 },
+    ],
+  },
+  {
+    package_id: packages[7].id,
+    package_name: packages[7].name,
+    package_version: packages[7].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 100 },
+      { state: TargetState.NOT_APPLICABLE, count: 10 },
+    ],
+  },
+  {
+    package_id: packages[8].id,
+    package_name: packages[8].name,
+    package_version: packages[8].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 2 },
+      { state: TargetState.NOT_APPLICABLE, count: 0 },
+    ],
+  },
+  {
+    package_id: packages[9].id,
+    package_name: packages[9].name,
+    package_version: packages[9].version,
+    package_state_counts: [
+      { state: TargetState.APPLICABLE, count: 0 },
+      { state: TargetState.NOT_APPLICABLE, count: 17 },
+    ],
+  },
+] as const satisfies PackageChangePlanSummaryItem[];

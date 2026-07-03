@@ -1,12 +1,19 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
 import type {
-  AvailableVersion,
-  DowngradeVersionCount,
-  GetDryRunInstancesParams,
-  GetPackagesParams,
-  Package,
-  VersionCount,
+  SearchPackagesRequest,
+  SearchPackagesResponse,
+  GetPackageChangePlanSummaryResponse,
+  CreatePackageChangePlanRequest,
+  PackageChangePlan,
+  ListPackageChangePlanItemsRequest,
+  ListPackageChangePlanItemsResponse,
+} from "@/features/packages";
+import {
+  PackageChangePlanAction,
+  PackageChangePlanState,
+  type GetPackagesParams,
+  type PackageOld,
 } from "@/features/packages";
 import type {
   GetPackageUpgradeParams,
@@ -15,14 +22,11 @@ import type {
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { activities } from "@/tests/mocks/activity";
 import {
-  availableVersions,
   downgradePackageVersions,
-  downgradeVersions,
   getInstancePackages,
-  packageInstances,
-  packages,
+  packagesOld,
   upgradePackages,
-} from "@/tests/mocks/packages";
+} from "@/tests/mocks/packagesOld";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import { http, HttpResponse } from "msw";
 import {
@@ -34,6 +38,11 @@ import {
   createEndpointStatusError,
   createEndpointStatusNetworkError,
 } from "./_constants";
+import {
+  packageChangePlanSummaryItems,
+  packages,
+} from "@/tests/mocks/packages";
+import { instances } from "@/tests/mocks/instance";
 
 const parseBooleanParam = (value: string | null): boolean | undefined => {
   if (value === "true") {
@@ -71,15 +80,15 @@ export default [
         endpointStatus.path === "packages"
       ) {
         return HttpResponse.json(
-          generatePaginatedResponse<Package>({ data: [], limit, offset }),
+          generatePaginatedResponse<PackageOld>({ data: [], limit, offset }),
         );
       }
 
       return HttpResponse.json(
-        generatePaginatedResponse<Package>({
+        generatePaginatedResponse<PackageOld>({
           data: names.length
-            ? packages.filter(({ name }) => names.includes(name))
-            : packages,
+            ? packagesOld.filter(({ name }) => names.includes(name))
+            : packagesOld,
           limit,
           offset,
           search,
@@ -173,60 +182,6 @@ export default [
     return HttpResponse.json<Activity>(activities[0]);
   }),
 
-  http.get(`${API_URL}packages/:id/available_versions`, ({ request }) => {
-    const url = new URL(request.url);
-    const action = url.searchParams.get("action");
-
-    const response: VersionCount = {
-      out_of_scope: 4,
-      versions: availableVersions,
-    };
-
-    if (action == "hold" || action == "unhold") {
-      response.uninstalled = 1;
-    }
-
-    return HttpResponse.json<VersionCount>(response);
-  }),
-
-  http.get(`${API_URL}packages/:id/downgrade_versions`, () => {
-    return HttpResponse.json<DowngradeVersionCount>({
-      out_of_scope: 4,
-      versions: downgradeVersions,
-    });
-  }),
-
-  http.get<never, GetDryRunInstancesParams, AvailableVersion[]>(
-    `${API_URL}packages/:packageId/dry-run`,
-    ({ request }) => {
-      const url = new URL(request.url);
-      const versions = url.searchParams.get("versions")?.split(",") || [];
-      const response = [
-        ...availableVersions,
-        { name: "", num_computers: 1 },
-      ].filter(({ name }) => versions.includes(name));
-
-      return HttpResponse.json<AvailableVersion[]>(response);
-    },
-  ),
-
-  http.get(`${API_URL}packages/:packageId/dry-run/computers`, ({ request }) => {
-    const url = new URL(request.url);
-    const limit = Number(url.searchParams.get("limit"));
-    const offset = Number(url.searchParams.get("offset")) || 0;
-    const search = url.searchParams.get("search") || "";
-
-    return HttpResponse.json(
-      generatePaginatedResponse({
-        data: packageInstances,
-        limit,
-        offset,
-        search,
-        searchFields: ["name"],
-      }),
-    );
-  }),
-
   http.get<
     never,
     GetPackageUpgradeParams,
@@ -276,6 +231,104 @@ export default [
   }),
 
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
+    return HttpResponse.json();
+  }),
+
+  http.post<never, SearchPackagesRequest, SearchPackagesResponse>(
+    `${API_URL}packages:search`,
+    async ({ request }) => {
+      const body = await request.json();
+
+      const response = generatePaginatedResponse({
+        data: packages
+          .filter((pkg) => {
+            if (body.names === undefined) {
+              return true;
+            }
+
+            return body.names.includes(pkg.name);
+          })
+          .filter((pkg) => {
+            if (body.text === undefined) {
+              return true;
+            }
+
+            const text = body.text.toLowerCase();
+
+            return (
+              pkg.name.toLowerCase().includes(text) ||
+              pkg.summary.toLowerCase().includes(text)
+            );
+          }),
+        limit: body.limit,
+        offset: body.offset,
+      });
+
+      return HttpResponse.json<SearchPackagesResponse>({
+        packages: response.results,
+        count: response.count,
+        next: response.next,
+        prev: response.previous,
+      });
+    },
+  ),
+
+  http.get<
+    never,
+    ListPackageChangePlanItemsRequest,
+    ListPackageChangePlanItemsResponse
+  >(`${API_URL}package-change-plans/:id/items`, async ({ request }) => {
+    const url = new URL(request.url);
+    const limit = Number(url.searchParams.get("limit"));
+    const offset = Number(url.searchParams.get("offset")) || 0;
+    const search = url.searchParams.get("computer_instance_name") || "";
+
+    const filteredInstances = instances.filter((instance) =>
+      instance.title.toLowerCase().includes(search.toLowerCase()),
+    );
+
+    return HttpResponse.json<ListPackageChangePlanItemsResponse>({
+      items: filteredInstances
+        .slice(offset, offset + limit)
+        .map((instance) => ({
+          computer: { id: instance.id, name: instance.title },
+          id: 0,
+          package_id: 0,
+        })),
+      count: filteredInstances.length,
+    });
+  }),
+
+  http.get<never, never, GetPackageChangePlanSummaryResponse>(
+    `${API_URL}package-change-plans/:id/summary`,
+    async () => {
+      return HttpResponse.json<GetPackageChangePlanSummaryResponse>({
+        summary_items: packageChangePlanSummaryItems,
+      });
+    },
+  ),
+
+  http.post<never, CreatePackageChangePlanRequest, PackageChangePlan>(
+    `${API_URL}package-change-plans`,
+    async () => {
+      return HttpResponse.json<PackageChangePlan>({
+        id: 1,
+        state: PackageChangePlanState.CREATED,
+        action: PackageChangePlanAction.INSTALL,
+        created_at: new Date().toISOString(),
+        item_count: 10,
+      });
+    },
+  ),
+
+  http.post<never, never, Activity>(
+    `${API_URL}package-change-plans/:id\\:execute`,
+    async () => {
+      return HttpResponse.json<Activity>(activities[0]);
+    },
+  ),
+
+  http.delete(`${API_URL}package-change-plans/:id`, async () => {
     return HttpResponse.json();
   }),
 

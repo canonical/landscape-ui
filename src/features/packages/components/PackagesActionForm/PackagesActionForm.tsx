@@ -1,26 +1,16 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
-import { useOpenActivityDetailsPanel } from "@/features/activities";
-import useDebug from "@/hooks/useDebug";
-import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import { capitalize, pluralize, getSelectionLabel } from "@/utils/_helpers";
 import { type FC, useState } from "react";
-import { mapActionToPast } from "../../helpers";
-import { usePackages } from "../../hooks";
-import type { PackageAction, SelectedPackage } from "../../types";
+import type { Package, PackageAction } from "../../types";
 import PackageDropdownSearch from "../PackageDropdownSearch";
 import PackagesActionSummary from "../PackagesActionSummary";
+
+import type { CreatePackageChangePlanRequest } from "../../api";
 import {
-  DeliveryBlock,
-  deliveryValidationSchema,
-  RandomizationBlock,
-  randomizationValidationSchema,
-} from "@/components/form/DeliveryScheduling";
-import { useFormik } from "formik";
-import { INITIAL_VALUES } from "../InstalledPackagesActionForm/constants";
-import * as Yup from "yup";
-import { Form } from "@canonical/react-components";
-import type { FormProps } from "../InstalledPackagesActionForm/types";
+  useCreatePackageChangePlan,
+  useDeletePackageChangePlan,
+} from "../../api";
+import { capitalize } from "@/utils/_helpers";
 
 interface PackagesActionFormProps {
   readonly instanceIds: number[];
@@ -31,71 +21,72 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
   instanceIds,
   action,
 }) => {
-  const [selectedPackages, setSelectedPackages] = useState<SelectedPackage[]>(
-    [],
+  const [selectedPackages, setSelectedPackages] = useState<Package[]>([]);
+  const [packageChangePlanId, setPackageChangePlanId] = useState<number | null>(
+    null,
   );
-  const [step, setStep] = useState<"form" | "summary" | "schedule">("form");
 
-  const debug = useDebug();
-  const { notify } = useNotify();
-  const { packagesActionQuery } = usePackages();
-  const { closeSidePanel } = useSidePanel();
-  const openActivityDetails = useOpenActivityDetailsPanel();
-  const { setSidePanelTitle } = useSidePanel();
+  const { setSidePanelTitle, setOnCloseOverride, closeSidePanel } =
+    useSidePanel();
 
-  const { mutateAsync: changePackages, isPending: changePackagesQueryLoading } =
-    packagesActionQuery;
+  const {
+    mutateAsync: createPackageChangePlan,
+    isPending: isCreatingPackageChangePlan,
+  } = useCreatePackageChangePlan();
+  const { mutateAsync: deletePackageChangePlan } = useDeletePackageChangePlan();
 
-  const requestAction = action == "uninstall" ? "remove" : action;
-  const actionPast = mapActionToPast(action);
+  const getCreatePackageChangePlanRequest =
+    (): CreatePackageChangePlanRequest => {
+      const computer_query = instanceIds.map((id) => `id:${id}`).join(" OR ");
+      const package_ids = selectedPackages.map(({ id }) => id);
 
-  const handleSubmit = async (values: FormProps) => {
-    try {
-      const { data: activity } = await changePackages({
-        action: requestAction,
-        computer_ids: instanceIds,
-        package_ids: selectedPackages.map(({ id }) => id),
-        deliver_after: values.deliver_immediately
-          ? undefined
-          : `${values.deliver_after}:00Z`,
-        deliver_delay_window: !values.randomize_delivery
-          ? undefined
-          : values.deliver_delay_window,
-      });
-
-      closeSidePanel();
-
-      notify.success({
-        title: `You queued ${getSelectionLabel(selectedPackages, (selectedPackage) => `package ${selectedPackage.name}`, "packages")} to be ${actionPast}.`,
-        message: `${getSelectionLabel(selectedPackages, (selectedPackage) => `${selectedPackage.name}`, "selected packages")} will be ${actionPast} and ${pluralize(selectedPackages.length, ["is", "are"])} queued in Activities.`,
-        actions: [
-          {
-            label: "Details",
-            onClick: () => {
-              openActivityDetails(activity);
+      switch (action) {
+        case "install":
+          return {
+            computer_query,
+            install_config: {
+              by_ids: {
+                package_ids,
+              },
             },
-          },
-        ],
-      });
-    } catch (error) {
-      debug(error);
-    }
-  };
+          };
 
-  const title = capitalize(action);
-  const actionButtonAppearance = action == "install" ? "positive" : "negative";
+        case "uninstall":
+          return {
+            computer_query,
+            remove_config: {
+              by_ids: {
+                package_ids,
+              },
+            },
+          };
 
-  const formik = useFormik({
-    initialValues: INITIAL_VALUES,
-    validationSchema: Yup.object({
-      ...randomizationValidationSchema,
-      ...deliveryValidationSchema,
-    }),
-    onSubmit: handleSubmit,
-  });
+        case "hold":
+          return {
+            computer_query,
+            hold_config: {
+              package_ids,
+            },
+          };
 
-  switch (step) {
-    case "form":
+        case "unhold":
+          return {
+            computer_query,
+            unhold_config: {
+              package_ids,
+            },
+          };
+
+        case "downgrade":
+          return {
+            computer_query,
+            change_version_config: { version_changes: [] },
+          };
+      }
+    };
+
+  switch (packageChangePlanId) {
+    case null:
       return (
         <>
           <PackageDropdownSearch
@@ -105,65 +96,36 @@ const PackagesActionForm: FC<PackagesActionFormProps> = ({
             action={action}
           />
           <SidePanelFormButtons
-            submitButtonDisabled={
-              !selectedPackages.length ||
-              selectedPackages.some(({ versions }) => !versions.length)
-            }
+            submitButtonDisabled={!selectedPackages.length}
             submitButtonText="Next"
             submitButtonAppearance="positive"
-            onSubmit={() => {
-              setStep("summary");
-              setSidePanelTitle(`${title} packages: Summary`);
+            submitButtonLoading={isCreatingPackageChangePlan}
+            onSubmit={async () => {
+              const request = getCreatePackageChangePlanRequest();
+              const { data } = await createPackageChangePlan(request);
+              setPackageChangePlanId(data.id);
+              setSidePanelTitle("Summary");
+              setOnCloseOverride(() => {
+                deletePackageChangePlan(data.id);
+                closeSidePanel();
+              });
             }}
           />
         </>
       );
 
-    case "summary":
+    default:
       return (
-        <>
-          <PackagesActionSummary
-            action={action}
-            instanceIds={instanceIds}
-            selectedPackages={selectedPackages}
-          />
-          <SidePanelFormButtons
-            submitButtonLoading={changePackagesQueryLoading}
-            submitButtonText="Next"
-            submitButtonAppearance="positive"
-            onSubmit={() => {
-              setStep("schedule");
-              setSidePanelTitle(`${title} packages: Delivery`);
-            }}
-            hasBackButton
-            onBackButtonPress={() => {
-              setStep("form");
-              setSidePanelTitle(`${title} packages`);
-            }}
-          />
-        </>
-      );
-
-    case "schedule":
-      return (
-        <Form onSubmit={formik.handleSubmit} noValidate>
-          <DeliveryBlock formik={formik} />
-          <RandomizationBlock formik={formik} />
-          <SidePanelFormButtons
-            submitButtonDisabled={!formik.isValid || formik.isSubmitting}
-            submitButtonText={`${title} ${pluralize(
-              selectedPackages.length,
-              ["package"],
-              "exact",
-            )}`}
-            submitButtonAppearance={actionButtonAppearance}
-            hasBackButton
-            onBackButtonPress={() => {
-              setStep("summary");
-              setSidePanelTitle(`${title} packages: Summary`);
-            }}
-          />
-        </Form>
+        <PackagesActionSummary
+          action={action}
+          instanceIds={instanceIds}
+          selectedPackages={selectedPackages}
+          packageChangePlanId={packageChangePlanId}
+          onBackButtonPress={() => {
+            setPackageChangePlanId(null);
+            setSidePanelTitle(`${capitalize(action)} packages`);
+          }}
+        />
       );
   }
 };

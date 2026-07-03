@@ -1,130 +1,111 @@
-import LoadingState from "@/components/layout/LoadingState";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { TablePagination } from "@/components/layout/TablePagination";
-import { Modal, SearchBox } from "@canonical/react-components";
+import { ModalTablePagination } from "@/components/layout/TablePagination";
+import { SearchBox } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
-import type { CellProps } from "react-table";
-import type { PackageAction, SelectedPackage } from "../../../../types";
-import type { PackageInstance } from "../../../../types/Package";
+import type { Column } from "react-table";
+import { type CellProps } from "react-table";
+import type {
+  PackageChangePlanItem,
+  PackageChangePlanSummaryItem,
+} from "../../../../types";
 import classes from "./PackagesActionSummaryDetails.module.scss";
-import type { InstanceColumn } from "./types";
-import { useGetPackageInstances } from "../../../../api/useGetPackageInstances";
-import usePageParams from "@/hooks/usePageParams";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
-import { mapSummaryToTitle } from "../../../../helpers";
-import { createPortal } from "react-dom";
+import { useListPackageChangePlanItems } from "@/features/packages";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
+import { useCounter } from "usehooks-ts";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface PackagesActionSummaryDetailsProps {
-  readonly selectedPackage: SelectedPackage;
-  readonly instanceIds: number[];
-  readonly close: () => void;
-  readonly summaryVersion?: string;
-  readonly action: PackageAction;
+  readonly packageChangePlanId: number;
+  readonly packageChangePlanSummaryItem: PackageChangePlanSummaryItem;
 }
 
 const PackagesActionSummaryDetails: FC<PackagesActionSummaryDetailsProps> = ({
-  selectedPackage,
-  instanceIds,
-  close,
-  summaryVersion,
-  action,
+  packageChangePlanId,
+  packageChangePlanSummaryItem,
 }) => {
-  const { setPageParams, currentPage, pageSize } = usePageParams();
-
-  const title = mapSummaryToTitle(selectedPackage.name, action, summaryVersion);
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
 
-  const clearSearchBox = () => {
-    setInputText("");
-    setSearch("");
-    setPageParams({ currentPage: DEFAULT_CURRENT_PAGE });
-  };
+  const {
+    count: currentPage,
+    decrement: goToPreviousPage,
+    increment: goToNextPage,
+    reset: resetPage,
+  } = useCounter(DEFAULT_CURRENT_PAGE);
 
-  const selectedVersions = selectedPackage.versions.map((version) => version);
-
-  const { isPending, data, error } = useGetPackageInstances({
-    id: selectedPackage.id,
-    action: action,
-    selected_versions: selectedVersions.map(({ name }) => name),
-    summary_version: summaryVersion,
-    search: search,
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    query: `id:${instanceIds}`,
+  const {
+    data: itemsResponse,
+    error: itemsError,
+    isPending: isGettingItems,
+  } = useListPackageChangePlanItems({
+    id: packageChangePlanId,
+    package_ids: [packageChangePlanSummaryItem.package_id],
+    computer_instance_name: search || undefined,
+    limit: DEFAULT_MODAL_PAGE_SIZE,
+    offset: (currentPage - 1) * DEFAULT_MODAL_PAGE_SIZE,
   });
 
-  if (error) {
-    throw error;
-  }
-
-  const instances = data?.data.results ?? [];
-
-  const columns = useMemo<InstanceColumn[]>(
+  const columns = useMemo<Column<PackageChangePlanItem>[]>(
     () => [
       {
-        accessor: "title",
         Header: "Instance Name",
-        Cell: ({ row }: CellProps<PackageInstance>) => {
-          return <span>{row.original.name}</span>;
-        },
-      },
-      {
-        accessor: "installed",
-        Header: "Installed Version",
-        Cell: ({ row }: CellProps<PackageInstance>) => {
-          return <span>{row.original.installed_version}</span>;
-        },
-      },
-      {
-        accessor: "available",
-        Header: "Latest Version Available",
-        Cell: ({ row }: CellProps<PackageInstance>) => {
-          return <span>{row.original.latest_available_version}</span>;
+        Cell: ({
+          row: { original: item },
+        }: CellProps<PackageChangePlanItem>) => {
+          return <span>{item.computer.name}</span>;
         },
       },
     ],
     [],
   );
 
+  if (itemsError) {
+    throw itemsError;
+  }
+
+  if (isGettingItems) {
+    return <LoadingState />;
+  }
+
+  const clearSearchBox = () => {
+    setInputText("");
+    setSearch("");
+    resetPage();
+  };
+
   const handleSearch = (value: string) => {
-    setPageParams({ currentPage: DEFAULT_CURRENT_PAGE });
+    resetPage();
     setSearch(value);
   };
 
-  return createPortal(
-    <Modal close={close} title={title} className={classes.modal}>
+  return (
+    <>
       <SearchBox
         placeholder={`Search instances`}
         shouldRefocusAfterReset
         externallyControlled
         value={inputText}
-        onChange={(value) => {
-          setInputText(value);
-        }}
+        onChange={setInputText}
         onClear={clearSearchBox}
         onSearch={handleSearch}
         className={classes.search}
       />
-      {isPending ? (
-        <LoadingState />
-      ) : (
-        <ResponsiveTable
-          columns={columns}
-          data={instances}
-          emptyMsg={"No instances found according to your search parameters."}
-          minWidth={400}
-          className={classes.table}
-          style={{ flex: 1 }}
-        />
-      )}
-      <TablePagination
-        totalItems={data?.data.count}
-        currentItemCount={instances.length}
-        className="u-no-margin--bottom"
+      <ResponsiveTable
+        columns={columns}
+        data={itemsResponse.data.items}
+        emptyMsg={"No instances found according to your search parameters."}
+        minWidth={400}
+        className={classes.table}
+        style={{ flex: 1 }}
       />
-    </Modal>,
-    document.body,
+      <ModalTablePagination
+        current={currentPage}
+        onPrev={goToPreviousPage}
+        onNext={goToNextPage}
+        max={Math.ceil(itemsResponse.data.count / DEFAULT_MODAL_PAGE_SIZE)}
+      />
+    </>
   );
 };
 

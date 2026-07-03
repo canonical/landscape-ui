@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import PackageDropdownSearchItem from "./PackageDropdownSearchItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
-import { availableVersions } from "@/tests/mocks/packages";
+import { availableVersions } from "@/tests/mocks/packagesOld";
 
 const props = {
   selectedPackage: {

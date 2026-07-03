@@ -1,8 +1,6 @@
-import LoadingState from "@/components/layout/LoadingState";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { PackageInstance } from "@/features/packages";
-import { useGetPackageInstances } from "@/features/packages";
 import { DEFAULT_CURRENT_PAGE } from "@/libs/pageParamsManager/constants";
 import { Modal, ModularTable, SearchBox } from "@canonical/react-components";
 import { useMemo, useState, type FC } from "react";
@@ -18,10 +16,9 @@ interface AffectedInstancesModalProps {
 
 const AffectedInstancesModal: FC<AffectedInstancesModalProps> = ({
   upgrade,
-  query,
   onClose,
 }) => {
-  const [search, setSearch] = useState("");
+  const [, setSearch] = useState("");
   const [value, setValue] = useState("");
   const {
     count: current,
@@ -34,18 +31,6 @@ const AffectedInstancesModal: FC<AffectedInstancesModalProps> = ({
     setSearch(inputValue);
     resetCurrent();
   };
-
-  const {
-    data: instancesResponse,
-    isPending: isPendingInstances,
-    error: instancesError,
-  } = useGetPackageInstances({
-    action: "upgrade",
-    id: upgrade.id,
-    query,
-    search,
-    selected_versions: [],
-  });
 
   const columns = useMemo<Column<PackageInstance>[]>(
     () => [
@@ -66,10 +51,6 @@ const AffectedInstancesModal: FC<AffectedInstancesModalProps> = ({
     [upgrade.versions],
   );
 
-  if (instancesError) {
-    throw instancesError;
-  }
-
   return (
     <Modal title={`Instances upgradeable for [package_name]`} close={onClose}>
       <SearchBox
@@ -78,24 +59,13 @@ const AffectedInstancesModal: FC<AffectedInstancesModalProps> = ({
         onSearch={handleSearch}
         value={value}
       />
-      {isPendingInstances ? (
-        <LoadingState />
-      ) : (
-        <>
-          <ModularTable
-            columns={columns}
-            data={instancesResponse.data.results}
-          />
-          <ModalTablePagination
-            current={current}
-            max={Math.ceil(
-              instancesResponse.data.count / DEFAULT_MODAL_PAGE_SIZE,
-            )}
-            onNext={next}
-            onPrev={prev}
-          />
-        </>
-      )}
+      <ModularTable columns={columns} data={[]} />
+      <ModalTablePagination
+        current={current}
+        max={Math.ceil(0 / DEFAULT_MODAL_PAGE_SIZE)}
+        onNext={next}
+        onPrev={prev}
+      />
     </Modal>
   );
 };

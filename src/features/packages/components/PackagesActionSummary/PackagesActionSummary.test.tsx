@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import PackagesActionSummary from "./PackagesActionSummary";
-import { selectedPackages } from "@/tests/mocks/packages";
+import { selectedPackages } from "@/tests/mocks/packagesOld";
 
 describe("PackagesActionSummary", () => {
   it("should render all selected packages", async () => {

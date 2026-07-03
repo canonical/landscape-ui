@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import PackageSearchDowngradeItem from "./PackageSearchDowngradeItem";
 import { ICONS } from "@canonical/react-components";
 import userEvent from "@testing-library/user-event";
-import { downgradeVersions } from "@/tests/mocks/packages";
+import { downgradeVersions } from "@/tests/mocks/packagesOld";
 
 const props = {
   selectedPackage: {

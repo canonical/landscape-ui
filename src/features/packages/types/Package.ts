@@ -1,56 +1,44 @@
-type PocketPackageName = string;
+import type { CVE } from "./CVE";
+import type { USN } from "./USN";
 
-type PocketPackageVersion = string;
+export interface PackageComputers {
+  count: number;
+}
 
-export type PocketPackage = [PocketPackageName, PocketPackageVersion];
+export class Package {
+  static nextId = 1;
 
-export type PackageDiff = Record<
-  string,
-  {
-    add?: PocketPackage[];
-    delete?: PocketPackage[];
-    update?: [PocketPackageName, PocketPackageVersion, PocketPackageVersion][];
-  }
->;
-
-export type PocketPackagesList = Record<string, PocketPackage[]>;
-
-interface CommonPackageInfo extends Record<string, unknown> {
   id: number;
   name: string;
   summary: string;
-}
-
-interface InstancePackageInfo extends Record<string, unknown> {
-  available_version: string | null;
-  current_version: string | null;
-  status: "available" | "installed" | "held" | "security";
-}
-
-export type InstancePackage = CommonPackageInfo & InstancePackageInfo;
-
-interface InstancePackageInfoWithInstanceId extends InstancePackageInfo {
-  id: number;
-}
-
-export interface PackageInstance extends Record<string, unknown> {
-  name: string;
-  latest_available_version: string;
-  installed_version: string;
-}
-
-export interface Package extends CommonPackageInfo {
-  computers: InstancePackageInfoWithInstanceId[];
-}
-
-export interface PackageObject {
-  arch: string;
-  component: string;
-  name: string;
-  udeb: boolean;
   version: string;
-}
+  computers: PackageComputers;
+  usn: USN | null = null;
+  cves: CVE[];
 
-export interface DowngradePackageVersion extends CommonPackageInfo {
-  version: string;
+  constructor({
+    id,
+    name,
+    summary,
+    version,
+    computerCount,
+    usn,
+    cves,
+  }: {
+    name: string;
+    version: string;
+    computerCount: number;
+    id?: number;
+    summary?: string;
+    usn?: USN;
+    cves?: CVE[];
+  }) {
+    this.id = id ?? Package.nextId++;
+    this.name = name;
+    this.summary = summary ?? "";
+    this.version = version;
+    this.computers = { count: computerCount };
+    this.usn = usn ?? null;
+    this.cves = cves ?? [];
+  }
 }
