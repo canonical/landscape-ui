@@ -80,7 +80,9 @@ describe("PublicationsList", () => {
       screen.getAllByRole("link", {
         name: sourceDisplayNames[publication.source],
       }),
-    ).toHaveLength(2);
+    ).toHaveLength(
+      publications.filter((pub) => pub.source === publication.source).length,
+    );
     expect(
       screen.getByRole("link", {
         name: publicationTargetDisplayNames[publication.publicationTarget],

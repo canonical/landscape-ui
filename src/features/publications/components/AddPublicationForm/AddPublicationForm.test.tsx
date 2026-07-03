@@ -171,6 +171,12 @@ describe("AddPublicationForm", () => {
     expect(
       screen.queryByRole("textbox", { name: "Signing GPG key" }),
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "The selected source preserves the upstream signing key.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("locks distribution field when mirror has preserveSignatures=true", async () => {

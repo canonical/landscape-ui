@@ -9,6 +9,7 @@ import {
   type MultiSelectItem,
   Select,
   Textarea,
+  Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -139,11 +140,13 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
           />
 
           {mirror.preserveSignatures ? (
-            <ReadOnlyField
-              label="Signing GPG key"
-              value=""
-              tooltipMessage="This mirror is preserving the upstream signing key"
-            />
+            <Notification
+              severity="information"
+              borderless
+              className="u-no-margin--bottom"
+            >
+              The selected mirror preserves the upstream signing key.
+            </Notification>
           ) : (
             <Textarea
               label="Signing GPG key"

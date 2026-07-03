@@ -13,6 +13,7 @@ import { getFormikError } from "@/utils/formikErrors";
 import {
   Form,
   Input,
+  Notification,
   Select,
   Textarea,
   type MultiSelectItem,
@@ -230,11 +231,13 @@ const AddPublicationForm: FC = () => {
               error={getFormikError(formik, "signingKey")}
             />
           ) : (
-            <ReadOnlyField
-              label="Signing GPG key"
-              value={formik.values.signingKey}
-              tooltipMessage="The signing key can't be changed for signature-preserving mirrors."
-            />
+            <Notification
+              severity="information"
+              borderless
+              className="u-no-margin--bottom"
+            >
+              The selected source preserves the upstream signing key.
+            </Notification>
           )}
         </Blocks.Item>
 
