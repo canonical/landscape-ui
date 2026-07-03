@@ -1,6 +1,5 @@
 import useOperation from "@/hooks/useOperation";
 import type { FC } from "react";
-import LoadingState from "@/components/layout/LoadingState";
 import OperationStatusContent from "../OperationStatusContent";
 
 interface OperationStatusCellProps {
@@ -15,15 +14,12 @@ const OperationStatusCell: FC<OperationStatusCellProps> = ({
   const { operations, isGettingOperations } = useOperation();
   const operation = operations[operationName ?? ""];
 
-  if (isGettingOperations) {
-    return <LoadingState inline />;
-  }
-
   return (
     <OperationStatusContent
       type={type}
       operationMetadata={operation?.metadata}
       hasOperation={!!operationName}
+      isGettingOperations={isGettingOperations}
       isTableCell
     />
   );

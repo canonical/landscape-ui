@@ -5,12 +5,14 @@ import ViewLogsButton from "../ViewLogsButton";
 import { getOperationTypeTexts } from "./helpers";
 import { Icon, ICONS } from "@canonical/react-components";
 import ProgressBar from "@/components/ui/ProgressBar";
+import LoadingState from "@/components/layout/LoadingState";
 
 interface OperationStatusContentProps {
   readonly type: "publication" | "mirror" | "local";
   readonly operationMetadata: OperationMetadata | undefined;
   readonly hasOperation: boolean;
   readonly isTableCell?: boolean;
+  readonly isGettingOperations?: boolean;
 }
 
 const OperationStatusContent: FC<OperationStatusContentProps> = ({
@@ -18,6 +20,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
   type,
   hasOperation,
   isTableCell = false,
+  isGettingOperations = false,
 }) => {
   const { inexistent, successful, failed, ongoing } = getOperationTypeTexts(
     type,
@@ -29,6 +32,10 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
   const getContent = () => {
     if (!hasOperation) {
       return <span>{inexistent}</span>;
+    }
+
+    if (isGettingOperations) {
+      return <LoadingState inline />;
     }
 
     if (!status) {
