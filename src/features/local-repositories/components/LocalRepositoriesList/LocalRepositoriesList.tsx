@@ -9,7 +9,7 @@ import usePageParams from "@/hooks/usePageParams";
 import { TablePagination } from "@/components/layout/TablePagination";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
 import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
-import LocalRepositoryPublicationsCount from "./components/LocalRepositoryPublicationsCount";
+import { AssociatedPublicationsCount } from "@/features/publications";
 
 interface LocalRepositoriesListProps {
   readonly repositories: Local[];
@@ -60,7 +60,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
       {
         Header: "Publications",
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
-          <LocalRepositoryPublicationsCount repository={repository} />
+          <AssociatedPublicationsCount sourceName={repository.name ?? ""} />
         ),
       },
       {
