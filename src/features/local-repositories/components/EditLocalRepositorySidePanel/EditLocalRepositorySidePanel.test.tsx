@@ -85,13 +85,15 @@ describe("EditLocalRepositorySidePanel", () => {
 
   it("shows an error notification when editing a repository fails", async () => {
     const user = userEvent.setup();
-    setEndpointStatus({ path: "locals", status: "error" });
 
     renderComponent();
 
     const submitButton = await screen.findByRole("button", {
       name: /save changes/i,
     });
+
+    setEndpointStatus({ path: "locals", status: "error" });
+
     await user.click(submitButton);
 
     expect(
