@@ -45,7 +45,7 @@ describe("ViewRepositoryActionsBlock", () => {
     expect(screen.getByText("Publish")).toBeInTheDocument();
     expect(screen.getByText("Remove")).toBeInTheDocument();
 
-    user.hover(screen.getByText("Importing packages"));
+    await user.hover(screen.getByText("Importing packages"));
 
     expect(
       await screen.findByRole("tooltip", {

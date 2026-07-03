@@ -83,7 +83,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
     );
   };
 
-  return <span aria-live="polite">{getContent()}</span>;
+  return <div aria-live="polite">{getContent()}</div>;
 };
 
 export default OperationStatusContent;

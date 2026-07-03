@@ -12,17 +12,17 @@ import type {
 import { idleOperation } from "@/tests/mocks/operations";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { shouldApplyEndpointStatus } from "./_helpers";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 
-const applyEndpointStatus = () => {
+const applyEndpointStatus = (emptyResponse = {}) => {
   const endpointStatus = getEndpointStatus("locals");
 
   if (endpointStatus.status === "error") {
-    return ENDPOINT_STATUS_API_ERROR;
+    throw createEndpointStatusError();
   }
 
   if (endpointStatus.status === "empty") {
-    return HttpResponse.json({});
+    return HttpResponse.json(emptyResponse);
   }
 
   if (endpointStatus.status === "loading") {
@@ -44,7 +44,7 @@ export default [
     const search = url.searchParams.get("filter")?.split("=").pop() ?? "";
 
     if (shouldApplyEndpointStatus("locals")) {
-      return applyEndpointStatus();
+      return applyEndpointStatus({ locals: [] });
     }
 
     if (!search) {
@@ -79,7 +79,7 @@ export default [
       const { names } = await request.json();
 
       if (shouldApplyEndpointStatus("locals")) {
-        return applyEndpointStatus();
+        return applyEndpointStatus({ locals: [] });
       }
 
       return HttpResponse.json({
@@ -90,6 +90,10 @@ export default [
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository`, ({ params }) => {
     const { repository } = params;
+
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
 
     return HttpResponse.json(
       repositories.find(({ localId }) => localId === repository),
@@ -113,10 +117,14 @@ export default [
       return applyEndpointStatus();
     }
 
-    return HttpResponse.json(repositories[0]);
+    return HttpResponse.json();
   }),
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus({ localPackages: [] });
+    }
+
     return HttpResponse.json({
       localPackages: paginatedPackages,
     });

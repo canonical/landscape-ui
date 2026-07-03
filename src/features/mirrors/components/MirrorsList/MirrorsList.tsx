@@ -32,10 +32,10 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
 
   const operationNames = useMemo(
     () =>
-      mirrors
+      pagedMirrors
         .filter((mirror) => mirror.lastOperation)
         .map((mirror) => mirror.lastOperation ?? ""),
-    [mirrors],
+    [pagedMirrors],
   );
 
   const columns = useMemo<Column<Mirror>[]>(
