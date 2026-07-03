@@ -1,0 +1,107 @@
+import LoadingState from "@/components/layout/LoadingState";
+import { TablePagination } from "@/components/layout/TablePagination";
+import usePageParams from "@/hooks/usePageParams";
+import useSidePanel from "@/hooks/useSidePanel";
+import useSortByUrlParams from "@/hooks/useSortByUrlParams";
+import UserPanelHeader from "../UserPanelHeader";
+import UserList from "../UserList";
+import UsersEmptyState from "../UsersEmptyState";
+import NewUserForm from "../NewUserForm";
+import { MAX_USERS_LIMIT } from "../../constants";
+import { SORT_FUNCTIONS } from "./constants";
+import type { UrlParams } from "@/types/UrlParams";
+import type { User } from "@/types/User";
+import { Notification } from "@canonical/react-components";
+import type { FC } from "react";
+import { useMemo, useState } from "react";
+import { Link, useParams } from "react-router";
+import { getFilteredUsers } from "./helpers";
+import { ROUTES } from "@/libs/routes";
+import { useGetUsers } from "../../api";
+
+const UserContainer: FC = () => {
+  const [selected, setSelected] = useState<number[]>([]);
+
+  const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
+  const { search, currentPage, pageSize } = usePageParams();
+  const { setSidePanelContent } = useSidePanel();
+  const instanceId = Number(childInstanceId ?? urlInstanceId);
+
+  const {
+    users: allUsers,
+    isLoadingUsers,
+    usersCount,
+  } = useGetUsers({
+    computer_id: instanceId,
+    limit: MAX_USERS_LIMIT,
+  });
+
+  const sortedUsers = useSortByUrlParams({
+    data: allUsers,
+    sortFunctions: SORT_FUNCTIONS,
+  });
+
+  const filteredUsers: User[] = getFilteredUsers(search, sortedUsers);
+
+  const getPaginatedUsers = (limit: number, offset: number) => {
+    return filteredUsers.slice(offset, offset + limit);
+  };
+
+  const users = useMemo(
+    () => getPaginatedUsers(pageSize, (currentPage - 1) * pageSize),
+    [search, filteredUsers, currentPage, pageSize],
+  );
+
+  const handleClearSelection = () => {
+    setSelected([]);
+  };
+
+  const handleEmptyStateAddUser = () => {
+    setSidePanelContent("Add new user", <NewUserForm />);
+  };
+
+  if (!search && isLoadingUsers) {
+    return <LoadingState />;
+  }
+
+  if (!search && allUsers.length === 0) {
+    return <UsersEmptyState onAddUser={handleEmptyStateAddUser} />;
+  }
+
+  return (
+    <>
+      <UserPanelHeader
+        selected={selected}
+        handleClearSelection={handleClearSelection}
+        users={users}
+      />
+      {usersCount && usersCount > MAX_USERS_LIMIT && (
+        <Notification
+          severity="caution"
+          title={`Fetched ${MAX_USERS_LIMIT} out of ${usersCount} users`}
+        >
+          <span>
+            The number of requested users is too high. Please{" "}
+            <Link to={ROUTES.external.support()}>
+              contact our support team.
+            </Link>
+          </span>
+        </Notification>
+      )}
+      <UserList
+        selected={selected}
+        setSelected={(userIds) => {
+          setSelected(userIds);
+        }}
+        users={users}
+      />
+      <TablePagination
+        handleClearSelection={handleClearSelection}
+        totalItems={filteredUsers.length}
+        currentItemCount={users.length}
+      />
+    </>
+  );
+};
+
+export default UserContainer;

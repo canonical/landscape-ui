@@ -11,7 +11,6 @@ import { lazy, Suspense, useState } from "react";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
-import useUsers from "@/hooks/useUsers";
 import type { User } from "@/types/User";
 import NewUserForm from "../NewUserForm";
 import {
@@ -24,11 +23,9 @@ import LoadingState from "@/components/layout/LoadingState";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
 import { ResponsiveButtons } from "@/components/ui";
+import { useLockUser, useRemoveUser, useUnlockUser } from "../../api";
 
-const EditUserForm = lazy(
-  async () =>
-    import("@/pages/dashboard/instances/[single]/tabs/users/EditUserForm"),
-);
+const EditUserForm = lazy(async () => import("../EditUserForm"));
 
 interface UserPanelActionButtonsProps {
   readonly selectedUsers: User[];
@@ -48,16 +45,12 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
   const debug = useDebug();
   const { notify } = useNotify();
   const { setSidePanelContent, closeSidePanel } = useSidePanel();
-  const { removeUserQuery, lockUserQuery, unlockUserQuery } = useUsers();
+  const { removeUser, isRemovingUser } = useRemoveUser();
+  const { lockUser, isLockingUser } = useLockUser();
+  const { unlockUser, isUnlockingUser } = useUnlockUser();
   const [lockOpen, setLockOpen] = useState(false);
   const [unlockOpen, setUnlockOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
-
-  const { mutateAsync: removeUserMutation, isPending: isRemoving } =
-    removeUserQuery;
-  const { mutateAsync: lockUserMutation, isPending: isLocking } = lockUserQuery;
-  const { mutateAsync: unlockUserMutation, isPending: isUnlocking } =
-    unlockUserQuery;
 
   const instanceId = Number(urlInstanceId);
   const user = selectedUsers.length === 1 ? selectedUsers[0] : undefined;
@@ -66,10 +59,7 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     getUserLockStatusCounts(selectedUsers);
 
   const performUserAction = async (
-    mutation:
-      | typeof removeUserMutation
-      | typeof lockUserMutation
-      | typeof unlockUserMutation,
+    mutation: typeof removeUser | typeof lockUser | typeof unlockUser,
     actionType: string,
   ) => {
     try {
@@ -89,16 +79,16 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
     }
   };
 
-  const lockUser = async () => {
-    await performUserAction(lockUserMutation, "locked");
+  const handleLockUser = async () => {
+    await performUserAction(lockUser, "locked");
   };
 
-  const unlockUser = async () => {
-    await performUserAction(unlockUserMutation, "unlocked");
+  const handleUnlockUser = async () => {
+    await performUserAction(unlockUser, "unlocked");
   };
 
-  const removeUser = async () => {
-    await performUserAction(removeUserMutation, "removed");
+  const handleRemoveUser = async () => {
+    await performUserAction(removeUser, "removed");
   };
 
   const handleAddUser = () => {
@@ -209,9 +199,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           }}
           confirmButtonLabel="Lock"
           confirmButtonAppearance="positive"
-          confirmButtonLoading={isLocking}
-          confirmButtonDisabled={isLocking}
-          onConfirm={lockUser}
+          confirmButtonLoading={isLockingUser}
+          confirmButtonDisabled={isLockingUser}
+          onConfirm={handleLockUser}
         >
           {renderModalBody({
             user: user,
@@ -230,9 +220,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           }}
           confirmButtonLabel="Unlock"
           confirmButtonAppearance="positive"
-          confirmButtonLoading={isUnlocking}
-          confirmButtonDisabled={isUnlocking}
-          onConfirm={unlockUser}
+          confirmButtonLoading={isUnlockingUser}
+          confirmButtonDisabled={isUnlockingUser}
+          onConfirm={handleUnlockUser}
         >
           {renderModalBody({
             user: user,
@@ -249,9 +239,9 @@ const UserPanelActionButtons: FC<UserPanelActionButtonsProps> = ({
           }}
           confirmButtonLabel="Delete"
           confirmButtonAppearance="negative"
-          confirmButtonLoading={isRemoving}
-          confirmButtonDisabled={isRemoving}
-          onConfirm={removeUser}
+          confirmButtonLoading={isRemovingUser}
+          confirmButtonDisabled={isRemovingUser}
+          onConfirm={handleRemoveUser}
         >
           <div>
             <p className="u-no-margin--bottom">

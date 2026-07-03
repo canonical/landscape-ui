@@ -1,74 +1,41 @@
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
-import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import useDebug from "@/hooks/useDebug";
 import useSidePanel from "@/hooks/useSidePanel";
-import useUsers from "@/hooks/useUsers";
 import { useParams } from "react-router";
 import type { UrlParams } from "@/types/UrlParams";
 import { getFormikError } from "@/utils/formikErrors";
-
-interface FormProps {
-  name: string;
-  username: string;
-  password: string;
-  confirmPassword: string;
-  requirePasswordReset: boolean;
-  location: string;
-  homePhoneNumber: string;
-  workPhoneNumber: string;
-  primaryGroupValue: string;
-}
+import {
+  NEW_USER_INITIAL_VALUES,
+  VALIDATION_SCHEMA,
+  PRIMARY_GROUP_PLACEHOLDER_OPTION,
+} from "./constants";
+import { mapGroupsToOptions } from "./helpers";
+import type { NewUserFormValues } from "./types";
+import { useCreateUser, useGetGroups } from "../../api";
 
 const NewUserForm: FC = () => {
   const { instanceId: urlInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
   const { closeSidePanel } = useSidePanel();
-  const { createUserQuery, getGroupsQuery } = useUsers();
+  const { createUser, isCreatingUser } = useCreateUser();
 
   const instanceId = Number(urlInstanceId);
 
-  const { mutateAsync } = createUserQuery;
-  const { data, isLoading: isLoadingGroups } = getGroupsQuery({
+  const { groups: groupsData, isLoadingGroups } = useGetGroups({
     computer_id: instanceId,
   });
 
-  const groupsData = data?.data.groups ?? [];
+  const groupOptions = mapGroupsToOptions(groupsData);
 
-  const groupOptions = groupsData.map((group) => ({
-    label: group.name,
-    value: group.name,
-  }));
-
-  const formik = useFormik<FormProps>({
-    initialValues: {
-      name: "",
-      username: "",
-      password: "",
-      confirmPassword: "",
-      requirePasswordReset: false,
-      location: "",
-      homePhoneNumber: "",
-      workPhoneNumber: "",
-      primaryGroupValue: "",
-    },
-    validationSchema: Yup.object().shape({
-      name: Yup.string().required("This field is required"),
-      username: Yup.string().required("This field is required"),
-      password: Yup.string().required("This field is required"),
-      confirmPassword: Yup.string()
-        .required("This field is required")
-        .oneOf([Yup.ref("password"), ""], "Passwords must match"),
-      location: Yup.string(),
-      homePhoneNumber: Yup.string(),
-      workPhoneNumber: Yup.string(),
-      primaryGroupValue: Yup.string().required("This field is required"),
-    }),
+  const formik = useFormik<NewUserFormValues>({
+    initialValues: NEW_USER_INITIAL_VALUES,
+    validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (values) => {
       try {
-        await mutateAsync({
+        await createUser({
           computer_ids: [instanceId],
           name: values.name,
           username: values.username,
@@ -129,7 +96,7 @@ const NewUserForm: FC = () => {
       <Select
         label="Primary Group"
         disabled={isLoadingGroups}
-        options={[{ label: "Select", value: "" }, ...groupOptions]}
+        options={[PRIMARY_GROUP_PLACEHOLDER_OPTION, ...groupOptions]}
         {...formik.getFieldProps("primaryGroupValue")}
         error={getFormikError(formik, "primaryGroupValue")}
       />
@@ -152,7 +119,7 @@ const NewUserForm: FC = () => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonDisabled={isCreatingUser}
         submitButtonText="Add user"
       />
     </Form>
