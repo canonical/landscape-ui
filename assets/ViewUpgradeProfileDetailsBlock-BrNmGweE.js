@@ -1,1 +1,0 @@
-import{Sn as e,Yt as t,_t as n}from"./index-BTW5Ow18.js";import{t as r}from"./InfoGrid-Co9SQKMf.js";var i=t(),a=({profile:e})=>(0,i.jsxs)(i.Fragment,{children:[(0,i.jsx)(r.Item,{label:`Upgrade type`,value:`${n(e.upgrade_type)} upgrades`}),(0,i.jsx)(r.Item,{label:`Auto remove packages`,value:e.autoremove?`On`:`Off`})]}),o=e({default:()=>a});export{o as t};

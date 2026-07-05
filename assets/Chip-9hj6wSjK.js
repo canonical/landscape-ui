@@ -1,1 +1,0 @@
-import{Xt as e,Yt as t,wn as n}from"./index-BTW5Ow18.js";var r=n(e(),1),i={chip:`_chip_8o9xt_1`},a=t(),o=({className:e,value:t})=>(0,a.jsx)(`span`,{className:(0,r.default)(`p-chip is-dense u-no-margin--bottom u-no-margin--right`,i.chip,e),children:(0,a.jsx)(`span`,{className:`p-chip__value`,children:t})});export{o as t};

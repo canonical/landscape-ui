@@ -1,1 +1,0 @@
-import{bn as e,c as t,wn as n}from"./index-BTW5Ow18.js";var r=n(e(),1);function i(){let e=(0,r.useContext)(t);if(!e)throw Error(`useFetchOld must be used within FetchOldProvider`);return e}export{i as t};

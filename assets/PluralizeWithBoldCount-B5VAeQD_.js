@@ -1,0 +1,1 @@
+import{t as e}from"./jsx-runtime-BGORY6w-.js";import{St as t}from"./index-D7pT9DnD.js";var n=e(),r=({count:e,singular:r,plural:i})=>(0,n.jsxs)(n.Fragment,{children:[(0,n.jsx)(`strong`,{children:e.toLocaleString()}),` `,t(e,[r,i])]});export{r as t};
