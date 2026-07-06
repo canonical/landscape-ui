@@ -36,18 +36,6 @@ vi.mock("../../api", async () => {
     useGetMirror: (name: string) => ({
       data: { data: mirrors.find((m) => m.name === name) ?? mirrors[0] },
     }),
-    useListPublicationTargets: () => ({
-      data: { data: { publicationTargets } },
-    }),
-    useListPublications: () => ({
-      data: {
-        data: {
-          publications: publications.filter(
-            (p) => p.source === mirrors[0].name,
-          ),
-        },
-      },
-    }),
   };
 });
 
@@ -56,6 +44,10 @@ vi.mock("@/features/publications", async () => {
 
   return {
     ...actual,
+    useGetPublicationsBySource: (source?: string) => ({
+      publications: publications.filter((p) => p.source === source),
+      isGettingPublications: false,
+    }),
     useCreatePublication: () => ({
       createPublication: mockCreatePublication,
       isCreatingPublication: false,
@@ -63,6 +55,19 @@ vi.mock("@/features/publications", async () => {
     usePublishPublication: () => ({
       publishPublication: mockPublishPublication,
       isPublishingPublication: false,
+    }),
+  };
+});
+
+vi.mock("@/features/publication-targets", async () => {
+  const actual = await vi.importActual("@/features/publication-targets");
+
+  return {
+    ...actual,
+    useGetPublicationTargets: () => ({
+      publicationTargets,
+      isGettingPublicationTargets: false,
+      count: publicationTargets.length,
     }),
   };
 });
@@ -103,6 +108,12 @@ describe("PublishMirrorForm", () => {
         "A publication has been created and an activity has been queued to publish it to the designated target.",
       ),
     ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockPublishPublication).toHaveBeenCalledWith({
+        name: mockPublicationName,
+      });
+    });
   });
 
   it("locks signing key field if source preserves signatures", async () => {
@@ -153,6 +164,12 @@ describe("PublishMirrorForm", () => {
         "An activity has been queued to publish the selected publication to the designated target.",
       ),
     ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockPublishPublication).toHaveBeenCalledWith({
+        name: publications[0].name,
+      });
+    });
   });
 
   it("passes settings to createPublication", async () => {
@@ -214,6 +231,7 @@ describe("PublishMirrorForm", () => {
       await screen.findByText("This field is required"),
     ).toBeInTheDocument();
     expect(mockCreatePublication).not.toHaveBeenCalled();
+    expect(mockPublishPublication).not.toHaveBeenCalled();
   });
 
   it("includes signing key in createPublication payload when provided", async () => {

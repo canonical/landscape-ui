@@ -19,11 +19,16 @@ vi.mock("../RemoveMirrorModal", () => ({
     isOpen ? <div>Remove modal is open</div> : null,
 }));
 
-vi.mock("@/features/publication-targets", () => ({
-  NoPublicationTargetsModal: () => (
-    <div>No publication targets modal is open</div>
-  ),
-}));
+vi.mock("@/features/publication-targets", async () => {
+  const actual = await vi.importActual("@/features/publication-targets");
+
+  return {
+    ...actual,
+    NoPublicationTargetsModal: () => (
+      <div>No publication targets modal is open</div>
+    ),
+  };
+});
 
 vi.mock("@/hooks/usePageParams", () => ({
   __esModule: true,
@@ -51,7 +56,11 @@ describe("MirrorActions", () => {
     );
 
   const openActionsMenu = async (user: ReturnType<typeof userEvent.setup>) => {
-    await user.click(await screen.findByRole("button", { name: "" }));
+    await user.click(
+      await screen.findByRole("button", {
+        name: "Mirror display name mirror actions",
+      }),
+    );
   };
 
   it("renders", () => {
@@ -83,10 +92,7 @@ describe("MirrorActions", () => {
   it("opens no publication targets modal when publish is clicked without targets", async () => {
     const user = userEvent.setup();
 
-    setEndpointStatus([
-      { status: "empty", path: "publicationTargets" },
-      { status: "empty", path: "publications" },
-    ]);
+    setEndpointStatus({ status: "empty", path: "publicationTargets" });
 
     renderActions();
 

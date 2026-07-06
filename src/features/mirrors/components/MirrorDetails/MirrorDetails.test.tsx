@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { assert, describe, expect, it } from "vitest";
+import { assert, beforeEach, describe, expect, it } from "vitest";
 import MirrorDetails from "./MirrorDetails";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { Suspense } from "react";
@@ -11,10 +11,15 @@ import type { Mirror } from "@canonical/landscape-openapi";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const typedMirrors = mirrors as Mirror[];
 
 describe("MirrorDetails", () => {
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
   it("renders the mirror display name once loaded", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
@@ -200,6 +205,55 @@ describe("MirrorDetails", () => {
     expect(
       screen.getByRole("columnheader", { name: /Package name/i }),
     ).toBeInTheDocument();
+  });
+
+  it("opens no publication targets modal when publish is clicked with no targets", async () => {
+    const user = userEvent.setup();
+
+    setEndpointStatus({ status: "empty", path: "publicationTargets" });
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[0].name}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(await screen.findByRole("button", { name: "Publish" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "No publication targets have been added",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows disabled updating action while last operation is in progress", async () => {
+    const mirrorWithInProgressOperation = typedMirrors.find(
+      ({ lastOperation }) => lastOperation?.includes("pppp-gggg-ssss"),
+    );
+    assert(
+      mirrorWithInProgressOperation,
+      "Missing mock mirror with an in-progress operation",
+    );
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrorWithInProgressOperation.name}`,
+    );
+
+    await expectLoadingState();
+
+    const updatingButton = await screen.findByRole("button", {
+      name: "Updating",
+    });
+    expect(updatingButton).toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {

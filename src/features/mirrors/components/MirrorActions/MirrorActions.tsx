@@ -52,6 +52,7 @@ const MirrorActions: FC<MirrorActionsProps> = ({
   return (
     <>
       <ListActions
+        toggleAriaLabel={`${mirrorDisplayName} mirror actions`}
         actions={[
           {
             icon: "show",
