@@ -1,12 +1,15 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { repositoryProfiles } from "@/tests/mocks/repositoryProfiles";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import type { ApiPaginatedResponse } from "@/types/api/ApiPaginatedResponse";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { screen } from "@testing-library/react";
 import type { AxiosResponse } from "axios";
-import { describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileContainer from "./RepositoryProfileContainer";
 
@@ -109,5 +112,44 @@ describe("RepositoryProfileContainer", () => {
     await expectLoadingState();
 
     expect(screen.getByRole("table")).toBeInTheDocument();
+  });
+});
+
+describe("RepositoryProfile request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}repositoryprofiles`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: repositoryProfiles,
+          count: repositoryProfiles.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search entirely when the search param is empty", async () => {
+    renderWithProviders(
+      <RepositoryProfileContainer
+        unfilteredRepositoryProfilesResult={makeUnfilteredResult(
+          repositoryProfiles.length,
+        )}
+      />,
+      undefined,
+      "/",
+    );
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

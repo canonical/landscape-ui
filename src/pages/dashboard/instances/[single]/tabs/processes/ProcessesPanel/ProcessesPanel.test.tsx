@@ -1,11 +1,13 @@
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { API_URL, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { processes } from "@/tests/mocks/process";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import moment from "moment/moment";
-import { describe } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ProcessesPanel from "./ProcessesPanel";
 
 describe("ProcessesPanel", () => {
@@ -36,5 +38,41 @@ describe("ProcessesPanel", () => {
     });
     expect(processFound).toBeInTheDocument();
     expect(processRemoved).not.toBeInTheDocument();
+  });
+});
+
+describe("Processes request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}computers/:computerId/processes`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: processes,
+          count: processes.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search entirely when the page param is empty", async () => {
+    renderWithProviders(
+      <ProcessesPanel />,
+      undefined,
+      "/instances/1/processes",
+      "/instances/:instanceId/processes",
+    );
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

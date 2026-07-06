@@ -12,18 +12,23 @@ export default function useEventsLog() {
   const getEventsLog: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<EventLog>>,
     GetEventsLogParams
-  > = (queryParams, config = {}) =>
-    useQuery<
+  > = (queryParams, config = {}) => {
+    const params = {
+      ...queryParams,
+      search: queryParams?.search || undefined,
+    };
+    return useQuery<
       AxiosResponse<ApiPaginatedResponse<EventLog>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["events", queryParams],
+      queryKey: ["events", params],
       queryFn: async () =>
         authFetch.get("events", {
-          params: queryParams,
+          params,
         }),
       ...config,
     });
+  };
 
   return {
     getEventsLog,

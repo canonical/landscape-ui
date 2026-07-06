@@ -166,6 +166,16 @@ describe("handleParams", () => {
     expect(result).toStrictEqual({ valid: "yes" });
   });
 
+  it("passes empty strings through to the backend on GET requests", () => {
+    const config = makeConfig({
+      method: "get",
+      params: { search: "" },
+    });
+
+    const result = handleParams({ config, isOld: false });
+    expect(result).toStrictEqual({ search: "" });
+  });
+
   it("throws when encountering an unsupported type", () => {
     const config = makeConfig({
       method: "get",

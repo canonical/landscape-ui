@@ -1,7 +1,11 @@
+import { API_URL } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scripts } from "@/tests/mocks/script";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi, assert } from "vitest";
 import ScriptDropdown from "./ScriptDropdown";
 
@@ -230,5 +234,42 @@ describe("ScriptDropdown", () => {
     fireEvent.scroll(list);
 
     expect(list).toBeInTheDocument();
+  });
+});
+
+describe("Scripts request params", () => {
+  const user = userEvent.setup();
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}scripts`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: scripts,
+          count: scripts.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits parent_access_group when the parent access group is empty", async () => {
+    renderWithProviders(
+      <ScriptDropdown script={null} setScript={vi.fn()} parentAccessGroup="" />,
+    );
+
+    const searchBox = screen.getByPlaceholderText(/search for scripts/i);
+    await user.click(searchBox);
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("parent_access_group")).toBe(false);
   });
 });

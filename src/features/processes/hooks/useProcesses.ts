@@ -23,12 +23,13 @@ export default function useProcesses() {
       throw new Error("Missing required parameters");
     }
 
-    const { computer_id, ...params } = queryParams;
+    const { computer_id, ...rest } = queryParams;
+    const params = { ...rest, search: rest.search || undefined };
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<Process>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["processes", queryParams],
+      queryKey: ["processes", { computer_id, ...params }],
       queryFn: async () =>
         authFetch.get(`/computers/${computer_id}/processes`, { params }),
       ...config,

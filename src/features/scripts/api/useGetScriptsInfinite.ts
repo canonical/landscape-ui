@@ -45,7 +45,7 @@ export const useGetScriptsInfinite = ({
           script_type: "active",
           limit,
           offset: pageParam * limit,
-          parent_access_group: parentAccessGroup,
+          parent_access_group: parentAccessGroup || undefined,
         },
       }),
     initialPageParam: 0,

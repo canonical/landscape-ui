@@ -47,18 +47,23 @@ export default function useRepositoryProfiles() {
   const getRepositoryProfilesQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>,
     GetRepositoryProfilesParams
-  > = (queryParams = {}, config = {}) =>
-    useQuery<
+  > = (queryParams = {}, config = {}) => {
+    const params = {
+      ...queryParams,
+      search: queryParams.search || undefined,
+    };
+    return useQuery<
       AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["repositoryProfiles", queryParams],
+      queryKey: ["repositoryProfiles", params],
       queryFn: async () =>
         authFetch.get("repositoryprofiles", {
-          params: queryParams,
+          params,
         }),
       ...config,
     });
+  };
 
   const createRepositoryProfileQuery = useMutation<
     AxiosResponse<RepositoryProfile>,

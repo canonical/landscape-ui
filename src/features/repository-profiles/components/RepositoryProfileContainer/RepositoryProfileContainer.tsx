@@ -32,7 +32,7 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
   } = getRepositoryProfilesQuery({
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    search: search || undefined,
+    search: search,
   });
 
   if (!unfilteredRepositoryProfilesResponse) {

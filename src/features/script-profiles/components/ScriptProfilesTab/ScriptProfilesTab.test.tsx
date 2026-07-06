@@ -1,7 +1,11 @@
+import { API_URL } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 import { scriptProfiles } from "@/tests/mocks/scriptProfiles";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import ScriptProfilesTab from "./ScriptProfilesTab";
 import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
@@ -55,5 +59,43 @@ describe("ScriptProfilesTab", () => {
         name: scriptProfiles[0].title,
       }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("Script profiles request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}script-profiles`, ({ request }) => {
+        const url = new URL(request.url);
+
+        // Only capture the URL-param-driven request (paginated), which is the
+        // one that forwards the `search` page param via `useGetScriptProfiles`.
+        if (url.searchParams.has("limit")) {
+          capturedUrl = url;
+        }
+
+        return HttpResponse.json({
+          results: scriptProfiles,
+          count: scriptProfiles.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search entirely when the page param is empty", async () => {
+    renderWithProviders(<ScriptProfilesTab />, undefined, "/");
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

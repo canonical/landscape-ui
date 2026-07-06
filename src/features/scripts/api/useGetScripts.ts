@@ -56,10 +56,13 @@ export const useGetScripts = (
       ? {
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
-          search: search ?? undefined,
+          search: search || undefined,
           script_type: getStatus(status),
         }
-      : params),
+      : {
+          ...params,
+          search: params?.search || undefined,
+        }),
   };
 
   const { data, isLoading } = useQuery<

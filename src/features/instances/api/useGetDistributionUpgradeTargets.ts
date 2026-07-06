@@ -21,6 +21,7 @@ export const useGetDistributionUpgradeTargets = (
 ) => {
   const authFetch = useFetch();
   const idsParam = computerIds.join(",");
+  const { enabled, ...restOptions } = options ?? {};
 
   const { data: response, isFetching } = useQuery<
     AxiosResponse<DistributionUpgradeTargetsResponse>,
@@ -29,9 +30,10 @@ export const useGetDistributionUpgradeTargets = (
     queryKey: ["distributionUpgradeTargets", computerIds],
     queryFn: async () =>
       authFetch.get("computers/release-upgrade-targets", {
-        params: { computer_ids: idsParam },
+        params: { computer_ids: idsParam || undefined },
       }),
-    ...options,
+    enabled: computerIds.length > 0 && (enabled ?? true),
+    ...restOptions,
   });
 
   return {

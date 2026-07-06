@@ -12,7 +12,7 @@ export default function useUsgProfileFormAssociationStep<
   const { instancesCount, isGettingInstances } = useGetInstances({
     query: formik.values.all_computers
       ? undefined
-      : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR "),
+      : formik.values.tags.map((tag) => `tag:${tag}`).join(" OR ") || undefined,
     limit: 1,
   });
 

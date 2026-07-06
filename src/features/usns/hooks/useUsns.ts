@@ -53,12 +53,13 @@ export default function useUsns() {
       "queryKey" | "queryFn"
     > = {},
   ) => {
+    const params = { ...queryParams, search: queryParams.search || undefined };
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<Usn>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["usns", queryParams],
-      queryFn: async () => authFetch.get("usns", { params: queryParams }),
+      queryKey: ["usns", params],
+      queryFn: async () => authFetch.get("usns", { params }),
       ...config,
     });
   };

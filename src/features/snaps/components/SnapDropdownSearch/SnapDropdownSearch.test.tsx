@@ -2,9 +2,15 @@ import { availableSnaps } from "@/tests/mocks/snap";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SnapDropdownSearch from "./SnapDropdownSearch";
+import { useGetAvailableSnaps } from "@/features/snaps";
+import type { FC } from "react";
 import { PATHS } from "@/libs/routes";
+import { API_URL } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 const props = {
   selectedItems: [],
@@ -76,5 +82,45 @@ describe("SnapDropdownSearch", () => {
       const reappearingSnap = await screen.findByText("Snap 2");
       expect(reappearingSnap).toBeInTheDocument();
     });
+  });
+});
+
+// `SnapDropdownSearch` gates the request behind `enabled: search.length > 0`,
+// so the empty-query guard (`params.query || undefined`) can only be exercised
+// by driving the hook directly. This minimal consumer forces the request to
+// fire with an empty query and asserts `name_startswith` is omitted.
+const EmptyQueryConsumer: FC = () => {
+  useGetAvailableSnaps({ instance_id: 1, query: "" });
+  return null;
+};
+
+describe("Available snaps request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(
+        `${API_URL}computers/:instanceId/snaps/available`,
+        ({ request }) => {
+          capturedUrl = new URL(request.url);
+          return HttpResponse.json({
+            results: availableSnaps,
+          });
+        },
+      ),
+    );
+  });
+
+  it("does not send name_startswith when the query is empty", async () => {
+    renderWithProviders(<EmptyQueryConsumer />);
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("name_startswith")).toBe(false);
   });
 });

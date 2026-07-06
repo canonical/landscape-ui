@@ -1,9 +1,12 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { employees } from "@/tests/mocks/employees";
 import { expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import EmployeesPanel from "./EmployeesPanel";
 import { EMPTY_STATE } from "./constants";
 
@@ -50,5 +53,36 @@ describe("EmployeesPanel", () => {
     await expectLoadingState();
 
     expect(screen.getByText(/Employee limit reached/i)).toBeInTheDocument();
+  });
+});
+
+describe("Employees request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}employees`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: employees,
+          count: employees.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search entirely when the page param is empty", async () => {
+    renderWithProviders(<EmployeesPanel />, undefined, "/employees");
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

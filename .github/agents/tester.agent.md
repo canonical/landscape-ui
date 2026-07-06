@@ -56,6 +56,7 @@ Lead QA Engineer for Landscape UI. Ensure reliable test coverage via Vitest, RTL
 6. **Hook Testing:** No dedicated hook test files. Test hooks through component tests:
    - Queries → container/page component tests
    - Mutations → form/action component tests via user interactions
+7. **Request-payload asserts:** To prove an outgoing request param/body is (not) sent — e.g. an empty `search`/`query` guarded by `param || undefined` is dropped — capture the request in a **scoped `server.use(http.get(...))` override inside the test** (`let capturedUrl: URL`), then assert `capturedUrl?.searchParams.has("search")` is `false`. Auto-reset by `setup.ts`. Put per-param _behavior_ in the handler only when the fake backend must respond differently (filtering/pagination). See `AddPublicationTargetForm.test.tsx` (`describe("payload shape")`) and `docs/testing/unit.md` → "Asserting Outgoing Request Params".
 
 # Workflow
 

@@ -176,7 +176,7 @@ export default function usePackageProfiles() {
     });
 
   const getPackageProfileConstraintsQuery = (
-    { name, ...queryParams }: GetPackageProfileConstraintsParams,
+    { name, ...rest }: GetPackageProfileConstraintsParams,
     config: Omit<
       UseQueryOptions<
         AxiosResponse<ApiPaginatedResponse<PackageProfileConstraint>>,
@@ -184,8 +184,9 @@ export default function usePackageProfiles() {
       >,
       "queryKey" | "queryFn"
     > = {},
-  ) =>
-    useQuery<
+  ) => {
+    const queryParams = { ...rest, search: rest.search || undefined };
+    return useQuery<
       AxiosResponse<ApiPaginatedResponse<PackageProfileConstraint>>,
       AxiosError<ApiError>
     >({
@@ -196,6 +197,7 @@ export default function usePackageProfiles() {
         }),
       ...config,
     });
+  };
 
   const addPackageProfileConstraintsQuery = useMutation<
     AxiosResponse<ApiPaginatedResponse<PackageProfileConstraint>>,

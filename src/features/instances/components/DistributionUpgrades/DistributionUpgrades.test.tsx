@@ -1,7 +1,11 @@
+import { API_URL } from "@/constants";
 import { instances } from "@/tests/mocks/instance";
+import server from "@/tests/server";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
+import { beforeEach, describe, expect, it } from "vitest";
 import DistributionUpgrades from "./DistributionUpgrades";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -107,5 +111,30 @@ describe("DistributionUpgrades", () => {
     expect(
       screen.getByRole("columnheader", { name: /reason/i }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("DistributionUpgrades request guard", () => {
+  const REQUEST_SETTLE_MS = 50;
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}computers/release-upgrade-targets`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ results: [] });
+      }),
+    );
+  });
+
+  it("does not fire the request when there are no selected instance ids", async () => {
+    renderWithProviders(<DistributionUpgrades selectedInstances={[]} />);
+
+    await new Promise((resolve) => setTimeout(resolve, REQUEST_SETTLE_MS));
+
+    expect(capturedUrl).toBeUndefined();
   });
 });

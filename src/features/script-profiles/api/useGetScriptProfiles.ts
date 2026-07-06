@@ -36,7 +36,7 @@ export const useGetScriptProfiles = (
       ? {
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
-          search: search ?? undefined,
+          search: search || undefined,
           archived: status || "active",
         }
       : params),
