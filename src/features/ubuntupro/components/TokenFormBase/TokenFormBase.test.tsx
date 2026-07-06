@@ -93,7 +93,7 @@ describe("TokenFormBase", () => {
     );
 
     const submitButton = screen.getByRole("button", { name: /attach token/i });
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
 
     expect(await screen.findByText(/token is required/i)).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe("TokenFormBase", () => {
     const submitButton = screen.getByRole("button", { name: /attach token/i });
 
     await user.type(tokenInput, "test-token");
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows confirmation modal when some selected instances are invalid", async () => {

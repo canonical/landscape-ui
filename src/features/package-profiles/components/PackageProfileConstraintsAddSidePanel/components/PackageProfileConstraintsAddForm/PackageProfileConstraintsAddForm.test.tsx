@@ -48,7 +48,7 @@ describe("PackageProfileConstraintsAddForm", () => {
       name: `Add constraint to "${packageProfiles[0].title}" profile`,
     });
 
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
 
     expect(await screen.findAllByText(/required\./i)).not.toHaveLength(0);
@@ -66,7 +66,7 @@ describe("PackageProfileConstraintsAddForm", () => {
     });
 
     await fillValidConstraint();
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
   });
 
@@ -94,8 +94,7 @@ describe("PackageProfileConstraintsAddForm", () => {
       "package",
     );
     await user.tab();
-    expect(submitButton).not.toHaveAttribute("aria-disabled");
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
     expect(
       await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),

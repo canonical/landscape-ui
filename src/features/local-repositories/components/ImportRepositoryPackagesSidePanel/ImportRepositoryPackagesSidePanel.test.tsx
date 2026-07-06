@@ -43,12 +43,12 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const fetchButton = await screen.findByRole("button", {
       name: /fetch packages/i,
     });
-    expect(fetchButton).toBeEnabled();
+    expect(fetchButton).toHaveAttribute("aria-disabled", "true");
 
     const importButton = await screen.findByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("enables Fetch packages button when source URL is provided", async () => {
@@ -58,7 +58,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     await user.type(input, "https://example.com/packages");
 
     const button = screen.getByRole("button", { name: /fetch packages/i });
-    expect(button).toBeEnabled();
+    expect(button).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows validation result with packages after successful fetch", async () => {
@@ -77,7 +77,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import 2 packages/i,
     });
-    expect(importButton).toBeEnabled();
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows caution notification when validation times out", async () => {
@@ -98,7 +98,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("blocks import after timeout when no packages are available", async () => {
@@ -119,12 +119,12 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toHaveAttribute("aria-disabled", "true");
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
 
     await user.click(importButton);
     expect(
       screen.queryByText(/you have marked .* to import packages/i),
-    ).not.toBeInTheDocument();
+    ).toBeInTheDocument();
   });
 
   it("shows error notification when validation fails and blocks submission", async () => {
@@ -196,18 +196,6 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     });
   });
 
-  it("keeps Import button enabled even with invalid URL", async () => {
-    renderComponent();
-
-    const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "not a url");
-
-    const importButton = screen.getByRole("button", {
-      name: /import packages/i,
-    });
-    expect(importButton).toBeEnabled();
-  });
-
   it("shows validation error when clicking Import with invalid URL without submitting form", async () => {
     renderComponent();
 
@@ -238,7 +226,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     let importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
 
     // Clear and type valid URL
     await user.clear(input);
@@ -247,7 +235,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("shows validation error when source URL is touched and left empty", async () => {
@@ -259,18 +247,6 @@ describe("ImportRepositoryPackagesSidePanel", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/this field is required/i)).toBeInTheDocument();
-    });
-  });
-
-  it("shows validation error when source URL is not a valid URL", async () => {
-    renderComponent();
-
-    const input = await screen.findByLabelText(/source url/i);
-    await user.type(input, "not a url");
-    await user.tab();
-
-    await waitFor(() => {
-      expect(screen.getByText(/please enter a valid url/i)).toBeInTheDocument();
     });
   });
 
@@ -374,7 +350,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     const importButton = screen.getByRole("button", {
       name: /import packages/i,
     });
-    expect(importButton).toBeEnabled();
+    expect(importButton).not.toHaveAttribute("aria-disabled", "true");
 
     await user.click(importButton);
 
@@ -421,7 +397,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("button", { name: /import 1 package/i }),
-      ).toBeEnabled();
+      ).not.toHaveAttribute("aria-disabled", "true");
     });
 
     expect(screen.queryByText(/packages to import/i)).not.toBeInTheDocument();

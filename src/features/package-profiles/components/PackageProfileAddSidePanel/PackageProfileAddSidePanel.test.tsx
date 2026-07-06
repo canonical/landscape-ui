@@ -77,7 +77,7 @@ describe("PackageProfileAddSidePanel", () => {
       name: "Add package profile",
     });
 
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
 
     expect(
@@ -94,7 +94,7 @@ describe("PackageProfileAddSidePanel", () => {
       const submitButton = screen.getByRole("button", {
         name: "Add package profile",
       });
-      expect(submitButton).toBeEnabled();
+      expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
       await user.click(submitButton);
       expect(await screen.findByText(/profile added/i)).toBeInTheDocument();
     };
@@ -154,7 +154,7 @@ describe("PackageProfileAddSidePanel", () => {
     const submitButton = screen.getByRole("button", {
       name: "Add package profile",
     });
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
 
     expect(

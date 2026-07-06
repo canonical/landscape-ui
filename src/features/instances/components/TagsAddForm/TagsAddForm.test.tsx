@@ -33,7 +33,7 @@ describe("TagsAddForm", async () => {
 
       const assignButton = screen.getByRole("button", { name: /assign/i });
 
-      expect(assignButton).toBeEnabled();
+      expect(assignButton).not.toHaveAttribute("aria-disabled", "true");
       await userEvent.click(assignButton);
       expect(
         await screen.findByText(/select at least one tag to assign/i),
@@ -46,7 +46,7 @@ describe("TagsAddForm", async () => {
           .map((checkbox) => userEvent.click(checkbox)),
       );
 
-      expect(assignButton).toBeEnabled();
+      expect(assignButton).not.toHaveAttribute("aria-disabled", "true");
       await userEvent.click(assignButton);
 
       await userEvent.click(screen.getByRole("button", { name: /add tags/i }));
@@ -95,7 +95,7 @@ describe("TagsAddForm", async () => {
 
       // Submit stays enabled, but empty submit should be blocked.
       const assignButton = screen.getByRole("button", { name: /assign/i });
-      expect(assignButton).toBeEnabled();
+      expect(assignButton).not.toHaveAttribute("aria-disabled", "true");
       await userEvent.click(assignButton);
       expect(
         await screen.findByText(/select at least one tag to assign/i),
@@ -264,7 +264,9 @@ describe("TagsAddForm", async () => {
 
     // Assign remains enabled, but submit is blocked when selectedTags is empty.
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /assign/i })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: /assign/i }),
+      ).not.toHaveAttribute("aria-disabled", "true");
     });
 
     await userEvent.click(screen.getByRole("button", { name: /assign/i }));

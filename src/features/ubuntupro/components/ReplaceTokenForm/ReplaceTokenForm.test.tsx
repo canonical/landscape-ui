@@ -39,7 +39,7 @@ describe("ReplaceTokenForm", () => {
     renderWithProviders(<ReplaceTokenForm {...props} />);
 
     const submitButton = screen.getByRole("button", { name: /replace/i });
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("renders cancel button", () => {

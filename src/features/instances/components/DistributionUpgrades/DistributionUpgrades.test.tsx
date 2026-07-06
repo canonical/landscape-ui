@@ -152,7 +152,7 @@ describe("DistributionUpgrades", () => {
     const submitButton = screen.getByRole("button", {
       name: /upgrade distributions/i,
     });
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
 
     await user.click(submitButton);
 

@@ -1,6 +1,6 @@
 import { DEFAULT_ACCESS_GROUP_NAME, INPUT_DATE_TIME_FORMAT } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
-import { act, screen } from "@testing-library/react";
+import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
 import { type ComponentProps } from "react";
@@ -98,7 +98,7 @@ describe("USGProfileForm", () => {
     ).toBeInTheDocument();
 
     const submitButton = await screen.findByRole("button", { name: "Submit" });
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
 
     await userEvent.click(submitButton);
 
@@ -130,5 +130,59 @@ describe("USGProfileForm", () => {
       "This field is required.",
     );
     expect(requiredErrors.length).toBeGreaterThan(0);
+  });
+
+  it("should block advancing when recurring weekly has no day selected", async () => {
+    renderWithProviders(<USGProfileForm {...props} />);
+
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: "Schedule" }),
+      "recurring",
+    );
+
+    const unitSelectWeekly = screen
+      .getAllByRole("combobox")
+      .find((el) => el.getAttribute("name") === "unit_of_time");
+    expect(unitSelectWeekly).toBeInTheDocument();
+    await userEvent.selectOptions(unitSelectWeekly as HTMLElement, "WEEKLY");
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Submit" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: "Back" }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText("Select at least one day.")).toBeInTheDocument();
+    });
+  });
+
+  it("should block advancing when recurring yearly has no month selected", async () => {
+    renderWithProviders(<USGProfileForm {...props} />);
+
+    await userEvent.selectOptions(
+      screen.getByRole("combobox", { name: "Schedule" }),
+      "recurring",
+    );
+
+    const unitSelectYearly = screen
+      .getAllByRole("combobox")
+      .find((el) => el.getAttribute("name") === "unit_of_time");
+    expect(unitSelectYearly).toBeInTheDocument();
+    await userEvent.selectOptions(unitSelectYearly as HTMLElement, "YEARLY");
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Submit" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole("button", { name: "Back" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText("Select at least one month."),
+      ).toBeInTheDocument();
+    });
   });
 });

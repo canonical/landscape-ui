@@ -52,7 +52,7 @@ describe("InstallSnaps", () => {
       name: /install/i,
     });
 
-    expect(installButton).toBeEnabled();
+    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
 
     await userEvent.click(installButton);
     expect(
@@ -96,7 +96,7 @@ describe("InstallSnaps", () => {
         name: /install snaps/i,
       }),
     );
-    expect(installButton).toBeEnabled();
+    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
     await userEvent.click(installButton);
 
     expect(await screen.findByText(/you queued/i)).toBeInTheDocument();

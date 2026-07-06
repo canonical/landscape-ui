@@ -142,4 +142,72 @@ describe("USGProfileAddSidePanel", () => {
       screen.queryByText(/choose where this profile will apply/i),
     ).not.toBeInTheDocument();
   });
+
+  it("should block on step 3 when recurring weekly has no day selected", async () => {
+    renderWithProviders(
+      <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
+    );
+
+    await goToStep2();
+
+    await user.click(screen.getByLabelText("Base profile"));
+    await user.click(await screen.findByText("CIS Level 1 Workstation"));
+
+    await user.click(screen.getByLabelText("Mode"));
+    await user.click(await screen.findByText("Audit only"));
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("Schedule"), "recurring");
+
+    const unitSelect = screen
+      .getAllByRole("combobox")
+      .find((el) => el.getAttribute("name") === "unit_of_time");
+    expect(unitSelect).toBeInTheDocument();
+    await user.selectOptions(unitSelect as HTMLElement, "WEEKLY");
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Select at least one day.")).toBeInTheDocument();
+    expect(
+      screen.queryByText(/choose where this profile will apply/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it("should block on step 3 when recurring yearly has no month selected", async () => {
+    renderWithProviders(
+      <USGProfileAddSidePanel showRetentionNotification={() => undefined} />,
+    );
+
+    await goToStep2();
+
+    await user.click(screen.getByLabelText("Base profile"));
+    await user.click(await screen.findByText("CIS Level 1 Workstation"));
+
+    await user.click(screen.getByLabelText("Mode"));
+    await user.click(await screen.findByText("Audit only"));
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("Schedule"), "recurring");
+
+    const unitSelect = screen
+      .getAllByRole("combobox")
+      .find((el) => el.getAttribute("name") === "unit_of_time");
+    expect(unitSelect).toBeInTheDocument();
+    await user.selectOptions(unitSelect as HTMLElement, "YEARLY");
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(screen.getByText("Step 3 of 5")).toBeInTheDocument();
+    expect(screen.getByText("Select at least one month.")).toBeInTheDocument();
+    expect(
+      screen.queryByText(/choose where this profile will apply/i),
+    ).not.toBeInTheDocument();
+  });
 });

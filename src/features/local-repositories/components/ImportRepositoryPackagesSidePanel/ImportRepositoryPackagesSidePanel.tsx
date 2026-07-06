@@ -119,7 +119,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
 
   const shouldDisableImportButton =
     (!!validationTask?.error && validationTask.error.code !== 4) ||
-    (validationTask?.done && validationTask?.count === 0);
+    (validationTask?.status === "succeeded" && validationTask?.count === 0);
 
   return (
     <>

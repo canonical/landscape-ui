@@ -87,15 +87,6 @@ const WslInstanceInstallForm: FC = () => {
         }),
     }),
     onSubmit: async (values) => {
-      if (!hasValidInstanceId) {
-        notify.error({
-          title: "Invalid parent instance",
-          message: "Unable to determine the parent instance. Please try again.",
-        });
-        closeSidePanel();
-        return;
-      }
-
       try {
         const cloudInitBase64 = await fileToBase64(values.cloudInit);
 

@@ -51,6 +51,12 @@ const useUsgProfileForm = ({
 
       benchmark: Yup.string().required("This field is required."),
 
+      days: Yup.array().when(["start_type", "unit_of_time"], {
+        is: (start_type: string, unit_of_time: string) =>
+          start_type == "recurring" && unit_of_time == "WEEKLY",
+        then: (schema) => schema.min(1, "Select at least one day."),
+      }),
+
       end_date: Yup.string().when(
         ["start_date", "start_type", "end_type"],
         ([start_date, start_type, end_type], schema) =>
@@ -86,6 +92,12 @@ const useUsgProfileForm = ({
       ),
 
       mode: Yup.string().required("This field is required."),
+
+      months: Yup.array().when(["start_type", "unit_of_time"], {
+        is: (start_type: string, unit_of_time: string) =>
+          start_type == "recurring" && unit_of_time == "YEARLY",
+        then: (schema) => schema.min(1, "Select at least one month."),
+      }),
 
       deliver_delay_window: Yup.number().when(
         ["mode", "randomize_delivery"],

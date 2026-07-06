@@ -43,7 +43,7 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).toBeEnabled();
+      expect(installButton).not.toHaveAttribute("aria-disabled", "true");
 
       await user.click(installButton);
 
@@ -75,7 +75,7 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).toBeEnabled();
+      expect(installButton).not.toHaveAttribute("aria-disabled", "true");
     });
 
     it("submits form and shows success notification for single package", async () => {
@@ -146,7 +146,7 @@ describe("PackagesInstallForm", () => {
     const installButton = screen.getByRole("button", {
       name: "Install packages",
     });
-    expect(installButton).toBeEnabled();
+    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
 
     await user.click(installButton);
     expect(

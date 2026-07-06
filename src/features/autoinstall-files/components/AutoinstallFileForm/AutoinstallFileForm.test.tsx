@@ -77,7 +77,7 @@ describe("AutoinstallFileForm", () => {
       name: props.buttonText,
     });
 
-    expect(submitButton).toBeEnabled();
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
     await user.click(submitButton);
 
     expect(await screen.findAllByText("This field is required")).toHaveLength(
@@ -132,11 +132,17 @@ describe("AutoinstallFileForm", () => {
       <AutoinstallFileForm {...createAutoinstallFileWithContentsProps()} />,
     );
 
-    expect(screen.getByRole("button", { name: "Add" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Add" })).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
 
     await user.type(screen.getByTestId("mock-monaco"), "\n# changed");
 
-    expect(screen.getByRole("button", { name: "Add" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Add" })).not.toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
   });
 
   it("submits successfully after validation", async () => {

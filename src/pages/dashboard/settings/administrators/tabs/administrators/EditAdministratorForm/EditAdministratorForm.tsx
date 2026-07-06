@@ -91,7 +91,9 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   const formik = useFormik({
     initialValues: { roles: [] as string[] },
     validationSchema: Yup.object().shape({
-      roles: Yup.array().of(Yup.string()),
+      roles: Yup.array()
+        .of(Yup.string())
+        .min(1, "At least one role is required"),
     }),
     onSubmit: handleSubmit,
   });

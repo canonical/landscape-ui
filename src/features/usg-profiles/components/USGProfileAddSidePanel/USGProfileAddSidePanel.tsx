@@ -26,6 +26,8 @@ const STEP_FIELDS: Record<StepIndex, (keyof USGProfileFormValues)[]> = {
     "start_type",
     "start_date",
     "every",
+    "days",
+    "months",
     "end_date",
     "deliver_delay_window",
     "restart_deliver_delay",

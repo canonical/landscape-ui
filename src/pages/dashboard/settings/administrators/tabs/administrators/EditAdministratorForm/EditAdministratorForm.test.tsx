@@ -59,7 +59,7 @@ describe("EditAdministratorForm", () => {
   it("keeps save changes enabled but does not submit when roles are unchanged", async () => {
     renderWithProviders(<EditAdministratorForm {...props} />);
     const saveButton = screen.getByRole("button", { name: /save changes/i });
-    expect(saveButton).toBeEnabled();
+    expect(saveButton).not.toHaveAttribute("aria-disabled", "true");
 
     await user.click(saveButton);
 
@@ -90,7 +90,7 @@ describe("EditAdministratorForm", () => {
     await user.click(roleCheckbox);
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
-    expect(saveButton).toBeEnabled();
+    expect(saveButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("confirms disable administrator", async () => {
