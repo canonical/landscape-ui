@@ -25,7 +25,7 @@ const ScriptsEmptyState: FC = () => {
       icon="connected"
       body="You haven’t added any scripts yet."
       link={{
-        href: "https://ubuntu.com/landscape/docs/managing-computers",
+        href: "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/classic-web-portal/manage-computers/",
         text: "How to manage instances in Landscape",
       }}
       cta={[
