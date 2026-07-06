@@ -85,9 +85,5 @@
   :global(.p-code-snippet__block) {
     max-height: 16rem;
     overflow: auto;
-
-    /* Reserve the scrollbar track so toggling the details doesn't shift the
-       layout when the snippet overflows. */
-    scrollbar-gutter: stable;
   }
 }
