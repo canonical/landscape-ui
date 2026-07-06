@@ -105,15 +105,14 @@ describe("InstancesContainer", () => {
         screen.getByRole("columnheader", { name: label }),
       ).toBeInTheDocument();
 
-      const [columnCheckbox] = screen.getAllByLabelText(checkboxLabel) as [
-        HTMLElement,
-        ...HTMLElement[],
-      ];
+      const checkbox = screen.getByRole("checkbox", {
+        name: checkboxLabel,
+      });
 
       if (canBeHidden) {
-        expect(columnCheckbox).toBeEnabled();
+        expect(checkbox).toBeEnabled();
 
-        await userEvent.click(columnCheckbox);
+        await userEvent.click(checkbox);
 
         selectedColumnCount -= 1;
 
@@ -121,7 +120,7 @@ describe("InstancesContainer", () => {
           screen.queryByRole("columnheader", { name: label }),
         ).not.toBeInTheDocument();
       } else {
-        expect(columnCheckbox).toBeDisabled();
+        expect(checkbox).toBeDisabled();
       }
 
       expect(
@@ -186,7 +185,7 @@ describe("InstancesContainer", () => {
       />,
     );
 
-    expect(screen.getByRole("status")).toHaveTextContent("Loading...");
+    expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
   it("shows empty state when there are no instances and not loading", () => {

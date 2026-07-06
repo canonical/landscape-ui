@@ -9,7 +9,7 @@ import {
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
 import usePageParams from "@/hooks/usePageParams";
-import { isInstancesEmptyState } from "./helpers";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
@@ -55,15 +55,14 @@ const InstancesContainer = memo(function InstancesContainer({
     tags.length > 0 ||
     wsl.length > 0;
 
-  if (
-    isInstancesEmptyState(
-      currentPage,
-      pageSize,
-      instanceCount,
-      isFilteringInstances,
-      isGettingInstances,
-    )
-  ) {
+  const hasNoInstances =
+    !isGettingInstances &&
+    currentPage === 1 &&
+    pageSize === DEFAULT_PAGE_SIZE &&
+    instanceCount === 0 &&
+    !isFilteringInstances;
+
+  if (hasNoInstances) {
     return <InstancesEmptyState />;
   }
 
