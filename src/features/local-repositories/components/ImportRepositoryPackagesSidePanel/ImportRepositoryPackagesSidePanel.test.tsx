@@ -101,7 +101,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
     expect(importButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
-  it("blocks import after timeout when no packages are available", async () => {
+  it("allows import after validation times out", async () => {
     renderComponent();
 
     const input = await screen.findByLabelText(/source url/i);
@@ -123,7 +123,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
 
     await user.click(importButton);
     expect(
-      screen.queryByText(/you have marked .* to import packages/i),
+      await screen.queryByText(/you have marked .* to import packages/i),
     ).toBeInTheDocument();
   });
 

@@ -145,10 +145,6 @@ const WslInstanceInstallForm: FC = () => {
     await formik.setFieldValue("cloudInit", null);
   };
 
-  if (!hasValidInstanceId) {
-    return null;
-  }
-
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
       <Select
