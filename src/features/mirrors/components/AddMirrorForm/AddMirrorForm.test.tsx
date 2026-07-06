@@ -141,6 +141,7 @@ describe("AddMirrorForm", () => {
     expect(mockCreateMirror).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         archiveRoot: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/${date}`,
+        mirrorType: "UBUNTU_SNAPSHOTS",
       }),
     );
   });

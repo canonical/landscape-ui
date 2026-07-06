@@ -4,9 +4,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { assert, describe, expect, it } from "vitest";
 import PublicationDetailsSidePanel from "./PublicationDetailsSidePanel";
-import server from "@/tests/server";
-import { http, HttpResponse } from "msw";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const [publication] = publications;
 assert(publication);
@@ -22,19 +20,7 @@ const renderPanel = () =>
 
 describe("PublicationDetailsSidePanel", () => {
   it("shows a loading state while the publication is being fetched", () => {
-    const pendingRequest = new Promise<void>((_resolve, _reject) => {
-      // Intentionally never resolves to simulate a pending request
-    });
-
-    server.use(
-      http.get(
-        `${API_URL_DEB_ARCHIVE}publications/:publicationName`,
-        async () => {
-          await pendingRequest;
-          return HttpResponse.json({});
-        },
-      ),
-    );
+    setEndpointStatus({ path: "publications", status: "loading" });
 
     renderPanel();
 
@@ -61,5 +47,22 @@ describe("PublicationDetailsSidePanel", () => {
     renderPanel();
 
     expect(await screen.findByText(mirrorDisplayName)).toBeInTheDocument();
+  });
+
+  it("keeps showing loading state when fetching the publication fails", async () => {
+    setEndpointStatus({ path: "publications", status: "error" });
+
+    renderPanel();
+
+    expect(await screen.findByRole("status")).toBeInTheDocument();
+    await expect(
+      screen.findByRole(
+        "heading",
+        { name: publication.displayName },
+        {
+          timeout: 300,
+        },
+      ),
+    ).rejects.toThrow();
   });
 });

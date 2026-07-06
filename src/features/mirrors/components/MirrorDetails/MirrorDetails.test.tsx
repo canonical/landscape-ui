@@ -229,26 +229,22 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("displays preserve signatures status", async () => {
-    const mirrorWithPreserveSignatures = mirrors.find(
-      ({ preserveSignatures }) => preserveSignatures,
-    );
-
-    assert(mirrorWithPreserveSignatures);
-
+  it("opens UpdateMirrorModal if updateModal param is true", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <MirrorDetails />
       </Suspense>,
       undefined,
-      `?name=${mirrorWithPreserveSignatures.name}`,
+      `?name=${mirrors[0].name}&updateModal=true`,
     );
 
     await expectLoadingState();
 
-    const label = screen.getByText("Preserve upstream signing key");
-    expect(label).toBeInTheDocument();
-    expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
+    expect(
+      await screen.findByRole("heading", {
+        name: `Update ${mirrors[0].displayName}`,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("renders mirror details for a mirror with preserve signatures disabled", async () => {
