@@ -7,6 +7,9 @@ const ONE_SECOND_MS = 1000;
 const ONE_MINUTE_MS = 60_000;
 const ONE_HOUR_MS = 3_600_000;
 const PARSED_MILLISECONDS = 456;
+const TRUNCATED_MILLISECONDS = 123;
+const HALF_SECOND_MS = 500;
+const MONTHS_PAST_ONE_YEAR = 13;
 
 describe("ChronoDate factory", () => {
   it("returns the current time when called with no arguments", () => {
@@ -86,6 +89,37 @@ describe("strict ISO 8601 parsing", () => {
     expect(
       date("2024-03-15T10:30:00.123+0200", date.ISO_8601, true).isValid(),
     ).toBe(true);
+  });
+
+  it("parses timezone offsets deterministically", () => {
+    expect(
+      date("2024-03-15T10:30:00+02:00", date.ISO_8601, true)
+        .utc()
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    ).toBe("2024-03-15T08:30:00");
+    expect(
+      date("2024-03-15T10:30:00-0530", date.ISO_8601, true)
+        .utc()
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    ).toBe("2024-03-15T16:00:00");
+    expect(
+      date("2024-03-15T10:30:00Z", date.ISO_8601, true)
+        .utc()
+        .format("YYYY-MM-DDTHH:mm:ss"),
+    ).toBe("2024-03-15T10:30:00");
+  });
+
+  it("truncates fractional seconds to milliseconds", () => {
+    expect(
+      date("2024-03-15T10:30:00.1239Z", date.ISO_8601, true)
+        .toDate()
+        .getUTCMilliseconds(),
+    ).toBe(TRUNCATED_MILLISECONDS);
+    expect(
+      date("2024-03-15T10:30:00.5Z", date.ISO_8601, true)
+        .toDate()
+        .getUTCMilliseconds(),
+    ).toBe(HALF_SECOND_MS);
   });
 
   it("rejects non-ISO strings in strict mode", () => {
@@ -294,6 +328,29 @@ describe("arithmetic", () => {
     expect(
       date("2024-03-15T10:00:00").add(1, "year").format("YYYY-MM-DD"),
     ).toBe("2025-03-15");
+  });
+
+  it("clamps end-of-month dates when adding months and years", () => {
+    expect(
+      date("2024-01-31T10:00:00").add(1, "month").format("YYYY-MM-DD"),
+    ).toBe("2024-02-29");
+    expect(
+      date("2024-03-31T10:00:00").subtract(1, "month").format("YYYY-MM-DD"),
+    ).toBe("2024-02-29");
+    expect(
+      date("2024-02-29T10:00:00").add(1, "year").format("YYYY-MM-DD"),
+    ).toBe("2025-02-28");
+    expect(
+      date("2024-01-31T10:00:00")
+        .add(MONTHS_PAST_ONE_YEAR, "months")
+        .format("YYYY-MM-DD"),
+    ).toBe("2025-02-28");
+  });
+
+  it("preserves wall-clock time when clamping months", () => {
+    expect(
+      date("2024-01-31T10:15:30").add(1, "month").format("YYYY-MM-DDTHH:mm:ss"),
+    ).toBe("2024-02-29T10:15:30");
   });
 
   it("preserves local wall-clock time when adding days across DST", () => {
