@@ -6,6 +6,7 @@ import { useAutoinstallFileActions } from "../../hooks";
 import type { AutoinstallFile, AutoinstallFileTabId } from "../../types";
 import AutoinstallFileDeleteModal from "../AutoinstallFileDeleteModal";
 import AutoinstallFileTabs from "../AutoinstallFileTabs";
+import classes from "./AutoinstallFileDetails.module.scss";
 
 interface AutoinstallFileDetailsProps {
   readonly autoinstallFile: AutoinstallFile;
@@ -35,6 +36,7 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
   return (
     <>
       <ResponsiveButtons
+        className={classes.marginBottom}
         collapseFrom="xs"
         buttons={[
           <Button
