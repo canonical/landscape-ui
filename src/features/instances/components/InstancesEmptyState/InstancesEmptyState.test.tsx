@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import InstancesEmptyState from "./InstancesEmptyState";
 
 describe("InstancesEmptyState", () => {
-  it("renders empty-state title, body, and docs link", () => {
+  it("renders empty-state title and body copy", () => {
     renderWithProviders(<InstancesEmptyState />);
 
     expect(screen.getByText("No instances found")).toBeInTheDocument();
@@ -13,6 +13,10 @@ describe("InstancesEmptyState", () => {
         "You don't have any instances registered to Landscape yet.",
       ),
     ).toBeInTheDocument();
+  });
+
+  it("renders the docs link with the expected attributes", () => {
+    renderWithProviders(<InstancesEmptyState />);
 
     const docsLink = screen.getByRole("link", {
       name: "How to manage instances in Landscape",
@@ -22,13 +26,7 @@ describe("InstancesEmptyState", () => {
       "href",
       "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/classic-web-portal/manage-computers/",
     );
-  });
-
-  it("does not render register link", () => {
-    renderWithProviders(<InstancesEmptyState />);
-
-    expect(
-      screen.queryByRole("link", { name: "Register a new instance" }),
-    ).not.toBeInTheDocument();
+    expect(docsLink).toHaveAttribute("target", "_blank");
+    expect(docsLink).toHaveAttribute("rel", "nofollow noopener noreferrer");
   });
 });

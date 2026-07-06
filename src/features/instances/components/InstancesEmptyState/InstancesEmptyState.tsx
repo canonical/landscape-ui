@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
 
-const InstanceEmptyState: FC = () => {
+const InstancesEmptyState: FC = () => {
   return (
     <EmptyState
       title="No instances found"
@@ -15,4 +15,4 @@ const InstanceEmptyState: FC = () => {
   );
 };
 
-export default InstanceEmptyState;
+export default InstancesEmptyState;
