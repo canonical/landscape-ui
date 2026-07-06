@@ -1,11 +1,10 @@
 @import "vanilla-framework/scss/settings_spacing";
 
 .chip {
-  align-self: center;
   font-weight: initial;
+  vertical-align: middle;
 }
 
-.container {
-  display: flex;
-  gap: $sph--small;
+.text {
+  margin-right: $sph--small;
 }
