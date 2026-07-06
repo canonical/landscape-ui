@@ -1,3 +1,4 @@
+import { ResponsiveButtons } from "@/components/ui";
 import { ActionButton, Button, Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -33,21 +34,21 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
 
   return (
     <>
-      <div className="p-segmented-control">
-        <div className="p-segmented-control__list">
+      <ResponsiveButtons
+        collapseFrom="xs"
+        buttons={[
           <Button
+            key="edit"
             type="button"
-            className="p-segmented-control__button"
             onClick={openAutoinstallFileEditForm}
             hasIcon
           >
             <Icon name="edit" />
             <span>Edit</span>
-          </Button>
-
+          </Button>,
           <ActionButton
+            key="set-as-default"
             type="button"
-            className="p-segmented-control__button"
             onClick={setAutoinstallFileAsDefault}
             disabled={autoinstallFile.is_default}
             hasIcon
@@ -55,20 +56,19 @@ const AutoinstallFileDetails: FC<AutoinstallFileDetailsProps> = ({
           >
             <Icon name="starred" />
             <span>Set as default</span>
-          </ActionButton>
-
+          </ActionButton>,
           <Button
+            key="remove"
             type="button"
-            className="p-segmented-control__button"
             onClick={openDeleteModal}
             disabled={autoinstallFile.is_default}
             hasIcon
           >
             <Icon name={ICONS.delete} />
             <span>Remove</span>
-          </Button>
-        </div>
-      </div>
+          </Button>,
+        ]}
+      />
 
       <AutoinstallFileTabs
         initialTabId={initialTabId}
