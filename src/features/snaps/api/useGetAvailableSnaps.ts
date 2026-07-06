@@ -23,15 +23,18 @@ export const useGetAvailableSnaps = (
 ) => {
   const authFetch = useFetch();
 
+  const { instance_id, query } = params;
+  const sanitizedParams = { name_startswith: query || undefined };
+
   const { data, isFetching } = useQuery<
     AxiosResponse<ApiPaginatedResponse<AvailableSnap>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["snaps", "available", { ...params }],
+    queryKey: ["snaps", "available", { instance_id, ...sanitizedParams }],
     queryFn: async () =>
-      authFetch.get(
-        `computers/${params.instance_id}/snaps/available?name_startswith=${encodeURIComponent(params.query)}`,
-      ),
+      authFetch.get(`computers/${instance_id}/snaps/available`, {
+        params: sanitizedParams,
+      }),
     ...options,
   });
 

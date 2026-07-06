@@ -24,13 +24,14 @@ export const useGetInstalledSnaps = (
   > = {},
 ) => {
   const authFetch = useFetch();
-  const { instance_id, ...queryParams } = params;
+  const { instance_id, ...rest } = params;
+  const queryParams = { ...rest, search: rest.search || undefined };
 
   const { data, isLoading } = useQuery<
     AxiosResponse<ApiPaginatedResponse<InstalledSnap>>,
     AxiosError<ApiError>
   >({
-    queryKey: ["snaps", "installed", { ...params }],
+    queryKey: ["snaps", "installed", { instance_id, ...queryParams }],
     queryFn: async () =>
       authFetch.get(`computers/${instance_id}/snaps/installed`, {
         params: queryParams,
