@@ -19,6 +19,7 @@ import {
   VALIDATION_SCHEMA,
 } from "../../constants";
 import type { EditTargetFormValues } from "../../constants";
+import classes from "./EditTargetForm.module.scss";
 
 export { TARGET_TYPE_LABELS } from "../../constants";
 
@@ -203,6 +204,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           <Input
             type="text"
             label="AWS access key ID"
+            autoComplete="off"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "awsAccessKeyId")}
             {...formik.getFieldProps("awsAccessKeyId")}
@@ -210,6 +212,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           <Input
             type="text"
             label="AWS secret access key"
+            autoComplete="off"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "awsSecretAccessKey")}
             {...formik.getFieldProps("awsSecretAccessKey")}
@@ -275,8 +278,10 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
             {...formik.getFieldProps("swiftUsername")}
           />
           <Input
-            type="password"
+            className={classes.maskedInput}
+            type="text"
             label="Password"
+            autoComplete="off"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "swiftPassword")}
             {...formik.getFieldProps("swiftPassword")}

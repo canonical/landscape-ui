@@ -1,9 +1,3 @@
-.typeFieldsIndent {
-  border-left: 1px solid var(--vf-color-border-default, #cdcdcd);
-  margin-top: 0.5rem;
-  padding-left: 1rem;
-}
-
 .maskedInput {
   /* Mask the entered bearer token without type="password", which browsers
    * autofill (and offer to generate passwords for) even with autocomplete="off". */
