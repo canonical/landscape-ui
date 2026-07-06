@@ -163,7 +163,7 @@ const getDaysInMonth = (year: number, month: number): number => {
 };
 
 const parseMilliseconds = (milliseconds?: string): number =>
-  milliseconds ? Math.trunc(Number(`0.${milliseconds}`) * 1000) : 0;
+  milliseconds ? Number(`${milliseconds}000`.slice(0, 3)) : 0;
 
 const hasValidDateTimeParts = (
   year: number,
@@ -234,7 +234,24 @@ const parseStrictIsoTime = (input: string): number => {
   }
 
   if (z || offsetSign) {
-    return new Date(input).getTime();
+    const utc = Date.UTC(
+      year,
+      month - 1,
+      day,
+      hour,
+      minute,
+      second,
+      parseMilliseconds(ms),
+    );
+
+    if (z) {
+      return utc;
+    }
+
+    const offset =
+      Number(offsetHour) * MS_PER_HOUR + Number(offsetMinute) * MS_PER_MINUTE;
+
+    return offsetSign === "+" ? utc - offset : utc + offset;
   }
 
   return createLocalTime(
@@ -447,28 +464,38 @@ export class ChronoDate {
       case "weeks":
         return this.shiftCalendarDays(amount * DAYS_PER_WEEK);
       case "month":
-      case "months": {
-        const date = new Date(this._time);
-        if (this._utc) {
-          date.setUTCMonth(date.getUTCMonth() + amount);
-        } else {
-          date.setMonth(date.getMonth() + amount);
-        }
-        return new ChronoDate(date.getTime(), this._utc);
-      }
+      case "months":
+        return this.shiftCalendarMonths(amount);
       case "year":
-      case "years": {
-        const date = new Date(this._time);
-        if (this._utc) {
-          date.setUTCFullYear(date.getUTCFullYear() + amount);
-        } else {
-          date.setFullYear(date.getFullYear() + amount);
-        }
-        return new ChronoDate(date.getTime(), this._utc);
-      }
+      case "years":
+        return this.shiftCalendarMonths(amount * MONTHS_PER_YEAR);
       default:
         return new ChronoDate(this._time, this._utc);
     }
+  }
+
+  private shiftCalendarMonths(amount: number): ChronoDate {
+    const date = new Date(this._time);
+    const year = this._utc ? date.getUTCFullYear() : date.getFullYear();
+    const month = this._utc ? date.getUTCMonth() : date.getMonth();
+    const day = this._utc ? date.getUTCDate() : date.getDate();
+
+    const totalMonths = month + amount;
+    const targetYear = year + Math.floor(totalMonths / MONTHS_PER_YEAR);
+    const targetMonth =
+      ((totalMonths % MONTHS_PER_YEAR) + MONTHS_PER_YEAR) % MONTHS_PER_YEAR;
+    const clampedDay = Math.min(
+      day,
+      getDaysInMonth(targetYear, targetMonth + 1),
+    );
+
+    if (this._utc) {
+      date.setUTCFullYear(targetYear, targetMonth, clampedDay);
+    } else {
+      date.setFullYear(targetYear, targetMonth, clampedDay);
+    }
+
+    return new ChronoDate(date.getTime(), this._utc);
   }
 
   private shiftCalendarDays(amount: number): ChronoDate {
