@@ -92,7 +92,8 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   }
 
   const handleValidate = async () => {
-    if (!formik.values.source || formik.errors.source) {
+    const errors = await formik.validateForm();
+    if (!formik.values.source || errors.source) {
       formik.setFieldTouched("source", true);
       return;
     }
