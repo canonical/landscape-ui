@@ -5,7 +5,7 @@
 }
 
 .maskedInput {
-  /* Mask the entered bearer token without type="password", which browsers
+  /* Mask the entered swift password without type="password", which browsers
    * autofill (and offer to generate passwords for) even with autocomplete="off". */
   -webkit-text-security: disc;
 }
