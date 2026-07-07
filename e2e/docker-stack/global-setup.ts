@@ -25,17 +25,18 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
 
   // Verify the seeded account is reachable before launching a browser.
   let apiReachable = false;
+  const healthUrl = `${API_URL}login/methods`;
   try {
-    const res = await fetch(API_URL, {
+    const res = await fetch(healthUrl, {
       signal: AbortSignal.timeout(API_TIMEOUT_MS),
     });
-    apiReachable = res.status < HTTP_SERVER_ERROR_MIN;
+    apiReachable = res.ok();
   } catch {
     // intentional
   }
   if (!apiReachable) {
     throw new Error(
-      `Backend API not reachable at ${API_URL}.\n` +
+      `Backend API not reachable at ${healthUrl}.\n` +
         "Ensure the backend stack is running: see docs/integration-testing.md",
     );
   }

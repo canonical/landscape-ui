@@ -38,6 +38,7 @@ export default defineConfig({
 
   use: {
     baseURL: BASE_URL,
+    storageState: "e2e/docker-stack/.auth/state.json",
     trace: "on-first-retry",
     video: "retain-on-failure",
     ignoreHTTPSErrors: true,

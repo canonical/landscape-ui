@@ -11,7 +11,7 @@ export default defineConfig({
   // fail because VITE_SELF_HOSTED_ENV=true and routes don't redirect).
   testIgnore: "**/*.saas.integration.spec.ts",
 
-  // Shared backend is mutable; read-only tests only in Phase 1
+  // Shared backend is mutable; keep workers=1 to avoid backend races.
   workers: 1,
   fullyParallel: false,
   retries: 1,
