@@ -290,8 +290,9 @@ jobs:
           until docker inspect landscape-debarchive-seeder &>/dev/null; do sleep 2; done
           EXIT=$(docker wait landscape-debarchive-seeder)
           if [ "$EXIT" != "0" ]; then
-            echo "::warning::Debarchive seeder exited with code $EXIT (non-blocking — seeder may have partial data or use an older API version)"
+            echo "::error::Debarchive seeder failed with exit code $EXIT!"
             docker logs landscape-debarchive-seeder --tail=50
+            exit 1
           fi
           echo "Debarchive seeder finished (exit $EXIT)"
 

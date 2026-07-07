@@ -8,7 +8,6 @@ const STORAGE_STATE_PATH = "e2e/docker-stack/.auth/state.json";
 const BASE_URL = "http://localhost:5173";
 const API_URL = "http://localhost:9091/api/v2/";
 const API_TIMEOUT_MS = 5_000;
-const HTTP_SERVER_ERROR_MIN = 500;
 const ENV_FILE = ".env.integration.local";
 const ARCHIVE_WARM_TIMEOUT_MS = 90_000;
 const ARCHIVE_WARM_POLL_MS = 3_000;
@@ -30,7 +29,7 @@ export default async function globalSetup(_config: FullConfig): Promise<void> {
     const res = await fetch(healthUrl, {
       signal: AbortSignal.timeout(API_TIMEOUT_MS),
     });
-    apiReachable = res.ok();
+    apiReachable = res.ok;
   } catch {
     // intentional
   }
