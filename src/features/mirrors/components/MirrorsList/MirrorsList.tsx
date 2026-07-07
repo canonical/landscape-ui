@@ -33,8 +33,8 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
   const operationNames = useMemo(
     () =>
       pagedMirrors
-        .filter((mirror) => mirror.lastOperation)
-        .map((mirror) => mirror.lastOperation ?? ""),
+        .map((mirror) => mirror.lastOperation)
+        .filter((operationName): operationName is string => !!operationName),
     [pagedMirrors],
   );
 

@@ -15,7 +15,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
   repository,
 }) => {
   const { isOperationInProgress } = useOperation();
-  const isImporting = isOperationInProgress(repository.lastOperation ?? "");
+  const isImporting = isOperationInProgress(repository.lastOperation);
 
   const {
     value: isRemovalModalOpen,

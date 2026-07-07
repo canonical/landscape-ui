@@ -37,8 +37,8 @@ const PublicationsList: FC<PublicationsListProps> = ({
   const operationNames = useMemo(
     () =>
       publications
-        .filter((publication) => publication.lastOperation)
-        .map((publication) => publication.lastOperation ?? ""),
+        .map((publication) => publication.lastOperation)
+        .filter((operationName): operationName is string => !!operationName),
     [publications],
   );
 

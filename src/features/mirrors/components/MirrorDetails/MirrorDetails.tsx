@@ -4,7 +4,6 @@ import {
   Button,
   Icon,
   ICONS,
-  Notification,
   Tabs,
   Tooltip,
 } from "@canonical/react-components";
@@ -36,7 +35,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import {
   OperationStatusContent,
   useGetOperation,
-  ViewLogsButton,
+  OperationErrorNotification,
 } from "@/features/operations";
 
 const MirrorDetails: FC = () => {
@@ -119,17 +118,11 @@ const MirrorDetails: FC = () => {
     <>
       <SidePanel.Header>{mirror.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <div aria-live="polite" aria-relevant="additions">
-          {!!operation?.error && (
-            <Notification
-              severity="negative"
-              title="Update failed"
-              actions={[<ViewLogsButton key="view-logs" />]}
-            >
-              Your last mirror update was not completed successfully.
-            </Notification>
-          )}
-        </div>
+        <OperationErrorNotification
+          isVisible={!!operation?.error}
+          title="Update failed"
+          message="Your last mirror update was not completed successfully."
+        />
         <div className="p-segmented-control">
           <Button
             type="button"

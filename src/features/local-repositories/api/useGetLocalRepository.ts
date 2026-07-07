@@ -17,5 +17,5 @@ export const useGetLocalRepository = (localId: string) => {
     queryFn: async () => authFetchDebArchive.get(`locals/${localId}`),
   });
 
-  return data?.data;
+  return data.data;
 };

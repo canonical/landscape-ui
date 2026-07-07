@@ -32,9 +32,13 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
     [repositories, currentPage, pageSize],
   );
 
-  const operationNames = pagedRepositories
-    .filter((repository) => repository.lastOperation)
-    .map((repository) => repository.lastOperation ?? "");
+  const operationNames = useMemo(
+    () =>
+      pagedRepositories
+        .map((repository) => repository.lastOperation)
+        .filter((operationName): operationName is string => !!operationName),
+    [pagedRepositories],
+  );
 
   const columns = useMemo<Column<Local>[]>(
     () => [

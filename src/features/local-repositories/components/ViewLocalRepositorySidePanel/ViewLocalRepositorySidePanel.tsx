@@ -1,13 +1,16 @@
 import { Suspense, useState, type FC } from "react";
 import SidePanel from "@/components/layout/SidePanel";
 import LoadingState from "@/components/layout/LoadingState";
-import { Tabs, Notification } from "@canonical/react-components";
+import { Tabs } from "@canonical/react-components";
 import ViewRepositoryActionsBlock from "./components/ViewRepositoryActionsBlock";
 import ViewLocalRepositoryDetailsTab from "./components/ViewLocalRepositoryDetailsTab";
 import ViewRepositoryPackagesTab from "./components/ViewRepositoryPackagesTab";
 import { useGetLocalRepository } from "../../api";
 import { DEFAULT_POLLING_INTERVAL } from "@/constants";
-import { useGetOperation, ViewLogsButton } from "@/features/operations";
+import {
+  OperationErrorNotification,
+  useGetOperation,
+} from "@/features/operations";
 import usePageParams from "@/hooks/usePageParams";
 
 const ViewLocalRepositorySidePanel: FC = () => {
@@ -47,17 +50,11 @@ const ViewLocalRepositorySidePanel: FC = () => {
     <>
       <SidePanel.Header>{repository.displayName}</SidePanel.Header>
       <SidePanel.Content>
-        <div aria-live="polite" aria-relevant="additions">
-          {!!operation?.error && (
-            <Notification
-              severity="negative"
-              title="Package import failed"
-              actions={[<ViewLogsButton key="view-logs" />]}
-            >
-              Your last package import was not completed successfully.
-            </Notification>
-          )}
-        </div>
+        <OperationErrorNotification
+          isVisible={!!operation?.error}
+          title="Package import failed"
+          message="Your last package import was not completed successfully."
+        />
         <ViewRepositoryActionsBlock
           repository={repository}
           isImporting={isImporting}

@@ -2,13 +2,7 @@ import Blocks from "@/components/layout/Blocks";
 import InfoGrid from "@/components/layout/InfoGrid";
 import { boolToLabel } from "@/utils/output";
 import type { Publication } from "@canonical/landscape-openapi";
-import {
-  Button,
-  Icon,
-  ICONS,
-  Notification,
-  Tooltip,
-} from "@canonical/react-components";
+import { Button, Icon, ICONS, Tooltip } from "@canonical/react-components";
 import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
@@ -22,7 +16,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import {
   OperationStatusContent,
   useGetOperation,
-  ViewLogsButton,
+  OperationErrorNotification,
 } from "@/features/operations";
 import LoadingState from "@/components/layout/LoadingState";
 
@@ -66,17 +60,11 @@ const PublicationDetails = ({
 
   return (
     <>
-      <div aria-live="polite" aria-relevant="additions">
-        {!!operation?.error && (
-          <Notification
-            severity="negative"
-            title="Publishing failed"
-            actions={[<ViewLogsButton key="view-logs" />]}
-          >
-            Your last publication was not completed successfully.
-          </Notification>
-        )}
-      </div>
+      <OperationErrorNotification
+        isVisible={!!operation?.error}
+        title="Publishing failed"
+        message="Your last publication was not completed successfully."
+      />
       <div className="p-segmented-control u-sv2">
         <div className="p-segmented-control__list">
           {!!operation && !operation.done ? (
