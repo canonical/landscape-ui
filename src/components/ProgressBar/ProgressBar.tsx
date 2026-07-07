@@ -27,7 +27,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
   return (
     <div className={`${classes.wrapper} ${fullWidth ? classes.fullWidth : ""}`}>
       {loading && (
-        <i className="p-icon--spinner u-animation--spin" aria-hidden="true" />
+        <i className="p-icon--spinner" aria-hidden="true" />
       )}
       <div className={classes.content}>
         <div
