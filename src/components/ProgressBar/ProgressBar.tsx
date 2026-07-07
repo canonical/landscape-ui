@@ -7,12 +7,14 @@ export interface ProgressBarProps {
   readonly progress: number;
   readonly secondsRemaining: number | null;
   readonly fullWidth?: boolean;
+  readonly label?: string;
 }
 
 const ProgressBar: FC<ProgressBarProps> = ({
   progress,
   secondsRemaining,
   fullWidth = false,
+  label,
 }) => {
   const clampedProgress = Math.min(
     MAX_PROGRESS,
@@ -27,7 +29,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
         aria-valuenow={clampedProgress}
         aria-valuemin={0}
         aria-valuemax={MAX_PROGRESS}
-        aria-label="Progress"
+        aria-label={label || "Progress"}
       >
         <div
           className={classes.fill}
