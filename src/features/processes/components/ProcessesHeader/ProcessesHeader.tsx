@@ -1,10 +1,10 @@
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
+import { ResponsiveButtons } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import { useProcesses } from "../../hooks";
 import type { UrlParams } from "@/types/UrlParams";
 import { ActionButton } from "@canonical/react-components";
-import classNames from "classnames";
 import type { FC } from "react";
 import { useParams } from "react-router";
 import classes from "./ProcessesHeader.module.scss";
@@ -64,28 +64,30 @@ const ProcessesHeader: FC<ProcessesHeaderProps> = ({
     <>
       <HeaderWithSearch
         actions={
-          <div className={classNames("p-segmented-control", classes.actions)}>
-            <div className="p-segmented-control__list">
+          <ResponsiveButtons
+            collapseFrom="lg"
+            className={classes.actions}
+            buttons={[
               <ActionButton
+                key="end-process"
                 type="button"
-                className="p-segmented-control__button u-no-margin--bottom"
                 disabled={0 === selectedPids.length}
                 onClick={handleEndProcess}
                 loading={isTerminatingProcess}
               >
                 End process
-              </ActionButton>
+              </ActionButton>,
               <ActionButton
+                key="kill-process"
                 type="button"
-                className="p-segmented-control__button u-no-margin--bottom"
                 disabled={0 === selectedPids.length}
                 onClick={handleKillProcess}
                 loading={isKillingProcess}
               >
                 Kill process
-              </ActionButton>
-            </div>
-          </div>
+              </ActionButton>,
+            ]}
+          />
         }
         afterSearch={handleClearSelection}
       />
