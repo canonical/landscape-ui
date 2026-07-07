@@ -56,11 +56,7 @@ const InstancesContainer = memo(function InstancesContainer({
     wsl.length > 0;
 
   const hasNoInstances =
-    !isGettingInstances &&
-    currentPage === 1 &&
-    pageSize === DEFAULT_PAGE_SIZE &&
-    instanceCount === 0 &&
-    !isFilteringInstances;
+    !isGettingInstances && instanceCount === 0 && !isFilteringInstances;
 
   if (hasNoInstances) {
     return <InstancesEmptyState />;
