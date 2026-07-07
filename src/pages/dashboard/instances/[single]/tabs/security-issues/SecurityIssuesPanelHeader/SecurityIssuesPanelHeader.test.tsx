@@ -1,4 +1,5 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
@@ -6,6 +7,14 @@ import { renderWithProviders } from "@/tests/render";
 import SecurityIssuesPanelHeader from "./SecurityIssuesPanelHeader";
 
 describe("SecurityIssuesPanelHeader", () => {
+  beforeEach(() => {
+    setScreenSize("xxl");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   it("renders a search box", async () => {
     renderWithProviders(
       <SecurityIssuesPanelHeader usns={[]} />,
