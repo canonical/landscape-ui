@@ -26,7 +26,12 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
     type,
     isTableCell,
   );
-  const { status, resource, progressPercent = 0 } = operationMetadata ?? {};
+  const {
+    status,
+    resource,
+    progressPercent = 0,
+    operationId = "",
+  } = operationMetadata ?? {};
   const resourceId = type === "mirror" ? resource : resource?.split("/").pop();
 
   const getContent = () => {
@@ -66,13 +71,15 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
       );
     }
 
+    const labelId = `${operationId}-${isTableCell ? "table" : "details"}-progress`;
+
     return (
       <>
         <Icon
           name={`${ICONS.spinner} u-animation--spin ${classes.marginRight}`}
         />
         <div className={classes.progressContainer}>
-          <span className={classes.marginRight} id={`${resource}-progress`}>
+          <span className={classes.marginRight} id={labelId}>
             {ongoing}
           </span>
           {isTableCell ? (
@@ -80,10 +87,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
               {progressPercent}%
             </span>
           ) : (
-            <ProgressBar
-              progressPercent={progressPercent}
-              labelledBy={`${resource}-progress`}
-            />
+            <ProgressBar progress={progressPercent} labelledBy={labelId} />
           )}
         </div>
       </>

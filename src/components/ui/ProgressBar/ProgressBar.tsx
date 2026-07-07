@@ -2,22 +2,22 @@ import type { FC } from "react";
 import classes from "./ProgressBar.module.scss";
 
 interface ProgressBarProps {
-  readonly progressPercent: number;
+  readonly progress: number;
   readonly labelledBy?: string;
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({ progressPercent, labelledBy }) => {
+const ProgressBar: FC<ProgressBarProps> = ({ progress, labelledBy }) => {
   return (
     <>
       <div
         className={classes.progressBar}
         role="progressbar"
-        aria-valuenow={progressPercent}
+        aria-valuenow={progress}
         aria-labelledby={labelledBy}
       >
-        <div style={{ width: `${progressPercent}%` }} />
+        <div style={{ width: `${progress}%` }} />
       </div>
-      <span aria-hidden="true">{progressPercent}%</span>
+      <span aria-hidden="true">{progress}%</span>
     </>
   );
 };
