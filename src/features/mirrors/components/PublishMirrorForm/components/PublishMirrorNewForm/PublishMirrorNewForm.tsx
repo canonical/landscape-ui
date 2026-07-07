@@ -12,7 +12,7 @@ import {
   Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
+import { useMemo, type FC } from "react";
 import useNotify from "@/hooks/useNotify";
 import {
   getInitialValues,
@@ -95,12 +95,14 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
     validateOnMount: true,
   });
 
-  const publicationTargetOptions: SelectOption[] = publicationTargets.map(
-    ({ displayName, name }) => ({
-      label: displayName,
-      value: name ?? "",
-      disabled: !name,
-    }),
+  const publicationTargetOptions = useMemo<SelectOption[]>(
+    () =>
+      publicationTargets.map(({ displayName, name }) => ({
+        label: displayName,
+        value: name ?? "",
+        disabled: !name,
+      })),
+    [publicationTargets],
   );
 
   const architectureOptions =

@@ -32,6 +32,7 @@ import { getPublicationPayload, stripResourcePrefix } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
 import PublicationSettingsBlock from "../../components/PublicationSettingsBlock";
 import { getInitialValues } from "../../helpers";
+import SidePanel from "@/components/layout/SidePanel/SidePanel";
 
 const AddPublicationForm: FC = () => {
   const debug = useDebug();
@@ -48,7 +49,7 @@ const AddPublicationForm: FC = () => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      ...getInitialValues(),
+      ...getInitialValues(publicationTargets[0]?.name),
       sourceType: SOURCE_TYPE_MIRROR,
       source: "",
       distribution: "",
@@ -66,7 +67,7 @@ const AddPublicationForm: FC = () => {
         notify.success({
           title: `You have successfully added ${values.name}`,
           message:
-            "The publication has been created and marked to be published.",
+            "The publication has been created and an activity has been queued to publish it to the designated target.",
         });
       } catch (error) {
         debug(error);
@@ -130,7 +131,6 @@ const AddPublicationForm: FC = () => {
 
   const publicationTargetOptions = useMemo<SelectOption[]>(
     () => [
-      { label: "Select publication target", value: "" },
       ...publicationTargets.map((publicationTarget) => ({
         label: publicationTarget.displayName,
         value: stripResourcePrefix(
@@ -183,125 +183,133 @@ const AddPublicationForm: FC = () => {
     );
   };
 
+  if (isGettingPublicationTargets) {
+    return <SidePanel.LoadingState />;
+  }
+
   return (
-    <Form noValidate onSubmit={formik.handleSubmit}>
-      <Blocks>
-        <Blocks.Item title="Details">
-          <Input
-            type="text"
-            label="Publication name"
-            required
-            error={getFormikError(formik, "name")}
-            {...formik.getFieldProps("name")}
-          />
+    <>
+      <SidePanel.Header>Add publication</SidePanel.Header>
+      <SidePanel.Content>
+        <Form noValidate onSubmit={formik.handleSubmit}>
+          <Blocks>
+            <Blocks.Item title="Details">
+              <Input
+                type="text"
+                label="Publication name"
+                required
+                error={getFormikError(formik, "name")}
+                {...formik.getFieldProps("name")}
+              />
 
-          <Select
-            label="Source type"
-            required
-            options={SOURCE_TYPE_OPTIONS}
-            error={getFormikError(formik, "sourceType")}
-            {...formik.getFieldProps("sourceType")}
-            onChange={handleSourceTypeChange}
-          />
+              <Select
+                label="Source type"
+                required
+                options={SOURCE_TYPE_OPTIONS}
+                error={getFormikError(formik, "sourceType")}
+                {...formik.getFieldProps("sourceType")}
+                onChange={handleSourceTypeChange}
+              />
 
-          <Select
-            label="Source"
-            required
-            disabled={isGettingSources}
-            options={sourceOptions}
-            error={getFormikError(formik, "source")}
-            {...formik.getFieldProps("source")}
-            onChange={handleSourceChange}
-          />
+              <Select
+                label="Source"
+                required
+                disabled={isGettingSources}
+                options={sourceOptions}
+                error={getFormikError(formik, "source")}
+                {...formik.getFieldProps("source")}
+                onChange={handleSourceChange}
+              />
 
-          <Select
-            label="Publication target"
-            required
-            disabled={isGettingPublicationTargets}
-            options={publicationTargetOptions}
-            error={getFormikError(formik, "publicationTarget")}
-            {...formik.getFieldProps("publicationTarget")}
-          />
+              <Select
+                label="Publication target"
+                required
+                options={publicationTargetOptions}
+                error={getFormikError(formik, "publicationTarget")}
+                {...formik.getFieldProps("publicationTarget")}
+              />
 
-          {!selectedSource?.preserveSignatures ? (
-            <Textarea
-              label="Signing GPG key"
-              rows={4}
-              {...formik.getFieldProps("signingKey")}
-              error={getFormikError(formik, "signingKey")}
-            />
-          ) : (
-            <Notification
-              severity="information"
-              borderless
-              className="u-no-margin--bottom"
-            >
-              The selected source preserves the upstream signing key.
-            </Notification>
-          )}
-        </Blocks.Item>
-
-        <Blocks.Item title="Contents">
-          {isLocalSourceType || selectedSource?.preserveSignatures ? (
-            <ReadOnlyField
-              label="Distribution"
-              value={formik.values.distribution}
-              tooltipMessage={
-                isLocalSourceType
-                  ? "The distribution is defined by the source repository."
-                  : "The distribution can't be changed for signature-preserving mirrors."
-              }
-            />
-          ) : (
-            <Input
-              type="text"
-              label="Distribution"
-              required
-              error={getFormikError(formik, "distribution")}
-              {...formik.getFieldProps("distribution")}
-            />
-          )}
-
-          <ReadOnlyField
-            label={isLocalSourceType ? "Component" : "Components"}
-            value={selectedSource?.components?.join(", ")}
-            tooltipMessage={
-              isLocalSourceType
-                ? "The component is defined by the source repository."
-                : "The components are defined by the source mirror."
-            }
-          />
-
-          {!isLocalSourceType && (
-            <MultiSelectField
-              variant="condensed"
-              hasSelectedItemsFirst={false}
-              label="Architectures"
-              required
-              disabled={!formik.values.source}
-              items={architectureItems}
-              selectedItems={architectureItems.filter(({ value }) =>
-                formik.values.architectures.includes(value),
+              {!selectedSource?.preserveSignatures ? (
+                <Textarea
+                  label="Signing GPG key"
+                  rows={4}
+                  {...formik.getFieldProps("signingKey")}
+                  error={getFormikError(formik, "signingKey")}
+                />
+              ) : (
+                <Notification
+                  severity="information"
+                  borderless
+                  className="u-no-margin--bottom"
+                >
+                  The selected source preserves the upstream signing key.
+                </Notification>
               )}
-              onItemsUpdate={handleArchitectureChange}
-              error={getFormikError(formik, "architectures")}
-            />
-          )}
-        </Blocks.Item>
+            </Blocks.Item>
 
-        <PublicationSettingsBlock formik={formik} />
-      </Blocks>
+            <Blocks.Item title="Contents">
+              {isLocalSourceType || selectedSource?.preserveSignatures ? (
+                <ReadOnlyField
+                  label="Distribution"
+                  value={formik.values.distribution}
+                  tooltipMessage={
+                    isLocalSourceType
+                      ? "The distribution is defined by the source repository."
+                      : "The distribution can't be changed for signature-preserving mirrors."
+                  }
+                />
+              ) : (
+                <Input
+                  type="text"
+                  label="Distribution"
+                  required
+                  error={getFormikError(formik, "distribution")}
+                  {...formik.getFieldProps("distribution")}
+                />
+              )}
 
-      <SidePanelFormButtons
-        submitButtonLoading={
-          formik.isSubmitting ||
-          isCreatingPublication ||
-          isPublishingPublication
-        }
-        submitButtonText="Add publication"
-        onCancel={closeSidePanel}
-      />
-    </Form>
+              <ReadOnlyField
+                label={isLocalSourceType ? "Component" : "Components"}
+                value={selectedSource?.components?.join(", ")}
+                tooltipMessage={
+                  isLocalSourceType
+                    ? "The component is defined by the source repository."
+                    : "The components are defined by the source mirror."
+                }
+              />
+
+              {!isLocalSourceType && (
+                <MultiSelectField
+                  variant="condensed"
+                  hasSelectedItemsFirst={false}
+                  label="Architectures"
+                  required
+                  disabled={!formik.values.source}
+                  items={architectureItems}
+                  selectedItems={architectureItems.filter(({ value }) =>
+                    formik.values.architectures.includes(value),
+                  )}
+                  onItemsUpdate={handleArchitectureChange}
+                  error={getFormikError(formik, "architectures")}
+                />
+              )}
+            </Blocks.Item>
+
+            <PublicationSettingsBlock formik={formik} />
+          </Blocks>
+
+          <SidePanelFormButtons
+            submitButtonLoading={
+              formik.isSubmitting ||
+              isCreatingPublication ||
+              isPublishingPublication
+            }
+            submitButtonText="Add publication"
+            onCancel={closeSidePanel}
+          />
+        </Form>
+      </SidePanel.Content>
+    </>
   );
 };
 
