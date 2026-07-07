@@ -8,12 +8,13 @@ import type { UrlParams } from "@/types/UrlParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Form, Input, Select } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { useEffect, type FC } from "react";
+import { type FC } from "react";
 import { useParams } from "react-router";
 import * as Yup from "yup";
 import { useCreateWslInstance, useGetWslInstanceTypes } from "../../api";
 import { MAX_FILE_SIZE_MB, RESERVED_PATTERNS } from "./constants";
 import { fileToBase64 } from "./helpers";
+import EmptyState from "@/components/layout/EmptyState";
 
 interface FormProps {
   instanceType: string;
@@ -31,12 +32,6 @@ const WslInstanceInstallForm: FC = () => {
   const parsedInstanceId = Number(instanceId);
   const hasValidInstanceId =
     Number.isInteger(parsedInstanceId) && parsedInstanceId > 0;
-
-  useEffect(() => {
-    if (!hasValidInstanceId) {
-      closeSidePanel();
-    }
-  }, [closeSidePanel, hasValidInstanceId]);
 
   const { isGettingWslInstanceTypes, wslInstanceTypes } =
     useGetWslInstanceTypes();
@@ -87,6 +82,9 @@ const WslInstanceInstallForm: FC = () => {
         }),
     }),
     onSubmit: async (values) => {
+      if (!hasValidInstanceId) {
+        return;
+      }
       try {
         const cloudInitBase64 = await fileToBase64(values.cloudInit);
 
@@ -144,6 +142,16 @@ const WslInstanceInstallForm: FC = () => {
   const handleRemoveFile = async () => {
     await formik.setFieldValue("cloudInit", null);
   };
+
+  if (!hasValidInstanceId) {
+    return (
+      <EmptyState
+        icon="file"
+        title="Instance not found"
+        body="It seems that the instance you're looking for doesn't exist."
+      />
+    );
+  }
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>

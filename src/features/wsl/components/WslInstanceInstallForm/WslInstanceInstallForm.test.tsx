@@ -34,12 +34,15 @@ describe("WslInstanceInstallForm", () => {
     });
   });
 
-  it("closes side panel when instance id is missing", async () => {
+  it("shows empty state when instance id is missing", () => {
     renderWithProviders(<WslInstanceInstallForm />);
 
-    await waitFor(() => {
-      expect(closeSidePanel).toHaveBeenCalled();
-    });
+    expect(screen.getByText("Instance not found")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /it seems that the instance you're looking for doesn't exist/i,
+      ),
+    ).toBeInTheDocument();
   });
 
   it("renders correct form fields when a provided instance type is selected", () => {
