@@ -1,15 +1,15 @@
 import { TableFilter } from "@/components/filter";
+import type { FilterProps } from "@/components/filter/types";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import type { SelectOption } from "@/types/SelectOption";
 import type { FC } from "react";
 import { useState } from "react";
 
-interface ActivityTypeFilterProps {
-  readonly options: SelectOption[];
-}
-
-const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
+const ActivityTypeFilter: FC<FilterProps> = ({
+  options,
+  label,
+  inline = false,
+}) => {
   const [searchText, setSearchText] = useState("");
 
   const { setPageParams, type } = usePageParams();
@@ -26,7 +26,8 @@ const ActivityTypeFilter: FC<ActivityTypeFilterProps> = ({ options }) => {
   return (
     <TableFilter
       type="single"
-      label="Type"
+      label={label}
+      inline={inline}
       hasToggleIcon
       hasBadge
       onSearch={(search) => {

@@ -1,0 +1,144 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+/* A faint tint of the severity colour: just enough to read the status at a
+   glance without competing with the Upgrades column. On the dark theme the
+   same alphas all but disappear against the dark surface, so they are bumped
+   up to keep the pills legible. */
+@mixin status-tint($color) {
+  background-color: rgba($color, 0.025);
+  border: 1px solid rgba($color, 0.2);
+
+  /* Clickable pills deepen their own tint on hover (status-aware) rather than
+     overlaying a flat grey, so the affordance reads in the status colour. The
+     bumps are kept gentle so the hover stays soft. */
+  &.clickable:hover {
+    background-color: rgba($color, 0.08);
+    border-color: rgba($color, 0.35);
+  }
+
+  :global(.is-dark) & {
+    background-color: rgba($color, 0.12);
+    border-color: rgba($color, 0.4);
+  }
+
+  :global(.is-dark) &.clickable:hover {
+    background-color: rgba($color, 0.2);
+    border-color: rgba($color, 0.55);
+  }
+}
+
+.pill {
+  align-items: center;
+  border-radius: 0.75rem;
+  color: $colors--theme--text-default;
+  display: inline-flex;
+  font-size: 0.625rem;
+  font-weight: 600;
+  gap: $sph--x-small;
+  letter-spacing: 0.05em;
+  line-height: 1.25rem;
+  max-width: 100%;
+  padding: 0 $sph--small;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pillLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Interactive pill (e.g. clickable tag/status filters): reset native button
+   chrome. The status-aware hover tint itself lives in the `status-tint` mixin
+   so each severity deepens in its own colour. */
+.clickable {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  margin: 0;
+  transition:
+    background-color 0.1s ease-in-out,
+    border-color 0.1s ease-in-out;
+}
+
+/* The status colour is conveyed by the tinted background; the icon is kept
+   small and slightly muted so the pills stay quiet next to the Upgrades column. */
+.pillIcon {
+  flex-shrink: 0;
+  height: 0.75rem;
+  margin: 0;
+  min-width: 0.75rem;
+  opacity: 0.7;
+  width: 0.75rem;
+}
+
+.danger {
+  @include status-tint($color-negative);
+}
+
+.warning {
+  @include status-tint($color-caution);
+}
+
+.info {
+  @include status-tint($color-information);
+}
+
+.positive {
+  @include status-tint($color-positive);
+}
+
+.neutral {
+  @include status-tint($color-mid-dark);
+}
+
+/* Single instance view: every status is shown, wrapping as needed. */
+.list {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spv--x-small $sph--small;
+}
+
+/* Collapsed table cell: visible pills sit inline with the expander. */
+.collapsed {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spv--x-small $sph--small;
+}
+
+/* Expanded table cell: a soft popover card that sizes to its content so the
+   full, un-truncated labels are visible, stacked one per line. */
+.container {
+  height: 100%;
+  position: relative;
+}
+
+.expanded {
+  align-items: flex-start;
+  background: $colors--theme--background-default;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 6%),
+    0 2px 8px -2px rgb(0 0 0 / 20%);
+  display: flex;
+  flex-direction: column;
+  gap: $spv--x-small;
+  left: 0;
+  max-width: 22rem;
+  min-width: 100%;
+  padding: $spv--small $sph--small;
+  position: absolute;
+  top: 0;
+  width: max-content;
+}
+
+.button {
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: none;
+  }
+}

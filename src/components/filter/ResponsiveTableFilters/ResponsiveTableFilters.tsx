@@ -26,7 +26,7 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
   filters,
   collapseFrom = "md",
   className,
-  menuPosition = "left",
+  menuPosition,
   isCollapsed = false,
   menuLabel = (
     <>
@@ -39,13 +39,20 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
 
+  // The Filters menu sits at the right of the table header, where there is
+  // always more room to the left than to the right. So the dropdown and its
+  // submenus always open leftward (right-aligned) to stay on screen — simpler
+  // and more reliable than estimating submenu widths. An explicit
+  // `menuPosition` prop overrides this.
+  const menuAlignment: Position = menuPosition ?? "right";
+
   return (
     <div className={classNames(classes.wrapper, className)}>
       {isLarge && !isCollapsed ? (
         filters.map((node, i) => <span key={i}>{node}</span>)
       ) : (
         <ContextualMenu
-          position={menuPosition}
+          position={menuAlignment}
           hasToggleIcon
           toggleLabel={menuLabel}
           toggleClassName="u-no-margin--bottom"
@@ -57,7 +64,13 @@ const ResponsiveTableFilters: FC<ResponsiveTableFiltersProps> = ({
                 return node;
               }
 
-              return <ResponsiveDropdownItem key={i} el={node} />;
+              return (
+                <ResponsiveDropdownItem
+                  key={i}
+                  el={node}
+                  position={menuAlignment}
+                />
+              );
             })}
           </div>
         </ContextualMenu>

@@ -5,10 +5,12 @@
   align-items: flex-start;
   display: flex;
   flex-basis: 30rem;
+  min-width: 15rem;
 }
 
 .formContainer {
   flex: 1;
+  min-width: 0;
 }
 
 .helpButton {

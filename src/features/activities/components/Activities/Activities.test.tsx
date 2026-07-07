@@ -1,4 +1,5 @@
 import { ROUTES } from "@/libs/routes";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   activities,
   INVALID_ACTIVITY_SEARCH_QUERY,
@@ -7,7 +8,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import Activities from "./Activities";
 
 const setSelectedActivities = vi.fn();
@@ -108,7 +109,12 @@ describe("Activities", () => {
   });
 
   describe("ActivitiesHeader integration", () => {
+    afterEach(() => {
+      resetScreenSize();
+    });
+
     it("should render ActivitiesHeader component", () => {
+      setScreenSize("xxl");
       renderWithProviders(<Activities {...defaultProps} />);
 
       expect(screen.getByPlaceholderText("Search")).toBeInTheDocument();

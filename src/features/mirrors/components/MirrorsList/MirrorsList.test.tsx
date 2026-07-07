@@ -35,4 +35,34 @@ describe("MirrorsList", () => {
 
     expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(4);
   });
+
+  describe("pagination", () => {
+    it("shows only the first page of mirrors when there are more than the page size", () => {
+      renderWithProviders(<MirrorsList mirrors={[...mirrors]} />);
+
+      const lastMirror = mirrors.at(-1);
+      assert(lastMirror);
+
+      expect(screen.getByText(mirrors[0].displayName)).toBeInTheDocument();
+      expect(
+        screen.queryByText(lastMirror.displayName),
+      ).not.toBeInTheDocument();
+    });
+
+    it("renders pagination controls when mirrors exceed page size", () => {
+      renderWithProviders(<MirrorsList mirrors={[...mirrors]} />);
+
+      expect(
+        screen.getByRole("navigation", { name: /pagination/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("does not render pagination controls when all mirrors fit on one page", () => {
+      renderWithProviders(<MirrorsList mirrors={mirrors.slice(0, 3)} />);
+
+      expect(
+        screen.queryByRole("navigation", { name: /pagination/i }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

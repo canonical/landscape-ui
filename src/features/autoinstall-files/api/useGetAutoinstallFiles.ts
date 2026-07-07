@@ -36,6 +36,8 @@ export const useGetAutoinstallFiles = (
 ): GetAutoinstallFilesResult => {
   const authFetch = useFetch();
 
+  const queryParams = { ...params, search: params?.search || undefined };
+
   const {
     data: response,
     isLoading,
@@ -48,8 +50,8 @@ export const useGetAutoinstallFiles = (
     >,
     AxiosError<ApiError>
   >({
-    queryKey: ["autoinstallFiles", params],
-    queryFn: async () => authFetch.get(`autoinstall`, { params }),
+    queryKey: ["autoinstallFiles", queryParams],
+    queryFn: async () => authFetch.get(`autoinstall`, { params: queryParams }),
     ...config,
   });
 

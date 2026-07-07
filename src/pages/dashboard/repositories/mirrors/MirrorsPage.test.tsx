@@ -31,11 +31,7 @@ describe("MirrorsPage", () => {
     expect(
       await screen.findByRole("heading", { name: "Mirrors" }),
     ).toBeInTheDocument();
-
-    expect(
-      await screen.findByText("Ubuntu archive mirror"),
-    ).toBeInTheDocument();
-
+    expect(screen.getByText("Ubuntu archive mirror")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Add mirror" })).toBeEnabled();
   });
 
@@ -149,6 +145,31 @@ describe("MirrorsPage", () => {
     expect(
       await within(screen.getByLabelText("Side panel")).findByRole("button", {
         name: /publish mirror/i,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders the logs side panel when sidePath=logs is in the URL", async () => {
+    setScreenSize("xxl");
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorsPage />
+      </Suspense>,
+      undefined,
+      "/?sidePath=logs&name=mirrors/third-party-mirror",
+    );
+
+    await expectLoadingState();
+
+    expect(
+      await screen.findByRole("heading", {
+        name: /Update logs for Third party mirror/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("button", {
+        name: /copy/i,
       }),
     ).toBeInTheDocument();
   });

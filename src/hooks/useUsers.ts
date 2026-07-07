@@ -76,12 +76,20 @@ export default function useUsers() {
   const getUsersQuery: QueryFnType<
     AxiosResponse<ApiPaginatedResponse<User>>,
     GetUsersParams
-  > = (queryParams, config = {}) =>
-    useQuery<AxiosResponse<ApiPaginatedResponse<User>>, AxiosError<ApiError>>({
-      queryKey: ["users", { ...queryParams }],
-      queryFn: async () => authFetch.get("users", { params: queryParams }),
+  > = (queryParams, config = {}) => {
+    const params = {
+      ...queryParams,
+      query: queryParams?.query || undefined,
+    };
+    return useQuery<
+      AxiosResponse<ApiPaginatedResponse<User>>,
+      AxiosError<ApiError>
+    >({
+      queryKey: ["users", { ...params }],
+      queryFn: async () => authFetch.get("users", { params }),
       ...config,
     });
+  };
 
   const createUserQuery = useMutation<
     AxiosResponse<Activity>,
