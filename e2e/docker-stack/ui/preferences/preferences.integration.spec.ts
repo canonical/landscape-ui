@@ -76,7 +76,7 @@ async function patchTitle(
 
 test.describe("preferences mutation round-trip (real backend)", () => {
   let authToken = "";
-  let originalTitle = "";
+  let originalTitle: string | undefined;
 
   test.beforeEach(async ({ request }) => {
     authToken = await getAuthToken(request);
@@ -86,7 +86,7 @@ test.describe("preferences mutation round-trip (real backend)", () => {
 
   test.afterEach(async ({ request }) => {
     // Restore the original org title so runs are idempotent.
-    if (originalTitle && authToken) {
+    if (authToken && originalTitle !== undefined) {
       await patchTitle(request, authToken, originalTitle);
     }
   });
