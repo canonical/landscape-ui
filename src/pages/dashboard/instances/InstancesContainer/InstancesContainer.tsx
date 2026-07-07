@@ -9,7 +9,6 @@ import {
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
 import usePageParams from "@/hooks/usePageParams";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
@@ -33,8 +32,6 @@ const InstancesContainer = memo(function InstancesContainer({
   >([]);
 
   const {
-    currentPage,
-    pageSize,
     query,
     status,
     os,
