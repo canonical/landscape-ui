@@ -48,8 +48,9 @@ const AddPublicationForm: FC = () => {
     usePublishPublication();
 
   const formik = useFormik<FormProps>({
+    enableReinitialize: true,
     initialValues: {
-      ...getInitialValues(publicationTargets[0]?.publicationTargetId),
+      ...getInitialValues(publicationTargets[0]?.name),
       sourceType: SOURCE_TYPE_MIRROR,
       source: "",
       distribution: "",
@@ -81,7 +82,7 @@ const AddPublicationForm: FC = () => {
     () =>
       mirrors.map((mirror) => ({
         label: mirror.displayName,
-        value: mirror.mirrorId ?? "",
+        value: mirror.name ?? "",
         sourceType: SOURCE_TYPE_MIRROR,
         distribution: mirror.distribution,
         components: mirror.components,
@@ -95,7 +96,7 @@ const AddPublicationForm: FC = () => {
     () =>
       locals.map((localSource) => ({
         label: localSource.displayName,
-        value: localSource.localId ?? "",
+        value: localSource.name ?? "",
         sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
         distribution: localSource.defaultDistribution,
         components: [localSource.defaultComponent],
@@ -133,7 +134,7 @@ const AddPublicationForm: FC = () => {
     () => [
       ...publicationTargets.map((publicationTarget) => ({
         label: publicationTarget.displayName,
-        value: publicationTarget.publicationTargetId ?? "",
+        value: publicationTarget.name ?? "",
       })),
     ],
     [publicationTargets],
