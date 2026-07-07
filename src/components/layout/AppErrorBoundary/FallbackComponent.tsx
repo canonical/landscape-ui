@@ -1,8 +1,131 @@
-import EmptyState from "@/components/layout/EmptyState";
-import { IS_DEV_ENV } from "@/constants";
-import { Button } from "@canonical/react-components";
+import { FEEDBACK_LINK, IS_DEV_ENV } from "@/constants";
+import { Button, CodeSnippet, Icon } from "@canonical/react-components";
 import type { FallbackRender } from "@sentry/react";
+import { useEffect, useRef, useState } from "react";
+import type { FC } from "react";
 import classes from "./FallbackComponent.module.scss";
+
+const COPIED_FEEDBACK_TIMEOUT = 2000;
+
+interface ErrorFallbackProps {
+  readonly error: unknown;
+  readonly componentStack?: string | null;
+  readonly resetError: () => void;
+}
+
+const ErrorFallback: FC<ErrorFallbackProps> = ({
+  error,
+  componentStack,
+  resetError,
+}) => {
+  const [copied, setCopied] = useState(false);
+  const copiedTimeoutRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(copiedTimeoutRef.current);
+    };
+  }, []);
+
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? error.stack : undefined;
+
+  const handleReload = () => {
+    window.location.reload();
+  };
+
+  const handleCopy = async () => {
+    const report = [
+      `Error: ${errorMessage}`,
+      stack ? `\n\nStack trace:\n${stack}` : "",
+      componentStack ? `\n\nComponent stack:\n${componentStack.trim()}` : "",
+    ]
+      .join("")
+      .trim();
+
+    try {
+      await navigator.clipboard.writeText(report);
+      setCopied(true);
+      window.clearTimeout(copiedTimeoutRef.current);
+      copiedTimeoutRef.current = window.setTimeout(() => {
+        setCopied(false);
+      }, COPIED_FEEDBACK_TIMEOUT);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <div className={classes.wrapper} role="alert" aria-live="assertive">
+      <div className={classes.panel}>
+        <Icon name="disconnect" className={classes.icon} aria-hidden />
+
+        <p className="p-heading--3 u-no-margin--bottom">Something went wrong</p>
+
+        <p className={classes.subtitle}>
+          We hit an unexpected error while loading this page. You can try again
+          — if the problem continues, please{" "}
+          <a href={FEEDBACK_LINK} rel="noopener noreferrer" target="_blank">
+            report it
+          </a>{" "}
+          or contact our support team.
+        </p>
+
+        <div className={classes.actions}>
+          <Button appearance="positive" onClick={resetError} type="button">
+            Try again
+          </Button>
+          <Button appearance="base" onClick={handleReload} type="button">
+            Reload page
+          </Button>
+        </div>
+
+        {IS_DEV_ENV && (
+          <details className={classes.details}>
+            <summary className={classes.summary}>
+              <Icon name="chevron-down" className={classes.summaryIcon} />
+              <span>Technical details</span>
+            </summary>
+
+            <div className={classes.detailsBody}>
+              <div className={classes.copyRow}>
+                <Button
+                  appearance="base"
+                  className="u-no-margin--bottom"
+                  hasIcon
+                  onClick={handleCopy}
+                  type="button"
+                >
+                  <Icon name={copied ? "success" : "copy"} />
+                  <span>{copied ? "Copied" : "Copy"}</span>
+                </Button>
+              </div>
+
+              <CodeSnippet
+                className={classes.snippet}
+                blocks={[
+                  { title: "Error", code: errorMessage, wrapLines: true },
+                  ...(stack
+                    ? [{ title: "Stack trace", code: stack, wrapLines: true }]
+                    : []),
+                  ...(componentStack
+                    ? [
+                        {
+                          title: "Component stack",
+                          code: componentStack.trim(),
+                          wrapLines: true,
+                        },
+                      ]
+                    : []),
+                ]}
+              />
+            </div>
+          </details>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const FallbackComponent: FallbackRender = (errorData) => {
   const { error, resetError, componentStack } = errorData;
@@ -11,39 +134,11 @@ export const FallbackComponent: FallbackRender = (errorData) => {
     console.error(error);
   }
 
-  const errorMessage = error instanceof Error ? error.message : String(error);
-
   return (
-    <EmptyState
-      className={classes.emptyState}
-      body={
-        <>
-          <p className="u-no-margin--bottom">
-            Please try again or contact our support team.
-          </p>
-          {IS_DEV_ENV && (
-            <pre className={classes.errorDetails}>
-              <strong>Error:</strong> {errorMessage}
-              <br />
-              <br />
-              <strong>Stack trace:</strong>
-              {componentStack}
-            </pre>
-          )}
-        </>
-      }
-      cta={[
-        <Button
-          appearance="positive"
-          key="try-again-button"
-          onClick={resetError}
-          type="button"
-        >
-          Try again
-        </Button>,
-      ]}
-      icon="disconnect"
-      title="Unexpected error occurred"
+    <ErrorFallback
+      componentStack={componentStack}
+      error={error}
+      resetError={resetError}
     />
   );
 };
