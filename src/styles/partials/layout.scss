@@ -59,6 +59,7 @@
 
 .p-contextual-menu__dropdown {
   background-color: $colors--theme--background-default;
+  min-width: 14rem;
   z-index: var(--z-dropdown);
 }
 

@@ -1,12 +1,21 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { ubuntuInstance } from "@/tests/mocks/instance";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import SecurityIssueList from "./SecurityIssueList";
 
 describe("SecurityIssueList", () => {
+  beforeEach(() => {
+    setScreenSize("xxl");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   it("renders the panel with USN list", async () => {
     renderWithProviders(
       <SecurityIssueList

@@ -15,11 +15,13 @@ const AutoinstallFileSidePanelTitle: FC<AutoinstallFileSidePanelTitleProps> = ({
   version = file.version,
 }) => {
   return (
-    <div className={classes.container}>
-      {!!title && `${title} `}
-      {file.filename}, v{version}
+    <span>
+      <span className={classes.text}>
+        {!!title && `${title} `}
+        {file.filename}, v{version}
+      </span>
       {file.is_default && <Chip className={classes.chip} value="Default" />}
-    </div>
+    </span>
   );
 };
 

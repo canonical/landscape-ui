@@ -1,9 +1,13 @@
+import { API_URL } from "@/constants";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
+import { autoinstallFiles } from "@/tests/mocks/autoinstallFiles";
 import { renderWithProviders } from "@/tests/render";
+import server from "@/tests/server";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import AutoinstallFilesPanel from "./AutoinstallFilesPanel";
 
 describe("AutoinstallFilesPanel", () => {
@@ -55,5 +59,36 @@ describe("AutoinstallFilesPanel", () => {
     await waitFor(() => {
       expect(screen.getByText(/add new autoinstall file/i)).toBeInTheDocument();
     });
+  });
+});
+
+describe("Autoinstall files request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}autoinstall`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: autoinstallFiles,
+          count: autoinstallFiles.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search entirely when the search param is empty", async () => {
+    renderWithProviders(<AutoinstallFilesPanel />, undefined, "/autoinstall");
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

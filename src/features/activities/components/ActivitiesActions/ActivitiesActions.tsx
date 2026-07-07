@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { ResponsiveButtons } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { ActivityCommon } from "../../types";
@@ -64,10 +65,11 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
   };
 
   return (
-    <div key="buttons" className="p-segmented-control">
-      <div className="p-segmented-control__list">
+    <ResponsiveButtons
+      collapseFrom="xl"
+      buttons={[
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="approve"
           type="button"
           disabled={
             !selected.length ||
@@ -85,9 +87,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           }}
         >
           Approve
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="cancel"
           type="button"
           disabled={
             !selected.length ||
@@ -105,9 +107,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           }}
         >
           Cancel
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="redo"
           type="button"
           disabled={
             !selected.length ||
@@ -125,9 +127,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
           }}
         >
           Redo
-        </ConfirmationButton>
-      </div>
-    </div>
+        </ConfirmationButton>,
+      ]}
+    />
   );
 };
 

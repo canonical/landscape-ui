@@ -1,11 +1,6 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
-import NoData from "@/components/layout/NoData";
-import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { getAlertStatus } from "@/features/alert-notifications";
-import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import { hasOneItem, pluralize } from "@/utils/_helpers";
-import { Icon, Tooltip } from "@canonical/react-components";
-import type { HTMLProps, ReactNode } from "react";
+import type { Instance } from "@/types/Instance";
+import type { HTMLProps } from "react";
 import type {
   Cell,
   HeaderGroup,
@@ -14,14 +9,7 @@ import type {
   TableHeaderProps,
   TableRowProps,
 } from "react-table";
-import { ALERT_STATUSES } from "../../constants";
-import {
-  getFeatures,
-  hasRegularUpgrades,
-  hasSecurityUpgrades,
-} from "../../helpers";
-import classes from "./InstanceList.module.scss";
-import type { GetUpgradesResult, InstanceColumn } from "./types";
+import type { InstanceColumn } from "./types";
 
 export const getColumnFilterOptions = (
   columns: InstanceColumn[],
@@ -66,139 +54,6 @@ export const handleCheckboxChange = ({
   }
 };
 
-export const getStatusCellIconAndLabel = (
-  instance: InstanceWithoutRelation,
-): { label: ReactNode; icon?: string } => {
-  if (instance.archived) {
-    return {
-      icon: "archive",
-      label: "Archived",
-    };
-  }
-
-  const filteredAlerts = (instance.alerts ?? []).filter(
-    ({ type }) =>
-      !["PackageUpgradesAlert", "SecurityUpgradesAlert"].includes(type),
-  );
-
-  if (0 === filteredAlerts.length) {
-    return {
-      icon: ALERT_STATUSES.Online.icon.color,
-      label:
-        ALERT_STATUSES.Online.alternateLabel ?? ALERT_STATUSES.Online.label,
-    };
-  }
-
-  if (hasOneItem(filteredAlerts)) {
-    return {
-      icon: getAlertStatus(filteredAlerts[0].type).icon.color,
-      label: <>{filteredAlerts[0].summary}</>,
-    };
-  }
-
-  return {
-    label: (
-      <span className={classes.indicatorWrapper}>
-        {filteredAlerts.map(({ type, summary }) => {
-          const alertStatus = getAlertStatus(type);
-
-          return (
-            <span className={classes.indicatorIcon} key={type}>
-              <Tooltip message={summary}>
-                <Icon
-                  className="u-no-margin--left"
-                  name={alertStatus.icon.color ?? alertStatus.icon.gray}
-                />
-              </Tooltip>
-            </span>
-          );
-        })}
-      </span>
-    ),
-  };
-};
-
-const getUpgradesFromAlerts = (
-  alerts: Instance["alerts"],
-): GetUpgradesResult => {
-  return {
-    regular: hasRegularUpgrades(alerts)
-      ? {
-          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color,
-          label: ALERT_STATUSES.PackageUpgradesAlert.label,
-        }
-      : false,
-    security: hasSecurityUpgrades(alerts)
-      ? {
-          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color,
-          label: ALERT_STATUSES.SecurityUpgradesAlert.label,
-        }
-      : false,
-  };
-};
-
-const getUpgradesFromUpgrades = (
-  upgrades: Instance["upgrades"],
-): GetUpgradesResult => {
-  if (!upgrades) {
-    return { regular: false, security: false };
-  }
-
-  return {
-    regular: upgrades.regular
-      ? {
-          icon: ALERT_STATUSES.PackageUpgradesAlert.icon.color,
-          label: pluralize(upgrades.regular, ["regular upgrade"], "exact"),
-        }
-      : false,
-    security: upgrades.security
-      ? {
-          icon: ALERT_STATUSES.SecurityUpgradesAlert.icon.color,
-          label: pluralize(upgrades.security, ["security upgrade"], "exact"),
-        }
-      : false,
-  };
-};
-
-export const getUpgradesCellIconAndLabel = (instance: Instance) => {
-  if (!getFeatures(instance).packages) {
-    return {
-      icon: "",
-      label: <NoData />,
-    };
-  }
-
-  const { regular, security } = DETAILED_UPGRADES_VIEW_ENABLED
-    ? getUpgradesFromUpgrades(instance.upgrades)
-    : getUpgradesFromAlerts(instance.alerts);
-
-  if (regular && security) {
-    return {
-      icon: security.icon,
-      label: `${regular.label}, ${security.label.toLowerCase()}`,
-    };
-  }
-
-  if (regular) {
-    return {
-      icon: regular.icon,
-      label: regular.label,
-    };
-  }
-
-  if (security) {
-    return {
-      icon: security.icon,
-      label: security.label,
-    };
-  }
-
-  return {
-    icon: ALERT_STATUSES.UpToDate.icon.color,
-    label: ALERT_STATUSES.UpToDate.label,
-  };
-};
-
 export const createHeaderPropsGetter = (titleId: string) => {
   return ({ id }: HeaderGroup<Instance>) => {
     const headerProps: Partial<
@@ -213,7 +68,10 @@ export const createHeaderPropsGetter = (titleId: string) => {
   };
 };
 
-export const getCellProps = (expandedRowIndex: number | null) => {
+export const getCellProps = (
+  expandedRowIndex: number | null,
+  expandedColumnId: string | null,
+) => {
   return ({
     column,
     row: { index },
@@ -223,12 +81,18 @@ export const getCellProps = (expandedRowIndex: number | null) => {
     const cellProps: Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> =
       {};
 
+    const isExpandedColumn = (id: string) =>
+      expandedRowIndex === index && expandedColumnId === id;
+
     switch (column.id) {
       case "title":
         cellProps.role = "rowheader";
         break;
       case "status":
         cellProps["aria-label"] = "Status";
+        if (isExpandedColumn("status")) {
+          cellProps.className = "expandedCell";
+        }
         break;
       case "upgrades":
         cellProps["aria-label"] = "Upgrades";
@@ -238,7 +102,7 @@ export const getCellProps = (expandedRowIndex: number | null) => {
         break;
       case "tags":
         cellProps["aria-label"] = "Tags";
-        if (expandedRowIndex === index) {
+        if (isExpandedColumn("tags")) {
           cellProps.className = "expandedCell";
         }
         break;

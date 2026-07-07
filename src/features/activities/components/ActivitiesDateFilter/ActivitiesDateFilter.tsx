@@ -3,13 +3,21 @@ import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { Badge, Button, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import classes from "./ActivitiesDateFilter.module.scss";
 import { TableFilter } from "@/components/filter";
 import { VALIDATION_SCHEMA } from "./constants";
 import type { FormProps } from "./types";
 
-const ActivitiesDateFilter: FC = () => {
+interface ActivitiesDateFilterProps {
+  readonly label?: ReactNode;
+  readonly inline?: boolean;
+}
+
+const ActivitiesDateFilter: FC<ActivitiesDateFilterProps> = ({
+  label = "Date range",
+  inline = false,
+}) => {
   const { setPageParams, fromDate, toDate } = usePageParams();
 
   const formik = useFormik<FormProps>({
@@ -32,7 +40,7 @@ const ActivitiesDateFilter: FC = () => {
       type="custom"
       label={
         <>
-          <span>Date range</span>
+          <span>{label}</span>
           <span className={tableFilterClasses.badgeContainer}>
             {fromDate || toDate ? (
               <Badge
@@ -43,6 +51,7 @@ const ActivitiesDateFilter: FC = () => {
           </span>
         </>
       }
+      inline={inline}
       hasToggleIcon
       hasBadge
       position="left"
