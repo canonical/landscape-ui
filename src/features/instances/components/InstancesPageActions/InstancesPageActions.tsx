@@ -15,7 +15,7 @@ import {
   hasUpgrades,
   type InstanceListParams,
 } from "../../helpers";
-import { getExportTitle } from "./helpers";
+import { getExportTitle } from "@/features/exports";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
@@ -206,7 +206,8 @@ const InstancesPageActions = memo(function InstancesPageActions({
       getExportTitle({
         isAllSelected,
         selectedCount: selectedInstances.length,
-        instanceCount,
+        totalCount: instanceCount,
+        selectionForms: ["instance"],
       }),
       <Suspense fallback={<LoadingState />}>
         <InstancesExportForm
