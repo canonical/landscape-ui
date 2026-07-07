@@ -223,6 +223,27 @@ describe("InstancesContainer", () => {
     expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
   });
 
+  it("shows table empty message when only upgrades filter is active", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isGettingInstances={false}
+        setSelectedInstances={() => undefined}
+      />,
+      undefined,
+      "/instances?upgrades=security-upgrades",
+    );
+
+    expect(
+      screen.getByText(
+        "No instances found according to your search parameters.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+  });
+
   it("shows global empty state when only groupBy is set", () => {
     renderWithProviders(
       <InstancesContainer

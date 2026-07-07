@@ -39,6 +39,7 @@ const InstancesContainer = memo(function InstancesContainer({
     accessGroups,
     availabilityZones,
     tags,
+    upgrades,
     wsl,
   } = usePageParams();
 
@@ -50,6 +51,7 @@ const InstancesContainer = memo(function InstancesContainer({
     accessGroups.length > 0 ||
     availabilityZones.length > 0 ||
     tags.length > 0 ||
+    upgrades.length > 0 ||
     wsl.length > 0;
 
   const hasNoInstances =

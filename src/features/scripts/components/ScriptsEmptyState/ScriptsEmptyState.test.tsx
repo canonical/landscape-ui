@@ -15,7 +15,7 @@ describe("Scripts Empty State", () => {
       /You haven’t added any scripts yet/i,
     );
     const emptyStateLink = screen.getByRole("link", {
-      name: /How to manage instances in Landscape/i,
+      name: /How to use remote script execution in Landscape/i,
     });
     const emptyStateButton = screen.getByRole("button", {
       name: /Add script/i,
