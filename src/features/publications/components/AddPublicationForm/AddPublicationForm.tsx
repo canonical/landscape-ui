@@ -28,7 +28,7 @@ import {
   SOURCE_TYPE_OPTIONS,
   VALIDATION_SCHEMA,
 } from "./constants";
-import { getPublicationPayload, stripResourcePrefix } from "./helpers";
+import { getPublicationPayload } from "./helpers";
 import type { FormProps, SelectableSource } from "./types";
 import PublicationSettingsBlock from "../../components/PublicationSettingsBlock";
 import { getInitialValues } from "../../helpers";
@@ -49,7 +49,7 @@ const AddPublicationForm: FC = () => {
 
   const formik = useFormik<FormProps>({
     initialValues: {
-      ...getInitialValues(publicationTargets[0]?.name),
+      ...getInitialValues(publicationTargets[0]?.publicationTargetId),
       sourceType: SOURCE_TYPE_MIRROR,
       source: "",
       distribution: "",
@@ -81,7 +81,7 @@ const AddPublicationForm: FC = () => {
     () =>
       mirrors.map((mirror) => ({
         label: mirror.displayName,
-        value: stripResourcePrefix(mirror.name, "mirrors/"),
+        value: mirror.mirrorId ?? "",
         sourceType: SOURCE_TYPE_MIRROR,
         distribution: mirror.distribution,
         components: mirror.components,
@@ -95,7 +95,7 @@ const AddPublicationForm: FC = () => {
     () =>
       locals.map((localSource) => ({
         label: localSource.displayName,
-        value: stripResourcePrefix(localSource.name, "locals/"),
+        value: localSource.localId ?? "",
         sourceType: SOURCE_TYPE_LOCAL_REPOSITORY,
         distribution: localSource.defaultDistribution,
         components: [localSource.defaultComponent],
@@ -133,10 +133,7 @@ const AddPublicationForm: FC = () => {
     () => [
       ...publicationTargets.map((publicationTarget) => ({
         label: publicationTarget.displayName,
-        value: stripResourcePrefix(
-          publicationTarget.name,
-          "publicationTargets/",
-        ),
+        value: publicationTarget.publicationTargetId ?? "",
       })),
     ],
     [publicationTargets],
