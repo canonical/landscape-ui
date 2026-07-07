@@ -3,6 +3,7 @@ import { test, expect } from "@playwright/test";
 // This test intentionally re-exercises the login flow with a fresh context.
 // It does NOT use storageState. See e2e/docker-stack/global-setup.ts which
 // performs the same login once to produce storageState for other tests.
+test.use({ storageState: { cookies: [], origins: [] } });
 
 const email = (): string => {
   const v = process.env.CI_ADMIN_EMAIL;

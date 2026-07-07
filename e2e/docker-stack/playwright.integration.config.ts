@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 const BASE_URL = "http://localhost:5173";
+const STORAGE_STATE_PATH = "e2e/docker-stack/.auth/state.json";
 
 export default defineConfig({
   testDir: "./ui",
@@ -42,6 +43,8 @@ export default defineConfig({
 
   use: {
     baseURL: BASE_URL,
+    // global-setup.ts writes authenticated state here for most UI specs.
+    storageState: STORAGE_STATE_PATH,
     trace: "on-first-retry",
     video: "retain-on-failure",
     ignoreHTTPSErrors: true,

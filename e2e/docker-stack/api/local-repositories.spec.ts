@@ -11,22 +11,13 @@ function validateLocalShape(repo: unknown): asserts repo is Local {
 
 test.describe("Local Repositories API Contract", () => {
   const testRepoName = `test-local-repo-${Date.now()}`;
-  let createdRepoName: string | undefined;
   let token = "";
 
   test.beforeAll(async ({ request }) => {
     token = await getAuthToken(request);
   });
 
-  test.afterAll(async ({ request }) => {
-    if (createdRepoName) {
-      await request.delete(`/v1beta1/${createdRepoName}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    }
-  });
-
-  test("POST /v1beta1/locals accepts payload and returns Local shape", async ({
+  test("POST/GET/DELETE /v1beta1/locals lifecycle works", async ({
     request,
   }) => {
     const payload: LocalWritable = {
@@ -36,37 +27,49 @@ test.describe("Local Repositories API Contract", () => {
       defaultComponent: "main",
     };
 
-    const response = await request.post("/v1beta1/locals", {
-      data: payload,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(response.ok(), await response.text()).toBeTruthy();
+    let createdRepoName: string | undefined;
 
-    const body = await response.json();
-    validateLocalShape(body);
-    expect(body.name).toContain("locals/");
-    createdRepoName = body.name;
-  });
+    try {
+      await test.step("create local repository", async () => {
+        const response = await request.post("/v1beta1/locals", {
+          data: payload,
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        expect(response.ok(), await response.text()).toBeTruthy();
 
-  test("GET /v1beta1/locals returns list containing our repo", async ({
-    request,
-  }) => {
-    const response = await request.get("/v1beta1/locals", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    expect(response.ok()).toBeTruthy();
+        const body = await response.json();
+        validateLocalShape(body);
+        expect(body.name).toContain("locals/");
+        createdRepoName = body.name;
+      });
 
-    const body = await response.json();
-    expect(body).toHaveProperty("locals");
-    expect(Array.isArray(body.locals)).toBeTruthy();
+      await test.step("list local repositories and find created repo", async () => {
+        const response = await request.get("/v1beta1/locals", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        expect(response.ok()).toBeTruthy();
 
-    if (body.locals.length > 0) {
-      validateLocalShape(body.locals[0]);
+        const body = await response.json();
+        expect(body).toHaveProperty("locals");
+        expect(Array.isArray(body.locals)).toBeTruthy();
+
+        if (body.locals.length > 0) {
+          validateLocalShape(body.locals[0]);
+        }
+
+        const found = body.locals.find(
+          (repo: Local) => repo.name === createdRepoName,
+        );
+        expect(found).toBeDefined();
+      });
+    } finally {
+      if (createdRepoName) {
+        await test.step("delete created local repository", async () => {
+          await request.delete(`/v1beta1/${createdRepoName}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        });
+      }
     }
-
-    const found = body.locals.find(
-      (repo: Local) => repo.name === createdRepoName,
-    );
-    expect(found).toBeDefined();
   });
 });
