@@ -3,8 +3,15 @@
 .wrapper {
   align-items: center;
   display: flex;
-  gap: 0.5rem;
   width: 100%;
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.5rem;
+  min-width: 0;
 }
 
 .fullWidth {
@@ -30,8 +37,6 @@
 
 .percentage {
   flex: 0 0 auto;
-  font-weight: 600;
-  min-width: 2.75rem;
 }
 
 .eta {

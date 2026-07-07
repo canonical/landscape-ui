@@ -35,8 +35,8 @@ export const useGetAllExportJobsList = (
       ? {
           limit: pageSize,
           offset: (currentPage - 1) * pageSize,
-          search: search ?? undefined,
-          type: type ?? undefined,
+          search: search || undefined,
+          type: type || undefined,
         }
       : params),
   };
