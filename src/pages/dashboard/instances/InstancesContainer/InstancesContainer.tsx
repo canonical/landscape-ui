@@ -1,17 +1,22 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import LoadingState from "@/components/layout/LoadingState";
 import { TablePagination } from "@/components/layout/TablePagination";
-import { InstanceList, InstancesHeader } from "@/features/instances";
+import {
+  InstanceList,
+  InstancesHeader,
+  InstancesEmptyState,
+} from "@/features/instances";
 import type { Instance } from "@/types/Instance";
 import { memo, useState } from "react";
+import usePageParams from "@/hooks/usePageParams";
 
 interface InstancesContainerProps {
   readonly instanceCount: number | undefined;
   readonly instances: Instance[];
-  readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
   readonly onChangeFilter: () => void;
+  readonly isGettingInstances: boolean;
 }
 
 const InstancesContainer = memo(function InstancesContainer({
@@ -25,6 +30,36 @@ const InstancesContainer = memo(function InstancesContainer({
   const [columnFilterOptions, setColumnFilterOptions] = useState<
     ColumnFilterOption[]
   >([]);
+
+  const {
+    query,
+    status,
+    os,
+    contractExpiryDays,
+    accessGroups,
+    availabilityZones,
+    tags,
+    upgrades,
+    wsl,
+  } = usePageParams();
+
+  const isFilteringInstances =
+    !!query ||
+    !!status ||
+    !!os ||
+    !!contractExpiryDays ||
+    accessGroups.length > 0 ||
+    availabilityZones.length > 0 ||
+    tags.length > 0 ||
+    upgrades.length > 0 ||
+    wsl.length > 0;
+
+  const hasNoInstances =
+    !isGettingInstances && instanceCount === 0 && !isFilteringInstances;
+
+  if (hasNoInstances) {
+    return <InstancesEmptyState />;
+  }
 
   return (
     <>
