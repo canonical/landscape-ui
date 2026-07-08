@@ -10,9 +10,11 @@ import { useParams } from "react-router";
 import { useSnapAction } from "../../api";
 import type { SelectedSnaps } from "../../types";
 import SnapDropdownSearch from "../SnapDropdownSearch";
+import { Notification } from "@canonical/react-components";
 
 const InstallSnaps: FC = () => {
   const [selectedSnaps, setSelectedSnaps] = useState<SelectedSnaps[]>([]);
+  const [showNoSnapsError, setShowNoSnapsError] = useState(false);
   const [confirming, setConfirming] = useState(false);
 
   const debug = useDebug();
@@ -26,12 +28,10 @@ const InstallSnaps: FC = () => {
 
   const handleSubmit = async () => {
     if (selectedSnaps.length === 0) {
-      notify.error({
-        title: "No snaps selected",
-        message: "Select at least one snap to install.",
-      });
+      setShowNoSnapsError(true);
       return;
     }
+    setShowNoSnapsError(false);
 
     try {
       await snapAction({
@@ -45,7 +45,11 @@ const InstallSnaps: FC = () => {
       });
       closeSidePanel();
       notify.success({
-        message: `You queued ${getSelectionLabel(selectedSnaps, (snap) => `snap ${snap.name}`, `snaps`)} to be installed.`,
+        message: `You queued ${getSelectionLabel(
+          selectedSnaps,
+          (snap) => `snap ${snap.name}`,
+          `snaps`,
+        )} to be installed.`,
       });
       setSelectedSnaps([]);
     } catch (error) {
@@ -55,10 +59,16 @@ const InstallSnaps: FC = () => {
 
   return (
     <>
+      {showNoSnapsError && (
+        <Notification severity="caution" title="No snaps selected">
+          Select at least one snap to install.
+        </Notification>
+      )}
       <SnapDropdownSearch
         selectedItems={selectedSnaps}
         setSelectedItems={(items) => {
           setSelectedSnaps(items);
+          setShowNoSnapsError(false);
         }}
         setConfirming={(item) => {
           setConfirming(item);

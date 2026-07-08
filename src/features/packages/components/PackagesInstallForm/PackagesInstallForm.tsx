@@ -1,3 +1,4 @@
+import { Notification } from "@canonical/react-components";
 import type { FC } from "react";
 import { useState } from "react";
 import { useParams } from "react-router";
@@ -14,6 +15,7 @@ import { pluralize, getSelectionLabel } from "@/utils/_helpers";
 
 const PackagesInstallForm: FC = () => {
   const [selected, setSelected] = useState<InstancePackage[]>([]);
+  const [showNoPackagesError, setShowNoPackagesError] = useState(false);
 
   const { instanceId: urlInstanceId, childInstanceId } = useParams<UrlParams>();
   const debug = useDebug();
@@ -31,12 +33,10 @@ const PackagesInstallForm: FC = () => {
 
   const handleSubmit = async () => {
     if (selected.length === 0) {
-      notify.error({
-        title: "No packages selected",
-        message: "Select at least one package to install.",
-      });
+      setShowNoPackagesError(true);
       return;
     }
+    setShowNoPackagesError(false);
 
     try {
       const { data: activity } = await installPackages({
@@ -48,8 +48,19 @@ const PackagesInstallForm: FC = () => {
       closeSidePanel();
 
       notify.success({
-        title: `You queued ${getSelectionLabel(selected, (pkg) => `package ${pkg.name}`, `packages`)} to be installed.`,
-        message: `${getSelectionLabel(selected, (pkg) => `${pkg.name} package`, `selected packages`)} will be installed and ${pluralize(selected.length, ["is", "are"])} queued in Activities.`,
+        title: `You queued ${getSelectionLabel(
+          selected,
+          (pkg) => `package ${pkg.name}`,
+          `packages`,
+        )} to be installed.`,
+        message: `${getSelectionLabel(
+          selected,
+          (pkg) => `${pkg.name} package`,
+          `selected packages`,
+        )} will be installed and ${pluralize(selected.length, [
+          "is",
+          "are",
+        ])} queued in Activities.`,
         actions: [
           {
             label: "Details",
@@ -66,10 +77,16 @@ const PackagesInstallForm: FC = () => {
 
   return (
     <>
+      {showNoPackagesError && (
+        <Notification severity="caution" title="No packages selected">
+          Select at least one package to install.
+        </Notification>
+      )}
       <PackageDropdownSearch
         selectedItems={selected}
         setSelectedItems={(items) => {
           setSelected(items);
+          setShowNoPackagesError(false);
         }}
       />
       <SidePanelFormButtons

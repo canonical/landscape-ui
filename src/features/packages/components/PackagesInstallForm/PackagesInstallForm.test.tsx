@@ -51,6 +51,27 @@ describe("PackagesInstallForm", () => {
         await screen.findByText(/select at least one package to install/i),
       ).toBeInTheDocument();
     });
+
+    it("shows 'No packages selected' notification on empty submission", async () => {
+      renderWithProviders(
+        <PackagesInstallForm />,
+        {},
+        instancePageUrl,
+        instancePath,
+      );
+
+      const installButton = screen.getByRole("button", {
+        name: "Install packages",
+      });
+      await user.click(installButton);
+
+      expect(
+        await screen.findByText("No packages selected"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Select at least one package to install."),
+      ).toBeInTheDocument();
+    });
   });
 
   describe("Form submission", () => {

@@ -46,6 +46,19 @@ describe("InstallSnaps", () => {
     expect(screen.getByText("Snap 2")).toBeInTheDocument();
   });
 
+  it("shows 'No snaps selected' notification on empty submission", async () => {
+    const installButton = screen.getByRole("button", {
+      name: /install/i,
+    });
+
+    await userEvent.click(installButton);
+
+    expect(await screen.findByText("No snaps selected")).toBeInTheDocument();
+    expect(
+      screen.getByText("Select at least one snap to install."),
+    ).toBeInTheDocument();
+  });
+
   it("delete a snap from list after adding it", async () => {
     const searchBox = screen.getByRole("searchbox");
     const installButton = screen.getByRole("button", {
