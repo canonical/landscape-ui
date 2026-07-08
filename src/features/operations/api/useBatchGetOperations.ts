@@ -56,11 +56,7 @@ export const useBatchGetOperations = (
             }
           }
 
-          if (Object.keys(lookup).length > 0) {
-            return lookup;
-          }
-
-          throw error;
+          return lookup;
         }
 
         throw error;

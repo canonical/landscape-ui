@@ -3,12 +3,11 @@ import { describe } from "vitest";
 import MirrorsList from "./MirrorsList";
 import { mirrors } from "@/tests/mocks/mirrors";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { API_URL_DEB_ARCHIVE, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
 
 describe("MirrorsList", () => {
   it("renders with data", () => {
