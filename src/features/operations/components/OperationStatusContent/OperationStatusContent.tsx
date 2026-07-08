@@ -36,7 +36,12 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
 
   const getContent = () => {
     if (!hasOperation) {
-      return <span>{inexistent}</span>;
+      return (
+        <>
+          <Icon name={`${ICONS.information} ${classes.marginRight}`} />
+          <span>{inexistent}</span>
+        </>
+      );
     }
 
     if (isGettingOperations) {

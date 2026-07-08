@@ -22,10 +22,10 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
     { enabled: !!resource.lastOperation },
   );
 
-  const { error: { details } = {}, metadata: { operationId } = {} } =
+  const { error: { details = [] } = {}, metadata: { operationId } = {} } =
     operation ?? {};
 
-  const logs = details?.join("\n") ?? "";
+  const logs = details[0]?.stackEntries.join("\n") ?? "";
 
   const getOperationType = () => {
     switch (resourceType) {

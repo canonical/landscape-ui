@@ -5,5 +5,4 @@ export type Action = Omit<ButtonProps, "children" | "hasIcon"> & {
   label: string;
   collapsed?: boolean;
   excluded?: boolean;
-  tooltipMessage?: string;
 };

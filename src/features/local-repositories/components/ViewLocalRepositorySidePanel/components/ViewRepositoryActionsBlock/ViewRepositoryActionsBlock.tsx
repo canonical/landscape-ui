@@ -58,9 +58,9 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
             </Button>
           );
 
-          return action.tooltipMessage ? (
+          return action.disabled ? (
             <Tooltip
-              message={action.tooltipMessage}
+              message="You must wait for this action to be completed to import more packages."
               position="btm-center"
               key={action.label}
             >

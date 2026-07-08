@@ -14,10 +14,16 @@ interface OperationResponse {
   output?: string;
 }
 
+interface OperationErrorDetails {
+  "@type": string;
+  detail: string;
+  stackEntries: string[];
+}
+
 export interface OperationError {
   code: number;
   message: string;
-  details?: string[];
+  details: OperationErrorDetails[];
 }
 
 interface BaseOperation {
