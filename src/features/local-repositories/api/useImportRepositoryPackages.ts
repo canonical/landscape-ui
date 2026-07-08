@@ -16,11 +16,12 @@ export const useImportRepositoryPackages = () => {
     AxiosError<LocalServiceImportLocalPackagesError>,
     ImportLocalPackagesRequest
   >({
-    mutationKey: ["locals", "packages", "import"],
+    mutationKey: ["localPackages", "import"],
     mutationFn: async ({ name, ...params }) =>
       authFetchDebArchive.post(`${name}:importPackages`, params),
     onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: ["locals", "packages"] });
+      queryClient.invalidateQueries({ queryKey: ["localPackages"] });
+      queryClient.invalidateQueries({ queryKey: ["locals"] });
       queryClient.invalidateQueries({ queryKey: ["operations"] });
     },
   });

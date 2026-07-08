@@ -26,7 +26,6 @@ export function useUpdateMirror(name: string) {
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["mirrors"] });
       queryClient.invalidateQueries({ queryKey: ["mirror", name] });
-      queryClient.invalidateQueries({ queryKey: ["operations"] });
     },
   });
 }
