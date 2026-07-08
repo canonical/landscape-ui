@@ -46,10 +46,10 @@ const InstancesPage: FC = () => {
         <InstancesContainer
           instanceCount={instancesCount}
           instances={instances}
-          isGettingInstances={isGettingInstances}
           selectedInstances={selectedInstances}
           setSelectedInstances={setSelectedInstances}
           onChangeFilter={clearSelection}
+          isGettingInstances={isGettingInstances}
         />
       </PageContent>
     </PageMain>

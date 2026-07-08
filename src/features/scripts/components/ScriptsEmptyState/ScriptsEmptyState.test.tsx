@@ -15,7 +15,7 @@ describe("Scripts Empty State", () => {
       /You haven’t added any scripts yet/i,
     );
     const emptyStateLink = screen.getByRole("link", {
-      name: /How to manage instances in Landscape/i,
+      name: /How to use remote script execution in Landscape/i,
     });
     const emptyStateButton = screen.getByRole("button", {
       name: /Add script/i,
@@ -27,7 +27,7 @@ describe("Scripts Empty State", () => {
     expect(emptyStateButton).toBeInTheDocument();
     expect(emptyStateLink).toHaveAttribute(
       "href",
-      "https://ubuntu.com/landscape/docs/managing-computers",
+      "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/web-portal-24-04-or-later/use-remote-script-execution/",
     );
   });
 

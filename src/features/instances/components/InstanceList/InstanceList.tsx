@@ -116,16 +116,6 @@ const InstanceList = memo(function InstanceList({
     [activeUpgrades, collapse, setPageParams],
   );
 
-  const isFilteringInstances = Object.values(filters).some((filter) => {
-    if (typeof filter === "string") {
-      return filter.length > 0;
-    } else if (Array.isArray(filter)) {
-      return filter.length > 0;
-    }
-
-    return false;
-  });
-
   const isSelected = useCallback(
     (instance: Instance) =>
       selectedInstances.some(
@@ -429,11 +419,7 @@ const InstanceList = memo(function InstanceList({
   return (
     <ResponsiveTable
       subhead={subhead}
-      emptyMsg={
-        isFilteringInstances
-          ? "No instances found according to your search parameters."
-          : "No instances found"
-      }
+      emptyMsg="No instances found according to your search parameters."
       ref={getTableRowsRef}
       columns={filteredColumns}
       data={currentInstances}
