@@ -1,6 +1,7 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
+import type { ApiError } from "@/types/api/ApiError";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
+import { isAxiosError, type AxiosError } from "axios";
 import type { Operation } from "../types";
 
 type BatchGetOperationsReturnType = Record<string, Operation>;
@@ -11,13 +12,16 @@ interface BatchGetOperationsResponse {
 export const useBatchGetOperations = (
   names: string[],
   config: Omit<
-    UseQueryOptions<BatchGetOperationsReturnType>,
+    UseQueryOptions<BatchGetOperationsReturnType, AxiosError<ApiError>>,
     "queryKey" | "queryFn"
   > = {},
 ) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isLoading } = useQuery<BatchGetOperationsReturnType>({
+  const { data, isLoading } = useQuery<
+    BatchGetOperationsReturnType,
+    AxiosError<ApiError>
+  >({
     queryKey: ["operations", "batch", names],
     queryFn: async () => {
       try {

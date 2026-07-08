@@ -12,7 +12,7 @@ const ViewLogsButton: FC<ViewLogsButtonProps> = ({ resource }) => {
   const openSidePanel = (action: string) => {
     return createPageParamsSetter({
       sidePath: [action],
-      name: resource,
+      name: resource ?? "",
     });
   };
 
