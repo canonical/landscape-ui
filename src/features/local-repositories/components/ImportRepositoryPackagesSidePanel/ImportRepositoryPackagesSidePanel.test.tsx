@@ -123,7 +123,7 @@ describe("ImportRepositoryPackagesSidePanel", () => {
 
     await user.click(importButton);
     expect(
-      await screen.queryByText(/you have marked .* to import packages/i),
+      await screen.findByText(/you have marked .* to import packages/i),
     ).toBeInTheDocument();
   });
 
