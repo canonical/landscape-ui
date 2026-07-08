@@ -10,5 +10,7 @@ export interface PublishSettingsValues {
 export interface PublishNewFormValues extends PublishSettingsValues {
   name: string;
   publicationTarget: string;
+  distribution?: string;
+  architectures?: string[];
   signingKey: string;
 }

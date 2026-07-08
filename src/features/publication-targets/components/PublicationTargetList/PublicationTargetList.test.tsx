@@ -38,9 +38,10 @@ describe("PublicationTargetList", () => {
     renderWithProviders(<PublicationTargetList targets={publicationTargets} />);
 
     await waitFor(() => {
-      expect(screen.getAllByText("1 publication")).toHaveLength(3);
+      expect(screen.getByText("1 publication")).toBeInTheDocument();
+      expect(screen.getAllByText("2 publications")).toHaveLength(2);
+      expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
     });
-    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("renders table correctly with empty targets array", () => {

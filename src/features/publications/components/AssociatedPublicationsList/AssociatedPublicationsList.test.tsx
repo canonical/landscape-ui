@@ -48,13 +48,14 @@ describe("AssociatedPublicationsList", () => {
   const user = userEvent.setup();
 
   describe("table structure and columns", () => {
-    it("renders table with correct column headers: Publication, Source, Distribution", () => {
+    it("renders table with correct column headers: Publication, Source, Date published", () => {
       renderWithProviders(
         <AssociatedPublicationsList publications={publications} />,
       );
 
       expect(screen.getByText("Publication")).toBeInTheDocument();
       expect(screen.getByText("Source")).toBeInTheDocument();
+      expect(screen.getByText(/Date published/i)).toBeInTheDocument();
     });
 
     it("renders all publications in rows with display_name", () => {
@@ -63,7 +64,7 @@ describe("AssociatedPublicationsList", () => {
       );
 
       publications.forEach((pub) => {
-        expect(screen.getByText(pub.source)).toBeInTheDocument();
+        expect(screen.getAllByText(pub.source).length).toBeGreaterThan(0);
       });
     });
   });
@@ -121,16 +122,6 @@ describe("AssociatedPublicationsList", () => {
       expect(
         screen.getByRole("link", { name: pubWithoutLabel.displayName }),
       ).toBeInTheDocument();
-    });
-
-    it("renders mirror value in Source column when available", () => {
-      renderWithProviders(
-        <AssociatedPublicationsList publications={publications} />,
-      );
-
-      publications.forEach((pub) => {
-        expect(screen.getByText(pub.source)).toBeInTheDocument();
-      });
     });
   });
 
@@ -197,25 +188,23 @@ describe("AssociatedPublicationsList", () => {
       );
 
       // First page should show first pageSize items
-      const firstPageFirstPub = publications[0]?.source;
-      if (firstPageFirstPub) {
-        expect(screen.getByText(firstPageFirstPub)).toBeInTheDocument();
-      }
+      const [firstPageFirstPub] = publications;
+      assert(firstPageFirstPub);
+      expect(screen.getByText(firstPageFirstPub.source)).toBeInTheDocument();
 
-      // Find and click next button (may be labeled differently depending on component)
-      const nextButton = screen.getByRole("button", {
-        name: /next|right|forward/i,
-      });
+      const nextButton = screen.getByRole("button", { name: /next/i });
       await user.click(nextButton);
 
       // First page publication should no longer be visible (unless on all pages)
       // Second page publication should be visible
       const secondPagePublication = publications[pageSize];
-      if (secondPagePublication) {
-        expect(
-          screen.getByText(secondPagePublication.source),
-        ).toBeInTheDocument();
-      }
+      assert(secondPagePublication);
+      expect(
+        screen.queryByText(firstPageFirstPub.source),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getAllByText(secondPagePublication.source).length,
+      ).toBeGreaterThan(0);
     });
   });
 
@@ -243,16 +232,6 @@ describe("AssociatedPublicationsList", () => {
   });
 
   describe("props handling", () => {
-    it("renders all publications without pageSize prop", () => {
-      renderWithProviders(
-        <AssociatedPublicationsList publications={publications} />,
-      );
-
-      publications.forEach((pub) => {
-        expect(screen.getByText(pub.source)).toBeInTheDocument();
-      });
-    });
-
     it("applies custom pageSize when provided", () => {
       if (!publications || publications.length < 2) {
         throw new Error(
