@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import {
   paginatedPackages,
@@ -14,7 +14,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { shouldApplyEndpointStatus } from "./_helpers";
 import { createEndpointStatusError } from "./_constants";
 
-const applyEndpointStatus = (emptyResponse = {}) => {
+const applyEndpointStatus = async (emptyResponse = {}) => {
   const endpointStatus = getEndpointStatus("locals");
 
   if (endpointStatus.status === "error") {
@@ -26,11 +26,7 @@ const applyEndpointStatus = (emptyResponse = {}) => {
   }
 
   if (endpointStatus.status === "loading") {
-    return HttpResponse.json({
-      isFetching: true,
-      isLoading: true,
-      isPending: true,
-    });
+    await delay("infinite");
   }
 
   if (endpointStatus.status === "variant") {
