@@ -1,7 +1,7 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
 import type { ApiError } from "@/types/api/ApiError";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { isAxiosError, type AxiosError } from "axios";
+import { HttpStatusCode, isAxiosError, type AxiosError } from "axios";
 import type { Operation } from "../types";
 
 type BatchGetOperationsReturnType = Record<string, Operation>;
@@ -39,7 +39,10 @@ export const useBatchGetOperations = (
         }
         return lookup;
       } catch (error) {
-        if (isAxiosError(error) && error.response?.status === 404) {
+        if (
+          isAxiosError(error) &&
+          error.response?.status === HttpStatusCode.NotFound
+        ) {
           // BatchGet fails whole request when one operation is missing.
           // Fall back to per-operation GETs so existing rows still render status.
           const responses = await Promise.allSettled(
