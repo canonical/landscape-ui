@@ -17,9 +17,8 @@ import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import moment from "moment";
 import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { OperationStatusCell } from "@/features/operations";
+import { OperationStatusCell, OperationProvider } from "@/features/operations";
 import classes from "./PublicationsList.module.scss";
-import { OperationProvider } from "@/context/operationStatus";
 
 interface PublicationsListProps {
   readonly publications: Publication[];

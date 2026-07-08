@@ -5,7 +5,7 @@ import { useBoolean } from "usehooks-ts";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import { useGetRepositoryActions } from "../../../../hooks";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
-import useOperation from "@/hooks/useOperation";
+import { useOperation } from "@/features/operations";
 
 interface LocalRepositoriesListActionsProps {
   readonly repository: Local;

@@ -6,7 +6,7 @@ import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import type { Publication } from "@canonical/landscape-openapi";
-import useOperation from "@/hooks/useOperation";
+import { useOperation } from "@/features/operations";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;

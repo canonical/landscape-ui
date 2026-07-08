@@ -4,7 +4,7 @@ import LocalRepositoriesListActions from "./LocalRepositoriesListActions";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { OperationProvider } from "@/context/operationStatus";
+import { OperationProvider } from "@/features/operations";
 import { useLocation } from "react-router";
 
 const [repository, repositoryImporting] = repositories;

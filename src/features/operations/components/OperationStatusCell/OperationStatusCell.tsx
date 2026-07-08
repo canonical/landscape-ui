@@ -1,4 +1,4 @@
-import useOperation from "@/hooks/useOperation";
+import { useOperation } from "../../hooks";
 import type { FC } from "react";
 import OperationStatusContent from "../OperationStatusContent";
 

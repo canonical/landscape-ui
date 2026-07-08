@@ -9,12 +9,11 @@ import usePageParams from "@/hooks/usePageParams";
 import LocalRepositoriesListActions from "./components/LocalRepositoriesListActions";
 import LocalRepositoryPackagesCount from "./components/LocalRepositoryPackagesCount";
 import { AssociatedPublicationsCount } from "@/features/publications";
-import { OperationStatusCell } from "@/features/operations";
+import { OperationStatusCell, OperationProvider } from "@/features/operations";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import classes from "./LocalRepositoriesList.module.scss";
 import moment from "moment";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
-import { OperationProvider } from "@/context/operationStatus";
 
 interface LocalRepositoriesListProps {
   readonly repositories: Local[];

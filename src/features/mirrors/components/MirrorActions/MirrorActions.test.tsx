@@ -1,4 +1,4 @@
-import { OperationProvider } from "@/context/operationStatus";
+import { OperationProvider } from "@/features/operations";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";

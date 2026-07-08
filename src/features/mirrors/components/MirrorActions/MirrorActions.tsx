@@ -8,7 +8,7 @@ import {
   NoPublicationTargetsModal,
   useGetPublicationTargets,
 } from "@/features/publication-targets";
-import useOperation from "@/hooks/useOperation";
+import { useOperation } from "@/features/operations";
 
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;

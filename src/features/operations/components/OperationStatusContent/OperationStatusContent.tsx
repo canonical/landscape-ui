@@ -1,4 +1,4 @@
-import type { OperationMetadata } from "@/features/operations";
+import type { OperationMetadata } from "../../types";
 import type { FC } from "react";
 import classes from "./OperationStatusContent.module.scss";
 import ViewLogsButton from "../ViewLogsButton";

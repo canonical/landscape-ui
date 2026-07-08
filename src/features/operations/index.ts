@@ -1,4 +1,7 @@
 export * from "./api";
+export * from "./hooks";
+
+export { OperationProvider } from "./context/operationStatus";
 
 export { default as OperationStatusCell } from "./components/OperationStatusCell";
 export { default as ViewLogsSidePanel } from "./components/ViewLogsSidePanel";
