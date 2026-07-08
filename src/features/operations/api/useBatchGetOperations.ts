@@ -39,28 +39,28 @@ export const useBatchGetOperations = (
         }
         return lookup;
       } catch (error) {
-        // BatchGet fails the whole request when one operation is missing.
-        // Fall back to per-operation GETs so existing rows still render status.
-        const responses = await Promise.allSettled(
-          names.map((name) => authFetchDebArchive.get<Operation>(name)),
-        );
+        if (isAxiosError(error) && error.response?.status === 404) {
+          // BatchGet fails whole request when one operation is missing.
+          // Fall back to per-operation GETs so existing rows still render status.
+          const responses = await Promise.allSettled(
+            names.map((name) => authFetchDebArchive.get<Operation>(name)),
+          );
 
-        const lookup: Record<string, Operation> = {};
-        for (const response of responses) {
-          if (response.status === "fulfilled" && response.value.data.name) {
-            lookup[response.value.data.name] = response.value.data;
+          const lookup: Record<string, Operation> = {};
+          for (const response of responses) {
+            if (response.status === "fulfilled" && response.value.data.name) {
+              lookup[response.value.data.name] = response.value.data;
+            }
           }
-        }
 
-        if (Object.keys(lookup).length > 0) {
-          return lookup;
-        }
+          if (Object.keys(lookup).length > 0) {
+            return lookup;
+          }
 
-        if (isAxiosError(error)) {
           throw error;
         }
 
-        throw new Error("Failed to fetch operations");
+        throw error;
       }
     },
     enabled: names.length > 0,
