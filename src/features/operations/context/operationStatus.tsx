@@ -23,11 +23,9 @@ interface OperationProviderProps {
 /**
  * Owns the operations polling and exposes the result through context.
  *
- * Pass a stable table component as `children` so that a poll refetch only
- * re-renders this provider and the context consumers (the status cells).
- * Keeping the table subtree mounted preserves interactive per-row state, such
- * as an open ListActions contextual menu, which would otherwise be torn down
- * on every poll.
+ * Wrap the table with this provider so the polling doesn't have to reset the
+ * table state. Context consumers (status cells / row actions) can subscribe
+ * to updates without forcing column definitions to change on every poll.
  */
 export const OperationProvider: FC<OperationProviderProps> = ({
   operationNames,

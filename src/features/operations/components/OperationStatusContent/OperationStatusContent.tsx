@@ -71,7 +71,7 @@ const OperationStatusContent: FC<OperationStatusContentProps> = ({
         <>
           <Icon name={`${ICONS.error} ${classes.marginRight}`} />
           <span className={classes.marginRight}>{failed}</span>
-          <ViewLogsButton resource={resourceId} />
+          <ViewLogsButton resource={isTableCell ? resourceId : undefined} />
         </>
       );
     }

@@ -66,6 +66,7 @@ export const failedOperation: FailedOperation = {
         "@type": "type.googleapis.com/google.rpc.DebugInfo",
         detail: "Task operation error logs",
         stackEntries: [
+          "0% [Working]",
           "0% [Connecting to 10.0.1.13]",
           "0% [Waiting for headers]",
           "Get:1 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl-dev amd64 1.0.1f-1ubuntu2.2 [1066 kB]",
@@ -296,22 +297,7 @@ export const failedMirrorOperation: FailedOperation = {
     details: [
       {
         "@type": "type.googleapis.com/google.rpc.DebugInfo",
-        detail: "Task operation error logs",
-        stackEntries: [
-          "0% [Working]",
-          "0% [Connecting to 10.0.1.13]",
-          "0% [Waiting for headers]",
-          "Get:1 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl-dev amd64 1.0.1f-1ubuntu2.2 [1066 kB]",
-          "0% [1 libssl-dev 2465 B/1066 kB 0%]",
-          "1% [1 libssl-dev 21.9 kB/1066 kB 2%]",
-          "15% [1 libssl-dev 749 kB/1066 kB 70%]",
-          "21% [Working]",
-          "21% [Waiting for headers]",
-          "Get:2 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl1.0.0 i386 1.0.1f-1ubuntu2.2 [779 kB]",
-          "21% [2 libssl1.0.0:i386 1080 B/779 kB 0%]",
-          "36% [Working]",
-          "36% [Waiting for headers]",
-        ],
+        detail: "Task failed with no logs",
       },
     ],
   },
@@ -333,18 +319,7 @@ export const failedPublicationOperation: FailedOperation = {
   error: {
     code: 13,
     message: "The operation failed unexpectedly.",
-    details: [
-      {
-        "@type": "type.googleapis.com/google.rpc.DebugInfo",
-        detail: "Task operation error logs",
-        stackEntries: [
-          "0% [Working]",
-          "0% [Connecting to 10.0.1.13]",
-          "0% [Waiting for headers]",
-          "Get:1 http://us.archive.ubuntu.com/ubuntu/ trusty-updates/main libssl-dev amd64 1.0.1f-1ubuntu2.2 [1066 kB]",
-        ],
-      },
-    ],
+    details: [],
   },
 };
 

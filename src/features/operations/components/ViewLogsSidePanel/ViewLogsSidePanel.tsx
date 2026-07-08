@@ -22,10 +22,12 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
     { enabled: !!resource.lastOperation },
   );
 
-  const { error: { details = [] } = {}, metadata: { operationId } = {} } =
-    operation ?? {};
+  const { error, metadata: { operationId } = {} } = operation ?? {};
 
-  const logs = details[0]?.stackEntries.join("\n") ?? "";
+  // The API requires the details type to be an array, but in practice it will
+  // only ever have at most 1 element.
+  const { stackEntries = [] } = error?.details[0] ?? {};
+  const logs = stackEntries.join("\n");
 
   const getOperationType = () => {
     switch (resourceType) {
@@ -47,6 +49,10 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
       window.clearTimeout(copiedTimeoutRef.current);
     };
   }, []);
+
+  if (resource.lastOperation && isGettingOperation) {
+    return <SidePanel.LoadingState />;
+  }
 
   const fileName = resource.displayName.replaceAll(" ", "-");
 
@@ -75,17 +81,13 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
     }
   };
 
-  if (resource.lastOperation && isGettingOperation) {
-    return <SidePanel.LoadingState />;
-  }
-
   return (
     <>
       <SidePanel.Header>
         {operationType} logs for {resource.displayName}
       </SidePanel.Header>
       <SidePanel.Content>
-        {!logs ? (
+        {!error ? (
           <EmptyState
             icon="file"
             title="Logs not found"
@@ -119,7 +121,7 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
               blocks={[
                 {
                   title: "Output",
-                  code: logs,
+                  code: logs || "Task failed with no logs",
                   wrapLines: true,
                 },
               ]}

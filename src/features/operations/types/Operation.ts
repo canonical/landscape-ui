@@ -17,7 +17,7 @@ interface OperationResponse {
 interface OperationErrorDetails {
   "@type": string;
   detail: string;
-  stackEntries: string[];
+  stackEntries?: string[];
 }
 
 export interface OperationError {

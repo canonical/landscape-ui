@@ -19,8 +19,10 @@ export const useImportRepositoryPackages = () => {
     mutationKey: ["locals", "packages", "import"],
     mutationFn: async ({ name, ...params }) =>
       authFetchDebArchive.post(`${name}:importPackages`, params),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["locals", "packages"] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["locals", "packages"] });
+      queryClient.invalidateQueries({ queryKey: ["operations"] });
+    },
   });
 
   return {
