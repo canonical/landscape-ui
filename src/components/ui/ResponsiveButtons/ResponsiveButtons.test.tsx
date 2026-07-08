@@ -1,10 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ComponentProps } from "react";
 import ResponsiveButtons from "./ResponsiveButtons";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
-import { Button, ContextualMenu, Icon } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationButton,
+  ContextualMenu,
+  Icon,
+} from "@canonical/react-components";
 
 const simpleButtonClick = vi.fn();
 const buttonWithIconClick = vi.fn();
@@ -332,6 +337,89 @@ describe("ResponsiveButtons", () => {
     ).toBeInTheDocument();
   });
 
+  it("opens the confirmation modal from a collapsed ConfirmationButton and confirms", async () => {
+    setScreenSize("xs");
+
+    const onConfirm = vi.fn();
+
+    render(
+      <ResponsiveButtons
+        buttons={[
+          <ConfirmationButton
+            key="delete"
+            type="button"
+            confirmationModalProps={{
+              title: "Delete item",
+              children: <p>Are you sure you want to delete this item?</p>,
+              confirmButtonLabel: "Delete",
+              onConfirm,
+            }}
+          >
+            Delete
+          </ConfirmationButton>,
+          <Button key="other" type="button" onClick={vi.fn()}>
+            Other
+          </Button>,
+        ]}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+    await userEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    const modal = screen.getByRole("dialog");
+    expect(
+      within(modal).getByText("Are you sure you want to delete this item?"),
+    ).toBeInTheDocument();
+
+    await userEvent.click(
+      within(modal).getByRole("button", { name: "Delete" }),
+    );
+
+    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("closes the confirmation modal of a collapsed ConfirmationButton without confirming", async () => {
+    setScreenSize("xs");
+
+    const onConfirm = vi.fn();
+
+    render(
+      <ResponsiveButtons
+        buttons={[
+          <ConfirmationButton
+            key="delete"
+            type="button"
+            confirmationModalProps={{
+              title: "Delete item",
+              children: <p>Are you sure you want to delete this item?</p>,
+              confirmButtonLabel: "Delete",
+              onConfirm,
+            }}
+          >
+            Delete
+          </ConfirmationButton>,
+          <Button key="other" type="button" onClick={vi.fn()}>
+            Other
+          </Button>,
+        ]}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+    await userEvent.click(screen.getByRole("button", { name: "Delete" }));
+
+    await userEvent.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: "Cancel",
+      }),
+    );
+
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("extracts text from nested children for collapsed button label", async () => {
     setScreenSize("xs");
 
@@ -343,12 +431,62 @@ describe("ResponsiveButtons", () => {
       </Button>,
     ];
 
-    render(<ResponsiveButtons buttons={nestedButtons} />);
+    render(<ResponsiveButtons buttons={nestedButtons} alwaysCollapse />);
 
     await userEvent.click(screen.getByRole("button", { name: /actions/i }));
 
     expect(
       screen.getByRole("button", { name: "Nested text" }),
     ).toBeInTheDocument();
+  });
+
+  it("does not collapse a single button below the breakpoint", () => {
+    setScreenSize("xs");
+
+    const onClick = vi.fn();
+
+    render(
+      <ResponsiveButtons
+        buttons={[
+          <Button key="only" type="button" onClick={onClick}>
+            Upgrade
+          </Button>,
+        ]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /actions/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps the has-icon class on a collapsed button that signals its icon via className", async () => {
+    setScreenSize("xs");
+
+    render(
+      <ResponsiveButtons
+        buttons={[
+          <Button
+            key="icon"
+            type="button"
+            className="has-icon"
+            onClick={vi.fn()}
+          >
+            <Icon name="change-version" />
+            <span>Upgrade</span>
+          </Button>,
+          <Button key="other" type="button" onClick={vi.fn()}>
+            Other
+          </Button>,
+        ]}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: /actions/i }));
+
+    expect(screen.getByRole("button", { name: "Upgrade" })).toHaveClass(
+      "has-icon",
+    );
   });
 });

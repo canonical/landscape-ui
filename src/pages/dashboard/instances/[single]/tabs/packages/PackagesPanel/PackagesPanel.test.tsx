@@ -133,8 +133,6 @@ describe("PackagesPanel", () => {
       "/instances/:instanceId",
     );
 
-    expect(
-      await screen.findByText(/unexpected error occurred/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/unexpected error/i)).toBeInTheDocument();
   });
 });

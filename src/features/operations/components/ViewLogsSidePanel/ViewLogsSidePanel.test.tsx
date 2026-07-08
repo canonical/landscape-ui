@@ -7,7 +7,7 @@ import { expectLoadingState } from "@/tests/helpers";
 import Suspense from "@/components/layout/SidePanel/Suspense";
 import LoadingState from "@/components/layout/SidePanel/LoadingState";
 import { mirrors } from "@/tests/mocks/mirrors";
-import type { Mirror } from "@canonical/landscape-openapi";
+import type { Mirror, Publication } from "@canonical/landscape-openapi";
 import { publications } from "@/tests/mocks/publications";
 
 const COPIED_FEEDBACK_TIMEOUT = 2010;
@@ -160,7 +160,7 @@ describe("ViewLogsSidePanel", () => {
   });
 
   it("shows empty state when operation has no error details", async () => {
-    const noLogsPublication = publications.find(
+    const noLogsPublication = (publications as Publication[]).find(
       (pub) => pub.lastOperation === "operations/ssss-cccc-dddd",
     );
     assert(

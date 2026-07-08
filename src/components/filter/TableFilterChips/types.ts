@@ -14,6 +14,7 @@ export type FilterType = Pick<
   | "query"
   | "passRateFrom"
   | "passRateTo"
+  | "upgrades"
   | "wsl"
 >;
 

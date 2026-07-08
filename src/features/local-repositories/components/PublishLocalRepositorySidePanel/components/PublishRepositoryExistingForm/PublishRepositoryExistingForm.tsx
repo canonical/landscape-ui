@@ -90,15 +90,13 @@ const PublishRepositoryExistingForm: FC<PublishRepositoryExistingFormProps> = ({
           <ReadOnlyField
             label="Publication target"
             value={publication.publicationTarget}
-            tooltipMessage={
-              "The publication target is defined by the publication."
-            }
+            tooltipMessage="The publication target is defined by the publication."
           />
 
           <ReadOnlyField
             label="Signing GPG key"
             value={publication.gpgKey?.armor}
-            tooltipMessage={"The GPG key is defined by the publication."}
+            tooltipMessage="The GPG key is defined by the publication."
           />
         </Blocks.Item>
 

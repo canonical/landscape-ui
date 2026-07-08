@@ -6,7 +6,6 @@ export const SOURCE_TYPE_MIRROR = "Mirror";
 export const SOURCE_TYPE_LOCAL_REPOSITORY = "Local repository";
 
 export const SOURCE_TYPE_OPTIONS: SelectOption[] = [
-  { label: "Select source type", value: "" },
   { label: SOURCE_TYPE_MIRROR, value: SOURCE_TYPE_MIRROR },
   {
     label: SOURCE_TYPE_LOCAL_REPOSITORY,

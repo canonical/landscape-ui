@@ -23,6 +23,7 @@ body:not(.is-dark) {
 }
 
 body.is-dark {
+  --vf-color-background-code: rgb(255 255 255 / 3%);
   --vf-color-link-default: #{$colors--dark-theme--focus};
   --vf-color-link-visited: #{$colors--dark-theme--focus};
 }

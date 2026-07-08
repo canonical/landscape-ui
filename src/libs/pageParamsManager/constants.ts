@@ -106,6 +106,11 @@ export const PARAMS_CONFIG: ParamsConfig = [
     defaultValue: DEFAULT_EMPTY_STRING,
   },
   {
+    urlParam: "upgrades",
+    shouldResetPage: true,
+    defaultValue: DEFAULT_EMPTY_ARRAY,
+  },
+  {
     urlParam: "query",
     shouldResetPage: true,
     defaultValue: DEFAULT_EMPTY_STRING,
