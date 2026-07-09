@@ -1,12 +1,13 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import { INPUT_DATE_FORMAT } from "@/constants";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import {
   Accordion,
   CheckboxInput,
   Form,
   Input,
+  SearchBox,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
@@ -38,7 +39,7 @@ const ExportForm: FC<ExportFormProps> = ({
   isSubmitting,
   onGenerate,
 }) => {
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePath } = usePageParams();
   const [step, setStep] = useState<StepIndex>(0);
   const [attributeSearch, setAttributeSearch] = useState("");
   const [orderedFields, setOrderedFields] = useState<ExportField[]>([]);
@@ -258,18 +259,14 @@ const ExportForm: FC<ExportFormProps> = ({
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />
-          <Input
-            type="search"
-            label="Search attributes"
+          <SearchBox
+            id="export-attributes-searchbox"
             placeholder="Search attributes"
+            externallyControlled
             value={attributeSearch}
-            onChange={(event) => {
-              setAttributeSearch(event.target.value);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-              }
+            searchButtonType="button"
+            onChange={(value) => {
+              setAttributeSearch(value);
             }}
           />
         </div>
@@ -305,7 +302,7 @@ const ExportForm: FC<ExportFormProps> = ({
         onBackButtonPress={step === 1 ? handleBack : undefined}
         submitButtonLoading={isSubmitting || formik.isSubmitting}
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}
-        onCancel={closeSidePanel}
+        onCancel={popSidePath}
       />
     </Form>
   );

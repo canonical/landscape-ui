@@ -1,6 +1,7 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import InstancesExportForm from "./InstancesExportForm";
 
@@ -301,6 +302,11 @@ describe("InstancesExportForm", () => {
     await openAttributeGroup(user, /business logic/i);
     await user.click(screen.getByRole("checkbox", { name: "Annotations" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).not.toBeDisabled();
+    });
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
@@ -312,5 +318,53 @@ describe("InstancesExportForm", () => {
     expect(
       screen.getByRole("button", { name: "View export status" }),
     ).toBeInTheDocument();
+  });
+
+  it("pops one sidePath entry on successful export", async () => {
+    const user = userEvent.setup();
+    const LocationDisplay = () => {
+      const { search } = useLocation();
+      return <div data-testid="location-display">{search}</div>;
+    };
+
+    renderWithProviders(
+      <>
+        <InstancesExportForm
+          exportParams={{
+            query: "",
+            archived_only: false,
+            wsl_children: false,
+            wsl_parents: false,
+          }}
+          selectedInstanceIds={[1, 2]}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view,export",
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "Weekly export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).not.toBeDisabled();
+    });
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    expect(await screen.findByText("TSV export in progress")).toBeVisible();
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=view",
+    );
+    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      "sidePath=view,export",
+    );
   });
 });

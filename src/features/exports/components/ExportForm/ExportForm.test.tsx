@@ -3,6 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
+import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import ExportForm from "./ExportForm";
 import type {
@@ -380,6 +381,77 @@ describe("ExportForm", () => {
         screen.getByRole("button", { name: /reset order/i }),
       ).toBeInTheDocument();
     });
+  });
+
+  const LocationDisplay = () => {
+    const { search } = useLocation();
+    return <div data-testid="location-display">{search}</div>;
+  };
+
+  it("pops one sidePath entry on cancel", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <>
+        <ExportForm
+          fieldGroups={FIELD_GROUPS}
+          initialValues={INITIAL_VALUES}
+          isSubmitting={false}
+          onGenerate={vi.fn()}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view,export",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=view",
+    );
+    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      "sidePath=view,export",
+    );
+  });
+
+  it("does not change the URL when advancing from step 0 to step 1", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <>
+        <ExportForm
+          fieldGroups={FIELD_GROUPS}
+          initialValues={INITIAL_VALUES}
+          isSubmitting={false}
+          onGenerate={vi.fn()}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=export",
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "My export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
+    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      "sidePath=export,",
+    );
   });
 
   it("reset order restores group-declaration sequence after manual reorder", async () => {

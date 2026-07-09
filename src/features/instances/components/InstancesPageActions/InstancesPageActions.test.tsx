@@ -9,6 +9,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import { useLocation } from "react-router";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
@@ -50,6 +51,11 @@ const defaultProps: ComponentProps<typeof InstancesPageActions> = {
   isGettingInstances: false,
   selectedInstances: selected,
   isAllSelected: false,
+};
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location-display">{search}</div>;
 };
 
 const renderPageActions = (
@@ -249,21 +255,6 @@ describe("InstancesPageActions", () => {
       renderPageActions();
     });
 
-    it("'Export' menu item", async () => {
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-      await userEvent.click(
-        screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
-      );
-
-      expect(
-        screen.getByRole("heading", {
-          name: `Export ${pluralize(selected.length, ["instance"], "exact")} as TSV`,
-        }),
-      ).toBeInTheDocument();
-    });
-
     it("'Shutdown' menu item", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
@@ -452,6 +443,24 @@ describe("InstancesPageActions", () => {
     expect(
       screen.getByRole("heading", { name: /replace Ubuntu Pro token/i }),
     ).toBeInTheDocument();
+  });
+
+  it("'Export' menu item pushes sidePath=export", async () => {
+    renderWithProviders(
+      <>
+        <InstancesPageActions {...defaultProps} />
+        <LocationDisplay />
+      </>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
+    );
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
   });
 
   describe("Run script form warning", () => {

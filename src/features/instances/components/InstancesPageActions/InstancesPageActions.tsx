@@ -4,6 +4,7 @@ import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { REPORT_VIEW_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
@@ -15,12 +16,10 @@ import {
   hasUpgrades,
   type InstanceListParams,
 } from "../../helpers";
-import { getExportTitle } from "@/features/exports";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-const InstancesExportForm = lazy(async () => import("../InstancesExportForm"));
 
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
@@ -60,6 +59,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const {
     value: rebootModalOpen,
@@ -201,25 +201,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const handleExport = () => {
-    setSidePanelContent(
-      getExportTitle({
-        isAllSelected,
-        selectedCount: selectedInstances.length,
-        totalCount: instanceCount,
-        selectionForms: ["instance"],
-      }),
-      <Suspense fallback={<LoadingState />}>
-        <InstancesExportForm
-          exportParams={exportParams}
-          selectedInstanceIds={
-            isAllSelected ? undefined : selectedInstances.map(({ id }) => id)
-          }
-        />
-      </Suspense>,
-      "medium",
-    );
-  };
+  const handleExport = createSidePathPusher("export");
 
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>
