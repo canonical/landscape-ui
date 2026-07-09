@@ -255,6 +255,7 @@ const Activities: FC<ActivitiesProps> = ({
       <ActivitiesHeader
         resetSelectedIds={handleClearSelection}
         selected={selectedActivities}
+        activityCount={activityCount}
         isAllSelected={isAllSelected}
       />
       {isGettingActivities ? (

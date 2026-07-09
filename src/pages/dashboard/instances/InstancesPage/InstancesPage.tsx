@@ -62,8 +62,6 @@ const InstancesPage: FC = () => {
         actions={[
           <InstancesPageActions
             key="actions"
-            exportParams={instanceListParams}
-            instanceCount={instancesCount}
             isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
             isAllSelected={isAllSelected}

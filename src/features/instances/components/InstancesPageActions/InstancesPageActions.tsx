@@ -11,11 +11,7 @@ import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
-import {
-  getFeatures,
-  hasUpgrades,
-  type InstanceListParams,
-} from "../../helpers";
+import { getFeatures, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
@@ -42,8 +38,6 @@ const ReplaceTokenForm = lazy(
 );
 
 interface InstancesPageActionsProps {
-  readonly exportParams: InstanceListParams;
-  readonly instanceCount: number | undefined;
   readonly isGettingInstances: boolean;
   readonly selectedInstances: Instance[];
   readonly isAllSelected: boolean;

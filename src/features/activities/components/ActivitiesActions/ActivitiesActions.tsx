@@ -14,9 +14,7 @@ import {
 
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
-  readonly activityCount?: number;
   readonly isAllSelected?: boolean;
-  readonly exportBaseQuery?: string;
 }
 
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({

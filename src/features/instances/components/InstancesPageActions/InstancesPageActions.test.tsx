@@ -38,16 +38,8 @@ const OPERATIONS_LABELS = [
 const GROUPING_LABELS = ["Assign access group", "Assign tag"];
 
 const UBUNTU_PRO_LABELS = ["Attach token", "Detach token"];
-const exportParams = {
-  query: "",
-  archived_only: false,
-  wsl_children: false,
-  wsl_parents: false,
-};
 
 const defaultProps: ComponentProps<typeof InstancesPageActions> = {
-  exportParams,
-  instanceCount: selected.length,
   isGettingInstances: false,
   selectedInstances: selected,
   isAllSelected: false,
@@ -97,7 +89,7 @@ describe("InstancesPageActions", () => {
 
   describe("Disabled and visible states", () => {
     it("should disable all groups when no instances are available to export", () => {
-      renderPageActions({ instanceCount: 0, selectedInstances: [] });
+      renderPageActions({ selectedInstances: [] });
 
       const buttons = screen.getAllByRole("button");
 
@@ -111,7 +103,6 @@ describe("InstancesPageActions", () => {
     it("should disable buttons while getting instances", () => {
       renderPageActions({
         isGettingInstances: true,
-        instanceCount: 0,
         selectedInstances: [],
       });
 

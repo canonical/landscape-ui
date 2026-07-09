@@ -111,6 +111,10 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     return fieldGroups.flatMap((group) => {
+      if (group.title.toLowerCase().includes(normalizedSearch)) {
+        return [group];
+      }
+
       const matchingFields = group.fields.filter((field) =>
         field.label.toLowerCase().includes(normalizedSearch),
       );
@@ -197,41 +201,52 @@ const ExportForm: FC<ExportFormProps> = ({
             Math.min(...b.fields.map((f) => rank(f.label))),
         );
 
+      const sortedSections = sortedGroups.map((group) => {
+        const groupIds = group.fields.map((f) => f.id);
+        const allSelected = groupIds.every((id) =>
+          formik.values.selectedFieldIds.includes(id),
+        );
+        const someSelected =
+          !allSelected &&
+          groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
+
+        return {
+          key: group.key,
+          title: (
+            <CheckboxInput
+              label={group.title}
+              labelClassName="export-form-group-title-checkbox"
+              checked={allSelected}
+              indeterminate={someSelected}
+              aria-label={`${group.title} select all`}
+              disabled
+              onChange={() => undefined}
+            />
+          ),
+          content: (
+            <div className={classes.optionList}>
+              {group.fields.map((field) => (
+                <CheckboxInput
+                  key={field.id}
+                  checked={formik.values.selectedFieldIds.includes(field.id)}
+                  label={field.label}
+                  onChange={() => {
+                    toggleField(field.id);
+                  }}
+                />
+              ))}
+            </div>
+          ),
+        };
+      });
+
       return (
         <div>
-          {sortedGroups.map((group) => {
-            const section = accordionSections.find((s) => s.key === group.key);
-            if (!section) return null;
-            return (
-              <Accordion
-                key={group.key}
-                className="export-form-field-groups-accordion"
-                expanded={group.key}
-                sections={[
-                  {
-                    ...section,
-                    content: (
-                      <div className={classes.optionList}>
-                        {group.fields.map((field) => (
-                          <CheckboxInput
-                            key={field.id}
-                            checked={formik.values.selectedFieldIds.includes(
-                              field.id,
-                            )}
-                            label={field.label}
-                            onChange={() => {
-                              toggleField(field.id);
-                            }}
-                          />
-                        ))}
-                      </div>
-                    ),
-                  },
-                ]}
-                titleElement="h5"
-              />
-            );
-          })}
+          <Accordion
+            className="export-form-field-groups-accordion"
+            sections={sortedSections}
+            titleElement="h5"
+          />
         </div>
       );
     }
