@@ -1,10 +1,16 @@
 import { usgProfiles } from "@/tests/mocks/usgProfiles";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import USGProfilesPage from "./USGProfilesPage";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
+import { API_URL } from "@/constants";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
+import type { FC } from "react";
+import { useGetUsgProfiles } from "@/features/usg-profiles";
 
 describe("USGProfilesPage", () => {
   it("has a button to add a profile", async () => {
@@ -98,5 +104,45 @@ describe("USGProfilesPage", () => {
         name: usgProfiles[1].title,
       }),
     ).toBeInTheDocument();
+  });
+});
+
+// `useGetUsgProfiles` guards `search: params?.search || undefined`. A minimal
+// consumer drives the hook directly with an empty search so the guard is
+// deterministically exercised; if it were changed to `?? undefined` the empty
+// string would leak into the request and this test would fail.
+const EmptySearchConsumer: FC = () => {
+  useGetUsgProfiles({ search: "" });
+  return null;
+};
+
+describe("USG profiles request params", () => {
+  let capturedUrl: URL | undefined;
+
+  beforeEach(() => {
+    capturedUrl = undefined;
+    setEndpointStatus("default");
+
+    server.use(
+      http.get(`${API_URL}usg-profiles`, ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({
+          results: usgProfiles,
+          count: usgProfiles.length,
+          next: null,
+          previous: null,
+        });
+      }),
+    );
+  });
+
+  it("omits search when an empty search is provided", async () => {
+    renderWithProviders(<EmptySearchConsumer />);
+
+    await vi.waitFor(() => {
+      expect(capturedUrl).toBeDefined();
+    });
+
+    expect(capturedUrl?.searchParams.has("search")).toBe(false);
   });
 });

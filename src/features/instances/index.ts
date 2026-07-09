@@ -1,15 +1,25 @@
 export * from "./api";
 export { default as InstanceList } from "./components/InstanceList";
-export { getStatusCellIconAndLabel } from "./components/InstanceList/helpers";
+export { default as InstanceStatus } from "./components/InstanceStatus";
+export { InstanceUpgrades } from "./components/InstanceStatus";
+export { Tags as InstanceTags } from "./components/InstanceStatus";
+export {
+  getInstanceStatuses,
+  getUpgradeStatuses,
+} from "./components/InstanceStatus";
 export { default as InstanceRemoveFromLandscapeModal } from "./components/InstanceRemoveFromLandscapeModal";
 export { default as InstancesHeader } from "./components/InstancesHeader";
+export { default as InstancesEmptyState } from "./components/InstancesEmptyState";
 export { default as InstancesPageActions } from "./components/InstancesPageActions";
 export { default as RecoveryKeyStatus } from "./components/RecoveryKeyStatus";
 export { default as TagsAddConfirmationModal } from "./components/TagsAddConfirmationModal";
 export { FILTERS, ALERT_STATUSES, STATUS_FILTERS } from "./constants";
 export {
   getFeatures,
+  getInstanceListParams,
+  getOptionQuery,
   getRecoveryKeyRegenerationAttemptMessage,
+  getQuery,
   isRecoveryKeyActivityFailedOrCanceled,
   isRecoveryKeyActivityInProgress,
   shouldShowRecoveryKeyActivityStatus,
@@ -25,3 +35,5 @@ export type { Status, RecoveryKey, DistributionUpgradeTarget } from "./types";
 export { default as useInstanceSearchHelpTerms } from "./components/InstancesHeader/hooks/useInstanceSearchHelpTerms";
 export { default as RestartModal } from "./components/RestartModal";
 export { default as ShutDownModal } from "./components/ShutDownModal";
+export type { InstanceListParams } from "./helpers";
+export type { InstancesExportJob } from "./types";

@@ -1,6 +1,6 @@
 export type OperationStatus = "idle" | "in progress" | "succeeded" | "failed";
 
-interface OperationMetadata {
+export interface OperationMetadata {
   "@type": string;
   description: string;
   operationId: string;
@@ -14,10 +14,16 @@ interface OperationResponse {
   output?: string;
 }
 
+interface OperationErrorDetails {
+  "@type": string;
+  detail: string;
+  stackEntries?: string[];
+}
+
 export interface OperationError {
   code: number;
   message: string;
-  details?: string[];
+  details: OperationErrorDetails[];
 }
 
 interface BaseOperation {

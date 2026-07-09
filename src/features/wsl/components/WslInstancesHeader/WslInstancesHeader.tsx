@@ -1,6 +1,7 @@
 import { PageParamFilter } from "@/components/filter";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch";
 import LoadingState from "@/components/layout/LoadingState";
+import { ResponsiveButtons } from "@/components/ui";
 import { useReapplyWslProfile } from "@/features/wsl-profiles";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
@@ -107,97 +108,90 @@ const WslInstancesHeader: FC<WslInstancesHeaderProps> = ({
               />
             )}
 
-            <div className={classes.buttons}>
-              <div className="p-segmented-control">
-                <div className="p-segmented-control__list">
-                  {hasWslProfiles && (
-                    <ActionButton
-                      type="button"
-                      onClick={install}
-                      className="p-segmented-control__button u-no-margin--bottom"
-                      hasIcon
-                      disabled={
-                        !selectedWslInstances.length ||
-                        selectedWslInstances.some(
+            <ResponsiveButtons
+              collapseFrom="xl"
+              buttons={[
+                ...(hasWslProfiles
+                  ? [
+                      <ActionButton
+                        key="install"
+                        type="button"
+                        onClick={install}
+                        hasIcon
+                        disabled={
+                          !selectedWslInstances.length ||
+                          selectedWslInstances.some(
+                            (wslInstance) =>
+                              wslInstance.compliance !== "uninstalled",
+                          )
+                        }
+                        loading={isReapplyingWslProfile}
+                      >
+                        <Icon name="begin-downloading" />
+                        <span>Install</span>
+                      </ActionButton>,
+                      <Button
+                        key="reinstall"
+                        type="button"
+                        onClick={openReinstallModal}
+                        hasIcon
+                        disabled={
+                          !selectedWslInstances.length ||
+                          selectedWslInstances.some(
+                            (wslInstance) =>
+                              wslInstance.compliance !== "noncompliant",
+                          )
+                        }
+                      >
+                        <Icon name="restart" />
+                        <span>Reinstall</span>
+                      </Button>,
+                    ]
+                  : []),
+                <Button
+                  key="uninstall"
+                  type="button"
+                  onClick={openUninstallModal}
+                  hasIcon
+                  disabled={
+                    !selectedWslInstances.length ||
+                    selectedWslInstances.some(
+                      (wslInstance) => !wslInstance.installed,
+                    )
+                  }
+                >
+                  <Icon name="close" />
+                  <span>Uninstall</span>
+                </Button>,
+                <Button
+                  key="create-new-instance"
+                  type="button"
+                  onClick={openInstallForm}
+                  hasIcon
+                >
+                  <Icon name="plus" />
+                  <span>Create new instance</span>
+                </Button>,
+                ...(hasWslProfiles
+                  ? [
+                      <Button
+                        key="make-compliant"
+                        type="button"
+                        hasIcon
+                        onClick={openMakeCompliantModal}
+                        disabled={wslInstances.every(
                           (wslInstance) =>
-                            wslInstance.compliance !== "uninstalled",
-                        )
-                      }
-                      loading={isReapplyingWslProfile}
-                    >
-                      <Icon name="begin-downloading" />
-                      <span>Install</span>
-                    </ActionButton>
-                  )}
-
-                  {hasWslProfiles && (
-                    <Button
-                      type="button"
-                      onClick={openReinstallModal}
-                      className="p-segmented-control__button u-no-margin--bottom"
-                      hasIcon
-                      disabled={
-                        !selectedWslInstances.length ||
-                        selectedWslInstances.some(
-                          (wslInstance) =>
-                            wslInstance.compliance !== "noncompliant",
-                        )
-                      }
-                    >
-                      <Icon name="restart" />
-                      <span>Reinstall</span>
-                    </Button>
-                  )}
-
-                  <Button
-                    type="button"
-                    onClick={openUninstallModal}
-                    className="p-segmented-control__button u-no-margin--bottom"
-                    hasIcon
-                    disabled={
-                      !selectedWslInstances.length ||
-                      selectedWslInstances.some(
-                        (wslInstance) => !wslInstance.installed,
-                      )
-                    }
-                  >
-                    <Icon name="close" />
-                    <span>Uninstall</span>
-                  </Button>
-                </div>
-              </div>
-
-              <div className="p-segmented-control">
-                <div className="p-segmented-control__list">
-                  <Button
-                    type="button"
-                    onClick={openInstallForm}
-                    className="p-segmented-control__button u-no-margin--bottom"
-                    hasIcon
-                  >
-                    <Icon name="plus" />
-                    <span>Create new instance</span>
-                  </Button>
-
-                  {hasWslProfiles && (
-                    <Button
-                      type="button"
-                      className="p-segmented-control__button u-no-margin--bottom"
-                      hasIcon
-                      onClick={openMakeCompliantModal}
-                      disabled={wslInstances.every(
-                        (wslInstance) =>
-                          wslInstance.compliance === "compliant" ||
-                          wslInstance.compliance === "pending",
-                      )}
-                    >
-                      <Icon name="security-tick" />
-                      <span>Make compliant</span>
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
+                            wslInstance.compliance === "compliant" ||
+                            wslInstance.compliance === "pending",
+                        )}
+                      >
+                        <Icon name="security-tick" />
+                        <span>Make compliant</span>
+                      </Button>,
+                    ]
+                  : []),
+              ]}
+            />
           </div>
         }
       />

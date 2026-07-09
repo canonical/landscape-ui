@@ -37,6 +37,10 @@ const PublishLocalRepositorySidePanel = lazy(
     import("@/features/local-repositories/components/PublishLocalRepositorySidePanel"),
 );
 
+const ViewLogsSidePanel = lazy(
+  async () => import("@/features/operations/components/ViewLogsSidePanel"),
+);
+
 const LocalRepositoriesPage: FC = () => {
   const { search, lastSidePathSegment, sidePath, popSidePathUntilClear } =
     usePageParams();
@@ -50,6 +54,7 @@ const LocalRepositoriesPage: FC = () => {
     "edit",
     "import-packages",
     "view",
+    "logs",
   ]);
 
   return (
@@ -69,7 +74,11 @@ const LocalRepositoriesPage: FC = () => {
         />
       </PageContent>
 
-      <SidePanel onClose={popSidePathUntilClear} isOpen={!!sidePath.length}>
+      <SidePanel
+        onClose={popSidePathUntilClear}
+        isOpen={!!sidePath.length}
+        size={lastSidePathSegment === "logs" ? "medium" : "small"}
+      >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
             <AddLocalRepositorySidePanel />
@@ -97,6 +106,12 @@ const LocalRepositoriesPage: FC = () => {
         {lastSidePathSegment === "publish" && (
           <SidePanel.Suspense key="publish">
             <PublishLocalRepositorySidePanel />
+          </SidePanel.Suspense>
+        )}
+
+        {lastSidePathSegment === "logs" && (
+          <SidePanel.Suspense key="logs">
+            <ViewLogsSidePanel resourceType="locals" />
           </SidePanel.Suspense>
         )}
       </SidePanel>

@@ -1,4 +1,5 @@
 import { PageParamFilter, TableFilterChips } from "@/components/filter";
+import ResponsiveTableFilters from "@/components/filter/ResponsiveTableFilters";
 import SearchBoxWithDescriptionButton from "@/components/form/SearchBoxWithDescriptionButton";
 import SearchHelpPopup from "@/components/layout/SearchHelpPopup";
 import usePageParams from "@/hooks/usePageParams";
@@ -20,11 +21,15 @@ import {
 interface ActivitiesHeaderProps {
   readonly selected: ActivityCommon[];
   readonly resetSelectedIds: () => void;
+  readonly activityCount?: number;
+  readonly isAllSelected?: boolean;
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   resetSelectedIds,
   selected,
+  activityCount,
+  isAllSelected = false,
 }) => {
   const [searchText, setSearchText] = useState<string>("");
   const [showSearchHelp, setShowSearchHelp] = useState(false);
@@ -40,6 +45,9 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   }));
 
   useEffect(() => {
+    // Intentional prop->state sync: resets the search input when the URL query
+    // param changes externally (e.g. browser back/forward).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchText(query ?? "");
   }, [query]);
 
@@ -77,17 +85,32 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
           onClear={handleClear}
         />
         <div className={classes.actions}>
-          <div className={classes.filters}>
-            <PageParamFilter
-              pageParamKey="status"
-              label="Status"
-              options={ACTIVITY_STATUS_OPTIONS}
-            />
-            <ActivityTypeFilter options={ACTIVITY_TYPE_OPTIONS} />
-            <ActivitiesDateFilter />
-          </div>
+          <ResponsiveTableFilters
+            collapseFrom="xl"
+            filters={[
+              <PageParamFilter
+                key="status"
+                pageParamKey="status"
+                label="Status"
+                options={ACTIVITY_STATUS_OPTIONS}
+              />,
+              <ActivityTypeFilter
+                key="type"
+                label="Type"
+                options={ACTIVITY_TYPE_OPTIONS}
+              />,
+              <ActivitiesDateFilter key="date-range" label="Date range" />,
+            ]}
+          />
 
-          {IS_PANEL && <ActivitiesActions selected={selected} />}
+          {IS_PANEL && (
+            <ActivitiesActions
+              selected={selected}
+              activityCount={activityCount}
+              isAllSelected={isAllSelected}
+              exportBaseQuery={instanceId ? `computer:id:${instanceId}` : ""}
+            />
+          )}
         </div>
       </div>
       <SearchHelpPopup

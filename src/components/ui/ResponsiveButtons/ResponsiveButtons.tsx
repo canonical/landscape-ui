@@ -10,10 +10,14 @@ import type {
   ConfirmationButtonProps,
   Position,
 } from "@canonical/react-components";
-import { Button, ContextualMenu } from "@canonical/react-components";
+import {
+  Button,
+  ConfirmationModal,
+  ContextualMenu,
+} from "@canonical/react-components";
 import classNames from "classnames";
 import type { FC, ReactElement, ReactNode } from "react";
-import { isValidElement, useMemo } from "react";
+import { isValidElement, useMemo, useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import classes from "./ResponsiveButtons.module.scss";
 import type { ButtonLikeProps, CollapsedLink, CollapsedNode } from "./types";
@@ -43,7 +47,15 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
     `(min-width: ${BREAKPOINT_PX[collapseFrom]}px)`,
   );
 
-  const isLargeScreen = alwaysCollapse ? false : isLargerThanBreakpoint;
+  const [confirmationModalProps, setConfirmationModalProps] = useState<
+    ConfirmationButtonProps["confirmationModalProps"] | null
+  >(null);
+
+  // A lone button gains nothing from collapsing into an "Actions" menu — it
+  // saves no horizontal space and just hides the action behind an extra click.
+  const isLargeScreen = alwaysCollapse
+    ? false
+    : isLargerThanBreakpoint || buttons.length <= 1;
 
   const { visibleButtons, collapsedItems } = useMemo(() => {
     const visible = isLargeScreen ? buttons : buttons.slice(0, alwaysVisible);
@@ -101,14 +113,28 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
         !visible.includes(node)
       ) {
         const el = node as ReactElement<ButtonLikeProps>;
+        const { confirmationModalProps: modalProps } =
+          node.props as ConfirmationButtonProps;
+
+        // Some buttons (e.g. ConfirmationButton) signal an icon via the
+        // `has-icon` class rather than the `hasIcon` prop; honour both so the
+        // collapsed menu item keeps the icon aligned with its label.
+        const hasIcon =
+          el.props.hasIcon ||
+          (typeof el.props.className === "string" &&
+            el.props.className.split(/\s+/).includes("has-icon"));
 
         collapsed.push({
           key: `action-${index}`,
           children:
             el.props.children || textFromNode(el) || `Action ${index + 1}`,
-          onClick: el.props.onClick,
+          onClick: modalProps
+            ? () => {
+                setConfirmationModalProps(modalProps);
+              }
+            : el.props.onClick,
           disabled: el.props.disabled,
-          hasIcon: el.props.hasIcon,
+          hasIcon,
         });
 
         return;
@@ -203,6 +229,26 @@ const ResponsiveButtons: FC<ResponsiveButtonGroupProps> = ({
             </>
           )}
         </ContextualMenu>
+      )}
+
+      {confirmationModalProps && (
+        <ConfirmationModal
+          {...confirmationModalProps}
+          confirmButtonLabel={confirmationModalProps.confirmButtonLabel}
+          close={() => {
+            setConfirmationModalProps(null);
+            confirmationModalProps.close?.();
+          }}
+          onConfirm={async (event) => {
+            // Keep the modal mounted until the async action settles so the
+            // confirm button's loading/disabled state stays meaningful; only
+            // clear on success (on error the modal stays open to retry).
+            await confirmationModalProps.onConfirm?.(event);
+            setConfirmationModalProps(null);
+          }}
+        >
+          {confirmationModalProps.children}
+        </ConfirmationModal>
       )}
     </div>
   );

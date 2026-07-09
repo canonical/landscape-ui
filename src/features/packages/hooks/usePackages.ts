@@ -85,14 +85,20 @@ export default function usePackages() {
     AxiosResponse<ApiPaginatedResponse<PackageOld>>,
     GetPackagesParams
   > = (queryParams, config = {}) => {
+    const params = {
+      ...queryParams,
+      query: queryParams?.query || undefined,
+      search: queryParams?.search || undefined,
+      names: queryParams?.names?.length ? queryParams.names : undefined,
+    };
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<PackageOld>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["packages", queryParams],
+      queryKey: ["packages", params],
       queryFn: async () =>
         authFetch.get("packages", {
-          params: queryParams,
+          params,
         }),
       ...config,
     });
@@ -108,14 +114,15 @@ export default function usePackages() {
       "queryKey" | "queryFn"
     > = {},
   ) => {
+    const params = { ...queryParams, search: queryParams.search || undefined };
     return useQuery<
       AxiosResponse<ApiPaginatedResponse<InstancePackage>>,
       AxiosError<ApiError>
     >({
-      queryKey: ["packages", { instance_id, ...queryParams }],
+      queryKey: ["packages", { instance_id, ...params }],
       queryFn: async () =>
         authFetch.get(`computers/${instance_id}/packages`, {
-          params: queryParams,
+          params,
         }),
       ...config,
     });

@@ -7,7 +7,7 @@ import {
 } from "@/features/activities";
 import useSelection from "@/hooks/useSelection";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
-import type { FC } from "react";
+import { useCallback, useState, type FC } from "react";
 
 interface ActivityPanelProps {
   readonly instanceId?: number;
@@ -35,6 +35,18 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
     setSelectedItems: setSelectedActivities,
   } = useSelection<ActivityCommon>(activities, isGettingActivities);
 
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const clearSelection = useCallback(() => {
+    setSelectedActivities([]);
+    setIsAllSelected(false);
+  }, [setSelectedActivities]);
+
+  const selectAll = useCallback(() => {
+    setIsAllSelected(true);
+    setSelectedActivities([]);
+  }, [setSelectedActivities]);
+
   if (isGettingUnfilteredActivities) {
     return <LoadingState />;
   }
@@ -51,6 +63,9 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
       instanceId={instanceId}
       selectedActivities={selectedActivities}
       setSelectedActivities={setSelectedActivities}
+      isAllSelected={isAllSelected}
+      onSelectAll={selectAll}
+      onClearSelection={clearSelection}
     />
   );
 };
