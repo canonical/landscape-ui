@@ -3,23 +3,21 @@
 
 .selectedColumns {
   padding-top: $spv--small;
+
+  :global(table) {
+    margin-bottom: 0;
+  }
 }
 
 .selectedColumnsHeader {
-  align-items: baseline;
-  display: flex;
-  gap: $sph--large;
-  justify-content: space-between;
   margin-bottom: $spv--medium;
 }
 
 .selectedColumnsIntro {
-  flex: 1;
-  margin-bottom: 0;
+  margin-bottom: $spv--small;
 }
 
 .resetButton {
-  flex-shrink: 0;
   white-space: nowrap;
 }
 
@@ -35,7 +33,7 @@
 }
 
 .orderColumn {
-  text-align: right;
+  text-align: center;
   white-space: nowrap;
   width: 12rem;
 }
@@ -51,6 +49,14 @@
   min-width: 0;
   text-align: center;
   width: 5rem;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  appearance: textfield;
 }
 
 .orderInputWrapper {
@@ -78,6 +84,7 @@
 // flash-blue @keyframes animation on .justMoved > td, causing a double-flash.
 .selectedColumns :global(td) {
   transition: box-shadow 0.15s ease;
+  vertical-align: middle;
 }
 
 // Fully-opaque card overlay that follows the cursor during drag.

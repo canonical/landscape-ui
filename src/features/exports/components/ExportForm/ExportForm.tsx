@@ -79,7 +79,6 @@ const ExportForm: FC<ExportFormProps> = ({
         ? formik.values.selectedFieldIds.filter((id) => id !== fieldId)
         : [...formik.values.selectedFieldIds, fieldId];
 
-      void formik.setFieldTouched("selectedFieldIds", true, false);
       void formik.setFieldValue("selectedFieldIds", nextSelectedFieldIds);
     },
     [formik],
@@ -96,7 +95,6 @@ const ExportForm: FC<ExportFormProps> = ({
         ? formik.values.selectedFieldIds.filter((id) => !groupIds.includes(id))
         : [...new Set([...formik.values.selectedFieldIds, ...groupIds])];
 
-      void formik.setFieldTouched("selectedFieldIds", true, false);
       void formik.setFieldValue("selectedFieldIds", nextSelectedFieldIds);
     },
     [formik],
@@ -305,13 +303,7 @@ const ExportForm: FC<ExportFormProps> = ({
       <SidePanelFormButtons
         hasBackButton={step === 1}
         onBackButtonPress={step === 1 ? handleBack : undefined}
-        submitButtonDisabled={
-          (step === 0 &&
-            (!formik.values.name.trim() ||
-              formik.values.selectedFieldIds.length === 0)) ||
-          isSubmitting ||
-          formik.isSubmitting
-        }
+        submitButtonLoading={isSubmitting || formik.isSubmitting}
         submitButtonText={step === 0 ? "Next" : "Generate TSV"}
         onCancel={closeSidePanel}
       />
