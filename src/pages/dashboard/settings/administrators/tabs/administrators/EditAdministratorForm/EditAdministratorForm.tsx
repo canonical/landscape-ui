@@ -14,6 +14,7 @@ import {
   Form,
   Icon,
   ICONS,
+  Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -112,6 +113,11 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
+      {showUnchangedError && (
+        <Notification severity="caution">
+          No changes to save. Update the administrator roles before saving.
+        </Notification>
+      )}
       <ConfirmationButton
         type="button"
         className="has-icon u-no-margin"
@@ -147,10 +153,6 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
         variant="condensed"
         label="Roles"
         items={roleOptions}
-        warning={
-          showUnchangedError &&
-          "No changes to save. Update the administrator roles before saving."
-        }
         selectedItems={roleOptions.filter(({ value }) =>
           formik.values.roles.includes(value),
         )}

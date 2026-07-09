@@ -11,6 +11,7 @@ import {
   Form,
   Icon,
   Input,
+  Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -169,6 +170,11 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
 
   return (
     <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
+      {showUnchangedError && (
+        <Notification severity="caution">
+          No changes to save. Update the file before saving.
+        </Notification>
+      )}
       <span>{description}</span>
 
       <div className={classes.inputContainer}>
@@ -214,10 +220,6 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
         error={getFormikError(formik, "contents")}
         required
         language={AUTOINSTALL_FILE_LANGUAGE}
-        warning={
-          showUnchangedError &&
-          "No changes to save. Update the file before saving."
-        }
         headerContent={
           <Button
             className="u-no-margin--bottom"
