@@ -18,7 +18,7 @@ const renderWithRoute = (routePath: string = ROUTE_PATH) =>
     routePath,
   );
 
-describe("PublishMirrorNewForm", () => {
+describe("PublishMirrorForm", () => {
   it("does not render radio buttons when publications do not exist", async () => {
     renderWithRoute(NO_PUBLICATIONS_ROUTE_PATH);
 

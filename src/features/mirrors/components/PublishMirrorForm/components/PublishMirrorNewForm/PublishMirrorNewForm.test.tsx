@@ -64,7 +64,7 @@ const preserveSignaturesMirror = mirrors.find(
   ({ preserveSignatures }) => preserveSignatures,
 );
 
-describe("PublishMirrorForm", () => {
+describe("PublishMirrorNewForm", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
