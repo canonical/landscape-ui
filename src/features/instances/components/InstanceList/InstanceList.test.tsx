@@ -9,10 +9,10 @@ import { describe, expect, vi } from "vitest";
 import InstanceList from "./InstanceList";
 
 const props: ComponentProps<typeof InstanceList> = {
-  toggledInstances: [],
+  selectedInstances: [],
   instances: instances.slice(0, DEFAULT_PAGE_SIZE),
   setColumnFilterOptions: vi.fn(),
-  setToggledInstances: vi.fn(),
+  setSelectedInstances: vi.fn(),
   selectAllInstances: vi.fn(),
   deselectAllInstances: vi.fn(),
   instanceCount: instances.length,
@@ -84,9 +84,9 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setToggledInstances).toHaveBeenCalledWith(props.instances);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith(props.instances);
 
-    rerender(<InstanceList {...props} toggledInstances={instances} />);
+    rerender(<InstanceList {...props} selectedInstances={instances} />);
     const checkedCheckboxes = screen.getAllByRole("checkbox", {
       checked: true,
     });
@@ -95,7 +95,7 @@ describe("InstanceList", () => {
 
   it("should deselect all instances when clicking ToggleAll checkbox with an instance selected", async () => {
     const { rerender } = renderWithProviders(
-      <InstanceList {...props} toggledInstances={[instances[0]]} />,
+      <InstanceList {...props} selectedInstances={[instances[0]]} />,
     );
 
     const toggleAllCheckbox = await screen.findByRole("checkbox", {
@@ -103,9 +103,9 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setToggledInstances).toHaveBeenCalledWith([]);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
 
-    rerender(<InstanceList {...props} toggledInstances={[]} />);
+    rerender(<InstanceList {...props} selectedInstances={[]} />);
     const checkedCheckboxes = screen.queryAllByRole("checkbox", {
       checked: true,
     });
@@ -128,12 +128,12 @@ describe("InstanceList", () => {
     });
 
     await userEvent.click(instanceCheckbox);
-    expect(props.setToggledInstances).toHaveBeenCalledWith([instances[0]]);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([instances[0]]);
   });
 
   it("deselects an instance", async () => {
     renderWithProviders(
-      <InstanceList {...props} toggledInstances={[instances[0]]} />,
+      <InstanceList {...props} selectedInstances={[instances[0]]} />,
     );
 
     const instanceCheckbox = screen.getByRole("checkbox", {
@@ -142,7 +142,7 @@ describe("InstanceList", () => {
 
     expect(instanceCheckbox).toBeChecked();
     await userEvent.click(instanceCheckbox);
-    expect(props.setToggledInstances).toHaveBeenCalledWith([]);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
   });
 
   it("clears selection", async () => {
@@ -150,7 +150,7 @@ describe("InstanceList", () => {
     assert(props.instanceCount > props.instances.length);
 
     renderWithProviders(
-      <InstanceList {...props} toggledInstances={instances} />,
+      <InstanceList {...props} selectedInstances={instances} />,
     );
 
     const clearSelectionButton = await screen.findByRole("button", {
@@ -158,6 +158,6 @@ describe("InstanceList", () => {
     });
 
     await userEvent.click(clearSelectionButton);
-    expect(props.setToggledInstances).toHaveBeenCalledWith([]);
+    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
   });
 });

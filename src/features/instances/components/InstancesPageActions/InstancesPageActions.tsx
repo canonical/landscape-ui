@@ -15,7 +15,7 @@ import {
   capitalize,
 } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
-import { lazy, Suspense } from "react";
+import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
 import { getFeatures, hasSecurityUpgrades, hasUpgrades } from "../../helpers";
 import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModal";
@@ -51,19 +51,13 @@ const ReplaceTokenForm = lazy(
 
 interface InstancesPageActionsProps {
   readonly isGettingInstances: boolean;
-  readonly toggledInstances: Instance[];
-  readonly instanceCount: number;
-  readonly areAllInstancesSelected?: boolean;
-  readonly query?: string;
+  readonly selectedInstances: Instance[];
 }
 
-const InstancesPageActions = ({
+const InstancesPageActions = memo(function InstancesPageActions({
   isGettingInstances,
-  toggledInstances,
-  areAllInstancesSelected,
-  instanceCount,
-  query,
-}: InstancesPageActionsProps) => {
+  selectedInstances,
+}: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
 
@@ -101,11 +95,13 @@ const InstancesPageActions = ({
     setSidePanelContent(
       "Run script",
       <Suspense fallback={<LoadingState />}>
-        {toggledInstances.some((instance) => !getFeatures(instance).scripts) ? (
+        {selectedInstances.some(
+          (instance) => !getFeatures(instance).scripts,
+        ) ? (
           <div className={classes.warning}>
             <p>
               You selected{" "}
-              {pluralize(toggledInstances.length, ["instance"], "exact")}. This
+              {pluralize(selectedInstances.length, ["instance"], "exact")}. This
               script will:
             </p>
 
@@ -113,7 +109,7 @@ const InstancesPageActions = ({
               <li>
                 run on{" "}
                 {createInstanceCountString(
-                  toggledInstances.filter(
+                  selectedInstances.filter(
                     (instance) => getFeatures(instance).scripts,
                   ),
                 )}
@@ -121,7 +117,7 @@ const InstancesPageActions = ({
               <li>
                 not run on{" "}
                 {createInstanceCountString(
-                  toggledInstances.filter(
+                  selectedInstances.filter(
                     (instance) => !getFeatures(instance).scripts,
                   ),
                 )}
@@ -130,7 +126,7 @@ const InstancesPageActions = ({
           </div>
         ) : null}
         <RunInstanceScriptForm
-          query={toggledInstances.map(({ id }) => `id:${id}`).join(" OR ")}
+          query={selectedInstances.map(({ id }) => `id:${id}`).join(" OR ")}
         />
       </Suspense>,
     );
@@ -138,9 +134,9 @@ const InstancesPageActions = ({
 
   const handleUpgradesRequest = () => {
     setSidePanelContent(
-      `Upgrade ${getSelectionLabel(toggledInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
+      `Upgrade ${getSelectionLabel(selectedInstances, (toggledInstance) => toggledInstance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <Upgrades query={query} toggledInstances={toggledInstances} />
+        <Upgrades toggledInstances={selectedInstances} />
       </Suspense>,
       "large",
     );
@@ -150,7 +146,7 @@ const InstancesPageActions = ({
     setSidePanelContent(
       "Apply all upgrades",
       <Suspense fallback={<LoadingState />}>
-        <UpgradesSummary query={query} isSelectAllUpgradesEnabled />
+        <UpgradesSummary isSelectAllUpgradesEnabled />
       </Suspense>,
       "medium",
     );
@@ -160,11 +156,7 @@ const InstancesPageActions = ({
     setSidePanelContent(
       "Apply all security upgrades",
       <Suspense fallback={<LoadingState />}>
-        <UpgradesSummary
-          query={query}
-          isSelectAllUpgradesEnabled
-          upgradeType="security"
-        />
+        <UpgradesSummary isSelectAllUpgradesEnabled upgradeType="security" />
       </Suspense>,
       "medium",
     );
@@ -175,7 +167,7 @@ const InstancesPageActions = ({
       "Upgrade distributions",
       <Suspense fallback={<LoadingState />}>
         <DistributionUpgrades
-          selectedInstances={toggledInstances.map(({ id }) => id)}
+          selectedInstances={selectedInstances.map(({ id }) => id)}
         />
       </Suspense>,
       "medium",
@@ -187,7 +179,7 @@ const InstancesPageActions = ({
       `${capitalize(action)} packages`,
       <Suspense fallback={<LoadingState />}>
         <PackagesActionForm
-          instanceIds={toggledInstances.map(({ id }) => id)}
+          instanceIds={selectedInstances.map(({ id }) => id)}
           action={action}
         />
       </Suspense>,
@@ -196,9 +188,9 @@ const InstancesPageActions = ({
 
   const handleReportView = () => {
     setSidePanelContent(
-      `Report for ${getSelectionLabel(toggledInstances, (selectedInstance) => selectedInstance.title, "instances")}`,
+      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, "instances")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={toggledInstances.map(({ id }) => id)} />
+        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
       </Suspense>,
       "medium",
     );
@@ -208,7 +200,7 @@ const InstancesPageActions = ({
     setSidePanelContent(
       "Assign access group",
       <Suspense fallback={<LoadingState />}>
-        <AccessGroupChange selected={toggledInstances} />
+        <AccessGroupChange selected={selectedInstances} />
       </Suspense>,
     );
   };
@@ -217,45 +209,102 @@ const InstancesPageActions = ({
     setSidePanelContent(
       "Assign tags",
       <Suspense fallback={<LoadingState />}>
-        <TagsAddForm selected={toggledInstances} />
+        <TagsAddForm selected={selectedInstances} />
       </Suspense>,
     );
   };
 
   const handleAttachToken = () => {
     setSidePanelContent(
-      `Attach Ubuntu Pro token to ${pluralize(toggledInstances.length, ["instance"], "exact")}`,
+      `Attach Ubuntu Pro token to ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <AttachTokenForm selectedInstances={toggledInstances} />
+        <AttachTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
     );
   };
 
   const handleReplaceToken = () => {
     setSidePanelContent(
-      `Replace Ubuntu Pro token for ${pluralize(toggledInstances.length, ["instance"], "exact")}`,
+      `Replace Ubuntu Pro token for ${pluralize(selectedInstances.length, ["instance"], "exact")}`,
       <Suspense fallback={<LoadingState />}>
-        <ReplaceTokenForm selectedInstances={toggledInstances} />
+        <ReplaceTokenForm selectedInstances={selectedInstances} />
       </Suspense>,
     );
   };
 
-  const allInstancesHaveToken = toggledInstances.every(
+  const allInstancesHaveToken = selectedInstances.every(
     (instance) =>
       instance.ubuntu_pro_info?.result === "success" &&
       instance.ubuntu_pro_info.attached,
   );
 
-  const noInstanceHasUpgrades =
-    !areAllInstancesSelected &&
-    toggledInstances.every(
-      (instance) =>
-        !hasUpgrades(instance.alerts) || !getFeatures(instance).packages,
-    );
+  const noInstanceHasUpgrades = selectedInstances.every(
+    (instance) =>
+      !hasUpgrades(instance.alerts) || !getFeatures(instance).packages,
+  );
 
-  const noInstanceHasPackageFeature =
-    !areAllInstancesSelected &&
-    toggledInstances.every((instance) => !getFeatures(instance).packages);
+  const noInstanceHasPackageFeature = selectedInstances.every(
+    (instance) => !getFeatures(instance).packages,
+  );
+
+  const proServicesLinks = [
+    allInstancesHaveToken
+      ? {
+          children: (
+            <>
+              <Icon name="change-version" />
+              <span>Replace token</span>
+            </>
+          ),
+          onClick: handleReplaceToken,
+          hasIcon: true,
+        }
+      : {
+          children: (
+            <>
+              <Icon name="private-key" />
+              <span>Attach token</span>
+            </>
+          ),
+          onClick: handleAttachToken,
+          hasIcon: true,
+        },
+    isFeatureEnabled("ubuntu-pro-licensing")
+      ? {
+          children: (
+            <>
+              <Icon name="disconnect" />
+              <span>Detach token</span>
+            </>
+          ),
+          onClick: openDetachModal,
+          hasIcon: true,
+        }
+      : {},
+  ].filter((link) => link.children);
+
+  const groupingLinks = [
+    {
+      children: (
+        <>
+          <Icon name="user-group" />
+          <span>Assign access group</span>
+        </>
+      ),
+      onClick: handleAccessGroupChange,
+      hasIcon: true,
+    },
+    {
+      children: (
+        <>
+          <Icon name="tag" />
+          <span>Assign tag</span>
+        </>
+      ),
+      onClick: handleTagsAssign,
+      hasIcon: true,
+    },
+  ];
 
   const operationsLinks = [
     {
@@ -297,9 +346,9 @@ const InstancesPageActions = ({
       ),
       onClick: handleDistributionUpgradesRequest,
       hasIcon: true,
-      disabled: toggledInstances.every(
-        (instance) => !instance.has_release_upgrades,
-      ),
+      disabled:
+        isGettingInstances ||
+        !selectedInstances.some((instance) => instance.has_release_upgrades),
     },
     REPORT_VIEW_ENABLED
       ? {
@@ -322,69 +371,10 @@ const InstancesPageActions = ({
       ),
       onClick: handleRunScript,
       hasIcon: true,
-      disabled: toggledInstances.every(
-        (instance) => !getFeatures(instance).scripts,
-      ),
+      disabled:
+        isGettingInstances ||
+        selectedInstances.every((instance) => !getFeatures(instance).scripts),
     },
-  ].filter((link) => link.children);
-
-  const groupingLinks = [
-    {
-      children: (
-        <>
-          <Icon name="user-group" />
-          <span>Assign access group</span>
-        </>
-      ),
-      onClick: handleAccessGroupChange,
-      hasIcon: true,
-    },
-    {
-      children: (
-        <>
-          <Icon name="tag" />
-          <span>Assign tag</span>
-        </>
-      ),
-      onClick: handleTagsAssign,
-      hasIcon: true,
-    },
-  ];
-
-  const proServicesLinks = [
-    allInstancesHaveToken
-      ? {
-          children: (
-            <>
-              <Icon name="change-version" />
-              <span>Replace token</span>
-            </>
-          ),
-          onClick: handleReplaceToken,
-          hasIcon: true,
-        }
-      : {
-          children: (
-            <>
-              <Icon name="private-key" />
-              <span>Attach token</span>
-            </>
-          ),
-          onClick: handleAttachToken,
-          hasIcon: true,
-        },
-    isFeatureEnabled("ubuntu-pro-licensing")
-      ? {
-          children: (
-            <>
-              <Icon name="disconnect" />
-              <span>Detach token</span>
-            </>
-          ),
-          onClick: openDetachModal,
-          hasIcon: true,
-        }
-      : {},
   ].filter((link) => link.children);
 
   const debManagementLinks = [
@@ -418,13 +408,11 @@ const InstancesPageActions = ({
         </>
       ),
       onClick: handleAllSecurityUpgradesRequest,
-      disabled:
-        !areAllInstancesSelected &&
-        toggledInstances.every(
-          (instance) =>
-            !hasSecurityUpgrades(instance.alerts) ||
-            !getFeatures(instance).packages,
-        ),
+      disabled: selectedInstances.every(
+        (instance) =>
+          !hasSecurityUpgrades(instance.alerts) ||
+          !getFeatures(instance).packages,
+      ),
       hasIcon: true,
     },
     {
@@ -494,13 +482,6 @@ const InstancesPageActions = ({
     },
   ];
 
-  const bulkActionDisabled =
-    (!areAllInstancesSelected && toggledInstances.length <= 0) ||
-    (areAllInstancesSelected && toggledInstances.length >= instanceCount) ||
-    isGettingInstances;
-
-  const nonBulkActionDisabled = bulkActionDisabled || areAllInstancesSelected;
-
   return (
     <>
       <ResponsiveButtons
@@ -513,7 +494,7 @@ const InstancesPageActions = ({
             position="right"
             toggleLabel="Operations"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={nonBulkActionDisabled}
+            toggleDisabled={0 === selectedInstances.length}
             hasToggleIcon
           />,
           <ContextualMenu
@@ -522,7 +503,7 @@ const InstancesPageActions = ({
             position="right"
             toggleLabel="Grouping"
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={nonBulkActionDisabled}
+            toggleDisabled={0 === selectedInstances.length}
             hasToggleIcon
           />,
           hasOneItem(proServicesLinks) ? (
@@ -531,7 +512,7 @@ const InstancesPageActions = ({
               type="button"
               className="u-no-margin--bottom"
               onClick={proServicesLinks[0].onClick}
-              disabled={nonBulkActionDisabled}
+              disabled={0 === selectedInstances.length}
               hasIcon={proServicesLinks[0].hasIcon}
             >
               {proServicesLinks[0].children}
@@ -543,7 +524,7 @@ const InstancesPageActions = ({
               links={proServicesLinks}
               toggleLabel="Ubuntu Pro"
               toggleClassName="u-no-margin--bottom"
-              toggleDisabled={nonBulkActionDisabled}
+              toggleDisabled={0 === selectedInstances.length}
               hasToggleIcon
             />
           ),
@@ -554,33 +535,34 @@ const InstancesPageActions = ({
             position="right"
             toggleLabel={<span>Deb management</span>}
             toggleClassName="u-no-margin--bottom"
-            toggleDisabled={bulkActionDisabled}
+            toggleDisabled={0 === selectedInstances.length}
           />,
         ]}
       />
+
       {rebootModalOpen && (
-        <RestartModal close={closeRebootModal} instances={toggledInstances} />
+        <RestartModal close={closeRebootModal} instances={selectedInstances} />
       )}
       {shutdownModalOpen && (
         <ShutDownModal
           close={closeShutdownModal}
-          instances={toggledInstances}
+          instances={selectedInstances}
         />
       )}
       {detachModalOpen && (
         <DetachTokenModal
           isOpen={detachModalOpen}
           onClose={closeDetachModal}
-          computerIds={toggledInstances.map(({ id }) => id)}
+          computerIds={selectedInstances.map(({ id }) => id)}
         />
       )}
       <InstanceRemoveFromLandscapeModal
         close={closeRemoveModal}
-        instances={toggledInstances}
+        instances={selectedInstances}
         isOpen={removeModalOpen}
       />
     </>
   );
-};
+});
 
 export default InstancesPageActions;

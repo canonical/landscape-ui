@@ -18,3 +18,13 @@
   display: flex;
   transform: translateX(-1.5rem);
 }
+
+.buttons {
+  display: flex;
+  gap: $sph--large;
+
+  > :not(:last-child) {
+    border-right: 1px solid $colors--theme--border-low-contrast;
+    padding-right: $sph--large !important;
+  }
+}
