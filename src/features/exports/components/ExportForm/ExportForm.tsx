@@ -111,10 +111,6 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     return fieldGroups.flatMap((group) => {
-      if (group.title.toLowerCase().includes(normalizedSearch)) {
-        return [group];
-      }
-
       const matchingFields = group.fields.filter((field) =>
         field.label.toLowerCase().includes(normalizedSearch),
       );
@@ -188,63 +184,25 @@ const ExportForm: FC<ExportFormProps> = ({
         return 2;
       };
 
-      const sortedGroups = [...filteredFieldGroups]
-        .map((group) => ({
-          ...group,
-          fields: [...group.fields].sort(
-            (a, b) => rank(a.label) - rank(b.label),
-          ),
-        }))
-        .sort(
-          (a, b) =>
-            Math.min(...a.fields.map((f) => rank(f.label))) -
-            Math.min(...b.fields.map((f) => rank(f.label))),
-        );
-
-      const sortedSections = sortedGroups.map((group) => {
-        const groupIds = group.fields.map((f) => f.id);
-        const allSelected = groupIds.every((id) =>
-          formik.values.selectedFieldIds.includes(id),
-        );
-        const someSelected =
-          !allSelected &&
-          groupIds.some((id) => formik.values.selectedFieldIds.includes(id));
-
-        return {
-          key: group.key,
-          title: (
-            <CheckboxInput
-              label={group.title}
-              labelClassName="export-form-group-title-checkbox"
-              checked={allSelected}
-              indeterminate={someSelected}
-              aria-label={`${group.title} select all`}
-              disabled
-              onChange={() => undefined}
-            />
-          ),
-          content: (
-            <div className={classes.optionList}>
-              {group.fields.map((field) => (
-                <CheckboxInput
-                  key={field.id}
-                  checked={formik.values.selectedFieldIds.includes(field.id)}
-                  label={field.label}
-                  onChange={() => {
-                    toggleField(field.id);
-                  }}
-                />
-              ))}
-            </div>
-          ),
-        };
+      const sortedSections = [...accordionSections].sort((a, b) => {
+        const aGroup = filteredFieldGroups.find((g) => g.key === a.key);
+        const bGroup = filteredFieldGroups.find((g) => g.key === b.key);
+        const aRank = aGroup
+          ? Math.min(...aGroup.fields.map((f) => rank(f.label)))
+          : 2;
+        const bRank = bGroup
+          ? Math.min(...bGroup.fields.map((f) => rank(f.label)))
+          : 2;
+        return aRank - bRank;
       });
 
       return (
         <div>
           <Accordion
+            key="filtered"
             className="export-form-field-groups-accordion"
             sections={sortedSections}
+            expanded={sortedSections[0]?.key}
             titleElement="h5"
           />
         </div>
@@ -287,6 +245,7 @@ const ExportForm: FC<ExportFormProps> = ({
             placeholder="Search attributes"
             externallyControlled
             value={attributeSearch}
+            aria-label="Search attributes"
             searchButtonType="button"
             onChange={(value) => {
               setAttributeSearch(value);

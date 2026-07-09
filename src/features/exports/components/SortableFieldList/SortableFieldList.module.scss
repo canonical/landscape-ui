@@ -46,6 +46,7 @@
 }
 
 .orderInput {
+  appearance: textfield;
   min-width: 0;
   text-align: center;
   width: 5rem;
@@ -55,8 +56,6 @@
     appearance: none;
     margin: 0;
   }
-
-  appearance: textfield;
 }
 
 .orderInputWrapper {

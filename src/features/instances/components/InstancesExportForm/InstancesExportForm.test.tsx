@@ -83,7 +83,6 @@ describe("InstancesExportForm", () => {
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "host");
 
-    await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Hostname" }),
     ).toBeInTheDocument();
@@ -102,7 +101,7 @@ describe("InstancesExportForm", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("matches a category name and shows all of its attributes", async () => {
+  it("does not match on group name, only field labels", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <InstancesExportForm
@@ -118,14 +117,10 @@ describe("InstancesExportForm", () => {
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "primary");
 
-    // The category title matches, so the whole group is shown including fields
-    // whose labels do not contain the search term.
-    await openAttributeGroup(user, /primary identity/i);
+    // "primary" matches the group title "Primary Identity" but no field labels
+    // in that group — group title matching is not supported.
     expect(
-      screen.getByRole("checkbox", { name: "Instance name" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("checkbox", { name: "Hostname" }),
+      screen.getByText("No attributes match your search."),
     ).toBeInTheDocument();
   });
 

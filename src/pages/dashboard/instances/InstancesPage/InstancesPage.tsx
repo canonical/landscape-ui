@@ -9,6 +9,7 @@ import {
   useGetInstances,
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { lazy, useCallback, useMemo, useState, type FC } from "react";
@@ -20,6 +21,7 @@ const InstancesExportForm = lazy(
 );
 
 const InstancesPage: FC = () => {
+  useSetDynamicFilterValidation("sidePath", ["export"]);
   const {
     currentPage,
     pageSize,

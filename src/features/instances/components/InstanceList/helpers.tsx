@@ -1,7 +1,6 @@
 import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
-import NoData from "@/components/layout/NoData";
-import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
-import type { HTMLProps, ReactNode } from "react";
+import type { Instance } from "@/types/Instance";
+import type { HTMLProps } from "react";
 import type {
   Cell,
   HeaderGroup,
@@ -10,7 +9,6 @@ import type {
   TableHeaderProps,
   TableRowProps,
 } from "react-table";
-import { getInstanceStatuses, getUpgradeStatuses } from "../InstanceStatus";
 import type { InstanceColumn } from "./types";
 
 export const getColumnFilterOptions = (
@@ -21,38 +19,6 @@ export const getColumnFilterOptions = (
     label: optionLabel,
     value: accessor,
   }));
-};
-
-export const getStatusCellIconAndLabel = (
-  instance: InstanceWithoutRelation,
-): { label: ReactNode; icon?: string } => {
-  const statuses = getInstanceStatuses(instance);
-  if (statuses.length === 0) {
-    return { label: "" };
-  }
-  if (statuses.length === 1 && statuses[0]) {
-    return { label: statuses[0].label, icon: statuses[0].icon };
-  }
-  return {
-    icon: statuses[0]?.icon,
-    label: statuses.map((s) => s.label).join(", "),
-  };
-};
-
-export const getUpgradesCellIconAndLabel = (
-  instance: Instance,
-): { label: ReactNode; icon?: string } => {
-  const statuses = getUpgradeStatuses(instance);
-  if (statuses.length === 0) {
-    return { icon: "", label: <NoData /> };
-  }
-  if (statuses.length === 1 && statuses[0]) {
-    return { icon: statuses[0].icon, label: statuses[0].label };
-  }
-  return {
-    icon: statuses[0]?.icon,
-    label: statuses.map((s) => s.label).join(", "),
-  };
 };
 
 export const createHeaderPropsGetter = (titleId: string) => {
