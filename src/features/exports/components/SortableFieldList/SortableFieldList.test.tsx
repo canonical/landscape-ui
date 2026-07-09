@@ -47,7 +47,7 @@ describe("SortableFieldList", () => {
     expect(screen.queryByText("Primary Identity")).not.toBeInTheDocument();
   });
 
-  it("shows the Reset to default order button", () => {
+  it("shows the Reset order button", () => {
     renderWithProviders(
       <SortableFieldList fields={FIELDS} onOrderChange={vi.fn()} />,
     );

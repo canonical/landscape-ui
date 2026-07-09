@@ -23,7 +23,7 @@
 
 .searchGroups > :global(.p-accordion),
 .fieldGroupsWrapper > :global(.p-accordion) {
-  border-top: 1px solid;
+  border-top: 1px solid $colors--theme--border-low-contrast;
 }
 
 :global(.p-accordion__tab) {

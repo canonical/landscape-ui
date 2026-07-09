@@ -1,10 +1,6 @@
-import {
-  Button,
-  Chip,
-  Icon,
-  Input,
-  ModularTable,
-} from "@canonical/react-components";
+import { Button, Icon, Input, ModularTable } from "@canonical/react-components";
+
+import Chip from "@/components/layout/Chip";
 import classNames from "classnames";
 import {
   useCallback,
@@ -360,14 +356,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
             <div className={classes.nameCell}>
               <i className={"p-icon--drag " + classes.dragHandle} />
               <span>{label}</span>
-              {groupTitle && (
-                <Chip
-                  value={groupTitle}
-                  isReadOnly
-                  isDense
-                  className="u-no-margin--bottom"
-                />
-              )}
+              {groupTitle && <Chip value={groupTitle} />}
             </div>
           );
         },
