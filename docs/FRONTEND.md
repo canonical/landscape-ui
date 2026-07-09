@@ -143,6 +143,33 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 - The build runs `tcm` against `src/**` for SCSS modules, so CSS module type generation must continue to work.
 - Stylelint covers SCSS files in CI, and Prettier checks Markdown and other formatted assets.
 
+## Pragma design system (@canonical/pragma)
+
+Pragma (`@canonical/react-ds-global` + `@canonical/styles`) is Canonical's next-generation
+design system and the successor to vanilla-framework and `@canonical/react-components`. Adoption
+is incremental: Pragma is installed and its global styles are active, and components move to it
+over time. Surfaces not yet migrated keep using vanilla / `@canonical/react-components`.
+
+**Using Pragma components**
+
+- Import components from `@canonical/react-ds-global` and style them with Pragma's own design
+  tokens.
+- Pragma versions are pinned exactly; it is pre-1.0, so upgrade deliberately.
+
+**Global styles**
+
+- `@canonical/styles` is imported once in `src/main.tsx`, after the vanilla SCSS bundle. Loading
+  last, Pragma's typography and reset apply the app-wide type scale on shared element selectors
+  (`h1`–`h6`, `p`, `body`, `a`, form controls), so import order matters.
+- The CSS-only `@canonical/styles` module is declared in `src/vite-env.d.ts` so the import
+  type-checks.
+
+**Testing Pragma components**
+
+- `vitest.config.ts` inlines `@canonical/react-ds-global` (`test.server.deps.inline`) so its
+  side-effect `.css` imports resolve through the existing `styleMock` alias, and strips the
+  package's dangling sourcemap references. Tests that render a Pragma component depend on this.
+
 ## Testing
 
 - Follow [testing/index.md](testing/index.md) for the repository testing contract and [verification/index.md](verification/index.md) for completion criteria.
