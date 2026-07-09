@@ -27,6 +27,12 @@ describe("AppErrorBoundary", () => {
         <ThrowingComponent />
       </AppErrorBoundary>,
     );
-    expect(screen.getByText("Unexpected error occurred")).toBeInTheDocument();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Try again" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Reload page" }),
+    ).toBeInTheDocument();
   });
 });

@@ -33,6 +33,13 @@
   right: 100%;
 }
 
+/* Reversed items (chevron on the left, label on the right): move the gap to
+   sit between the chevron and the label instead of after the label. */
+.alignRight .text {
+  padding-left: 0.5rem;
+  padding-right: 0;
+}
+
 .isOpen {
   background-color: $colors--theme--background-active;
 

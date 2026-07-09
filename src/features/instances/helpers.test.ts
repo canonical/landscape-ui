@@ -37,6 +37,7 @@ describe("InstancesPage helpers", () => {
       contractExpiryDays: contractOption.value,
       query: "name:web,annotation:prod",
       tags: ["db", "prod"],
+      upgrades: ["security-upgrades", "package-upgrades"],
       accessGroups: ["global", "ops"],
       availabilityZones: ["eu-west-1a", "eu-west-1b"],
     });
@@ -49,10 +50,26 @@ describe("InstancesPage helpers", () => {
         "name:web",
         "annotation:prod",
         "tag:db OR tag:prod",
+        "alert:security-upgrades OR alert:package-upgrades",
         "access-group:global OR access-group:ops",
         "availability-zone:eu-west-1a OR availability-zone:eu-west-1b",
       ].join(" "),
     );
+  });
+
+  it("builds an OR query for selected upgrade types", () => {
+    const query = getQuery({
+      os: "",
+      status: "",
+      contractExpiryDays: "",
+      query: "",
+      tags: [],
+      upgrades: ["security-upgrades"],
+      accessGroups: [],
+      availabilityZones: [],
+    });
+
+    expect(query).toBe("alert:security-upgrades");
   });
 
   it("uses null availability zone query when none is selected", () => {
@@ -62,6 +79,7 @@ describe("InstancesPage helpers", () => {
       contractExpiryDays: "",
       query: "",
       tags: [],
+      upgrades: [],
       accessGroups: [],
       availabilityZones: ["none"],
     });
@@ -76,6 +94,7 @@ describe("InstancesPage helpers", () => {
       contractExpiryDays: "",
       query: "",
       tags: [],
+      upgrades: [],
       accessGroups: [],
       availabilityZones: [],
     });
@@ -90,6 +109,7 @@ describe("InstancesPage helpers", () => {
       contractExpiryDays: "",
       query: "",
       tags: [],
+      upgrades: [],
       accessGroups: [],
       availabilityZones: [],
     });

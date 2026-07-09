@@ -1,4 +1,5 @@
 import LoadingState from "@/components/layout/LoadingState";
+import { ResponsiveButtons } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -114,8 +115,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   };
 
   return (
-    <div key="buttons" className="p-segmented-control">
-      <div className="p-segmented-control__list">
+    <ResponsiveButtons
+      collapseFrom="xl"
+      buttons={[
         <Button
           className="p-segmented-control__button"
           type="button"
@@ -125,7 +127,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           <span>Export selection as TSV</span>
         </Button>
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="approve"
           type="button"
           disabled={
             !selected.length ||
@@ -143,9 +145,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Approve
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="cancel"
           type="button"
           disabled={
             !selected.length ||
@@ -163,9 +165,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Cancel
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="redo"
           type="button"
           disabled={
             !selected.length ||
@@ -183,9 +185,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Redo
-        </ConfirmationButton>
-      </div>
-    </div>
+        </ConfirmationButton>,
+      ]}
+    />
   );
 };
 

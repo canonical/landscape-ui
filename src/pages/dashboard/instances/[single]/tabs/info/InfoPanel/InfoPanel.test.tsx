@@ -843,7 +843,7 @@ describe("InfoPanel", () => {
       expect(await screen.findByText("unknown-group")).toBeInTheDocument();
     });
 
-    it("renders icon fallback when instance has multiple non-upgrade alerts", async () => {
+    it("renders a labelled status for every non-upgrade alert", async () => {
       const instanceWithMultipleAlerts = {
         ...instances[0],
         alerts: [
@@ -855,7 +855,8 @@ describe("InfoPanel", () => {
       renderWithProviders(<InfoPanel instance={instanceWithMultipleAlerts} />);
       await expectLoadingState();
 
-      expect(await screen.findByText(instances[0].title)).toBeInTheDocument();
+      expect(await screen.findByText("Reporter failed")).toBeInTheDocument();
+      expect(screen.getByText("Computer offline")).toBeInTheDocument();
     });
 
     it("renders with empty access groups when query fails", async () => {

@@ -34,7 +34,7 @@ export const useGetEmployees = (
     is_active: getStatus(status),
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    search: search ?? undefined,
+    search: search || undefined,
   };
 
   const { data, isPending, isFetching } = useQuery<

@@ -3,6 +3,7 @@ import { describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { PATHS, ROUTES } from "@/libs/routes";
 import { setEndpointStatus } from "@/tests/controllers/controller";
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 import WslInstancesHeader from "./WslInstancesHeader";
@@ -14,6 +15,14 @@ import {
 import { windowsInstance } from "@/tests/mocks/instance";
 
 describe("WslInstancesHeader", () => {
+  beforeEach(() => {
+    setScreenSize("xxl");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   it("renders the search box", () => {
     renderWithProviders(
       <WslInstancesHeader

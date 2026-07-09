@@ -1,5 +1,9 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectLoadingState } from "@/tests/helpers";
+import {
+  expectLoadingState,
+  resetScreenSize,
+  setScreenSize,
+} from "@/tests/helpers";
 import {
   autoinstallFiles,
   autoinstallFileVersions,
@@ -18,8 +22,26 @@ describe("AutoinstallFileDetails", () => {
     autoinstallFile: defaultFile,
   };
 
+  beforeEach(() => {
+    setScreenSize("lg");
+  });
+
   it("renders action buttons", () => {
     renderWithProviders(<AutoinstallFileDetails {...defaultProps} />);
+    expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /set as default/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /remove/i })).toBeInTheDocument();
+  });
+
+  it("renders collapsed action buttons", async () => {
+    resetScreenSize();
+    renderWithProviders(<AutoinstallFileDetails {...defaultProps} />);
+
+    const actionsButton = screen.getByRole("button", { name: /actions/i });
+    await userEvent.click(actionsButton);
+
     expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /set as default/i }),

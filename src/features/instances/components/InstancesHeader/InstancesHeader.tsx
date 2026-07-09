@@ -15,6 +15,7 @@ import AccessGroupFilter from "../AccessGroupFilter";
 import AvailabilityZoneFilter from "../AvailabilityZoneFilter";
 import PendingInstancesNotification from "../PendingInstancesNotification";
 import TagFilter from "../TagFilter";
+import UpgradesFilter from "../UpgradesFilter";
 import WslFilter from "../WslFilter";
 import classes from "./InstancesHeader.module.scss";
 import useInstanceSearchHelpTerms from "./hooks/useInstanceSearchHelpTerms";
@@ -67,6 +68,8 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
   const statusOptions =
     FILTERS.status.type === "select" ? FILTERS.status.options : [];
   const osOptions = FILTERS.os.type === "select" ? FILTERS.os.options : [];
+  const upgradeOptions =
+    FILTERS.upgrades.type === "multi-select" ? FILTERS.upgrades.options : [];
   const wslOptions =
     FILTERS.wsl.type === "multi-select" ? FILTERS.wsl.options : [];
   const contractExpiryOptions =
@@ -100,6 +103,12 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
               label="OS"
               options={osOptions}
               pageParamKey="os"
+              onChange={onChangeFilter}
+            />,
+            <UpgradesFilter
+              key="upgrades"
+              label="Upgrades"
+              options={upgradeOptions}
               onChange={onChangeFilter}
             />,
             <AvailabilityZoneFilter
@@ -146,6 +155,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
           "os",
           "availabilityZones",
           "status",
+          "upgrades",
           "tags",
           "wsl",
           "contractExpiryDays",
@@ -156,6 +166,7 @@ const InstancesHeader: FC<InstancesHeaderProps> = ({
         osOptions={osOptions}
         statusOptions={statusOptions}
         tagOptions={tagOptions}
+        upgradesOptions={upgradeOptions}
         wslOptions={wslOptions}
         contractExpiryOptions={contractExpiryOptions}
       />

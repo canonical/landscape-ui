@@ -1,14 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   getColumnFilterOptions,
-  getStatusCellIconAndLabel,
-  getUpgradesCellIconAndLabel,
   createHeaderPropsGetter,
   getCellProps,
   getRowProps,
 } from "./helpers";
 import { ubuntuInstance } from "@/tests/mocks/instance";
-import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import type { InstanceColumn } from "./types";
 
 describe("InstanceList helpers", () => {
@@ -29,174 +26,6 @@ describe("InstanceList helpers", () => {
     });
   });
 
-  describe("getStatusCellIconAndLabel", () => {
-    it("returns 'Archived' for archived instances", () => {
-      const instance: InstanceWithoutRelation = {
-        ...ubuntuInstance,
-        archived: true,
-        alerts: [],
-      };
-      const result = getStatusCellIconAndLabel(instance);
-      expect(result.label).toBe("Archived");
-      expect(result.icon).toBe("archive");
-    });
-
-    it("returns 'Online' when there are no relevant alerts", () => {
-      const instance: InstanceWithoutRelation = {
-        ...ubuntuInstance,
-        archived: false,
-        alerts: [],
-      };
-      const result = getStatusCellIconAndLabel(instance);
-      expect(result.label).toBeTruthy();
-    });
-
-    it("returns single alert summary when there is exactly one alert", () => {
-      const instance: InstanceWithoutRelation = {
-        ...ubuntuInstance,
-        archived: false,
-        alerts: [
-          {
-            type: "ComputerOfflineAlert",
-            summary: "Computer is offline",
-            severity: "warning",
-          },
-        ],
-      };
-      const result = getStatusCellIconAndLabel(instance);
-      expect(result.label).toBeDefined();
-    });
-
-    it("returns React element (icons) when there are multiple alerts", () => {
-      const instance: InstanceWithoutRelation = {
-        ...ubuntuInstance,
-        archived: false,
-        alerts: [
-          {
-            type: "ComputerOfflineAlert",
-            summary: "Offline",
-            severity: "warning",
-          },
-          {
-            type: "ComputerRebootAlert",
-            summary: "Needs reboot",
-            severity: "warning",
-          },
-        ],
-      };
-      const result = getStatusCellIconAndLabel(instance);
-      // Multiple alerts returns a ReactElement
-      expect(result.label).toBeTruthy();
-    });
-  });
-
-  describe("getUpgradesCellIconAndLabel", () => {
-    it("returns NoData icon when packages feature is not available", () => {
-      const instance: Instance = {
-        ...ubuntuInstance,
-        distribution: "22", // Ubuntu Core - no packages feature
-        distribution_info: {
-          code_name: "jammy",
-          description: "Ubuntu 22.04 LTS",
-          distributor: "Ubuntu Core",
-          release: "22",
-        },
-      };
-      const result = getUpgradesCellIconAndLabel(instance);
-      expect(result).toBeDefined();
-    });
-
-    it("returns up-to-date when no upgrades", () => {
-      const instance: Instance = {
-        ...ubuntuInstance,
-        distribution_info: {
-          code_name: "focal",
-          description: "Ubuntu 20.04 LTS",
-          distributor: "Ubuntu",
-          release: "20.04",
-        },
-        alerts: [],
-        upgrades: { regular: 0, security: 0 },
-      };
-      const result = getUpgradesCellIconAndLabel(instance);
-      expect(result.label).toBeTruthy();
-    });
-
-    it("returns regular upgrade info when only regular upgrades present", () => {
-      const instance: Instance = {
-        ...ubuntuInstance,
-        distribution_info: {
-          code_name: "focal",
-          description: "Ubuntu 20.04 LTS",
-          distributor: "Ubuntu",
-          release: "20.04",
-        },
-        alerts: [
-          { type: "PackageUpgradesAlert", summary: "", severity: "info" },
-        ],
-        upgrades: { regular: 5, security: 0 },
-      };
-      const result = getUpgradesCellIconAndLabel(instance);
-      expect(result.icon).toBeTruthy();
-      expect(result.label).toBeTruthy();
-    });
-
-    it("returns security upgrade info when only security upgrades present", () => {
-      const instance: Instance = {
-        ...ubuntuInstance,
-        distribution_info: {
-          code_name: "focal",
-          description: "Ubuntu 20.04 LTS",
-          distributor: "Ubuntu",
-          release: "20.04",
-        },
-        alerts: [
-          { type: "SecurityUpgradesAlert", summary: "", severity: "warning" },
-        ],
-        upgrades: { regular: 0, security: 3 },
-      };
-      const result = getUpgradesCellIconAndLabel(instance);
-      expect(result.icon).toBeTruthy();
-      expect(result.label).toBeTruthy();
-    });
-
-    it("returns combined info when both regular and security upgrades present", () => {
-      const instance: Instance = {
-        ...ubuntuInstance,
-        distribution_info: {
-          code_name: "focal",
-          description: "Ubuntu 20.04 LTS",
-          distributor: "Ubuntu",
-          release: "20.04",
-        },
-        alerts: [
-          { type: "PackageUpgradesAlert", summary: "", severity: "info" },
-          { type: "SecurityUpgradesAlert", summary: "", severity: "warning" },
-        ],
-        upgrades: { regular: 5, security: 3 },
-      };
-      const result = getUpgradesCellIconAndLabel(instance);
-      expect(result.icon).toBeTruthy();
-      expect(result.label).toBeTruthy();
-    });
-
-    it("returns up-to-date when upgrades is null", () => {
-      const instance = {
-        ...ubuntuInstance,
-        distribution_info: {
-          code_name: "focal",
-          description: "Ubuntu 20.04 LTS",
-          distributor: "Ubuntu",
-          release: "20.04",
-        },
-        alerts: [],
-        upgrades: null,
-      } as unknown as Instance;
-      const result = getUpgradesCellIconAndLabel(instance);
-      expect(result).toBeDefined();
-    });
-  });
-
   describe("createHeaderPropsGetter", () => {
     it("sets aria-labelledby on the title column header", () => {
       const getter = createHeaderPropsGetter("my-title-id");
@@ -213,7 +42,7 @@ describe("InstanceList helpers", () => {
 
   describe("getCellProps", () => {
     it("sets role=rowheader for title cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "title" },
         row: { index: 0 },
@@ -222,7 +51,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for status cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "status" },
         row: { index: 0 },
@@ -231,7 +60,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for upgrades cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "upgrades" },
         row: { index: 0 },
@@ -240,7 +69,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for os cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "os" },
         row: { index: 0 },
@@ -249,7 +78,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for tags cells without expanded class when not expanded", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "tags" },
         row: { index: 0 },
@@ -258,8 +87,8 @@ describe("InstanceList helpers", () => {
       expect(result.className).toBeUndefined();
     });
 
-    it("adds expandedCell class when row matches expanded row", () => {
-      const getter = getCellProps(0);
+    it("adds expandedCell class when row and column match the expanded cell", () => {
+      const getter = getCellProps(0, "tags");
       const result = getter({
         column: { id: "tags" },
         row: { index: 0 },
@@ -267,8 +96,26 @@ describe("InstanceList helpers", () => {
       expect(result.className).toBe("expandedCell");
     });
 
+    it("does not add expandedCell class when a different column is expanded", () => {
+      const getter = getCellProps(0, "status");
+      const result = getter({
+        column: { id: "tags" },
+        row: { index: 0 },
+      } as Parameters<typeof getter>[0]);
+      expect(result.className).toBeUndefined();
+    });
+
+    it("adds expandedCell class to the expanded status cell", () => {
+      const getter = getCellProps(0, "status");
+      const result = getter({
+        column: { id: "status" },
+        row: { index: 0 },
+      } as Parameters<typeof getter>[0]);
+      expect(result.className).toBe("expandedCell");
+    });
+
     it("sets aria-label for availability_zone cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "availability_zone" },
         row: { index: 0 },
@@ -277,7 +124,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for ubuntu_pro cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "ubuntu_pro" },
         row: { index: 0 },
@@ -286,7 +133,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for last_ping_time cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "last_ping_time" },
         row: { index: 0 },
@@ -295,7 +142,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for actions cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "actions" },
         row: { index: 0 },
@@ -304,7 +151,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("returns empty props for unknown columns", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "unknown" },
         row: { index: 0 },
@@ -340,57 +187,5 @@ describe("InstanceList helpers", () => {
       } as Parameters<typeof getter>[0]);
       expect(result["aria-label"]).toBe(`${ubuntuInstance.title} instance row`);
     });
-  });
-});
-
-describe("getUpgradesCellIconAndLabel with alerts (DETAILED_UPGRADES_VIEW_ENABLED=false)", () => {
-  beforeEach(() => {
-    vi.resetModules();
-    vi.stubEnv("VITE_DETAILED_UPGRADES_VIEW_ENABLED", "false");
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
-    vi.resetModules();
-  });
-
-  it("uses alerts when DETAILED_UPGRADES_VIEW_ENABLED is false", async () => {
-    const { getUpgradesCellIconAndLabel: getUpgradesCellIconAndLabelDynamic } =
-      await import("./helpers");
-
-    const instance: Instance = {
-      ...ubuntuInstance,
-      distribution_info: {
-        code_name: "focal",
-        description: "Ubuntu 20.04 LTS",
-        distributor: "Ubuntu",
-        release: "20.04",
-      },
-      alerts: [
-        { type: "PackageUpgradesAlert", summary: "", severity: "info" },
-        { type: "SecurityUpgradesAlert", summary: "", severity: "warning" },
-      ],
-    };
-    const result = getUpgradesCellIconAndLabelDynamic(instance);
-    expect(result.icon).toBeTruthy();
-    expect(result.label).toBeTruthy();
-  });
-
-  it("returns up-to-date via alerts when no upgrade alerts exist", async () => {
-    const { getUpgradesCellIconAndLabel: getUpgradesCellIconAndLabelDynamic } =
-      await import("./helpers");
-
-    const instance: Instance = {
-      ...ubuntuInstance,
-      distribution_info: {
-        code_name: "focal",
-        description: "Ubuntu 20.04 LTS",
-        distributor: "Ubuntu",
-        release: "20.04",
-      },
-      alerts: [],
-    };
-    const result = getUpgradesCellIconAndLabelDynamic(instance);
-    expect(result).toBeDefined();
   });
 });
