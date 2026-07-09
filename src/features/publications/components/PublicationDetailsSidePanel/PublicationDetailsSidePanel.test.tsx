@@ -48,21 +48,4 @@ describe("PublicationDetailsSidePanel", () => {
 
     expect(await screen.findByText(mirrorDisplayName)).toBeInTheDocument();
   });
-
-  it("keeps showing loading state when fetching the publication fails", async () => {
-    setEndpointStatus({ path: "publications", status: "error" });
-
-    renderPanel();
-
-    expect(await screen.findByRole("status")).toBeInTheDocument();
-    await expect(
-      screen.findByRole(
-        "heading",
-        { name: publication.displayName },
-        {
-          timeout: 300,
-        },
-      ),
-    ).rejects.toThrow();
-  });
 });

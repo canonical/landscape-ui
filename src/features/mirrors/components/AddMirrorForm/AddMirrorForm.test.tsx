@@ -133,7 +133,6 @@ describe("AddMirrorForm", () => {
 
     fireEvent.change(screen.getByLabelText("Snapshot date"), {
       target: { value: date },
-      mirrorType: "UBUNTU_SNAPSHOTS",
     });
 
     await user.click(screen.getByRole("button", { name: "Add mirror" }));
