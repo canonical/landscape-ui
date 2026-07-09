@@ -137,6 +137,7 @@ const ExportForm: FC<ExportFormProps> = ({
       title: (
         <CheckboxInput
           label={group.title}
+          labelClassName="export-form-group-title-checkbox"
           checked={allSelected}
           indeterminate={someSelected}
           aria-label={`${group.title} select all`}
@@ -202,6 +203,7 @@ const ExportForm: FC<ExportFormProps> = ({
             return (
               <Accordion
                 key={group.key}
+                className="export-form-field-groups-accordion"
                 expanded={group.key}
                 sections={[
                   {
@@ -234,7 +236,11 @@ const ExportForm: FC<ExportFormProps> = ({
 
     return (
       <div className={classes.fieldGroupsWrapper}>
-        <Accordion sections={accordionSections} titleElement="h5" />
+        <Accordion
+          className="export-form-field-groups-accordion"
+          sections={accordionSections}
+          titleElement="h5"
+        />
       </div>
     );
   };

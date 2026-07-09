@@ -21,29 +21,39 @@
   margin-top: $spv--small;
 }
 
-.searchGroups > :global(.p-accordion),
-.fieldGroupsWrapper > :global(.p-accordion) {
+:global(.export-form-field-groups-accordion) {
   border-top: 1px solid $colors--theme--border-low-contrast;
 }
 
-.searchGroups > :global(.p-accordion .p-accordion__tab h5),
-.fieldGroupsWrapper > :global(.p-accordion .p-accordion__tab h5) {
+:global(.export-form-field-groups-accordion h5.p-accordion__heading),
+:global(
+  .export-form-field-groups-accordion h5.p-accordion__heading.p-heading--5
+) {
   font-weight: 400;
+}
+
+:global(label.export-form-group-title-checkbox.p-checkbox) {
   margin-bottom: 0;
 }
 
-:global(.p-accordion__tab) {
-  padding-right: $sph--x-large !important;
+:global(.export-form-field-groups-accordion .p-accordion__panel) {
+  padding-top: 0;
 }
 
-:global(.p-accordion__tab)::before {
-  margin-right: 0 !important;
-  position: absolute !important;
-  right: 1.5rem !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+:global(.export-form-field-groups-accordion .p-accordion__tab) {
+  padding-right: $sph--x-large;
 }
 
-:global(.p-accordion__tab[aria-expanded="false"])::before {
-  transform: translateY(-50%) rotate(-90deg) !important;
+:global(.export-form-field-groups-accordion .p-accordion__tab)::before {
+  margin-right: 0;
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:global(
+  .export-form-field-groups-accordion .p-accordion__tab[aria-expanded="false"]
+)::before {
+  transform: translateY(-50%) rotate(-90deg);
 }
