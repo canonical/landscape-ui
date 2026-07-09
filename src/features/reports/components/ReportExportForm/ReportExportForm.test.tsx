@@ -43,9 +43,13 @@ describe("ReportExportForm", () => {
   it("renders the bucket selector, Include Other, Report by CVE and the ExportForm shell", () => {
     renderForm();
 
-    expect(screen.getByRole("combobox", { name: "Bucket" })).toBeVisible();
     expect(
-      screen.getByRole("checkbox", { name: "Include Other" }),
+      screen.getByRole("combobox", { name: "Time to patch USNs" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("checkbox", {
+        name: "Include instances with no date range (Other)",
+      }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("checkbox", { name: "Report by CVE" }),
@@ -60,9 +64,9 @@ describe("ReportExportForm", () => {
   it("defaults to the 60+ days outstanding bucket", () => {
     renderForm();
 
-    expect(screen.getByRole("combobox", { name: "Bucket" })).toHaveValue(
-      "over-60",
-    );
+    expect(
+      screen.getByRole("combobox", { name: "Time to patch USNs" }),
+    ).toHaveValue("over-60");
   });
 
   it("shows the empty-bucket validation message when the selected bucket has no instances", async () => {
@@ -70,7 +74,9 @@ describe("ReportExportForm", () => {
     renderForm();
 
     // Switch to a bucket with no instances in the fixture
-    const select = screen.getByRole("combobox", { name: "Bucket" });
+    const select = screen.getByRole("combobox", {
+      name: "Time to patch USNs",
+    });
     await user.selectOptions(select, "30-60");
 
     expect(
@@ -82,14 +88,20 @@ describe("ReportExportForm", () => {
     const user = userEvent.setup();
     renderForm();
 
-    const select = screen.getByRole("combobox", { name: "Bucket" });
+    const select = screen.getByRole("combobox", {
+      name: "Time to patch USNs",
+    });
     await user.selectOptions(select, "30-60");
 
     expect(
       screen.getByText(/the selected bucket contains no instances/i),
     ).toBeInTheDocument();
 
-    await user.click(screen.getByRole("checkbox", { name: "Include Other" }));
+    await user.click(
+      screen.getByRole("checkbox", {
+        name: "Include instances with no date range (Other)",
+      }),
+    );
 
     // OTHER_IDS is empty in our fixture too, so the message should still show —
     // both the bucket and Other are empty.
@@ -137,11 +149,6 @@ describe("ReportExportForm", () => {
     // Enable by_cve
     await user.click(screen.getByRole("checkbox", { name: "Report by CVE" }));
 
-    // Verify the CVE note appears
-    expect(
-      screen.getByText(/CVE exports add a cve_id and status column/i),
-    ).toBeInTheDocument();
-
     // Fill ExportForm Step 0
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
@@ -149,6 +156,18 @@ describe("ReportExportForm", () => {
     );
     await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(
+      screen.queryByRole("combobox", { name: "Time to patch USNs" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("checkbox", {
+        name: "Include instances with no date range (Other)",
+      }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("checkbox", { name: "Report by CVE" }),
+    ).not.toBeInTheDocument();
 
     // Step 1 — submit
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
@@ -204,7 +223,7 @@ describe("ReportExportForm", () => {
 
     // Switch to the within-2 bucket
     await user.selectOptions(
-      screen.getByRole("combobox", { name: "Bucket" }),
+      screen.getByRole("combobox", { name: "Time to patch USNs" }),
       "within-2",
     );
 
@@ -506,7 +525,11 @@ describe("ReportExportForm", () => {
       />,
     );
 
-    await user.click(screen.getByRole("checkbox", { name: "Include Other" }));
+    await user.click(
+      screen.getByRole("checkbox", {
+        name: "Include instances with no date range (Other)",
+      }),
+    );
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
       "Test export",

@@ -30,6 +30,7 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
+  readonly onStepChange?: (step: StepIndex) => void;
   readonly sortableNote?: ReactNode;
 }
 
@@ -38,6 +39,7 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
+  onStepChange,
   sortableNote,
 }) => {
   const { closeSidePanel } = useSidePanel();
@@ -47,6 +49,7 @@ const ExportForm: FC<ExportFormProps> = ({
 
   const handleBack = () => {
     setStep(0);
+    onStepChange?.(0);
   };
 
   const formik = useFormik<ExportFormValues>({
@@ -62,10 +65,13 @@ const ExportForm: FC<ExportFormProps> = ({
       if (step === 0) {
         setOrderedFields(selectedFields);
         setStep(1);
+        onStepChange?.(1);
         return;
       }
 
-      const selectedFieldIdSet = new Set(selectedFields.map((field) => field.id));
+      const selectedFieldIdSet = new Set(
+        selectedFields.map((field) => field.id),
+      );
       const orderedSelectedFields = orderedFields.filter((field) =>
         selectedFieldIdSet.has(field.id),
       );

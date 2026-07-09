@@ -6,6 +6,7 @@ import {
   ExportForm,
   type ExportField,
   type ExportFormValues,
+  type StepIndex,
 } from "@/features/exports";
 import {
   CheckboxInput,
@@ -45,6 +46,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
   const [selectedBucket, setSelectedBucket] = useState<BucketKey>("over-60");
   const [includeOther, setIncludeOther] = useState(false);
   const [byCve, setByCve] = useState(false);
+  const [exportStep, setExportStep] = useState<StepIndex>(0);
 
   // Hide aggregate CVE columns when byCve=true — they are always empty in that
   // mode because _build_cve_tsv emits one row per (instance, CVE) and never
@@ -124,51 +126,56 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
 
   return (
     <>
-      {emptyBucket && (
-        <Notification severity="caution">
-          The selected bucket contains no instances. Choose a different bucket
-          or include Other.
-        </Notification>
-      )}
-      <Select
-        label="Bucket"
-        options={BUCKET_OPTIONS.map((o) => ({
-          label: o.label,
-          value: o.value,
-        }))}
-        value={selectedBucket}
-        onChange={(e) => {
-          setSelectedBucket(e.target.value as BucketKey);
-        }}
-      />
-      <CheckboxInput
-        label="Include instances with no date range (Other)"
-        checked={includeOther}
-        onChange={() => {
-          setIncludeOther((v) => !v);
-        }}
-      />
-      <div className={classes.includeOtherRow}>
-        <CheckboxInput
-          label="Report by CVE"
-          checked={byCve}
-          onChange={() => {
-            setByCve((v) => !v);
-          }}
-        />
-        <div className={classes.includeOtherTooltip}>
-          <ReportHelpTooltip
-            message={
-              "CVE exports add a cve_id and status column and emit one row per instance and CVE. The fields selected below are included on every row."
-            }
+      {exportStep === 0 && (
+        <>
+          <Select
+            label="Time to patch USNs"
+            options={BUCKET_OPTIONS.map((o) => ({
+              label: o.label,
+              value: o.value,
+            }))}
+            value={selectedBucket}
+            onChange={(e) => {
+              setSelectedBucket(e.target.value as BucketKey);
+            }}
           />
-        </div>
-      </div>
+          {emptyBucket && (
+            <Notification severity="caution">
+              The selected bucket contains no instances. Choose a different
+              bucket or include Other.
+            </Notification>
+          )}
+          <CheckboxInput
+            label="Include instances with no date range (Other)"
+            checked={includeOther}
+            onChange={() => {
+              setIncludeOther((v) => !v);
+            }}
+          />
+          <div className={classes.includeOtherRow}>
+            <CheckboxInput
+              label="Report by CVE"
+              checked={byCve}
+              onChange={() => {
+                setByCve((v) => !v);
+              }}
+            />
+            <div className={classes.includeOtherTooltip}>
+              <ReportHelpTooltip
+                message={
+                  "CVE exports add a cve_id and status column and emit one row per instance and CVE. The fields selected below are included on every row."
+                }
+              />
+            </div>
+          </div>
+        </>
+      )}
       <ExportForm
         fieldGroups={fieldGroups}
         initialValues={INITIAL_EXPORT_VALUES}
         isSubmitting={isExportComplianceTsvLoading}
         onGenerate={handleGenerate}
+        onStepChange={setExportStep}
         sortableNote={
           byCve
             ? "cve_id and cve_status will always be the first two columns in this export."
