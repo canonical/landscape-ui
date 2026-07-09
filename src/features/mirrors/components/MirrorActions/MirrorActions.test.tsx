@@ -1,5 +1,3 @@
-import { OperationProvider } from "@/features/operations";
-import { mirrors } from "@/tests/mocks/mirrors";
 import { renderWithProviders } from "@/tests/render";
 import LoadingState from "@/components/layout/LoadingState";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -9,8 +7,6 @@ import { Suspense } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 import MirrorActions from "./MirrorActions";
 
-const [mirror] = mirrors;
-const operationName = "operations/pppp-gggg-ssss";
 import usePageParams from "@/hooks/usePageParams/usePageParams";
 
 describe("MirrorActions", () => {
