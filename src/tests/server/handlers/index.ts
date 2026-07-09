@@ -6,6 +6,7 @@ import activity from "./activity";
 import administrators from "./administrators";
 import alerts from "./alerts";
 import auth from "./auth";
+import exports from "./exports";
 import autoinstallFiles from "./autoinstallFiles";
 import availabilityZones from "./availabilityZones";
 import employees from "./employees";
@@ -52,6 +53,7 @@ export default [
   ...activity,
   ...alerts,
   ...auth,
+  ...exports,
   ...oidcIssuers,
   ...availabilityZones,
   ...employees,

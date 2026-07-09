@@ -1,17 +1,15 @@
-import LoadingState from "@/components/layout/LoadingState";
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import type { ActivityCommon } from "@/features/activities";
 import {
-  Activities,
   ActivitiesActions,
-  ActivitiesEmptyState,
+  ActivitiesContainer,
   useGetActivities,
 } from "@/features/activities";
 import useSelection from "@/hooks/useSelection";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
-import type { FC } from "react";
+import { useCallback, useState, type FC } from "react";
 
 const ActivitiesPage: FC = () => {
   const { activities, activitiesCount, isGettingActivities } =
@@ -33,6 +31,18 @@ const ActivitiesPage: FC = () => {
     setSelectedItems: setSelectedActivities,
   } = useSelection<ActivityCommon>(activities, isGettingActivities);
 
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const clearSelection = useCallback(() => {
+    setSelectedActivities([]);
+    setIsAllSelected(false);
+  }, [setSelectedActivities]);
+
+  const selectAll = useCallback(() => {
+    setIsAllSelected(true);
+    setSelectedActivities([]);
+  }, [setSelectedActivities]);
+
   return (
     <PageMain>
       <PageHeader
@@ -42,26 +52,27 @@ const ActivitiesPage: FC = () => {
             ? [
                 <ActivitiesActions
                   selected={selectedActivities}
+                  activityCount={activitiesCount}
                   key="activities-actions"
+                  isAllSelected={isAllSelected}
                 />,
               ]
             : undefined
         }
       />
       <PageContent hasTable>
-        {isGettingUnfilteredActivities ? (
-          <LoadingState />
-        ) : !unfilteredActivitiesCount ? (
-          <ActivitiesEmptyState />
-        ) : (
-          <Activities
-            activities={activities}
-            activitiesCount={activitiesCount}
-            isGettingActivities={isGettingActivities}
-            selectedActivities={selectedActivities}
-            setSelectedActivities={setSelectedActivities}
-          />
-        )}
+        <ActivitiesContainer
+          activities={activities}
+          activitiesCount={activitiesCount}
+          isGettingActivities={isGettingActivities}
+          isGettingUnfilteredActivities={isGettingUnfilteredActivities}
+          unfilteredActivitiesCount={unfilteredActivitiesCount}
+          selectedActivities={selectedActivities}
+          setSelectedActivities={setSelectedActivities}
+          isAllSelected={isAllSelected}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
+        />
       </PageContent>
     </PageMain>
   );

@@ -2,6 +2,7 @@ export * from "./useAcceptPendingInstances";
 export * from "./useAddTagsToInstances";
 export * from "./useCreateDistributionUpgrades";
 export * from "./useEditInstance";
+export * from "./useExportInstancesTsv";
 export * from "./useGenerateRecoveryKey";
 export * from "./useGetAvailabilityZones";
 export * from "./useGetRecoveryKey";
