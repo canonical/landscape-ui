@@ -1,6 +1,10 @@
+import { readFileSync } from "fs";
 import { resolve } from "path";
 import { defineConfig } from "vitest/config";
 import packageJson from "./package.json";
+
+// Strip Vite's query suffix (e.g. "?v=hash") from a module id to get a real path.
+const cleanUrl = (id: string) => id.replace(/[?#].*$/, "");
 
 export default defineConfig({
   test: {
@@ -35,6 +39,17 @@ export default defineConfig({
     ],
     pool: "threads",
     testTimeout: 30000,
+    server: {
+      deps: {
+        // Inline the Pragma barrel so Vite (not Node) transforms it: this lets
+        // the CSS -> styleMock alias catch the ".css" side-effect imports its
+        // _work_in_progress components pull in. Without this, Node's native ESM
+        // loader hits those CSS files and throws "Unknown file extension .css".
+        // Anchored to the package boundary so it does not also match the future
+        // @canonical/react-ds-global-form (Track A3).
+        inline: [/@canonical\/react-ds-global(\/|$)/],
+      },
+    },
     coverage: {
       provider: "v8",
       reporter: ["cobertura", "json-summary", "html"],
@@ -68,6 +83,32 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
+  plugins: [
+    {
+      // @canonical/react-ds-global ships .js.map files whose "sources" point at
+      // src/ paths it doesn't publish. Inlining it for tests (server.deps.inline
+      // above) makes Vite read those maps and warn "points to missing source
+      // files". Strip the dangling sourcemap reference and return an empty map so
+      // Vite never looks for the missing sources. Keeps test output pristine.
+      name: "strip-pragma-sourcemaps",
+      enforce: "pre",
+      load(id) {
+        const path = cleanUrl(id);
+        if (
+          !path.includes("@canonical/react-ds-global/") ||
+          !path.endsWith(".js")
+        ) {
+          return null;
+        }
+        const original = readFileSync(path, "utf-8");
+        const code = original.replace(/\n?\/\/# sourceMappingURL=\S+/g, "");
+        if (code === original) {
+          return null;
+        }
+        return { code, map: { mappings: "" } };
+      },
+    },
+  ],
   define: {
     __APP_VERSION__: JSON.stringify(packageJson.version),
   },

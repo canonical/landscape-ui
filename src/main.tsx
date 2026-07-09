@@ -1,4 +1,5 @@
 import "./styles/index.scss";
+import "@canonical/styles";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
