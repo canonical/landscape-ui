@@ -127,6 +127,7 @@ describe("InstancesPage helpers", () => {
           contractExpiryDays: "",
           query: "name:web",
           tags: [],
+          upgrades: [],
           accessGroups: [],
           availabilityZones: [],
         },

@@ -134,6 +134,7 @@ export interface GetInstanceQueryProps {
   query: string;
   status: string;
   tags: string[];
+  upgrades: string[];
 }
 
 export interface InstanceListParams {
@@ -151,6 +152,7 @@ export const getQuery = ({
   query,
   status,
   tags,
+  upgrades,
 }: GetInstanceQueryProps) => {
   const queryParts: string[] = [];
   const osQuery = os ? getOptionQuery(FILTERS.os, os) : "";
@@ -177,6 +179,10 @@ export const getQuery = ({
 
   if (tags.length) {
     queryParts.push(`tag:${tags.join(" OR tag:")}`);
+  }
+
+  if (upgrades.length) {
+    queryParts.push(upgrades.map((upgrade) => `alert:${upgrade}`).join(" OR "));
   }
 
   if (accessGroups.length) {
