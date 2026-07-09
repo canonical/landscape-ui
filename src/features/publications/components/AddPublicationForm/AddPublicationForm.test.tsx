@@ -316,7 +316,7 @@ describe("AddPublicationForm", () => {
     });
     await user.selectOptions(
       publicationTargetSelect,
-      "aaaaaaaa-0000-0000-0000-000000000001",
+      "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
     );
 
     const archCombobox = screen.getByRole("combobox", {
