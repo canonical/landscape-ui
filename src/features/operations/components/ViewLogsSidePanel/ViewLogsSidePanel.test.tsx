@@ -7,16 +7,23 @@ import { expectLoadingState } from "@/tests/helpers";
 import Suspense from "@/components/layout/SidePanel/Suspense";
 import LoadingState from "@/components/layout/SidePanel/LoadingState";
 import { mirrors } from "@/tests/mocks/mirrors";
-import type { Mirror, Publication } from "@canonical/landscape-openapi";
+import type { Local, Mirror, Publication } from "@canonical/landscape-openapi";
 import { publications } from "@/tests/mocks/publications";
+import { repositories } from "@/tests/mocks/localRepositories";
 
 const COPIED_FEEDBACK_TIMEOUT = 2010;
 const typedMirrors = mirrors as Mirror[];
+const locals = repositories as Local[];
 
 const failedMirror = typedMirrors.find(
   (mirror) => mirror.lastOperation === "operations/mirror-ffff-llll-dddd",
 );
 assert(failedMirror, "Missing mock mirror with a failed operation");
+
+const failedLocal = locals.find(
+  (local) => local.lastOperation === "operations/ffff-llll-dddd",
+);
+assert(failedLocal, "Missing mock local with a failed operation");
 
 describe("ViewLogsSidePanel", () => {
   beforeEach(() => {
@@ -38,6 +45,27 @@ describe("ViewLogsSidePanel", () => {
   it("renders operation logs when available", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
+        <ViewLogsSidePanel resourceType="locals" />
+      </Suspense>,
+      undefined,
+      `?sidePath=logs&name=${failedLocal.localId}`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      await screen.findByRole("heading", {
+        name: `Import logs for ${failedLocal.displayName}`,
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.getByRole("heading", { name: "Output" })).toBeInTheDocument();
+    expect(screen.getByText(/0% \[Working\]/)).toBeInTheDocument();
+  });
+
+  it("renders fallback if operation failed with no logs", async () => {
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
         <ViewLogsSidePanel resourceType="mirrors" />
       </Suspense>,
       undefined,
@@ -53,7 +81,7 @@ describe("ViewLogsSidePanel", () => {
     ).toBeInTheDocument();
 
     expect(screen.getByRole("heading", { name: "Output" })).toBeInTheDocument();
-    expect(screen.getByText(/0% \[Working\]/)).toBeInTheDocument();
+    expect(screen.getByText("Task failed with no logs")).toBeInTheDocument();
   });
 
   it("displays actions when logs are available", async () => {

@@ -8,19 +8,24 @@ import {
   NoPublicationTargetsModal,
   useGetPublicationTargets,
 } from "@/features/publication-targets";
+import { useOperation } from "@/features/operations";
 
 interface MirrorActionsProps {
   readonly mirrorDisplayName: string;
   readonly mirrorName: string;
+  readonly operationName?: string;
 }
 
 const MirrorActions: FC<MirrorActionsProps> = ({
   mirrorDisplayName,
   mirrorName,
+  operationName,
 }) => {
   const { setPageParams, createPageParamsSetter } = usePageParams();
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
+  const { isOperationInProgress } = useOperation();
+  const isUpdating = isOperationInProgress(operationName);
 
   const {
     value: isUpdateModalOpen,
@@ -70,11 +75,17 @@ const MirrorActions: FC<MirrorActionsProps> = ({
               name: mirrorName,
             }),
           },
-          {
-            icon: "restart",
-            label: "Update",
-            onClick: openUpdateModal,
-          },
+          isUpdating
+            ? {
+                icon: "spinner u-animation--spin",
+                label: "Updating",
+                disabled: true,
+              }
+            : {
+                icon: "restart",
+                label: "Update",
+                onClick: openUpdateModal,
+              },
           {
             icon: "upload",
             label: "Publish",

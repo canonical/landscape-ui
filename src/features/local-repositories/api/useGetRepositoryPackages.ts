@@ -13,7 +13,7 @@ export const useGetRepositoryPackages = (repository: string) => {
     string[],
     AxiosError<LocalServiceListLocalPackagesError>
   >({
-    queryKey: ["packages", repository],
+    queryKey: ["localPackages", repository],
     queryFn: async () => {
       let pageToken: string | undefined;
       const packages: string[] = [];

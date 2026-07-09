@@ -17,7 +17,7 @@ const ComponentWithSearch = () => {
 
 describe("PublicationsHeader", () => {
   it("renders the search input with the current query", () => {
-    renderWithProviders(<PublicationsHeader />, undefined, "?query=focal");
+    renderWithProviders(<PublicationsHeader />, undefined, "/?query=focal");
 
     expect(screen.getByRole("searchbox")).toHaveValue("focal");
   });

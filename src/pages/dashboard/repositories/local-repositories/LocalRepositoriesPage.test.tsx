@@ -92,4 +92,25 @@ describe("LocalRepositoriesPage", () => {
       }),
     ).toBeInTheDocument();
   });
+
+  it("renders the logs side panel when sidePath=logs is in the URL", async () => {
+    setScreenSize("xxl");
+
+    renderWithProviders(
+      <LocalRepositoriesPage />,
+      undefined,
+      "/?sidePath=logs&name=cccc-dddd-eeee",
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: /Import logs for Failed import local/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      await within(screen.getByLabelText("Side panel")).findByRole("button", {
+        name: /copy/i,
+      }),
+    ).toBeInTheDocument();
+  });
 });

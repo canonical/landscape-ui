@@ -7,19 +7,23 @@ import { Suspense } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 
 const ROUTE_PATH = "/?name=mirrors/ubuntu-archive-mirror";
+const NO_PUBLICATIONS_ROUTE_PATH = "/?name=mirrors/ubuntu-security-mirror";
 
-const renderWithRoute = () =>
+const renderWithRoute = (routePath: string = ROUTE_PATH) =>
   renderWithProviders(
     <Suspense fallback={<LoadingState />}>
       <PublishMirrorForm />
     </Suspense>,
     undefined,
-    ROUTE_PATH,
+    routePath,
   );
 
 describe("PublishMirrorForm", () => {
   it("does not render radio buttons when publications do not exist", async () => {
-    renderWithRoute();
+    renderWithRoute(NO_PUBLICATIONS_ROUTE_PATH);
+
+    // Wait for the form to finish loading - the form only renders after both queries resolve
+    await screen.findByRole("button", { name: /publish mirror/i });
 
     expect(screen.queryByLabelText(/new publication/i)).not.toBeInTheDocument();
     expect(

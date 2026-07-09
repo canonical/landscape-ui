@@ -4,17 +4,21 @@ import PublishRepositoryContentsBlock from "./PublishRepositoryContentsBlock";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 
+const [repository] = repositories;
+
 describe("PublishRepositoryContentsBlock", () => {
   it("renders contents block", () => {
     renderWithProviders(
-      <PublishRepositoryContentsBlock repository={repositories[0]} />,
+      <PublishRepositoryContentsBlock repository={repository} />,
     );
 
     expect(screen.getByText("Contents")).toBeInTheDocument();
 
     expect(screen.getByText("Distribution")).toBeInTheDocument();
-    expect(screen.getByText("distribution 1")).toBeInTheDocument();
+    expect(
+      screen.getByText(repository.defaultDistribution),
+    ).toBeInTheDocument();
     expect(screen.getByText("Component")).toBeInTheDocument();
-    expect(screen.getByText("component 1")).toBeInTheDocument();
+    expect(screen.getByText(repository.defaultComponent)).toBeInTheDocument();
   });
 });

@@ -1,4 +1,5 @@
 import type { EventLog } from "@/features/events-log";
+import { downloadBlob } from "@/utils/browserDownload";
 
 export const downloadCSV = (eventsLog: EventLog[], filename: string) => {
   const header = [
@@ -29,21 +30,5 @@ export const downloadCSV = (eventsLog: EventLog[], filename: string) => {
   ].join("\r\n");
 
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-
-  // Create URL for blob
-  const url = URL.createObjectURL(blob);
-
-  // Create link element
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-
-  // Append link to body
-  document.body.appendChild(link);
-
-  // Programmatically click the link to start download
-  link.click();
-
-  // Clean up by removing the link
-  document.body.removeChild(link);
+  downloadBlob(blob, filename);
 };
