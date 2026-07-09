@@ -26,8 +26,8 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
 
   // The API requires the details type to be an array, but in practice it will
   // only ever have at most 1 element.
-  const { stackEntries = [] } = error?.details[0] ?? {};
-  const logs = stackEntries.join("\n");
+  const logs =
+    error?.details[0]?.stackEntries?.join("\n") || "Task failed with no logs";
 
   const getOperationType = () => {
     switch (resourceType) {
@@ -121,7 +121,7 @@ const ViewLogsSidePanel: FC<ViewLogsSidePanelProps> = ({ resourceType }) => {
               blocks={[
                 {
                   title: "Output",
-                  code: logs || "Task failed with no logs",
+                  code: logs,
                   wrapLines: true,
                 },
               ]}
