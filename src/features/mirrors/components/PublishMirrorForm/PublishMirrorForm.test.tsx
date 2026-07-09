@@ -116,7 +116,7 @@ describe("PublishMirrorForm", () => {
     });
   });
 
-  it("locks signing key field if source preserves signatures", async () => {
+  it("hides signing key field if source preserves signatures", async () => {
     assert(preserveSignaturesMirror);
 
     renderWithProviders(
@@ -125,18 +125,12 @@ describe("PublishMirrorForm", () => {
       `?name=${preserveSignaturesMirror.name}`,
     );
 
-    expect(
-      screen.queryByRole("textbox", { name: "Signing GPG key" }),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText("Signing GPG key")).toBeInTheDocument();
-    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
-
-    await user.hover(screen.getByText(NO_DATA_TEXT));
+    expect(screen.queryByText("Signing GPG key")).not.toBeInTheDocument();
 
     expect(
-      await screen.findByRole("tooltip", {
-        name: "This mirror is preserving the upstream signing key",
-      }),
+      await screen.findByText(
+        "The selected mirror preserves the upstream signing key.",
+      ),
     ).toBeInTheDocument();
   });
 

@@ -50,7 +50,12 @@ describe("MirrorPackagesList", () => {
     expect(screen.getByRole("status")).toBeInTheDocument();
 
     expect(
-      await screen.findByText("Please try again or contact our support team."),
+      await screen.findByText((content, element) => {
+        return (
+          element?.textContent ===
+          "We hit an unexpected error while loading this page. You can try again — if the problem continues, please report it or contact our support team."
+        );
+      }),
     ).toBeInTheDocument();
   });
 });
