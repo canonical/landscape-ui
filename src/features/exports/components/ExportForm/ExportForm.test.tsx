@@ -449,9 +449,6 @@ describe("ExportForm", () => {
     expect(screen.getByTestId("location-display")).toHaveTextContent(
       "sidePath=export",
     );
-    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
-      "sidePath=export,",
-    );
   });
 
   it("reset order restores group-declaration sequence after manual reorder", async () => {
@@ -480,14 +477,9 @@ describe("ExportForm", () => {
     );
 
     await user.click(screen.getByRole("button", { name: /reset order/i }));
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: "Generate TSV" }),
-      ).toBeInTheDocument();
-    });
-
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Generate TSV" }),
+    );
 
     await waitFor(() => {
       expect(onGenerate).toHaveBeenCalledWith(

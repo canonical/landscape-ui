@@ -156,9 +156,19 @@ export default [
     const limit = Number(url.searchParams.get("limit")) || 1;
 
     if (shouldApplyEndpointStatus("computers")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers");
       if (status === "error") {
         throw createEndpointStatusError();
+      }
+
+      if (status === "empty") {
+        return HttpResponse.json(
+          generatePaginatedResponse<Instance>({
+            data: [],
+            limit,
+            offset,
+          }),
+        );
       }
     }
 

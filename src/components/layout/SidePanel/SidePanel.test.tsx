@@ -48,7 +48,7 @@ describe("SidePanel", () => {
     );
 
     expect(screen.queryByText(children)).not.toBeInTheDocument();
-    expect(screen.getByText("Unexpected error occurred")).toBeInTheDocument();
+    expect(screen.getByText("Something went wrong")).toBeInTheDocument();
   });
 
   it("renders a loading fallback with suspense", async () => {

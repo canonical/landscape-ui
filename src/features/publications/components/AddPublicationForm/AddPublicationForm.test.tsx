@@ -5,6 +5,11 @@ import userEvent from "@testing-library/user-event";
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";
 import AddPublicationForm from "./AddPublicationForm";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
+
+const [firstTarget, secondTarget] = publicationTargets;
+assert(firstTarget);
+assert(secondTarget);
 
 const renderForm = () =>
   renderWithProviders(
@@ -29,7 +34,7 @@ describe("AddPublicationForm", () => {
       expect(sourceSelect).toBeEnabled();
     });
 
-    await user.selectOptions(sourceSelect, mirrorId);
+    await user.selectOptions(sourceSelect, `mirrors/${mirrorId}`);
   };
 
   const selectLocalSource = async (
@@ -46,7 +51,7 @@ describe("AddPublicationForm", () => {
       expect(sourceSelect).toBeEnabled();
     });
 
-    await user.selectOptions(sourceSelect, "aaaa-bbbb-cccc");
+    await user.selectOptions(sourceSelect, "locals/aaaa-bbbb-cccc");
   };
 
   it("updates contents fields when a mirror source is selected", async () => {
@@ -84,11 +89,6 @@ describe("AddPublicationForm", () => {
       expect(publicationTargetSelect).toBeEnabled();
     });
 
-    await user.selectOptions(
-      publicationTargetSelect,
-      "aaaaaaaa-0000-0000-0000-000000000001",
-    );
-
     await user.click(
       screen.getByRole("checkbox", { name: /Hash based indexing/i }),
     );
@@ -104,9 +104,7 @@ describe("AddPublicationForm", () => {
     await user.click(archCombobox);
     await user.click(await screen.findByRole("checkbox", { name: "amd64" }));
 
-    expect(publicationTargetSelect).toHaveValue(
-      "aaaaaaaa-0000-0000-0000-000000000001",
-    );
+    expect(publicationTargetSelect).toHaveValue(firstTarget.name);
 
     expect(
       screen.getByText("main, restricted, universe, multiverse"),
@@ -125,8 +123,8 @@ describe("AddPublicationForm", () => {
     );
     await selectLocalSource(user);
 
-    expect(screen.getByText("repo 1")).toBeInTheDocument();
-    expect(screen.getByText("component 1")).toBeInTheDocument();
+    expect(screen.getByText("noble")).toBeInTheDocument();
+    expect(screen.getByText("main")).toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Architectures" }),
     ).not.toBeInTheDocument();
@@ -139,14 +137,8 @@ describe("AddPublicationForm", () => {
       expect(publicationTargetSelect).toBeEnabled();
     });
 
-    await user.selectOptions(
-      publicationTargetSelect,
-      "bbbbbbbb-0000-0000-0000-000000000002",
-    );
-
-    expect(publicationTargetSelect).toHaveValue(
-      "bbbbbbbb-0000-0000-0000-000000000002",
-    );
+    await user.selectOptions(publicationTargetSelect, `${secondTarget.name}`);
+    expect(publicationTargetSelect).toHaveValue(secondTarget.name);
   });
 
   it("shows signing key field when mirror has preserveSignatures=false", async () => {
@@ -171,6 +163,12 @@ describe("AddPublicationForm", () => {
     expect(
       screen.queryByRole("textbox", { name: "Signing GPG key" }),
     ).not.toBeInTheDocument();
+
+    expect(
+      screen.getByText(
+        "The selected source preserves the upstream signing key.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("locks distribution field when mirror has preserveSignatures=true", async () => {
@@ -188,10 +186,10 @@ describe("AddPublicationForm", () => {
 
     await selectLocalSource(user);
 
-    expect(screen.getByText("distribution 1")).toBeInTheDocument();
+    expect(screen.getByText("noble")).toBeInTheDocument();
   });
 
-  it("hides signing key field when local repository is selected", async () => {
+  it("shows signing key field when local repository is selected", async () => {
     const user = userEvent.setup();
 
     renderForm();
@@ -199,8 +197,8 @@ describe("AddPublicationForm", () => {
     await selectLocalSource(user);
 
     expect(
-      screen.queryByRole("textbox", { name: "Signing GPG key" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
+    ).toBeInTheDocument();
   });
 
   it("shows validation error when all architectures are deselected", async () => {
@@ -237,17 +235,6 @@ describe("AddPublicationForm", () => {
     );
     await selectLocalSource(user);
 
-    const publicationTargetSelect = screen.getByRole("combobox", {
-      name: "Publication target",
-    });
-    await waitFor(() => {
-      expect(publicationTargetSelect).toBeEnabled();
-    });
-    await user.selectOptions(
-      publicationTargetSelect,
-      "bbbbbbbb-0000-0000-0000-000000000002",
-    );
-
     await user.click(screen.getByRole("button", { name: "Add publication" }));
 
     expect(
@@ -267,17 +254,6 @@ describe("AddPublicationForm", () => {
       "new-mirror-publication",
     );
     await selectMirrorSource(user);
-
-    const publicationTargetSelect = screen.getByRole("combobox", {
-      name: "Publication target",
-    });
-    await waitFor(() => {
-      expect(publicationTargetSelect).toBeEnabled();
-    });
-    await user.selectOptions(
-      publicationTargetSelect,
-      "aaaaaaaa-0000-0000-0000-000000000001",
-    );
 
     await user.type(
       screen.getByRole("textbox", { name: "Signing GPG key" }),

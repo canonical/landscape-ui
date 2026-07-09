@@ -9,7 +9,6 @@ import {
   useGetInstances,
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
-import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
 import { lazy, useCallback, useMemo, useState, type FC } from "react";
@@ -17,11 +16,18 @@ import InstancesContainer from "../InstancesContainer";
 
 const InstancesExportForm = lazy(
   async () =>
-    import("@/features/instances/components/InstancesExportForm"),
+    import("@/features/instances/components/InstancesExportForm/InstancesExportForm"),
 );
 
 const InstancesPage: FC = () => {
-  const { currentPage, pageSize, wsl, ...filters } = usePageParams();
+  const {
+    currentPage,
+    pageSize,
+    wsl,
+    lastSidePathSegment,
+    popSidePathUntilClear,
+    ...filters
+  } = usePageParams();
   const instanceListParams = useMemo(
     () => getInstanceListParams({ filters, wsl }),
     [filters, wsl],
@@ -38,10 +44,6 @@ const InstancesPage: FC = () => {
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
-
-  const { lastSidePathSegment, popSidePath } = usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", ["export"]);
 
   const clearSelection = useCallback(() => {
     setSelectedInstances([]);
@@ -72,19 +74,18 @@ const InstancesPage: FC = () => {
         <InstancesContainer
           instanceCount={instancesCount}
           instances={instances}
-          isGettingInstances={isGettingInstances}
           selectedInstances={selectedInstances}
           setSelectedInstances={setSelectedInstances}
           onChangeFilter={clearSelection}
+          isGettingInstances={isGettingInstances}
           isAllSelected={isAllSelected}
           onSelectAll={selectAll}
           onClearSelection={clearSelection}
         />
       </PageContent>
-
       <SidePanel
         isOpen={lastSidePathSegment === "export"}
-        onClose={popSidePath}
+        onClose={popSidePathUntilClear}
         size="medium"
       >
         {lastSidePathSegment === "export" && (

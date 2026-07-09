@@ -1,3 +1,4 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
@@ -8,6 +9,14 @@ import type { Activity } from "../../types";
 import ActivitiesActions from "./ActivitiesActions";
 
 describe("ActivitiesActions", () => {
+  beforeEach(() => {
+    setScreenSize("xxl");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
+  });
+
   const mockActivities = [
     {
       ...activities[0],

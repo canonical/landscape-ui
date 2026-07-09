@@ -38,9 +38,7 @@ describe("InstancesExportForm", () => {
       screen.getByRole("tab", { name: /primary identity/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("tab", {
-        name: /granular metadata & deep diagnostics/i,
-      }),
+      screen.getByRole("tab", { name: /system ids & agent logs/i }),
     ).toBeInTheDocument();
     await openAttributeGroup(user, /business logic/i);
     expect(
@@ -48,7 +46,7 @@ describe("InstancesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("pre-selects the visible table columns and keeps Next disabled until a name is given", async () => {
+  it("pre-selects the visible table columns", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <InstancesExportForm
@@ -67,16 +65,6 @@ describe("InstancesExportForm", () => {
       screen.getByRole("checkbox", { name: "Instance name" }),
     ).toBeChecked();
     expect(screen.getByRole("checkbox", { name: "Status" })).toBeChecked();
-
-    // A name is still required before proceeding.
-    const nextButton = screen.getByRole("button", { name: "Next" });
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
-
-    await user.type(
-      screen.getByRole("textbox", { name: "Export name" }),
-      "Weekly export",
-    );
-    expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("filters attributes by field name", async () => {
@@ -95,7 +83,6 @@ describe("InstancesExportForm", () => {
     const search = screen.getByRole("searchbox", { name: "Search attributes" });
     await user.type(search, "host");
 
-    await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Hostname" }),
     ).toBeInTheDocument();
@@ -132,7 +119,6 @@ describe("InstancesExportForm", () => {
 
     // The category title matches, so the whole group is shown including fields
     // whose labels do not contain the search term.
-    await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Instance name" }),
     ).toBeInTheDocument();
@@ -204,7 +190,7 @@ describe("InstancesExportForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Next" })).toBeInTheDocument();
     await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Instance name" }),

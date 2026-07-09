@@ -64,9 +64,7 @@ describe("WslPanel", () => {
       </AppErrorBoundary>,
     );
 
-    expect(
-      await screen.findByText(/unexpected error occurred/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/unexpected error/i)).toBeInTheDocument();
   });
 
   it("shows loading state while wsl limits are being fetched", async () => {

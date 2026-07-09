@@ -1,5 +1,9 @@
 import { setEndpointStatus } from "@/tests/controllers/controller";
-import { expectErrorNotification } from "@/tests/helpers";
+import {
+  expectErrorNotification,
+  resetScreenSize,
+  setScreenSize,
+} from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -18,6 +22,11 @@ const INSTANCE_ID = 11;
 describe("ProcessesHeader", () => {
   beforeEach(() => {
     setEndpointStatus("default");
+    setScreenSize("xxl");
+  });
+
+  afterEach(() => {
+    resetScreenSize();
   });
 
   it("should render ProcessesHeader correctly", () => {

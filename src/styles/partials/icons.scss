@@ -311,6 +311,21 @@
   @include vf-icon-security-tick($color-negative);
 }
 
+.p-icon--security-tick--positive {
+  @extend %icon;
+  @include vf-icon-security-tick($color-positive);
+}
+
+.p-icon--security-error--negative {
+  @extend %icon;
+  @include vf-icon-security-error($color-negative);
+}
+
+.p-icon--security-warning--caution {
+  @extend %icon;
+  @include vf-icon-security-warning($color-caution);
+}
+
 .p-icon--information--muted {
   @extend %icon;
   @include vf-icon-info($color-mid-dark);

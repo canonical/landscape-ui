@@ -20,7 +20,6 @@ import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModa
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
@@ -51,8 +50,6 @@ interface InstancesPageActionsProps {
 }
 
 const InstancesPageActions = memo(function InstancesPageActions({
-  exportParams,
-  instanceCount,
   isGettingInstances,
   selectedInstances,
   isAllSelected,

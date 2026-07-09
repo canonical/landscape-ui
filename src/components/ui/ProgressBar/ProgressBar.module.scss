@@ -1,15 +1,11 @@
 @import "vanilla-framework/scss/settings_spacing";
 @import "vanilla-framework/scss/settings_colors";
 
-.failedText {
-  margin-right: $sph--small;
-}
-
 .progressBar {
   background-color: $colors--theme--background-active;
-  display: inline-flex;
+  display: flex;
   height: $spv--small;
-  margin: 0 $sph--small;
+  margin-right: $sph--small;
   width: 4rem;
 
   > div {

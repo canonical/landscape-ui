@@ -22,10 +22,6 @@ import {
 import { hasOneItem } from "@/utils/_helpers";
 import { isArchiveInfoValid } from "../../helpers";
 
-export function getStrippedUrl(url: string): string {
-  return url.replace(/\/[^\\/@]*@/, "/");
-}
-
 export function getInitialSourceType({
   ubuntuArchiveInfo,
   ubuntuEsmInfo,

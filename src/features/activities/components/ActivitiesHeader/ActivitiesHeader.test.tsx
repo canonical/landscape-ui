@@ -1,7 +1,8 @@
+import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
 import type { ComponentProps } from "react";
 import ActivitiesHeader from "./ActivitiesHeader";
 import { EXCLUDED_ACTIVITY_TYPE_OPTIONS } from "../../constants";
@@ -15,7 +16,12 @@ describe("ActivitiesHeader", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
+    setScreenSize("xxl");
     renderWithProviders(<ActivitiesHeader {...props} />);
+  });
+
+  afterEach(() => {
+    resetScreenSize();
   });
 
   it("should render without crashing", () => {

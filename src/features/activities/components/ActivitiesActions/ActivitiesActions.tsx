@@ -1,3 +1,4 @@
+import { ResponsiveButtons } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -13,7 +14,9 @@ import {
 
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
+  readonly activityCount?: number;
   readonly isAllSelected?: boolean;
+  readonly exportBaseQuery?: string;
 }
 
 const ActivitiesActions: FC<ActivitiesActionsProps> = ({
@@ -73,18 +76,20 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   };
 
   return (
-    <div key="buttons" className="p-segmented-control">
-      <div className="p-segmented-control__list">
+    <ResponsiveButtons
+      collapseFrom="xl"
+      buttons={[
         <Button
+          key="export"
           className="p-segmented-control__button"
           type="button"
           disabled={!isAllSelected && selected.length === 0}
           onClick={handleExport}
         >
           <span>Export selection as TSV</span>
-        </Button>
+        </Button>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="approve"
           type="button"
           disabled={
             !selected.length ||
@@ -102,9 +107,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Approve
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="cancel"
           type="button"
           disabled={
             !selected.length ||
@@ -122,9 +127,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Cancel
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="redo"
           type="button"
           disabled={
             !selected.length ||
@@ -142,9 +147,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Redo
-        </ConfirmationButton>
-      </div>
-    </div>
+        </ConfirmationButton>,
+      ]}
+    />
   );
 };
 

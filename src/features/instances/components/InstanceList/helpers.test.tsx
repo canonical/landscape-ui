@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   getColumnFilterOptions,
   getStatusCellIconAndLabel,
@@ -8,8 +8,8 @@ import {
   getRowProps,
 } from "./helpers";
 import { ubuntuInstance } from "@/tests/mocks/instance";
-import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 import type { InstanceColumn } from "./types";
+import type { Instance, InstanceWithoutRelation } from "@/types/Instance";
 
 describe("InstanceList helpers", () => {
   describe("getColumnFilterOptions", () => {
@@ -213,7 +213,7 @@ describe("InstanceList helpers", () => {
 
   describe("getCellProps", () => {
     it("sets role=rowheader for title cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "title" },
         row: { index: 0 },
@@ -222,7 +222,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for status cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "status" },
         row: { index: 0 },
@@ -231,7 +231,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for upgrades cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "upgrades" },
         row: { index: 0 },
@@ -240,7 +240,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for os cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "os" },
         row: { index: 0 },
@@ -249,7 +249,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for tags cells without expanded class when not expanded", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "tags" },
         row: { index: 0 },
@@ -258,8 +258,8 @@ describe("InstanceList helpers", () => {
       expect(result.className).toBeUndefined();
     });
 
-    it("adds expandedCell class when row matches expanded row", () => {
-      const getter = getCellProps(0);
+    it("adds expandedCell class when row and column match the expanded cell", () => {
+      const getter = getCellProps(0, "tags");
       const result = getter({
         column: { id: "tags" },
         row: { index: 0 },
@@ -267,8 +267,26 @@ describe("InstanceList helpers", () => {
       expect(result.className).toBe("expandedCell");
     });
 
+    it("does not add expandedCell class when a different column is expanded", () => {
+      const getter = getCellProps(0, "status");
+      const result = getter({
+        column: { id: "tags" },
+        row: { index: 0 },
+      } as Parameters<typeof getter>[0]);
+      expect(result.className).toBeUndefined();
+    });
+
+    it("adds expandedCell class to the expanded status cell", () => {
+      const getter = getCellProps(0, "status");
+      const result = getter({
+        column: { id: "status" },
+        row: { index: 0 },
+      } as Parameters<typeof getter>[0]);
+      expect(result.className).toBe("expandedCell");
+    });
+
     it("sets aria-label for availability_zone cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "availability_zone" },
         row: { index: 0 },
@@ -277,7 +295,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for ubuntu_pro cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "ubuntu_pro" },
         row: { index: 0 },
@@ -286,7 +304,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for last_ping_time cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "last_ping_time" },
         row: { index: 0 },
@@ -295,7 +313,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("sets aria-label for actions cells", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "actions" },
         row: { index: 0 },
@@ -304,7 +322,7 @@ describe("InstanceList helpers", () => {
     });
 
     it("returns empty props for unknown columns", () => {
-      const getter = getCellProps(null);
+      const getter = getCellProps(null, null);
       const result = getter({
         column: { id: "unknown" },
         row: { index: 0 },
@@ -340,57 +358,5 @@ describe("InstanceList helpers", () => {
       } as Parameters<typeof getter>[0]);
       expect(result["aria-label"]).toBe(`${ubuntuInstance.title} instance row`);
     });
-  });
-});
-
-describe("getUpgradesCellIconAndLabel with alerts (DETAILED_UPGRADES_VIEW_ENABLED=false)", () => {
-  beforeEach(() => {
-    vi.resetModules();
-    vi.stubEnv("VITE_DETAILED_UPGRADES_VIEW_ENABLED", "false");
-  });
-
-  afterEach(() => {
-    vi.unstubAllEnvs();
-    vi.resetModules();
-  });
-
-  it("uses alerts when DETAILED_UPGRADES_VIEW_ENABLED is false", async () => {
-    const { getUpgradesCellIconAndLabel: getUpgradesCellIconAndLabelDynamic } =
-      await import("./helpers");
-
-    const instance: Instance = {
-      ...ubuntuInstance,
-      distribution_info: {
-        code_name: "focal",
-        description: "Ubuntu 20.04 LTS",
-        distributor: "Ubuntu",
-        release: "20.04",
-      },
-      alerts: [
-        { type: "PackageUpgradesAlert", summary: "", severity: "info" },
-        { type: "SecurityUpgradesAlert", summary: "", severity: "warning" },
-      ],
-    };
-    const result = getUpgradesCellIconAndLabelDynamic(instance);
-    expect(result.icon).toBeTruthy();
-    expect(result.label).toBeTruthy();
-  });
-
-  it("returns up-to-date via alerts when no upgrade alerts exist", async () => {
-    const { getUpgradesCellIconAndLabel: getUpgradesCellIconAndLabelDynamic } =
-      await import("./helpers");
-
-    const instance: Instance = {
-      ...ubuntuInstance,
-      distribution_info: {
-        code_name: "focal",
-        description: "Ubuntu 20.04 LTS",
-        distributor: "Ubuntu",
-        release: "20.04",
-      },
-      alerts: [],
-    };
-    const result = getUpgradesCellIconAndLabelDynamic(instance);
-    expect(result).toBeDefined();
   });
 });

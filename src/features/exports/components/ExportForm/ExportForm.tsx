@@ -80,6 +80,7 @@ const ExportForm: FC<ExportFormProps> = ({
         ? formik.values.selectedFieldIds.filter((id) => id !== fieldId)
         : [...formik.values.selectedFieldIds, fieldId];
 
+      void formik.setFieldTouched("selectedFieldIds", true, false);
       void formik.setFieldValue("selectedFieldIds", nextSelectedFieldIds);
     },
     [formik],
@@ -96,6 +97,7 @@ const ExportForm: FC<ExportFormProps> = ({
         ? formik.values.selectedFieldIds.filter((id) => !groupIds.includes(id))
         : [...new Set([...formik.values.selectedFieldIds, ...groupIds])];
 
+      void formik.setFieldTouched("selectedFieldIds", true, false);
       void formik.setFieldValue("selectedFieldIds", nextSelectedFieldIds);
     },
     [formik],

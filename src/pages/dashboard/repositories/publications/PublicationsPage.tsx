@@ -35,10 +35,7 @@ const PublicationsPage: FC = () => {
       >
         {lastSidePathSegment === "add" && (
           <SidePanel.Suspense key="add">
-            <SidePanel.Header>Add publication</SidePanel.Header>
-            <SidePanel.Content>
-              <AddPublicationForm />
-            </SidePanel.Content>
+            <AddPublicationForm />
           </SidePanel.Suspense>
         )}
         {lastSidePathSegment === "view" && (

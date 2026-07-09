@@ -49,7 +49,6 @@ const ActivitiesPage: FC = () => {
     toDate,
     type,
     lastSidePathSegment,
-    sidePath,
     popSidePath,
   } = usePageParams();
 
@@ -85,6 +84,7 @@ const ActivitiesPage: FC = () => {
             ? [
                 <ActivitiesActions
                   selected={selectedActivities}
+                  activityCount={activitiesCount}
                   key="activities-actions"
                   isAllSelected={isAllSelected}
                 />,
