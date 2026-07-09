@@ -196,7 +196,7 @@ const ExportForm: FC<ExportFormProps> = ({
         );
 
       return (
-        <div className={classes.searchGroups}>
+        <div>
           {sortedGroups.map((group) => {
             const section = accordionSections.find((s) => s.key === group.key);
             if (!section) return null;
@@ -235,7 +235,7 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     return (
-      <div className={classes.fieldGroupsWrapper}>
+      <div>
         <Accordion
           className="export-form-field-groups-accordion"
           sections={accordionSections}
