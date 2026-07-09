@@ -106,7 +106,7 @@ export default defineConfig({
         } catch {
           return null;
         }
-        const code = original.replace(/\n?\/\/# sourceMappingURL=\S+/g, "");
+        const code = original.replace(/\r?\n?\/\/# sourceMappingURL=\S+/g, "");
         if (code === original) {
           return null;
         }
