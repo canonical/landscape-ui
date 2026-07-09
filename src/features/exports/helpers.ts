@@ -31,6 +31,28 @@ export const getExportScope = ({
   return query ? ` for "${query}"` : "";
 };
 
+export const getExportTitle = ({
+  isAllSelected,
+  selectedCount,
+  totalCount,
+  selectionForms,
+}: {
+  isAllSelected: boolean;
+  selectedCount: number;
+  totalCount: number | undefined;
+  selectionForms: readonly [singular: string, plural?: string];
+}): string => {
+  if (!isAllSelected && selectedCount > 0) {
+    return `Export ${pluralize(selectedCount, selectionForms, "exact")} as TSV`;
+  }
+
+  if (totalCount !== undefined) {
+    return `Export ${pluralize(totalCount, selectionForms, "exact")} as TSV`;
+  }
+
+  return `Export ${pluralize(0, selectionForms)} as TSV`;
+};
+
 export const hasProcessingExportJobs = (jobs: ExportJob[]) =>
   jobs.some((job) => job.status === "processing");
 

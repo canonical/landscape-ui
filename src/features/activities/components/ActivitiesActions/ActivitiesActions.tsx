@@ -7,7 +7,7 @@ import { Button, ConfirmationButton } from "@canonical/react-components";
 import { lazy, Suspense, type FC } from "react";
 import type { ActivityCommon } from "../../types";
 import { pluralize } from "@/utils/_helpers";
-import { getExportTitle } from "./helpers";
+import { getExportTitle } from "@/features/exports";
 import {
   useApproveActivities,
   useCancelActivities,
@@ -60,7 +60,8 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
       getExportTitle({
         isAllSelected,
         selectedCount: selected.length,
-        activityCount,
+        totalCount: activityCount,
+        selectionForms: ["activity", "activities"],
       }),
       <Suspense fallback={<LoadingState />}>
         <ActivitiesExportForm

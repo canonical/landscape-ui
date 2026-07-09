@@ -53,6 +53,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
   const handleConfirmCancel = async () => {
     try {
       await onCancel(job.id);
+      popSidePathUntilClear();
       notify.success({
         title: "TSV generation cancelled",
         message: `${job.name} has been cancelled.`,
@@ -181,6 +182,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
                   <ProgressBar
                     progress={job.progress}
                     secondsRemaining={job.estimated_seconds_remaining ?? null}
+                    label={`${job.name} export progress`}
                     fullWidth
                   />
                 ) : (
