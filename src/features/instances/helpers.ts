@@ -204,7 +204,7 @@ export const getInstanceListParams = ({
   filters,
   wsl,
 }: {
-  filters: GetInstanceQueryProps & { status: string };
+  filters: GetInstanceQueryProps;
   wsl: string[];
 }): InstanceListParams => ({
   query: getQuery(filters),
