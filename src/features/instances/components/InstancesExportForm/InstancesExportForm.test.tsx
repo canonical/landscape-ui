@@ -192,7 +192,9 @@ describe("InstancesExportForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(await screen.findByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Next" }),
+    ).toBeInTheDocument();
     await openAttributeGroup(user, /primary identity/i);
     expect(
       screen.getByRole("checkbox", { name: "Instance name" }),
