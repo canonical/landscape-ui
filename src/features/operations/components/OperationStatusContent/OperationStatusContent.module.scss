@@ -1,0 +1,10 @@
+@import "vanilla-framework/scss/settings_spacing";
+
+.marginRight {
+  margin-right: $sph--small;
+}
+
+.progressContainer {
+  align-items: center;
+  display: inline-flex;
+}

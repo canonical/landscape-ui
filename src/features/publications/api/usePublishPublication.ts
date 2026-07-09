@@ -23,8 +23,10 @@ export const usePublishPublication = () => {
     mutationKey: ["publications", "publish"],
     mutationFn: async ({ name }) =>
       authFetchDebArchive.post(`${name}:publish`, body),
-    onSuccess: async () =>
-      queryClient.invalidateQueries({ queryKey: ["publications"] }),
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["publications"] });
+      queryClient.invalidateQueries({ queryKey: ["operations"] });
+    },
   });
 
   return {

@@ -6,6 +6,7 @@ import { useBoolean } from "usehooks-ts";
 import RemovePublicationModal from "../RemovePublicationModal";
 import RepublishPublicationModal from "../RepublishPublicationModal";
 import type { Publication } from "@canonical/landscape-openapi";
+import { useOperation } from "@/features/operations";
 
 interface PublicationsListActionsProps {
   readonly publication: Publication;
@@ -15,6 +16,8 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   publication,
 }) => {
   const { createPageParamsSetter } = usePageParams();
+  const { isOperationInProgress } = useOperation();
+  const isPublishing = isOperationInProgress(publication.lastOperation);
   const publicationDisplayName = publication.displayName;
 
   const {
@@ -33,25 +36,32 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
     {
       icon: "show",
       label: "View details",
-      "aria-label": `View details of "${publicationDisplayName}" publication`,
+      "aria-label": `View details of "${publicationDisplayName}"`,
       onClick: createPageParamsSetter({
         sidePath: ["view"],
         name: publication.publicationId,
       }),
     },
-    {
-      icon: "upload",
-      label: "Republish",
-      "aria-label": `Republish "${publicationDisplayName}" publication`,
-      onClick: openRepublishModal,
-    },
+    isPublishing
+      ? {
+          icon: "spinner u-animation--spin",
+          label: "Publishing",
+          "aria-label": `Publishing "${publicationDisplayName}"`,
+          disabled: true,
+        }
+      : {
+          icon: "upload",
+          label: "Republish",
+          "aria-label": `Republish "${publicationDisplayName}"`,
+          onClick: openRepublishModal,
+        },
   ];
 
   const destructiveActions: Action[] = [
     {
       icon: "delete",
       label: "Remove",
-      "aria-label": `Remove "${publicationDisplayName}" publication`,
+      "aria-label": `Remove "${publicationDisplayName}"`,
       onClick: openRemovalModal,
     },
   ];
@@ -59,7 +69,7 @@ const PublicationsListActions: FC<PublicationsListActionsProps> = ({
   return (
     <>
       <ListActions
-        toggleAriaLabel={`${publicationDisplayName} actions`}
+        toggleAriaLabel={`${publicationDisplayName} publication actions`}
         actions={actions}
         destructiveActions={destructiveActions}
       />

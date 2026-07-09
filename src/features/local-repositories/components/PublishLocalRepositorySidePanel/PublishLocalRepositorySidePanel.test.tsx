@@ -1,35 +1,38 @@
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
+import { Suspense } from "react";
+import SidePanel from "@/components/layout/SidePanel";
 import PublishLocalRepositorySidePanel from "./PublishLocalRepositorySidePanel";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { repositories } from "@/tests/mocks/localRepositories";
 
-const ROUTE_PATH = "/?name=aaaa-bbbb-cccc";
+const [repository] = repositories;
 
-const renderWithRoute = () =>
+const renderWithRoute = (localId: string = repository.localId) =>
   renderWithProviders(
-    <PublishLocalRepositorySidePanel />,
+    <Suspense fallback={<SidePanel.LoadingState />}>
+      <PublishLocalRepositorySidePanel />
+    </Suspense>,
     undefined,
-    ROUTE_PATH,
+    `/?name=${localId}`,
   );
 
 describe("PublishLocalRepositorySidePanel", () => {
-  it("renders loading state when fetching repository", () => {
-    renderWithProviders(<PublishLocalRepositorySidePanel />);
-  });
-
   it("renders header with repository name", async () => {
     renderWithRoute();
 
-    expect(await screen.findByText(/publish repo 1/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(`Publish ${repository.displayName}`),
+    ).toBeInTheDocument();
   });
 
   it("does not render radio buttons when publications do not exist", async () => {
-    renderWithProviders(
-      <PublishLocalRepositorySidePanel />,
-      undefined,
-      ROUTE_PATH,
-    );
+    renderWithRoute("eeee-ffff-gggg");
+
+    expect(
+      await screen.findByRole("textbox", { name: /publication name/i }),
+    ).toBeInTheDocument();
 
     expect(screen.queryByLabelText(/new publication/i)).not.toBeInTheDocument();
     expect(
