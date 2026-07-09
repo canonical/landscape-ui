@@ -4,56 +4,29 @@ import { setEndpointStatus } from "@/tests/controllers/controller";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Suspense } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import MirrorActions from "./MirrorActions";
-
-const mockSetPageParams = vi.fn();
-
-vi.mock("../UpdateMirrorModal", () => ({
-  default: ({ isOpen }: { isOpen: boolean }) =>
-    isOpen ? <div>Update modal is open</div> : null,
-}));
-
-vi.mock("../RemoveMirrorModal", () => ({
-  default: ({ isOpen }: { isOpen: boolean }) =>
-    isOpen ? <div>Remove modal is open</div> : null,
-}));
-
-vi.mock("@/features/publication-targets", async () => {
-  const actual = await vi.importActual("@/features/publication-targets");
-
-  return {
-    ...actual,
-    NoPublicationTargetsModal: () => (
-      <div>No publication targets modal is open</div>
-    ),
-  };
-});
-
-vi.mock("@/hooks/usePageParams", () => ({
-  __esModule: true,
-  default: () => ({
-    setPageParams: mockSetPageParams,
-    createPageParamsSetter: (params: Record<string, unknown>) => () =>
-      mockSetPageParams(params),
-  }),
-}));
+import usePageParams from "@/hooks/usePageParams/usePageParams";
 
 describe("MirrorActions", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
     setEndpointStatus("default");
   });
 
-  const renderActions = () =>
-    renderWithProviders(
+  const TestComponent = () => {
+    const { lastSidePathSegment, name } = usePageParams();
+
+    return (
       <Suspense fallback={<LoadingState />}>
         <MirrorActions
           mirrorDisplayName="Mirror display name"
           mirrorName="mirrors/name"
         />
-      </Suspense>,
+        <div data-testid="sidePath">{lastSidePathSegment}</div>
+        <div data-testid="name">{name}</div>
+      </Suspense>
     );
+  };
 
   const openActionsMenu = async (user: ReturnType<typeof userEvent.setup>) => {
     await user.click(
@@ -63,30 +36,30 @@ describe("MirrorActions", () => {
     );
   };
 
-  it("renders", () => {
-    renderActions();
-  });
-
   it("opens the update modal when update is clicked", async () => {
     const user = userEvent.setup();
 
-    renderActions();
+    renderWithProviders(<TestComponent />);
 
     await openActionsMenu(user);
     await user.click(await screen.findByRole("menuitem", { name: "Update" }));
 
-    expect(screen.getByText("Update modal is open")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Update Mirror display name" }),
+    ).toBeInTheDocument();
   });
 
   it("opens the remove modal when remove is clicked", async () => {
     const user = userEvent.setup();
 
-    renderActions();
+    renderWithProviders(<TestComponent />);
 
     await openActionsMenu(user);
     await user.click(await screen.findByRole("menuitem", { name: "Remove" }));
 
-    expect(screen.getByText("Remove modal is open")).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Remove Mirror display name" }),
+    ).toBeInTheDocument();
   });
 
   it("opens no publication targets modal when publish is clicked without targets", async () => {
@@ -94,60 +67,55 @@ describe("MirrorActions", () => {
 
     setEndpointStatus({ status: "empty", path: "publicationTargets" });
 
-    renderActions();
+    renderWithProviders(<TestComponent />);
 
     await openActionsMenu(user);
     await user.click(await screen.findByRole("menuitem", { name: "Publish" }));
 
     expect(
-      screen.getByText("No publication targets modal is open"),
+      screen.getByRole("heading", {
+        name: "No publication targets have been added",
+      }),
     ).toBeInTheDocument();
-    expect(mockSetPageParams).not.toHaveBeenCalledWith(
-      expect.objectContaining({ sidePath: ["publish"] }),
-    );
+
+    expect(screen.getByTestId("sidePath")).not.toHaveTextContent("publish");
   });
 
   it("sets publish side panel when publish is clicked with publication targets", async () => {
     const user = userEvent.setup();
 
-    renderActions();
+    renderWithProviders(<TestComponent />);
 
     await openActionsMenu(user);
     await user.click(await screen.findByRole("menuitem", { name: "Publish" }));
 
-    expect(mockSetPageParams).toHaveBeenCalledWith({
-      sidePath: ["publish"],
-      name: "mirrors/name",
-    });
+    expect(screen.getByTestId("sidePath")).toHaveTextContent("publish");
+    expect(screen.getByTestId("name")).toHaveTextContent("mirrors/name");
   });
 
   it("sets view side panel when view details is clicked", async () => {
     const user = userEvent.setup();
 
-    renderActions();
+    renderWithProviders(<TestComponent />);
 
     await openActionsMenu(user);
     await user.click(
       await screen.findByRole("menuitem", { name: "View details" }),
     );
 
-    expect(mockSetPageParams).toHaveBeenCalledWith({
-      sidePath: ["view"],
-      name: "mirrors/name",
-    });
+    expect(screen.getByTestId("sidePath")).toHaveTextContent("view");
+    expect(screen.getByTestId("name")).toHaveTextContent("mirrors/name");
   });
 
   it("sets edit side panel when edit is clicked", async () => {
     const user = userEvent.setup();
 
-    renderActions();
+    renderWithProviders(<TestComponent />);
 
     await openActionsMenu(user);
     await user.click(await screen.findByRole("menuitem", { name: "Edit" }));
 
-    expect(mockSetPageParams).toHaveBeenCalledWith({
-      sidePath: ["edit"],
-      name: "mirrors/name",
-    });
+    expect(screen.getByTestId("sidePath")).toHaveTextContent("edit");
+    expect(screen.getByTestId("name")).toHaveTextContent("mirrors/name");
   });
 });
