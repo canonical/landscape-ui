@@ -229,11 +229,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
   const handleExportDialog = () => {
     setSidePanelContent(
       "Export report as TSV",
-      <ReportExportForm
-        bucketIds={bucketIds}
-        otherIds={otherIds}
-        otherDetail={OTHER_DETAIL}
-      />,
+      <ReportExportForm bucketIds={bucketIds} otherIds={otherIds} />,
       "medium",
     );
   };
@@ -243,7 +239,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       <div className="p-segmented-control">
         <Button
           type="button"
-          appearance="positive"
+          appearance="secondary"
           className="p-segmented-control__button"
           onClick={handleExportDialog}
         >

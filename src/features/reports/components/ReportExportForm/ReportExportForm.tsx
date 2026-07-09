@@ -7,7 +7,11 @@ import {
   type ExportField,
   type ExportFormValues,
 } from "@/features/exports";
-import { CheckboxInput, Select } from "@canonical/react-components";
+import {
+  CheckboxInput,
+  Notification,
+  Select,
+} from "@canonical/react-components";
 import moment from "moment";
 import { useMemo, useState, type FC } from "react";
 import { useNavigate } from "react-router";
@@ -25,13 +29,11 @@ import {
 interface ReportExportFormProps {
   readonly bucketIds: Record<BucketKey, readonly number[]>;
   readonly otherIds: readonly number[];
-  readonly otherDetail?: string;
 }
 
 const ReportExportForm: FC<ReportExportFormProps> = ({
   bucketIds,
   otherIds,
-  otherDetail,
 }) => {
   const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
@@ -76,15 +78,6 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => {
-    if (emptyBucket) {
-      notify.info({
-        title: "No instances in bucket",
-        message:
-          "The selected bucket contains no instances. Choose a different bucket or include Other.",
-      });
-      return;
-    }
-
     if (fieldsToExport.length === 0) {
       notify.info({
         title: "No attributes selected",
@@ -131,6 +124,12 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
 
   return (
     <>
+      {emptyBucket && (
+        <Notification severity="caution">
+          The selected bucket contains no instances. Choose a different bucket
+          or include Other.
+        </Notification>
+      )}
       <Select
         label="Bucket"
         options={BUCKET_OPTIONS.map((o) => ({
@@ -142,45 +141,29 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
           setSelectedBucket(e.target.value as BucketKey);
         }}
       />
+      <CheckboxInput
+        label="Include instances with no date range (Other)"
+        checked={includeOther}
+        onChange={() => {
+          setIncludeOther((v) => !v);
+        }}
+      />
       <div className={classes.includeOtherRow}>
         <CheckboxInput
-          label="Include Other"
-          checked={includeOther}
+          label="Report by CVE"
+          checked={byCve}
           onChange={() => {
-            setIncludeOther((v) => !v);
+            setByCve((v) => !v);
           }}
         />
         <div className={classes.includeOtherTooltip}>
           <ReportHelpTooltip
             message={
-              otherDetail ||
-              "Other includes instances that are not in any of the buckets."
+              "CVE exports add a cve_id and status column and emit one row per instance and CVE. The fields selected below are included on every row."
             }
           />
         </div>
       </div>
-      {emptyBucket && (
-        <p className="p-form-validation__message">
-          The selected bucket contains no instances. Choose a different bucket
-          or include Other.
-        </p>
-      )}
-      <CheckboxInput
-        label="Report by CVE"
-        checked={byCve}
-        onChange={() => {
-          setByCve((v) => !v);
-        }}
-      />
-      {byCve && (
-        <p className="u-text--muted">
-          <small>
-            CVE exports add a cve_id and status column and emit one row per
-            instance and CVE. The fields selected below are included on every
-            row.
-          </small>
-        </p>
-      )}
       <ExportForm
         fieldGroups={fieldGroups}
         initialValues={INITIAL_EXPORT_VALUES}
