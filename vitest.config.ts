@@ -93,19 +93,27 @@ export default defineConfig({
       name: "strip-pragma-sourcemaps",
       enforce: "pre",
       load(id) {
-        const path = cleanUrl(id);
+        const path = cleanUrl(id).replace(/^\/@fs/, "");
         if (
           !path.includes("@canonical/react-ds-global/") ||
           !path.endsWith(".js")
         ) {
           return null;
         }
-        const original = readFileSync(path, "utf-8");
+        let original: string;
+        try {
+          original = readFileSync(path, "utf-8");
+        } catch {
+          return null;
+        }
         const code = original.replace(/\n?\/\/# sourceMappingURL=\S+/g, "");
         if (code === original) {
           return null;
         }
-        return { code, map: { mappings: "" } };
+        return {
+          code,
+          map: { version: 3, sources: [], names: [], mappings: "" },
+        };
       },
     },
   ],
