@@ -86,6 +86,19 @@ describe("AutoinstallFileForm", () => {
     expect(props.onSubmit).not.toHaveBeenCalled();
   });
 
+  it("shows no changes notification and does not submit when editing unchanged file", async () => {
+    const props = editAutoinstallFileProps();
+    const user = userEvent.setup();
+    renderWithProviders(<AutoinstallFileForm {...props} />);
+
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+
+    expect(
+      await screen.findByText("No changes to save. Please edit the file first."),
+    ).toBeInTheDocument();
+    expect(props.onSubmit).not.toHaveBeenCalled();
+  });
+
   it("populates filename from uploaded file when creating", async () => {
     const props = createAutoinstallFileProps();
     const user = userEvent.setup();
