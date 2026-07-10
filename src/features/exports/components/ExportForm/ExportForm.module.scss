@@ -25,6 +25,10 @@
   border-top: 1px solid $colors--theme--border-low-contrast;
 }
 
+:global(.export-form-field-groups-accordion .p-accordion__list) {
+  margin-bottom: 0;
+}
+
 :global(.export-form-field-groups-accordion h5.p-accordion__heading),
 :global(
   .export-form-field-groups-accordion h5.p-accordion__heading.p-heading--5

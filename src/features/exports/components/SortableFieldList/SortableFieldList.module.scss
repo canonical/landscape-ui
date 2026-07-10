@@ -120,22 +120,3 @@
   padding: 0 $sph--x-small;
   text-align: center;
 }
-
-// Brief blue flash on cells after a row is moved via arrows or number input.
-@keyframes flash-blue {
-  0% {
-    background-color: rgb(0 102 204 / 20%);
-  }
-
-  30% {
-    background-color: rgb(0 102 204 / 20%);
-  }
-
-  100% {
-    background-color: transparent;
-  }
-}
-
-.justMoved > :global(td) {
-  animation: flash-blue 0.15s ease-out forwards;
-}

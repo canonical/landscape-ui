@@ -198,13 +198,15 @@ const ExportForm: FC<ExportFormProps> = ({
 
       return (
         <div>
-          <Accordion
-            key={`filtered-${sortedSections[0]?.key ?? ""}`}
-            className="export-form-field-groups-accordion"
-            sections={sortedSections}
-            expanded={sortedSections[0]?.key}
-            titleElement="h5"
-          />
+          {sortedSections.map((section) => (
+            <Accordion
+              key={`filtered-${section.key}`}
+              className="export-form-field-groups-accordion"
+              sections={[section]}
+              expanded={section.key}
+              titleElement="h5"
+            />
+          ))}
         </div>
       );
     }
