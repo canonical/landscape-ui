@@ -13,10 +13,6 @@
   margin-bottom: $spv--medium;
 }
 
-.selectedColumnsIntro {
-  margin-bottom: $spv--small;
-}
-
 .resetButton {
   white-space: nowrap;
 }
@@ -33,9 +29,10 @@
 }
 
 .orderColumn {
-  text-align: center;
+  text-align: left;
   white-space: nowrap;
-  width: 12rem;
+  // Fixed width to left-align header over row content columns (matches .orderInput width + flex gap + padding)
+  width: 10.5rem;
 }
 
 .orderControls {

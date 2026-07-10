@@ -21,6 +21,12 @@
   margin-top: $spv--small;
 }
 
+.attributesLabel {
+  display: block;
+  font-weight: 500;
+  margin-bottom: $spv--small;
+}
+
 :global(.export-form-field-groups-accordion) {
   border-top: 1px solid $colors--theme--border-low-contrast;
 }
