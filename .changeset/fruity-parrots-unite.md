@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Disable autocomplete suggestions for sensitive fields such as access keys while keeping password manager suggestions
+Disable autocomplete suggestions for AWS access key ID and keep password manager suggestions for secrets and passwords
