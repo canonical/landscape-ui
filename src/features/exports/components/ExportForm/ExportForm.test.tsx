@@ -155,7 +155,7 @@ describe("ExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("auto-expands groups matched by group title so all their fields are visible", async () => {
+  it("does not match group titles (only field labels)", async () => {
     const user = userEvent.setup();
     renderForm();
 

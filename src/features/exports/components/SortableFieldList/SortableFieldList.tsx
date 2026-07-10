@@ -83,7 +83,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
   // Capture the field list as it exists on first render so Reset can always
   // return to the group-declaration order, regardless of how many moves the
   // parent state has accumulated since then.
-  const initialFieldsRef = useRef<ExportField[]>(fields);
+  const initialFieldsRef = useRef<ExportField[]>([...fields]);
 
   // Stable per-row ref callbacks, cached by fieldId, so the row's ref doesn't
   // churn (null then re-set) on every render.

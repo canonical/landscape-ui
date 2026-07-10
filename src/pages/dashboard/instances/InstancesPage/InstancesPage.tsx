@@ -16,8 +16,7 @@ import { lazy, useCallback, useMemo, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
 
 const InstancesExportForm = lazy(
-  async () =>
-    import("@/features/instances/components/InstancesExportForm/InstancesExportForm"),
+  async () => import("@/features/instances/components/InstancesExportForm"),
 );
 
 const InstancesPage: FC = () => {
