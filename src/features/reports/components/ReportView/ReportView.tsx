@@ -8,9 +8,10 @@ import {
   subscribeToSelectedInstanceIds,
 } from "@/features/instances";
 import { ROUTES } from "@/libs/routes";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { pluralize } from "@/utils/_helpers";
 import { Button, Notification } from "@canonical/react-components";
+import SidePanel from "@/components/layout/SidePanel";
 import classNames from "classnames";
 import moment from "moment";
 import type { FC } from "react";
@@ -25,36 +26,44 @@ import MetricBarTable from "../MetricBarTable";
 import classes from "./ReportView.module.scss";
 
 interface ReportViewProps {
-  readonly instanceIds: number[];
+  readonly selectedInstanceIds?: number[];
+  readonly isAllSelected?: boolean;
 }
 
-const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
-  const { closeSidePanel, setSidePanelContent, setSidePanelTitle } =
-    useSidePanel();
+const ReportView: FC<ReportViewProps> = ({
+  selectedInstanceIds,
+  isAllSelected,
+}) => {
+  const { closeSidePanel, createSidePathPusher, lastSidePathSegment } =
+    usePageParams();
+  const handleExport = createSidePathPusher("export");
 
   // The report is a snapshot of the selection at the time the panel was
   // opened (or last regenerated); the live selection is only observed to
   // tell the user when the snapshot has gone stale.
-  const [reportIds, setReportIds] = useState<readonly number[]>(instanceIds);
   const currentIds = useSyncExternalStore(
     subscribeToSelectedInstanceIds,
     getSelectedInstanceIds,
   );
+  // Initialize snapshot from props (frozen at open time) or fall back to current
+  const initialIds = isAllSelected
+    ? currentIds // When all selected, use full current IDs from store
+    : (selectedInstanceIds ?? currentIds);
+  const [reportIds, setReportIds] = useState<readonly number[]>(initialIds);
   const reportIdSet = new Set(reportIds);
   const selectionChanged =
     currentIds.length !== reportIds.length ||
     !currentIds.every((id) => reportIdSet.has(id));
 
+  // Build query: undefined selectedIds means "all selected", so omit query filter
+  const query = reportIds.length === 0 ? "" : `id:${reportIds.join(" OR id:")}`;
   const { report, isGettingComplianceReport, isComplianceReportError } =
     useGetComplianceReport({
-      query: `id:${reportIds.join(" OR id:")}`,
+      query,
     });
 
   const regenerateReport = () => {
     setReportIds(currentIds);
-    setSidePanelTitle(
-      `Report for ${pluralize(currentIds.length, ["instance"], "exact")}`,
-    );
   };
 
   // A shareable deep link to the instances list filtered to exactly these
@@ -226,63 +235,75 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     },
   ];
 
-  const handleExportDialog = () => {
-    setSidePanelContent(
-      "Export report as TSV",
-      <ReportExportForm bucketIds={bucketIds} otherIds={otherIds} />,
-      "medium",
+  if (lastSidePathSegment === "export") {
+    return (
+      <>
+        <SidePanel.Header>Export report as TSV</SidePanel.Header>
+        <SidePanel.Content>
+          <ReportExportForm bucketIds={bucketIds} otherIds={otherIds} />
+        </SidePanel.Content>
+      </>
     );
-  };
+  }
 
   return (
     <>
-      <div className="p-segmented-control">
-        <Button
-          type="button"
-          appearance="secondary"
-          className="p-segmented-control__button"
-          onClick={handleExportDialog}
-        >
-          <span>Export as TSV</span>
-        </Button>
-      </div>
-      {selectionChanged && (
-        <Notification
-          severity="information"
-          title="Selection has changed"
-          actions={
-            currentIds.length > 0
-              ? [{ label: "Regenerate report", onClick: regenerateReport }]
-              : undefined
-          }
-        >
-          {`This report still covers the ${pluralize(reportIds.length, ["instance"], "exact")} selected when it was generated.`}
-        </Notification>
-      )}
-      <section className={classes.section}>
-        <p className={classNames("p-heading--5 u-no-margin", classes.heading)}>
-          Status
+      <SidePanel.Header>
+        {`Report for ${pluralize(reportIds.length, ["instance"], "exact")}`}
+      </SidePanel.Header>
+      <SidePanel.Content>
+        <div className="p-segmented-control">
+          <Button
+            type="button"
+            appearance="secondary"
+            className="p-segmented-control__button"
+            onClick={handleExport}
+          >
+            <span>Export as TSV</span>
+          </Button>
+        </div>
+        {selectionChanged && (
+          <Notification
+            severity="information"
+            title="Selection has changed"
+            actions={
+              currentIds.length > 0
+                ? [{ label: "Regenerate report", onClick: regenerateReport }]
+                : undefined
+            }
+          >
+            {`This report still covers the ${pluralize(reportIds.length, ["instance"], "exact")} selected when it was generated.`}
+          </Notification>
+        )}
+        <section className={classes.section}>
+          <p
+            className={classNames("p-heading--5 u-no-margin", classes.heading)}
+          >
+            Status
+          </p>
+          <MetricBarTable
+            labelHeader="Status"
+            countHeader="Instances"
+            rows={statusRows}
+          />
+        </section>
+        <section className={classes.section}>
+          <p
+            className={classNames("p-heading--5 u-no-margin", classes.heading)}
+          >
+            Security upgrades
+          </p>
+          <ReportDonutChart
+            total={total}
+            segments={patchSegments}
+            labelHeader="Time to patch USNs"
+            countHeader="Instances"
+          />
+        </section>
+        <p className="u-text--muted p-text--small">
+          {`Report generated ${moment(report.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
         </p>
-        <MetricBarTable
-          labelHeader="Status"
-          countHeader="Instances"
-          rows={statusRows}
-        />
-      </section>
-      <section className={classes.section}>
-        <p className={classNames("p-heading--5 u-no-margin", classes.heading)}>
-          Security upgrades
-        </p>
-        <ReportDonutChart
-          total={total}
-          segments={patchSegments}
-          labelHeader="Time to patch USNs"
-          countHeader="Instances"
-        />
-      </section>
-      <p className="u-text--muted p-text--small">
-        {`Report generated ${moment(report.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
-      </p>
+      </SidePanel.Content>
     </>
   );
 };

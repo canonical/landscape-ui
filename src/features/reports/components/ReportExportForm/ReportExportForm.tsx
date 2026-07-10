@@ -1,6 +1,6 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import {
   ExportForm,
@@ -36,7 +36,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
   bucketIds,
   otherIds,
 }) => {
-  const { closeSidePanel } = useSidePanel();
+  const { popSidePathUntilClear } = usePageParams();
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
@@ -105,7 +105,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
         retain_until: moment(values.retainUntil).toISOString(),
       });
       const job = response.data;
-      closeSidePanel();
+      popSidePathUntilClear();
       notify.success({
         title: "TSV export in progress",
         message: `Your compliance export "${values.name.trim()}" is being generated.`,

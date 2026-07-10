@@ -9,22 +9,35 @@ import {
   useGetInstances,
 } from "@/features/instances";
 import { getExportTitle } from "@/features/exports";
+import { setSelectedInstanceIds } from "@/features/instances";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { lazy, useCallback, useMemo, useState, type FC } from "react";
+import {
+  lazy,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FC,
+} from "react";
 import InstancesContainer from "../InstancesContainer";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
 );
 
+const ReportView = lazy(
+  async () => import("@/features/reports/components/ReportView"),
+);
+
 const InstancesPage: FC = () => {
-  useSetDynamicFilterValidation("sidePath", ["export"]);
+  useSetDynamicFilterValidation("sidePath", ["export", "report"]);
   const {
     currentPage,
     pageSize,
     wsl,
+    sidePath,
     lastSidePathSegment,
     popSidePathUntilClear,
     ...filters
@@ -56,6 +69,14 @@ const InstancesPage: FC = () => {
     setSelectedInstances([]);
   }, []);
 
+  useEffect(() => {
+    setSelectedInstanceIds(
+      isAllSelected
+        ? instances.map(({ id }) => id)
+        : selectedInstances.map(({ id }) => id),
+    );
+  }, [selectedInstances, isAllSelected, instances]);
+
   return (
     <PageMain>
       <PageHeader
@@ -83,11 +104,11 @@ const InstancesPage: FC = () => {
         />
       </PageContent>
       <SidePanel
-        isOpen={lastSidePathSegment === "export"}
+        isOpen={sidePath.join(",") === "export"}
         onClose={popSidePathUntilClear}
         size="medium"
       >
-        {lastSidePathSegment === "export" && (
+        {sidePath.join(",") === "export" && (
           <SidePanel.Suspense key="export">
             <SidePanel.Header>
               {getExportTitle({
@@ -107,6 +128,24 @@ const InstancesPage: FC = () => {
                 }
               />
             </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
+      <SidePanel
+        isOpen={sidePath[0] === "report"}
+        onClose={popSidePathUntilClear}
+        size="medium"
+      >
+        {sidePath[0] === "report" && (
+          <SidePanel.Suspense key="report">
+            <ReportView
+              selectedInstanceIds={
+                isAllSelected
+                  ? undefined
+                  : selectedInstances.map(({ id }) => id)
+              }
+              isAllSelected={isAllSelected}
+            />
           </SidePanel.Suspense>
         )}
       </SidePanel>

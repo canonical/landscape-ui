@@ -22,9 +22,6 @@ const RunInstanceScriptForm = lazy(
 const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
 );
-const ReportView = lazy(
-  async () => import("@/features/reports/components/ReportView"),
-);
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
   async () => import("../DistributionUpgrades"),
@@ -146,15 +143,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const handleReportView = () => {
-    setSidePanelContent(
-      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, `instances`)}`,
-      <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
-      </Suspense>,
-      "medium",
-    );
-  };
+  const handleReportView = createSidePathPusher("report");
 
   const handleAccessGroupChange = () => {
     setSidePanelContent(
