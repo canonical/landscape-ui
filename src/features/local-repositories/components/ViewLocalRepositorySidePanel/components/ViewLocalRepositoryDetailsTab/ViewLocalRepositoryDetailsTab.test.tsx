@@ -3,59 +3,77 @@ import { describe, it, expect } from "vitest";
 import ViewLocalRepositoryDetailsTab from "./ViewLocalRepositoryDetailsTab";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+import { succeededOperation } from "@/tests/mocks/operations";
+import type { Local } from "@canonical/landscape-openapi";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import moment from "moment";
+
+const [repository] = repositories;
 
 describe("ViewLocalRepositoryDetailsTab", () => {
   it("renders details block with repository information", () => {
-    renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
+    const { container } = renderWithProviders(
+      <ViewLocalRepositoryDetailsTab
+        repository={repository}
+        operationMetadata={succeededOperation.metadata}
+      />,
     );
 
     expect(screen.getByText("Details")).toBeInTheDocument();
-    expect(screen.getByText("repo 1")).toBeInTheDocument();
-    expect(screen.getByText("distribution 1")).toBeInTheDocument();
-    expect(screen.getByText("component 1")).toBeInTheDocument();
+
+    expect(container).toHaveInfoItem("Name", repository.displayName);
+    expect(container).toHaveInfoItem("Status", "Packages imported");
+    expect(container).toHaveInfoItem(
+      "Last import",
+      moment(repository.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT),
+    );
+    expect(container).toHaveInfoItem("Description", NO_DATA_TEXT);
+    expect(container).toHaveInfoItem(
+      "Default distribution",
+      repository.defaultDistribution,
+    );
+    expect(container).toHaveInfoItem(
+      "Default component",
+      repository.defaultComponent,
+    );
   });
 
-  it("renders description when present", () => {
-    renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[1]} />,
+  it("renders description when present and fallback for last import", () => {
+    const noImportRepository = (repositories as Local[]).find(
+      (repo) => !repo.lastImportTime,
+    );
+    assert(
+      noImportRepository,
+      "Need a mock repository with no last import time",
+    );
+    assert(
+      noImportRepository.comment,
+      "Need a mock repository with a description",
     );
 
-    expect(screen.getByText("repo 2 description")).toBeInTheDocument();
+    const { container } = renderWithProviders(
+      <ViewLocalRepositoryDetailsTab repository={noImportRepository} />,
+    );
+
+    expect(container).toHaveInfoItem("Last import", NO_DATA_TEXT);
+    expect(container).toHaveInfoItem("Description", noImportRepository.comment);
   });
 
-  it("renders used in block", () => {
+  it("renders used in block", async () => {
     renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
+      <ViewLocalRepositoryDetailsTab repository={repository} />,
     );
 
     expect(screen.getByText("Used in")).toBeInTheDocument();
-  });
-
-  it("renders loading state while fetching publications", () => {
-    renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
-    );
-
     expect(screen.getByRole("status")).toBeInTheDocument();
-  });
 
-  it("renders publications list when loaded", async () => {
-    renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
-    );
-
-    expect((await screen.findAllByRole("link")).length).toBeGreaterThan(0);
-  });
-
-  it("displays all detail fields", () => {
-    renderWithProviders(
-      <ViewLocalRepositoryDetailsTab repository={repositories[0]} />,
-    );
-
-    expect(screen.getByText("Name")).toBeInTheDocument();
-    expect(screen.getByText("Description")).toBeInTheDocument();
-    expect(screen.getByText("Default distribution")).toBeInTheDocument();
-    expect(screen.getByText("Default component")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("columnheader", { name: /Publication/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /Date published/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link")).toBeInTheDocument();
   });
 });

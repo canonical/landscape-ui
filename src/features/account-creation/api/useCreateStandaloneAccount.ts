@@ -15,7 +15,7 @@ export const useCreateStandaloneAccount = () => {
   const axiosInstance = axios.create({ baseURL: API_URL });
 
   const { isPending, mutateAsync } = useMutation<
-    AxiosResponse<unknown>,
+    AxiosResponse<void>,
     AxiosError<ApiError>,
     CreateStandaloneAccountParams
   >({

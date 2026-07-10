@@ -2,6 +2,8 @@ import { API_URL_DEB_ARCHIVE } from "@/constants";
 import server from "@/tests/server";
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
+import { Suspense } from "react";
+import SidePanel from "@/components/layout/SidePanel";
 import ImportRepositoryPackagesSidePanel from "./ImportRepositoryPackagesSidePanel";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -9,23 +11,17 @@ import { repositories } from "@/tests/mocks/localRepositories";
 import { expectLoadingState } from "@/tests/helpers";
 import { http, HttpResponse } from "msw";
 
-const ROUTE_PATH = `/?name=${repositories[0].localId}`;
-
 const renderComponent = () =>
   renderWithProviders(
-    <ImportRepositoryPackagesSidePanel />,
+    <Suspense fallback={<SidePanel.LoadingState />}>
+      <ImportRepositoryPackagesSidePanel />
+    </Suspense>,
     undefined,
-    ROUTE_PATH,
+    `/?name=${repositories[0].localId}`,
   );
 
 describe("ImportRepositoryPackagesSidePanel", () => {
   const user = userEvent.setup();
-
-  it("renders loading state while repository is unresolved", () => {
-    renderWithProviders(<ImportRepositoryPackagesSidePanel />);
-
-    expect(screen.getByRole("status")).toBeInTheDocument();
-  });
 
   it("renders the header, input, and buttons", async () => {
     renderComponent();

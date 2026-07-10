@@ -1,103 +1,56 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import PublishRepositoryExistingForm from "./PublishRepositoryExistingForm";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { publications } from "@/tests/mocks/publications";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as publicationsApi from "@/features/publications";
 import { ErrorBoundary } from "@sentry/react";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
 
 const localRepositoriesPublications = publications.filter(({ source }) =>
   source.startsWith("locals/"),
 );
 
+const [repository] = repositories;
+const [defaultPublication] = localRepositoriesPublications;
+assert(
+  defaultPublication,
+  "No local repository publications found for testing",
+);
+
 describe("PublishRepositoryExistingForm", () => {
-  const mockPublishPublication = vi.fn();
-
-  beforeEach(() => {
-    mockPublishPublication.mockResolvedValue({});
-    vi.spyOn(publicationsApi, "usePublishPublication").mockReturnValue({
-      publishPublication: mockPublishPublication,
-      isPublishingPublication: false,
-    });
-  });
-
-  it("renders form with publication selector", () => {
+  it("renders form with all fields and buttons", () => {
     renderWithProviders(
       <PublishRepositoryExistingForm
-        repository={repositories[0]}
+        repository={repository}
         publications={localRepositoriesPublications}
       />,
     );
 
-    expect(screen.getByLabelText(/^publication name$/i)).toBeInTheDocument();
-  });
-
-  it("renders read-only publication target field", () => {
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
+    expect(
+      screen.getByRole("heading", { name: "Details" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/publication name/i)).toHaveValue(
+      defaultPublication.name,
     );
-
     expect(screen.getByText("Publication target")).toBeInTheDocument();
-  });
-
-  it("renders read-only signing GPG key field", () => {
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
-    );
-
     expect(screen.getByText("Signing GPG key")).toBeInTheDocument();
-  });
 
-  it("displays available publications", () => {
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
-    );
+    expect(
+      screen.getByRole("heading", { name: "Contents" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Distribution")).toBeInTheDocument();
+    expect(screen.getByText("Component")).toBeInTheDocument();
 
-    expect(screen.getByText("noble publication")).toBeInTheDocument();
-  });
-
-  it("renders contents block", () => {
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
-    );
-
-    expect(screen.getByText("Contents")).toBeInTheDocument();
-  });
-
-  it("renders settings block", () => {
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
-    );
-
+    expect(
+      screen.getByRole("heading", { name: "Settings" }),
+    ).toBeInTheDocument();
     expect(screen.getByText("Installs and upgrades")).toBeInTheDocument();
     expect(screen.getByLabelText(/hash based indexing/i)).toBeInTheDocument();
-  });
 
-  it("renders publish button", () => {
-    renderWithProviders(
-      <PublishRepositoryExistingForm
-        repository={repositories[0]}
-        publications={localRepositoriesPublications}
-      />,
-    );
-
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /publish/i }),
     ).toBeInTheDocument();
@@ -107,7 +60,7 @@ describe("PublishRepositoryExistingForm", () => {
     const user = userEvent.setup();
     renderWithProviders(
       <PublishRepositoryExistingForm
-        repository={repositories[0]}
+        repository={repository}
         publications={localRepositoriesPublications}
       />,
     );
@@ -121,23 +74,24 @@ describe("PublishRepositoryExistingForm", () => {
     const submitButton = screen.getByRole("button", { name: /publish/i });
     await user.click(submitButton);
 
-    expect(mockPublishPublication).toHaveBeenCalled();
+    expect(
+      await screen.findByRole("heading", {
+        name: `You have marked ${repository.displayName} to be published`,
+      }),
+    ).toBeInTheDocument();
   });
 
   it("displays publication details when selected", async () => {
     const user = userEvent.setup();
     renderWithProviders(
       <PublishRepositoryExistingForm
-        repository={repositories[0]}
+        repository={repository}
         publications={localRepositoriesPublications}
       />,
     );
 
     const publicationSelect = screen.getByLabelText(/^publication name$/i);
-    await user.selectOptions(
-      publicationSelect,
-      localRepositoriesPublications[0]?.name ?? "",
-    );
+    await user.selectOptions(publicationSelect, defaultPublication.name);
 
     expect(
       screen.getByText(
@@ -150,7 +104,7 @@ describe("PublishRepositoryExistingForm", () => {
     renderWithProviders(
       <ErrorBoundary fallback={<p>Selected publication not found</p>}>
         <PublishRepositoryExistingForm
-          repository={repositories[0]}
+          repository={repository}
           publications={[]}
         />
       </ErrorBoundary>,
@@ -158,5 +112,32 @@ describe("PublishRepositoryExistingForm", () => {
     expect(
       screen.getByText("Selected publication not found"),
     ).toBeInTheDocument();
+  });
+
+  it("shows an error notification when publishing a repository fails", async () => {
+    const user = userEvent.setup();
+    setEndpointStatus({ path: "publications", status: "error" });
+
+    renderWithProviders(
+      <PublishRepositoryExistingForm
+        repository={repository}
+        publications={localRepositoriesPublications}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", {
+      name: /publish repository/i,
+    });
+    await user.click(submitButton);
+
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: `You have marked ${repository.displayName} to be published`,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

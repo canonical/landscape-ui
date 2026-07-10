@@ -123,8 +123,8 @@ describe("AddPublicationForm", () => {
     );
     await selectLocalSource(user);
 
-    expect(screen.getByText("repo 1")).toBeInTheDocument();
-    expect(screen.getByText("component 1")).toBeInTheDocument();
+    expect(screen.getByText("noble")).toBeInTheDocument();
+    expect(screen.getByText("main")).toBeInTheDocument();
     expect(
       screen.queryByRole("combobox", { name: "Architectures" }),
     ).not.toBeInTheDocument();
@@ -186,7 +186,7 @@ describe("AddPublicationForm", () => {
 
     await selectLocalSource(user);
 
-    expect(screen.getByText("distribution 1")).toBeInTheDocument();
+    expect(screen.getByText("noble")).toBeInTheDocument();
   });
 
   it("shows signing key field when local repository is selected", async () => {

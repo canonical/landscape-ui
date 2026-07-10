@@ -3,31 +3,35 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import ViewLogsButton from "./ViewLogsButton";
-import { useLocation } from "react-router";
+import usePageParams from "@/hooks/usePageParams/usePageParams";
 
-const ComponentWrapper = () => {
-  const { search } = useLocation();
+const ComponentWrapper = ({ resource }: { readonly resource?: string }) => {
+  const { sidePath, name } = usePageParams();
 
   return (
     <>
-      <ViewLogsButton resource="test-resource" />
-      <div data-testid="location">{search}</div>
+      <ViewLogsButton resource={resource} />
+      <div data-testid="sidePath">{sidePath.join("&")}</div>
+      <div data-testid="name">{name}</div>
     </>
   );
 };
 
 describe("ViewLogsButton", () => {
-  it("opens side panel with logs action when sidePath is empty", async () => {
-    renderWithProviders(<ComponentWrapper />);
+  it("overwrites side panel when resource is provided", async () => {
+    renderWithProviders(
+      <ComponentWrapper resource="mirrorName" />,
+      undefined,
+      "?sidePath=view&name=test-resource",
+    );
 
     await userEvent.click(screen.getByRole("button", { name: /view logs/i }));
 
-    expect(screen.getByTestId("location")).toHaveTextContent(
-      "?sidePath=logs&name=test-resource",
-    );
+    expect(screen.getByTestId("sidePath")).toHaveTextContent("logs");
+    expect(screen.getByTestId("name")).toHaveTextContent("mirrorName");
   });
 
-  it("pushes side path when sidePath is not empty", async () => {
+  it("opens second side panel when no resource is provided", async () => {
     renderWithProviders(
       <ComponentWrapper />,
       undefined,
@@ -36,8 +40,7 @@ describe("ViewLogsButton", () => {
 
     await userEvent.click(screen.getByRole("button", { name: /view logs/i }));
 
-    const location = screen.getByTestId("location");
-    expect(location).toHaveTextContent("name=test-resource");
-    expect(location).toHaveTextContent("sidePath=view%2Clogs");
+    expect(screen.getByTestId("sidePath")).toHaveTextContent("view&logs");
+    expect(screen.getByTestId("name")).toHaveTextContent("test-resource");
   });
 });

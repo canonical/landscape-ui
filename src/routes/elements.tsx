@@ -125,3 +125,6 @@ export const Alerts = Loadable(
 export const ApiCredentials = Loadable(
   lazy(() => import("@/pages/dashboard/account/api-credentials")),
 );
+export const ExportsPage = Loadable(
+  lazy(() => import("@/pages/dashboard/account/exports")),
+);

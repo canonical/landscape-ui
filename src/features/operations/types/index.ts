@@ -1,6 +1,7 @@
 export type {
   OperationStatus,
   OperationError,
+  OperationMetadata,
   Operation,
   SuccessfulOperation,
   UnfinishedOperation,

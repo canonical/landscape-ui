@@ -1,79 +1,113 @@
 import { renderWithProviders } from "@/tests/render";
 import { describe, it, expect } from "vitest";
+import { Suspense } from "react";
+import SidePanel from "@/components/layout/SidePanel";
 import ViewLocalRepositorySidePanel from "./ViewLocalRepositorySidePanel";
-import { screen } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { expectLoadingState } from "@/tests/helpers";
+import { repositories } from "@/tests/mocks/localRepositories";
+import type { Local } from "@canonical/landscape-openapi";
+
+const [repository] = repositories;
+const typedRepos = repositories as Local[];
+
+const renderComponent = (localId: string = repository.localId) =>
+  renderWithProviders(
+    <Suspense fallback={<SidePanel.LoadingState />}>
+      <ViewLocalRepositorySidePanel />
+    </Suspense>,
+    undefined,
+    `?sidePath=view&name=${localId}`,
+  );
 
 describe("ViewLocalRepositorySidePanel", () => {
-  const user = userEvent.setup();
-  it("renders loading state when fetching repository", () => {
-    renderWithProviders(
-      <ViewLocalRepositorySidePanel />,
-      undefined,
-      "?sidePath=view&name=aaaa-bbbb-cccc",
-    );
+  it("renders header and both tabs", async () => {
+    renderComponent();
 
     expect(screen.getByRole("status")).toBeInTheDocument();
-  });
 
-  it("renders header and both tabs", async () => {
-    renderWithProviders(
-      <ViewLocalRepositorySidePanel />,
-      undefined,
-      "?sidePath=view&name=aaaa-bbbb-cccc",
-    );
-
-    await expectLoadingState();
-
-    expect(screen.getByRole("heading", { name: "repo 1" })).toBeInTheDocument();
-    expect(screen.getByText(/general details/i)).toBeInTheDocument();
-    expect(screen.getByText(/packages/i)).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: repository.displayName }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("General details")).toBeInTheDocument();
+    expect(screen.getByText("Packages")).toBeInTheDocument();
   });
 
   it("renders action buttons in both tabs", async () => {
-    renderWithProviders(
-      <ViewLocalRepositorySidePanel />,
-      undefined,
-      "?sidePath=view&name=aaaa-bbbb-cccc",
+    const user = userEvent.setup();
+    renderComponent();
+
+    const actionsButton = await screen.findByRole("button", {
+      name: /actions/i,
+    });
+
+    expect(actionsButton).toBeInTheDocument();
+
+    await user.click(
+      within(screen.getByRole("navigation")).getByText(/packages/i),
     );
 
-    await expectLoadingState();
-
-    expect(
-      screen.getByRole("button", { name: /actions/i }),
-    ).toBeInTheDocument();
-
-    await user.click(screen.getByText(/packages/i));
-
-    expect(
-      screen.getByRole("button", { name: /actions/i }),
-    ).toBeInTheDocument();
+    expect(actionsButton).toBeInTheDocument();
   });
 
   it("defaults to details tab and changes to packages tab when clicked", async () => {
-    renderWithProviders(
-      <ViewLocalRepositorySidePanel />,
-      undefined,
-      "?sidePath=view&name=aaaa-bbbb-cccc",
+    const user = userEvent.setup();
+    renderComponent();
+
+    const detailsTab = await screen.findByText(/general details/i);
+    const packagesTab = within(screen.getByRole("navigation")).getByText(
+      /packages/i,
     );
 
-    await expectLoadingState();
+    expect(detailsTab).toHaveAttribute("aria-selected", "true");
 
-    expect(screen.getByText(/general details/i)).toHaveAttribute(
-      "aria-selected",
-      "true",
+    await user.click(packagesTab);
+
+    expect(packagesTab).toHaveAttribute("aria-selected", "true");
+    expect(detailsTab).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("renders failed import notification", async () => {
+    const failedRepository = typedRepos.find(({ lastOperation }) =>
+      lastOperation?.includes("ffff-llll-dddd"),
+    );
+    assert(failedRepository, "Missing mock repository with a failed operation");
+
+    renderComponent(failedRepository.localId ?? "");
+
+    expect(
+      await screen.findByRole("heading", { name: "Package import failed" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Your last package import was not completed successfully.",
+      ),
+    ).toBeInTheDocument();
+
+    expect(screen.getAllByRole("button", { name: "View logs" })).toHaveLength(
+      2,
+    );
+  });
+
+  it("does not render notification if no operation exists", async () => {
+    const repositoryWithoutOperation = typedRepos.find(
+      ({ lastOperation }) => !lastOperation,
+    );
+    assert(
+      repositoryWithoutOperation,
+      "Missing mock repository without an operation",
     );
 
-    await user.click(screen.getByText(/packages/i));
+    renderComponent(repositoryWithoutOperation.localId ?? "");
 
-    expect(screen.getByText(/packages/i)).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    expect(screen.getByText(/general details/i)).not.toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
+    expect(
+      await screen.findByRole("heading", {
+        name: repositoryWithoutOperation.displayName,
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", { name: "Package import failed" }),
+    ).not.toBeInTheDocument();
   });
 });

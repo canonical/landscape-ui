@@ -1,0 +1,48 @@
+@import "vanilla-framework/scss/settings_colors";
+
+.wrapper {
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+
+.content {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.fullWidth {
+  .bar {
+    max-width: none;
+  }
+}
+
+.bar {
+  background-color: $color-mid-x-light;
+  flex: 1 1 auto;
+  height: 0.5rem;
+  max-width: 8rem;
+  min-width: 0;
+  overflow: hidden;
+
+  .fill {
+    background-color: $colors--theme--link-default;
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+}
+
+.percentage {
+  flex: 0 0 2.5rem;
+}
+
+.eta {
+  color: $colors--theme--text-muted;
+  flex: 0 0 6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

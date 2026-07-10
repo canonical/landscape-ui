@@ -2,31 +2,42 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances } from "@/features/instances";
+import {
+  getInstanceListParams,
+  InstancesPageActions,
+  useGetInstances,
+} from "@/features/instances";
 import usePageParams from "@/hooks/usePageParams";
 import type { Instance } from "@/types/Instance";
-import { useCallback, useState, type FC } from "react";
+import { useCallback, useMemo, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
-import { getQuery } from "./helpers";
 
 const InstancesPage: FC = () => {
   const { currentPage, pageSize, wsl, ...filters } = usePageParams();
+  const instanceListParams = useMemo(
+    () => getInstanceListParams({ filters, wsl }),
+    [filters, wsl],
+  );
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
-    query: getQuery(filters),
-    archived_only: filters.status === "archived",
+    ...instanceListParams,
     with_alerts: true,
     with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
     limit: pageSize,
     offset: (currentPage - 1) * pageSize,
-    wsl_children: wsl.includes("child"),
-    wsl_parents: wsl.includes("parent"),
   });
 
   const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
 
   const clearSelection = useCallback(() => {
+    setSelectedInstances([]);
+    setIsAllSelected(false);
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setIsAllSelected(true);
     setSelectedInstances([]);
   }, []);
 
@@ -37,8 +48,11 @@ const InstancesPage: FC = () => {
         actions={[
           <InstancesPageActions
             key="actions"
+            exportParams={instanceListParams}
+            instanceCount={instancesCount}
             isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
+            isAllSelected={isAllSelected}
           />,
         ]}
       />
@@ -50,6 +64,9 @@ const InstancesPage: FC = () => {
           setSelectedInstances={setSelectedInstances}
           onChangeFilter={clearSelection}
           isGettingInstances={isGettingInstances}
+          isAllSelected={isAllSelected}
+          onSelectAll={selectAll}
+          onClearSelection={clearSelection}
         />
       </PageContent>
     </PageMain>

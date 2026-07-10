@@ -4,58 +4,53 @@ import ViewRepositoryActionsBlock from "./ViewRepositoryActionsBlock";
 import { repositories } from "@/tests/mocks/localRepositories";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { setScreenSize } from "@/tests/helpers";
 
 describe("ViewRepositoryActionsBlock", () => {
-  it("renders actions toggle button", () => {
-    renderWithProviders(
-      <ViewRepositoryActionsBlock repository={repositories[0]} />,
-    );
-
-    expect(
-      screen.getByRole("button", { name: /actions/i }),
-    ).toBeInTheDocument();
+  beforeEach(() => {
+    setScreenSize("lg");
   });
 
-  it("shows action items when actions menu is opened", async () => {
+  it("shows action items when actions menu is opened in small screens", async () => {
     const user = userEvent.setup();
+    setScreenSize("xs");
+
     renderWithProviders(
-      <ViewRepositoryActionsBlock repository={repositories[0]} />,
+      <ViewRepositoryActionsBlock
+        repository={repositories[0]}
+        isImporting={false}
+      />,
     );
 
     await user.click(screen.getByRole("button", { name: /actions/i }));
 
     expect(screen.getByText("Edit")).toBeInTheDocument();
-    expect(screen.getByText("Remove")).toBeInTheDocument();
-  });
-
-  it("renders responsive buttons menu", () => {
-    renderWithProviders(
-      <ViewRepositoryActionsBlock repository={repositories[0]} />,
-    );
-
-    const buttons = screen.getAllByRole("button");
-    expect(buttons.length).toBeGreaterThan(0);
-  });
-
-  it("shows publish action in menu", async () => {
-    const user = userEvent.setup();
-    renderWithProviders(
-      <ViewRepositoryActionsBlock repository={repositories[0]} />,
-    );
-
-    await user.click(screen.getByRole("button", { name: /actions/i }));
-
+    expect(screen.getByText("Import packages")).toBeInTheDocument();
     expect(screen.getByText("Publish")).toBeInTheDocument();
+    expect(screen.getByText("Remove")).toBeInTheDocument();
   });
 
-  it("renders remove action in menu", async () => {
+  it("disables import button when packages are being imported", async () => {
     const user = userEvent.setup();
     renderWithProviders(
-      <ViewRepositoryActionsBlock repository={repositories[0]} />,
+      <ViewRepositoryActionsBlock
+        repository={repositories[0]}
+        isImporting={true}
+      />,
     );
 
-    await user.click(screen.getByRole("button", { name: /actions/i }));
-
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.queryByText("Import packages")).not.toBeInTheDocument();
+    expect(screen.getByText("Importing packages")).toBeInTheDocument();
+    expect(screen.getByText("Publish")).toBeInTheDocument();
     expect(screen.getByText("Remove")).toBeInTheDocument();
+
+    await user.hover(screen.getByText("Importing packages"));
+
+    expect(
+      await screen.findByRole("tooltip", {
+        name: "You must wait for this action to be completed to import more packages.",
+      }),
+    ).toBeInTheDocument();
   });
 });
