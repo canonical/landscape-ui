@@ -41,6 +41,8 @@ const ActivitiesPage: FC = () => {
 
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  useSetDynamicFilterValidation("sidePath", ["export"]);
+
   const {
     query,
     search,
@@ -51,9 +53,6 @@ const ActivitiesPage: FC = () => {
     lastSidePathSegment,
     popSidePath,
   } = usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", ["export"]);
-
   const exportQuery = [
     search,
     query,

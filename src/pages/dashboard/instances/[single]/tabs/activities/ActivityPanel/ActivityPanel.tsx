@@ -45,6 +45,8 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
 
   const [isAllSelected, setIsAllSelected] = useState(false);
 
+  useSetDynamicFilterValidation("sidePath", ["export"]);
+
   const {
     query,
     search,
@@ -55,9 +57,6 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
     lastSidePathSegment,
     popSidePath,
   } = usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", ["export"]);
-
   const exportQuery = [
     instanceId ? `computer:id:${instanceId}` : "",
     search,
