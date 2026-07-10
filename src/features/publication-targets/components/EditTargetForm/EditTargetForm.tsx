@@ -278,6 +278,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           />
           <Input
             type="password"
+            autoComplete="new-password"
             label="Password"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "swiftPassword")}

@@ -28,6 +28,7 @@ const SwiftFields: FC<SwiftFieldsProps> = ({ formik }) => (
     />
     <Input
       type="password"
+      autoComplete="new-password"
       label="Password"
       required
       error={getFormikError(formik, ["swift", "password"])}

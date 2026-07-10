@@ -269,6 +269,7 @@ const AddMirrorForm: FC = () => {
               {formik.values.sourceType === "ubuntu-pro" && (
                 <Input
                   type="password"
+                  autoComplete="new-password"
                   label={
                     <>
                       <span>Bearer token </span>
