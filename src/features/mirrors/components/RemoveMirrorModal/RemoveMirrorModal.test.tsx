@@ -77,4 +77,14 @@ describe("RemoveMirrorModal", () => {
     ).toBeInTheDocument();
     expect(close).toHaveBeenCalled();
   });
+
+  it("does not fetch publications when the modal is closed", () => {
+    renderWithProviders(<RemoveMirrorModal {...props} isOpen={false} />);
+
+    expect(
+      screen.queryByText(
+        "This mirror is associated with the following publications:",
+      ),
+    ).not.toBeInTheDocument();
+  });
 });
