@@ -1,58 +1,64 @@
 import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
+import SidePanel from "@/components/layout/SidePanel";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import {
-  getInstanceListParams,
-  InstancesPageActions,
-  setSelectedInstanceIds,
-  useGetInstances,
-} from "@/features/instances";
+import { InstancesPageActions, useGetInstances, getExportTitle } from "@/features/instances";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
+import useSelection from "@/hooks/useSelection";
+import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import { useCallback, useEffect, useState, type FC } from "react";
+import { lazy, useCallback, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
+import { getQuery } from "./helpers";
+
+const InstancesExportForm = lazy(
+  async () => import("@/features/instances/components/InstancesExportForm"),
+);
 
 const InstancesPage: FC = () => {
-  const { currentPage, pageSize, wsl, ...filters } = usePageParams();
-  const instanceListParams = getInstanceListParams({ filters, wsl });
-  const { query } = filters;
+  const {
+    currentPage,
+    pageSize,
+    wsl,
+    lastSidePathSegment,
+    popSidePath,
+    ...filters
+  } = usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", ["export"]);
+
+  const instanceListParams = {
+    wsl,
+    ...getQuery(filters),
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
+  };
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     ...instanceListParams,
     with_alerts: true,
     with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
   });
 
-  const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
+  const {
+    selectedItems: selectedInstances,
+    setSelectedItems: setSelectedInstances,
+  } = useSelection<Instance>(instances, isGettingInstances);
 
-  // Clear the selection when the search query changes (e.g. following a report
-  // deep link), matching how header filter changes reset it.
   const [isAllSelected, setIsAllSelected] = useState(false);
-
-  useEffect(() => {
-    setSelectedInstances([]);
-    setIsAllSelected(false);
-  }, [query]);
-
-  // Mirror the selection into an external store so side panel content (whose
-  // props are frozen when the panel opens) can detect selection changes.
-  useEffect(() => {
-    setSelectedInstanceIds(selectedInstances.map(({ id }) => id));
-  }, [selectedInstances]);
 
   const clearSelection = useCallback(() => {
     setSelectedInstances([]);
     setIsAllSelected(false);
-  }, []);
+  }, [setSelectedInstances]);
 
   const selectAll = useCallback(() => {
     setIsAllSelected(true);
     setSelectedInstances([]);
-  }, []);
+  }, [setSelectedInstances]);
 
   return (
     <PageMain>
@@ -61,9 +67,6 @@ const InstancesPage: FC = () => {
         actions={[
           <InstancesPageActions
             key="actions"
-            instanceCount={instancesCount}
-            exportParams={instanceListParams}
-            isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
             isAllSelected={isAllSelected}
           />,
@@ -82,6 +85,34 @@ const InstancesPage: FC = () => {
           isGettingInstances={isGettingInstances}
         />
       </PageContent>
+      <SidePanel
+        isOpen={lastSidePathSegment === "export"}
+        onClose={popSidePath}
+        size="medium"
+      >
+        {lastSidePathSegment === "export" && (
+          <SidePanel.Suspense key="export">
+            <SidePanel.Header>
+              {getExportTitle({
+                isAllSelected,
+                selectedCount: selectedInstances.length,
+                totalCount: instancesCount,
+                selectionForms: ["instance", "instances"],
+              })}
+            </SidePanel.Header>
+            <SidePanel.Content>
+              <InstancesExportForm
+                exportParams={instanceListParams}
+                selectedInstanceIds={
+                  !isAllSelected && selectedInstances.length > 0
+                    ? selectedInstances.map(({ id }) => id)
+                    : undefined
+                }
+              />
+            </SidePanel.Content>
+          </SidePanel.Suspense>
+        )}
+      </SidePanel>
     </PageMain>
   );
 };

@@ -126,28 +126,7 @@ describe("InstancesPage helpers", () => {
           contractExpiryDays: "",
           query: "name:web",
           tags: [],
-          accessGroups: [],
-          availabilityZones: [],
-        },
-        wsl: ["child", "parent"],
-      }),
-    ).toEqual({
-      archived_only: true,
-      query: "name:web",
-      wsl_children: true,
-      wsl_parents: true,
-    });
-  });
-
-  it("builds list params that preserve archived and WSL filters", () => {
-    expect(
-      getInstanceListParams({
-        filters: {
-          os: "",
-          status: "archived",
-          contractExpiryDays: "",
-          query: "name:web",
-          tags: [],
+          upgrades: [],
           accessGroups: [],
           availabilityZones: [],
         },

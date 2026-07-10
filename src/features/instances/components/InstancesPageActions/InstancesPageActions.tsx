@@ -3,6 +3,7 @@ import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
+import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
 import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
@@ -19,8 +20,6 @@ import InstanceRemoveFromLandscapeModal from "../InstanceRemoveFromLandscapeModa
 import classes from "./InstancesPageActions.module.scss";
 import ShutDownModal from "../ShutDownModal";
 import RestartModal from "../RestartModal";
-const InstancesExportForm = lazy(async () => import("../InstancesExportForm"));
-
 const RunInstanceScriptForm = lazy(
   async () => import("@/features/scripts/components/RunInstanceScriptForm"),
 );
@@ -59,6 +58,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
+  const { createSidePathPusher } = usePageParams();
 
   const {
     value: rebootModalOpen,
@@ -200,24 +200,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const handleExport = () => {
-    setSidePanelContent(
-      getExportTitle({
-        isAllSelected,
-        selectedCount: selectedInstances.length,
-        instanceCount,
-      }),
-      <Suspense fallback={<LoadingState />}>
-        <InstancesExportForm
-          exportParams={exportParams}
-          selectedInstanceIds={
-            isAllSelected ? undefined : selectedInstances.map(({ id }) => id)
-          }
-        />
-      </Suspense>,
-      "medium",
-    );
-  };
+  const handleExport = createSidePathPusher("export");
 
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>
@@ -371,7 +354,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasInstancesToExport,
     },
-    isFeatureEnabled("instance-reports")
+    REPORT_VIEW_ENABLED
       ? {
           children: (
             <>

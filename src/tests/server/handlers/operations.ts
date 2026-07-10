@@ -15,7 +15,7 @@ export const resetLroProgress = () => {
 
 const getOperationResponse = (operation: Operation) => {
   if (operation.metadata.operationId === "pppp-gggg-ssss") {
-    progress += 10;
+    progress += 5;
 
     if (progress >= 100) {
       progress = inProgressOperation.metadata.progressPercent;

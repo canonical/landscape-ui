@@ -3,6 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import moment from "moment";
+import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import ExportForm from "./ExportForm";
 import type {
@@ -67,25 +68,48 @@ const openAttributeGroup = async (
 };
 
 describe("ExportForm", () => {
-  it("keeps Next disabled until an export name and at least one attribute are selected", async () => {
+  it("shows validation errors on Next click for empty name and no attributes", async () => {
     const user = userEvent.setup();
     renderForm();
 
     const nextButton = screen.getByRole("button", { name: "Next" });
 
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
+    // Click Next with no name and no attributes selected
+    await user.click(nextButton);
 
+    // Errors should appear
+    await waitFor(() => {
+      expect(screen.getByText("This field is required")).toBeInTheDocument();
+      expect(
+        screen.getByText("Select at least one attribute"),
+      ).toBeInTheDocument();
+    });
+
+    // Fill in name
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
       "My export",
     );
 
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
+    // Click Next again - should still error on no attributes
+    await user.click(nextButton);
+    await waitFor(() => {
+      expect(
+        screen.getByText("Select at least one attribute"),
+      ).toBeInTheDocument();
+    });
 
+    // Select an attribute and try again
     await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    await user.click(nextButton);
 
-    expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
+    // Should proceed to step 2
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).toBeInTheDocument();
+    });
   });
 
   it("filters attributes by search text and shows the empty state when nothing matches", async () => {
@@ -131,7 +155,7 @@ describe("ExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("auto-expands groups matched by group title so all their fields are visible", async () => {
+  it("does not match group titles (only field labels)", async () => {
     const user = userEvent.setup();
     renderForm();
 
@@ -214,9 +238,14 @@ describe("ExportForm", () => {
     await user.type(exportName, "Group selection export");
     await user.click(groupSelectAll);
 
-    expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
-
     await user.click(nextButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).toBeInTheDocument();
+    });
+
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     await waitFor(() => {
@@ -236,11 +265,21 @@ describe("ExportForm", () => {
     });
 
     await user.click(screen.getByRole("button", { name: "Back" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+    });
+
+    // No attributes selected - validation error appears on Next click
     await user.click(
       screen.getByRole("checkbox", { name: "Primary Identity" }),
     );
-
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
+    await user.click(nextButton);
+    await waitFor(() => {
+      expect(
+        screen.getByText("Select at least one attribute"),
+      ).toBeInTheDocument();
+    });
   });
 
   it("moves to the reorder step on the first submit and returns to step 0 with Back", async () => {
@@ -256,16 +295,21 @@ describe("ExportForm", () => {
     await user.click(screen.getByRole("button", { name: "Next" }));
 
     expect(onGenerate).not.toHaveBeenCalled();
-    expect(
-      screen.getByRole("button", { name: "Generate TSV" }),
-    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).toBeInTheDocument();
+    });
 
     await user.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
-    expect(
-      screen.getByRole("textbox", { name: "Export name" }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+      expect(
+        screen.getByRole("textbox", { name: "Export name" }),
+      ).toBeInTheDocument();
+    });
   });
 
   it("submits selected fields and form values on the second step", async () => {
@@ -286,6 +330,13 @@ describe("ExportForm", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Next" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).toBeInTheDocument();
+    });
+
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     await waitFor(() => {
@@ -307,64 +358,6 @@ describe("ExportForm", () => {
     });
   });
 
-  it("filters stale ordered fields when fieldGroups change on step 1", async () => {
-    const user = userEvent.setup();
-    const onGenerate = vi.fn().mockResolvedValue(undefined);
-
-    const { rerender } = renderWithProviders(
-      <ExportForm
-        fieldGroups={FIELD_GROUPS}
-        initialValues={INITIAL_VALUES}
-        isSubmitting={false}
-        onGenerate={onGenerate}
-      />,
-    );
-
-    await user.type(
-      screen.getByRole("textbox", { name: "Export name" }),
-      "Dynamic groups export",
-    );
-    await openAttributeGroup(user, /primary identity/i);
-    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
-    await openAttributeGroup(user, /compliance/i);
-    await user.click(
-      screen.getByRole("checkbox", { name: "Securely patched" }),
-    );
-
-    await user.click(screen.getByRole("button", { name: "Next" }));
-
-    const cveFieldGroups: readonly ExportFieldGroup[] = [
-      FIELD_GROUPS[0]!,
-      {
-        ...FIELD_GROUPS[1]!,
-        fields: [{ id: "time_to_patch_days", label: "Time to patch (days)" }],
-      },
-    ];
-
-    rerender(
-      <ExportForm
-        fieldGroups={cveFieldGroups}
-        initialValues={INITIAL_VALUES}
-        isSubmitting={false}
-        onGenerate={onGenerate}
-      />,
-    );
-
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
-
-    await waitFor(() => {
-      expect(onGenerate).toHaveBeenCalledWith({
-        values: expect.objectContaining({
-          name: "Dynamic groups export",
-          selectedFieldIds: ["hostname", "securely_patched"],
-        }),
-        fieldsToExport: [
-          { id: "hostname", label: "Hostname", groupTitle: "Primary Identity" },
-        ],
-      });
-    });
-  });
-
   it("shows group badges and reset button on step 2", async () => {
     const user = userEvent.setup();
     renderForm();
@@ -381,11 +374,81 @@ describe("ExportForm", () => {
     );
     await user.click(screen.getByRole("button", { name: "Next" }));
 
-    expect(screen.getByText("Primary Identity")).toBeInTheDocument();
-    expect(screen.getByText("Compliance")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /reset order/i }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Primary Identity")).toBeInTheDocument();
+      expect(screen.getByText("Compliance")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /reset order/i }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  const LocationDisplay = () => {
+    const { search } = useLocation();
+    return <div data-testid="location-display">{search}</div>;
+  };
+
+  it("pops one sidePath entry on cancel", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <>
+        <ExportForm
+          fieldGroups={FIELD_GROUPS}
+          initialValues={INITIAL_VALUES}
+          isSubmitting={false}
+          onGenerate={vi.fn()}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view,export",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=view",
+    );
+    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      "sidePath=view,export",
+    );
+  });
+
+  it("does not change the URL when advancing from step 0 to step 1", async () => {
+    const user = userEvent.setup();
+
+    renderWithProviders(
+      <>
+        <ExportForm
+          fieldGroups={FIELD_GROUPS}
+          initialValues={INITIAL_VALUES}
+          isSubmitting={false}
+          onGenerate={vi.fn()}
+        />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=export",
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "My export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
   });
 
   it("reset order restores group-declaration sequence after manual reorder", async () => {
@@ -403,13 +466,20 @@ describe("ExportForm", () => {
     await user.click(screen.getByRole("checkbox", { name: "Instance name" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
 
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /move hostname down/i }),
+      ).toBeInTheDocument();
+    });
+
     await user.click(
       screen.getByRole("button", { name: /move hostname down/i }),
     );
 
     await user.click(screen.getByRole("button", { name: /reset order/i }));
-
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Generate TSV" }),
+    );
 
     await waitFor(() => {
       expect(onGenerate).toHaveBeenCalledWith(

@@ -1,9 +1,9 @@
 import {
   Button,
-  Chip,
   Icon,
   Input,
   ModularTable,
+  Chip,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import {
@@ -83,7 +83,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
   // Capture the field list as it exists on first render so Reset can always
   // return to the group-declaration order, regardless of how many moves the
   // parent state has accumulated since then.
-  const initialFieldsRef = useRef<ExportField[]>(fields);
+  const initialFieldsRef = useRef<ExportField[]>([...fields]);
 
   // Stable per-row ref callbacks, cached by fieldId, so the row's ref doesn't
   // churn (null then re-set) on every render.
@@ -361,12 +361,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
               <i className={"p-icon--drag " + classes.dragHandle} />
               <span>{label}</span>
               {groupTitle && (
-                <Chip
-                  value={groupTitle}
-                  isReadOnly
-                  isDense
-                  className="u-no-margin--bottom"
-                />
+                <Chip value={groupTitle} className="u-no-margin--bottom" />
               )}
             </div>
           );
@@ -511,7 +506,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
   return (
     <div className={classes.selectedColumns}>
       <div className={classes.selectedColumnsHeader}>
-        <p className={classes.selectedColumnsIntro}>
+        <p>
           Review and reorder the columns for your export. Drag rows or use the
           controls to change the order.
         </p>

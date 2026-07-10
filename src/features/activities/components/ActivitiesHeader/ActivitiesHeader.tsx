@@ -21,14 +21,12 @@ import {
 interface ActivitiesHeaderProps {
   readonly selected: ActivityCommon[];
   readonly resetSelectedIds: () => void;
-  readonly activityCount?: number;
   readonly isAllSelected?: boolean;
 }
 
 const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
   resetSelectedIds,
   selected,
-  activityCount,
   isAllSelected = false,
 }) => {
   const [searchText, setSearchText] = useState<string>("");
@@ -106,9 +104,7 @@ const ActivitiesHeader: FC<ActivitiesHeaderProps> = ({
           {IS_PANEL && (
             <ActivitiesActions
               selected={selected}
-              activityCount={activityCount}
               isAllSelected={isAllSelected}
-              exportBaseQuery={instanceId ? `computer:id:${instanceId}` : ""}
             />
           )}
         </div>

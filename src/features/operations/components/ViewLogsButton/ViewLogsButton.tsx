@@ -7,11 +7,10 @@ interface ViewLogsButtonProps {
 }
 
 const ViewLogsButton: FC<ViewLogsButtonProps> = ({ resource }) => {
-  const { createPageParamsSetter, createSidePathPusher, sidePath } =
-    usePageParams();
+  const { createPageParamsSetter, createSidePathPusher } = usePageParams();
 
   const openSidePanel = (action: string) => {
-    if (!sidePath.length) {
+    if (resource) {
       return createPageParamsSetter({
         sidePath: [action],
         name: resource,

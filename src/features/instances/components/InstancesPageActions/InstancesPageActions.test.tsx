@@ -12,6 +12,7 @@ import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import { useLocation } from "react-router";
 import { beforeEach } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
@@ -41,19 +42,16 @@ const OPERATIONS_LABELS = [
 const GROUPING_LABELS = ["Assign access group", "Assign tag"];
 
 const UBUNTU_PRO_LABELS = ["Attach token", "Detach token"];
-const exportParams = {
-  query: "",
-  archived_only: false,
-  wsl_children: false,
-  wsl_parents: false,
-};
 
 const defaultProps: ComponentProps<typeof InstancesPageActions> = {
-  exportParams,
-  instanceCount: selected.length,
   isGettingInstances: false,
   selectedInstances: selected,
   isAllSelected: false,
+};
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location-display">{search}</div>;
 };
 
 const renderPageActions = (
@@ -94,7 +92,7 @@ describe("InstancesPageActions", () => {
 
   describe("Disabled and visible states", () => {
     it("should disable all groups when no instances are available to export", () => {
-      renderPageActions({ instanceCount: 0, selectedInstances: [] });
+      renderPageActions({ selectedInstances: [] });
 
       const buttons = screen.getAllByRole("button");
 
@@ -108,7 +106,6 @@ describe("InstancesPageActions", () => {
     it("should disable buttons while getting instances", () => {
       renderPageActions({
         isGettingInstances: true,
-        instanceCount: 0,
         selectedInstances: [],
       });
 
@@ -133,21 +130,7 @@ describe("InstancesPageActions", () => {
     });
 
     it("'View report' menu item should not be visible when feature disabled", async () => {
-      server.use(
-        http.get(`${API_URL}features`, () =>
-          HttpResponse.json(
-            generatePaginatedResponse({
-              data: features.map((feature) =>
-                feature.key === "instance-reports"
-                  ? { ...feature, enabled: false }
-                  : feature,
-              ),
-              offset: 0,
-              limit: 20,
-            }),
-          ),
-        ),
-      );
+      vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
 
       renderPageActions();
 
@@ -264,21 +247,6 @@ describe("InstancesPageActions", () => {
   describe("should proper handle button clicks", () => {
     beforeEach(() => {
       renderPageActions();
-    });
-
-    it("'Export' menu item", async () => {
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-      await userEvent.click(
-        screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
-      );
-
-      expect(
-        screen.getByRole("heading", {
-          name: `Export ${pluralize(selected.length, ["instance"], "exact")} as TSV`,
-        }),
-      ).toBeInTheDocument();
     });
 
     it("'Shutdown' menu item", async () => {
@@ -469,6 +437,24 @@ describe("InstancesPageActions", () => {
     expect(
       screen.getByRole("heading", { name: /replace Ubuntu Pro token/i }),
     ).toBeInTheDocument();
+  });
+
+  it("'Export' menu item pushes sidePath=export", async () => {
+    renderWithProviders(
+      <>
+        <InstancesPageActions {...defaultProps} />
+        <LocationDisplay />
+      </>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
+    );
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
   });
 
   describe("Run script form warning", () => {

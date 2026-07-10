@@ -3,23 +3,17 @@
 
 .selectedColumns {
   padding-top: $spv--small;
+
+  :global(table) {
+    margin-bottom: 0;
+  }
 }
 
 .selectedColumnsHeader {
-  align-items: baseline;
-  display: flex;
-  gap: $sph--large;
-  justify-content: space-between;
   margin-bottom: $spv--medium;
 }
 
-.selectedColumnsIntro {
-  flex: 1;
-  margin-bottom: 0;
-}
-
 .resetButton {
-  flex-shrink: 0;
   white-space: nowrap;
 }
 
@@ -29,26 +23,17 @@
   gap: $sph--small;
 }
 
-.groupBadge {
-  background: var(--vf-color-background-alt, #f5f5f5);
-  border: 1px solid var(--vf-color-border-default, #d9d9d9);
-  border-radius: 2px;
-  color: var(--vf-color-text-muted, #666);
-  font-size: 0.688rem;
-  margin-left: auto;
-  padding: 0 $sph--x-small;
-  white-space: nowrap;
-}
-
 .dragHandle {
   cursor: grab;
   flex-shrink: 0;
 }
 
 .orderColumn {
-  text-align: right;
+  text-align: left;
   white-space: nowrap;
-  width: 12rem;
+
+  // Fixed width to left-align header over row content columns (matches .orderInput width + flex gap + padding)
+  width: 10.5rem;
 }
 
 .orderControls {
@@ -59,9 +44,16 @@
 }
 
 .orderInput {
+  appearance: textfield;
   min-width: 0;
   text-align: center;
   width: 5rem;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
 }
 
 .orderInputWrapper {
@@ -89,6 +81,7 @@
 // flash-blue @keyframes animation on .justMoved > td, causing a double-flash.
 .selectedColumns :global(td) {
   transition: box-shadow 0.15s ease;
+  vertical-align: middle;
 }
 
 // Fully-opaque card overlay that follows the cursor during drag.

@@ -9,6 +9,7 @@ export interface ProgressBarProps {
   readonly secondsRemaining: number | null;
   readonly fullWidth?: boolean;
   readonly loading?: boolean;
+  readonly label?: string;
 }
 
 const ProgressBar: FC<ProgressBarProps> = ({
@@ -16,6 +17,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
   secondsRemaining,
   fullWidth = false,
   loading = false,
+  label,
 }) => {
   const clampedProgress = Math.min(
     MAX_PROGRESS,
@@ -24,9 +26,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 
   return (
     <div className={`${classes.wrapper} ${fullWidth ? classes.fullWidth : ""}`}>
-      {loading && (
-        <i className="p-icon--spinner u-animation--spin" aria-hidden="true" />
-      )}
+      {loading && <i className="p-icon--spinner" aria-hidden="true" />}
       <div className={classes.content}>
         <div
           className={classes.bar}
@@ -34,7 +34,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
           aria-valuenow={clampedProgress}
           aria-valuemin={0}
           aria-valuemax={MAX_PROGRESS}
-          aria-label="Progress"
+          aria-label={label || "Progress"}
         >
           <div
             className={classes.fill}

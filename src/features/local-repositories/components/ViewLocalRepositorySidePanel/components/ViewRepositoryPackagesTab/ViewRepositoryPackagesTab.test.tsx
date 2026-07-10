@@ -7,7 +7,10 @@ import { repositories, sortedPackages } from "@/tests/mocks/localRepositories";
 describe("ViewRepositoryPackagesTab", () => {
   it("renders table with correct header after loading", async () => {
     renderWithProviders(
-      <ViewRepositoryPackagesTab repository={repositories[0]} />,
+      <ViewRepositoryPackagesTab
+        repositoryName={repositories[0].name}
+        isImporting={false}
+      />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -18,5 +21,26 @@ describe("ViewRepositoryPackagesTab", () => {
 
     assert(sortedPackages[0]);
     expect(await screen.findByText(sortedPackages[0])).toBeInTheDocument();
+  });
+
+  it("renders in progress notification while importing packages", async () => {
+    renderWithProviders(
+      <ViewRepositoryPackagesTab
+        repositoryName={repositories[0].name}
+        isImporting={true}
+      />,
+    );
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Packages are currently being imported.",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      await screen.findByRole("columnheader", { name: "Package name" }),
+    ).toBeInTheDocument();
   });
 });
