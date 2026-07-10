@@ -33,7 +33,7 @@ describe("getTypeIcon", () => {
     );
   });
 
-  it('returns "documents" for report exports', () => {
+  it('returns "file" for report exports', () => {
     expect(getTypeIcon(newComplianceExportJob)).toBe("file");
   });
 });
