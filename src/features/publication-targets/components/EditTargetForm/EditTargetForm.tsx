@@ -19,7 +19,6 @@ import {
   VALIDATION_SCHEMA,
 } from "../../constants";
 import type { EditTargetFormValues } from "../../constants";
-import classes from "./EditTargetForm.module.scss";
 
 export { TARGET_TYPE_LABELS } from "../../constants";
 
@@ -278,10 +277,8 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
             {...formik.getFieldProps("swiftUsername")}
           />
           <Input
-            className={classes.maskedInput}
-            type="text"
+            type="password"
             label="Password"
-            autoComplete="off"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "swiftPassword")}
             {...formik.getFieldProps("swiftPassword")}

@@ -27,10 +27,8 @@ const SwiftFields: FC<SwiftFieldsProps> = ({ formik }) => (
       {...formik.getFieldProps("swift.username")}
     />
     <Input
-      className={styles.maskedInput}
-      type="text"
+      type="password"
       label="Password"
-      autoComplete="off"
       required
       error={getFormikError(formik, ["swift", "password"])}
       {...formik.getFieldProps("swift.password")}
