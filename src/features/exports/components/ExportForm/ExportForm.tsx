@@ -242,12 +242,7 @@ const ExportForm: FC<ExportFormProps> = ({
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />
-          <label
-            htmlFor="export-attributes-searchbox"
-            className={classes.attributesLabel}
-          >
-            Attributes
-          </label>
+          <p className={classes.attributesLabel}>Attributes</p>
           <SearchBox
             id="export-attributes-searchbox"
             label="Search attributes"

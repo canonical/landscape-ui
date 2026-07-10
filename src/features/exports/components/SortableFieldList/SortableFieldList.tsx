@@ -506,7 +506,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
   return (
     <div className={classes.selectedColumns}>
       <div className={classes.selectedColumnsHeader}>
-        <p className={classes.selectedColumnsIntro}>
+        <p>
           Review and reorder the columns for your export. Drag rows or use the
           controls to change the order.
         </p>
