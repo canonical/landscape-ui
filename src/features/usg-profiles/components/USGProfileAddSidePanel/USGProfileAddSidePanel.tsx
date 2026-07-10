@@ -112,7 +112,7 @@ const USGProfileAddSidePanel: FC<USGProfileAddSidePanelProps> = ({
   const submit = async () => {
     const errors = await formik.validateForm();
 
-    if (stepHasValidationErrors(errors)) {
+    if (stepHasValidationErrors(errors) || !steps[step].isValid) {
       await touchStepFields();
       return;
     }

@@ -59,6 +59,27 @@ describe("InstallSnaps", () => {
     ).toBeInTheDocument();
   });
 
+  it("disables install while snap confirmation is open", async () => {
+    const searchBox = screen.getByRole("searchbox");
+    await userEvent.type(searchBox, "Snap 2");
+
+    const matchingSnap = await screen.findByText("Snap 2");
+    await userEvent.click(matchingSnap);
+    expect(
+      await screen.findByRole("button", { name: /add/i }),
+    ).toBeInTheDocument();
+
+    const installButton = screen.getByRole("button", {
+      name: /install snaps/i,
+    });
+
+    expect(installButton).toHaveAttribute("aria-disabled", "true");
+
+    await userEvent.click(installButton);
+
+    expect(screen.queryByText("No snaps selected")).not.toBeInTheDocument();
+  });
+
   it("delete a snap from list after adding it", async () => {
     const searchBox = screen.getByRole("searchbox");
     const installButton = screen.getByRole("button", {

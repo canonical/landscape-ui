@@ -27,6 +27,10 @@ const InstallSnaps: FC = () => {
   const instanceId = Number(urlInstanceId);
 
   const handleSubmit = async () => {
+    if (confirming || installSnapsLoading) {
+      return;
+    }
+
     if (selectedSnaps.length === 0) {
       setShowNoSnapsError(true);
       return;
@@ -75,7 +79,8 @@ const InstallSnaps: FC = () => {
         }}
       />
       <SidePanelFormButtons
-        submitButtonLoading={confirming || installSnapsLoading}
+        submitButtonLoading={installSnapsLoading}
+        submitButtonDisabled={confirming}
         cancelButtonDisabled={installSnapsLoading}
         submitButtonText="Install snaps"
         submitButtonAppearance="positive"
