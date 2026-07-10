@@ -361,7 +361,12 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
               <i className={"p-icon--drag " + classes.dragHandle} />
               <span>{label}</span>
               {groupTitle && (
-                <Chip value={groupTitle} className="u-no-margin--bottom" />
+                <Chip
+                  isReadOnly
+                  isDense
+                  value={groupTitle}
+                  className="u-no-margin--bottom"
+                />
               )}
             </div>
           );
@@ -512,6 +517,7 @@ const SortableFieldList: FC<SortableFieldListProps> = ({
         </p>
         <Button
           type="button"
+          hasIcon
           className={`u-no-margin--bottom ${classes.resetButton}`}
           onClick={handleResetOrder}
         >

@@ -14,6 +14,7 @@ import { useFormik } from "formik";
 import moment from "moment";
 import { useCallback, useMemo, useState, type FC } from "react";
 import SortableFieldList from "../SortableFieldList";
+import { getFilteredFieldGroups, getGroupSearchRank } from "./helpers";
 import { VALIDATION_SCHEMA } from "./constants";
 import classes from "./ExportForm.module.scss";
 import type {
@@ -103,25 +104,10 @@ const ExportForm: FC<ExportFormProps> = ({
     [formik],
   );
 
-  const filteredFieldGroups = useMemo(() => {
-    const normalizedSearch = attributeSearch.trim().toLowerCase();
-
-    if (!normalizedSearch) {
-      return fieldGroups;
-    }
-
-    return fieldGroups.flatMap((group) => {
-      const matchingFields = group.fields.filter((field) =>
-        field.label.toLowerCase().includes(normalizedSearch),
-      );
-
-      if (!matchingFields.length) {
-        return [];
-      }
-
-      return [{ ...group, fields: matchingFields }];
-    });
-  }, [attributeSearch, fieldGroups]);
+  const filteredFieldGroups = useMemo(
+    () => getFilteredFieldGroups(fieldGroups, attributeSearch),
+    [attributeSearch, fieldGroups],
+  );
 
   const accordionSections = filteredFieldGroups.map((group) => {
     const groupIds = group.fields.map((field) => field.id);
@@ -139,7 +125,7 @@ const ExportForm: FC<ExportFormProps> = ({
       title: (
         <CheckboxInput
           label={group.title}
-          labelClassName="export-form-group-title-checkbox"
+          labelClassName={classes.exportFormGroupTitleCheckbox}
           checked={allSelected}
           indeterminate={someSelected}
           aria-label={`${group.title} select all`}
@@ -176,23 +162,17 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     if (attributeSearch.trim()) {
-      const needle = attributeSearch.trim().toLowerCase();
-      const rank = (label: string) => {
-        const hay = label.toLowerCase();
-        if (hay === needle) return 0;
-        if (hay.startsWith(needle)) return 1;
-        return 2;
-      };
-
       const sortedSections = [...accordionSections].sort((a, b) => {
-        const aGroup = filteredFieldGroups.find((g) => g.key === a.key);
-        const bGroup = filteredFieldGroups.find((g) => g.key === b.key);
-        const aRank = aGroup
-          ? Math.min(...aGroup.fields.map((f) => rank(f.label)))
-          : 2;
-        const bRank = bGroup
-          ? Math.min(...bGroup.fields.map((f) => rank(f.label)))
-          : 2;
+        const aRank = getGroupSearchRank(
+          a.key,
+          filteredFieldGroups,
+          attributeSearch,
+        );
+        const bRank = getGroupSearchRank(
+          b.key,
+          filteredFieldGroups,
+          attributeSearch,
+        );
         return aRank - bRank;
       });
 
