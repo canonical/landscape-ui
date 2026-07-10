@@ -8,6 +8,7 @@ import {
   Form,
   Input,
   SearchBox,
+  Notification,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
@@ -263,9 +264,9 @@ const ExportForm: FC<ExportFormProps> = ({
     ) : (
       <>
         {sortableNote && (
-          <p className="u-text--muted">
-            <small>{sortableNote}</small>
-          </p>
+          <Notification severity="information" title="Note">
+            <span>{sortableNote}</span>
+          </Notification>
         )}
         <SortableFieldList
           fields={orderedFields}
