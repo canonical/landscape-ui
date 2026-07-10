@@ -35,11 +35,13 @@ const S3Fields: FC<S3FieldsProps> = ({ formik }) => (
       type="text"
       label="AWS access key ID"
       required
+      autoComplete="off"
       error={getFormikError(formik, ["s3", "awsAccessKeyId"])}
       {...formik.getFieldProps("s3.awsAccessKeyId")}
     />
     <Input
-      type="text"
+      type="password"
+      autoComplete="new-password"
       label="AWS secret access key"
       required
       error={getFormikError(formik, ["s3", "awsSecretAccessKey"])}

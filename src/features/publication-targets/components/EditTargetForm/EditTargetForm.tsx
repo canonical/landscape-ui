@@ -203,12 +203,14 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           <Input
             type="text"
             label="AWS access key ID"
+            autoComplete="off"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "awsAccessKeyId")}
             {...formik.getFieldProps("awsAccessKeyId")}
           />
           <Input
-            type="text"
+            type="password"
+            autoComplete="new-password"
             label="AWS secret access key"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "awsSecretAccessKey")}
@@ -276,6 +278,7 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
           />
           <Input
             type="password"
+            autoComplete="new-password"
             label="Password"
             help="Leave blank to keep current value"
             error={getFormikError(formik, "swiftPassword")}
