@@ -176,11 +176,13 @@ describe("ActivitiesExportForm", () => {
 
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
-      "sidePath=view",
-    );
-    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
-      "sidePath=view,export",
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "sidePath=view",
+      );
+      expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+        "sidePath=view,export",
+      );
+    });
   });
 });
