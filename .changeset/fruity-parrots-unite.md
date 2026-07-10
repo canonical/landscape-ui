@@ -2,4 +2,4 @@
 "landscape-ui": patch
 ---
 
-Disable autofill suggestions for sensitive fields such as passwords or access keys
+Disable autocomplete suggestions for sensitive fields such as access keys while keeping password manager suggestions
