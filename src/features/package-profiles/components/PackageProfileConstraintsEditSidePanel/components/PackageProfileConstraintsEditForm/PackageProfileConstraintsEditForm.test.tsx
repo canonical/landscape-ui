@@ -17,9 +17,10 @@ const renderAndSubmit = async () => {
     <PackageProfileConstraintsEditForm profile={packageProfiles[0]} />,
   );
 
-  await expectLoadingState();
+  expect(screen.getByRole("status")).toBeInTheDocument();
+
   await user.click(
-    screen.getByRole("button", {
+    await screen.findByRole("button", {
       name: `Edit ${packageProfiles[0].constraints[0].package} constraint`,
     }),
   );
