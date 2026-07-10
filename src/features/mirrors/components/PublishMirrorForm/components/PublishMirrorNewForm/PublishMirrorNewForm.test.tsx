@@ -1,0 +1,363 @@
+import { mirrors } from "@/tests/mocks/mirrors";
+import { renderWithProviders } from "@/tests/render";
+import { beforeEach, describe, expect, assert } from "vitest";
+import PublishMirrorNewForm from "./PublishMirrorNewForm";
+import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import userEvent from "@testing-library/user-event";
+import { screen, waitFor } from "@testing-library/react";
+import { publications } from "@/tests/mocks/publications";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
+
+const mockPublicationName = "publications/publication";
+const [mirror] = mirrors;
+
+const mockCreatePublication = vi.fn(() => ({
+  data: { name: mockPublicationName },
+}));
+
+const mockPublishPublication = vi.fn();
+
+vi.mock("../../api", async () => {
+  const actual = await vi.importActual("../../api");
+  return {
+    ...actual,
+    useGetMirror: (name: string) => ({
+      data: { data: mirrors.find((m) => m.name === name) ?? mirror },
+    }),
+  };
+});
+
+vi.mock("@/features/publications", async () => {
+  const actual = await vi.importActual("@/features/publications");
+
+  return {
+    ...actual,
+    useGetPublicationsBySource: (source?: string) => ({
+      publications: publications.filter((p) => p.source === source),
+      isGettingPublications: false,
+    }),
+    useCreatePublication: () => ({
+      createPublication: mockCreatePublication,
+      isCreatingPublication: false,
+    }),
+    usePublishPublication: () => ({
+      publishPublication: mockPublishPublication,
+      isPublishingPublication: false,
+    }),
+  };
+});
+
+vi.mock("@/features/publication-targets", async () => {
+  const actual = await vi.importActual("@/features/publication-targets");
+
+  return {
+    ...actual,
+    useGetPublicationTargets: () => ({
+      publicationTargets,
+      isGettingPublicationTargets: false,
+      count: publicationTargets.length,
+    }),
+  };
+});
+
+const preserveSignaturesMirror = mirrors.find(
+  ({ preserveSignatures }) => preserveSignatures,
+);
+
+describe("PublishMirrorNewForm", () => {
+  const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("publishes to a new publication", async () => {
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      await screen.findByRole("textbox", { name: "Publication name" }),
+      "My publication",
+    );
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    expect(
+      await screen.findByText(
+        `You have marked ${mirror.displayName} to be published`,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "A publication has been created and an activity has been queued to publish it to the designated target.",
+      ),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mockPublishPublication).toHaveBeenCalledWith({
+        name: mockPublicationName,
+      });
+    });
+  });
+
+  it("hides signing key field if source preserves signatures", async () => {
+    assert(preserveSignaturesMirror);
+
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={preserveSignaturesMirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${preserveSignaturesMirror.name}`,
+    );
+
+    expect(screen.queryByText("Signing GPG key")).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "The selected mirror preserves the upstream signing key.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows no data if signature preserving mirror has no distribution", async () => {
+    assert(preserveSignaturesMirror);
+
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={{ ...preserveSignaturesMirror, distribution: undefined }}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${preserveSignaturesMirror.name}`,
+    );
+
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
+  });
+
+  it("passes settings to createPublication", async () => {
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Publication name" }),
+      "Settings test publication",
+    );
+
+    await user.click(
+      screen.getByRole("checkbox", { name: /hash based indexing/i }),
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: /installs and upgrades/i }),
+    );
+    await user.click(
+      await screen.findByRole("option", { name: /automatic upgrades only/i }),
+    );
+    await user.click(screen.getByRole("checkbox", { name: /skip bz2/i }));
+    await user.click(
+      screen.getByRole("checkbox", {
+        name: /skip generating content indexes/i,
+      }),
+    );
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    await waitFor(() => {
+      expect(mockCreatePublication).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            acquireByHash: true,
+            notAutomatic: true,
+            butAutomaticUpgrades: true,
+            skipBz2: true,
+            skipContents: true,
+          }),
+        }),
+      );
+    });
+  });
+
+  it("shows validation error when publication name is empty", async () => {
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    expect(
+      await screen.findByText("This field is required"),
+    ).toBeInTheDocument();
+    expect(mockCreatePublication).not.toHaveBeenCalled();
+    expect(mockPublishPublication).not.toHaveBeenCalled();
+  });
+
+  it("includes signing key in createPublication payload when provided", async () => {
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Publication name" }),
+      "Signed publication",
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Signing GPG key" }),
+      "-----BEGIN PGP PRIVATE KEY BLOCK-----",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    await waitFor(() => {
+      expect(mockCreatePublication).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            gpgKey: { armor: "-----BEGIN PGP PRIVATE KEY BLOCK-----" },
+          }),
+        }),
+      );
+    });
+  });
+
+  it("selects a different publication target", async () => {
+    const [, target] = publicationTargets;
+    assert(target?.name);
+
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Publication name" }),
+      "Test publication",
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Publication target" }),
+      target.name,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    await waitFor(() => {
+      expect(mockCreatePublication).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            publicationTarget: target.name,
+          }),
+        }),
+      );
+    });
+  });
+
+  it("updates the selected architectures", async () => {
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Publication name" }),
+      "Test publication",
+    );
+
+    await user.click(screen.getByRole("combobox", { name: "Architectures" }));
+    await user.click(await screen.findByRole("checkbox", { name: "arm64" }));
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    await waitFor(() => {
+      expect(mockCreatePublication).toHaveBeenCalledWith(
+        expect.objectContaining({
+          body: expect.objectContaining({
+            architectures: ["amd64"],
+          }),
+        }),
+      );
+    });
+  });
+
+  it("shows an error when creating a publication fails", async () => {
+    mockCreatePublication.mockRejectedValueOnce(
+      new Error("Failed to create publication"),
+    );
+
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Publication name" }),
+      "Failing publication",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    expect(
+      await screen.findByText("Failed to create publication"),
+    ).toBeInTheDocument();
+    expect(mockPublishPublication).not.toHaveBeenCalled();
+  });
+
+  it("shows an error when publishing fails", async () => {
+    mockPublishPublication.mockRejectedValueOnce(
+      new Error("Failed to publish publication"),
+    );
+
+    renderWithProviders(
+      <PublishMirrorNewForm
+        mirror={mirror}
+        publicationTargets={publicationTargets}
+      />,
+      undefined,
+      `?name=${mirror.name}`,
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Publication name" }),
+      "Failing publication",
+    );
+
+    await user.click(screen.getByRole("button", { name: "Publish mirror" }));
+
+    expect(
+      await screen.findByText("Failed to publish publication"),
+    ).toBeInTheDocument();
+  });
+});
