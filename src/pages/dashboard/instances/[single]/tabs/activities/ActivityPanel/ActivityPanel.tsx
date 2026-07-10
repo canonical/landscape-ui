@@ -7,6 +7,7 @@ import {
   useGetActivities,
 } from "@/features/activities";
 import { getExportTitle } from "@/features/exports";
+import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import useSelection from "@/hooks/useSelection";
 import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
@@ -44,7 +45,30 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
 
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  const { lastSidePathSegment, popSidePath } = usePageParams();
+  const {
+    query,
+    search,
+    status,
+    fromDate,
+    toDate,
+    type,
+    lastSidePathSegment,
+    popSidePath,
+  } = usePageParams();
+
+  useSetDynamicFilterValidation("sidePath", ["export"]);
+
+  const exportQuery = [
+    instanceId ? `computer:id:${instanceId}` : "",
+    search,
+    query,
+    status ? `status:${status}` : "",
+    fromDate ? `created-after:${fromDate}` : "",
+    toDate ? `created-before:${toDate}` : "",
+    type ? `type:${type}` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   const clearSelection = useCallback(() => {
     setSelectedActivities([]);
@@ -94,7 +118,7 @@ const ActivityPanel: FC<ActivityPanelProps> = ({ instanceId }) => {
             </SidePanel.Header>
             <SidePanel.Content>
               <ActivitiesExportForm
-                exportParams={{ query: `computer:id:${instanceId}` }}
+                exportParams={{ query: exportQuery }}
                 selectedActivityIds={
                   !isAllSelected && selectedActivities.length > 0
                     ? selectedActivities.map((a) => a.id)
