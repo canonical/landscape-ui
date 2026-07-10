@@ -20,9 +20,6 @@ interface InstancesContainerProps {
   readonly onSelectAll: () => void;
   readonly onClearSelection: () => void;
   readonly isGettingInstances: boolean;
-  readonly isAllSelected: boolean;
-  readonly onSelectAll: () => void;
-  readonly onClearSelection: () => void;
 }
 
 const InstancesContainer = memo(function InstancesContainer({

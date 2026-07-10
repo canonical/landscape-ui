@@ -1,5 +1,4 @@
-import { API_URL } from "@/constants";
-import { features } from "@/tests/mocks/features";
+import * as Constants from "@/constants";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import {
   instances,
@@ -7,8 +6,6 @@ import {
   windowsInstance,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import server from "@/tests/server";
-import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
@@ -18,7 +15,6 @@ import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import type { UbuntuProInfo } from "@/types/Instance";
-import { http, HttpResponse } from "msw";
 
 const selected = instances.slice(0, 2);
 const ubuntuProInfo = {
@@ -60,6 +56,7 @@ const renderPageActions = (
 
 describe("InstancesPageActions", () => {
   beforeEach(() => {
+    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
   });

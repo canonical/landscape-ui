@@ -27,6 +27,15 @@
   margin-bottom: $spv--small;
 }
 
+// .searchGroups {
+//   display: grid;
+//   gap: 0;
+// }
+
+// .fieldGroupsWrapper {
+//   display: contents;
+// }
+
 :global(.export-form-field-groups-accordion) {
   border-top: 1px solid $colors--theme--border-low-contrast;
 }

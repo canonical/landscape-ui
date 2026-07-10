@@ -83,7 +83,6 @@ const ActivitiesPage: FC = () => {
             ? [
                 <ActivitiesActions
                   selected={selectedActivities}
-                  activityCount={activitiesCount}
                   key="activities-actions"
                   isAllSelected={isAllSelected}
                 />,

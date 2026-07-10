@@ -154,7 +154,7 @@ describe("handleParams", () => {
     expect(result.filter).toBe(JSON.stringify(payload));
   });
 
-  it("ignores undefined and empty strings", () => {
+  it("only ignores undefined", () => {
     const config = makeConfig({
       method: "get",
       params: {
@@ -166,7 +166,7 @@ describe("handleParams", () => {
     });
 
     const result = handleParams({ config, isOld: false });
-    expect(result).toStrictEqual({ emptyArr: "", valid: "yes" });
+    expect(result).toStrictEqual({ emptyStr: "", emptyArr: "", valid: "yes" });
   });
 
   it("passes empty strings through to the backend on GET requests", () => {

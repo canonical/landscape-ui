@@ -87,6 +87,9 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
       });
       return;
     }
+    if (resolvedIds.length === 0) {
+      return;
+    }
     try {
       const description = buildExportDescription(
         selectedBucket,
@@ -126,6 +129,12 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
 
   return (
     <>
+      {emptyBucket && (
+        <Notification severity="caution">
+          The selected bucket contains no instances. Choose a different bucket
+          or include Other.
+        </Notification>
+      )}
       {exportStep === 0 && (
         <>
           <Select
@@ -139,12 +148,6 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
               setSelectedBucket(e.target.value as BucketKey);
             }}
           />
-          {emptyBucket && (
-            <Notification severity="caution">
-              The selected bucket contains no instances. Choose a different
-              bucket or include Other.
-            </Notification>
-          )}
           <CheckboxInput
             label="Include instances with no date range (Other)"
             checked={includeOther}

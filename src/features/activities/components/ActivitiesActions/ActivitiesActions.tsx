@@ -87,7 +87,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           <span>Export selection as TSV</span>
         </Button>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="approve"
           type="button"
           disabled={
             !selected.length ||
@@ -105,9 +105,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Approve
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="cancel"
           type="button"
           disabled={
             !selected.length ||
@@ -125,9 +125,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Cancel
-        </ConfirmationButton>
+        </ConfirmationButton>,
         <ConfirmationButton
-          className="p-segmented-control__button"
+          key="redo"
           type="button"
           disabled={
             !selected.length ||
@@ -145,7 +145,7 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
           }}
         >
           Redo
-        </ConfirmationButton>
+        </ConfirmationButton>,
       ]}
     />
   );

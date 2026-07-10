@@ -3,62 +3,58 @@ import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
 import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
-import { InstancesPageActions, useGetInstances, getExportTitle } from "@/features/instances";
+import {
+  getInstanceListParams,
+  InstancesPageActions,
+  useGetInstances,
+} from "@/features/instances";
+import { getExportTitle } from "@/features/exports";
 import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
-import useSelection from "@/hooks/useSelection";
-import { DEFAULT_PAGE_SIZE } from "@/libs/pageParamsManager/constants";
 import type { Instance } from "@/types/Instance";
-import { lazy, useCallback, useState, type FC } from "react";
+import { lazy, useCallback, useMemo, useState, type FC } from "react";
 import InstancesContainer from "../InstancesContainer";
-import { getQuery } from "./helpers";
 
 const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
 );
 
 const InstancesPage: FC = () => {
+  useSetDynamicFilterValidation("sidePath", ["export"]);
   const {
     currentPage,
     pageSize,
     wsl,
     lastSidePathSegment,
-    popSidePath,
+    popSidePathUntilClear,
     ...filters
   } = usePageParams();
-
-  useSetDynamicFilterValidation("sidePath", ["export"]);
-
-  const instanceListParams = {
-    wsl,
-    ...getQuery(filters),
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-  };
+  const instanceListParams = useMemo(
+    () => getInstanceListParams({ filters, wsl }),
+    [filters, wsl],
+  );
 
   const { instances, instancesCount, isGettingInstances } = useGetInstances({
     ...instanceListParams,
     with_alerts: true,
     with_release_upgrades: true,
     with_upgrades: DETAILED_UPGRADES_VIEW_ENABLED,
+    limit: pageSize,
+    offset: (currentPage - 1) * pageSize,
   });
 
-  const {
-    selectedItems: selectedInstances,
-    setSelectedItems: setSelectedInstances,
-  } = useSelection<Instance>(instances, isGettingInstances);
-
+  const [selectedInstances, setSelectedInstances] = useState<Instance[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
   const clearSelection = useCallback(() => {
     setSelectedInstances([]);
     setIsAllSelected(false);
-  }, [setSelectedInstances]);
+  }, []);
 
   const selectAll = useCallback(() => {
     setIsAllSelected(true);
     setSelectedInstances([]);
-  }, [setSelectedInstances]);
+  }, []);
 
   return (
     <PageMain>
@@ -67,6 +63,7 @@ const InstancesPage: FC = () => {
         actions={[
           <InstancesPageActions
             key="actions"
+            isGettingInstances={isGettingInstances}
             selectedInstances={selectedInstances}
             isAllSelected={isAllSelected}
           />,
@@ -78,16 +75,16 @@ const InstancesPage: FC = () => {
           instances={instances}
           selectedInstances={selectedInstances}
           setSelectedInstances={setSelectedInstances}
+          onChangeFilter={clearSelection}
+          isGettingInstances={isGettingInstances}
           isAllSelected={isAllSelected}
           onSelectAll={selectAll}
           onClearSelection={clearSelection}
-          onChangeFilter={clearSelection}
-          isGettingInstances={isGettingInstances}
         />
       </PageContent>
       <SidePanel
         isOpen={lastSidePathSegment === "export"}
-        onClose={popSidePath}
+        onClose={popSidePathUntilClear}
         size="medium"
       >
         {lastSidePathSegment === "export" && (
@@ -97,16 +94,16 @@ const InstancesPage: FC = () => {
                 isAllSelected,
                 selectedCount: selectedInstances.length,
                 totalCount: instancesCount,
-                selectionForms: ["instance", "instances"],
+                selectionForms: ["instance"],
               })}
             </SidePanel.Header>
             <SidePanel.Content>
               <InstancesExportForm
                 exportParams={instanceListParams}
                 selectedInstanceIds={
-                  !isAllSelected && selectedInstances.length > 0
-                    ? selectedInstances.map(({ id }) => id)
-                    : undefined
+                  isAllSelected
+                    ? undefined
+                    : selectedInstances.map(({ id }) => id)
                 }
               />
             </SidePanel.Content>
