@@ -25,7 +25,6 @@ export const useGetPublicationsBySource = (
     AxiosError<PublicationServiceListPublicationsError>
   >({
     queryKey: ["publications", source],
-    enabled: !!source,
     queryFn: async () => {
       let pageToken: string | undefined;
       const publications: Publication[] = [];
@@ -50,6 +49,7 @@ export const useGetPublicationsBySource = (
       return publications;
     },
     ...options,
+    enabled: !!source && options?.enabled !== false,
   });
 
   return {
