@@ -27,15 +27,6 @@
   margin-bottom: $spv--small;
 }
 
-// .searchGroups {
-//   display: grid;
-//   gap: 0;
-// }
-
-// .fieldGroupsWrapper {
-//   display: contents;
-// }
-
 :global(.export-form-field-groups-accordion) {
   border-top: 1px solid $colors--theme--border-low-contrast;
 }
@@ -51,7 +42,7 @@
   font-weight: 400;
 }
 
-:global(label.export-form-group-title-checkbox.p-checkbox) {
+.exportFormGroupTitleCheckbox {
   margin-bottom: 0;
 }
 

@@ -12,8 +12,9 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { useCallback, useMemo, useState, type FC, type ReactNode } from "react";
+import { useCallback, useMemo, useState, type FC } from "react";
 import SortableFieldList from "../SortableFieldList";
+import { getFilteredFieldGroups, getGroupSearchRank } from "./helpers";
 import { VALIDATION_SCHEMA } from "./constants";
 import classes from "./ExportForm.module.scss";
 import type {
@@ -31,8 +32,6 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
-  readonly onStepChange?: (step: StepIndex) => void;
-  readonly sortableNote?: ReactNode;
 }
 
 const ExportForm: FC<ExportFormProps> = ({
@@ -40,8 +39,6 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
-  onStepChange,
-  sortableNote,
 }) => {
   const { popSidePath } = usePageParams();
   const [step, setStep] = useState<StepIndex>(0);
@@ -50,7 +47,6 @@ const ExportForm: FC<ExportFormProps> = ({
 
   const handleBack = () => {
     setStep(0);
-    onStepChange?.(0);
   };
 
   const formik = useFormik<ExportFormValues>({
@@ -66,19 +62,11 @@ const ExportForm: FC<ExportFormProps> = ({
       if (step === 0) {
         setOrderedFields(selectedFields);
         setStep(1);
-        onStepChange?.(1);
         return;
       }
 
-      const selectedFieldIdSet = new Set(
-        selectedFields.map((field) => field.id),
-      );
-      const orderedSelectedFields = orderedFields.filter((field) =>
-        selectedFieldIdSet.has(field.id),
-      );
-
-      const fieldsToExport = orderedSelectedFields.length
-        ? orderedSelectedFields
+      const fieldsToExport = orderedFields.length
+        ? orderedFields
         : selectedFields;
 
       await onGenerate({ values, fieldsToExport });
@@ -116,25 +104,10 @@ const ExportForm: FC<ExportFormProps> = ({
     [formik],
   );
 
-  const filteredFieldGroups = useMemo(() => {
-    const normalizedSearch = attributeSearch.trim().toLowerCase();
-
-    if (!normalizedSearch) {
-      return fieldGroups;
-    }
-
-    return fieldGroups.flatMap((group) => {
-      const matchingFields = group.fields.filter((field) =>
-        field.label.toLowerCase().includes(normalizedSearch),
-      );
-
-      if (!matchingFields.length) {
-        return [];
-      }
-
-      return [{ ...group, fields: matchingFields }];
-    });
-  }, [attributeSearch, fieldGroups]);
+  const filteredFieldGroups = useMemo(
+    () => getFilteredFieldGroups(fieldGroups, attributeSearch),
+    [attributeSearch, fieldGroups],
+  );
 
   const accordionSections = filteredFieldGroups.map((group) => {
     const groupIds = group.fields.map((field) => field.id);
@@ -152,7 +125,7 @@ const ExportForm: FC<ExportFormProps> = ({
       title: (
         <CheckboxInput
           label={group.title}
-          labelClassName="export-form-group-title-checkbox"
+          labelClassName={classes.exportFormGroupTitleCheckbox}
           checked={allSelected}
           indeterminate={someSelected}
           aria-label={`${group.title} select all`}
@@ -189,23 +162,17 @@ const ExportForm: FC<ExportFormProps> = ({
     }
 
     if (attributeSearch.trim()) {
-      const needle = attributeSearch.trim().toLowerCase();
-      const rank = (label: string) => {
-        const hay = label.toLowerCase();
-        if (hay === needle) return 0;
-        if (hay.startsWith(needle)) return 1;
-        return 2;
-      };
-
       const sortedSections = [...accordionSections].sort((a, b) => {
-        const aGroup = filteredFieldGroups.find((g) => g.key === a.key);
-        const bGroup = filteredFieldGroups.find((g) => g.key === b.key);
-        const aRank = aGroup
-          ? Math.min(...aGroup.fields.map((f) => rank(f.label)))
-          : 2;
-        const bRank = bGroup
-          ? Math.min(...bGroup.fields.map((f) => rank(f.label)))
-          : 2;
+        const aRank = getGroupSearchRank(
+          a.key,
+          filteredFieldGroups,
+          attributeSearch,
+        );
+        const bRank = getGroupSearchRank(
+          b.key,
+          filteredFieldGroups,
+          attributeSearch,
+        );
         return aRank - bRank;
       });
 
@@ -255,12 +222,7 @@ const ExportForm: FC<ExportFormProps> = ({
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />
-          <label
-            htmlFor="export-attributes-searchbox"
-            className={classes.attributesLabel}
-          >
-            Attributes
-          </label>
+          <p className={classes.attributesLabel}>Attributes</p>
           <SearchBox
             id="export-attributes-searchbox"
             label="Search attributes"
@@ -284,17 +246,10 @@ const ExportForm: FC<ExportFormProps> = ({
         </div>
       </>
     ) : (
-      <>
-        {sortableNote && (
-          <p className="u-text--muted">
-            <small>{sortableNote}</small>
-          </p>
-        )}
-        <SortableFieldList
-          fields={orderedFields}
-          onOrderChange={setOrderedFields}
-        />
-      </>
+      <SortableFieldList
+        fields={orderedFields}
+        onOrderChange={setOrderedFields}
+      />
     );
 
   return (
