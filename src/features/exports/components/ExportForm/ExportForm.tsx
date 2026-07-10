@@ -12,7 +12,7 @@ import {
 import classNames from "classnames";
 import { useFormik } from "formik";
 import moment from "moment";
-import { useCallback, useMemo, useState, type FC } from "react";
+import { type ReactNode, useCallback, useMemo, useState, type FC } from "react";
 import SortableFieldList from "../SortableFieldList";
 import { getFilteredFieldGroups, getGroupSearchRank } from "./helpers";
 import { VALIDATION_SCHEMA } from "./constants";
@@ -23,6 +23,7 @@ import type {
   ExportFormValues,
   StepIndex,
 } from "../../types/ExportForm";
+import Blocks from "@/components/layout/Blocks";
 
 interface ExportFormProps {
   readonly fieldGroups: readonly ExportFieldGroup[];
@@ -32,6 +33,8 @@ interface ExportFormProps {
     values: ExportFormValues;
     fieldsToExport: ExportField[];
   }) => Promise<void>;
+  readonly onStepChange?: (step: StepIndex) => void;
+  readonly sortableNote?: ReactNode;
 }
 
 const ExportForm: FC<ExportFormProps> = ({
@@ -39,6 +42,8 @@ const ExportForm: FC<ExportFormProps> = ({
   initialValues,
   isSubmitting,
   onGenerate,
+  onStepChange,
+  sortableNote,
 }) => {
   const { popSidePath } = usePageParams();
   const [step, setStep] = useState<StepIndex>(0);
@@ -47,6 +52,7 @@ const ExportForm: FC<ExportFormProps> = ({
 
   const handleBack = () => {
     setStep(0);
+    onStepChange?.(0);
   };
 
   const formik = useFormik<ExportFormValues>({
@@ -62,11 +68,19 @@ const ExportForm: FC<ExportFormProps> = ({
       if (step === 0) {
         setOrderedFields(selectedFields);
         setStep(1);
+        onStepChange?.(1);
         return;
       }
 
-      const fieldsToExport = orderedFields.length
-        ? orderedFields
+      const selectedFieldIdSet = new Set(
+        selectedFields.map((field) => field.id),
+      );
+      const orderedSelectedFields = orderedFields.filter((field) =>
+        selectedFieldIdSet.has(field.id),
+      );
+
+      const fieldsToExport = orderedSelectedFields.length
+        ? orderedSelectedFields
         : selectedFields;
 
       await onGenerate({ values, fieldsToExport });
@@ -222,19 +236,20 @@ const ExportForm: FC<ExportFormProps> = ({
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />
-          <p className={classes.attributesLabel}>Attributes</p>
-          <SearchBox
-            id="export-attributes-searchbox"
-            label="Search attributes"
-            placeholder="Search attributes"
-            externallyControlled
-            value={attributeSearch}
-            aria-label="Search attributes"
-            searchButtonType="button"
-            onChange={(value) => {
-              setAttributeSearch(value);
-            }}
-          />
+          <Blocks.Item title="Attributes">
+            <SearchBox
+              id="export-attributes-searchbox"
+              label="Search attributes"
+              placeholder="Search attributes"
+              externallyControlled
+              value={attributeSearch}
+              aria-label="Search attributes"
+              searchButtonType="button"
+              onChange={(value) => {
+                setAttributeSearch(value);
+              }}
+            />
+          </Blocks.Item>
         </div>
         <div className={classNames({ "is-error": !!selectedFieldIdsError })}>
           {!!selectedFieldIdsError && (
@@ -246,10 +261,17 @@ const ExportForm: FC<ExportFormProps> = ({
         </div>
       </>
     ) : (
-      <SortableFieldList
-        fields={orderedFields}
-        onOrderChange={setOrderedFields}
-      />
+      <>
+        {sortableNote && (
+          <p className="u-text--muted">
+            <small>{sortableNote}</small>
+          </p>
+        )}
+        <SortableFieldList
+          fields={orderedFields}
+          onOrderChange={setOrderedFields}
+        />
+      </>
     );
 
   return (

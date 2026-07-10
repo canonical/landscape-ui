@@ -36,7 +36,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
   bucketIds,
   otherIds,
 }) => {
-  const { popSidePathUntilClear } = usePageParams();
+  const { closeSidePanel } = usePageParams();
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
@@ -105,7 +105,7 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
         retain_until: moment(values.retainUntil).toISOString(),
       });
       const job = response.data;
-      popSidePathUntilClear();
+      closeSidePanel();
       notify.success({
         title: "TSV export in progress",
         message: `Your compliance export "${values.name.trim()}" is being generated.`,
@@ -131,8 +131,9 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
     <>
       {emptyBucket && (
         <Notification severity="caution">
-          The selected bucket contains no instances. Choose a different bucket
-          or include Other.
+          The selected bucket contains no instances. Choose a different date
+          range
+          {otherIds.length > 0 && " or include Other"}.
         </Notification>
       )}
       {exportStep === 0 && (
@@ -148,13 +149,15 @@ const ReportExportForm: FC<ReportExportFormProps> = ({
               setSelectedBucket(e.target.value as BucketKey);
             }}
           />
-          <CheckboxInput
-            label="Include instances with no date range (Other)"
-            checked={includeOther}
-            onChange={() => {
-              setIncludeOther((v) => !v);
-            }}
-          />
+          {otherIds.length > 0 && (
+            <CheckboxInput
+              label="Include instances with no date range (Other)"
+              checked={includeOther}
+              onChange={() => {
+                setIncludeOther((v) => !v);
+              }}
+            />
+          )}
           <div className={classes.includeOtherRow}>
             <CheckboxInput
               label="Report by CVE"
