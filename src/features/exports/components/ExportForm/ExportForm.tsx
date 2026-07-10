@@ -199,7 +199,7 @@ const ExportForm: FC<ExportFormProps> = ({
       return (
         <div>
           <Accordion
-            key="filtered"
+            key={`filtered-${sortedSections[0]?.key ?? ""}`}
             className="export-form-field-groups-accordion"
             sections={sortedSections}
             expanded={sortedSections[0]?.key}
