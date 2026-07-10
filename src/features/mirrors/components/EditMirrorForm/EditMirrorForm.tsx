@@ -19,7 +19,6 @@ import {
 import { SETTINGS_HELP_TEXT } from "../../constants";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import * as Yup from "yup";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import classes from "./EditMirrorForm.module.scss";
 import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
 
@@ -116,7 +115,7 @@ const EditMirrorForm: FC = () => {
             <Blocks.Item title="Mirror contents">
               <ReadOnlyField
                 label="Distribution"
-                value={mirror.distribution || NO_DATA_TEXT}
+                value={mirror.distribution}
                 tooltipMessage="You can’t change the distribution after the mirror is created."
               />
               <ReadOnlyField
@@ -126,7 +125,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Architectures"
-                value={mirror.architectures?.join(", ") || NO_DATA_TEXT}
+                value={mirror.architectures?.join(", ")}
                 tooltipMessage="You can’t change the architectures after the mirror is created."
               />
               <div className={classes.wrapper}>

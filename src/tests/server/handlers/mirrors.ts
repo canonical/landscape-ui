@@ -3,7 +3,7 @@ import { getEndpointStatus } from "@/tests/controllers/controller";
 import { mirrors as mockMirrors } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import type {
   ListMirrorPackagesResponse,
   MirrorServiceGetMirrorResponse,
@@ -20,7 +20,12 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 
-const mirrors = mockMirrors as Mirror[];
+const mirrors = [...(mockMirrors as Mirror[])];
+
+export const resetMirrors = (): void => {
+  mirrors.length = 0;
+  mirrors.push(...(mockMirrors as Mirror[]));
+};
 
 const getMirrorsResponse = (requestUrl: string) => {
   const { pageSize, pageToken, search } =
@@ -61,7 +66,7 @@ export default [
       const endpointStatus = getEndpointStatus("mirrors");
 
       if (endpointStatus.status === "error") {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
 
       if (endpointStatus.status === "empty") {
@@ -123,6 +128,16 @@ export default [
             endpointStatus.response as ListMirrorPackagesResponse,
           );
         }
+
+        if (endpointStatus.status === "empty") {
+          return HttpResponse.json<ListMirrorPackagesResponse>({
+            mirrorPackages: [],
+          });
+        }
+
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
       }
 
       const mirror = mirrors.find(
@@ -144,6 +159,20 @@ export default [
     async ({ params, request }) => {
       await delay();
 
+      if (shouldApplyEndpointStatus("mirrors/update")) {
+        const endpointStatus = getEndpointStatus("mirrors/update");
+
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (endpointStatus.status === "variant") {
+          return HttpResponse.json(
+            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
+          );
+        }
+      }
+
       const mirrorIndex = mirrors.findIndex(
         ({ mirrorId }) => mirrorId === params.mirrorId,
       );
@@ -153,16 +182,6 @@ export default [
       }
 
       await request.json();
-
-      if (shouldApplyEndpointStatus("mirrors/update")) {
-        const endpointStatus = getEndpointStatus("mirrors/update");
-
-        if (endpointStatus.status === "variant") {
-          return HttpResponse.json(
-            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
-          );
-        }
-      }
 
       return HttpResponse.json<MirrorServiceUpdateMirrorResponse>();
     },
