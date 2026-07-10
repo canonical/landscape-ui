@@ -94,7 +94,9 @@ describe("AutoinstallFileForm", () => {
     await user.click(screen.getByRole("button", { name: "Save changes" }));
 
     expect(
-      await screen.findByText("No changes to save. Please edit the file first."),
+      await screen.findByText(
+        "No changes to save. Update the file before saving.",
+      ),
     ).toBeInTheDocument();
     expect(props.onSubmit).not.toHaveBeenCalled();
   });
