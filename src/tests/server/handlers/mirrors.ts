@@ -1,6 +1,6 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { mirrors as mockMirrors } from "@/tests/mocks/mirrors";
+import { mirrors as mockMirrors, packages } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
@@ -117,9 +117,7 @@ export default [
 
   http.get(
     `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`,
-    async ({ params }) => {
-      await delay();
-
+    async ({ params, request }) => {
       if (shouldApplyEndpointStatus("mirrors/packages")) {
         const endpointStatus = getEndpointStatus("mirrors/packages");
 
@@ -146,11 +144,21 @@ export default [
 
       if (!mirror) {
         return new HttpResponse(null, { status: 404 });
-      } else {
-        return HttpResponse.json<ListMirrorPackagesResponse>({
-          mirrorPackages: ["package-1", "package-2", "package-3"],
-        });
       }
+
+      const url = new URL(request.url);
+      const pageToken = Number(url.searchParams.get("pageToken"));
+      const pageSize = Number(url.searchParams.get("pageSize"));
+
+      const pageIndex = pageToken * pageSize;
+      const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
+      const maxPage = Math.ceil(packages.length / pageSize);
+      const page = pageToken + 1;
+
+      return HttpResponse.json({
+        mirrorPackages: paginatedPackages,
+        nextPageToken: page === maxPage ? undefined : page.toString(),
+      });
     },
   ),
 

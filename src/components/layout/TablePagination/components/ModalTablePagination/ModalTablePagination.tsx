@@ -7,6 +7,7 @@ export interface ModalTablePaginationProps {
   readonly onNext: () => void;
   readonly current: number;
   readonly max: number;
+  readonly isExact?: boolean;
 }
 
 const ModalTablePagination: FC<ModalTablePaginationProps> = ({
@@ -14,6 +15,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
   onNext,
   max,
   current,
+  isExact = true,
 }) => {
   if (max <= 1) {
     return;
@@ -35,6 +37,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
         </Button>
         <span>
           Page {current} of {max}
+          {isExact ? "" : "+"}
         </span>
         <Button
           type="button"
@@ -42,7 +45,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
           appearance="base"
           hasIcon
           onClick={onNext}
-          disabled={current >= max}
+          disabled={current >= max && isExact}
           aria-label="Next page"
         >
           <Icon name="chevron-right" />

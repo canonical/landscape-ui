@@ -1,29 +1,28 @@
 import NoData from "@/components/layout/NoData";
 import { pluralize } from "@/utils/_helpers";
-import { Spinner } from "@canonical/react-components";
+import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import { useListMirrorPackages } from "../../api";
+import { useGetMirrorPackagesCount } from "../../api";
 
-interface MirrorPackagesCount {
+interface MirrorPackagesCountProps {
   readonly mirrorName: string;
 }
 
-const MirrorPackagesCount: FC<MirrorPackagesCount> = ({ mirrorName }) => {
-  const { data, isLoading, isError } = useListMirrorPackages(
-    mirrorName,
-    {
-      pageSize: 1000,
-    },
-    { refetchOnMount: false },
-  );
+const MirrorPackagesCount: FC<MirrorPackagesCountProps> = ({ mirrorName }) => {
+  const {
+    mirrorPackagesCount,
+    isPackagesCountExact,
+    isGettingPackagesCount,
+    isPackagesCountError,
+  } = useGetMirrorPackagesCount({ mirrorName });
 
-  if (isLoading) return <Spinner />;
-  if (isError || !data?.data.mirrorPackages) return <NoData />;
+  if (isGettingPackagesCount) return <LoadingState inline />;
+  if (isPackagesCountError) return <NoData />;
 
   return pluralize(
-    data.data.mirrorPackages.length,
+    mirrorPackagesCount,
     ["package"],
-    data.data.nextPageToken ? "limited" : "exact",
+    isPackagesCountExact ? "exact" : "limited",
   );
 };
 
