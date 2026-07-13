@@ -24,9 +24,11 @@
     "tcm:watch": "pnpm tcm:run --watch"
   },
   "dependencies": {
+    "@canonical/ds-assets": "0.29.0",
     "@canonical/landscape-openapi": "0.0.70",
     "@canonical/react-components": "4.6.0",
     "@canonical/react-ds-global": "0.29.1",
+    "@canonical/react-ds-global-form": "0.29.1",
     "@canonical/styles": "0.29.0",
     "@monaco-editor/react": "4.7.0",
     "@sentry/react": "10.56.0",

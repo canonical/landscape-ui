@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@canonical/ds-assets':
+        specifier: 0.29.0
+        version: 0.29.0
       '@canonical/landscape-openapi':
         specifier: 0.0.70
         version: 0.0.70(axios@1.17.0)
@@ -17,6 +20,9 @@ importers:
       '@canonical/react-ds-global':
         specifier: 0.29.1
         version: 0.29.1(@canonical/design-tokens@0.6.1)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+      '@canonical/react-ds-global-form':
+        specifier: 0.29.1
+        version: 0.29.1(@canonical/design-tokens@0.6.1)(@canonical/ds-assets@0.29.0)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
       '@canonical/styles':
         specifier: 0.29.0
         version: 0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)
@@ -302,6 +308,9 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
       vanilla-framework: ^3.15.1 || ^4.0.0
+
+  '@canonical/react-ds-global-form@0.29.1':
+    resolution: {integrity: sha512-bGT/Y3e472YA7bs3R+590FBaTsMh5yB1LMyHn70SVEVtlcZFbLRCUs/PN0hwpK7IR4FoRycBbxaQq5IARuFkLw==}
 
   '@canonical/react-ds-global@0.29.1':
     resolution: {integrity: sha512-nFRuy6IgIIy2vqEy7q1H0XhtNcBeCe5CTU3dCU6bJ74Okqh1oQ52+KylTut5i1XXNCZfnUO30fPCGLeJ8xliYg==}
@@ -3754,6 +3763,12 @@ packages:
   react-fast-compare@2.0.4:
     resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
 
+  react-hook-form@7.81.0:
+    resolution: {integrity: sha512-ocbmr2p5KBMoAfj4WCUvped33lVi1Kd5DuDUvQDnB6VEAacOjPI/jMbtDdbhco4y9ct4xUuCmMY0b/C9L0QHjw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -4970,6 +4985,43 @@ snapshots:
       - canvas
       - supports-color
       - utf-8-validate
+
+  '@canonical/react-ds-global-form@0.29.1(@canonical/design-tokens@0.6.1)(@canonical/ds-assets@0.29.0)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)':
+    dependencies:
+      '@canonical/react-ds-global': 0.29.1(@canonical/design-tokens@0.6.1)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+      '@canonical/storybook-config': 0.29.1(@canonical/design-tokens@0.6.1)(@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+      '@canonical/styles': 0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)
+      '@canonical/utils': 0.29.0
+      downshift: 9.3.4(react@19.2.7)
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      react-hook-form: 7.81.0(react@19.2.7)
+    transitivePeerDependencies:
+      - '@canonical/design-tokens'
+      - '@canonical/ds-assets'
+      - '@canonical/router-core'
+      - '@canonical/router-react'
+      - '@chromatic-com/cypress'
+      - '@chromatic-com/playwright'
+      - '@chromatic-com/vitest'
+      - '@storybook/svelte'
+      - '@sveltejs/vite-plugin-svelte'
+      - '@types/react'
+      - '@types/react-dom'
+      - '@vitest/browser'
+      - '@vitest/browser-playwright'
+      - '@vitest/runner'
+      - babel-plugin-macros
+      - esbuild
+      - lit
+      - rollup
+      - storybook
+      - supports-color
+      - svelte
+      - typescript
+      - vite
+      - vitest
+      - webpack
 
   '@canonical/react-ds-global@0.29.1(@canonical/design-tokens@0.6.1)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)':
     dependencies:
@@ -8630,6 +8682,10 @@ snapshots:
       scheduler: 0.27.0
 
   react-fast-compare@2.0.4: {}
+
+  react-hook-form@7.81.0(react@19.2.7):
+    dependencies:
+      react: 19.2.7
 
   react-is@16.13.1: {}
 

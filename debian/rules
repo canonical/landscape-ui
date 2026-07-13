@@ -11,6 +11,7 @@ export DH_VERBOSE = 1
 build-indep:
 	mkdir dist
 	cp -r assets dist
+	cp -r icons dist
 	cp index.html favicon.svg dist
 
 
