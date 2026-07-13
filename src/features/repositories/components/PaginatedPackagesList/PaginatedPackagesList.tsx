@@ -41,9 +41,6 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
     () => [
       {
         Header: "Package name",
-        meta: {
-          ariaLabel: ({ original: { name } }) => `${name} package name`,
-        },
         Cell: ({ row: { original } }: CellProps<Package>) => original.name,
       },
     ],

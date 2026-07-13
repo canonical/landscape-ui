@@ -7,7 +7,7 @@ import { screen } from "@testing-library/react";
 describe("LocalRepositoryPackagesCount", () => {
   it("renders loading state while fetching packages", () => {
     renderWithProviders(
-      <LocalRepositoryPackagesCount repository={repositories[0]} />,
+      <LocalRepositoryPackagesCount repository={repositories[0].name} />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -15,7 +15,7 @@ describe("LocalRepositoryPackagesCount", () => {
 
   it("renders package count when loaded", async () => {
     renderWithProviders(
-      <LocalRepositoryPackagesCount repository={repositories[0]} />,
+      <LocalRepositoryPackagesCount repository={repositories[0].name} />,
     );
 
     expect(await screen.findByText(/25 packages/i)).toBeInTheDocument();
