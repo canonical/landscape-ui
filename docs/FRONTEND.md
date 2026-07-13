@@ -145,30 +145,28 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 
 ## Pragma design system (@canonical/pragma)
 
-Pragma (`@canonical/react-ds-global` + `@canonical/styles`) is Canonical's next-generation
-design system and the successor to vanilla-framework and `@canonical/react-components`. Adoption
-is incremental: Pragma is installed and its global styles are active, and components move to it
-over time. Surfaces not yet migrated keep using vanilla / `@canonical/react-components`.
+Pragma is Canonical's next-generation design system and the successor to vanilla-framework and
+`@canonical/react-components`. The app currently has Pragma's A1 setup in place through
+`@canonical/styles`, `@canonical/react-ds-global`, `@canonical/react-ds-global-form`, and
+`@canonical/ds-assets`; component migration remains incremental, so many surfaces still use vanilla
+and `@canonical/react-components`.
 
-**Using Pragma components**
+`src/main.tsx` loads the Vanilla SCSS bundle first, then `@canonical/styles`, then
+`@canonical/react-ds-global-form/dist/esm/index.css`. `@canonical/styles` brings in the active
+global design tokens, reset, and typography rules; the form stylesheet provides package-level CSS
+variables for future Pragma form components. These are Vite side-effect imports rather than SCSS
+`@import`s because the package CSS entrypoints resolve correctly from the Vite entrypoint.
 
-- Import components from `@canonical/react-ds-global` and style them with Pragma's own design
-  tokens.
-- Pragma versions are pinned exactly; it is pre-1.0, so upgrade deliberately.
+Font faces still come from vanilla-framework in this codebase, so there is no separate
+`@canonical/styles/fonts` import at the moment. Pragma icon assets come from
+`@canonical/ds-assets/icons` and are served at `/icons` by `createPragmaIconsPlugin` in
+`vite.config.ts`; production builds copy the same assets to `dist/icons`, and Debian packaging
+includes that directory in the deployed dashboard files.
 
-**Global styles**
-
-- `@canonical/styles` is imported once in `src/main.tsx`, after the vanilla SCSS bundle. Loading
-  last, Pragma's typography and reset apply the app-wide type scale on shared element selectors
-  (`h1`–`h6`, `p`, `body`, `a`, form controls), so import order matters.
-- The CSS-only `@canonical/styles` module is declared in `src/vite-env.d.ts` so the import
-  type-checks.
-
-**Testing Pragma components**
-
-- `vitest.config.ts` inlines `@canonical/react-ds-global` (`test.server.deps.inline`) so its
-  side-effect `.css` imports resolve through the existing `styleMock` alias, and strips the
-  package's dangling sourcemap references. Tests that render a Pragma component depend on this.
+When migrating components, import non-form components from `@canonical/react-ds-global` and form
+components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently inlines
+`@canonical/react-ds-global` so its side-effect CSS imports are handled by the existing
+`styleMock` alias and its dangling sourcemap references are stripped during tests.
 
 ## Testing
 
