@@ -19,9 +19,21 @@ const getPragmaIconPath = (requestUrl: string | undefined) => {
     return null;
   }
 
-  const iconPath = path.normalize(
-    decodeURIComponent(pathname.slice(PRAGMA_ICONS_ROUTE.length)),
-  );
+  let decodedIconPath: string;
+
+  try {
+    decodedIconPath = decodeURIComponent(
+      pathname.slice(PRAGMA_ICONS_ROUTE.length),
+    );
+  } catch (error) {
+    if (error instanceof URIError) {
+      return null;
+    }
+
+    throw error;
+  }
+
+  const iconPath = path.normalize(decodedIconPath);
 
   if (!iconPath || iconPath.startsWith("..") || path.isAbsolute(iconPath)) {
     return null;
