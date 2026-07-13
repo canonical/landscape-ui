@@ -37,3 +37,4 @@ src/**/*.module.scss.d.ts
 .cert
 src/tests/msw-api-registry.jsonl
 src/tests/msw-contract-coverage.json
+src/tests/msw-handlers-manifest.json
