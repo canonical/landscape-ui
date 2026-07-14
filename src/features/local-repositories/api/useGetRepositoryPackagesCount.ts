@@ -30,7 +30,7 @@ export const useGetRepositoryPackagesCount = ({
 
   return {
     localPackagesCount: data?.data.localPackages?.length ?? 0,
-    isPackagesCountExact: !data?.data.nextPageToken,
+    isPackagesCountExact: !!data && !data.data.nextPageToken,
     isGettingPackagesCount: isLoading,
     isPackagesCountError: isError,
   };

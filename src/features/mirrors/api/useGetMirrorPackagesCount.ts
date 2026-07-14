@@ -30,7 +30,7 @@ export const useGetMirrorPackagesCount = ({
 
   return {
     mirrorPackagesCount: data?.data.mirrorPackages?.length ?? 0,
-    isPackagesCountExact: !data?.data.nextPageToken,
+    isPackagesCountExact: !!data && !data.data.nextPageToken,
     isGettingPackagesCount: isLoading,
     isPackagesCountError: isError,
   };

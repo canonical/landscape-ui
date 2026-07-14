@@ -63,7 +63,7 @@ describe("PaginatedPackagesList", () => {
       />,
     );
 
-    expect(screen.getByText(/page 1 of 100\+/i)).toBeInTheDocument();
+    expect(screen.getByText("Page 1 of 100+")).toBeInTheDocument();
   });
 
   it("marks the total as exact when there is no next page", () => {
@@ -77,7 +77,7 @@ describe("PaginatedPackagesList", () => {
       />,
     );
 
-    expect(screen.getByText(/page 101 of 101/i)).toBeInTheDocument();
+    expect(screen.getByText("Page 101 of 101")).toBeInTheDocument();
   });
 
   it("invokes the navigation callbacks", async () => {

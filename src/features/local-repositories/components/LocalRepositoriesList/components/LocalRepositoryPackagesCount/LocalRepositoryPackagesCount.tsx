@@ -2,7 +2,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
 import { useGetRepositoryPackagesCount } from "../../../../api";
 import { pluralize } from "@/utils/_helpers";
-import NoData from "@/components/layout/NoData/NoData";
+import NoData from "@/components/layout/NoData";
 
 interface LocalPackagesCountProps {
   readonly repository: string;
