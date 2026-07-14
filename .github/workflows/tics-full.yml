@@ -83,6 +83,9 @@ jobs:
           name: vitest-report
           path: ${{ github.workspace }}/reports
 
+      - name: Generate CSS module type declarations
+        run: pnpm run tcm:run
+
       - name: TICS report
         uses: tiobe/tics-github-action@v3
         with:

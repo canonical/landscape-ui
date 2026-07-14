@@ -19,4 +19,7 @@ export const highlightVersionsDifference = (pkg: InstancePackage) => {
       );
     }
   }
+
+  // If the available version is a prefix of the current version, don't show it
+  return "";
 };
