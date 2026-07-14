@@ -22,12 +22,14 @@ interface ManifestEntry {
  * The v1 catch-all handlers (path === "/api/") are skipped here — v1 routes
  * are identified by RPC action, handled by the v1-actions connector.
  */
-export function createMswHandlerSource(): ContractSource {
+export function createMswHandlerSource(
+  manifestPath: string = MANIFEST_PATH,
+): ContractSource {
   const routes: { definition: RouteDefinition; regExp: RegExp }[] = [];
 
   // Existence is guarded by the aggregator CLI before any source is built.
   const entries = JSON.parse(
-    fs.readFileSync(MANIFEST_PATH, "utf-8"),
+    fs.readFileSync(manifestPath, "utf-8"),
   ) as ManifestEntry[];
 
   const seen = new Set<string>();

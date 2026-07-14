@@ -16,7 +16,7 @@ interface OpenApiOperation {
   parameters?: OpenApiParameter[];
 }
 
-interface OpenApiSpec {
+export interface OpenApiSpec {
   paths?: Record<string, Record<string, OpenApiOperation>>;
 }
 
@@ -70,9 +70,10 @@ function resolveWildcardParam(paramName: string, schemaPattern: string): string 
  * mounted under in the frontend (VITE_API_URL_DEB_ARCHIVE minus the spec's
  * own /v1beta1 prefix).
  */
-export function createOpenApiSource(basePath: string): ContractSource {
-  const spec = loadSpec();
-
+export function createOpenApiSource(
+  basePath: string,
+  spec: OpenApiSpec = loadSpec(),
+): ContractSource {
   const routes: { definition: RouteDefinition; regExp: RegExp }[] = [];
 
   for (const [specPath, operations] of Object.entries(spec.paths ?? {})) {

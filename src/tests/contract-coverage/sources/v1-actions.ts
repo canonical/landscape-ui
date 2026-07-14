@@ -10,7 +10,9 @@ import type { ContractSource, RouteDefinition } from "../types";
  * handler sources for `isAction(request, "...")` dispatches, paired with the
  * enclosing `http.<method>(API_URL_OLD, ...)` call.
  */
-export function createV1ActionSource(): ContractSource {
+export function createV1ActionSource(
+  handlersDir: string = HANDLERS_DIR,
+): ContractSource {
   const declared = new Map<string, RouteDefinition>();
 
   const defineAction = (method: string, action: string): RouteDefinition => ({
@@ -21,9 +23,9 @@ export function createV1ActionSource(): ContractSource {
     source: "msw-actions",
   });
 
-  for (const file of fs.readdirSync(HANDLERS_DIR)) {
+  for (const file of fs.readdirSync(handlersDir)) {
     if (!file.endsWith(".ts")) continue;
-    const content = fs.readFileSync(path.join(HANDLERS_DIR, file), "utf-8");
+    const content = fs.readFileSync(path.join(handlersDir, file), "utf-8");
 
     // Each chunk after a split starts with the handler's method name and
     // spans until the next `http.` call, so an `isAction` found in a chunk

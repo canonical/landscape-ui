@@ -43,7 +43,12 @@ export function patternToRegExp(pattern: string): RegExp {
  * deduplicate to the same signature.
  */
 export function structuralSignature(method: string, pattern: string): string {
-  return `${method} ${pattern.replace(/\{[^}]*\.\.\.\}/g, "{...}").replace(/\{[^}]+\}/g, "{}")}`;
+  // Single pass: a second regex pass would also erase the "{...}" token and
+  // wrongly merge multi-segment params with single-segment ones.
+  const erased = pattern.replace(/\{[^}]*?(\.\.\.)?\}/g, (_match, dots) =>
+    dots ? "{...}" : "{}",
+  );
+  return `${method} ${erased}`;
 }
 
 /**
