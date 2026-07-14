@@ -41,9 +41,9 @@ describe("createOpenApiSource", () => {
     expect(ids).toContain("GET /debarchive/v1beta1/mirrors");
     expect(ids).toContain("POST /debarchive/v1beta1/mirrors");
     expect(ids).toContain("GET /debarchive/v1beta1/mirrors/{mirror}");
-    expect(
-      source.listRoutes().every((route) => route.backend === "go"),
-    ).toBe(true);
+    expect(source.listRoutes().every((route) => route.backend === "go")).toBe(
+      true,
+    );
     expect(
       source.listRoutes().every((route) => route.source === "openapi"),
     ).toBe(true);
@@ -52,7 +52,9 @@ describe("createOpenApiSource", () => {
   it("resolves wildcard params from their schema patterns", () => {
     const ids = source.listRoutes().map((route) => route.id);
     expect(ids).toContain("GET /debarchive/v1beta1/locals/{name}");
-    expect(ids).toContain("DELETE /debarchive/v1beta1/operations/{operation...}");
+    expect(ids).toContain(
+      "DELETE /debarchive/v1beta1/operations/{operation...}",
+    );
   });
 
   it("matches concrete URLs to declared routes", () => {

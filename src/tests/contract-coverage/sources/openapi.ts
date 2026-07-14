@@ -51,7 +51,10 @@ function loadSpec(): OpenApiSpec {
  * e.g. "{name_1}" with schema pattern "mirrors/[^/]+" -> "mirrors/{name_1}",
  * and "operations/.+" -> "operations/{name_2...}" (multi-segment).
  */
-function resolveWildcardParam(paramName: string, schemaPattern: string): string {
+function resolveWildcardParam(
+  paramName: string,
+  schemaPattern: string,
+): string {
   const resolved = schemaPattern
     .replace(/\[\^\/\]\+/g, `{${paramName}}`)
     .replace(/\.\+/g, `{${paramName}...}`);

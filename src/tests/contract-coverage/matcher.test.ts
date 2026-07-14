@@ -69,9 +69,11 @@ describe("patternToRegExp", () => {
     const regExp = patternToRegExp("/v1beta1/mirrors/{mirror}:sync");
     expect(regExp.test("/v1beta1/mirrors/my-mirror:sync")).toBe(true);
     expect(regExp.test("/v1beta1/mirrors/my-mirror")).toBe(false);
-    expect(patternToRegExp("/v1beta1/mirrors/{mirror}").test(
-      "/v1beta1/mirrors/my-mirror:sync",
-    )).toBe(false);
+    expect(
+      patternToRegExp("/v1beta1/mirrors/{mirror}").test(
+        "/v1beta1/mirrors/my-mirror:sync",
+      ),
+    ).toBe(false);
   });
 
   it("matches multi-segment {param...} across slashes", () => {
@@ -89,18 +91,18 @@ describe("patternToRegExp", () => {
 
 describe("structuralSignature", () => {
   it("equates patterns that differ only in param names", () => {
-    expect(
-      structuralSignature("GET", "/v1beta1/mirrors/{mirrorId}"),
-    ).toBe(structuralSignature("GET", "/v1beta1/mirrors/{name_1}"));
+    expect(structuralSignature("GET", "/v1beta1/mirrors/{mirrorId}")).toBe(
+      structuralSignature("GET", "/v1beta1/mirrors/{name_1}"),
+    );
   });
 
   it("distinguishes methods and verbs", () => {
     expect(structuralSignature("GET", "/v1beta1/mirrors/{m}")).not.toBe(
       structuralSignature("DELETE", "/v1beta1/mirrors/{m}"),
     );
-    expect(
-      structuralSignature("POST", "/v1beta1/mirrors/{m}:sync"),
-    ).not.toBe(structuralSignature("POST", "/v1beta1/mirrors/{m}"));
+    expect(structuralSignature("POST", "/v1beta1/mirrors/{m}:sync")).not.toBe(
+      structuralSignature("POST", "/v1beta1/mirrors/{m}"),
+    );
   });
 
   it("distinguishes single-segment from multi-segment params", () => {

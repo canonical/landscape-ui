@@ -12,9 +12,9 @@ describe("createHeuristicSource", () => {
   });
 
   it("labels everything it emits as a guess", () => {
-    expect(
-      match("GET", "http://localhost:3000/api/v2/whatever")?.source,
-    ).toBe("heuristic");
+    expect(match("GET", "http://localhost:3000/api/v2/whatever")?.source).toBe(
+      "heuristic",
+    );
   });
 
   it("collapses UUID and numeric segments to {id}", () => {

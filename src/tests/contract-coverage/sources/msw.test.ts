@@ -46,9 +46,7 @@ describe("createMswHandlerSource", () => {
     expect(
       byId.get("POST /debarchive/v1beta1/mirrors/{mirrorId}:sync")?.backend,
     ).toBe("go");
-    expect(
-      routes.every((route) => route.source === "msw-handlers"),
-    ).toBe(true);
+    expect(routes.every((route) => route.source === "msw-handlers")).toBe(true);
   });
 
   it("skips v1 catch-alls, regexp paths, and duplicates", () => {

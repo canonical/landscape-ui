@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildReport } from "./aggregate";
 import type { MigrationMapEntry } from "./migration-map";
-import type {
-  ContractSource,
-  Observation,
-  RouteDefinition,
-} from "./types";
+import type { ContractSource, Observation, RouteDefinition } from "./types";
 
 const HTTP_OK = 200;
 const HTTP_BAD_REQUEST = 400;
@@ -35,8 +31,7 @@ const stubSource = (
     matcher?.(method, url) ??
     routes.find(
       (candidate) =>
-        candidate.method === method &&
-        candidate.pattern === url.pathname,
+        candidate.method === method && candidate.pattern === url.pathname,
     ) ??
     null,
 });
@@ -186,11 +181,7 @@ describe("buildReport", () => {
       },
       { name: "Broken entry", v2: "GET /api/v2/typo" },
     ];
-    const report = buildReport(
-      [observation("GET", "/v1/foos")],
-      [source],
-      map,
-    );
+    const report = buildReport([observation("GET", "/v1/foos")], [source], map);
 
     const [foo, broken] = report.migration;
     expect(foo?.layers.v1).toEqual({
@@ -210,11 +201,7 @@ describe("buildReport", () => {
       route("GET /api/?action=GetFoo", "msw-actions", "v1"),
       route("GET /v1/foos", "openapi"),
     ]);
-    const report = buildReport(
-      [observation("GET", "/v1/foos")],
-      [source],
-      [],
-    );
+    const report = buildReport([observation("GET", "/v1/foos")], [source], []);
 
     expect(report.summary.byBackend.v1).toEqual({
       declared: 1,
