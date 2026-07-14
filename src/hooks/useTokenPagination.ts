@@ -24,7 +24,9 @@ export default function useTokenPagination(resetKey: string) {
 
   const pushNextPage = (nextPageToken: string | undefined) => {
     if (nextPageToken) {
-      setPageTokenStack((stack) => [...stack, nextPageToken]);
+      setPageTokenStack((stack) =>
+        stack.at(-1) === nextPageToken ? stack : [...stack, nextPageToken],
+      );
     }
   };
 

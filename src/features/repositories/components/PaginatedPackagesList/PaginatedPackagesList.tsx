@@ -49,8 +49,8 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
     [],
   );
 
-  if (isGettingPackages) return <LoadingState />;
   if (error) throw error;
+  if (isGettingPackages) return <LoadingState />;
 
   const maxPages = Math.max(
     currentPage,

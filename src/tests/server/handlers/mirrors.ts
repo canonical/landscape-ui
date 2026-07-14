@@ -150,15 +150,13 @@ export default [
       const pageToken = Number(url.searchParams.get("pageToken")) || 0;
       const pageSize =
         Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
-
       const pageIndex = pageToken * pageSize;
       const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
-      const maxPage = Math.ceil(packages.length / pageSize);
-      const page = pageToken + 1;
+      const hasNextPage = pageIndex + pageSize < packages.length;
 
       return HttpResponse.json({
         mirrorPackages: paginatedPackages,
-        nextPageToken: page === maxPage ? undefined : page.toString(),
+        nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,
       });
     },
   ),

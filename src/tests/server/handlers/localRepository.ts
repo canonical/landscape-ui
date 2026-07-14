@@ -116,22 +116,21 @@ export default [
   http.get(
     `${API_URL_DEB_ARCHIVE}locals/:repository/packages`,
     async ({ request }) => {
-      const url = new URL(request.url);
-      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
-      const pageSize =
-        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
       if (shouldApplyEndpointStatus("locals")) {
         return applyEndpointStatus({ localPackages: [] });
       }
 
+      const url = new URL(request.url);
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
       const pageIndex = pageToken * pageSize;
       const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
-      const maxPage = Math.ceil(packages.length / pageSize);
-      const page = pageToken + 1;
+      const hasNextPage = pageIndex + pageSize < packages.length;
 
       return HttpResponse.json({
         localPackages: paginatedPackages,
-        nextPageToken: page === maxPage ? undefined : page.toString(),
+        nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,
       });
     },
   ),
