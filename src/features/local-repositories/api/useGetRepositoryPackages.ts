@@ -36,7 +36,7 @@ export const useGetRepositoryPackages = ({
     AxiosResponse<LocalServiceListLocalPackagesResponse>,
     AxiosError<LocalServiceListLocalPackagesError>
   >({
-    queryKey: ["localPackages", local, currentPageToken],
+    queryKey: ["localPackages", local, currentPageToken, pageSize],
     queryFn: async () =>
       authFetchDebArchive.get(`${local}/packages`, {
         params: { pageSize, pageToken: currentPageToken },

@@ -1,3 +1,3 @@
-export interface Package extends Record<string, unknown> {
+export interface SourcePackage extends Record<string, unknown> {
   name: string;
 }

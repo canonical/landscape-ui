@@ -5,7 +5,7 @@ import LoadingState from "@/components/layout/LoadingState";
 import type { CellProps, Column } from "react-table";
 import type { AxiosError } from "axios";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
-import type { Package } from "../../types";
+import type { SourcePackage } from "../../types";
 
 interface PaginatedPackagesListProps {
   readonly packages: string[];
@@ -32,16 +32,17 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
   onNextPage,
   onPreviousPage,
 }) => {
-  const data = useMemo<Package[]>(
+  const data = useMemo<SourcePackage[]>(
     () => packages.map((name) => ({ name })),
     [packages],
   );
 
-  const columns = useMemo<Column<Package>[]>(
+  const columns = useMemo<Column<SourcePackage>[]>(
     () => [
       {
         Header: "Package name",
-        Cell: ({ row: { original } }: CellProps<Package>) => original.name,
+        Cell: ({ row: { original } }: CellProps<SourcePackage>) =>
+          original.name,
       },
     ],
     [],

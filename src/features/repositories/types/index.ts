@@ -1,1 +1,1 @@
-export type { Package } from "./Package";
+export type { SourcePackage } from "./Package";

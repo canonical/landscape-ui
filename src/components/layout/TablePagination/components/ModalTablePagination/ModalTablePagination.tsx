@@ -18,7 +18,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
   isExact = true,
 }) => {
   if (max <= 1) {
-    return;
+    return null;
   }
 
   return (
@@ -45,6 +45,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
           appearance="base"
           hasIcon
           onClick={onNext}
+          // keep enabled until we know it's actually the last page
           disabled={current >= max && isExact}
           aria-label="Next page"
         >

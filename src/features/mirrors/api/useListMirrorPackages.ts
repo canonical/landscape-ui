@@ -36,7 +36,7 @@ export const useListMirrorPackages = ({
     AxiosResponse<MirrorServiceListMirrorPackagesResponse>,
     AxiosError<MirrorServiceListMirrorPackagesError>
   >({
-    queryKey: ["mirrorPackages", mirrorName, currentPageToken],
+    queryKey: ["mirrorPackages", mirrorName, currentPageToken, pageSize],
     queryFn: async () =>
       authFetchDebArchive.get(`${mirrorName}/packages`, {
         params: { pageSize, pageToken: currentPageToken },

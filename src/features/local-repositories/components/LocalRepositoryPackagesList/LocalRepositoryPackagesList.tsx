@@ -2,7 +2,7 @@ import { useMemo, useState, type FC } from "react";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import type { CellProps, Column } from "react-table";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
-import type { Package } from "@/features/repositories";
+import type { SourcePackage } from "@/features/repositories";
 import { getCellProps } from "./helpers";
 import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 
@@ -18,7 +18,7 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = DEFAULT_MODAL_PAGE_SIZE;
 
-  const pagedPackages = useMemo<Package[]>(
+  const pagedPackages = useMemo<SourcePackage[]>(
     () =>
       packages
         .slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -26,14 +26,15 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
     [packages, currentPage, pageSize],
   );
 
-  const columns = useMemo<Column<Package>[]>(
+  const columns = useMemo<Column<SourcePackage>[]>(
     () => [
       {
         Header: header,
         meta: {
           ariaLabel: ({ original: { name } }) => `Package name: ${name}`,
         },
-        Cell: ({ row: { original } }: CellProps<Package>) => original.name,
+        Cell: ({ row: { original } }: CellProps<SourcePackage>) =>
+          original.name,
       },
     ],
     [header],
