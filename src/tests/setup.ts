@@ -4,7 +4,7 @@ import { cleanup, configure } from "@testing-library/react";
 import fs from "fs";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
-import { REGISTRY_PATH } from "./global-setup";
+import { MANIFEST_PATH, REGISTRY_PATH } from "./contract-coverage/paths";
 import {
   mockRangeBoundingClientRect,
   resetScreenSize,
@@ -67,6 +67,27 @@ const pendingLogs: Promise<void>[] = [];
 server.events.on("response:mocked", ({ request, response }) => {
   pendingLogs.push(logInteraction(request, response));
 });
+
+// Dump the declared handler patterns for the coverage aggregator, which runs
+// outside Vite and cannot import the handler modules (import.meta.env).
+// Content is identical across workers, so concurrent rewrites are harmless.
+// A failed write must fail hard — a stale manifest would silently skew the
+// coverage report.
+try {
+  const manifest = server.listHandlers().map((handler) => {
+    const info = handler.info as { method?: unknown; path?: unknown };
+    return {
+      method: String(info.method ?? ""),
+      path: String(info.path ?? ""),
+      isRegExpPath: info.path instanceof RegExp,
+    };
+  });
+  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
+} catch (error) {
+  throw new Error(
+    `[FATAL] MSW manifest write failed at ${MANIFEST_PATH}: ${String(error)}`,
+  );
+}
 
 // ----------------------------------------
 

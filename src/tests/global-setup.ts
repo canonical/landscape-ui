@@ -1,7 +1,5 @@
 import fs from "fs";
-import path from "path";
-
-export const REGISTRY_PATH = path.resolve(__dirname, "msw-api-registry.jsonl");
+import { REGISTRY_PATH } from "./contract-coverage/paths";
 
 export default function setup() {
   if (fs.existsSync(REGISTRY_PATH)) {
