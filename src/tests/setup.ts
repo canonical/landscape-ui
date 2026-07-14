@@ -71,6 +71,8 @@ server.events.on("response:mocked", ({ request, response }) => {
 // Dump the declared handler patterns for the coverage aggregator, which runs
 // outside Vite and cannot import the handler modules (import.meta.env).
 // Content is identical across workers, so concurrent rewrites are harmless.
+// A failed write must fail hard — a stale manifest would silently skew the
+// coverage report.
 try {
   const manifest = server.listHandlers().map((handler) => {
     const info = handler.info as { method?: unknown; path?: unknown };
@@ -82,7 +84,9 @@ try {
   });
   fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
 } catch (error) {
-  console.error("Failed to write MSW handler manifest:", error);
+  throw new Error(
+    `[FATAL] MSW manifest write failed at ${MANIFEST_PATH}: ${String(error)}`,
+  );
 }
 
 // ----------------------------------------

@@ -25,39 +25,34 @@ interface ManifestEntry {
 export function createMswHandlerSource(): ContractSource {
   const routes: { definition: RouteDefinition; regExp: RegExp }[] = [];
 
-  if (fs.existsSync(MANIFEST_PATH)) {
-    const entries = JSON.parse(
-      fs.readFileSync(MANIFEST_PATH, "utf-8"),
-    ) as ManifestEntry[];
+  // Existence is guarded by the aggregator CLI before any source is built.
+  const entries = JSON.parse(
+    fs.readFileSync(MANIFEST_PATH, "utf-8"),
+  ) as ManifestEntry[];
 
-    const seen = new Set<string>();
-    for (const entry of entries) {
-      if (entry.isRegExpPath) continue;
+  const seen = new Set<string>();
+  for (const entry of entries) {
+    if (entry.isRegExpPath) continue;
 
-      const pathname = entry.path.replace(/\/$/, "");
-      if (pathname === "/api") continue;
+    const pathname = entry.path.replace(/\/$/, "");
+    if (pathname === "/api") continue;
 
-      const pattern = canonicalizeMswPath(pathname);
-      const method = entry.method.toUpperCase();
-      const id = `${method} ${pattern}`;
-      if (seen.has(id)) continue;
-      seen.add(id);
+    const pattern = canonicalizeMswPath(pathname);
+    const method = entry.method.toUpperCase();
+    const id = `${method} ${pattern}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
 
-      routes.push({
-        definition: {
-          id,
-          method,
-          pattern,
-          backend: classifyBackend(pattern),
-          source: "msw-handlers",
-        },
-        regExp: patternToRegExp(pattern),
-      });
-    }
-  } else {
-    console.error(
-      `[-] MSW handler manifest not found at ${MANIFEST_PATH} — run the test suite first. Falling back to heuristics for v2/go traffic.`,
-    );
+    routes.push({
+      definition: {
+        id,
+        method,
+        pattern,
+        backend: classifyBackend(pattern),
+        source: "msw-handlers",
+      },
+      regExp: patternToRegExp(pattern),
+    });
   }
 
   return {

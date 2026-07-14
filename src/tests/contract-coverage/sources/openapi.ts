@@ -1,4 +1,6 @@
+import fs from "fs";
 import { createRequire } from "module";
+import { parse as parseYaml } from "yaml";
 import { patternToRegExp } from "../matcher";
 import type { ContractSource, RouteDefinition } from "../types";
 
@@ -19,6 +21,30 @@ interface OpenApiSpec {
 }
 
 const HTTP_METHODS = ["get", "post", "put", "patch", "delete"];
+
+/**
+ * The packaged document format changed across @canonical/landscape-openapi
+ * versions (openapi.json up to 0.0.59, openapi.yaml from 0.0.70) — accept
+ * either.
+ */
+function loadSpec(): OpenApiSpec {
+  const candidates: [string, (raw: string) => unknown][] = [
+    ["openapi.yaml", parseYaml],
+    ["openapi.json", JSON.parse],
+  ];
+  for (const [file, parser] of candidates) {
+    let specPath: string;
+    try {
+      specPath = require.resolve(`@canonical/landscape-openapi/${file}`);
+    } catch {
+      continue;
+    }
+    return parser(fs.readFileSync(specPath, "utf-8")) as OpenApiSpec;
+  }
+  throw new Error(
+    "No OpenAPI document (openapi.yaml/openapi.json) found in @canonical/landscape-openapi",
+  );
+}
 
 /**
  * Resolves a gRPC-transcoded wildcard parameter into canonical segments,
@@ -45,7 +71,7 @@ function resolveWildcardParam(paramName: string, schemaPattern: string): string 
  * own /v1beta1 prefix).
  */
 export function createOpenApiSource(basePath: string): ContractSource {
-  const spec = require("@canonical/landscape-openapi/openapi.json") as OpenApiSpec;
+  const spec = loadSpec();
 
   const routes: { definition: RouteDefinition; regExp: RegExp }[] = [];
 

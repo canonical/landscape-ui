@@ -1,7 +1,11 @@
 import fs from "fs";
 import { buildReport } from "./contract-coverage/aggregate";
 import { MIGRATION_MAP } from "./contract-coverage/migration-map";
-import { REGISTRY_PATH, REPORT_PATH } from "./contract-coverage/paths";
+import {
+  MANIFEST_PATH,
+  REGISTRY_PATH,
+  REPORT_PATH,
+} from "./contract-coverage/paths";
 import { createHeuristicSource } from "./contract-coverage/sources/heuristic";
 import { createMswHandlerSource } from "./contract-coverage/sources/msw";
 import { createOpenApiSource } from "./contract-coverage/sources/openapi";
@@ -12,10 +16,16 @@ import type { Observation } from "./contract-coverage/types";
 // spec's own /v1beta1 (VITE_API_URL_DEB_ARCHIVE = /debarchive/v1beta1/).
 const DEB_ARCHIVE_MOUNT = "/debarchive";
 
-if (!fs.existsSync(REGISTRY_PATH)) {
-  console.error(
-    `[-] No registry file found at ${REGISTRY_PATH}. Ensure tests ran successfully.`,
-  );
+// Both inputs are produced by the test run: the registry by the traffic
+// recorder, the manifest by the handler dump (see setup.ts).
+const missingInputs = [REGISTRY_PATH, MANIFEST_PATH].filter(
+  (file) => !fs.existsSync(file),
+);
+if (missingInputs.length > 0) {
+  for (const file of missingInputs) {
+    console.error(`[-] Missing generated input: ${file}`);
+  }
+  console.error(`    Run the test suite first: pnpm vitest run`);
   process.exit(1);
 }
 

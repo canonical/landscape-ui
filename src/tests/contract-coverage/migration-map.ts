@@ -35,7 +35,7 @@ export const MIGRATION_MAP: MigrationMapEntry[] = [
   {
     name: "Repository mirror — sync",
     v1: "GET /api/?action=SyncMirrorPocket",
-    go: "POST /debarchive/v1beta1/mirrors/{name}:sync",
+    go: "POST /debarchive/v1beta1/mirrors/{mirror}:sync",
     notes:
       "Approximate equivalence: legacy sync is pocket-level, debarchive sync is mirror-level.",
   },
