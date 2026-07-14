@@ -18,8 +18,8 @@ const LocalRepositoryPackagesCount: FC<LocalPackagesCountProps> = ({
     isPackagesCountError,
   } = useGetRepositoryPackagesCount({ local: repository });
 
+  if (isPackagesCountError || !repository) return <NoData />;
   if (isGettingPackagesCount) return <LoadingState inline />;
-  if (isPackagesCountError) return <NoData />;
 
   return pluralize(
     localPackagesCount,

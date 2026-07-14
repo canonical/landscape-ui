@@ -16,7 +16,7 @@ export const useGetRepositoryPackagesCount = ({
 }: UseGetRepositoryPackagesCountProps) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending, isError } = useQuery<
+  const { data, isLoading, isError } = useQuery<
     AxiosResponse<LocalServiceListLocalPackagesResponse>,
     AxiosError<LocalServiceListLocalPackagesError>
   >({
@@ -25,12 +25,13 @@ export const useGetRepositoryPackagesCount = ({
       authFetchDebArchive.get(`${local}/packages`, {
         params: { pageSize: COUNT_PAGE_SIZE },
       }),
+    enabled: !!local,
   });
 
   return {
     localPackagesCount: data?.data.localPackages?.length ?? 0,
     isPackagesCountExact: !data?.data.nextPageToken,
-    isGettingPackagesCount: isPending,
+    isGettingPackagesCount: isLoading,
     isPackagesCountError: isError,
   };
 };

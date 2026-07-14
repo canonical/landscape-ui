@@ -16,7 +16,7 @@ export const useGetMirrorPackagesCount = ({
 }: UseGetMirrorPackagesCountProps) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, isPending, isError } = useQuery<
+  const { data, isLoading, isError } = useQuery<
     AxiosResponse<MirrorServiceListMirrorPackagesResponse>,
     AxiosError<MirrorServiceListMirrorPackagesError>
   >({
@@ -25,12 +25,13 @@ export const useGetMirrorPackagesCount = ({
       authFetchDebArchive.get(`${mirrorName}/packages`, {
         params: { pageSize: COUNT_PAGE_SIZE },
       }),
+    enabled: !!mirrorName,
   });
 
   return {
     mirrorPackagesCount: data?.data.mirrorPackages?.length ?? 0,
     isPackagesCountExact: !data?.data.nextPageToken,
-    isGettingPackagesCount: isPending,
+    isGettingPackagesCount: isLoading,
     isPackagesCountError: isError,
   };
 };

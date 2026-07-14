@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from "msw";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { API_URL_DEB_ARCHIVE, DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { packages, repositories } from "@/tests/mocks/localRepositories";
 import type {
   ImportLocalPackagesRequest,
@@ -117,8 +117,9 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals/:repository/packages`,
     async ({ request }) => {
       const url = new URL(request.url);
-      const pageToken = Number(url.searchParams.get("pageToken"));
-      const pageSize = Number(url.searchParams.get("pageSize"));
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
       if (shouldApplyEndpointStatus("locals")) {
         return applyEndpointStatus({ localPackages: [] });
       }

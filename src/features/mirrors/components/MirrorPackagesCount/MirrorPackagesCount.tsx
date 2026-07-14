@@ -16,8 +16,8 @@ const MirrorPackagesCount: FC<MirrorPackagesCountProps> = ({ mirrorName }) => {
     isPackagesCountError,
   } = useGetMirrorPackagesCount({ mirrorName });
 
+  if (isPackagesCountError || !mirrorName) return <NoData />;
   if (isGettingPackagesCount) return <LoadingState inline />;
-  if (isPackagesCountError) return <NoData />;
 
   return pluralize(
     mirrorPackagesCount,

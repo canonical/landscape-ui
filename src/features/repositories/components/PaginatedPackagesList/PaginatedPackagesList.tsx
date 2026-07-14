@@ -40,6 +40,7 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
   const columns = useMemo<Column<SourcePackage>[]>(
     () => [
       {
+        accessor: "name",
         Header: "Package name",
         Cell: ({ row: { original } }: CellProps<SourcePackage>) =>
           original.name,

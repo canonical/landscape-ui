@@ -1,4 +1,4 @@
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { API_URL_DEB_ARCHIVE, DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { mirrors as mockMirrors, packages } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
@@ -147,8 +147,9 @@ export default [
       }
 
       const url = new URL(request.url);
-      const pageToken = Number(url.searchParams.get("pageToken"));
-      const pageSize = Number(url.searchParams.get("pageSize"));
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
 
       const pageIndex = pageToken * pageSize;
       const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
