@@ -4,6 +4,7 @@ import { ALERT_ROUTES } from "./alerts";
 import { AUTH_ROUTES } from "./auth";
 import { ERROR_ROUTES } from "./errors";
 import { EVENTS_LOG_ROUTES } from "./eventsLog";
+import { EXPORTS_ROUTES } from "./exports";
 import { EXTERNAL_ROUTES } from "./external";
 import { INSTANCES_ROUTES } from "./instances";
 import { OVERVIEW_ROUTES } from "./overview";
@@ -20,6 +21,7 @@ export const ROUTES = {
   alerts: ALERT_ROUTES,
   errors: ERROR_ROUTES,
   eventsLog: EVENTS_LOG_ROUTES,
+  exports: EXPORTS_ROUTES,
   external: EXTERNAL_ROUTES,
   instances: INSTANCES_ROUTES,
   overview: OVERVIEW_ROUTES,

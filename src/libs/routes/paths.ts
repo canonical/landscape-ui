@@ -4,6 +4,7 @@ import { ALERT_PATHS } from "./alerts";
 import { AUTH_PATHS } from "./auth";
 import { ERROR_PATHS } from "./errors";
 import { EVENTS_LOG_PATHS } from "./eventsLog";
+import { EXPORTS_PATHS } from "./exports";
 import { EXTERNAL_PATHS } from "./external";
 import { INSTANCES_PATHS } from "./instances";
 import { OVERVIEW_PATHS } from "./overview";
@@ -20,6 +21,7 @@ export const PATHS = {
   alerts: ALERT_PATHS,
   error: ERROR_PATHS,
   eventsLog: EVENTS_LOG_PATHS,
+  exports: EXPORTS_PATHS,
   external: EXTERNAL_PATHS,
   instances: INSTANCES_PATHS,
   overview: OVERVIEW_PATHS,

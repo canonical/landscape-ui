@@ -8,7 +8,7 @@ import {
   getDebArchivePaginationParams,
   shouldApplyEndpointStatus,
 } from "./_helpers";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import type { Publication } from "@canonical/landscape-openapi";
 import type { Operation } from "@/features/operations";
 import { succeededOperation } from "@/tests/mocks/operations";
@@ -124,7 +124,7 @@ export default [
       }
 
       if (endpointStatus.status === "error") {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
 
       if (endpointStatus.status === "empty") {
@@ -143,7 +143,7 @@ export default [
       const endpointStatus = getEndpointStatus("publications");
 
       if (endpointStatus.status === "error") {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
     }
 
@@ -157,7 +157,7 @@ export default [
         const endpointStatus = getEndpointStatus("publications");
 
         if (endpointStatus.status === "error") {
-          return ENDPOINT_STATUS_API_ERROR;
+          throw createEndpointStatusError();
         }
       }
 
@@ -170,7 +170,7 @@ export default [
       const endpointStatus = getEndpointStatus("publications");
 
       if (endpointStatus.status === "error") {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
     }
 
@@ -184,7 +184,7 @@ export default [
         const endpointStatus = getEndpointStatus("publications");
 
         if (endpointStatus.status === "error") {
-          return ENDPOINT_STATUS_API_ERROR;
+          throw createEndpointStatusError();
         }
       }
 

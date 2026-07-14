@@ -7,13 +7,21 @@ import {
   useGetPublicationsBySource,
 } from "@/features/publications";
 import type { Local } from "@canonical/landscape-openapi";
+import {
+  OperationStatusContent,
+  type OperationMetadata,
+} from "@/features/operations";
+import moment from "moment";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface ViewLocalRepositoryDetailsTabProps {
   readonly repository: Local;
+  readonly operationMetadata?: OperationMetadata;
 }
 
 const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
   repository,
+  operationMetadata,
 }) => {
   const { publications, isGettingPublications } = useGetPublicationsBySource(
     repository.name,
@@ -23,7 +31,29 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
     <Blocks>
       <Blocks.Item title="Details">
         <InfoGrid dense>
-          <InfoGrid.Item label="Name" value={repository.displayName} />
+          <InfoGrid.Item label="Name" large value={repository.displayName} />
+
+          <InfoGrid.Item
+            label="Status"
+            value={
+              <OperationStatusContent
+                operationMetadata={operationMetadata}
+                type="local"
+                hasOperation={!!repository.lastOperation}
+              />
+            }
+          />
+
+          <InfoGrid.Item
+            label="Last import"
+            value={
+              repository.lastImportTime
+                ? moment(repository.lastImportTime).format(
+                    DISPLAY_DATE_TIME_FORMAT,
+                  )
+                : null
+            }
+          />
 
           <InfoGrid.Item label="Description" large value={repository.comment} />
 

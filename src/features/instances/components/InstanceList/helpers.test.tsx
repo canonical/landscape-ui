@@ -1,8 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import {
   getColumnFilterOptions,
-  getCheckboxState,
-  handleCheckboxChange,
   createHeaderPropsGetter,
   getCellProps,
   getRowProps,
@@ -25,46 +23,6 @@ describe("InstanceList helpers", () => {
       expect(result).toEqual([
         { canBeHidden: false, label: "Title", value: "title" },
       ]);
-    });
-  });
-
-  describe("getCheckboxState", () => {
-    it("returns 'checked' when instance is in selectedInstances", () => {
-      const result = getCheckboxState({
-        instance: ubuntuInstance,
-        selectedInstances: [ubuntuInstance],
-      });
-      expect(result).toBe("checked");
-    });
-
-    it("returns 'unchecked' when instance is not in selectedInstances", () => {
-      const result = getCheckboxState({
-        instance: ubuntuInstance,
-        selectedInstances: [],
-      });
-      expect(result).toBe("unchecked");
-    });
-  });
-
-  describe("handleCheckboxChange", () => {
-    it("adds instance when not already selected", () => {
-      const setSelectedInstances = vi.fn();
-      handleCheckboxChange({
-        instance: ubuntuInstance,
-        selectedInstances: [],
-        setSelectedInstances,
-      });
-      expect(setSelectedInstances).toHaveBeenCalledWith([ubuntuInstance]);
-    });
-
-    it("removes instance when already selected", () => {
-      const setSelectedInstances = vi.fn();
-      handleCheckboxChange({
-        instance: ubuntuInstance,
-        selectedInstances: [ubuntuInstance],
-        setSelectedInstances,
-      });
-      expect(setSelectedInstances).toHaveBeenCalledWith([]);
     });
   });
 
@@ -174,10 +132,10 @@ describe("InstanceList helpers", () => {
       expect(result["aria-label"]).toBe("Ubuntu Pro expiration date");
     });
 
-    it("sets aria-label for last_ping cells", () => {
+    it("sets aria-label for last_ping_time cells", () => {
       const getter = getCellProps(null, null);
       const result = getter({
-        column: { id: "last_ping" },
+        column: { id: "last_ping_time" },
         row: { index: 0 },
       } as Parameters<typeof getter>[0]);
       expect(result["aria-label"]).toBe("Last ping");

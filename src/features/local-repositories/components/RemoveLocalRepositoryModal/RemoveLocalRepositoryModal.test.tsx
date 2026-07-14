@@ -5,6 +5,10 @@ import { repositories } from "@/tests/mocks/localRepositories";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { expectLoadingState } from "@/tests/helpers";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
+
+const [repository] = repositories;
 
 describe("RemoveLocalRepositoryModal", () => {
   const mockClose = vi.fn();
@@ -15,14 +19,14 @@ describe("RemoveLocalRepositoryModal", () => {
       <RemoveLocalRepositoryModal
         close={mockClose}
         isOpen={true}
-        repository={repositories[0]}
+        repository={repository}
       />,
     );
 
     await expectLoadingState();
 
     expect(
-      screen.getByRole("heading", { name: /remove repo 1/i }),
+      screen.getByRole("heading", { name: `Remove ${repository.displayName}` }),
     ).toBeInTheDocument();
 
     const confirmButton = screen.getByRole("button", {
@@ -41,7 +45,7 @@ describe("RemoveLocalRepositoryModal", () => {
       <RemoveLocalRepositoryModal
         close={mockClose}
         isOpen={true}
-        repository={repositories[2]}
+        repository={repositories[3]}
       />,
     );
 
@@ -82,14 +86,14 @@ describe("RemoveLocalRepositoryModal", () => {
       <RemoveLocalRepositoryModal
         close={mockClose}
         isOpen={true}
-        repository={repositories[0]}
+        repository={repository}
       />,
     );
 
     const confirmationInput = screen.getByPlaceholderText(
-      `remove ${repositories[0].displayName}`,
+      `remove ${repository.displayName}`,
     );
-    await user.type(confirmationInput, `remove ${repositories[0].displayName}`);
+    await user.type(confirmationInput, `remove ${repository.displayName}`);
 
     const removeButton = screen.getByRole("button", {
       name: /remove local repository/i,
@@ -97,13 +101,45 @@ describe("RemoveLocalRepositoryModal", () => {
     await user.click(removeButton);
 
     expect(
-      await screen.findByText(
-        "The local repository has been removed from Landscape.",
-      ),
+      screen.getByRole("heading", {
+        name: `You have successfully removed ${repository.displayName}`,
+      }),
     ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(mockClose).toHaveBeenCalled();
     });
+  });
+
+  it("shows an error notification when removing a repository fails", async () => {
+    setEndpointStatus({ path: "locals", status: "error" });
+
+    renderWithProviders(
+      <RemoveLocalRepositoryModal
+        close={mockClose}
+        isOpen={true}
+        repository={repository}
+      />,
+    );
+
+    const confirmationInput = screen.getByPlaceholderText(
+      `remove ${repository.displayName}`,
+    );
+    await user.type(confirmationInput, `remove ${repository.displayName}`);
+
+    const removeButton = screen.getByRole("button", {
+      name: /remove local repository/i,
+    });
+    await user.click(removeButton);
+
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: `You have successfully removed ${repository.displayName}`,
+      }),
+    ).not.toBeInTheDocument();
   });
 });

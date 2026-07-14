@@ -29,7 +29,7 @@ describe("AssociatedPublicationsCount", () => {
 
   it("renders zero publications text", async () => {
     renderWithProviders(
-      <AssociatedPublicationsCount sourceName={repositories[2].name} />,
+      <AssociatedPublicationsCount sourceName={repositories[3].name} />,
     );
 
     expect(await screen.findByText(/0 publications/i)).toBeInTheDocument();

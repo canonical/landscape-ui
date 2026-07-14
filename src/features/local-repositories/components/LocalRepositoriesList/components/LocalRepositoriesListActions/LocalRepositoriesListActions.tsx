@@ -5,6 +5,7 @@ import { useBoolean } from "usehooks-ts";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
 import { useGetRepositoryActions } from "../../../../hooks";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
+import { useOperation } from "@/features/operations";
 
 interface LocalRepositoriesListActionsProps {
   readonly repository: Local;
@@ -13,6 +14,9 @@ interface LocalRepositoriesListActionsProps {
 const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
   repository,
 }) => {
+  const { isOperationInProgress } = useOperation();
+  const isImporting = isOperationInProgress(repository.lastOperation);
+
   const {
     value: isRemovalModalOpen,
     setTrue: openRemovalModal,
@@ -25,8 +29,9 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
     setFalse: closePublishGuard,
   } = useBoolean();
 
-  const { viewAction, actions, destructiveActions } = useGetRepositoryActions({
+  const { viewAction, actions, destructiveAction } = useGetRepositoryActions({
     repository,
+    isImporting,
     openRemovalModal,
     openPublishGuard,
   });
@@ -36,7 +41,7 @@ const LocalRepositoriesListActions: FC<LocalRepositoriesListActionsProps> = ({
       <ListActions
         toggleAriaLabel={`${repository.displayName} actions`}
         actions={[viewAction, ...actions]}
-        destructiveActions={destructiveActions}
+        destructiveActions={[destructiveAction]}
       />
 
       <RemoveLocalRepositoryModal
