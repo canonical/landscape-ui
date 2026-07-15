@@ -4,7 +4,7 @@ import {
   manyDeliveredActivities,
 } from "@/tests/mocks/activity";
 import { instances } from "@/tests/mocks/instance";
-import { packages } from "@/tests/mocks/packages";
+import { packagesOld } from "@/tests/mocks/packagesOld";
 import { usns } from "@/tests/mocks/usn";
 import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -45,7 +45,7 @@ describe("InfoTablesContainer", () => {
       const packagesTab = screen.getByRole("tab", { name: /packages/i });
       await userEvent.click(packagesTab);
 
-      const shownPackages = packages.slice(0, LIST_LIMIT);
+      const shownPackages = packagesOld.slice(0, LIST_LIMIT);
       for (const singlePackage of shownPackages) {
         const packageName = await screen.findByText(singlePackage.name);
         expect(packageName).toBeInTheDocument();
@@ -270,7 +270,7 @@ describe("InfoTablesContainer", () => {
       const packagesTab = screen.getByRole("tab", { name: /packages/i });
       await userEvent.click(packagesTab);
 
-      const shownPackages = packages.slice(0, LIST_LIMIT);
+      const shownPackages = packagesOld.slice(0, LIST_LIMIT);
       const [firstPackage] = shownPackages;
       assert(firstPackage);
       await screen.findByText(firstPackage.name);

@@ -1,0 +1,15 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: $spv--x-large;
+}
+
+.row {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+  color: $colors--theme--text-muted;
+  padding-bottom: $spv--small;
+  padding-top: $spv--small;
+}

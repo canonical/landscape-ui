@@ -2,6 +2,7 @@ import type { ColumnFilterOption } from "@/components/form/ColumnFilter";
 import ListTitle from "@/components/layout/ListTitle";
 import NoData from "@/components/layout/NoData";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
+import ResponsiveTableSubhead from "@/components/layout/ResponsiveTableSubhead";
 import StaticLink from "@/components/layout/StaticLink";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { useExpandableRow } from "@/hooks/useExpandableRow";
@@ -413,7 +414,7 @@ const InstanceList = memo(function InstanceList({
   const subhead = showSubhead && (
     <tr>
       <td colSpan={filteredColumns.length} className="u-no-padding">
-        <div className={classes.subhead}>
+        <ResponsiveTableSubhead>
           <span>
             {isAllSelected
               ? `All ${instanceCount} instances selected`
@@ -437,7 +438,7 @@ const InstanceList = memo(function InstanceList({
               Clear selection
             </Button>
           </div>
-        </div>
+        </ResponsiveTableSubhead>
       </td>
     </tr>
   );
