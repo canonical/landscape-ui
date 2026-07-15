@@ -1,6 +1,9 @@
 name: Full TICS report
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 3 1 * *"
 
 jobs:
   unit-tests:
@@ -57,6 +60,11 @@ jobs:
   tics-report:
     runs-on: [self-hosted, linux, amd64, tiobe, jammy]
     needs: unit-tests
+    # Self-hosted runners share machine-level resources. Serialize TICS
+    # to avoid qserver collisions for the same project database.
+    concurrency:
+      group: tics-report-${{ github.repository }}
+      cancel-in-progress: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -94,3 +102,6 @@ jobs:
           viewerUrl: https://canonical.tiobe.com/tiobeweb/TICS/api/cfg?name=default
           ticsAuthToken: ${{ secrets.TICSAUTHTOKEN }}
           installTics: true
+          # Keep qserver temp state isolated per run to prevent stale lock/state
+          # reuse between workflow runs on the same self-hosted machine.
+          tmpdir: /tmp/tics-${{ github.run_id }}-${{ github.run_attempt }}
