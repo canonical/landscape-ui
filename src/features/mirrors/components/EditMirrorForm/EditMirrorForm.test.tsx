@@ -25,6 +25,8 @@ const TestComponent = () => {
   if (lastSidePathSegment === "edit") {
     return <EditMirrorForm />;
   }
+
+  return null;
 };
 
 describe("EditMirrorForm", () => {

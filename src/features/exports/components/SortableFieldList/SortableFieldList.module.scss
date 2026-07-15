@@ -54,22 +54,24 @@
   }
 }
 
-// Smooth opacity transitions when dragging starts/ends or rows are dimmed.
+/* Smooth opacity transitions when dragging starts/ends or rows are dimmed. */
 .selectedColumns :global(tr) {
   transition: opacity 0.15s ease;
 }
 
-// Smooth the blue outline appearing/disappearing on the dragged row's cells.
-// background-color is intentionally excluded — including it conflicts with the
-// flash-blue @keyframes animation on .justMoved > td, causing a double-flash.
+/* Smooth the blue outline appearing/disappearing on the dragged row's cells.
+ * background-color is intentionally excluded — including it conflicts with the
+ * flash-blue @keyframes animation on .justMoved > td, causing a double-flash.
+ */
 .selectedColumns :global(td) {
   transition: box-shadow 0.15s ease;
 }
 
-// Fully-opaque card overlay that follows the cursor during drag.
-// Anchored at the top-left; its `transform` is set imperatively per rAF frame
-// (see positionOverlay) to follow the cursor without re-rendering React.
-// Rendered via React portal on document.body to escape any parent transform/overflow.
+/* Fully-opaque card overlay that follows the cursor during drag.
+ * Anchored at the top-left; its `transform` is set imperatively per rAF frame
+ * (see positionOverlay) to follow the cursor without re-rendering React.
+ * Rendered via React portal on document.body to escape any parent transform/overflow.
+ */
 .dragOverlay {
   align-items: center;
   background: var(--vf-color-background-default, #fff);
@@ -101,7 +103,7 @@
   text-align: center;
 }
 
-// Brief blue flash on cells after a row is moved via arrows or number input.
+/* Brief blue flash on cells after a row is moved via arrows or number input. */
 @keyframes flash-blue {
   0% {
     background-color: rgb(0 102 204 / 20%);
