@@ -11,7 +11,7 @@ a[target="_blank"] {
     }
 
     /* The CustomSelect highlight background color is the default link color so
-     * we make the text white instead 
+     * we make the text white instead
      */
     .highlight & {
       @include vf-icon-external-link($colors--dark-theme--text-default);
