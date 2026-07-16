@@ -1,8 +1,10 @@
 import fs from "fs";
-import { REGISTRY_PATH } from "./contract-coverage/paths";
+import { MANIFEST_PATH, REGISTRY_PATH } from "./contract-coverage/paths";
 
 export default function setup() {
-  if (fs.existsSync(REGISTRY_PATH)) {
-    fs.unlinkSync(REGISTRY_PATH);
+  for (const file of [REGISTRY_PATH, MANIFEST_PATH]) {
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+    }
   }
 }

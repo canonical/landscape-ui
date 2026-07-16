@@ -73,7 +73,11 @@ const pendingLogs: Promise<void>[] = [];
 
 // Attach listeners immediately to capture traffic in this worker's context
 server.events.on("response:mocked", ({ request, response }) => {
-  pendingLogs.push(logInteraction(request, response));
+  const p = logInteraction(request, response).finally(() => {
+    const idx = pendingLogs.indexOf(p);
+    if (idx !== -1) pendingLogs.splice(idx, 1);
+  });
+  pendingLogs.push(p);
 });
 
 // Dump the declared handler patterns for the coverage aggregator, which runs
