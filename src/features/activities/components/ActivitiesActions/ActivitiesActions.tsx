@@ -33,10 +33,9 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
   const title = pluralize(selected.length, ["activity", "activities"], "exact");
 
   const { lastSidePathSegment } = usePageParams();
-  const handleExport =
-    lastSidePathSegment !== "export"
-      ? createSidePathPusher("export")
-      : undefined;
+  const handleExport = () => {
+    if (lastSidePathSegment !== "export") createSidePathPusher("export")();
+  };
 
   const handleApproveActivities = async () => {
     try {

@@ -193,10 +193,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
   };
 
   const { lastSidePathSegment } = usePageParams();
-  const handleExport =
-    lastSidePathSegment !== "export"
-      ? createSidePathPusher("export")
-      : undefined;
+  const handleExport = () => {
+    if (lastSidePathSegment !== "export") createSidePathPusher("export")();
+  };
 
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>
