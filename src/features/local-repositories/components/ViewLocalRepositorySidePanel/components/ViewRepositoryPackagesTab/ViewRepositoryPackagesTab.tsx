@@ -25,7 +25,7 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
     goToPreviousPage,
   } = useGetRepositoryPackages({ local: repositoryName });
 
-  const { localPackagesCount, isPackagesCountExact, isGettingPackagesCount } =
+  const { localPackagesCount, isPackagesCountExact } =
     useGetRepositoryPackagesCount({
       local: repositoryName,
     });
@@ -51,7 +51,7 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
         hasNextPage={hasNextPage}
         goToNextPage={goToNextPage}
         goToPreviousPage={goToPreviousPage}
-        isGettingPackages={isGettingPackages || isGettingPackagesCount}
+        isGettingPackages={isGettingPackages}
         error={packagesError}
       />
     </>

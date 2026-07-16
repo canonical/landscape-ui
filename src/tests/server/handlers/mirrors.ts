@@ -154,6 +154,21 @@ export default [
       const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
       const hasNextPage = pageIndex + pageSize < packages.length;
 
+      await delay(pageSize);
+
+      if (mirror.mirrorId === mirrors[4]?.mirrorId) {
+        return HttpResponse.json<ListMirrorPackagesResponse>({
+          mirrorPackages: [],
+        });
+      }
+
+      if (mirror.mirrorId === mirrors[5]?.mirrorId) {
+        return HttpResponse.json<ListMirrorPackagesResponse>({
+          mirrorPackages: paginatedPackages.slice(0, 1),
+          nextPageToken: undefined,
+        });
+      }
+
       return HttpResponse.json({
         mirrorPackages: paginatedPackages,
         nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,

@@ -49,16 +49,19 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
   );
 
   if (error) throw error;
-  if (isGettingPackages) return <LoadingState />;
 
   return (
     <>
-      <ResponsiveTable
-        columns={columns}
-        data={data}
-        emptyMsg={emptyMsg}
-        minWidth={320}
-      />
+      {isGettingPackages ? (
+        <LoadingState />
+      ) : (
+        <ResponsiveTable
+          columns={columns}
+          data={data}
+          emptyMsg={emptyMsg}
+          minWidth={320}
+        />
+      )}
       <TokenBasedTablePagination
         currentItemCount={packages.length}
         totalItemCount={packagesCount}
@@ -67,6 +70,7 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
         goToPreviousPage={goToPreviousPage}
         hasPreviousPage={hasPreviousPage}
         hasNextPage={hasNextPage}
+        itemType="package"
       />
     </>
   );

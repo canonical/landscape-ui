@@ -17,7 +17,7 @@ const MirrorPackagesList: FC<MirrorPackagesListProps> = ({ mirrorName }) => {
     goToPreviousPage,
   } = useListMirrorPackages({ mirrorName });
 
-  const { mirrorPackagesCount, isPackagesCountExact, isGettingPackagesCount } =
+  const { mirrorPackagesCount, isPackagesCountExact } =
     useGetMirrorPackagesCount({ mirrorName });
 
   return (
@@ -30,7 +30,7 @@ const MirrorPackagesList: FC<MirrorPackagesListProps> = ({ mirrorName }) => {
       hasNextPage={hasNextPage}
       goToNextPage={goToNextPage}
       goToPreviousPage={goToPreviousPage}
-      isGettingPackages={isGettingPackages || isGettingPackagesCount}
+      isGettingPackages={isGettingPackages}
       error={packagesError}
     />
   );

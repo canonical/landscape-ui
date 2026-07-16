@@ -1,17 +1,15 @@
-import {
-  Button,
-  Icon,
-  Select,
-  type SelectProps,
-} from "@canonical/react-components";
+import { Button, Icon, Select } from "@canonical/react-components";
 import type { FC } from "react";
+import type { SelectProps } from "@canonical/react-components";
 import classes from "./TokenBasedTablePagination.module.scss";
 import { pluralize } from "@/utils/_helpers";
 
 export interface TokenBasedTablePaginationProps {
   readonly currentItemCount: number;
-  readonly totalItemCount?: number;
+  readonly totalItemCount: number;
   readonly isTotalExact?: boolean;
+  readonly itemType?: string;
+  readonly itemTypePlural?: string;
   readonly hasNextPage: boolean;
   readonly hasPreviousPage: boolean;
   readonly goToNextPage: () => void;
@@ -26,13 +24,15 @@ const TokenBasedTablePagination: FC<TokenBasedTablePaginationProps> = ({
   currentItemCount,
   totalItemCount,
   isTotalExact = true,
+  itemType = "item",
+  itemTypePlural = `${itemType}s`,
   hasPreviousPage,
   hasNextPage,
   goToNextPage,
   goToPreviousPage,
   pageSizeControl,
 }) => {
-  if (!totalItemCount && isTotalExact) return null;
+  if (!totalItemCount && !isTotalExact) return null;
 
   const PAGE_SIZE_OPTIONS: SelectProps["options"] = [
     { label: "20", value: 20 },
@@ -47,7 +47,7 @@ const TokenBasedTablePagination: FC<TokenBasedTablePaginationProps> = ({
           <span>Advance by:</span>
           <Select
             name="pageSize"
-            label={"items per page"}
+            label={`${itemTypePlural} per page`}
             labelClassName="u-off-screen"
             className={classes.pageSizeSelect}
             options={PAGE_SIZE_OPTIONS}
@@ -56,14 +56,14 @@ const TokenBasedTablePagination: FC<TokenBasedTablePaginationProps> = ({
               pageSizeControl.setPageSize(Number(e.target.value));
             }}
           />
-          <span>items</span>
+          <span>{itemTypePlural}</span>
         </div>
       )}
 
-      {!!totalItemCount && (
+      {!!totalItemCount && !!currentItemCount && (
         <span>
           Showing {currentItemCount} of {!isTotalExact && "more than "}
-          {pluralize(totalItemCount, ["item"], "exact")}
+          {pluralize(totalItemCount, [itemType, itemTypePlural], "exact")}
         </span>
       )}
 
@@ -71,7 +71,6 @@ const TokenBasedTablePagination: FC<TokenBasedTablePaginationProps> = ({
         <Button
           aria-label="Previous page"
           appearance="link"
-          className="u-no-margin--right u-no-margin--bottom u-no-padding--top"
           disabled={!hasPreviousPage}
           onClick={goToPreviousPage}
           type="button"
@@ -82,7 +81,6 @@ const TokenBasedTablePagination: FC<TokenBasedTablePaginationProps> = ({
         <Button
           aria-label="Next page"
           appearance="link"
-          className="u-no-margin--bottom u-no-padding--top"
           disabled={!hasNextPage}
           onClick={goToNextPage}
           type="button"

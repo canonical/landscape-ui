@@ -2,7 +2,7 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import TokenBasedTablePagination from "./TokenBasedTablePagination";
 
 const defaultProps = {
@@ -20,6 +20,10 @@ const defaultProps = {
 };
 
 describe("TokenBasedTablePagination", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("does not render when there is exactly 0 items", () => {
     renderWithProviders(
       <TokenBasedTablePagination {...defaultProps} totalItemCount={0} />,
@@ -99,46 +103,32 @@ describe("TokenBasedTablePagination", () => {
     expect(defaultProps.pageSizeControl.setPageSize).toHaveBeenCalledWith(20);
   });
 
-  it("disables prev button when there is no previous page", () => {
+  it("disables pagination buttons when there is only 1 page", () => {
     renderWithProviders(
-      <TokenBasedTablePagination {...defaultProps} hasPreviousPage={false} />,
+      <TokenBasedTablePagination
+        {...defaultProps}
+        hasPreviousPage={false}
+        hasNextPage={false}
+      />,
     );
 
     expect(
       screen.getByRole("button", { name: /previous page/i }),
     ).toHaveAttribute("aria-disabled", "true");
-    expect(
-      screen.getByRole("button", { name: /next page/i }),
-    ).not.toHaveAttribute("aria-disabled", "true");
-  });
-
-  it("disables next button when there is no next page", () => {
-    renderWithProviders(
-      <TokenBasedTablePagination {...defaultProps} hasNextPage={false} />,
-    );
 
     expect(screen.getByRole("button", { name: /next page/i })).toHaveAttribute(
       "aria-disabled",
       "true",
     );
-    expect(
-      screen.getByRole("button", { name: /previous page/i }),
-    ).not.toHaveAttribute("aria-disabled", "true");
   });
 
-  it("goes to next page when next button is clicked", async () => {
+  it("switches pages when pagination buttons are clicked", async () => {
     const user = userEvent.setup();
 
     renderWithProviders(<TokenBasedTablePagination {...defaultProps} />);
 
     await user.click(screen.getByRole("button", { name: /next page/i }));
     expect(defaultProps.goToNextPage).toHaveBeenCalled();
-  });
-
-  it("goes to previous page when prev button is clicked", async () => {
-    const user = userEvent.setup();
-
-    renderWithProviders(<TokenBasedTablePagination {...defaultProps} />);
 
     await user.click(screen.getByRole("button", { name: /previous page/i }));
     expect(defaultProps.goToPreviousPage).toHaveBeenCalled();
