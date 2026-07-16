@@ -59,7 +59,7 @@ export interface CoverageReport {
 }
 
 function hashPayload(payload: unknown): string {
-  if (!payload) return "empty";
+  if (payload === null || payload === undefined) return "empty";
   const str = typeof payload === "string" ? payload : JSON.stringify(payload);
   return crypto.createHash("sha1").update(str).digest("hex");
 }
