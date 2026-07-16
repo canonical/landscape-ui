@@ -43,10 +43,22 @@ async function extractPayload(streamOwner: Request | Response) {
   }
 }
 
+// Keep JSONL lines short enough for a single O_APPEND write syscall to be
+// effectively atomic across concurrent Vitest worker threads. Payloads larger
+// than this are replaced with a sentinel so the line stays well under 4 KB.
+const MAX_PAYLOAD_BYTES = 2048;
+
+function truncateForLog(payload: unknown): unknown {
+  if (payload === null) return null;
+  const serialized = JSON.stringify(payload);
+  if (serialized.length <= MAX_PAYLOAD_BYTES) return payload;
+  return { __truncated: true, originalBytes: serialized.length };
+}
+
 async function logInteraction(request: Request, response: Response) {
   try {
-    const requestPayload = await extractPayload(request);
-    const responsePayload = await extractPayload(response);
+    const requestPayload = truncateForLog(await extractPayload(request));
+    const responsePayload = truncateForLog(await extractPayload(response));
 
     const logEntry = {
       timestamp: new Date().toISOString(),
@@ -57,9 +69,6 @@ async function logInteraction(request: Request, response: Response) {
       responsePayload,
     };
 
-    // Concurrent appends from parallel Vitest workers may theoretically interleave,
-    // but JSONL line-length is short enough that OS-level write buffering makes
-    // corruption extremely unlikely in practice.
     await fs.promises.appendFile(
       REGISTRY_PATH,
       JSON.stringify(logEntry) + "\n",
