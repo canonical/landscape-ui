@@ -2,27 +2,27 @@
 @import "vanilla-framework/scss/settings_colors";
 
 .wrapper {
-  display: flex;
   border-top: 1px solid $colors--theme--border-default;
+  display: flex;
   gap: $sph--small;
   padding: $spv--x-small $spv--small;
 }
 
 .pageSizeControls {
-  display: flex;
   border-right: 1px solid $colors--theme--border-default;
-  padding-right: $sph--small;
+  display: flex;
   flex-wrap: wrap;
+  padding-right: $sph--small;
 }
 
 .pageSizeSelect {
   background-color: transparent;
-  min-width: 1rem;
+  background-position: right 1rem center;
   border: 0;
   margin-bottom: 0;
-  padding-top: 0;
+  min-width: 1rem;
   padding-bottom: 0;
-  background-position: right 1rem center;
+  padding-top: 0;
 }
 
 .paginationWrapper {
