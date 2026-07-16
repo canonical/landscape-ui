@@ -19,7 +19,11 @@
         const systemDark = window.matchMedia(
           "(prefers-color-scheme: dark)",
         ).matches;
-        const shouldDark = saved === "true" || (!saved && systemDark);
+        // "true"/"false" are legacy values of the dark mode switch
+        const shouldDark =
+          saved === "dark" ||
+          saved === "true" ||
+          (saved !== "light" && saved !== "false" && systemDark);
         if (shouldDark) {
           document.body.classList.add("is-dark");
           document.body.style.colorScheme = "dark";
