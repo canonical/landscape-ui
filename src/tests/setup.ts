@@ -51,7 +51,8 @@ const MAX_PAYLOAD_BYTES = 2048;
 function truncateForLog(payload: unknown): unknown {
   if (payload === null) return null;
   const serialized = JSON.stringify(payload);
-  if (serialized.length <= MAX_PAYLOAD_BYTES) return payload;
+  if (Buffer.byteLength(serialized, "utf8") <= MAX_PAYLOAD_BYTES)
+    return payload;
   return { __truncated: true, originalBytes: serialized.length };
 }
 
