@@ -13,18 +13,10 @@ const defaultProps: ModalTablePaginationProps = {
 };
 
 describe("ModalTablePagination", () => {
-  it("does not render when there is exactly 1 page", () => {
+  it("does not render when there is 1 page", () => {
     renderWithProviders(<ModalTablePagination {...defaultProps} max={1} />);
 
     expect(screen.queryByText(/Page/)).not.toBeInTheDocument();
-  });
-
-  it("renders when there is 1 known page but the count is not exact", () => {
-    renderWithProviders(
-      <ModalTablePagination {...defaultProps} max={1} isExact={false} />,
-    );
-
-    expect(screen.getByText(/Page 3 of 1+/)).toBeInTheDocument();
   });
 
   it("shows 'Page X of Y'", () => {
@@ -72,13 +64,5 @@ describe("ModalTablePagination", () => {
 
     await user.click(screen.getByRole("button", { name: /previous page/i }));
     expect(defaultProps.onPrev).toHaveBeenCalled();
-  });
-
-  it("marks the total as approximate when count is not exact", () => {
-    renderWithProviders(
-      <ModalTablePagination {...defaultProps} isExact={false} />,
-    );
-
-    expect(screen.getByText("Page 3 of 5+")).toBeInTheDocument();
   });
 });

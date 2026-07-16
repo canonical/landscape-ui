@@ -1,23 +1,22 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import { ModalTablePagination } from "@/components/layout/TablePagination";
 import { useMemo, type FC } from "react";
 import LoadingState from "@/components/layout/LoadingState";
 import type { CellProps, Column } from "react-table";
 import type { AxiosError } from "axios";
-import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import type { SourcePackage } from "../../types";
+import { TokenBasedTablePagination } from "@/components/layout/TablePagination";
 
 interface PaginatedPackagesListProps {
   readonly packages: string[];
-  readonly isPackagesCountExact: boolean;
   readonly packagesCount: number;
+  readonly isPackagesCountExact: boolean;
   readonly isGettingPackages: boolean;
   readonly error: AxiosError | null;
   readonly emptyMsg: string;
-  readonly currentPage: number;
+  readonly hasPreviousPage: boolean;
   readonly hasNextPage: boolean;
-  readonly onNextPage: () => void;
-  readonly onPreviousPage: () => void;
+  readonly goToNextPage: () => void;
+  readonly goToPreviousPage: () => void;
 }
 
 const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
@@ -27,10 +26,10 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
   isGettingPackages,
   error,
   emptyMsg,
-  currentPage,
+  hasPreviousPage,
   hasNextPage,
-  onNextPage,
-  onPreviousPage,
+  goToNextPage,
+  goToPreviousPage,
 }) => {
   const data = useMemo<SourcePackage[]>(
     () => packages.map((name) => ({ name })),
@@ -52,11 +51,6 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
   if (error) throw error;
   if (isGettingPackages) return <LoadingState />;
 
-  const maxPages = Math.max(
-    currentPage,
-    Math.ceil(packagesCount / DEFAULT_MODAL_PAGE_SIZE),
-  );
-
   return (
     <>
       <ResponsiveTable
@@ -65,12 +59,14 @@ const PaginatedPackagesList: FC<PaginatedPackagesListProps> = ({
         emptyMsg={emptyMsg}
         minWidth={320}
       />
-      <ModalTablePagination
-        current={currentPage}
-        max={maxPages}
-        isExact={hasNextPage ? isPackagesCountExact : true}
-        onNext={onNextPage}
-        onPrev={onPreviousPage}
+      <TokenBasedTablePagination
+        currentItemCount={packages.length}
+        totalItemCount={packagesCount}
+        isTotalExact={isPackagesCountExact}
+        goToNextPage={goToNextPage}
+        goToPreviousPage={goToPreviousPage}
+        hasPreviousPage={hasPreviousPage}
+        hasNextPage={hasNextPage}
       />
     </>
   );

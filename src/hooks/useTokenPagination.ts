@@ -36,7 +36,6 @@ export default function useTokenPagination(resetKey: string) {
 
   return {
     currentPageToken: pageTokenStack.at(-1),
-    currentPage: pageTokenStack.length + 1,
     hasPreviousPage: pageTokenStack.length > 0,
     pushNextPage,
     goToPreviousPage,

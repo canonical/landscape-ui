@@ -19,13 +19,8 @@ export const useListMirrorPackages = ({
 }: UseListMirrorPackagesProps) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const {
-    currentPageToken,
-    currentPage,
-    hasPreviousPage,
-    pushNextPage,
-    goToPreviousPage,
-  } = useTokenPagination(mirrorName);
+  const { currentPageToken, hasPreviousPage, pushNextPage, goToPreviousPage } =
+    useTokenPagination(mirrorName);
 
   const { data, isLoading, error } = useQuery<
     AxiosResponse<MirrorServiceListMirrorPackagesResponse>,
@@ -45,7 +40,6 @@ export const useListMirrorPackages = ({
     packages: data?.data.mirrorPackages ?? [],
     isGettingPackages: isLoading,
     packagesError: error,
-    currentPage,
     hasNextPage: !!nextPageToken,
     hasPreviousPage,
     goToNextPage: () => {

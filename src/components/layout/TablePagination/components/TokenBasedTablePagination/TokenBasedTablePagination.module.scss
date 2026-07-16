@@ -1,0 +1,32 @@
+@import "vanilla-framework/scss/settings_spacing";
+@import "vanilla-framework/scss/settings_colors";
+
+.wrapper {
+  display: flex;
+  border-top: 1px solid $colors--theme--border-default;
+  gap: $sph--small;
+  padding: $spv--x-small $spv--small;
+}
+
+.pageSizeControls {
+  display: flex;
+  border-right: 1px solid $colors--theme--border-default;
+  padding-right: $sph--small;
+  flex-wrap: wrap;
+}
+
+.pageSizeSelect {
+  background-color: transparent;
+  min-width: 1rem;
+  border: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  background-position: right 1rem center;
+}
+
+.paginationWrapper {
+  display: flex;
+  gap: $sph--x-large;
+  margin-left: auto;
+}

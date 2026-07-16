@@ -19,13 +19,8 @@ export const useGetRepositoryPackages = ({
 }: UseGetRepositoryPackagesProps) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const {
-    currentPageToken,
-    currentPage,
-    hasPreviousPage,
-    pushNextPage,
-    goToPreviousPage,
-  } = useTokenPagination(local);
+  const { currentPageToken, hasPreviousPage, pushNextPage, goToPreviousPage } =
+    useTokenPagination(local);
 
   const { data, isLoading, error } = useQuery<
     AxiosResponse<LocalServiceListLocalPackagesResponse>,
@@ -45,7 +40,6 @@ export const useGetRepositoryPackages = ({
     packages: data?.data.localPackages ?? [],
     isGettingPackages: isLoading,
     packagesError: error,
-    currentPage,
     hasNextPage: !!nextPageToken,
     hasPreviousPage,
     goToNextPage: () => {

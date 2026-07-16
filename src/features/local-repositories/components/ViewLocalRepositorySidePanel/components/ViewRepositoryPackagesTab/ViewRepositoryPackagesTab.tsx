@@ -19,7 +19,7 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
     packages,
     isGettingPackages,
     packagesError,
-    currentPage,
+    hasPreviousPage,
     hasNextPage,
     goToNextPage,
     goToPreviousPage,
@@ -47,10 +47,10 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
         packagesCount={localPackagesCount}
         isPackagesCountExact={isPackagesCountExact}
         emptyMsg="No packages associated with this local repository."
-        currentPage={currentPage}
+        hasPreviousPage={hasPreviousPage}
         hasNextPage={hasNextPage}
-        onNextPage={goToNextPage}
-        onPreviousPage={goToPreviousPage}
+        goToNextPage={goToNextPage}
+        goToPreviousPage={goToPreviousPage}
         isGettingPackages={isGettingPackages || isGettingPackagesCount}
         error={packagesError}
       />

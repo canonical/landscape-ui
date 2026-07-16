@@ -13,22 +13,25 @@ const props = {
   isGettingPackages: false,
   error: null,
   emptyMsg: "No packages found.",
-  currentPage: 1,
-  hasNextPage: false,
-  onNextPage: vi.fn(),
-  onPreviousPage: vi.fn(),
+  hasPreviousPage: true,
+  hasNextPage: true,
+  goToNextPage: vi.fn(),
+  goToPreviousPage: vi.fn(),
 };
 
 describe("PaginatedPackagesList", () => {
-  it("renders the packages with the default header and data", () => {
+  it("renders the packages with the header, data, and pagination", () => {
     renderWithProviders(<PaginatedPackagesList {...props} />);
 
     expect(
       screen.getByRole("columnheader", { name: "Package name" }),
     ).toBeInTheDocument();
+
     expect(screen.getByText("package-1")).toBeInTheDocument();
     expect(screen.getByText("package-2")).toBeInTheDocument();
     expect(screen.getByText("package-3")).toBeInTheDocument();
+
+    expect(screen.getByText("Showing 3 of 3 items")).toBeInTheDocument();
   });
 
   it("renders the empty message when there are no packages", () => {
@@ -45,58 +48,16 @@ describe("PaginatedPackagesList", () => {
     expect(screen.getByRole("status")).toBeInTheDocument();
   });
 
-  it("shows the exact number of pages when the count is exact", () => {
-    renderWithProviders(
-      <PaginatedPackagesList {...props} packagesCount={1000} hasNextPage />,
-    );
-
-    expect(screen.getByText("Page 1 of 100")).toBeInTheDocument();
-  });
-
-  it("marks the total as approximate when the count is limited", () => {
-    renderWithProviders(
-      <PaginatedPackagesList
-        {...props}
-        packagesCount={1000}
-        isPackagesCountExact={false}
-        hasNextPage
-      />,
-    );
-
-    expect(screen.getByText("Page 1 of 100+")).toBeInTheDocument();
-  });
-
-  it("marks the total as exact when there is no next page", () => {
-    renderWithProviders(
-      <PaginatedPackagesList
-        {...props}
-        packagesCount={1000}
-        isPackagesCountExact={false}
-        hasNextPage={false}
-        currentPage={101}
-      />,
-    );
-
-    expect(screen.getByText("Page 101 of 101")).toBeInTheDocument();
-  });
-
   it("invokes the navigation callbacks", async () => {
     const user = userEvent.setup();
 
-    renderWithProviders(
-      <PaginatedPackagesList
-        {...props}
-        packagesCount={30}
-        currentPage={2}
-        hasNextPage
-      />,
-    );
+    renderWithProviders(<PaginatedPackagesList {...props} />);
 
     await user.click(screen.getByRole("button", { name: "Next page" }));
-    expect(props.onNextPage).toHaveBeenCalled();
+    expect(props.goToNextPage).toHaveBeenCalled();
 
     await user.click(screen.getByRole("button", { name: "Previous page" }));
-    expect(props.onPreviousPage).toHaveBeenCalled();
+    expect(props.goToPreviousPage).toHaveBeenCalled();
   });
 
   it("renders the error fallback when there is an error", () => {

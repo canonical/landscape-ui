@@ -11,8 +11,8 @@ const MirrorPackagesList: FC<MirrorPackagesListProps> = ({ mirrorName }) => {
     packages,
     isGettingPackages,
     packagesError,
-    currentPage,
     hasNextPage,
+    hasPreviousPage,
     goToNextPage,
     goToPreviousPage,
   } = useListMirrorPackages({ mirrorName });
@@ -26,10 +26,10 @@ const MirrorPackagesList: FC<MirrorPackagesListProps> = ({ mirrorName }) => {
       packagesCount={mirrorPackagesCount}
       isPackagesCountExact={isPackagesCountExact}
       emptyMsg="No packages associated with this mirror."
-      currentPage={currentPage}
+      hasPreviousPage={hasPreviousPage}
       hasNextPage={hasNextPage}
-      onNextPage={goToNextPage}
-      onPreviousPage={goToPreviousPage}
+      goToNextPage={goToNextPage}
+      goToPreviousPage={goToPreviousPage}
       isGettingPackages={isGettingPackages || isGettingPackagesCount}
       error={packagesError}
     />
