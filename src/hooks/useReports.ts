@@ -1,4 +1,3 @@
-import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import useFetchOld from "@/hooks/useFetchOld";
 import type { QueryFnType } from "@/types/api/QueryFnType";
@@ -7,16 +6,10 @@ import type { ApiError } from "@/types/api/ApiError";
 
 interface CommonGetParams {
   query?: string;
-}
-
-interface GetNotPingingInstancesParams extends CommonGetParams {
-  since_minutes: number;
-}
-
-interface GetUsnTimeToFixParams extends CommonGetParams {
-  fixed_in_days?: number[];
-  in_last?: number;
-  pending_in_days?: number;
+  /** Only include USN/CVE issues released within this many days. */
+  max_days?: number;
+  /** Key the CSV columns by CVE instead of by USN. */
+  by_cve?: boolean;
 }
 
 export default function useReports() {
@@ -40,92 +33,7 @@ export default function useReports() {
     });
   };
 
-  const getInstancesNotUpgraded: QueryFnType<
-    AxiosResponse<number[]>,
-    CommonGetParams
-  > = (queryParams = {}, config = {}) => {
-    const params = {
-      ...queryParams,
-      query: queryParams.query || undefined,
-    };
-    return useQuery<AxiosResponse<number[]>, AxiosError<ApiError>>({
-      queryKey: ["instancesNotUpgraded", params],
-      queryFn: async () =>
-        authFetchOld.get("GetComputersNotUpgraded", {
-          params,
-        }),
-      ...config,
-    });
-  };
-
-  const getNotPingingInstances = (
-    queryParams: GetNotPingingInstancesParams,
-    config: Omit<
-      UseQueryOptions<AxiosResponse<number[]>, AxiosError<ApiError>>,
-      "queryKey" | "queryFn"
-    > = {},
-  ) => {
-    const params = {
-      ...queryParams,
-      query: queryParams.query || undefined,
-    };
-    return useQuery<AxiosResponse<number[]>, AxiosError<ApiError>>({
-      queryKey: ["notPingingInstances", params],
-      queryFn: async () =>
-        authFetchOld.get("GetNotPingingComputers", {
-          params,
-        }),
-      ...config,
-    });
-  };
-
-  const getUsnTimeToFix: QueryFnType<
-    AxiosResponse<Record<`${number}` | "pending", number[]>>,
-    GetUsnTimeToFixParams
-  > = (queryParams = {}, config = {}) => {
-    const params = {
-      ...queryParams,
-      query: queryParams.query || undefined,
-    };
-    return useQuery<
-      AxiosResponse<Record<string | "pending", number[]>>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["usnTimeToFix", params],
-      queryFn: async () =>
-        authFetchOld.get("GetUSNTimeToFix", {
-          params,
-        }),
-      ...config,
-    });
-  };
-
-  const getUpgradedInstancesByFrequency: QueryFnType<
-    AxiosResponse<{ "Every hour at 30 minutes past the hour": number[] }>,
-    CommonGetParams
-  > = (queryParams = {}, config = {}) => {
-    const params = {
-      ...queryParams,
-      query: queryParams.query || undefined,
-    };
-    return useQuery<
-      AxiosResponse<{ "Every hour at 30 minutes past the hour": number[] }>,
-      AxiosError<ApiError>
-    >({
-      queryKey: ["upgradedInstancesByFrequency", params],
-      queryFn: async () =>
-        authFetchOld.get("GetUpgradedComputersByFrequency", {
-          params,
-        }),
-      ...config,
-    });
-  };
-
   return {
     getCsvComplianceData,
-    getInstancesNotUpgraded,
-    getNotPingingInstances,
-    getUsnTimeToFix,
-    getUpgradedInstancesByFrequency,
   };
 }

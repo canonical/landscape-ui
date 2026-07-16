@@ -1,7 +1,6 @@
 import LoadingState from "@/components/layout/LoadingState";
 import { ResponsiveButtons } from "@/components/ui";
 import PluralizeWithBoldCount from "@/components/ui/PluralizeWithBoldCount";
-import { REPORT_VIEW_ENABLED } from "@/constants";
 import { DetachTokenModal } from "@/features/ubuntupro";
 import useAuth from "@/hooks/useAuth";
 import useSidePanel from "@/hooks/useSidePanel";
@@ -29,7 +28,7 @@ const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
 );
 const ReportView = lazy(
-  async () => import("@/pages/dashboard/instances/ReportView"),
+  async () => import("@/features/reports/components/ReportView"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
@@ -373,7 +372,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasInstancesToExport,
     },
-    REPORT_VIEW_ENABLED
+    isFeatureEnabled("instance-reports")
       ? {
           children: (
             <>

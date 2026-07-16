@@ -374,7 +374,13 @@ export default [
     return HttpResponse.json(activities[0]);
   }),
 
-  http.get(`${API_URL}computers/:computerId`, async ({ request }) => {
+  http.get(`${API_URL}computers/:computerId`, async ({ params, request }) => {
+    // The real route only matches integer ids (`/computers/<int:computer_id>`),
+    // letting static paths like `computers/report` reach their own handlers.
+    if (!/^\d+$/.test(String(params.computerId))) {
+      return;
+    }
+
     if (shouldApplyEndpointStatus("computers/:computerId")) {
       const { status } = getEndpointStatus();
       if (status === "error") {

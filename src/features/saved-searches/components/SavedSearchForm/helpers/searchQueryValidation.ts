@@ -133,6 +133,14 @@ const validateNeedsToken = (val: string): ValidationResult => {
   return keyError("needs", `has invalid value "${val}".`);
 };
 
+const validateHasToken = (val: string): ValidationResult => {
+  if (val === "upgrade-profile") {
+    return undefined;
+  }
+
+  return keyError("has", 'must be "upgrade-profile".');
+};
+
 const validateProfileToken = (
   [, type, id, status]: [unknown, string, string?, string?],
   config: ValidationConfig,
@@ -272,6 +280,9 @@ const validateKeyToken = (
     case "needs":
       return validateNeedsToken(val);
 
+    case "has":
+      return validateHasToken(val);
+
     case "profile":
       return validateProfileToken(parts, config);
 
@@ -286,6 +297,9 @@ const validateKeyToken = (
     case "contract-expires-within-days":
     case "license-expires-within-days":
     case "last-ping":
+    case "last-ping-minutes":
+    case "usn-outstanding":
+    case "usn-applied-in":
       return validateNumericKeyToken(key, val);
 
     default:
