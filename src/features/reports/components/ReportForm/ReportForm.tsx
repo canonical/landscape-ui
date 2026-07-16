@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
+import useDebug from "@/hooks/useDebug";
 import useReports from "@/hooks/useReports";
 import { CheckboxInput, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
@@ -16,6 +17,7 @@ interface ReportFormProps {
 }
 
 const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
+  const debug = useDebug();
   const { getCsvComplianceData } = useReports();
 
   // The submit handler triggers `refetch`, but the query hook that creates it
@@ -23,7 +25,7 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
   // the two so the handler always calls the latest refetch — no forward
   // reference, and the query still reads the values chosen at submit time.
   const refetchRef = useRef<
-    (() => Promise<{ data?: { data?: string } }>) | null
+    (() => Promise<{ data?: { data?: string }; error?: unknown }>) | null
   >(null);
 
   const formik = useFormik({
@@ -36,10 +38,18 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
     }),
     onSubmit: async () => {
       const result = await refetchRef.current?.();
+      const csv = result?.data?.data;
+
+      // A failed refetch resolves (react-query doesn't throw) with no data;
+      // bail out instead of downloading an empty file that would be
+      // indistinguishable from a legitimately empty report.
+      if (csv === undefined) {
+        debug(result?.error ?? "Failed to generate the CSV report.");
+        return;
+      }
+
       downloadBlob(
-        new Blob([result?.data?.data ?? ""], {
-          type: "text/csv;charset=utf-8;",
-        }),
+        new Blob([csv], { type: "text/csv;charset=utf-8;" }),
         "report.csv",
       );
     },

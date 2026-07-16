@@ -89,7 +89,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
     color: segment.color,
     countHref: instancesHref(segment.ids),
     onCountActivate: closeSidePanel,
-    countAriaLabel: `View the ${segment.ids.length} instances in the ${segment.label} bucket`,
+    countAriaLabel: `View the ${pluralize(segment.ids.length, ["instance"], "exact")} in the ${segment.label} bucket`,
   }));
 
   const statusRows: MetricRow[] = [
@@ -101,7 +101,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       color: "positive",
       countHref: instancesHref(report.securely_patched.computer_ids),
       onCountActivate: closeSidePanel,
-      countAriaLabel: `View the ${report.securely_patched.count} securely patched instances`,
+      countAriaLabel: `View the ${pluralize(report.securely_patched.count, ["securely patched instance"], "exact")}`,
     },
     {
       key: "upgrade-profiles",
@@ -111,7 +111,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       color: "link",
       countHref: instancesHref(report.covered_by_upgrade_profiles.computer_ids),
       onCountActivate: closeSidePanel,
-      countAriaLabel: `View the ${report.covered_by_upgrade_profiles.count} instances covered by upgrade profiles`,
+      countAriaLabel: `View the ${pluralize(report.covered_by_upgrade_profiles.count, ["instance"], "exact")} covered by upgrade profiles`,
     },
     {
       key: "contacted",
@@ -121,7 +121,7 @@ const ReportView: FC<ReportViewProps> = ({ instanceIds }) => {
       color: "neutral",
       countHref: instancesHref(report.contacted_recently.computer_ids),
       onCountActivate: closeSidePanel,
-      countAriaLabel: `View the ${report.contacted_recently.count} instances contacted in the last 5 minutes`,
+      countAriaLabel: `View the ${pluralize(report.contacted_recently.count, ["instance"], "exact")} contacted in the last 5 minutes`,
     },
   ];
 

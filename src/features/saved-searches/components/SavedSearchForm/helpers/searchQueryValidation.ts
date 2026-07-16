@@ -138,7 +138,7 @@ const validateHasToken = (val: string): ValidationResult => {
     return undefined;
   }
 
-  return keyError("has", `has invalid value "${val}".`);
+  return keyError("has", 'must be "upgrade-profile".');
 };
 
 const validateProfileToken = (

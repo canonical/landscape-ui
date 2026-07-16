@@ -222,7 +222,7 @@ describe("ReportView", () => {
     );
 
     const link = await screen.findByRole("link", {
-      name: "View the 1 instances in the 30–60 days bucket",
+      name: "View the 1 instance in the 30–60 days bucket",
     });
     expect(
       decodeURIComponent(link.getAttribute("href") ?? "").replace(/\+/g, " "),
