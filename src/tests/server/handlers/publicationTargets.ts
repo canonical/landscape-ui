@@ -1,6 +1,6 @@
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { publicationTargets } from "@/tests/mocks/publicationTargets";
+import { publicationTargets as _originalPublicationTargets } from "@/tests/mocks/publicationTargets";
 import type {
   PublicationTarget,
   BatchGetPublicationTargetsResponse,
@@ -12,6 +12,15 @@ import {
   getDebArchivePaginationParams,
   shouldApplyEndpointStatus,
 } from "./_helpers";
+
+const publicationTargets: PublicationTarget[] = [
+  ..._originalPublicationTargets,
+];
+
+export const resetPublicationTargets = (): void => {
+  publicationTargets.length = 0;
+  publicationTargets.push(..._originalPublicationTargets);
+};
 
 const getPublicationTargetsResponse = (requestUrl: string) => {
   const { pageSize, pageToken, search } =

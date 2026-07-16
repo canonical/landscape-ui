@@ -13,6 +13,7 @@ const options = activityTypes.map((type) => ({
 
 const props: ComponentProps<typeof ActivityTypeFilter> = {
   options,
+  label: "Type",
 };
 
 describe("ActivityTypeFilter", () => {

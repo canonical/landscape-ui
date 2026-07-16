@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import {
   paginatedPackages,
@@ -10,11 +10,37 @@ import type {
   LocalWritable,
 } from "@canonical/landscape-openapi";
 import { idleOperation } from "@/tests/mocks/operations";
+import { getEndpointStatus } from "@/tests/controllers/controller";
+import { shouldApplyEndpointStatus } from "./_helpers";
+import { createEndpointStatusError } from "./_constants";
+
+const applyEndpointStatus = async (emptyResponse = {}) => {
+  const endpointStatus = getEndpointStatus("locals");
+
+  if (endpointStatus.status === "error") {
+    throw createEndpointStatusError();
+  }
+
+  if (endpointStatus.status === "loading") {
+    await delay("infinite");
+  }
+
+  if (endpointStatus.status === "variant") {
+    return HttpResponse.json(endpointStatus.response ?? {});
+  }
+
+  // default to empty response
+  return HttpResponse.json(emptyResponse);
+};
 
 export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals`, ({ request }) => {
     const url = new URL(request.url);
     const search = url.searchParams.get("filter")?.split("=").pop() ?? "";
+
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus({ locals: [] });
+    }
 
     if (!search) {
       return HttpResponse.json({ locals: repositories });
@@ -32,6 +58,10 @@ export default [
     async ({ request }) => {
       const { displayName: namePosted } = await request.json();
 
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus();
+      }
+
       return HttpResponse.json(
         repositories.find(({ displayName }) => namePosted === displayName),
       );
@@ -43,6 +73,10 @@ export default [
     async ({ request }) => {
       const { names } = await request.json();
 
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus({ locals: [] });
+      }
+
       return HttpResponse.json({
         locals: repositories.filter(({ name }) => names.includes(name ?? "")),
       });
@@ -52,6 +86,10 @@ export default [
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository`, ({ params }) => {
     const { repository } = params;
 
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
+
     return HttpResponse.json(
       repositories.find(({ localId }) => localId === repository),
     );
@@ -60,16 +98,28 @@ export default [
   http.patch(`${API_URL_DEB_ARCHIVE}locals/:repository`, ({ params }) => {
     const { repository } = params;
 
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
+
     return HttpResponse.json(
       repositories.find(({ localId }) => localId === repository),
     );
   }),
 
   http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository`, () => {
-    return HttpResponse.json(repositories[0]);
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus();
+    }
+
+    return HttpResponse.json();
   }),
 
   http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
+    if (shouldApplyEndpointStatus("locals")) {
+      return applyEndpointStatus({ localPackages: [] });
+    }
+
     return HttpResponse.json({
       localPackages: paginatedPackages,
     });
@@ -79,6 +129,11 @@ export default [
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
     async ({ request }) => {
       const { url } = await request.json();
+
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus();
+      }
+
       let id = "oooo-vvvv-cccc";
 
       if (url === "failed") {
@@ -108,8 +163,4 @@ export default [
       return HttpResponse.json({ ...idleOperation, name: `operations/${id}` });
     },
   ),
-
-  http.delete(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
-    return HttpResponse.json(paginatedPackages[0]);
-  }),
 ];

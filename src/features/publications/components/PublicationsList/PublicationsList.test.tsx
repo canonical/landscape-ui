@@ -77,10 +77,12 @@ describe("PublicationsList", () => {
     expect(screen.getAllByText("Mirror")).toHaveLength(mirrorsCount);
     expect(screen.getAllByText("Local repository")).toHaveLength(localsCount);
     expect(
-      screen.getByRole("link", {
+      screen.getAllByRole("link", {
         name: sourceDisplayNames[publication.source],
       }),
-    ).toBeInTheDocument();
+    ).toHaveLength(
+      publications.filter((pub) => pub.source === publication.source).length,
+    );
     expect(
       screen.getByRole("link", {
         name: publicationTargetDisplayNames[publication.publicationTarget],
@@ -109,7 +111,11 @@ describe("PublicationsList", () => {
 
   it("shows empty message with search query", () => {
     renderWithProviders(
-      <PublicationsList publications={[]} />,
+      <PublicationsList
+        publications={[]}
+        sourceDisplayNames={{}}
+        publicationTargetDisplayNames={{}}
+      />,
       undefined,
       "/?query=test-publication",
     );

@@ -18,15 +18,20 @@ export default function useReports() {
   const getCsvComplianceData: QueryFnType<
     AxiosResponse<string>,
     CommonGetParams
-  > = (queryParams = {}, config = {}) =>
-    useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
-      queryKey: ["csvComplianceData", queryParams],
+  > = (queryParams = {}, config = {}) => {
+    const params = {
+      ...queryParams,
+      query: queryParams.query || undefined,
+    };
+    return useQuery<AxiosResponse<string>, AxiosError<ApiError>>({
+      queryKey: ["csvComplianceData", params],
       queryFn: async () =>
         authFetchOld.get("GetCSVComplianceData", {
-          params: queryParams,
+          params,
         }),
       ...config,
     });
+  };
 
   return {
     getCsvComplianceData,

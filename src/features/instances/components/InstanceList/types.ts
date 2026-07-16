@@ -7,8 +7,3 @@ export type InstanceColumn = Column<Instance> & {
   optionLabel: string;
   getCellIcon?: (cell: CellProps<Instance>) => string | undefined;
 };
-
-export interface GetUpgradesResult {
-  regular: { icon: string; label: string } | false;
-  security: { icon: string; label: string } | false;
-}

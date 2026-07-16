@@ -139,6 +139,28 @@ const UserInfo: FC = () => {
         <li className="p-side-navigation__item">
           <Link
             className={classNames("p-side-navigation__link", classes.link)}
+            to={ROUTES.exports.root()}
+            aria-current={
+              pathname.includes(ROUTES.exports.root()) ? "page" : undefined
+            }
+          >
+            <Icon
+              name="export"
+              className={classNames(
+                "is-light p-side-navigation__icon",
+                classes.icon,
+              )}
+            />
+            <span
+              className={classNames("p-side-navigation__label", classes.label)}
+            >
+              Exports
+            </span>
+          </Link>
+        </li>
+        <li className="p-side-navigation__item">
+          <Link
+            className={classNames("p-side-navigation__link", classes.link)}
             to={ROUTES.alerts.root()}
             aria-current={
               pathname === ROUTES.alerts.root() ? "page" : undefined

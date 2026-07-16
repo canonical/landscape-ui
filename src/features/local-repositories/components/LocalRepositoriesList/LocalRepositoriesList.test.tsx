@@ -16,7 +16,10 @@ describe("LocalRepositoriesList", () => {
       screen.getByRole("columnheader", { name: "Name" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: "Description" }),
+      screen.getByRole("columnheader", { name: "Status" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Last import" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: "Packages" }),
@@ -34,17 +37,26 @@ describe("LocalRepositoriesList", () => {
   it("renders repositories as buttons", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
-    expect(screen.getByRole("button", { name: "repo 1" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "repo 2" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "repo 3" })).toBeInTheDocument();
+    for (const repository of repositories) {
+      expect(
+        screen.getByRole("button", { name: repository.displayName }),
+      ).toBeInTheDocument();
+    }
   });
 
-  it("renders descriptions in rows", () => {
+  it("renders last import dates", () => {
     renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
 
+    expect(screen.getAllByText(/Jun \d{2}, 2024/)).toHaveLength(4);
     expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
-    expect(screen.getByText("repo 2 description")).toBeInTheDocument();
-    expect(screen.getByText("repo 3 description")).toBeInTheDocument();
+  });
+
+  it("renders status for no operation", async () => {
+    renderWithProviders(<LocalRepositoriesList repositories={repositories} />);
+
+    expect(
+      await screen.findByText("No packages imported yet"),
+    ).toBeInTheDocument();
   });
 
   it("renders empty message when no repositories", () => {

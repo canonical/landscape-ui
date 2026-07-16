@@ -7,30 +7,9 @@ import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import classes from "./ReportForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
+import { downloadBlob } from "@/utils/browserDownload";
 
 const DEFAULT_RANGE_DAYS = 30;
-
-const downloadCSV = (csvString: string, filename: string) => {
-  // Create blob from string
-  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-
-  // Create URL for blob
-  const url = URL.createObjectURL(blob);
-
-  // Create link element
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-
-  // Append link to body
-  document.body.appendChild(link);
-
-  // Programmatically click the link to start download
-  link.click();
-
-  // Clean up by removing the link
-  document.body.removeChild(link);
-};
 
 interface ReportFormProps {
   readonly instanceIds: readonly number[];
@@ -57,7 +36,12 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
     }),
     onSubmit: async () => {
       const result = await refetchRef.current?.();
-      downloadCSV(result?.data?.data ?? "", "report.csv");
+      downloadBlob(
+        new Blob([result?.data?.data ?? ""], {
+          type: "text/csv;charset=utf-8;",
+        }),
+        "report.csv",
+      );
     },
   });
 

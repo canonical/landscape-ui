@@ -3,18 +3,19 @@ import type { Local } from "@canonical/landscape-openapi";
 import { ResponsiveButtons } from "@/components/ui";
 import { useGetRepositoryActions } from "../../../../hooks/useGetRepositoryActions";
 import { useBoolean } from "usehooks-ts";
-import { Button, Icon } from "@canonical/react-components";
+import { Button, Icon, Tooltip } from "@canonical/react-components";
 import RemoveLocalRepositoryModal from "../../../RemoveLocalRepositoryModal";
-import classes from "../../ViewLocalRepositorySidePanel.module.scss";
-import type { Action } from "@/types/Action";
+import classes from "./ViewRepositoryActionsBlock.module.scss";
 import PublishLocalRepositoryGuard from "../../../PublishLocalRepositoryGuard";
 
 interface ViewRepositoryActionsBlockProps {
   readonly repository: Local;
+  readonly isImporting: boolean;
 }
 
 const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
-  repository: repository,
+  repository,
+  isImporting,
 }) => {
   const {
     value: isRemovalModalOpen,
@@ -28,38 +29,48 @@ const ViewRepositoryActionsBlock: FC<ViewRepositoryActionsBlockProps> = ({
     setFalse: closePublishGuard,
   } = useBoolean();
 
-  const { actions, destructiveActions } = useGetRepositoryActions({
+  const { actions, destructiveAction } = useGetRepositoryActions({
     repository,
+    isImporting,
     openRemovalModal,
     openPublishGuard,
   });
-  const buttons = [...actions, ...destructiveActions];
-  const isNegative = (action: Action) => action.appearance === "negative";
+  const buttons = [...actions, destructiveAction];
 
   return (
     <>
       <ResponsiveButtons
         className={classes.marginBottom}
-        buttons={buttons.map((button) => (
-          <Button
-            key={button.label}
-            hasIcon
-            type="button"
-            onClick={button.onClick}
-            aria-label={`${button.label} ${repository.displayName} local repository`}
-            disabled={button.disabled}
-          >
-            <Icon
-              name={
-                isNegative(button) ? `${button.icon}--negative` : button.icon
-              }
-            />
-            <span className={isNegative(button) ? "u-text--negative" : ""}>
-              {button.label}
-            </span>
-          </Button>
-        ))}
-        collapseFrom={"xs"}
+        buttons={buttons.map((action) => {
+          const button = (
+            <Button
+              key={action.label}
+              hasIcon
+              type="button"
+              className="u-no-margin--bottom"
+              onClick={action.onClick}
+              disabled={action.disabled}
+            >
+              <Icon
+                name={`${action.icon}${action.appearance ? "--negative" : ""}`}
+              />
+              <span className={action.className}>{action.label}</span>
+            </Button>
+          );
+
+          return action.disabled ? (
+            <Tooltip
+              message="You must wait for this action to be completed to import more packages."
+              position="btm-center"
+              key={action.label}
+            >
+              {button}
+            </Tooltip>
+          ) : (
+            button
+          );
+        })}
+        collapseFrom="sm"
         menuPosition="left"
       />
 
