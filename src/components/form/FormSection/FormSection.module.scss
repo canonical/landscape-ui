@@ -1,0 +1,50 @@
+@import "vanilla-framework/scss/settings_colors";
+@import "vanilla-framework/scss/settings_spacing";
+
+$label-column-width: 24rem;
+$label-column-min-width: 19rem;
+$content-min-width: 28rem;
+
+/* NOTE: comments in *.module.scss files must be loud (slash-star) — tcm parses
+   these files as plain CSS and silently fails to generate type declarations
+   when it hits a silent (slash-slash) comment. */
+
+/* Sized as a container so the stacking breakpoint tracks the section's own
+   width rather than the viewport's: the navigation panels can consume most of
+   a small viewport, which makes viewport-based media queries collapse far too
+   late. */
+.section {
+  container-type: inline-size;
+}
+
+/* Consecutive sections are separated by a divider with generous spacing below
+   it. Scoped to adjacent siblings so a lone section (and the first one) render
+   without a top border or padding. Theme-aware colour so it reads correctly in
+   light and dark mode. */
+.section + .section {
+  border-top: 1px solid $colors--theme--border-low-contrast;
+  margin-top: 3rem;
+  padding-top: 1rem;
+}
+
+/* The content column's minimum outranks the label column's maximum, so as the
+   section narrows the label column gives up its whitespace first and only then
+   does the content start to shrink. */
+.grid {
+  display: grid;
+  gap: $spv--large $sph--x-large;
+  grid-template-columns:
+    minmax($label-column-min-width, $label-column-width)
+    minmax($content-min-width, 1fr);
+
+  /* Stack the label above the content once both columns are at their minimum
+     widths. */
+  @container (max-width: #{$label-column-min-width + $sph--x-large + $content-min-width}) {
+    gap: $spv--small;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.content {
+  min-width: 0;
+}

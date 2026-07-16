@@ -21,10 +21,6 @@ const applyEndpointStatus = async (emptyResponse = {}) => {
     throw createEndpointStatusError();
   }
 
-  if (endpointStatus.status === "empty") {
-    return HttpResponse.json(emptyResponse);
-  }
-
   if (endpointStatus.status === "loading") {
     await delay("infinite");
   }
@@ -32,6 +28,9 @@ const applyEndpointStatus = async (emptyResponse = {}) => {
   if (endpointStatus.status === "variant") {
     return HttpResponse.json(endpointStatus.response ?? {});
   }
+
+  // default to empty response
+  return HttpResponse.json(emptyResponse);
 };
 
 export default [
