@@ -25,7 +25,7 @@ if (missingInputs.length > 0) {
   for (const file of missingInputs) {
     console.error(`[-] Missing generated input: ${file}`);
   }
-  console.error(`    Run the test suite first: pnpm vitest run`);
+  console.error(`    Run the test suite first: pnpm coverage`);
   process.exit(1);
 }
 
