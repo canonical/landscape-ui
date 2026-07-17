@@ -72,7 +72,10 @@ export default [
       }
 
       return HttpResponse.json(
-        { error: "Operation not found" },
+        {
+          code: 13,
+          message: "The requested operation could not be found.",
+        },
         { status: 404 },
       );
     },
