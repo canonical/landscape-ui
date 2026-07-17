@@ -84,5 +84,6 @@ When making a change:
 ## Operational Notes
 
 - Environment-driven behavior is configured through Vite environment variables exposed in `src/constants.ts`.
+- External documentation URLs used in more than one component are centralised in `src/DocumentationURLS/DocumentationURLS.ts`. URLs used by only a single component live in that component's colocated `constants.ts`.
 - The app supports both SaaS and self-hosted behavior, and some routes or features are guarded accordingly.
 - Testing is split between Vitest for component/unit coverage and Playwright for end-to-end route flows.

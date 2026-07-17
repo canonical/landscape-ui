@@ -4,7 +4,7 @@ import { screen } from "@testing-library/react";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import userEvent from "@testing-library/user-event";
-import { ADMINISTRATORS_DOCUMENTATION_URL } from "./constants";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/DocumentationURLS/DocumentationURLS";
 
 describe("AdministratorsPanel", () => {
   const user = userEvent.setup();

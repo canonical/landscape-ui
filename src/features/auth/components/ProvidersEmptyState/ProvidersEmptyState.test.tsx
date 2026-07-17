@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import ProvidersEmptyState from "./ProvidersEmptyState";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/DocumentationURLS/DocumentationURLS";
 
 describe("ProvidersEmptyState", () => {
   it("should render correctly", async () => {

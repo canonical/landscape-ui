@@ -36,6 +36,8 @@ Add colocated supporting files when the component needs them:
 - `helpers.ts`
 - `types.ts`
 
+When a documentation URL is used in more than one component, place it in `src/DocumentationURLS/DocumentationURLS.ts` and import it from there instead of duplicating it in local `constants.ts` files.
+
 ### Nested `components/` folders
 
 Use an internal `components/` subfolder when a parent component owns tightly related child components that are not intended to become broad shared primitives.
