@@ -1,0 +1,12 @@
+'TESTCODE_FILE' =>
+  "/src/tests/" ||
+  "/e2e/" ||
+  "/src/.+\.test\.(ts|tsx)$"
+
+'GENERATED_FILE' =>
+  "/src/.+\.module\.scss\.d\.ts$"
+
+'INFRA_FILE' =>
+  "/scripts/" ||
+  "/\.github/" ||
+  "/.+\.config\..+"

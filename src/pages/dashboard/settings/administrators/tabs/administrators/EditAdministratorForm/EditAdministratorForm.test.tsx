@@ -56,10 +56,21 @@ describe("EditAdministratorForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows disabled save changes button unless a role is changed", () => {
+  it("keeps save changes enabled but does not submit when roles are unchanged", async () => {
     renderWithProviders(<EditAdministratorForm {...props} />);
     const saveButton = screen.getByRole("button", { name: /save changes/i });
-    expect(saveButton).toHaveAttribute("aria-disabled", "true");
+    expect(saveButton).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(saveButton);
+
+    expect(await screen.findByText(/no changes to save/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/update the administrator roles before saving\./i),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(/permission changes have been queued/i),
+    ).not.toBeInTheDocument();
   });
 
   it("changes role of an admin", async () => {
@@ -79,8 +90,7 @@ describe("EditAdministratorForm", () => {
     await user.click(roleCheckbox);
 
     const saveButton = screen.getByRole("button", { name: /save changes/i });
-    expect(saveButton).not.toHaveAttribute("aria-disabled");
-    expect(saveButton).toBeEnabled();
+    expect(saveButton).not.toHaveAttribute("aria-disabled", "true");
   });
 
   it("confirms disable administrator", async () => {

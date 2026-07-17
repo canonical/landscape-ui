@@ -51,6 +51,12 @@ const useUsgProfileForm = ({
 
       benchmark: Yup.string().required("This field is required."),
 
+      days: Yup.array().when(["start_type", "unit_of_time"], {
+        is: (start_type: string, unit_of_time: string) =>
+          start_type == "recurring" && unit_of_time == "WEEKLY",
+        then: (schema) => schema.min(1, "Select at least one day."),
+      }),
+
       end_date: Yup.string().when(
         ["start_date", "start_type", "end_type"],
         ([start_date, start_type, end_type], schema) =>
@@ -67,18 +73,31 @@ const useUsgProfileForm = ({
       every: Yup.number().when("start_type", ([start_type], schema) =>
         start_type == "recurring"
           ? schema
+              .transform((value, originalValue) =>
+                originalValue === "" ? undefined : value,
+              )
+              .typeError("This field is required.")
               .required("This field is required.")
               .positive("Enter a positive number.")
               .integer("Enter an integer.")
-              .when("unit_of_time", ([unit_of_time]) =>
+              .when("unit_of_time", ([unit_of_time], recurringSchema) =>
                 unit_of_time === "DAILY"
-                  ? schema.min(7, "Enter an interval of at least 7 days.")
-                  : schema,
+                  ? recurringSchema.min(
+                      7,
+                      "Enter an interval of at least 7 days.",
+                    )
+                  : recurringSchema,
               )
           : schema,
       ),
 
       mode: Yup.string().required("This field is required."),
+
+      months: Yup.array().when(["start_type", "unit_of_time"], {
+        is: (start_type: string, unit_of_time: string) =>
+          start_type == "recurring" && unit_of_time == "YEARLY",
+        then: (schema) => schema.min(1, "Select at least one month."),
+      }),
 
       deliver_delay_window: Yup.number().when(
         ["mode", "randomize_delivery"],

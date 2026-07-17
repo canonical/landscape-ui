@@ -1,5 +1,6 @@
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import usePageParams from "@/hooks/usePageParams";
+import type { FormikErrors } from "formik";
 import type { ReactNode } from "react";
 import { useState, type FC } from "react";
 import { phrase } from "../../helpers";
@@ -16,6 +17,20 @@ interface USGProfileFormProps extends UseUSGProfileFormProps {
   readonly submitButtonText?: string;
   readonly submitting?: boolean;
 }
+
+const VALIDATION_FIELDS: (keyof USGProfileFormValues)[] = [
+  "title",
+  "benchmark",
+  "mode",
+  "start_type",
+  "start_date",
+  "every",
+  "days",
+  "months",
+  "end_date",
+  "deliver_delay_window",
+  "restart_deliver_delay",
+];
 
 const USGProfileForm: FC<USGProfileFormProps> = ({
   getConfirmationStepDisabled = () => false,
@@ -34,7 +49,26 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
     formik.handleSubmit();
   };
 
-  const startSubmit = () => {
+  const touchValidationFields = async () => {
+    await Promise.all(
+      VALIDATION_FIELDS.map((field) =>
+        formik.setFieldTouched(field, true, false),
+      ),
+    );
+  };
+
+  const hasValidationErrors = (errors: FormikErrors<USGProfileFormValues>) => {
+    return VALIDATION_FIELDS.some((field) => !!errors[field]);
+  };
+
+  const startSubmit = async () => {
+    const errors = await formik.validateForm();
+
+    if (hasValidationErrors(errors)) {
+      await touchValidationFields();
+      return;
+    }
+
     if (getConfirmationStepDisabled(formik.values)) {
       finishSubmit();
       return;
@@ -73,7 +107,6 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
           hasBackButton
           onBackButtonPress={goBack}
           onSubmit={finishSubmit}
-          submitButtonDisabled={!!step.isLoading || submitting}
           submitButtonLoading={step.isLoading || submitting}
           submitButtonText={submitButtonText}
           onCancel={popSidePathUntilClear}
@@ -96,7 +129,6 @@ const USGProfileForm: FC<USGProfileFormProps> = ({
 
       <SidePanelFormButtons
         onSubmit={startSubmit}
-        submitButtonDisabled={!formik.isValid || submitting}
         submitButtonLoading={steps.some((step) => step.isLoading) || submitting}
         submitButtonText={submitButtonText}
         onCancel={popSidePathUntilClear}

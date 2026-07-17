@@ -105,3 +105,4 @@ jobs:
           # Keep qserver temp state isolated per run to prevent stale lock/state
           # reuse between workflow runs on the same self-hosted machine.
           tmpdir: /tmp/tics-${{ github.run_id }}-${{ github.run_attempt }}
+          additionalFlags: -archivefile '${{ github.workspace }}/.github/workflows/tiobe_archive.txt'

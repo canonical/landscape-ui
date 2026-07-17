@@ -55,7 +55,7 @@ const NewAccessGroupForm: FC = () => {
         {...formik.getFieldProps("parent")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Add access group"
       />
     </Form>
