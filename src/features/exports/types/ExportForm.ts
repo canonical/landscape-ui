@@ -1,6 +1,7 @@
 export interface ExportField {
   id: string;
   label: string;
+  groupTitle?: string;
 }
 
 export interface ExportFieldGroup {

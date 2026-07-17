@@ -1,6 +1,6 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
+import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import {
   buildExportQuery,
@@ -25,12 +25,12 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
   exportParams,
   selectedActivityIds,
 }) => {
-  const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
   const { exportActivitiesTsv, isExportActivitiesTsvLoading } =
     useExportActivitiesTsv();
+  const { popSidePath } = usePageParams();
 
   const handleGenerate = async ({
     values,
@@ -58,7 +58,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
         selectionForms: ["selected activity", "selected activities"],
       });
 
-      closeSidePanel();
+      popSidePath();
       notify.success({
         title: "TSV export in progress",
         message: `Your activities export "${values.name.trim()}"${exportScope} is being generated.`,

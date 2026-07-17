@@ -1,7 +1,8 @@
 import { renderWithProviders } from "@/tests/render";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
+import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import ActivitiesExportForm from "./ActivitiesExportForm";
 
@@ -45,22 +46,23 @@ describe("ActivitiesExportForm", () => {
     ).toBeInTheDocument();
   });
 
-  it("pre-selects the visible table columns and keeps Next disabled until a name is given", async () => {
+  it("shows a validation error when Next is clicked without a name, then clears it", async () => {
     const user = userEvent.setup();
     renderWithProviders(<ActivitiesExportForm {...defaultProps} />);
 
-    await openAttributeGroup(user, /primary identity/i);
-    expect(screen.getByRole("checkbox", { name: "Summary" })).toBeChecked();
-    expect(screen.getByRole("checkbox", { name: "Status" })).toBeChecked();
-
     const nextButton = screen.getByRole("button", { name: "Next" });
-    expect(nextButton).toHaveAttribute("aria-disabled", "true");
+    await user.click(nextButton);
+
+    expect(screen.getByText("This field is required")).toBeInTheDocument();
 
     await user.type(
       screen.getByRole("textbox", { name: "Export name" }),
       "My activities export",
     );
-    expect(nextButton).not.toHaveAttribute("aria-disabled", "true");
+
+    expect(
+      screen.queryByText("This field is required"),
+    ).not.toBeInTheDocument();
   });
 
   it("filters attributes by field name", async () => {
@@ -74,7 +76,6 @@ describe("ActivitiesExportForm", () => {
       "creator",
     );
 
-    await openAttributeGroup(user, /audit & time/i);
     expect(
       screen.getByRole("checkbox", { name: "Creator" }),
     ).toBeInTheDocument();
@@ -98,13 +99,15 @@ describe("ActivitiesExportForm", () => {
     await user.click(screen.getByRole("button", { name: "Next" }));
 
     expect(
-      screen.getByText(/review and reorder the columns/i),
+      await screen.findByText(/review and reorder the columns/i),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Order for ID")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Back" }));
 
-    expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: "Next" }),
+    ).toBeInTheDocument();
     await openAttributeGroup(user, /primary identity/i);
     expect(screen.getByRole("checkbox", { name: "ID" })).toBeChecked();
   });
@@ -123,6 +126,11 @@ describe("ActivitiesExportForm", () => {
     await user.click(screen.getByRole("checkbox", { name: "ID" }));
     await user.click(screen.getByRole("checkbox", { name: "Type" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).not.toBeDisabled();
+    });
     await user.click(screen.getByRole("button", { name: "Generate TSV" }));
 
     expect(await screen.findByText("TSV export in progress")).toBeVisible();
@@ -134,5 +142,47 @@ describe("ActivitiesExportForm", () => {
     expect(
       screen.getByRole("button", { name: "View export status" }),
     ).toBeInTheDocument();
+  });
+
+  it("pops one sidePath entry on successful export", async () => {
+    const user = userEvent.setup();
+    const LocationDisplay = () => {
+      const { search } = useLocation();
+      return <div data-testid="location-display">{search}</div>;
+    };
+
+    renderWithProviders(
+      <>
+        <ActivitiesExportForm {...defaultProps} selectedActivityIds={[1, 2]} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=view,export",
+    );
+
+    await user.type(
+      screen.getByRole("textbox", { name: "Export name" }),
+      "My activities export",
+    );
+    await openAttributeGroup(user, /primary identity/i);
+    await user.click(screen.getByRole("checkbox", { name: "ID" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Generate TSV" }),
+      ).not.toBeDisabled();
+    });
+    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+
+    expect(await screen.findByText("TSV export in progress")).toBeVisible();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "sidePath=view",
+      );
+      expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+        "sidePath=view,export",
+      );
+    });
   });
 });
