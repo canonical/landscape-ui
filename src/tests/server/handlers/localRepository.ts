@@ -1,9 +1,6 @@
 import { delay, http, HttpResponse } from "msw";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
-import {
-  paginatedPackages,
-  repositories,
-} from "@/tests/mocks/localRepositories";
+import { API_URL_DEB_ARCHIVE, DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
+import { packages, repositories } from "@/tests/mocks/localRepositories";
 import type {
   ImportLocalPackagesRequest,
   BatchGetLocalsRequest,
@@ -115,15 +112,27 @@ export default [
     return HttpResponse.json();
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
-    if (shouldApplyEndpointStatus("locals")) {
-      return applyEndpointStatus({ localPackages: [] });
-    }
+  http.get(
+    `${API_URL_DEB_ARCHIVE}locals/:repository/packages`,
+    async ({ request }) => {
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus({ localPackages: [] });
+      }
 
-    return HttpResponse.json({
-      localPackages: paginatedPackages,
-    });
-  }),
+      const url = new URL(request.url);
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
+      const pageIndex = pageToken * pageSize;
+      const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
+      const hasNextPage = pageIndex + pageSize < packages.length;
+
+      return HttpResponse.json({
+        localPackages: paginatedPackages,
+        nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,
+      });
+    },
+  ),
 
   http.post<never, ImportLocalPackagesRequest>(
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,

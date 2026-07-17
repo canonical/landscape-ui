@@ -80,7 +80,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         Header: "Packages",
         className: classes.count,
         Cell: ({ row: { original: repository } }: CellProps<Local>) => (
-          <LocalRepositoryPackagesCount repository={repository} />
+          <LocalRepositoryPackagesCount repository={repository.name ?? ""} />
         ),
       },
       {
