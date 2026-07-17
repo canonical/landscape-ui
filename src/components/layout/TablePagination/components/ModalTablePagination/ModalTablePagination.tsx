@@ -16,7 +16,7 @@ const ModalTablePagination: FC<ModalTablePaginationProps> = ({
   current,
 }) => {
   if (max <= 1) {
-    return;
+    return null;
   }
 
   return (

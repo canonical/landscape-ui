@@ -1,25 +1,31 @@
 import LoadingState from "@/components/layout/LoadingState";
 import type { FC } from "react";
-import type { Local } from "@canonical/landscape-openapi";
-import { useGetRepositoryPackages } from "../../../../api";
+import { useGetRepositoryPackagesCount } from "../../../../api";
 import { pluralize } from "@/utils/_helpers";
+import NoData from "@/components/layout/NoData";
 
-interface LocalRepositoryPackagesCountProps {
-  readonly repository: Local;
+interface LocalPackagesCountProps {
+  readonly repository: string;
 }
 
-const LocalRepositoryPackagesCount: FC<LocalRepositoryPackagesCountProps> = ({
+const LocalRepositoryPackagesCount: FC<LocalPackagesCountProps> = ({
   repository,
 }) => {
-  const { packages, isGettingRepositoryPackages } = useGetRepositoryPackages(
-    repository.name ?? "", // TODO: handle case where repository name is undefined,
+  const {
+    localPackagesCount,
+    isPackagesCountExact,
+    isGettingPackagesCount,
+    isPackagesCountError,
+  } = useGetRepositoryPackagesCount({ local: repository });
+
+  if (isPackagesCountError || !repository) return <NoData />;
+  if (isGettingPackagesCount) return <LoadingState inline />;
+
+  return pluralize(
+    localPackagesCount,
+    ["package"],
+    isPackagesCountExact ? "exact" : "limited",
   );
-
-  if (isGettingRepositoryPackages) {
-    return <LoadingState inline />;
-  }
-
-  return pluralize(packages.length, ["package"], "exact");
 };
 
 export default LocalRepositoryPackagesCount;

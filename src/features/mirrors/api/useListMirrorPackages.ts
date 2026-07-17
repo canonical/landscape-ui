@@ -1,34 +1,50 @@
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
+import useTokenPagination from "@/hooks/useTokenPagination";
 import type {
-  MirrorServiceListMirrorPackagesData,
   MirrorServiceListMirrorPackagesError,
   MirrorServiceListMirrorPackagesResponse,
 } from "@canonical/landscape-openapi";
-import type { UseQueryOptions } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 import type { AxiosError, AxiosResponse } from "axios";
 
-export function useListMirrorPackages(
-  mirrorName: string,
-  params: MirrorServiceListMirrorPackagesData["query"] = {},
-  options: Omit<
-    UseQueryOptions<
-      AxiosResponse<MirrorServiceListMirrorPackagesResponse>,
-      AxiosError<MirrorServiceListMirrorPackagesError>
-    >,
-    "queryKey" | "queryFn"
-  > = {},
-) {
+interface UseListMirrorPackagesProps {
+  readonly mirrorName: string;
+  readonly pageSize?: number;
+}
+
+export const useListMirrorPackages = ({
+  mirrorName,
+  pageSize = DEFAULT_MODAL_PAGE_SIZE,
+}: UseListMirrorPackagesProps) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  return useQuery<
+  const { currentPageToken, hasPreviousPage, pushNextPage, goToPreviousPage } =
+    useTokenPagination(mirrorName);
+
+  const { data, isLoading, error } = useQuery<
     AxiosResponse<MirrorServiceListMirrorPackagesResponse>,
     AxiosError<MirrorServiceListMirrorPackagesError>
   >({
-    queryKey: ["mirrorPackages", mirrorName, params],
+    queryKey: ["mirrorPackages", mirrorName, currentPageToken, pageSize],
     queryFn: async () =>
-      authFetchDebArchive.get(`${mirrorName}/packages`, { params }),
-    retry: false,
-    ...options,
+      authFetchDebArchive.get(`${mirrorName}/packages`, {
+        params: { pageSize, pageToken: currentPageToken },
+      }),
+    enabled: !!mirrorName,
   });
-}
+
+  const nextPageToken = data?.data.nextPageToken;
+
+  return {
+    packages: data?.data.mirrorPackages ?? [],
+    isGettingPackages: isLoading,
+    packagesError: error,
+    hasNextPage: !!nextPageToken,
+    hasPreviousPage,
+    goToNextPage: () => {
+      pushNextPage(nextPageToken);
+    },
+    goToPreviousPage,
+  };
+};
