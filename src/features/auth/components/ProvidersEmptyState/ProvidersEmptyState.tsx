@@ -4,6 +4,7 @@ import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
 
 const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
 
@@ -23,7 +24,7 @@ const ProvidersEmptyState: FC = () => {
     <EmptyState
       body="You haven’t added any identity providers yet."
       link={{
-        href: "https://ubuntu.com/landscape/docs/managing-computers",
+        href: MANAGING_COMPUTERS_DOCUMENTATION_URL,
         text: "How to manage computers in Landscape",
       }}
       cta={[

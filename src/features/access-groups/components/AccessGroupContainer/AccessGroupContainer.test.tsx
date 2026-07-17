@@ -6,6 +6,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect } from "vitest";
 import AccessGroupContainer from "./AccessGroupContainer";
+import { ACCESS_GROUPS_DOCUMENTATION_URL } from "./constants";
 
 describe("AccessGroupContainer", () => {
   it("renders AccessGroupContainer", async () => {
@@ -27,6 +28,19 @@ describe("AccessGroupContainer", () => {
     await expectLoadingState();
 
     expect(screen.getByText("No access groups found")).toBeInTheDocument();
+  });
+
+  it("renders access groups documentation link in empty state", async () => {
+    setEndpointStatus("empty");
+    renderWithProviders(<AccessGroupContainer />);
+
+    await expectLoadingState();
+
+    const docsLink = screen.getByRole("link", {
+      name: "How to manage access groups in Landscape",
+    });
+
+    expect(docsLink).toHaveAttribute("href", ACCESS_GROUPS_DOCUMENTATION_URL);
   });
 
   it("opens side panel with form when Add access group button is clicked", async () => {

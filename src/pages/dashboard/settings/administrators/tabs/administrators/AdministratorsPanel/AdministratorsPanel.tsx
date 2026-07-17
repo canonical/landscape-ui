@@ -6,6 +6,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import useAdministrators from "@/hooks/useAdministrators";
 import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsPanelContent from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelContent";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "./constants";
 
 const InviteAdministratorForm = lazy(
   () =>
@@ -39,7 +40,7 @@ const AdministratorsPanel: FC = () => {
           <EmptyState
             body="There are no administrators in your Landscape organization."
             link={{
-              href: "https://ubuntu.com/landscape/docs/administrators",
+              href: ADMINISTRATORS_DOCUMENTATION_URL,
               text: "How to manage administrators in Landscape",
             }}
             cta={[

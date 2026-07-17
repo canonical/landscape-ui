@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
+import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "./constants";
 
 const InstancesEmptyState: FC = () => {
   return (
@@ -8,7 +9,7 @@ const InstancesEmptyState: FC = () => {
       icon="connected"
       body="You don't have any instances registered to Landscape yet."
       link={{
-        href: "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
+        href: MANAGE_INSTANCES_DOCUMENTATION_URL,
         text: "How to manage instances in Landscape",
       }}
     />

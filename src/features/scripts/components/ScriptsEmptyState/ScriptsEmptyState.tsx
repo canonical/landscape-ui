@@ -4,6 +4,7 @@ import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
+import { REMOTE_SCRIPT_EXECUTION_DOCUMENTATION_URL } from "./constants";
 
 const CreateScriptForm = lazy(async () => import("../CreateScriptForm"));
 
@@ -25,7 +26,7 @@ const ScriptsEmptyState: FC = () => {
       icon="connected"
       body="You haven’t added any scripts yet."
       link={{
-        href: "https://ubuntu.com/landscape/docs/how-to-guides/web-portal/web-portal-24-04-or-later/use-remote-script-execution/",
+        href: REMOTE_SCRIPT_EXECUTION_DOCUMENTATION_URL,
         text: "How to use remote script execution in Landscape",
       }}
       cta={[

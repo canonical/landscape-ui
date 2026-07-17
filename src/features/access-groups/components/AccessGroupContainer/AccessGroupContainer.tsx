@@ -7,6 +7,7 @@ import AccessGroupHeader from "../AccessGroupHeader";
 import AccessGroupList from "../AccessGroupList";
 import { Button } from "@canonical/react-components";
 import useSidePanel from "@/hooks/useSidePanel";
+import { ACCESS_GROUPS_DOCUMENTATION_URL } from "./constants";
 
 const NewAccessGroupForm = lazy(() => import("../NewAccessGroupForm"));
 
@@ -37,7 +38,7 @@ const AccessGroupsContainer: FC = () => {
           icon="copy"
           body="You haven't added any access groups yet."
           link={{
-            href: "https://ubuntu.com/landscape/docs/access-groups",
+            href: ACCESS_GROUPS_DOCUMENTATION_URL,
             text: "How to manage access groups in Landscape",
           }}
           cta={[
