@@ -77,7 +77,7 @@ const ChangePasswordForm: FC = () => {
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

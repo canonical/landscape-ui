@@ -136,27 +136,27 @@ export default [
 
       let id = "oooo-vvvv-cccc";
 
-      if (url === "failed") {
+      if (url === "https://example.com/failed") {
         id = "ffff-llll-dddd";
       }
 
-      if (url === "timeout") {
+      if (url === "https://example.com/timeout") {
         id = "tttt-mmmm-oooo";
       }
 
-      if (url === "idle") {
+      if (url === "https://example.com/idle") {
         id = "iiii-dddd-llll";
       }
 
-      if (url === "in/progress") {
+      if (url === "https://example.com/in/progress") {
         id = "pppp-gggg-ssss";
       }
 
-      if (url === "empty") {
+      if (url === "https://example.com/empty") {
         id = "mmmm-pppp-tttt";
       }
 
-      if (url === "succeeded") {
+      if (url === "https://example.com/succeeded") {
         id = "ssss-cccc-dddd";
       }
 

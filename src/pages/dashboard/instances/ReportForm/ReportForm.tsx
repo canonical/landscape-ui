@@ -56,10 +56,7 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
         <span>Days</span>
       </div>
 
-      <SidePanelFormButtons
-        submitButtonDisabled={false}
-        submitButtonText="Download"
-      />
+      <SidePanelFormButtons submitButtonText="Download" />
     </Form>
   );
 };
