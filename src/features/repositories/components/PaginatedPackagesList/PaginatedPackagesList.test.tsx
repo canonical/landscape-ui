@@ -31,7 +31,7 @@ describe("PaginatedPackagesList", () => {
     expect(screen.getByText("package-2")).toBeInTheDocument();
     expect(screen.getByText("package-3")).toBeInTheDocument();
 
-    expect(screen.getByText("Showing 3 of 3 items")).toBeInTheDocument();
+    expect(screen.getByText("Showing 3 of 3 packages")).toBeInTheDocument();
   });
 
   it("renders the empty message when there are no packages", () => {
