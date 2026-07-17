@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import ActivitiesEmptyState from "./ActivitiesEmptyState";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/DocumentationURLS/DocumentationURLS";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
 
 describe("ActivitiesEmptyState", () => {
   it("renders the empty state with correct title and body text", () => {

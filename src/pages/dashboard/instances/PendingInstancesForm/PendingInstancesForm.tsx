@@ -21,7 +21,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
 import { ROUTES } from "@/libs/routes";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/DocumentationURLS/DocumentationURLS";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
 
 interface PendingInstanceListProps {
   readonly instances: PendingInstance[];

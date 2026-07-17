@@ -4,7 +4,7 @@ import { screen, within } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import userEvent from "@testing-library/user-event";
-import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/DocumentationURLS/DocumentationURLS";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
 
 describe("RolesContainer", () => {
   const user = userEvent.setup();

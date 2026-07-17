@@ -4,7 +4,7 @@ import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/DocumentationURLS/DocumentationURLS";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
 
 const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
 
