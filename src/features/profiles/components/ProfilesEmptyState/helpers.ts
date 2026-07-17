@@ -24,12 +24,12 @@ export const getMessage = (type: ProfileTypes) => {
 export const getLink = (type: ProfileTypes) => {
   switch (type) {
     case ProfileTypes.repository:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/repository-mirrors/manage-repositories-in-the-web-portal/#create-a-repository-profile-and-associate-client-machines-to-the-profile";
+      return "https://ubuntu.com/landscape/docs/how-to-guides/repository-mirrors/manage-repositories-in-the-web-portal/#create-a-repository-profile-and-associate-client-machines-to-the-profile";
     case ProfileTypes.usg:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/security/use-usg-profiles/#how-to-web-portal-use-usg-profiles";
+      return "https://ubuntu.com/landscape/docs/how-to-guides/security/use-usg-profiles/#how-to-web-portal-use-usg-profiles";
     case ProfileTypes.wsl:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/wsl-integration/use-wsl-profiles/#how-to-use-wsl-profiles";
+      return "https://ubuntu.com/landscape/docs/how-to-guides/wsl-integration/use-wsl-profiles/#how-to-use-wsl-profiles";
     default:
-      return `https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/web-portal-24-04-or-later/use-profiles/#${type}-profiles`;
+      return `https://ubuntu.com/landscape/docs/how-to-guides/web-portal/web-portal-24-04-or-later/use-profiles/#${type}-profiles`;
   }
 };

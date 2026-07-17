@@ -24,7 +24,7 @@ describe("InstancesEmptyState", () => {
 
     expect(docsLink).toHaveAttribute(
       "href",
-      "https://documentation.ubuntu.com/landscape/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
+      "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
     );
     expect(docsLink).toHaveAttribute("target", "_blank");
     expect(docsLink).toHaveAttribute("rel", "nofollow noopener noreferrer");

@@ -1,2 +1,2 @@
 export const DEBARCHIVE_DOCUMENTATION_URL =
-  "https://documentation.ubuntu.com/landscape/explanation/features/repository-mirroring-2604/";
+  "https://ubuntu.com/landscape/docs/explanation/features/repository-mirroring-2604/";

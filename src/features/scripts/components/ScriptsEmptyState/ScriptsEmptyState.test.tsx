@@ -27,7 +27,7 @@ describe("Scripts Empty State", () => {
     expect(emptyStateButton).toBeInTheDocument();
     expect(emptyStateLink).toHaveAttribute(
       "href",
-      "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/web-portal-24-04-or-later/use-remote-script-execution/",
+      "https://ubuntu.com/landscape/docs/how-to-guides/web-portal/web-portal-24-04-or-later/use-remote-script-execution/",
     );
   });
 

@@ -8,7 +8,7 @@ const InstancesEmptyState: FC = () => {
       icon="connected"
       body="You don't have any instances registered to Landscape yet."
       link={{
-        href: "https://documentation.ubuntu.com/landscape/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
+        href: "https://ubuntu.com/landscape/docs/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
         text: "How to manage instances in Landscape",
       }}
     />
