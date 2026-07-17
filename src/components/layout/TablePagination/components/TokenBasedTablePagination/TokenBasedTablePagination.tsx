@@ -32,7 +32,7 @@ const TokenBasedTablePagination: FC<TokenBasedTablePaginationProps> = ({
   goToPreviousPage,
   pageSizeControl,
 }) => {
-  if (!totalItemCount && !isTotalExact) return null;
+  if (!totalItemCount && isTotalExact) return null;
 
   const PAGE_SIZE_OPTIONS: SelectProps["options"] = [
     { label: "20", value: 20 },
