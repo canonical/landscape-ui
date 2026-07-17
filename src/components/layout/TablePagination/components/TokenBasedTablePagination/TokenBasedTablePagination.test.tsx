@@ -70,24 +70,30 @@ describe("TokenBasedTablePagination", () => {
       <TokenBasedTablePagination
         {...defaultProps}
         pageSizeControl={undefined}
+        itemType="package"
       />,
     );
 
     expect(screen.queryByText(/Advance by:/)).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("combobox", { name: /items per page/i }),
+      screen.queryByRole("combobox", { name: /packages per page/i }),
     ).not.toBeInTheDocument();
 
-    expect(screen.getByText("Showing 10 of 15 items")).toBeInTheDocument();
+    expect(screen.getByText("Showing 10 of 15 packages")).toBeInTheDocument();
   });
 
-  it("shows approximate count information", () => {
+  it("shows approximate count information with custom plural type", () => {
     renderWithProviders(
-      <TokenBasedTablePagination {...defaultProps} isTotalExact={false} />,
+      <TokenBasedTablePagination
+        {...defaultProps}
+        isTotalExact={false}
+        itemType="repository"
+        itemTypePlural="repositories"
+      />,
     );
 
     expect(
-      screen.getByText("Showing 10 of more than 15 items"),
+      screen.getByText("Showing 10 of more than 15 repositories"),
     ).toBeInTheDocument();
   });
 
@@ -109,8 +115,12 @@ describe("TokenBasedTablePagination", () => {
         {...defaultProps}
         hasPreviousPage={false}
         hasNextPage={false}
+        currentItemCount={1}
+        totalItemCount={1}
       />,
     );
+
+    expect(screen.getByText("Showing 1 of 1 item")).toBeInTheDocument();
 
     expect(
       screen.getByRole("button", { name: /previous page/i }),
