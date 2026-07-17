@@ -202,8 +202,8 @@ beforeAll(() => {
 });
 
 afterAll(async () => {
-  await Promise.allSettled(pendingLogs);
   server.close();
+  await Promise.allSettled(pendingLogs);
   restoreRangeBoundingClientRect();
 });
 
