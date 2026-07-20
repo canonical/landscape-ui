@@ -1,6 +1,6 @@
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { API_URL_DEB_ARCHIVE, DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { mirrors as mockMirrors } from "@/tests/mocks/mirrors";
+import { mirrors as mockMirrors, packages } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { createEndpointStatusError } from "./_constants";
@@ -117,9 +117,7 @@ export default [
 
   http.get(
     `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`,
-    async ({ params }) => {
-      await delay();
-
+    async ({ params, request }) => {
       if (shouldApplyEndpointStatus("mirrors/packages")) {
         const endpointStatus = getEndpointStatus("mirrors/packages");
 
@@ -146,11 +144,33 @@ export default [
 
       if (!mirror) {
         return new HttpResponse(null, { status: 404 });
-      } else {
+      }
+
+      const url = new URL(request.url);
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
+      const pageIndex = pageToken * pageSize;
+      const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
+      const hasNextPage = pageIndex + pageSize < packages.length;
+
+      if (mirror.mirrorId === mirrors[4]?.mirrorId) {
         return HttpResponse.json<ListMirrorPackagesResponse>({
-          mirrorPackages: ["package-1", "package-2", "package-3"],
+          mirrorPackages: [],
         });
       }
+
+      if (mirror.mirrorId === mirrors[5]?.mirrorId) {
+        return HttpResponse.json<ListMirrorPackagesResponse>({
+          mirrorPackages: paginatedPackages.slice(0, 1),
+          nextPageToken: undefined,
+        });
+      }
+
+      return HttpResponse.json({
+        mirrorPackages: paginatedPackages,
+        nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,
+      });
     },
   ),
 
