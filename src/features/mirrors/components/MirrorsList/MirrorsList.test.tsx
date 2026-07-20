@@ -3,9 +3,11 @@ import { describe } from "vitest";
 import MirrorsList from "./MirrorsList";
 import { mirrors } from "@/tests/mocks/mirrors";
 import moment from "moment";
-import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
+import { API_URL_DEB_ARCHIVE, DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
+import server from "@/tests/server";
+import { http, HttpResponse } from "msw";
 
 describe("MirrorsList", () => {
   it("renders with data", () => {
@@ -35,6 +37,42 @@ describe("MirrorsList", () => {
     renderWithProviders(<MirrorsList mirrors={[mirror]} />);
 
     expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(5);
+  });
+
+  it("keeps valid statuses when batchGet fails and one operation is missing", async () => {
+    server.use(
+      http.post(`${API_URL_DEB_ARCHIVE}operations\\:batchGet`, () => {
+        return HttpResponse.json(
+          { error: "Operation not found" },
+          { status: 404 },
+        );
+      }),
+    );
+
+    const succeededMirror = mirrors.find(
+      (mirror) => mirror.name === "mirrors/ubuntu-archive-mirror",
+    );
+    const missingOperationMirror = mirrors.find(
+      (mirror) => mirror.name === "mirrors/third-party-mirror",
+    );
+
+    assert(succeededMirror);
+    assert(missingOperationMirror);
+
+    renderWithProviders(
+      <MirrorsList
+        mirrors={[
+          succeededMirror,
+          {
+            ...missingOperationMirror,
+            lastOperation: "operations/does-not-exist",
+          },
+        ]}
+      />,
+    );
+
+    expect(await screen.findByText("Updated")).toBeInTheDocument();
+    expect(await screen.findByText("Not yet updated")).toBeInTheDocument();
   });
 
   describe("pagination", () => {
