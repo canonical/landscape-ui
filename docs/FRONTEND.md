@@ -143,6 +143,31 @@ Because the current repo still contains some domain hooks under `src/hooks/`, tr
 - The build runs `tcm` against `src/**` for SCSS modules, so CSS module type generation must continue to work.
 - Stylelint covers SCSS files in CI, and Prettier checks Markdown and other formatted assets.
 
+## Pragma design system (@canonical/pragma)
+
+Pragma is Canonical's next-generation design system and the successor to vanilla-framework and
+`@canonical/react-components`. The app currently has Pragma's A1 setup in place through
+`@canonical/styles`, `@canonical/react-ds-global`, `@canonical/react-ds-global-form`, and
+`@canonical/ds-assets`; component migration remains incremental, so many surfaces still use vanilla
+and `@canonical/react-components`.
+
+`src/main.tsx` loads the Vanilla SCSS bundle first, then `@canonical/styles`, then
+`@canonical/react-ds-global-form/dist/esm/index.css`. `@canonical/styles` brings in the active
+global design tokens, reset, and typography rules; the form stylesheet provides package-level CSS
+variables for future Pragma form components. These are Vite side-effect imports rather than SCSS
+`@import`s because the package CSS entrypoints resolve correctly from the Vite entrypoint.
+
+Font faces still come from vanilla-framework in this codebase, so there is no separate
+`@canonical/styles/fonts` import at the moment. Pragma icon assets come from
+`@canonical/ds-assets/icons` and are served at `/icons` by `createPragmaIconsPlugin` in
+`vite.config.ts`; production builds copy the same assets to `dist/icons`, and Debian packaging
+includes that directory in the deployed dashboard files.
+
+When migrating components, import non-form components from `@canonical/react-ds-global` and form
+components from `@canonical/react-ds-global-form`. `vitest.config.ts` currently inlines
+`@canonical/react-ds-global` so its side-effect CSS imports are handled by the existing
+`styleMock` alias and its dangling sourcemap references are stripped during tests.
+
 ## Testing
 
 - Follow [testing/index.md](testing/index.md) for the repository testing contract and [verification/index.md](verification/index.md) for completion criteria.

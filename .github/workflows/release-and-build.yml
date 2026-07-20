@@ -225,8 +225,9 @@ jobs:
           VERSION: ${{ needs.process-release.outputs.version }}
         run: |
           # Move pre-built files to root level (matching ppa-build layout
-          # that debian/rules expects: assets/, index.html, favicon.svg at root)
+          # that debian/rules expects: assets/, icons/, index.html, favicon.svg at root)
           cp -r dist/assets .
+          cp -r dist/icons .
           cp dist/index.html dist/favicon.svg .
           rm -rf dist
 
@@ -237,7 +238,7 @@ jobs:
 
           # Create the orig tarball
           tar czf "../landscape-dashboard_${VERSION}.orig.tar.gz" \
-            assets favicon.svg index.html
+            assets favicon.svg index.html icons
 
           # Build the binary .deb (unsigned)
           dpkg-buildpackage -us -uc -b

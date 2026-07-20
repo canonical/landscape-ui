@@ -1,5 +1,10 @@
 /// <reference types="vite/client" />
 
+// Pragma ships CSS-only entrypoints under a bare package name, which the
+// `*.css` ambient glob does not match. Declare them so the side-effect
+// imports in main.tsx type-check.
+declare module "@canonical/styles";
+
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
   readonly VITE_API_URL: string;
