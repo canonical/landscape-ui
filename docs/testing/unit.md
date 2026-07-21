@@ -354,7 +354,7 @@ Use this for units whose behavior changes across breakpoints, such as:
 - table/list layout changes
 - conditional mobile vs desktop controls
 
-The helpers work by mocking `window.matchMedia` against the breakpoints defined in `src/constants.ts`.
+The helpers work by mocking `window.matchMedia` against the breakpoints defined in `src/constants/constants.ts` (re-exported via `@/constants`).
 
 ## Interaction Style
 
