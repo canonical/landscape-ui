@@ -6,7 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
 import RoleList from "@/pages/dashboard/settings/roles/RoleList";
-import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
 const AddRoleForm = lazy(
   () => import("@/pages/dashboard/settings/roles/AddRoleForm"),

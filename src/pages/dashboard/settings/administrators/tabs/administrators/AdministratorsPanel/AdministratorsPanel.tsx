@@ -6,7 +6,7 @@ import EmptyState from "@/components/layout/EmptyState";
 import useAdministrators from "@/hooks/useAdministrators";
 import useSidePanel from "@/hooks/useSidePanel";
 import AdministratorsPanelContent from "@/pages/dashboard/settings/administrators/tabs/administrators/AdministratorsPanelContent";
-import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
 const InviteAdministratorForm = lazy(
   () =>

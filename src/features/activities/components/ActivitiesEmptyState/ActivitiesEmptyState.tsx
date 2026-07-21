@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import EmptyState from "@/components/layout/EmptyState";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/constants";
 
 const ActivitiesEmptyState: FC = () => {
   return (

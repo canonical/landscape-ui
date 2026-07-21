@@ -36,7 +36,7 @@ Add colocated supporting files when the component needs them:
 - `helpers.ts`
 - `types.ts`
 
-When a documentation URL is used in more than one component, place it in `src/documentationUrls/documentationUrls.ts` and import it from there instead of duplicating it in local `constants.ts` files.
+When a documentation URL is used in more than one component, place it in `src/constants/documentationUrls.ts` and import it from `@/constants` instead of duplicating it in local `constants.ts` files. Build all documentation URLs from `EXTERNAL_PATHS.documentation` in `src/libs/routes/external.ts`.
 
 ### Nested `components/` folders
 

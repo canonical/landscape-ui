@@ -7,7 +7,7 @@ import { pendingInstances } from "@/tests/mocks/instance";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { authUser } from "@/tests/mocks/auth";
 import useAuth from "@/hooks/useAuth";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/documentationUrls/documentationUrls";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/constants";
 
 vi.mock("@/hooks/useAuth");
 
