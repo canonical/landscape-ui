@@ -113,11 +113,14 @@ describe("ReportLegendTable", () => {
         rows={rows}
       />,
     );
-    // rowB carries a detail; rowA does not.
-    expect(screen.getByRole("img", { name: "extra context" })).toHaveClass(
-      "p-icon--help",
-    );
-    expect(screen.getAllByRole("img")).toHaveLength(1);
+    // rowB carries a detail; rowA does not. The icon is decorative now, so
+    // assert on the off-screen help text and icon class instead of role="img".
+    expect(
+      screen.getByText("Help", { selector: ".u-off-screen" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Second").closest("tr")?.querySelector(".p-icon--help"),
+    ).toHaveAttribute("aria-hidden", "true");
   });
 
   it("renders a header label for the marker column when given", () => {
