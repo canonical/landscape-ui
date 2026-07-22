@@ -3,6 +3,66 @@
 
 ---
 
+## 26.10.0.1168-beta
+
+### Minor Changes
+
+- Add publishing status for publications
+- Add missing loading states for buttons
+- Remove the Applied column from repository profiles
+- Add tooltip for "Include dependencies in filter" checkbox
+- Add syncing status for mirrors
+- Add exports functionality for instances and activities
+- Redesign instance status, upgrade and tag indicators as accessible labelled pills (colour, icon and text), move the Upgrades column before Status, collapse overflowing table tags behind a counter like statuses, add a dedicated Upgrades filter (security/regular), show a neutral "N/A" pill when upgrades don't apply, and let status, upgrade and tag pills filter the table when clicked. Expanded status/tag cells now collapse when clicking anywhere outside the pop-over, including elsewhere in the same row.
+- Add "available version" column to instance>packages tab with NO_DATA_TEXT
+- Update mirrors and locals package list pagination to show an approximate page count when there are over 1000 packages
+- Replace chart.js pie with pure SVG donut, improve accessibility
+- Add mirror package filter options
+- Add mirror packages tab
+- Design changes and added test coverage for export form
+- Limit usage of disabled submit buttons in side panel forms. Most forms now only disable the submit button while loading, though some flows may still disable it after validation failures (for example, importing repository packages).
+- Add package import status for local repositories
+- Move the theme setting from the account settings sidebar to Account settings > General and add a "System default" option that follows the OS color scheme
+
+### Patch Changes
+
+- Sort the local repositories packages list so it stays consistent
+- Move account name from API credentials to organization settings as a read-only field
+- Show GPG Key in mirrors and publications, unlock publications distribution fields if non-signature-preserving, and lock link type field for publication target
+- Fix API param to remove GPG key. Better options for gpg keys on edit mirror form: users can keep their current key, remove it, or add a new one
+- Add informational text when there are no channels to switch a snap to
+- Rename the Ubuntu Pro mirror token field to "Bearer token", clarify that it is not the Ubuntu Pro subscription token, and mask the entered token
+- Improve test coverage for publications and mirrors
+- Fix pagination for mirrors when number of mirrors is >20
+- Remove search chips from appearing when performing a search
+- Fix "Include dependencies in filter" checkbox
+- Fix instances page actions grouping so it doesn't overflow horizontally
+- Include empty Associated Publications table in Publication Targets
+- Disable autocomplete suggestions for AWS access key ID and keep password manager suggestions for secrets and passwords
+- Fix new tab link security issue and dark mode text contrast for password constraints
+- Fix success notification timing out too early and not updating properly
+- Fix external link icon styling
+- Add gpg key fingerprint to sources table on repo profiles, fix PUT param empty string replacement
+- Fix empty state spacing and links that used to be buttons
+- Allow selection of more than one architecture when creating a publication
+- Clear package filter field in add mirror form when preserve signatures is checked
+- Send mirrorType when creating mirrors and improve source-type/authentication inference for legacy mirrors
+- Fixed a grammar mistake in the Search Help Popup on the Instances page.
+- Disable snap switch channel button when there are no available channels to switch to
+- Added empty state for instances and fixed broken link in scripts page
+- Add preserve signatures field to mirror add / edit forms and details view.
+- Fix profiles sidepanels cancel and close behavior to be consistent with new design
+- Make publication automatic installs and upgrades settings less confusing
+- Fix Ubuntu Pro mirror archive root
+- Automatically publishes a new publication and adds cleanup of older packages on publishing
+- Make the behavior of adding a publication and publishing a mirror or local to a new publication consistent
+- Collapse table header action buttons and filters on medium screens so the search bar stays visible in the WSL, Activities and Processes views
+- Make repositories success notifications consistent and add link to update mirror from creation
+- Fix styling for Autoinstall files side panel
+- Keyboard a11y and arrow-key navigation for saved-searches dropdown
+- Add a message for when scripts search returns no results.
+- Standardize publications settings behavior and adjust other publication fields
+
 ## 26.10.0.1081-beta
 
 ### Minor Changes
