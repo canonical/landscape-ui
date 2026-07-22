@@ -1,6 +1,7 @@
 import FileInput from "@/components/form/FileInput";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
 import LabelWithDescription from "@/components/layout/LabelWithDescription";
+import { getFormikError } from "@/utils/formikErrors";
 import { CustomSelect, Notification } from "@canonical/react-components";
 import type { FormikContextType } from "formik";
 import {
@@ -134,6 +135,7 @@ export default function useUsgProfileFormBenchmarkStep<
           ]}
           value={formik.values.benchmark ?? ""}
           onChange={async (value) => formik.setFieldValue("benchmark", value)}
+          error={getFormikError(formik, "benchmark")}
           required
           searchable="never"
         />
@@ -178,6 +180,7 @@ export default function useUsgProfileFormBenchmarkStep<
           ]}
           value={formik.values.mode ?? ""}
           onChange={async (value) => formik.setFieldValue("mode", value)}
+          error={getFormikError(formik, "mode")}
           required
         />
 

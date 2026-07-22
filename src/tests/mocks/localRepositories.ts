@@ -4,33 +4,53 @@ export const repositories = [
   {
     name: "locals/aaaa-bbbb-cccc",
     localId: "aaaa-bbbb-cccc",
-    defaultComponent: "component 1",
-    displayName: "repo 1",
-    defaultDistribution: "distribution 1",
+    displayName: "Local with no description",
+    defaultComponent: "main",
+    defaultDistribution: "noble",
+    lastOperation: "operations/ssss-cccc-dddd",
+    lastImportTime: new Date("2024-06-01T12:00:00Z"),
   },
   {
     name: "locals/bbbb-cccc-dddd",
     localId: "bbbb-cccc-dddd",
-    displayName: "repo 2",
-    comment: "repo 2 description",
-    defaultComponent: "component 2",
-    defaultDistribution: "distribution 2",
+    displayName: "In progress import local",
+    comment: "local with a package import in progress",
+    defaultComponent: "universe",
+    defaultDistribution: "noble",
+    lastOperation: "operations/pppp-gggg-ssss",
+    lastImportTime: new Date("2024-06-02T12:00:00Z"),
   },
   {
     name: "locals/cccc-dddd-eeee",
     localId: "cccc-dddd-eeee",
-    displayName: "repo 3",
-    comment: "repo 3 description",
-    defaultDistribution: "distribution 3",
-    defaultComponent: "component 3",
+    displayName: "Failed import local",
+    comment: "local with failed package import",
+    defaultDistribution: "focal",
+    defaultComponent: "main",
+    lastOperation: "operations/ffff-llll-dddd",
+    lastImportTime: new Date("2024-06-03T12:00:00Z"),
+  },
+  {
+    name: "locals/dddd-eeee-ffff",
+    localId: "dddd-eeee-ffff",
+    displayName: "LRO not found local",
+    comment: "local with an invalid last operation reference",
+    defaultDistribution: "jammy",
+    defaultComponent: "main",
+    lastOperation: "operations/non-existent-operation",
+    lastImportTime: new Date("2024-06-04T12:00:00Z"),
+  },
+  {
+    name: "locals/eeee-ffff-gggg",
+    localId: "eeee-ffff-gggg",
+    displayName: "No imports local",
+    comment: "local with no package import attempts",
+    defaultDistribution: "noble",
+    defaultComponent: "multiverse",
   },
 ] as const satisfies Local[];
 
-export const paginatedPackages = Array.from(
+export const packages = Array.from(
   { length: 25 },
   (_, i) => `package-${i + 1}`,
-);
-
-export const sortedPackages = paginatedPackages.toSorted((a, b) =>
-  a.localeCompare(b),
 );

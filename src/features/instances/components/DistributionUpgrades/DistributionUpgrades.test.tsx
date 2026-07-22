@@ -11,17 +11,48 @@ import { renderWithProviders } from "@/tests/render";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 
+const EXCLUDED_INSTANCE_ID_A = 11;
+const EXCLUDED_INSTANCE_ID_B = 21;
+const EXCLUDED_INSTANCE_ID_C = 65;
+
+const EXCLUDED_INSTANCE_IDS = [
+  EXCLUDED_INSTANCE_ID_A,
+  EXCLUDED_INSTANCE_ID_B,
+  EXCLUDED_INSTANCE_ID_C,
+];
+
 const eligibleSelectedInstances = instances
   .filter((instance) => instance.has_release_upgrades)
   .map((instance) => instance.id);
+
 const ineligibleSelectedInstances = instances
-  .filter(
-    (instance) =>
-      !(
-        instance.distribution_info &&
-        instance.distribution_info.release < "18.04"
-      ),
-  )
+  .filter((instance) => {
+    const release = instance.distribution_info?.release;
+    const distributor = instance.distribution_info?.distributor;
+
+    if (!instance.distribution_info) {
+      return true;
+    }
+
+    if (distributor === "Ubuntu Core") {
+      return true;
+    }
+
+    if (distributor !== "Canonical" && distributor !== "Ubuntu") {
+      return true;
+    }
+
+    if (EXCLUDED_INSTANCE_IDS.includes(instance.id)) {
+      return true;
+    }
+
+    // Only compare release if defined
+    if (release === undefined) {
+      return true;
+    }
+
+    return !(release < "18.04" || release === "22.04");
+  })
   .map((instance) => instance.id);
 
 const props = {
@@ -111,6 +142,37 @@ describe("DistributionUpgrades", () => {
     expect(
       screen.getByRole("columnheader", { name: /reason/i }),
     ).toBeInTheDocument();
+  });
+
+  it("keeps submit enabled and blocks confirmation when no eligible instances", async () => {
+    renderWithProviders(
+      <DistributionUpgrades
+        selectedInstances={ineligibleSelectedInstances.slice(0, 3)}
+      />,
+    );
+
+    await expectLoadingState();
+
+    const submitButton = screen.getByRole("button", {
+      name: /upgrade distributions/i,
+    });
+    expect(submitButton).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(submitButton);
+
+    expect(
+      await screen.findByText(
+        /select at least one eligible instance to upgrade/i,
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(/upgrade distributions for \d+ instances/i),
+    ).not.toBeInTheDocument();
+
+    expect(
+      screen.queryByRole("button", { name: /confirm/i }),
+    ).not.toBeInTheDocument();
   });
 });
 

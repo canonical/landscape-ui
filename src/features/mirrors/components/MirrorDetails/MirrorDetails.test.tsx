@@ -1,5 +1,5 @@
 import { renderWithProviders } from "@/tests/render";
-import { describe, expect } from "vitest";
+import { assert, beforeEach, describe, expect, it } from "vitest";
 import MirrorDetails from "./MirrorDetails";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { Suspense } from "react";
@@ -11,11 +11,16 @@ import type { Mirror } from "@canonical/landscape-openapi";
 import { API_URL_DEB_ARCHIVE } from "@/constants";
 import server from "@/tests/server";
 import { http, HttpResponse } from "msw";
+import { setEndpointStatus } from "@/tests/controllers/controller";
 
 const typedMirrors = mirrors as Mirror[];
 
 describe("MirrorDetails", () => {
-  it("renders", async () => {
+  beforeEach(() => {
+    setEndpointStatus("default");
+  });
+
+  it("renders the mirror display name once loaded", async () => {
     renderWithProviders(
       <Suspense fallback={<LoadingState />}>
         <MirrorDetails />
@@ -202,6 +207,55 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
+  it("opens no publication targets modal when publish is clicked with no targets", async () => {
+    const user = userEvent.setup();
+
+    setEndpointStatus({ status: "empty", path: "publicationTargets" });
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrors[0].name}`,
+    );
+
+    await expectLoadingState();
+
+    await user.click(await screen.findByRole("button", { name: "Publish" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "No publication targets have been added",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows disabled updating action while last operation is in progress", async () => {
+    const mirrorWithInProgressOperation = typedMirrors.find(
+      ({ lastOperation }) => lastOperation?.includes("pppp-gggg-ssss"),
+    );
+    assert(
+      mirrorWithInProgressOperation,
+      "Missing mock mirror with an in-progress operation",
+    );
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrorWithInProgressOperation.name}`,
+    );
+
+    await expectLoadingState();
+
+    const updatingButton = await screen.findByRole("button", {
+      name: "Updating",
+    });
+    expect(updatingButton).toHaveAttribute("aria-disabled", "true");
+  });
+
   it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {
     const legacyMirror = { ...mirrors[2], mirrorType: undefined };
 
@@ -238,10 +292,34 @@ describe("MirrorDetails", () => {
       `?name=${mirrors[0].name}&updateModal=true`,
     );
 
+    await expectLoadingState();
+
     expect(
       await screen.findByRole("heading", {
         name: `Update ${mirrors[0].displayName}`,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("renders mirror details for a mirror with preserve signatures disabled", async () => {
+    const mirrorWithoutPreserveSignatures = mirrors.find(
+      ({ preserveSignatures }) => !preserveSignatures,
+    );
+
+    assert(mirrorWithoutPreserveSignatures);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${mirrorWithoutPreserveSignatures.name}`,
+    );
+
+    await expectLoadingState();
+
+    const label = screen.getByText("Preserve upstream signing key");
+    expect(label).toBeInTheDocument();
+    expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
   });
 });

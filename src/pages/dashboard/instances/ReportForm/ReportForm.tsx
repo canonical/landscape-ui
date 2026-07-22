@@ -6,28 +6,7 @@ import * as Yup from "yup";
 import SidePanelFormButtons from "@/components/form/SidePanelFormButtons";
 import classes from "./ReportForm.module.scss";
 import { getFormikError } from "@/utils/formikErrors";
-
-const downloadCSV = (csvString: string, filename: string) => {
-  // Create blob from string
-  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-
-  // Create URL for blob
-  const url = URL.createObjectURL(blob);
-
-  // Create link element
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-
-  // Append link to body
-  document.body.appendChild(link);
-
-  // Programmatically click the link to start download
-  link.click();
-
-  // Clean up by removing the link
-  document.body.removeChild(link);
-};
+import { downloadBlob } from "@/utils/browserDownload";
 
 interface ReportFormProps {
   readonly instanceIds: number[];
@@ -48,7 +27,12 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
     }),
     // todo: figure out how to use form values to submit
     onSubmit: () => {
-      downloadCSV(getCsvComplianceDataResult?.data || "", "report.csv");
+      downloadBlob(
+        new Blob([getCsvComplianceDataResult?.data || ""], {
+          type: "text/csv;charset=utf-8;",
+        }),
+        "report.csv",
+      );
     },
   });
 
@@ -72,10 +56,7 @@ const ReportForm: FC<ReportFormProps> = ({ instanceIds }) => {
         <span>Days</span>
       </div>
 
-      <SidePanelFormButtons
-        submitButtonDisabled={false}
-        submitButtonText="Download"
-      />
+      <SidePanelFormButtons submitButtonText="Download" />
     </Form>
   );
 };

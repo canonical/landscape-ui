@@ -38,6 +38,9 @@ interface InstanceListProps {
   readonly selectedInstances: Instance[];
   readonly setColumnFilterOptions: (options: ColumnFilterOption[]) => void;
   readonly setSelectedInstances: (instances: Instance[]) => void;
+  readonly isAllSelected: boolean;
+  readonly onSelectAll: () => void;
+  readonly onClearSelection: () => void;
 }
 
 const InstanceList = memo(function InstanceList({
@@ -46,6 +49,9 @@ const InstanceList = memo(function InstanceList({
   selectedInstances,
   setColumnFilterOptions,
   setSelectedInstances,
+  isAllSelected,
+  onSelectAll,
+  onClearSelection,
 }: InstanceListProps) {
   const { disabledColumns, ...filters } = usePageParams();
   const {
@@ -116,22 +122,13 @@ const InstanceList = memo(function InstanceList({
     [activeUpgrades, collapse, setPageParams],
   );
 
-  const isFilteringInstances = Object.values(filters).some((filter) => {
-    if (typeof filter === "string") {
-      return filter.length > 0;
-    } else if (Array.isArray(filter)) {
-      return filter.length > 0;
-    }
-
-    return false;
-  });
-
   const isSelected = useCallback(
     (instance: Instance) =>
+      isAllSelected ||
       selectedInstances.some(
         (selectedInstance) => selectedInstance.id === instance.id,
       ),
-    [selectedInstances],
+    [isAllSelected, selectedInstances],
   );
 
   const isNotSelected = useCallback(
@@ -158,17 +155,20 @@ const InstanceList = memo(function InstanceList({
     [setSelectedInstances, selectedInstances],
   );
 
-  const selectAll = useCallback(() => {
-    select(...currentInstances.filter(isNotSelected));
-  }, [currentInstances, select, isNotSelected]);
-
   const toggleAll = useCallback(() => {
-    if (currentInstances.some(isSelected)) {
-      deselect(...currentInstances);
+    if (isAllSelected || currentInstances.some(isSelected)) {
+      onClearSelection();
     } else {
-      selectAll();
+      select(...currentInstances.filter(isNotSelected));
     }
-  }, [deselect, selectAll, currentInstances, isSelected]);
+  }, [
+    isAllSelected,
+    onClearSelection,
+    select,
+    currentInstances,
+    isSelected,
+    isNotSelected,
+  ]);
 
   const columns = useMemo<InstanceColumn[]>(
     () => [
@@ -208,7 +208,9 @@ const InstanceList = memo(function InstanceList({
                 labelClassName="u-no-margin--bottom u-no-padding--top"
                 checked={isSelected(row.original)}
                 onChange={() => {
-                  if (isSelected(row.original)) {
+                  if (isAllSelected) {
+                    onClearSelection();
+                  } else if (isSelected(row.original)) {
                     deselect(row.original);
                   } else {
                     select(row.original);
@@ -351,7 +353,7 @@ const InstanceList = memo(function InstanceList({
         },
       },
       {
-        accessor: "last_ping",
+        accessor: "last_ping_time",
         canBeHidden: true,
         optionLabel: "Last ping",
         Header: "Last ping time",
@@ -382,9 +384,11 @@ const InstanceList = memo(function InstanceList({
       titleId,
       isSelected,
       isNotSelected,
+      isAllSelected,
       select,
       deselect,
       toggleAll,
+      onClearSelection,
     ],
   );
 
@@ -401,39 +405,47 @@ const InstanceList = memo(function InstanceList({
     [disabledColumns, columns],
   );
 
-  const clearSelection = () => {
-    setSelectedInstances([]);
-  };
-
-  const subhead = !!selectedInstances.length &&
+  const showSubhead =
+    (isAllSelected || !!selectedInstances.length) &&
     instanceCount !== undefined &&
-    instanceCount > currentInstances.length && (
+    instanceCount > currentInstances.length;
+
+  const subhead = showSubhead && (
+    <tr>
       <td colSpan={filteredColumns.length} className="u-no-padding">
         <div className={classes.subhead}>
           <span>
-            {selectedInstances.length} of {instanceCount} instances selected
+            {isAllSelected
+              ? `All ${instanceCount} instances selected`
+              : `${selectedInstances.length} of ${instanceCount} instances selected`}
           </span>
           <div className={classes.buttons}>
+            {!isAllSelected && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={onSelectAll}
+              >
+                Select all {instanceCount} instances
+              </Button>
+            )}
             <Button
               className="u-no-padding u-no-margin"
               appearance="link"
-              onClick={clearSelection}
+              onClick={onClearSelection}
             >
               Clear selection
             </Button>
           </div>
         </div>
       </td>
-    );
+    </tr>
+  );
 
   return (
     <ResponsiveTable
       subhead={subhead}
-      emptyMsg={
-        isFilteringInstances
-          ? "No instances found according to your search parameters."
-          : "No instances found"
-      }
+      emptyMsg="No instances found according to your search parameters."
       ref={getTableRowsRef}
       columns={filteredColumns}
       data={currentInstances}

@@ -7,9 +7,8 @@ import usePageParams from "@/hooks/usePageParams";
 import { getFormikError } from "@/utils/formikErrors";
 import { ActionButton, Form, Input } from "@canonical/react-components";
 import { useFormik } from "formik";
-import { useGetPageLocalRepository } from "../../api/useGetPageLocalRepository";
+import { useGetLocalRepository, useImportRepositoryPackages } from "../../api";
 import * as Yup from "yup";
-import { useImportRepositoryPackages } from "../../api/useImportRepositoryPackages";
 import { useGetOperation } from "@/features/operations";
 import classes from "./ImportRepositoryPackagesSidePanel.module.scss";
 import { pluralize } from "@/utils/_helpers";
@@ -17,14 +16,13 @@ import type { OperationStatus } from "@/features/operations";
 import type { PackagesValidationState } from "../../types";
 import { getPackageList } from "./helpers";
 import ValidationResult from "./ValidationResult/ValidationResult";
-
-const POLL_INTERVAL = 2000;
+import { DEFAULT_POLLING_INTERVAL } from "@/constants";
 
 const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { popSidePathUntilClear, name, closeSidePanel } = usePageParams();
-  const { repository, isGettingRepository } = useGetPageLocalRepository();
+  const repository = useGetLocalRepository(name);
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =
     useImportRepositoryPackages();
@@ -36,7 +34,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const { operation } = useGetOperation(operationName, {
     enabled: isPolling,
     refetchInterval: ({ state }) =>
-      state.data?.data?.done ? false : POLL_INTERVAL,
+      state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
 
   const getTaskStatus = (): PackagesValidationState | undefined => {
@@ -81,15 +79,19 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     initialValues: { source: "" },
     onSubmit: handleSubmit,
     validationSchema: Yup.object().shape({
-      source: Yup.string().required("This field is required."),
+      source: Yup.string()
+        .required("This field is required.")
+        .matches(/^(https?|file):\/\/.+/, "Please enter a valid URL."),
     }),
   });
 
-  if (isGettingRepository) {
-    return <SidePanel.LoadingState />;
-  }
-
   const handleValidate = async () => {
+    const errors = await formik.validateForm();
+    if (!formik.values.source || errors.source) {
+      formik.setFieldTouched("source", true);
+      return;
+    }
+
     try {
       setOperationName("");
 
@@ -105,14 +107,14 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     }
   };
 
-  const canImport =
-    validationTask?.error?.code === 4 ||
-    (validationTask?.status === "succeeded" && !!validationTask.count);
-
   const packagesCount =
     validationTask && validationTask.count > 0
       ? pluralize(validationTask.count, ["package"], "exact")
       : "packages";
+
+  const shouldDisableImportButton =
+    (!!validationTask?.error && validationTask.error.code !== 4) ||
+    (validationTask?.status === "succeeded" && validationTask?.count === 0);
 
   return (
     <>
@@ -130,6 +132,11 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
               help={
                 "In order to upload packages, provide a URL for Landscape to fetch the packages from."
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                }
+              }}
             />
 
             <ActionButton
@@ -152,7 +159,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
           )}
 
           <SidePanelFormButtons
-            submitButtonDisabled={!canImport}
+            submitButtonDisabled={shouldDisableImportButton}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText={`Import ${packagesCount}`}
             onCancel={popSidePathUntilClear}

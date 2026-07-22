@@ -168,7 +168,7 @@ const AddPublicationTargetForm: FC = () => {
         <FilesystemFields formik={formik} />
       )}
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Add publication target"
         onCancel={closeSidePanel}
       />

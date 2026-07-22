@@ -27,6 +27,9 @@ interface ActivitiesProps {
   readonly selectedActivities: ActivityCommon[];
   readonly setSelectedActivities: (activities: ActivityCommon[]) => void;
   readonly instanceId?: number;
+  readonly isAllSelected?: boolean;
+  readonly onSelectAll?: () => void;
+  readonly onClearSelection?: () => void;
 }
 
 const Activities: FC<ActivitiesProps> = ({
@@ -36,6 +39,9 @@ const Activities: FC<ActivitiesProps> = ({
   isGettingActivities,
   selectedActivities,
   setSelectedActivities,
+  isAllSelected = false,
+  onSelectAll,
+  onClearSelection,
 }) => {
   const handleActivityDetailsOpen = useOpenActivityDetailsPanel();
 
@@ -44,15 +50,33 @@ const Activities: FC<ActivitiesProps> = ({
   useOpenActivityDetails(handleActivityDetailsOpen);
 
   const handleClearSelection = useCallback(() => {
-    setSelectedActivities([]);
-  }, [setSelectedActivities]);
+    if (onClearSelection) {
+      onClearSelection();
+    } else {
+      setSelectedActivities([]);
+    }
+  }, [setSelectedActivities, onClearSelection]);
 
   const toggleAll = useCallback(() => {
-    setSelectedActivities(selectedActivities.length !== 0 ? [] : activities);
-  }, [activities, selectedActivities, setSelectedActivities]);
+    if (isAllSelected || selectedActivities.length !== 0) {
+      handleClearSelection();
+    } else {
+      setSelectedActivities(activities);
+    }
+  }, [
+    activities,
+    isAllSelected,
+    selectedActivities,
+    setSelectedActivities,
+    handleClearSelection,
+  ]);
 
   const handleToggleActivity = useCallback(
     (activity: ActivityCommon) => {
+      if (isAllSelected) {
+        handleClearSelection();
+        return;
+      }
       setSelectedActivities(
         selectedActivities.includes(activity)
           ? selectedActivities.filter(
@@ -61,7 +85,12 @@ const Activities: FC<ActivitiesProps> = ({
           : [...selectedActivities, activity],
       );
     },
-    [selectedActivities, setSelectedActivities],
+    [
+      isAllSelected,
+      selectedActivities,
+      setSelectedActivities,
+      handleClearSelection,
+    ],
   );
 
   const columns = useMemo<Column<ActivityCommon>[]>(
@@ -77,10 +106,12 @@ const Activities: FC<ActivitiesProps> = ({
                 inline
                 onChange={toggleAll}
                 checked={
-                  activities.length > 0 &&
-                  selectedActivities.length === activities.length
+                  isAllSelected ||
+                  (activities.length > 0 &&
+                    selectedActivities.length === activities.length)
                 }
                 indeterminate={
+                  !isAllSelected &&
                   selectedActivities.length > 0 &&
                   selectedActivities.length < activities.length
                 }
@@ -97,7 +128,9 @@ const Activities: FC<ActivitiesProps> = ({
                 }
                 inline
                 labelClassName="u-no-margin--bottom u-no-padding--top"
-                checked={selectedActivities.includes(row.original)}
+                checked={
+                  isAllSelected || selectedActivities.includes(row.original)
+                }
                 onChange={() => {
                   handleToggleActivity(row.original);
                 }}
@@ -167,6 +200,7 @@ const Activities: FC<ActivitiesProps> = ({
       ].filter((col) => !instanceId || col.accessor !== "computer_id"),
     [
       activities,
+      isAllSelected,
       selectedActivities,
       toggleAll,
       handleToggleActivity,
@@ -176,11 +210,52 @@ const Activities: FC<ActivitiesProps> = ({
     ],
   );
 
+  const showSubhead =
+    onSelectAll &&
+    (isAllSelected || selectedActivities.length > 0) &&
+    activityCount !== undefined &&
+    activityCount > activities.length;
+
+  const subhead = showSubhead ? (
+    <tr>
+      <td colSpan={columns.length} className="u-no-padding">
+        <div className={classes.subhead}>
+          <span>
+            {isAllSelected
+              ? `All ${activityCount} activities selected`
+              : `${selectedActivities.length} of ${activityCount} activities selected`}
+          </span>
+          <div className={classes.buttons}>
+            {!isAllSelected && onSelectAll && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={onSelectAll}
+              >
+                Select all {activityCount} activities
+              </Button>
+            )}
+            {onClearSelection && (
+              <Button
+                className="u-no-padding u-no-margin"
+                appearance="link"
+                onClick={onClearSelection}
+              >
+                Clear selection
+              </Button>
+            )}
+          </div>
+        </div>
+      </td>
+    </tr>
+  ) : undefined;
+
   return (
     <>
       <ActivitiesHeader
         resetSelectedIds={handleClearSelection}
         selected={selectedActivities}
+        isAllSelected={isAllSelected}
       />
       {isGettingActivities ? (
         <LoadingState />
@@ -190,6 +265,7 @@ const Activities: FC<ActivitiesProps> = ({
           columns={columns}
           data={activities}
           minWidth={1150}
+          subhead={subhead}
         />
       )}
       <TablePagination

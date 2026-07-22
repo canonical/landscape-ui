@@ -26,6 +26,9 @@ const props: ComponentProps<typeof InstanceList> = {
   setColumnFilterOptions: vi.fn(),
   setSelectedInstances: vi.fn(),
   instanceCount: instances.length,
+  isAllSelected: false,
+  onSelectAll: vi.fn(),
+  onClearSelection: vi.fn(),
 };
 
 describe("InstanceList", () => {
@@ -116,7 +119,7 @@ describe("InstanceList", () => {
     });
     await userEvent.click(toggleAllCheckbox);
 
-    expect(props.setSelectedInstances).toHaveBeenCalledWith([]);
+    expect(props.onClearSelection).toHaveBeenCalled();
 
     rerender(<InstanceList {...props} selectedInstances={[]} />);
     const checkedCheckboxes = screen.queryAllByRole("checkbox", {

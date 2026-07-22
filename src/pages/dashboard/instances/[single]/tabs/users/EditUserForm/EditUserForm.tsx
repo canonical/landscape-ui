@@ -222,7 +222,7 @@ const EditUserForm: FC<EditUserFormProps> = ({ user }) => {
         {...formik.getFieldProps("workPhoneNumber")}
       />
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

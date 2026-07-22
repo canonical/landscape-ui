@@ -100,7 +100,7 @@ const SwitchSnapForm: FC<SwitchSnapFormProps> = ({
       <SidePanelFormButtons
         submitButtonText="Switch"
         submitButtonAppearance="positive"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );

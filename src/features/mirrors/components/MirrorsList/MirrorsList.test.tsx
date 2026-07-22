@@ -29,11 +29,12 @@ describe("MirrorsList", () => {
       ...mirrors[0],
       name: undefined,
       lastDownloadDate: undefined,
+      distribution: undefined,
     };
 
     renderWithProviders(<MirrorsList mirrors={[mirror]} />);
 
-    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(4);
+    expect(screen.getAllByText(NO_DATA_TEXT)).toHaveLength(5);
   });
 
   describe("pagination", () => {

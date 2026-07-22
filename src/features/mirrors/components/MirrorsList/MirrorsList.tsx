@@ -1,8 +1,5 @@
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import {
-  DEFAULT_POLLING_INTERVAL,
-  DISPLAY_DATE_TIME_FORMAT,
-} from "@/constants";
+import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Mirror } from "@canonical/landscape-openapi";
 import { Button } from "@canonical/react-components";
 import moment from "moment";
@@ -14,13 +11,10 @@ import usePageParams from "@/hooks/usePageParams";
 import MirrorPackagesCount from "../MirrorPackagesCount";
 import MirrorActions from "../MirrorActions";
 import LoadingState from "@/components/layout/LoadingState";
-import {
-  useBatchGetOperations,
-  OperationStatusCell,
-  getOperationStatusIcon,
-} from "@/features/operations";
+import { OperationStatusCell, OperationProvider } from "@/features/operations";
 import { TablePagination } from "@/components/layout/TablePagination";
 import { AssociatedPublicationsCount } from "@/features/publications";
+import classes from "./MirrorsList.module.scss";
 
 interface MirrorsListProps {
   readonly mirrors: Mirror[];
@@ -35,25 +29,18 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
     [mirrors, currentPage, pageSize],
   );
 
-  const operationNames = mirrors
-    .filter((mirror) => mirror.lastOperation)
-    .map((mirror) => mirror.lastOperation ?? "");
-
-  const { operations, isGettingOperations } = useBatchGetOperations(
-    operationNames,
-    {
-      refetchInterval: ({ state }) =>
-        Object.values(state.data ?? {}).some((operation) => !operation.done)
-          ? DEFAULT_POLLING_INTERVAL
-          : false,
-    },
+  const operationNames = useMemo(
+    () =>
+      pagedMirrors
+        .map((mirror) => mirror.lastOperation)
+        .filter((operationName): operationName is string => !!operationName),
+    [pagedMirrors],
   );
 
   const columns = useMemo<Column<Mirror>[]>(
     () => [
       {
         Header: "Mirror name",
-        className: "large-cell",
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
           <Button
             type="button"
@@ -70,26 +57,17 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Status",
-        className: "large-cell",
-        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          const operation = operations[mirror.lastOperation ?? ""];
-          return (
-            <OperationStatusCell
-              isGettingOperation={isGettingOperations}
-              operation={operation}
-              type="mirror"
-            />
-          );
-        },
-        getCellIcon: ({ row: { original: mirror } }: CellProps<Mirror>) => {
-          // eslint-disable-next-line react/prop-types
-          const operation = operations[mirror.lastOperation ?? ""];
-          return getOperationStatusIcon(operation);
-        },
+        className: `${classes.status} p-table__cell--icon-placeholder`,
+        Cell: ({ row: { original: mirror } }: CellProps<Mirror>) => (
+          <OperationStatusCell
+            operationName={mirror.lastOperation}
+            type="mirror"
+          />
+        ),
       },
       {
         Header: "Last update",
-        className: "medium-cell",
+        className: classes.datetime,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.lastDownloadDate ? (
             moment(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT)
@@ -99,11 +77,13 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Distribution",
+        className: classes.distribution,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.distribution ?? <NoData />,
       },
       {
         Header: "Packages",
+        className: classes.count,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
             <MirrorPackagesCount mirrorName={mirror.name} />
@@ -113,6 +93,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
       },
       {
         Header: "Publications",
+        className: classes.count,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
           mirror.name ? (
             <AssociatedPublicationsCount sourceName={mirror.name} />
@@ -129,6 +110,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
               <MirrorActions
                 mirrorDisplayName={mirror.displayName}
                 mirrorName={mirror.name}
+                operationName={mirror.lastOperation}
               />
             </Suspense>
           ) : (
@@ -136,25 +118,25 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
           ),
       },
     ],
-    [createPageParamsSetter, isGettingOperations, operations],
+    [createPageParamsSetter],
   );
 
   return (
-    <>
+    <OperationProvider operationNames={operationNames}>
       <ResponsiveTable
         columns={columns}
         data={pagedMirrors}
         emptyMsg={
           emptyMsg ?? "No mirrors found according to your search parameters."
         }
-        minWidth={1150}
+        minWidth={1120}
       />
       <TablePagination
         totalItems={mirrors.length}
         currentItemCount={pagedMirrors.length}
         pageSizeLabel="Mirrors per page"
       />
-    </>
+    </OperationProvider>
   );
 };
 

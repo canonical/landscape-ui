@@ -10,6 +10,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { UrlParams } from "@/types/UrlParams";
+import { getFormikError } from "@/utils/formikErrors";
 import { Col, Form, Row, Select } from "@canonical/react-components";
 import type { AxiosResponse } from "axios";
 import { useFormik } from "formik";
@@ -50,14 +51,17 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
   const instanceId = Number(childInstanceId ?? urlInstanceId);
 
+  const [firstPackage] = packages;
+  const hasPackageForDowngrade = !!firstPackage;
+
   const { data: getDowngradePackageVersionsQueryResult } =
     getDowngradePackageVersionsQuery(
       {
         instanceId,
-        packageName: packages[0]!.name,
+        packageName: firstPackage?.name ?? "",
       },
       {
-        enabled: action === "downgrade",
+        enabled: action === "downgrade" && hasPackageForDowngrade,
       },
     );
 
@@ -103,9 +107,17 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
         query: `id:${instanceId}`,
       });
     } else if (action === "downgrade") {
+      if (!firstPackage) {
+        notify.error({
+          title: "No package selected",
+          message: "Select a package before attempting to downgrade.",
+        });
+        return;
+      }
+
       promise = downgradePackageVersion({
         instanceId,
-        package_name: packages[0]!.name,
+        package_name: firstPackage.name,
         package_version: values.version,
       });
     } else {
@@ -151,7 +163,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
           <Col size={6}>
             <InfoItem
               label="Current version"
-              value={packages[0]!.current_version}
+              value={firstPackage?.current_version ?? ""}
             />
           </Col>
           <Col size={6}>
@@ -162,6 +174,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
                 labelClassName="p-text--small u-text--muted u-no-margin--bottom p-text--small-caps"
                 {...formik.getFieldProps("version")}
                 options={downgradeOptions}
+                error={getFormikError(formik, "version")}
               />
             ) : (
               <p>No downgrade versions</p>
@@ -190,7 +203,7 @@ const InstalledPackagesActionForm: FC<InstalledPackagesActionFormProps> = ({
 
       {(action !== "downgrade" || downgradeOptions.length > 1) && (
         <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
+          submitButtonLoading={formik.isSubmitting}
           submitButtonText={INSTALLED_PACKAGE_ACTIONS[action].label}
           submitButtonAppearance={INSTALLED_PACKAGE_ACTIONS[action].appearance}
         />

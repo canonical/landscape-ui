@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
-import { afterEach } from "vitest";
+import { afterEach, vi } from "vitest";
 import InstancesContainer from "./InstancesContainer";
 import { ubuntuInstance } from "@/tests/mocks/instance";
 
@@ -11,11 +11,14 @@ const props: Omit<
   ComponentProps<typeof InstancesContainer>,
   "setSelectedInstances"
 > = {
-  instances: [],
-  instanceCount: 0,
+  instances: [ubuntuInstance],
+  instanceCount: 1,
   isGettingInstances: false,
   selectedInstances: [],
   onChangeFilter: vi.fn(),
+  isAllSelected: false,
+  onSelectAll: vi.fn(),
+  onClearSelection: vi.fn(),
 };
 
 const columns = [
@@ -105,10 +108,14 @@ describe("InstancesContainer", () => {
         screen.getByRole("columnheader", { name: label }),
       ).toBeInTheDocument();
 
-      if (canBeHidden) {
-        expect(screen.getByLabelText(checkboxLabel)).toBeEnabled();
+      const checkbox = screen.getByRole("checkbox", {
+        name: checkboxLabel,
+      });
 
-        await userEvent.click(screen.getByLabelText(checkboxLabel));
+      if (canBeHidden) {
+        expect(checkbox).toBeEnabled();
+
+        await userEvent.click(checkbox);
 
         selectedColumnCount -= 1;
 
@@ -116,7 +123,7 @@ describe("InstancesContainer", () => {
           screen.queryByRole("columnheader", { name: label }),
         ).not.toBeInTheDocument();
       } else {
-        expect(screen.getByLabelText(checkboxLabel)).toBeDisabled();
+        expect(checkbox).toBeDisabled();
       }
 
       expect(
@@ -169,5 +176,95 @@ describe("InstancesContainer", () => {
 
     expect(setSelectedInstances).toHaveBeenCalledTimes(1);
     expect(setSelectedInstances).toHaveBeenCalledWith([mockInstance]);
+  });
+
+  it("shows loading state while instances are loading", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={undefined}
+        isGettingInstances
+        setSelectedInstances={() => undefined}
+      />,
+    );
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
+
+  it("shows empty state when there are no instances and not loading", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isGettingInstances={false}
+        setSelectedInstances={() => undefined}
+      />,
+    );
+
+    expect(screen.getByText("No instances found")).toBeInTheDocument();
+  });
+
+  it("shows table empty message for filtered empty results", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isGettingInstances={false}
+        setSelectedInstances={() => undefined}
+      />,
+      undefined,
+      "/instances?query=random-filter",
+    );
+
+    expect(
+      screen.getByText(
+        "No instances found according to your search parameters.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+  });
+
+  it("shows table empty message when only upgrades filter is active", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isGettingInstances={false}
+        setSelectedInstances={() => undefined}
+      />,
+      undefined,
+      "/instances?upgrades=security-upgrades",
+    );
+
+    expect(
+      screen.getByText(
+        "No instances found according to your search parameters.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No instances found")).not.toBeInTheDocument();
+  });
+
+  it("shows global empty state when only groupBy is set", () => {
+    renderWithProviders(
+      <InstancesContainer
+        {...props}
+        instanceCount={0}
+        instances={[]}
+        isGettingInstances={false}
+        setSelectedInstances={() => undefined}
+      />,
+      undefined,
+      "/instances?groupBy=status",
+    );
+
+    expect(screen.getByText("No instances found")).toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "No instances found according to your search parameters.",
+      ),
+    ).not.toBeInTheDocument();
   });
 });

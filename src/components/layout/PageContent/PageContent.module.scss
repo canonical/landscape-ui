@@ -21,6 +21,8 @@
   align-items: center;
 }
 
+/* Cap the content width and keep it aligned to the start of the page. Children
+   stretch to this width (default flex behaviour) so sibling sections line up. */
 .alignLeft {
-  align-items: flex-start;
+  max-width: 60rem;
 }

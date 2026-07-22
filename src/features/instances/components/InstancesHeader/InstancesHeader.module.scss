@@ -12,3 +12,10 @@
 .searchContainer {
   flex-basis: 30rem;
 }
+
+.actions {
+  align-items: center;
+  display: flex;
+  gap: $sph--small;
+  margin-left: auto;
+}

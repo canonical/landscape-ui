@@ -45,7 +45,7 @@ describe("LocalRepositoriesContainer", () => {
       screen.getByRole("searchbox", { name: /search/i }),
     ).toBeInTheDocument();
 
-    expect(screen.getByText("repo 1")).toBeInTheDocument();
-    expect(screen.getByText("repo 2")).toBeInTheDocument();
+    expect(screen.getByText(repositories[0].displayName)).toBeInTheDocument();
+    expect(screen.getByText(repositories[1].displayName)).toBeInTheDocument();
   });
 });

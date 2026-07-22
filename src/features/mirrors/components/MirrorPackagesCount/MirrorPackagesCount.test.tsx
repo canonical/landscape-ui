@@ -1,17 +1,26 @@
-import { setEndpointStatus } from "@/tests/controllers/controller";
 import { renderWithProviders } from "@/tests/render";
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 import MirrorPackagesCount from "./MirrorPackagesCount";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { screen } from "@testing-library/react";
+import { setEndpointStatus } from "@/tests/controllers/controller";
+import { ENDPOINT_STATUS_API_ERROR_MESSAGE } from "@/tests/server/handlers/_constants";
+import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
+
+const mirrorName = mirrors[0].name;
 
 describe("MirrorPackagesCount", () => {
-  beforeEach(() => {
-    setEndpointStatus("default");
-  });
-
   it("shows an exact count", async () => {
-    renderWithProviders(<MirrorPackagesCount mirrorName={mirrors[0].name} />);
+    setEndpointStatus({
+      status: "variant",
+      path: "mirrors/packages",
+      response: {
+        mirrorPackages: ["package-1", "package-2", "package-3"],
+        nextPageToken: undefined,
+      },
+    });
+
+    renderWithProviders(<MirrorPackagesCount mirrorName={mirrorName} />);
 
     expect(await screen.findByText("3 packages")).toBeInTheDocument();
   });
@@ -22,12 +31,44 @@ describe("MirrorPackagesCount", () => {
       path: "mirrors/packages",
       response: {
         mirrorPackages: ["package-1", "package-2", "package-3"],
-        nextPageToken: "token",
+        nextPageToken: "1",
       },
     });
 
-    renderWithProviders(<MirrorPackagesCount mirrorName={mirrors[0].name} />);
+    renderWithProviders(<MirrorPackagesCount mirrorName={mirrorName} />);
 
     expect(await screen.findByText("3+ packages")).toBeInTheDocument();
+  });
+
+  it("shows 0 packages", async () => {
+    setEndpointStatus({
+      status: "empty",
+      path: "mirrors/packages",
+    });
+
+    renderWithProviders(<MirrorPackagesCount mirrorName={mirrorName} />);
+
+    expect(await screen.findByText("0 packages")).toBeInTheDocument();
+  });
+
+  it("shows no data fallback with error", async () => {
+    setEndpointStatus({
+      status: "error",
+      path: "mirrors/packages",
+    });
+
+    renderWithProviders(<MirrorPackagesCount mirrorName={mirrorName} />);
+
+    expect(
+      await screen.findByText(ENDPOINT_STATUS_API_ERROR_MESSAGE),
+    ).toBeInTheDocument();
+
+    expect(await screen.findByText(NO_DATA_TEXT)).toBeInTheDocument();
+  });
+
+  it("shows no data fallback for empty name", async () => {
+    renderWithProviders(<MirrorPackagesCount mirrorName="" />);
+
+    expect(await screen.findByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 });

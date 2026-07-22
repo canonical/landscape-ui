@@ -1,5 +1,6 @@
 import { API_URL, API_URL_OLD } from "@/constants";
 import type { Activity } from "@/features/activities";
+import type { ExportJob } from "@/features/exports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import {
   activities,
@@ -8,6 +9,7 @@ import {
   manyDeliveredActivities,
   manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
+import moment from "moment";
 import { http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
@@ -217,5 +219,30 @@ export default [
     }
 
     return HttpResponse.json([activities[0].id, activities[1].id]);
+  }),
+
+  http.post(`${API_URL}activities/exports`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("activities/exports")) {
+      const { status } = getEndpointStatus();
+      if (status === "error") return createEndpointStatusError();
+    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const job: ExportJob = {
+      id: 8,
+      name: typeof body.name === "string" ? body.name : "New activities export",
+      filename: "activities-export.tsv",
+      row_count: 0,
+      type: "activity",
+      created_at: new Date().toISOString(),
+      status: "processing",
+      progress: 0,
+      download_ready: false,
+      retain_until:
+        typeof body.retain_until === "string"
+          ? body.retain_until
+          : moment().add(3, "years").toISOString(),
+      query: typeof body.query === "string" ? body.query : null,
+    };
+    return HttpResponse.json(job, { status: 201 });
   }),
 ];

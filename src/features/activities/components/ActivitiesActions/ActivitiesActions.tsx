@@ -1,10 +1,11 @@
-import type { FC } from "react";
 import { ResponsiveButtons } from "@/components/ui";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
+import usePageParams from "@/hooks/usePageParams";
+import { Button, ConfirmationButton } from "@canonical/react-components";
+import { type FC } from "react";
 import type { ActivityCommon } from "../../types";
 import { pluralize } from "@/utils/_helpers";
-import { ConfirmationButton } from "@canonical/react-components";
 import {
   useApproveActivities,
   useCancelActivities,
@@ -13,17 +14,28 @@ import {
 
 interface ActivitiesActionsProps {
   readonly selected: ActivityCommon[];
+  readonly isAllSelected?: boolean;
 }
 
-const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
+const ActivitiesActions: FC<ActivitiesActionsProps> = ({
+  selected,
+  isAllSelected = false,
+}) => {
   const { notify } = useNotify();
   const debug = useDebug();
+  const { createSidePathPusher } = usePageParams();
   const { approveActivities, isApprovingActivities } = useApproveActivities();
   const { cancelActivities, isCancelingActivities } = useCancelActivities();
   const { redoActivities, isRedoingActivities } = useRedoActivities();
 
   const selectedIds = selected.map((activity) => activity.id);
+
   const title = pluralize(selected.length, ["activity", "activities"], "exact");
+
+  const { lastSidePathSegment } = usePageParams();
+  const handleExport = () => {
+    if (lastSidePathSegment !== "export") createSidePathPusher("export")();
+  };
 
   const handleApproveActivities = async () => {
     try {
@@ -68,6 +80,15 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({ selected }) => {
     <ResponsiveButtons
       collapseFrom="xl"
       buttons={[
+        <Button
+          key="export"
+          className="p-segmented-control__button"
+          type="button"
+          disabled={!isAllSelected && selected.length === 0}
+          onClick={handleExport}
+        >
+          <span>Export selection as TSV</span>
+        </Button>,
         <ConfirmationButton
           key="approve"
           type="button"
