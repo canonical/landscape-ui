@@ -18,7 +18,7 @@ describe("ActivitiesEmptyState", () => {
     renderWithProviders(<ActivitiesEmptyState />);
 
     const link = screen.getByRole("link", {
-      name: /how to manage computers in landscape/i,
+      name: /how to manage activities in landscape/i,
     });
 
     expect(link).toBeInTheDocument();

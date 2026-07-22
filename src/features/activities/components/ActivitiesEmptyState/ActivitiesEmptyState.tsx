@@ -8,7 +8,7 @@ const ActivitiesEmptyState: FC = () => {
       body="There are no activities yet."
       link={{
         href: ACTIVITIES_DOCUMENTATION_URL,
-        text: "How to manage computers in Landscape",
+        text: "How to manage activities in Landscape",
       }}
       icon="switcher-environments"
       title="No activities found"

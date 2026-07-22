@@ -25,7 +25,7 @@ const ProvidersEmptyState: FC = () => {
       body="You haven’t added any identity providers yet."
       link={{
         href: EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL,
-        text: "How to manage computers in Landscape",
+        text: "How to manage identity providers in Landscape",
       }}
       cta={[
         <Button

@@ -15,7 +15,7 @@ describe("ProvidersEmptyState", () => {
 
     expect(
       screen.getByRole("link", {
-        name: "How to manage computers in Landscape",
+        name: "How to manage identity providers in Landscape",
       }),
     ).toBeInTheDocument();
 
@@ -36,7 +36,7 @@ describe("ProvidersEmptyState", () => {
     renderWithProviders(<ProvidersEmptyState />);
 
     const docsLink = screen.getByRole("link", {
-      name: "How to manage computers in Landscape",
+      name: "How to manage identity providers in Landscape",
     });
 
     expect(docsLink).toHaveAttribute(
