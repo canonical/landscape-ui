@@ -163,7 +163,7 @@ const PublicationDetails = ({
             <InfoGrid.Item
               label="Architectures"
               large
-              value={publication.architectures?.join(", ")}
+              value={publication.architectures.join(", ")}
             />
           </InfoGrid>
         </Blocks.Item>

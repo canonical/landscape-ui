@@ -98,6 +98,8 @@ export default [
         mirrorId,
         name: `mirrors/${mirrorId}`,
         ...requestBody,
+        distribution: requestBody.distribution ?? "jammy",
+        architectures: requestBody.architectures ?? ["amd64"],
       };
       return HttpResponse.json<MirrorServiceCreateMirrorResponse>(newMirror);
     },
