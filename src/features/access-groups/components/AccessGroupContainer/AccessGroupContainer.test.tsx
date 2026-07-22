@@ -42,9 +42,13 @@ describe("AccessGroupContainer", () => {
 
     expect(docsLink).toHaveAttribute("href", ACCESS_GROUPS_DOCUMENTATION_URL);
 
+    // This is a redundant test (done only once in this component to avoid redundancy - which defeats
+    // the whole point of centralizing documentation URLS and meant as a test for all components with
+    // documentation links) to ensure the base path URL is imported and combined properly to form the
+    // final documentation URL. This test also helps validate future refactoring of the base path url.
     expect(docsLink).toHaveAttribute(
       "href",
-      expect.stringContaining("ubuntu.com/landscape/docs"),
+      "https://ubuntu.com/landscape/docs/access-groups",
     );
   });
 
