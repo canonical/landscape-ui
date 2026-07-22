@@ -3,7 +3,7 @@ import ResponsiveTable from "@/components/layout/ResponsiveTable";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import usePageParams from "@/hooks/usePageParams";
 import { Button } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -81,9 +81,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         accessor: "job.created_at",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <span className="font-monospace">
-            {moment(row.original.job.created_at).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            )}
+            {date(row.original.job.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
           </span>
         ),
       },
@@ -92,7 +90,7 @@ const ExportsList: FC<ExportsListProps> = ({ exportJobs }) => {
         accessor: "job.retain_until",
         Cell: ({ row }: CellProps<ExportRowData>) => (
           <span className="font-monospace">
-            {moment(row.original.job.retain_until).format(
+            {date(row.original.job.retain_until).format(
               DISPLAY_DATE_TIME_FORMAT,
             )}
           </span>

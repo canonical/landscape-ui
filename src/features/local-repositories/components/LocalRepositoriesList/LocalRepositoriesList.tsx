@@ -12,7 +12,7 @@ import { AssociatedPublicationsCount } from "@/features/publications";
 import { OperationStatusCell, OperationProvider } from "@/features/operations";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import classes from "./LocalRepositoriesList.module.scss";
-import moment from "moment";
+import date from "@/libs/date";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 interface LocalRepositoriesListProps {
@@ -73,7 +73,7 @@ const LocalRepositoriesList: FC<LocalRepositoriesListProps> = ({
         className: classes.datetime,
         Cell: ({ row: { original } }: CellProps<Local>) =>
           original.lastImportTime
-            ? moment(original.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT)
+            ? date(original.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT)
             : NO_DATA_TEXT,
       },
       {

@@ -11,7 +11,7 @@ import {
   OperationStatusContent,
   type OperationMetadata,
 } from "@/features/operations";
-import moment from "moment";
+import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 
 interface ViewLocalRepositoryDetailsTabProps {
@@ -48,7 +48,7 @@ const ViewLocalRepositoryDetailsTab: FC<ViewLocalRepositoryDetailsTabProps> = ({
             label="Last import"
             value={
               repository.lastImportTime
-                ? moment(repository.lastImportTime).format(
+                ? date(repository.lastImportTime).format(
                     DISPLAY_DATE_TIME_FORMAT,
                   )
                 : null

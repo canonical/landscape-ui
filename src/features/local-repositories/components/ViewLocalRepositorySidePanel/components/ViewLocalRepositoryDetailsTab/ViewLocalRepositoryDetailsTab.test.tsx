@@ -7,7 +7,7 @@ import { NO_DATA_TEXT } from "@/components/layout/NoData/constants";
 import { succeededOperation } from "@/tests/mocks/operations";
 import type { Local } from "@canonical/landscape-openapi";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 
 const [repository] = repositories;
 
@@ -26,7 +26,7 @@ describe("ViewLocalRepositoryDetailsTab", () => {
     expect(container).toHaveInfoItem("Status", "Packages imported");
     expect(container).toHaveInfoItem(
       "Last import",
-      moment(repository.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT),
+      date(repository.lastImportTime).format(DISPLAY_DATE_TIME_FORMAT),
     );
     expect(container).toHaveInfoItem("Description", NO_DATA_TEXT);
     expect(container).toHaveInfoItem(

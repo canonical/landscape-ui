@@ -9,7 +9,7 @@ import {
   manyDeliveredActivities,
   manyUnapprovedActivities,
 } from "@/tests/mocks/activity";
-import moment from "moment";
+import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
 import {
   createEndpointStatusError,
@@ -240,7 +240,7 @@ export default [
       retain_until:
         typeof body.retain_until === "string"
           ? body.retain_until
-          : moment().add(3, "years").toISOString(),
+          : date().add(3, "years").toISOString(),
       query: typeof body.query === "string" ? body.query : null,
     };
     return HttpResponse.json(job, { status: 201 });

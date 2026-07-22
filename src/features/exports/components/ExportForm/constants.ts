@@ -1,4 +1,4 @@
-import moment from "moment";
+import date from "@/libs/date";
 import * as Yup from "yup";
 
 export const VALIDATION_SCHEMA = Yup.object().shape({
@@ -11,12 +11,12 @@ export const VALIDATION_SCHEMA = Yup.object().shape({
     .test(
       "retain-until-future",
       "Must be a date in the future",
-      (value) => !!value && moment(value).isAfter(moment().startOf("day")),
+      (value) => !!value && date(value).isAfter(date().format("YYYY-MM-DD")),
     )
     .test(
       "retain-until-max",
       "Must be within 100 years from today",
       (value) =>
-        !!value && moment(value).isSameOrBefore(moment().add(100, "years")),
+        !!value && date(value).isSameOrBefore(date().add(100, "years")),
     ),
 });
