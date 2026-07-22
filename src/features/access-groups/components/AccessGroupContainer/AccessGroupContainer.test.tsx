@@ -41,6 +41,11 @@ describe("AccessGroupContainer", () => {
     });
 
     expect(docsLink).toHaveAttribute("href", ACCESS_GROUPS_DOCUMENTATION_URL);
+
+    expect(docsLink).toHaveAttribute(
+      "href",
+      expect.stringContaining("ubuntu.com/landscape/docs"),
+    );
   });
 
   it("opens side panel with form when Add access group button is clicked", async () => {
