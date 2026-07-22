@@ -12,7 +12,7 @@ const PublishMirrorContentsBlock: FC<PublishMirrorContentsBlockProps> = ({
   mirror,
   publication,
 }) => {
-  const architectures = publication.architectures ?? mirror.architectures ?? [];
+  const { architectures } = publication;
   return (
     <Blocks.Item title="Contents">
       <ReadOnlyField

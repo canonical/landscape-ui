@@ -6,7 +6,6 @@ import { publicationTargets } from "@/tests/mocks/publicationTargets";
 import userEvent from "@testing-library/user-event";
 import { screen, waitFor } from "@testing-library/react";
 import { publications } from "@/tests/mocks/publications";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const mockPublicationName = "publications/publication";
 const [mirror] = mirrors;
@@ -123,21 +122,6 @@ describe("PublishMirrorNewForm", () => {
         "The selected mirror preserves the upstream signing key.",
       ),
     ).toBeInTheDocument();
-  });
-
-  it("shows no data if signature preserving mirror has no distribution", async () => {
-    assert(preserveSignaturesMirror);
-
-    renderWithProviders(
-      <PublishMirrorNewForm
-        mirror={{ ...preserveSignaturesMirror, distribution: undefined }}
-        publicationTargets={publicationTargets}
-      />,
-      undefined,
-      `?name=${preserveSignaturesMirror.name}`,
-    );
-
-    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 
   it("passes settings to createPublication", async () => {

@@ -125,7 +125,7 @@ const EditMirrorForm: FC = () => {
               />
               <ReadOnlyField
                 label="Architectures"
-                value={mirror.architectures?.join(", ")}
+                value={mirror.architectures.join(", ")}
                 tooltipMessage="You can’t change the architectures after the mirror is created."
               />
               <div className={classes.wrapper}>

@@ -79,7 +79,7 @@ const MirrorsList: FC<MirrorsListProps> = ({ mirrors, emptyMsg }) => {
         Header: "Distribution",
         className: classes.distribution,
         Cell: ({ row: { original: mirror } }: CellProps<Mirror>) =>
-          mirror.distribution ?? <NoData />,
+          mirror.distribution,
       },
       {
         Header: "Packages",

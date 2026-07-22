@@ -106,10 +106,10 @@ const PublishMirrorNewForm: FC<PublishMirrorNewFormProps> = ({
   );
 
   const architectureOptions =
-    mirror.architectures?.map((architecture) => ({
+    mirror.architectures.map((architecture) => ({
       label: architecture,
       value: architecture,
-    })) ?? [];
+    }));
 
   const handleArchitectureChange = async (
     items: MultiSelectItem[],
