@@ -3,6 +3,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import ScriptsEmptyState from "./ScriptsEmptyState";
+import { REMOTE_SCRIPT_EXECUTION_DOCUMENTATION_URL } from "./constants";
 
 describe("Scripts Empty State", () => {
   const user = userEvent.setup();
@@ -27,7 +28,7 @@ describe("Scripts Empty State", () => {
     expect(emptyStateButton).toBeInTheDocument();
     expect(emptyStateLink).toHaveAttribute(
       "href",
-      "https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/web-portal-24-04-or-later/use-remote-script-execution/",
+      REMOTE_SCRIPT_EXECUTION_DOCUMENTATION_URL,
     );
   });
 

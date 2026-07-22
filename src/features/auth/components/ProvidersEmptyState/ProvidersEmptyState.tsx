@@ -4,6 +4,7 @@ import { Button } from "@canonical/react-components";
 import EmptyState from "@/components/layout/EmptyState";
 import LoadingState from "@/components/layout/LoadingState";
 import useSidePanel from "@/hooks/useSidePanel";
+import { EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL } from "./constants";
 
 const SupportedProviderList = lazy(() => import("../SupportedProviderList"));
 
@@ -23,8 +24,8 @@ const ProvidersEmptyState: FC = () => {
     <EmptyState
       body="You haven’t added any identity providers yet."
       link={{
-        href: "https://ubuntu.com/landscape/docs/managing-computers",
-        text: "How to manage computers in Landscape",
+        href: EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL,
+        text: "How to manage identity providers in Landscape",
       }}
       cta={[
         <Button

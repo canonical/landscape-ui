@@ -21,6 +21,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import classes from "./PendingInstancesForm.module.scss";
 import { ROUTES } from "@/libs/routes";
+import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "./constants";
 
 interface PendingInstanceListProps {
   readonly instances: PendingInstance[];
@@ -109,7 +110,7 @@ const PendingInstancesForm: FC<PendingInstanceListProps> = ({ instances }) => {
         <Link to={ROUTES.settings.general()}>Org. settings</Link>
         <span> or </span>
         <a
-          href="https://ubuntu.com/landscape/docs/managing-computers"
+          href={MANAGING_COMPUTERS_DOCUMENTATION_URL}
           target="_blank"
           rel="nofollow noopener noreferrer"
         >

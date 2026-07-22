@@ -1,4 +1,10 @@
 import { ProfileTypes } from "../../helpers";
+import {
+  getDefaultProfilesDocumentationUrl,
+  REPOSITORY_PROFILES_DOCUMENTATION_URL,
+  USG_PROFILES_DOCUMENTATION_URL,
+  WSL_PROFILES_DOCUMENTATION_URL,
+} from "./constants";
 
 export const getMessage = (type: ProfileTypes) => {
   switch (type) {
@@ -24,12 +30,12 @@ export const getMessage = (type: ProfileTypes) => {
 export const getLink = (type: ProfileTypes) => {
   switch (type) {
     case ProfileTypes.repository:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/repository-mirrors/manage-repositories-in-the-web-portal/#create-a-repository-profile-and-associate-client-machines-to-the-profile";
+      return REPOSITORY_PROFILES_DOCUMENTATION_URL;
     case ProfileTypes.usg:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/security/use-usg-profiles/#how-to-web-portal-use-usg-profiles";
+      return USG_PROFILES_DOCUMENTATION_URL;
     case ProfileTypes.wsl:
-      return "https://documentation.ubuntu.com/landscape/how-to-guides/wsl-integration/use-wsl-profiles/#how-to-use-wsl-profiles";
+      return WSL_PROFILES_DOCUMENTATION_URL;
     default:
-      return `https://documentation.ubuntu.com/landscape/how-to-guides/web-portal/web-portal-24-04-or-later/use-profiles/#${type}-profiles`;
+      return getDefaultProfilesDocumentationUrl(type);
   }
 };

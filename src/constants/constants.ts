@@ -1,4 +1,4 @@
-import { ROUTES } from "./libs/routes";
+import { ROUTES } from "@/libs/routes";
 
 export const IS_DEV_ENV = import.meta.env.DEV;
 export const IS_SELF_HOSTED_ENV = import.meta.env.VITE_SELF_HOSTED_ENV;

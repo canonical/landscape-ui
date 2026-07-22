@@ -6,6 +6,7 @@ import useSidePanel from "@/hooks/useSidePanel";
 import LoadingState from "@/components/layout/LoadingState";
 import EmptyState from "@/components/layout/EmptyState";
 import RoleList from "@/pages/dashboard/settings/roles/RoleList";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
 const AddRoleForm = lazy(
   () => import("@/pages/dashboard/settings/roles/AddRoleForm"),
@@ -27,7 +28,7 @@ const RolesContainer: FC = () => {
             title="No roles found"
             body="You haven’t added any roles yet."
             link={{
-              href: "https://ubuntu.com/landscape/docs/administrators",
+              href: ADMINISTRATORS_DOCUMENTATION_URL,
               text: "How to manage administrators in Landscape",
             }}
             cta={[

@@ -10,6 +10,7 @@ import type { RepositoryProfile } from "../../types";
 import RepositoryProfileList from "../RepositoryProfileList";
 import HeaderWithSearch from "@/components/form/HeaderWithSearch/HeaderWithSearch";
 import { AddProfileButton } from "@/features/profiles";
+import { MANAGE_REPOSITORIES_DOCUMENTATION_URL } from "./constants";
 
 interface RepositoryProfileContainerProps {
   readonly unfilteredRepositoryProfilesResult: UseQueryResult<
@@ -45,7 +46,7 @@ const RepositoryProfileContainer: FC<RepositoryProfileContainerProps> = ({
         title="No repository profiles found"
         body="You haven’t added any repository profiles yet."
         link={{
-          href: "https://ubuntu.com/landscape/docs/manage-repositories-web-portal",
+          href: MANAGE_REPOSITORIES_DOCUMENTATION_URL,
           text: "How to manage repositories in Landscape",
         }}
         cta={[<AddProfileButton key="add" />]}

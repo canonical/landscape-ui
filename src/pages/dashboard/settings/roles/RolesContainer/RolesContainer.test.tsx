@@ -4,6 +4,7 @@ import { screen, within } from "@testing-library/react";
 import { expectLoadingState } from "@/tests/helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import userEvent from "@testing-library/user-event";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "@/constants";
 
 describe("RolesContainer", () => {
   const user = userEvent.setup();
@@ -44,6 +45,20 @@ describe("RolesContainer", () => {
     expect(
       screen.getByRole("button", { name: /add role/i }),
     ).toBeInTheDocument();
+  });
+
+  it("renders docs link with expected href in empty state", async () => {
+    setEndpointStatus("empty");
+
+    renderWithProviders(<RolesContainer />);
+
+    await expectLoadingState();
+
+    const docsLink = screen.getByRole("link", {
+      name: /how to manage administrators in landscape/i,
+    });
+
+    expect(docsLink).toHaveAttribute("href", ADMINISTRATORS_DOCUMENTATION_URL);
   });
 
   it("opens the add role side panel when 'Add role' is clicked in empty state", async () => {
