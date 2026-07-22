@@ -1,5 +1,5 @@
 import { INPUT_DATE_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import type {
   BaseFormProps,
   FormProps,
@@ -113,7 +113,7 @@ export function getInitialUbuntuSnapshotsValues(
     ...getInitialBaseValues(ubuntuArchiveInfo?.distributions ?? []),
     sourceType: "ubuntu-snapshots",
     sourceUrl: `https://${UBUNTU_SNAPSHOTS_HOST}/ubuntu/`,
-    snapshotDate: moment().format(INPUT_DATE_FORMAT),
+    snapshotDate: date().format(INPUT_DATE_FORMAT),
   };
 }
 

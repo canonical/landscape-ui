@@ -14,7 +14,7 @@ import {
 } from "../../helpers";
 import type { Publication } from "@canonical/landscape-openapi";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { ROUTES } from "@/libs/routes";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { OperationStatusCell, OperationProvider } from "@/features/operations";
@@ -76,7 +76,7 @@ const PublicationsList: FC<PublicationsListProps> = ({
         className: classes.datetime,
         Cell: ({ row: { original } }: CellProps<Publication>) =>
           original.publishTime
-            ? moment(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
+            ? date(original.publishTime).format(DISPLAY_DATE_TIME_FORMAT)
             : NO_DATA_TEXT,
       },
       {

@@ -2,7 +2,7 @@ import ModalTablePagination from "@/components/layout/TablePagination/components
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { ModularTable } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { CellProps, Column } from "react-table";
@@ -107,7 +107,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
         }: CellProps<Publication>): ReactNode =>
           publishTime ? (
             <span>
-              {moment(publishTime).format(DISPLAY_DATE_TIME_FORMAT) + " UTC"}
+              {date(publishTime).format(DISPLAY_DATE_TIME_FORMAT) + " UTC"}
             </span>
           ) : (
             <NoData />

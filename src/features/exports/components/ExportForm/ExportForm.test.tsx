@@ -2,7 +2,7 @@ import { INPUT_DATE_FORMAT } from "@/constants";
 import { renderWithProviders } from "@/tests/render";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import moment from "moment";
+import date from "@/libs/date";
 import { useLocation } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import ExportForm from "./ExportForm";
@@ -33,7 +33,7 @@ const FIELD_GROUPS: readonly ExportFieldGroup[] = [
 const INITIAL_VALUES: ExportFormValues = {
   name: "",
   selectedFieldIds: [],
-  retainUntil: moment().add(3, "years").format(INPUT_DATE_FORMAT),
+  retainUntil: date().add(3, "years").format(INPUT_DATE_FORMAT),
 };
 
 const renderForm = (

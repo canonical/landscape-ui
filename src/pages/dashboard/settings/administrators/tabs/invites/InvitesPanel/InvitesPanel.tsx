@@ -5,7 +5,7 @@ import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import type { Invitation } from "@/types/Invitation";
 import { ConfirmationButton } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useMemo } from "react";
 import type { CellProps, Column } from "react-table";
@@ -28,7 +28,7 @@ const InvitesPanel: FC = () => {
   const invitations = useMemo(
     () =>
       getInvitationsQueryResult?.data.results.sort((a, b) =>
-        moment(b.creation_time).diff(moment(a.creation_time)),
+        date(b.creation_time).diff(date(a.creation_time)),
       ) ?? [],
     [getInvitationsQueryResult],
   );
@@ -79,9 +79,7 @@ const InvitesPanel: FC = () => {
         Header: "Invited",
         Cell: ({ row }: CellProps<Invitation>) => (
           <span className="font-monospace">
-            {moment(row.original.creation_time).format(
-              DISPLAY_DATE_TIME_FORMAT,
-            )}
+            {date(row.original.creation_time).format(DISPLAY_DATE_TIME_FORMAT)}
           </span>
         ),
       },
@@ -90,7 +88,7 @@ const InvitesPanel: FC = () => {
         Header: "Expires",
         Cell: ({ row }: CellProps<Invitation>) => (
           <span className="font-monospace">
-            {moment(row.original.creation_time)
+            {date(row.original.creation_time)
               .add(TWO_WEEKS_DAYS, "days")
               .format(DISPLAY_DATE_TIME_FORMAT)}
           </span>

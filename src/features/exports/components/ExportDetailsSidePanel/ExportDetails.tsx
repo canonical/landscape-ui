@@ -10,7 +10,7 @@ import {
   Icon,
   ICONS,
 } from "@canonical/react-components";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useCancelExportJob } from "../../api/useCancelExportJob";
 import { useDiscardExportJob } from "../../api/useDiscardExportJob";
@@ -205,7 +205,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
               label="Created"
               value={
                 <span className="font-monospace">
-                  {moment(job.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
+                  {date(job.created_at).format(DISPLAY_DATE_TIME_FORMAT)}
                 </span>
               }
             />
@@ -213,7 +213,7 @@ const ExportDetails: FC<ExportDetailsProps> = ({ job }) => {
               label="Expires"
               value={
                 <span className="font-monospace">
-                  {moment(job.retain_until).format(DISPLAY_DATE_TIME_FORMAT)}
+                  {date(job.retain_until).format(DISPLAY_DATE_TIME_FORMAT)}
                 </span>
               }
             />

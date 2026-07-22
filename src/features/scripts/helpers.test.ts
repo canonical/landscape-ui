@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import moment from "moment";
+import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import {
   formatTitleCase,
@@ -92,13 +92,13 @@ describe("scripts helpers", () => {
   it("formats shebang code and author metadata", () => {
     const interpreter = "/usr/bin/python3";
     const code = "print('ok')";
-    const date = "2024-01-01T12:34:56Z";
+    const dateString = "2024-01-01T12:34:56Z";
 
     expect(getCode({ interpreter, code })).toBe(
       "#!/usr/bin/python3\nprint('ok')",
     );
-    expect(getAuthorInfo({ author: "alice", date })).toBe(
-      `${moment(date).format(DISPLAY_DATE_TIME_FORMAT)}, by alice`,
+    expect(getAuthorInfo({ author: "alice", date: dateString })).toBe(
+      `${date(dateString).format(DISPLAY_DATE_TIME_FORMAT)}, by alice`,
     );
   });
 });

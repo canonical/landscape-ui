@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import { INSTANCES_PATHS } from "@/libs/routes/instances";
 import UbuntuProInfoRow from "./UbuntuProInfoRow";
 import { screen } from "@testing-library/react";
-import moment from "moment";
+import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT, MASKED_VALUE } from "@/constants";
 import { getInstanceWithUbuntuPro } from "../../helpers";
 
@@ -44,8 +44,8 @@ describe("UbuntuProInfoRow", () => {
       singleInstancePath,
     );
 
-    if (ubuntuProData.expires && moment(ubuntuProData.expires).isValid()) {
-      const formattedDate = moment(ubuntuProData.expires).format(
+    if (ubuntuProData.expires && date(ubuntuProData.expires).isValid()) {
+      const formattedDate = date(ubuntuProData.expires).format(
         DISPLAY_DATE_TIME_FORMAT,
       );
       expect(container).toHaveInfoItem("Valid Until", formattedDate);

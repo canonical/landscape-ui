@@ -8,8 +8,8 @@ import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import date from "@/libs/date";
 import { http, HttpResponse } from "msw";
-import moment from "moment";
 import { type ComponentProps } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import USGProfileForm from "./USGProfileForm";
@@ -31,7 +31,7 @@ const getProps = (): ComponentProps<typeof USGProfileForm> => ({
     randomize_delivery: false,
     restart_deliver_delay: 0,
     deliver_delay_window: 0,
-    start_date: moment().format(INPUT_DATE_TIME_FORMAT),
+    start_date: date().format(INPUT_DATE_TIME_FORMAT),
     start_type: "on-a-date",
     tags: [],
     tailoring_file: null,

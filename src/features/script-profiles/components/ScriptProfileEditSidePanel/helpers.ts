@@ -1,5 +1,5 @@
 import { INPUT_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import type { ScriptProfile } from "../../types";
 
 export const getScriptProfileEditFormInitialValues = (
@@ -10,13 +10,13 @@ export const getScriptProfileEditFormInitialValues = (
   ...scriptProfile.trigger,
   start_after:
     scriptProfile.trigger.trigger_type == "recurring"
-      ? moment(scriptProfile.trigger.start_after)
+      ? date(scriptProfile.trigger.start_after)
           .utc()
           .format(INPUT_DATE_TIME_FORMAT)
       : "",
   timestamp:
     scriptProfile.trigger.trigger_type == "one_time"
-      ? moment(scriptProfile.trigger.timestamp)
+      ? date(scriptProfile.trigger.timestamp)
           .utc()
           .format(INPUT_DATE_TIME_FORMAT)
       : "",

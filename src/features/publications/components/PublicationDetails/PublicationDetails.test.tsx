@@ -8,7 +8,7 @@ import PublicationDetails from "./PublicationDetails";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { getSourceType } from "../..";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import moment from "moment";
+import date from "@/libs/date";
 import { AUTOMATIC_LABELS } from "../../constants";
 import { expectLoadingState } from "@/tests/helpers";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
@@ -44,7 +44,7 @@ describe("PublicationDetails", () => {
       { label: "Status", value: "Published" },
       {
         label: "Last published",
-        value: moment(publication.publishTime).format(DISPLAY_DATE_TIME_FORMAT),
+        value: date(publication.publishTime).format(DISPLAY_DATE_TIME_FORMAT),
       },
       { label: "Distribution", value: publication.distribution },
       {

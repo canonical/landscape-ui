@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { describe } from "vitest";
 import MirrorsList from "./MirrorsList";
 import { mirrors } from "@/tests/mocks/mirrors";
-import moment from "moment";
+import date from "@/libs/date";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import { screen } from "@testing-library/react";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
@@ -19,7 +19,7 @@ describe("MirrorsList", () => {
 
     expect(
       screen.getByText(
-        moment(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT),
+        date(mirror.lastDownloadDate).format(DISPLAY_DATE_TIME_FORMAT),
       ),
     ).toBeInTheDocument();
   });

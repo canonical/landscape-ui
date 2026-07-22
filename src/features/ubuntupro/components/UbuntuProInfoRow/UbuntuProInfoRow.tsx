@@ -1,7 +1,7 @@
 import InfoGrid from "@/components/layout/InfoGrid";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
 import type { Instance, UbuntuProInfo } from "@/types/Instance";
-import moment from "moment";
+import date from "@/libs/date";
 import { type FC } from "react";
 import classes from "./UbuntuProInfoRow.module.scss";
 
@@ -20,8 +20,8 @@ const UbuntuProInfoRow: FC<UbuntuProInfoRowProps> = ({ instance }) => {
         <InfoGrid.Item
           label="Valid Until"
           value={
-            ubuntuProData.expires && moment(ubuntuProData.expires).isValid()
-              ? moment(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
+            ubuntuProData.expires && date(ubuntuProData.expires).isValid()
+              ? date(ubuntuProData.expires).format(DISPLAY_DATE_TIME_FORMAT)
               : null
           }
         />
