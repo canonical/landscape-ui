@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ADMINISTRATORS_DOCUMENTATION_URL,
-  MANAGING_COMPUTERS_DOCUMENTATION_URL,
-} from "./documentationUrls";
+import { ADMINISTRATORS_DOCUMENTATION_URL } from "./documentationUrls";
 
 /*
 These tests are to verify that each exported URL is correctly composed from the shared base path
@@ -16,16 +13,6 @@ future refactoring to the base path will be covered by testing.
 const BASE_PATH = "https://ubuntu.com/landscape/docs";
 
 describe("documentationUrls", () => {
-  it("MANAGING_COMPUTERS_DOCUMENTATION_URL contains the docs base path", () => {
-    expect(MANAGING_COMPUTERS_DOCUMENTATION_URL).toContain(BASE_PATH);
-  });
-
-  it("MANAGING_COMPUTERS_DOCUMENTATION_URL points to the correct page", () => {
-    expect(MANAGING_COMPUTERS_DOCUMENTATION_URL).toBe(
-      `${BASE_PATH}/managing-computers`,
-    );
-  });
-
   it("ADMINISTRATORS_DOCUMENTATION_URL contains the docs base path", () => {
     expect(ADMINISTRATORS_DOCUMENTATION_URL).toContain(BASE_PATH);
   });

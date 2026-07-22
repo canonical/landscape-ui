@@ -3,7 +3,7 @@ import { renderWithProviders } from "@/tests/render";
 import ProvidersEmptyState from "./ProvidersEmptyState";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MANAGING_COMPUTERS_DOCUMENTATION_URL } from "@/constants";
+import { EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL } from "./constants";
 
 describe("ProvidersEmptyState", () => {
   it("should render correctly", async () => {
@@ -41,7 +41,7 @@ describe("ProvidersEmptyState", () => {
 
     expect(docsLink).toHaveAttribute(
       "href",
-      MANAGING_COMPUTERS_DOCUMENTATION_URL,
+      EXTERNAL_AUTHENTICATION_DOCUMENTATION_URL,
     );
   });
 });

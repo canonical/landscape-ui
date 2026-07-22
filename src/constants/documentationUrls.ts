@@ -11,6 +11,4 @@
 
 import { EXTERNAL_PATHS } from "@/libs/routes/external";
 
-export const MANAGING_COMPUTERS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/managing-computers`;
-
 export const ADMINISTRATORS_DOCUMENTATION_URL = `${EXTERNAL_PATHS.documentation}/administrators`;
