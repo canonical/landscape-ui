@@ -25,7 +25,7 @@ export default defineConfig({
   // requests so tests can share the exact same UI session cookie natively.
   webServer: {
     cwd: "../../",
-    command: "vite --mode e2e.selfHosted",
+    command: "pnpm exec vite --mode e2e.selfHosted",
     url: BASE_URL,
     reuseExistingServer: false,
     timeout: 120_000,

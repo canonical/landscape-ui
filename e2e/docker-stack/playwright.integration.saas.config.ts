@@ -28,7 +28,7 @@ export default defineConfig({
   // Starts Vite in e2e.saas mode → loads .env.e2e.saas (VITE_SELF_HOSTED_ENV=false).
   webServer: {
     cwd: "../../",
-    command: "vite --mode e2e.saas",
+    command: "pnpm exec vite --mode e2e.saas",
     url: BASE_URL,
     reuseExistingServer: false,
     timeout: 120_000,
