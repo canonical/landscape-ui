@@ -33,7 +33,7 @@ export default defineConfig({
   // Starts Vite in e2e.selfHosted mode → loads .env.e2e.selfHosted (VITE_SELF_HOSTED_ENV=true).
   webServer: {
     cwd: "../../",
-    command: "vite --mode e2e.selfHosted",
+    command: "pnpm exec vite --mode e2e.selfHosted",
     url: BASE_URL,
     reuseExistingServer: false,
     timeout: 120_000,

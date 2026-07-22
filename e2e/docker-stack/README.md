@@ -56,9 +56,7 @@ curl -sf http://localhost:8080/
 
 ### 2. Install browsers (first time)
 
-```bash
-pnpm exec playwright install chromium
-```
+    pnpm exec playwright install --with-deps chromium
 
 ### 3. Run the tests
 

@@ -17,7 +17,7 @@ test.describe("Local Repositories API Contract", () => {
     token = await getAuthToken(request);
   });
 
-  test("POST/GET/DELETE /v1beta1/locals lifecycle works", async ({
+  test("POST/LIST/DELETE /v1beta1/locals lifecycle works", async ({
     request,
   }) => {
     const payload: LocalWritable = {

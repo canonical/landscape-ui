@@ -14,6 +14,6 @@ To avoid duplicating test coverage in the UI's Playwright integration tests, ple
 - **Strategy:** Real PostgreSQL databases via Storm ORM (`ZStormResourceManager`). Each test class receives a freshly provisioned database instance.
 - **Coverage:** Full coverage of HTTP handlers (`APIHandlerTest`), REST methods (`APITest`), and database models (`ModelTest`).
 
-## UI Integration Test Strategy (Playwright API)
+## API Contract Test Strategy (Playwright request API)
 
-Given the comprehensive backend coverage, the UI's Playwright API tests in this directory should **only** verify the JSON shape contract. Do not write tests for deep database constraints, locking scenarios, or backend business logic. Focus purely on whether the UI's TypeScript interfaces (`CreateLocalRequest`, `Local`, etc.) match the API payloads and responses.
+Given the comprehensive backend coverage, the UI's Playwright API contract tests under `e2e/docker-stack/api/` should **only** verify the JSON shape contract. Do not write tests for deep database constraints, locking scenarios, or backend business logic. Focus purely on whether the UI's TypeScript interfaces (`CreateLocalRequest`, `Local`, etc.) match the API payloads and responses.

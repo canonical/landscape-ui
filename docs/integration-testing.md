@@ -11,7 +11,8 @@ See [e2e/docker-stack/README.md](../e2e/docker-stack/README.md) for a quick-star
 - Login via standalone auth with a seeded admin account
 - Instances list rendered from a real `GET /api/v2/computers` response
 - Preferences mutation round-trip through the real API
-- Debarchive publication targets listed from a seeded debarchive service
+- Debarchive publication targets listed and CRUD round-trip against the real debarchive service
+- Debarchive mirrors listed and CRUD round-trip against the real debarchive service
 
 **SaaS mode** (`*.saas.integration.spec.ts`)
 
@@ -118,9 +119,7 @@ CI_ADMIN_PASSWORD=pwd
 
 ### 3. Install Playwright browsers (first time or after upgrades)
 
-```bash
-pnpm exec playwright install chromium
-```
+    pnpm exec playwright install --with-deps chromium
 
 ### 4. Run integration tests
 

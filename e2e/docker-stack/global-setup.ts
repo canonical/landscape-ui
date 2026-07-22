@@ -15,7 +15,7 @@ const ARCHIVE_WARM_POLL_MS = 3_000;
 // Load local credentials file if present (gitignored). Values already in
 // process.env (e.g. from CI) take precedence because override is false.
 if (fs.existsSync(ENV_FILE)) {
-  process.loadEnvFile(ENV_FILE);
+  process.loadEnvFile(ENV_FILE, { override: false });
 }
 
 export default async function globalSetup(_config: FullConfig): Promise<void> {
