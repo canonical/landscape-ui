@@ -38,7 +38,6 @@ const InstancesPage: FC = () => {
     pageSize,
     wsl,
     sidePath,
-    lastSidePathSegment,
     popSidePathUntilClear,
     ...filters
   } = usePageParams();

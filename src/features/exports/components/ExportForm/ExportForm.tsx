@@ -7,8 +7,8 @@ import {
   CheckboxInput,
   Form,
   Input,
-  SearchBox,
   Notification,
+  SearchBox,
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";

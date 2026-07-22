@@ -7,7 +7,7 @@ import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -47,7 +47,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
-  const { createSidePathPusher } = usePageParams();
+  const { createSidePathPusher, lastSidePathSegment } = usePageParams();
 
   const {
     value: rebootModalOpen,
@@ -181,7 +181,9 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const handleExport = createSidePathPusher("export");
+  const handleExport = () => {
+    if (lastSidePathSegment !== "export") createSidePathPusher("export")();
+  };
 
   const allInstancesHaveToken = selectedInstances.every(
     (instance) =>

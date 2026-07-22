@@ -1,9 +1,9 @@
-import { API_URL_DEB_ARCHIVE } from "@/constants";
+import { API_URL_DEB_ARCHIVE, DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 import { getEndpointStatus } from "@/tests/controllers/controller";
-import { mirrors as mockMirrors } from "@/tests/mocks/mirrors";
+import { mirrors as mockMirrors, packages } from "@/tests/mocks/mirrors";
 import type { StrictResponse } from "msw";
 import { delay, http, HttpResponse } from "msw";
-import { ENDPOINT_STATUS_API_ERROR } from "./_constants";
+import { createEndpointStatusError } from "./_constants";
 import type {
   ListMirrorPackagesResponse,
   MirrorServiceGetMirrorResponse,
@@ -20,7 +20,12 @@ import {
   shouldApplyEndpointStatus,
 } from "./_helpers";
 
-const mirrors = mockMirrors as Mirror[];
+const mirrors = [...(mockMirrors as Mirror[])];
+
+export const resetMirrors = (): void => {
+  mirrors.length = 0;
+  mirrors.push(...(mockMirrors as Mirror[]));
+};
 
 const getMirrorsResponse = (requestUrl: string) => {
   const { pageSize, pageToken, search } =
@@ -61,7 +66,7 @@ export default [
       const endpointStatus = getEndpointStatus("mirrors");
 
       if (endpointStatus.status === "error") {
-        return ENDPOINT_STATUS_API_ERROR;
+        throw createEndpointStatusError();
       }
 
       if (endpointStatus.status === "empty") {
@@ -112,9 +117,7 @@ export default [
 
   http.get(
     `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId/packages`,
-    async ({ params }) => {
-      await delay();
-
+    async ({ params, request }) => {
       if (shouldApplyEndpointStatus("mirrors/packages")) {
         const endpointStatus = getEndpointStatus("mirrors/packages");
 
@@ -122,6 +125,16 @@ export default [
           return HttpResponse.json(
             endpointStatus.response as ListMirrorPackagesResponse,
           );
+        }
+
+        if (endpointStatus.status === "empty") {
+          return HttpResponse.json<ListMirrorPackagesResponse>({
+            mirrorPackages: [],
+          });
+        }
+
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
         }
       }
 
@@ -131,11 +144,33 @@ export default [
 
       if (!mirror) {
         return new HttpResponse(null, { status: 404 });
-      } else {
+      }
+
+      const url = new URL(request.url);
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
+      const pageIndex = pageToken * pageSize;
+      const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
+      const hasNextPage = pageIndex + pageSize < packages.length;
+
+      if (mirror.mirrorId === mirrors[4]?.mirrorId) {
         return HttpResponse.json<ListMirrorPackagesResponse>({
-          mirrorPackages: ["package-1", "package-2", "package-3"],
+          mirrorPackages: [],
         });
       }
+
+      if (mirror.mirrorId === mirrors[5]?.mirrorId) {
+        return HttpResponse.json<ListMirrorPackagesResponse>({
+          mirrorPackages: paginatedPackages.slice(0, 1),
+          nextPageToken: undefined,
+        });
+      }
+
+      return HttpResponse.json({
+        mirrorPackages: paginatedPackages,
+        nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,
+      });
     },
   ),
 
@@ -143,6 +178,20 @@ export default [
     `${API_URL_DEB_ARCHIVE}mirrors/:mirrorId`,
     async ({ params, request }) => {
       await delay();
+
+      if (shouldApplyEndpointStatus("mirrors/update")) {
+        const endpointStatus = getEndpointStatus("mirrors/update");
+
+        if (endpointStatus.status === "error") {
+          throw createEndpointStatusError();
+        }
+
+        if (endpointStatus.status === "variant") {
+          return HttpResponse.json(
+            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
+          );
+        }
+      }
 
       const mirrorIndex = mirrors.findIndex(
         ({ mirrorId }) => mirrorId === params.mirrorId,
@@ -153,16 +202,6 @@ export default [
       }
 
       await request.json();
-
-      if (shouldApplyEndpointStatus("mirrors/update")) {
-        const endpointStatus = getEndpointStatus("mirrors/update");
-
-        if (endpointStatus.status === "variant") {
-          return HttpResponse.json(
-            endpointStatus.response as MirrorServiceUpdateMirrorResponse,
-          );
-        }
-      }
 
       return HttpResponse.json<MirrorServiceUpdateMirrorResponse>();
     },

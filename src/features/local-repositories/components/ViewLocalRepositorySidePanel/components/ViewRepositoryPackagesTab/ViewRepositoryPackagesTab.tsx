@@ -1,7 +1,9 @@
 import type { FC } from "react";
-import LoadingState from "@/components/layout/LoadingState";
-import { useGetRepositoryPackages } from "../../../../api/useGetRepositoryPackages";
-import LocalRepositoryPackagesList from "../../../LocalRepositoryPackagesList";
+import {
+  useGetRepositoryPackages,
+  useGetRepositoryPackagesCount,
+} from "../../../../api";
+import { PaginatedPackagesList } from "@/features/repositories";
 import { Notification } from "@canonical/react-components";
 
 interface ViewRepositoryPackagesTabProps {
@@ -13,8 +15,20 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
   repositoryName,
   isImporting,
 }) => {
-  const { packages, isGettingRepositoryPackages } =
-    useGetRepositoryPackages(repositoryName);
+  const {
+    packages,
+    isGettingPackages,
+    packagesError,
+    hasPreviousPage,
+    hasNextPage,
+    goToNextPage,
+    goToPreviousPage,
+  } = useGetRepositoryPackages({ local: repositoryName });
+
+  const { localPackagesCount, isPackagesCountExact } =
+    useGetRepositoryPackagesCount({
+      local: repositoryName,
+    });
 
   return (
     <>
@@ -28,11 +42,18 @@ const ViewRepositoryPackagesTab: FC<ViewRepositoryPackagesTabProps> = ({
           />
         )}
       </div>
-      {isGettingRepositoryPackages ? (
-        <LoadingState />
-      ) : (
-        <LocalRepositoryPackagesList packages={packages} />
-      )}
+      <PaginatedPackagesList
+        packages={packages}
+        packagesCount={localPackagesCount}
+        isPackagesCountExact={isPackagesCountExact}
+        emptyMsg="No packages associated with this local repository."
+        hasPreviousPage={hasPreviousPage}
+        hasNextPage={hasNextPage}
+        goToNextPage={goToNextPage}
+        goToPreviousPage={goToPreviousPage}
+        isGettingPackages={isGettingPackages}
+        error={packagesError}
+      />
     </>
   );
 };

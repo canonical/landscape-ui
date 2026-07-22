@@ -1,8 +1,10 @@
 import { useMemo, useState, type FC } from "react";
 import ResponsiveTable from "@/components/layout/ResponsiveTable";
-import type { Column, CellProps } from "react-table";
+import type { CellProps, Column } from "react-table";
 import { ModalTablePagination } from "@/components/layout/TablePagination";
-import type { LocalPackage } from "../../types";
+import type { SourcePackage } from "@/features/repositories";
+import { getCellProps } from "./helpers";
+import { DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
 
 interface LocalRepositoryPackagesListProps {
   readonly packages: string[];
@@ -14,48 +16,38 @@ const LocalRepositoryPackagesList: FC<LocalRepositoryPackagesListProps> = ({
   header = "Package name",
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = DEFAULT_MODAL_PAGE_SIZE;
 
-  const formattedPackages = useMemo<LocalPackage[]>(
+  const pagedPackages = useMemo<SourcePackage[]>(
     () =>
       packages
-        .map((name) => ({ name }))
-        .toSorted((a, b) => a.name.localeCompare(b.name)),
-    [packages],
-  );
-  const pagedPackages = useMemo(
-    () =>
-      formattedPackages.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize,
-      ),
-    [formattedPackages, currentPage, pageSize],
+        .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+        .map((name) => ({ name })),
+    [packages, currentPage, pageSize],
   );
 
-  const columns = useMemo<Column<LocalPackage>[]>(
+  const columns = useMemo<Column<SourcePackage>[]>(
     () => [
       {
         Header: header,
         meta: {
-          ariaLabel: ({ original: { name } }) => `${name} package name`,
+          ariaLabel: ({ original: { name } }) => `Package name: ${name}`,
         },
-        Cell: ({
-          row: {
-            original: { name },
-          },
-        }: CellProps<LocalPackage>) => name,
+        Cell: ({ row: { original } }: CellProps<SourcePackage>) =>
+          original.name,
       },
     ],
     [header],
   );
 
-  const maxPage = Math.ceil(formattedPackages.length / pageSize);
+  const maxPage = Math.ceil(packages.length / pageSize);
 
   return (
     <>
       <ResponsiveTable
         columns={columns}
         data={pagedPackages}
+        getCellProps={getCellProps}
         emptyMsg={"No packages associated with this local repository."}
         minWidth={320}
       />

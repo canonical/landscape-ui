@@ -66,7 +66,6 @@ const PackageProfileConstraintsAddForm: FC<
     <Form onSubmit={formik.handleSubmit} noValidate>
       <PackageProfileConstraintsBlock formik={formik} />
       <SidePanelFormButtons
-        submitButtonDisabled={!formik.isValid || formik.isValidating}
         submitButtonLoading={formik.isSubmitting}
         submitButtonText={`Add ${pluralize(formik.values.constraints.length, ["constraint"])}`}
         submitButtonAriaLabel={`Add ${pluralize(formik.values.constraints.length, ["constraint"])} to "${profile.title}" profile`}

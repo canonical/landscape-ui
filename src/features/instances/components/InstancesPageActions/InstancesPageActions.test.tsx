@@ -6,7 +6,7 @@ import {
   windowsInstance,
 } from "@/tests/mocks/instance";
 import { renderWithProviders } from "@/tests/render";
-import { screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { useLocation } from "react-router";
@@ -308,6 +308,15 @@ describe("InstancesPageActions", () => {
     });
 
     it("'View report' menu item", async () => {
+      cleanup();
+
+      renderWithProviders(
+        <>
+          <InstancesPageActions {...defaultProps} />
+          <LocationDisplay />
+        </>,
+      );
+
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
       );
@@ -315,11 +324,9 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /view report/i }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Report for ${selected.length} instances`,
-        }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "sidePath=report",
+      );
     });
 
     it("'Upgrade' menu item", async () => {
@@ -451,6 +458,29 @@ describe("InstancesPageActions", () => {
 
     expect(screen.getByTestId("location-display")).toHaveTextContent(
       "sidePath=export",
+    );
+  });
+
+  it("'Export' menu item does not append duplicate export sidePath", async () => {
+    renderWithProviders(
+      <>
+        <InstancesPageActions {...defaultProps} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=export",
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
+    );
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
+    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      "sidePath=export,export",
     );
   });
 

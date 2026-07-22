@@ -74,7 +74,7 @@ const AccessGroupChange: FC<AccessGroupChangeProps> = ({ selected }) => {
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Assign"
       />
     </Form>

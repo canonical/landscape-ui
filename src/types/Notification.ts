@@ -11,6 +11,7 @@ export interface Notification {
   actions?: NotificationAction[];
   error?: unknown;
   title?: string;
+  duration?: number;
 }
 
 export type NotificationMethodArgs<T extends "default" | "error" = "default"> =
