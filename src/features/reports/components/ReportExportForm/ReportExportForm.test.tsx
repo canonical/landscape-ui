@@ -19,13 +19,15 @@ const BUCKET_IDS: Record<BucketKey, readonly number[]> = {
   "2-14": [5, 6],
   "within-2": [1, 2, 3, 4],
 };
-const OTHER_IDS: readonly number[] = [];
-// Securely-patched IDs not in the over-60 bucket represent real "other" instances
-// for a parent that opens the export form with the default bucket selected.
-const OTHER_IDS_WITH_CONTENT: readonly number[] =
-  complianceReport.securely_patched.computer_ids.filter(
-    (id) => !BUCKET_IDS["over-60"].includes(id),
-  );
+const CLASSIFIED_IDS = new Set(Object.values(BUCKET_IDS).flat());
+const OTHER_IDS: readonly number[] = [
+  ...new Set([
+    ...complianceReport.securely_patched.computer_ids,
+    ...complianceReport.not_securely_patched.computer_ids,
+    ...complianceReport.usn_fixed_in["60"].computer_ids,
+    ...complianceReport.usn_pending_over_60_days.computer_ids,
+  ]),
+].filter((id) => !CLASSIFIED_IDS.has(id));
 
 const renderForm = () =>
   renderWithProviders(
@@ -37,6 +39,10 @@ const openAttributeGroup = async (
   name: RegExp,
 ) => {
   await user.click(screen.getByRole("tab", { name }));
+};
+
+const clickGenerateTsv = async (user: ReturnType<typeof userEvent.setup>) => {
+  await user.click(await screen.findByRole("button", { name: "Generate TSV" }));
 };
 
 describe("ReportExportForm", () => {
@@ -103,11 +109,9 @@ describe("ReportExportForm", () => {
       }),
     );
 
-    // OTHER_IDS is empty in our fixture too, so the message should still show —
-    // both the bucket and Other are empty.
     expect(
-      screen.getByText(/the selected bucket contains no instances/i),
-    ).toBeInTheDocument();
+      screen.queryByText(/the selected bucket contains no instances/i),
+    ).not.toBeInTheDocument();
   });
 
   it("does not show the empty-bucket message for the default populated bucket", () => {
@@ -170,7 +174,7 @@ describe("ReportExportForm", () => {
     ).not.toBeInTheDocument();
 
     // Step 1 — submit
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     await waitFor(() => {
       expect(requestBody.by_cve).toBe(true);
@@ -234,7 +238,7 @@ describe("ReportExportForm", () => {
     await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("checkbox", { name: "Hostname" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     await waitFor(() => {
       expect(capturedQuery).toBe("id:1 OR id:2 OR id:3 OR id:4");
@@ -322,7 +326,7 @@ describe("ReportExportForm", () => {
       "Default fields export",
     );
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     await waitFor(() => {
       expect(requestBody.selected_field_ids).toEqual(
@@ -429,7 +433,7 @@ describe("ReportExportForm", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     expect(requestCount).toBe(0);
     expect(
@@ -519,10 +523,7 @@ describe("ReportExportForm", () => {
     );
 
     renderWithProviders(
-      <ReportExportForm
-        bucketIds={BUCKET_IDS}
-        otherIds={OTHER_IDS_WITH_CONTENT}
-      />,
+      <ReportExportForm bucketIds={BUCKET_IDS} otherIds={OTHER_IDS} />,
     );
 
     await user.click(
@@ -536,7 +537,7 @@ describe("ReportExportForm", () => {
     );
     await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     await waitFor(() => {
       expect(capturedDescription).toBe(
@@ -581,7 +582,7 @@ describe("ReportExportForm", () => {
     );
     await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     await waitFor(() => {
       expect(capturedDescription).toBe(
@@ -627,7 +628,7 @@ describe("ReportExportForm", () => {
     );
     await openAttributeGroup(user, /primary identity/i);
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(screen.getByRole("button", { name: "Generate TSV" }));
+    await clickGenerateTsv(user);
 
     await waitFor(() => {
       expect(capturedDescription).toBe(

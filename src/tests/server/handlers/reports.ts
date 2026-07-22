@@ -5,10 +5,15 @@ import { http, HttpResponse } from "msw";
 import { createEndpointStatusNetworkError } from "./_constants";
 import { shouldApplyEndpointStatus } from "./_helpers";
 
+const OTHER_INSTANCE_ID = 11;
+
 export const complianceReport: ComplianceReport = {
   generated_at: "2026-06-11T10:38:00Z",
-  total: 11,
-  securely_patched: { count: 6, computer_ids: [1, 2, 3, 4, 5, 6] },
+  total: 12,
+  securely_patched: {
+    count: 7,
+    computer_ids: [1, 2, 3, 4, 5, 6, OTHER_INSTANCE_ID],
+  },
   not_securely_patched: { count: 5, computer_ids: [7, 8, 9, 10, 16] },
   covered_by_upgrade_profiles: { count: 1, computer_ids: [1] },
   contacted_recently: { count: 0, computer_ids: [] },

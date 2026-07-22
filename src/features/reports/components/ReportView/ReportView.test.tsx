@@ -56,7 +56,7 @@ describe("ReportView", () => {
     });
     expect(
       table.getByRole("link", {
-        name: "View the 6 securely patched instances",
+        name: "View the 7 securely patched instances",
       }),
     ).toBeInTheDocument();
   });
@@ -83,8 +83,8 @@ describe("ReportView", () => {
     expect(labels[5]).toContain("Other");
 
     // From the fixture: pending [7, 8, 9, 10, 16] wins over the cumulative
-    // fixed_in buckets, leaving 4 within 2 days, 2 in 2-14 days and none in
-    // the middle buckets or in the unclassified remainder.
+    // fixed_in buckets, leaving 4 within 2 days, 2 in 2-14 days, none in
+    // the middle buckets, and one accounted-but-unclassified instance in Other.
     expect(
       legend.getByRole("link", {
         name: "View the 5 instances in the 60+ days outstanding bucket",
@@ -98,6 +98,11 @@ describe("ReportView", () => {
     expect(
       legend.getByRole("link", {
         name: "View the 2 instances in the 2–14 days bucket",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      legend.getByRole("link", {
+        name: "View the 1 instances in the Other bucket",
       }),
     ).toBeInTheDocument();
   });
@@ -128,8 +133,13 @@ describe("ReportView", () => {
 
     await screen.findByText("Security upgrades");
     const otherRow = screen.getByText("Other").closest("tr") as HTMLElement;
-    expect(within(otherRow).getByText("0")).toBeInTheDocument();
-    expect(within(otherRow).queryByRole("link")).not.toBeInTheDocument();
+    const link = within(otherRow).getByRole("link", {
+      name: "View the 1 instances in the Other bucket",
+    });
+    expect(link).toBeInTheDocument();
+    expect(
+      decodeURIComponent(link.getAttribute("href") ?? "").replace(/\+/g, " "),
+    ).toContain("id:11");
   });
 
   it("renders no over-60-days arc when nothing is outstanding", async () => {
@@ -202,12 +212,12 @@ describe("ReportView", () => {
     );
 
     const link = await screen.findByRole("link", {
-      name: "View the 6 securely patched instances",
+      name: "View the 7 securely patched instances",
     });
-    // The fixture's securely patched instances are ids 1–6.
+    // The fixture's securely patched instances are ids 1-6 and 11.
     expect(
       decodeURIComponent(link.getAttribute("href") ?? "").replace(/\+/g, " "),
-    ).toContain("id:1 OR id:2 OR id:3 OR id:4 OR id:5 OR id:6");
+    ).toContain("id:1 OR id:2 OR id:3 OR id:4 OR id:5 OR id:6 OR id:11");
   });
 
   it("deep-links a patch speed bucket to its exact instances", async () => {

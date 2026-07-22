@@ -15,7 +15,8 @@ export const setSelectedInstanceIds = (ids: readonly number[]): void => {
   const next = Object.freeze([...ids]);
   const prev = selectedInstanceIds;
   const isSame =
-    prev.length === next.length && prev.every((id, index) => id === next[index]);
+    prev.length === next.length &&
+    prev.every((id, index) => id === next[index]);
 
   if (isSame) return;
 
