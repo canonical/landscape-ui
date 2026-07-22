@@ -12,8 +12,8 @@ import {
 } from "@canonical/react-components";
 import classNames from "classnames";
 import { useFormik } from "formik";
-import moment from "moment";
 import { type ReactNode, useCallback, useMemo, useState, type FC } from "react";
+import date from "@/libs/date";
 import SortableFieldList from "../SortableFieldList";
 import { getFilteredFieldGroups, getGroupSearchRank } from "./helpers";
 import { VALIDATION_SCHEMA } from "./constants";
@@ -232,8 +232,8 @@ const ExportForm: FC<ExportFormProps> = ({
             type="date"
             label="Keep until"
             required
-            min={moment().add(1, "day").format(INPUT_DATE_FORMAT)}
-            max={moment().add(100, "years").format(INPUT_DATE_FORMAT)}
+            min={date().add(1, "day").format(INPUT_DATE_FORMAT)}
+            max={date().add(100, "years").format(INPUT_DATE_FORMAT)}
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />

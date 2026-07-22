@@ -9,7 +9,7 @@ import {
   type ExportField,
   type ExportFormValues,
 } from "@/features/exports";
-import moment from "moment";
+import date from "@/libs/date";
 import type { FC } from "react";
 import { useNavigate } from "react-router";
 import { useExportActivitiesTsv } from "../../api/useExportActivitiesTsv";
@@ -49,7 +49,7 @@ const ActivitiesExportForm: FC<ActivitiesExportFormProps> = ({
         name: values.name.trim(),
         query,
         selected_field_ids: fieldsToExport.map((field) => field.id),
-        retain_until: moment(values.retainUntil).toISOString(),
+        retain_until: date(values.retainUntil).toISOString(),
       });
       const job = response.data;
       const exportScope = getExportScope({
