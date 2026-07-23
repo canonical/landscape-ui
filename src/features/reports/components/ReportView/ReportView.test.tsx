@@ -260,6 +260,23 @@ describe("ReportView", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows no-selection warning at top while keeping full report view with zero instances", async () => {
+    renderWithProviders(
+      <ReportView selectedInstanceIds={[]} isAllSelected={false} />,
+    );
+
+    expect(
+      screen.getByText("Select at least one instance to view a report."),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Report for 0 instances")).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Status" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Security upgrades", { selector: "p" }),
+    ).toBeInTheDocument();
+  });
+
   it("deep-links a status row to its exact instances", async () => {
     renderWithProviders(
       <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,

@@ -17,6 +17,7 @@ import moment from "moment";
 import type { FC } from "react";
 import { useState, useSyncExternalStore } from "react";
 import { useGetComplianceReport } from "../../api";
+import type { ComplianceReport } from "../../types";
 import type { DonutSegment } from "../ReportDonutChart";
 import ReportDonutChart from "../ReportDonutChart";
 import ReportExportForm from "../ReportExportForm";
@@ -24,6 +25,24 @@ import type { BucketKey } from "../ReportExportForm/constants";
 import type { MetricRow } from "../MetricBarTable";
 import MetricBarTable from "../MetricBarTable";
 import classes from "./ReportView.module.scss";
+
+const EMPTY_BUCKET = { count: 0, computer_ids: [] };
+
+const EMPTY_REPORT: ComplianceReport = {
+  generated_at: new Date(0).toISOString(),
+  total: 0,
+  securely_patched: EMPTY_BUCKET,
+  not_securely_patched: EMPTY_BUCKET,
+  covered_by_upgrade_profiles: EMPTY_BUCKET,
+  contacted_recently: EMPTY_BUCKET,
+  usn_fixed_in: {
+    "2": EMPTY_BUCKET,
+    "14": EMPTY_BUCKET,
+    "30": EMPTY_BUCKET,
+    "60": EMPTY_BUCKET,
+  },
+  usn_pending_over_60_days: EMPTY_BUCKET,
+};
 
 interface ReportViewProps {
   readonly selectedInstanceIds?: number[];
@@ -60,22 +79,16 @@ const ReportView: FC<ReportViewProps> = ({
 
   const shouldFetchReport = Boolean(isAllSelected) || reportIds.length > 0;
 
-  const query = isAllSelected
-    ? (allSelectedQuery ?? "")
-    : reportIds.length > 0
-      ? `id:${reportIds.join(" OR id:")}`
-      : "";
+  let query = "";
+  if (isAllSelected) {
+    query = allSelectedQuery ?? "";
+  } else if (reportIds.length > 0) {
+    query = `id:${reportIds.join(" OR id:")}`;
+  }
 
   const { report, isGettingComplianceReport, isComplianceReportError } =
     useGetComplianceReport({ query }, { enabled: shouldFetchReport });
 
-  if (!shouldFetchReport) {
-    return (
-      <Notification severity="information" title="No instances selected">
-        Select at least one instance to view a report.
-      </Notification>
-    );
-  }
   const regenerateReport = () => {
     setReportIds(currentIds);
   };
@@ -92,7 +105,7 @@ const ReportView: FC<ReportViewProps> = ({
     return <LoadingState />;
   }
 
-  if (isComplianceReportError || !report) {
+  if (shouldFetchReport && (isComplianceReportError || !report)) {
     return (
       <Notification severity="negative" title="Error">
         {CONTACT_SUPPORT_TEAM_MESSAGE}
@@ -100,7 +113,10 @@ const ReportView: FC<ReportViewProps> = ({
     );
   }
 
-  const { total } = report;
+  const reportData: ComplianceReport = shouldFetchReport
+    ? (report as ComplianceReport)
+    : EMPTY_REPORT;
+  const { total } = reportData;
   const headerCount = isAllSelected ? total : reportIds.length;
 
   // Every instance lands in exactly one bucket, worst first: instances with
@@ -110,11 +126,11 @@ const ReportView: FC<ReportViewProps> = ({
   // still unpatched for under 60 days, or patched after more than 60 days — is
   // reported honestly as "Other". We carry the exact computer ids per bucket so
   // the deep link matches the report's count precisely.
-  const pendingIds = report.usn_pending_over_60_days.computer_ids;
-  const withinTwoIds = report.usn_fixed_in["2"].computer_ids;
-  const withinFourteenIds = report.usn_fixed_in["14"].computer_ids;
-  const withinThirtyIds = report.usn_fixed_in["30"].computer_ids;
-  const withinSixtyIds = report.usn_fixed_in["60"].computer_ids;
+  const pendingIds = reportData.usn_pending_over_60_days.computer_ids;
+  const withinTwoIds = reportData.usn_fixed_in["2"].computer_ids;
+  const withinFourteenIds = reportData.usn_fixed_in["14"].computer_ids;
+  const withinThirtyIds = reportData.usn_fixed_in["30"].computer_ids;
+  const withinSixtyIds = reportData.usn_fixed_in["60"].computer_ids;
   const pendingSet = new Set(pendingIds);
   const withinTwoSet = new Set(withinTwoIds);
   const withinFourteenSet = new Set(withinFourteenIds);
@@ -151,8 +167,8 @@ const ReportView: FC<ReportViewProps> = ({
   // in securely/not-securely-patched and/or the USN sets) rather than from the
   // raw selection, which may include instances the server didn't account for.
   const accountedIds = new Set<number>([
-    ...report.securely_patched.computer_ids,
-    ...report.not_securely_patched.computer_ids,
+    ...reportData.securely_patched.computer_ids,
+    ...reportData.not_securely_patched.computer_ids,
     ...withinSixtyIds,
     ...pendingIds,
   ]);
@@ -221,32 +237,34 @@ const ReportView: FC<ReportViewProps> = ({
     {
       key: "securely-patched",
       label: "Securely patched",
-      count: report.securely_patched.count,
+      count: reportData.securely_patched.count,
       total,
       color: "positive",
-      countHref: instancesHref(report.securely_patched.computer_ids),
+      countHref: instancesHref(reportData.securely_patched.computer_ids),
       onCountActivate: closeSidePanel,
-      countAriaLabel: `View the ${report.securely_patched.count} securely patched instances`,
+      countAriaLabel: `View the ${reportData.securely_patched.count} securely patched instances`,
     },
     {
       key: "upgrade-profiles",
       label: "Upgrade profiles",
-      count: report.covered_by_upgrade_profiles.count,
+      count: reportData.covered_by_upgrade_profiles.count,
       total,
       color: "link",
-      countHref: instancesHref(report.covered_by_upgrade_profiles.computer_ids),
+      countHref: instancesHref(
+        reportData.covered_by_upgrade_profiles.computer_ids,
+      ),
       onCountActivate: closeSidePanel,
-      countAriaLabel: `View the ${report.covered_by_upgrade_profiles.count} instances covered by upgrade profiles`,
+      countAriaLabel: `View the ${reportData.covered_by_upgrade_profiles.count} instances covered by upgrade profiles`,
     },
     {
       key: "contacted",
       label: "Contacted in last 5 min",
-      count: report.contacted_recently.count,
+      count: reportData.contacted_recently.count,
       total,
       color: "neutral",
-      countHref: instancesHref(report.contacted_recently.computer_ids),
+      countHref: instancesHref(reportData.contacted_recently.computer_ids),
       onCountActivate: closeSidePanel,
-      countAriaLabel: `View the ${report.contacted_recently.count} instances contacted in the last 5 minutes`,
+      countAriaLabel: `View the ${reportData.contacted_recently.count} instances contacted in the last 5 minutes`,
     },
   ];
 
@@ -267,6 +285,11 @@ const ReportView: FC<ReportViewProps> = ({
         {`Report for ${pluralize(headerCount, ["instance"], "exact")}`}
       </SidePanel.Header>
       <SidePanel.Content>
+        {!shouldFetchReport && (
+          <Notification severity="information" title="No instances selected">
+            Select at least one instance to view a report.
+          </Notification>
+        )}
         <div className="p-segmented-control">
           <Button
             type="button"
@@ -316,7 +339,7 @@ const ReportView: FC<ReportViewProps> = ({
           />
         </section>
         <p className="u-text--muted p-text--small">
-          {`Report generated ${moment(report.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
+          {`Report generated ${moment(reportData.generated_at).format(DISPLAY_DATE_TIME_FORMAT)}`}
         </p>
       </SidePanel.Content>
     </>
