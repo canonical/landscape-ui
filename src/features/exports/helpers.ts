@@ -68,5 +68,16 @@ export const getStatusLabel = (job: ExportJob): string => {
   }
 };
 
-export const getTypeLabel = (job: ExportJob): string =>
-  job.type === "activity" ? "Activities" : "Instances";
+export const getTypeLabel = (job: ExportJob, source?: string): string => {
+  switch (job.type) {
+    case "activity":
+      return "Activities";
+    case "report":
+      if (source === "details") {
+        return "Instances in report";
+      }
+      return "Report";
+    default:
+      return "Instances";
+  }
+};

@@ -16,10 +16,10 @@ interface InstancesContainerProps {
   readonly selectedInstances: Instance[];
   readonly setSelectedInstances: (instances: Instance[]) => void;
   readonly onChangeFilter: () => void;
-  readonly isGettingInstances: boolean;
   readonly isAllSelected: boolean;
   readonly onSelectAll: () => void;
   readonly onClearSelection: () => void;
+  readonly isGettingInstances: boolean;
 }
 
 const InstancesContainer = memo(function InstancesContainer({

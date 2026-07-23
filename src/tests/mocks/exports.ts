@@ -164,6 +164,22 @@ export const processingAlmostDoneExportJob: ExportJob = {
   query: "tag:production",
 };
 
+export const newComplianceExportJob: ExportJob = {
+  id: 12,
+  name: "Compliance export 2026-06-24 10:00:00",
+  filename: "compliance-export-1.tsv",
+  row_count: 0,
+  type: "report",
+  created_at: "2026-06-24T10:00:00.000Z",
+  status: "processing",
+  progress: 0,
+  download_ready: false,
+  retain_until: "2029-06-24T10:00:00.000Z",
+  query: "id:42 OR id:107",
+  description:
+    "Instances that took 14-30 days to apply a USN, including other unclassified instances, organized by CVE",
+};
+
 // Default fixtures served by the MSW exports handlers so the Exports UI is fully
 // browsable in dev mode (`VITE_MSW_ENABLED`) and resolvable by id in tests.
 export const DEFAULT_EXPORT_JOBS: ExportJob[] = [
@@ -178,4 +194,5 @@ export const DEFAULT_EXPORT_JOBS: ExportJob[] = [
   processingMinutesExportJob,
   processingSecondsExportJob,
   processingAlmostDoneExportJob,
+  newComplianceExportJob,
 ];

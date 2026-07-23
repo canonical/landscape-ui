@@ -1,54 +1,64 @@
-import { API_URL_OLD } from "@/constants";
+import { API_URL } from "@/constants";
+import type { ComplianceReport } from "@/features/reports";
 import { getEndpointStatus } from "@/tests/controllers/controller";
 import { http, HttpResponse } from "msw";
-import { isAction, shouldApplyEndpointStatus } from "./_helpers";
+import { createEndpointStatusNetworkError } from "./_constants";
+import { shouldApplyEndpointStatus } from "./_helpers";
 
-const usnTimeToFix = {
-  "2": [],
-  "14": [],
-  "30": [],
-  "60": [],
-  pending: [],
+const OTHER_INSTANCE_ID = 11;
+
+export const complianceReport: ComplianceReport = {
+  generated_at: "2026-06-11T10:38:00Z",
+  total: 12,
+  securely_patched: {
+    count: 7,
+    computer_ids: [1, 2, 3, 4, 5, 6, OTHER_INSTANCE_ID],
+  },
+  not_securely_patched: { count: 5, computer_ids: [7, 8, 9, 10, 16] },
+  covered_by_upgrade_profiles: { count: 1, computer_ids: [1] },
+  contacted_recently: { count: 0, computer_ids: [] },
+  usn_fixed_in: {
+    "2": { count: 4, computer_ids: [1, 2, 3, 4] },
+    "14": { count: 6, computer_ids: [1, 2, 3, 4, 5, 6] },
+    "30": { count: 8, computer_ids: [1, 2, 3, 4, 5, 6, 7, 8] },
+    "60": { count: 8, computer_ids: [1, 2, 3, 4, 5, 6, 7, 8] },
+  },
+  usn_pending_over_60_days: { count: 5, computer_ids: [7, 8, 9, 10, 16] },
+};
+
+// A report for a selection the server accounted for but with nothing to show,
+// so the "empty" endpoint status can be simulated for this endpoint too.
+const emptyBucket = { count: 0, computer_ids: [] };
+export const emptyComplianceReport: ComplianceReport = {
+  generated_at: complianceReport.generated_at,
+  total: 0,
+  securely_patched: emptyBucket,
+  not_securely_patched: emptyBucket,
+  covered_by_upgrade_profiles: emptyBucket,
+  contacted_recently: emptyBucket,
+  usn_fixed_in: {
+    "2": emptyBucket,
+    "14": emptyBucket,
+    "30": emptyBucket,
+    "60": emptyBucket,
+  },
+  usn_pending_over_60_days: emptyBucket,
 };
 
 export default [
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "GetCSVComplianceData")) {
-      return;
-    }
+  http.get(`${API_URL}computers/report`, () => {
+    if (shouldApplyEndpointStatus("computers/report")) {
+      const { status } = getEndpointStatus("computers/report");
 
-    if (shouldApplyEndpointStatus("reports")) {
-      const endpointStatus = getEndpointStatus();
+      if (status === "error") {
+        throw createEndpointStatusNetworkError();
+      }
 
-      if (endpointStatus.status === "empty") {
-        return HttpResponse.json("");
+      if (status === "empty") {
+        return HttpResponse.json(emptyComplianceReport);
       }
     }
 
-    return HttpResponse.json("name,status\ninstance-1,ok");
-  }),
-
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "GetComputersNotUpgraded")) {
-      return;
-    }
-
-    return HttpResponse.json([]);
-  }),
-
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "GetNotPingingComputers")) {
-      return;
-    }
-
-    return HttpResponse.json([]);
-  }),
-
-  http.get(API_URL_OLD, ({ request }) => {
-    if (!isAction(request, "GetUSNTimeToFix")) {
-      return;
-    }
-
-    return HttpResponse.json(usnTimeToFix);
+    return HttpResponse.json(complianceReport);
   }),
 ];
