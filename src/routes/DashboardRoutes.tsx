@@ -7,6 +7,7 @@ import SecondaryNavigation from "@/templates/dashboard/SecondaryNavigation";
 import { ACCOUNT_SETTINGS } from "@/templates/dashboard/SecondaryNavigation/constants";
 import { REPOSITORY_SUBMENU } from "@/templates/dashboard/Navigation/constants";
 import { SelfHostedGuard } from "@/components/guards/SelfHostedGuard";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import classes from "@/templates/dashboard/DashboardTemplate.module.scss";
 import ProfilesOutlet from "@/routes/ProfilesOutlet";
 
@@ -27,7 +28,9 @@ export const DashboardRoutes = (
         path={PATHS.alerts.root}
         element={<Pages.AlertNotificationsPage />}
       />
-      <Route path={PATHS.exports.root} element={<Pages.ExportsPage />} />
+      {TSV_EXPORTS_ENABLED && (
+        <Route path={PATHS.exports.root} element={<Pages.ExportsPage />} />
+      )}
       <Route path={PATHS.error.envError} element={<Pages.EnvError />} />
 
       {/* --- Instances --- */}

@@ -57,12 +57,14 @@ const renderPageActions = (
 describe("InstancesPageActions", () => {
   beforeEach(() => {
     vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(true);
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
     setEndpointStatus("default");
   });
 
   afterEach(() => {
     resetScreenSize();
+    vi.restoreAllMocks();
   });
 
   it("should render correct action groups", async () => {
@@ -137,6 +139,22 @@ describe("InstancesPageActions", () => {
 
       expect(
         screen.queryByRole("menuitem", { name: /view report/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("'Export selection as TSV' menu item should not be visible when feature disabled", async () => {
+      vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+
+      renderPageActions();
+
+      await userEvent.click(
+        screen.getByRole("button", { name: MENU_LABELS[0] }),
+      );
+
+      expect(
+        screen.queryByRole("menuitem", {
+          name: /export selection as tsv/i,
+        }),
       ).not.toBeInTheDocument();
     });
 
