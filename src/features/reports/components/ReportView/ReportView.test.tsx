@@ -237,6 +237,29 @@ describe("ReportView", () => {
     expect(capturedQuery).toBe("tag:prod");
   });
 
+  it("uses report total in header when all results are selected", async () => {
+    act(() => {
+      setSelectedInstanceIds([
+        ALL_SELECTED_STORE_ID_A,
+        ALL_SELECTED_STORE_ID_B,
+      ]);
+    });
+
+    renderWithProviders(
+      <ReportView
+        selectedInstanceIds={undefined}
+        isAllSelected
+        allSelectedQuery="tag:prod"
+      />,
+    );
+
+    await screen.findByText("Security upgrades");
+
+    expect(
+      screen.getByText(`Report for ${complianceReport.total} instances`),
+    ).toBeInTheDocument();
+  });
+
   it("deep-links a status row to its exact instances", async () => {
     renderWithProviders(
       <ReportView selectedInstanceIds={instanceIds} isAllSelected={false} />,

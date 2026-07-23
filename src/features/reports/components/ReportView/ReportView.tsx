@@ -94,6 +94,7 @@ const ReportView: FC<ReportViewProps> = ({
   }
 
   const { total } = report;
+  const headerCount = isAllSelected ? total : reportIds.length;
 
   // Every instance lands in exactly one bucket, worst first: instances with
   // USNs outstanding for over 60 days take priority, the rest are split by the
@@ -256,7 +257,7 @@ const ReportView: FC<ReportViewProps> = ({
   return (
     <>
       <SidePanel.Header>
-        {`Report for ${pluralize(reportIds.length, ["instance"], "exact")}`}
+        {`Report for ${pluralize(headerCount, ["instance"], "exact")}`}
       </SidePanel.Header>
       <SidePanel.Content>
         <div className="p-segmented-control">
