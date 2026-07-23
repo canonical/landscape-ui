@@ -1,4 +1,5 @@
 import { ResponsiveButtons } from "@/components/ui";
+import { TSV_EXPORTS_ENABLED } from "@/constants";
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
 import usePageParams from "@/hooks/usePageParams";
@@ -80,15 +81,19 @@ const ActivitiesActions: FC<ActivitiesActionsProps> = ({
     <ResponsiveButtons
       collapseFrom="xl"
       buttons={[
-        <Button
-          key="export"
-          className="p-segmented-control__button"
-          type="button"
-          disabled={!isAllSelected && selected.length === 0}
-          onClick={handleExport}
-        >
-          <span>Export selection as TSV</span>
-        </Button>,
+        ...(TSV_EXPORTS_ENABLED
+          ? [
+              <Button
+                key="export"
+                className="p-segmented-control__button"
+                type="button"
+                disabled={!isAllSelected && selected.length === 0}
+                onClick={handleExport}
+              >
+                <span>Export selection as TSV</span>
+              </Button>,
+            ]
+          : []),
         <ConfirmationButton
           key="approve"
           type="button"

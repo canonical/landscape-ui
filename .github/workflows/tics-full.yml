@@ -20,6 +20,7 @@ jobs:
       VITE_APP_TITLE: Landscape
       VITE_ROOT_PATH: /new_dashboard/
       VITE_REPORT_VIEW_ENABLED: false
+      VITE_TSV_EXPORTS_ENABLED: false
       VITE_DETAILED_UPGRADES_VIEW_ENABLED: false
       VITE_APP_VERSION: "26.04.0.12"
       VITE_APP_COMMIT: ${{ github.sha }}

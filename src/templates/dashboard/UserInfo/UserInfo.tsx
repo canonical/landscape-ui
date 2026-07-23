@@ -10,7 +10,7 @@ import { ACCOUNT_SETTINGS } from "../SecondaryNavigation/constants";
 import { useAuthHandle } from "@/features/auth";
 import useDebug from "@/hooks/useDebug";
 import { ROUTES } from "@/libs/routes";
-import { APP_COMMIT, APP_VERSION } from "@/constants";
+import { APP_COMMIT, APP_VERSION, TSV_EXPORTS_ENABLED } from "@/constants";
 
 const UserInfo: FC = () => {
   const { user, logout } = useAuth();
@@ -136,28 +136,33 @@ const UserInfo: FC = () => {
             </Link>
           )}
         </li>
-        <li className="p-side-navigation__item">
-          <Link
-            className={classNames("p-side-navigation__link", classes.link)}
-            to={ROUTES.exports.root()}
-            aria-current={
-              pathname.includes(ROUTES.exports.root()) ? "page" : undefined
-            }
-          >
-            <Icon
-              name="export"
-              className={classNames(
-                "is-light p-side-navigation__icon",
-                classes.icon,
-              )}
-            />
-            <span
-              className={classNames("p-side-navigation__label", classes.label)}
+        {TSV_EXPORTS_ENABLED && (
+          <li className="p-side-navigation__item">
+            <Link
+              className={classNames("p-side-navigation__link", classes.link)}
+              to={ROUTES.exports.root()}
+              aria-current={
+                pathname.includes(ROUTES.exports.root()) ? "page" : undefined
+              }
             >
-              Exports
-            </span>
-          </Link>
-        </li>
+              <Icon
+                name="export"
+                className={classNames(
+                  "is-light p-side-navigation__icon",
+                  classes.icon,
+                )}
+              />
+              <span
+                className={classNames(
+                  "p-side-navigation__label",
+                  classes.label,
+                )}
+              >
+                Exports
+              </span>
+            </Link>
+          </li>
+        )}
         <li className="p-side-navigation__item">
           <Link
             className={classNames("p-side-navigation__link", classes.link)}
