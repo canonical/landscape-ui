@@ -343,7 +343,7 @@ export default [
 
   http.post(`${API_URL}computers/release-upgrades`, async () => {
     if (shouldApplyEndpointStatus("computers/release-upgrades")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/release-upgrades");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -355,7 +355,7 @@ export default [
 
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
     if (shouldApplyEndpointStatus("computers/upgrade-packages")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/upgrade-packages");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -366,7 +366,7 @@ export default [
 
   http.post(`${API_URL}computers/:computerId/restart`, async () => {
     if (shouldApplyEndpointStatus("computers/:computerId/restart")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/:computerId/restart");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -383,7 +383,7 @@ export default [
     }
 
     if (shouldApplyEndpointStatus("computers/:computerId")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/:computerId");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -399,7 +399,7 @@ export default [
 
   http.put(`${API_URL}computers/:computerId`, async () => {
     if (shouldApplyEndpointStatus("editInstance")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("editInstance");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -412,7 +412,7 @@ export default [
     `${API_URL}computers/:computerId/usergroups/update_bulk`,
     async () => {
       if (shouldApplyEndpointStatus("userGroups")) {
-        const { status } = getEndpointStatus();
+        const { status } = getEndpointStatus("userGroups");
         if (status === "error") {
           throw createEndpointStatusError();
         }
@@ -672,7 +672,7 @@ export default [
 
   http.post(`${API_URL}computers/exports`, async ({ request }) => {
     if (shouldApplyEndpointStatus("computers/exports")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/exports");
       if (status === "error") {
         return createEndpointStatusError();
       }
@@ -699,7 +699,7 @@ export default [
 
   http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
     if (shouldApplyEndpointStatus("computers/report:export")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/report:export");
       if (status === "error") {
         return createEndpointStatusError();
       }
