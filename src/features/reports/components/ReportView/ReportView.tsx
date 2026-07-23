@@ -58,17 +58,24 @@ const ReportView: FC<ReportViewProps> = ({
     (currentIds.length !== reportIds.length ||
       !currentIds.every((id) => reportIdSet.has(id)));
 
-  let query = "";
-  if (isAllSelected) {
-    query = allSelectedQuery ?? "";
-  } else if (reportIds.length > 0) {
-    query = `id:${reportIds.join(" OR id:")}`;
-  }
-  const { report, isGettingComplianceReport, isComplianceReportError } =
-    useGetComplianceReport({
-      query,
-    });
+  const shouldFetchReport = Boolean(isAllSelected) || reportIds.length > 0;
 
+  const query = isAllSelected
+    ? (allSelectedQuery ?? "")
+    : reportIds.length > 0
+      ? `id:${reportIds.join(" OR id:")}`
+      : "";
+
+  const { report, isGettingComplianceReport, isComplianceReportError } =
+    useGetComplianceReport({ query }, { enabled: shouldFetchReport });
+
+  if (!shouldFetchReport) {
+    return (
+      <Notification severity="information" title="No instances selected">
+        Select at least one instance to view a report.
+      </Notification>
+    );
+  }
   const regenerateReport = () => {
     setReportIds(currentIds);
   };
