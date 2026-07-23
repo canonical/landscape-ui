@@ -28,11 +28,13 @@ import classes from "./ReportView.module.scss";
 interface ReportViewProps {
   readonly selectedInstanceIds?: number[];
   readonly isAllSelected?: boolean;
+  readonly allSelectedQuery?: string;
 }
 
 const ReportView: FC<ReportViewProps> = ({
   selectedInstanceIds,
   isAllSelected,
+  allSelectedQuery,
 }) => {
   const { closeSidePanel, createSidePathPusher, lastSidePathSegment } =
     usePageParams();
@@ -52,11 +54,16 @@ const ReportView: FC<ReportViewProps> = ({
   const [reportIds, setReportIds] = useState<readonly number[]>(initialIds);
   const reportIdSet = new Set(reportIds);
   const selectionChanged =
-    currentIds.length !== reportIds.length ||
-    !currentIds.every((id) => reportIdSet.has(id));
+    !isAllSelected &&
+    (currentIds.length !== reportIds.length ||
+      !currentIds.every((id) => reportIdSet.has(id)));
 
-  // Build query: undefined selectedIds means "all selected", so omit query filter
-  const query = reportIds.length === 0 ? "" : `id:${reportIds.join(" OR id:")}`;
+  let query = "";
+  if (isAllSelected) {
+    query = allSelectedQuery ?? "";
+  } else if (reportIds.length > 0) {
+    query = `id:${reportIds.join(" OR id:")}`;
+  }
   const { report, isGettingComplianceReport, isComplianceReportError } =
     useGetComplianceReport({
       query,

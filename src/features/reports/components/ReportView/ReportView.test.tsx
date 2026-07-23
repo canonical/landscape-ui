@@ -21,6 +21,8 @@ const UNACCOUNTED_ID_A = 98;
 const UNACCOUNTED_ID_B = 99;
 // An id placed only in the 60-day bucket so the 30–60 slice has a member.
 const THIRTY_SIXTY_ID = 17;
+const ALL_SELECTED_STORE_ID_A = 999;
+const ALL_SELECTED_STORE_ID_B = 1000;
 
 describe("ReportView", () => {
   beforeEach(() => {
@@ -204,6 +206,35 @@ describe("ReportView", () => {
 
     await user.click(link);
     expect(closeSidePanel).toHaveBeenCalled();
+  });
+
+  it("uses allSelectedQuery when all results are selected", async () => {
+    let capturedQuery: string | null = null;
+    server.use(
+      http.get(`${API_URL}computers/report`, ({ request }) => {
+        capturedQuery = new URL(request.url).searchParams.get("query");
+        return HttpResponse.json(complianceReport);
+      }),
+    );
+
+    act(() => {
+      setSelectedInstanceIds([
+        ALL_SELECTED_STORE_ID_A,
+        ALL_SELECTED_STORE_ID_B,
+      ]);
+    });
+
+    renderWithProviders(
+      <ReportView
+        selectedInstanceIds={undefined}
+        isAllSelected
+        allSelectedQuery="tag:prod"
+      />,
+    );
+
+    await screen.findByText("Security upgrades");
+
+    expect(capturedQuery).toBe("tag:prod");
   });
 
   it("deep-links a status row to its exact instances", async () => {

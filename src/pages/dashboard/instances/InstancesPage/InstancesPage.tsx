@@ -2,7 +2,10 @@ import PageContent from "@/components/layout/PageContent";
 import PageHeader from "@/components/layout/PageHeader";
 import PageMain from "@/components/layout/PageMain";
 import SidePanel from "@/components/layout/SidePanel";
-import { DETAILED_UPGRADES_VIEW_ENABLED } from "@/constants";
+import {
+  DETAILED_UPGRADES_VIEW_ENABLED,
+  REPORT_VIEW_ENABLED,
+} from "@/constants";
 import {
   getInstanceListParams,
   InstancesPageActions,
@@ -27,12 +30,16 @@ const InstancesExportForm = lazy(
   async () => import("@/features/instances/components/InstancesExportForm"),
 );
 
-const ReportView = lazy(
-  async () => import("@/features/reports/components/ReportView"),
-);
+const ReportView = lazy(async () => {
+  const module = await import("@/features/reports");
+  return { default: module.ReportView };
+});
 
 const InstancesPage: FC = () => {
-  useSetDynamicFilterValidation("sidePath", ["export", "report"]);
+  useSetDynamicFilterValidation(
+    "sidePath",
+    REPORT_VIEW_ENABLED ? ["export", "report"] : ["export"],
+  );
   const {
     currentPage,
     pageSize,
@@ -69,12 +76,10 @@ const InstancesPage: FC = () => {
   }, []);
 
   useEffect(() => {
-    setSelectedInstanceIds(
-      isAllSelected
-        ? instances.map(({ id }) => id)
-        : selectedInstances.map(({ id }) => id),
-    );
-  }, [selectedInstances, isAllSelected, instances]);
+    if (!isAllSelected) {
+      setSelectedInstanceIds(selectedInstances.map(({ id }) => id));
+    }
+  }, [selectedInstances, isAllSelected]);
 
   return (
     <PageMain>
@@ -130,24 +135,29 @@ const InstancesPage: FC = () => {
           </SidePanel.Suspense>
         )}
       </SidePanel>
-      <SidePanel
-        isOpen={sidePath[0] === "report"}
-        onClose={popSidePathUntilClear}
-        size="medium"
-      >
-        {sidePath[0] === "report" && (
-          <SidePanel.Suspense key="report">
-            <ReportView
-              selectedInstanceIds={
-                isAllSelected
-                  ? undefined
-                  : selectedInstances.map(({ id }) => id)
-              }
-              isAllSelected={isAllSelected}
-            />
-          </SidePanel.Suspense>
-        )}
-      </SidePanel>
+      {REPORT_VIEW_ENABLED && (
+        <SidePanel
+          isOpen={sidePath[0] === "report"}
+          onClose={popSidePathUntilClear}
+          size="medium"
+        >
+          {sidePath[0] === "report" && (
+            <SidePanel.Suspense key="report">
+              <ReportView
+                selectedInstanceIds={
+                  isAllSelected
+                    ? undefined
+                    : selectedInstances.map(({ id }) => id)
+                }
+                isAllSelected={isAllSelected}
+                allSelectedQuery={
+                  isAllSelected ? (instanceListParams.query ?? "") : undefined
+                }
+              />
+            </SidePanel.Suspense>
+          )}
+        </SidePanel>
+      )}
     </PageMain>
   );
 };

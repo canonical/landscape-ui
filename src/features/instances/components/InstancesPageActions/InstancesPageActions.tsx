@@ -337,19 +337,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasInstancesToExport,
     },
-    REPORT_VIEW_ENABLED
-      ? {
-          children: (
-            <>
-              <Icon name="status" />
-              <span>View report</span>
-            </>
-          ),
-          onClick: handleReportView,
-          hasIcon: true,
-          disabled: !hasSelectedInstances,
-        }
-      : {},
+    ...(REPORT_VIEW_ENABLED
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="status" />
+                <span>View report</span>
+              </>
+            ),
+            onClick: handleReportView,
+            hasIcon: true,
+            disabled: !hasSelectedInstances,
+          },
+        ]
+      : []),
   ].filter((link) => link.children);
 
   return (

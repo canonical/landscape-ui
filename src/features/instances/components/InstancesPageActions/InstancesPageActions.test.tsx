@@ -10,7 +10,7 @@ import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ComponentProps } from "react";
 import { useLocation } from "react-router";
-import { beforeEach } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -63,6 +63,7 @@ describe("InstancesPageActions", () => {
 
   afterEach(() => {
     resetScreenSize();
+    vi.restoreAllMocks();
   });
 
   it("should render correct action groups", async () => {
