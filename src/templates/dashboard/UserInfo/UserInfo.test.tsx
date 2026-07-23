@@ -3,6 +3,7 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserInfo from "./UserInfo";
 import { APP_COMMIT, APP_VERSION } from "@/constants";
+import * as Constants from "@/constants";
 import { vi } from "vitest";
 import useAuth from "@/hooks/useAuth";
 import type { AuthContextProps } from "@/context/auth";
@@ -29,6 +30,10 @@ const labels = ["Unknown user", "Alerts", "Sign out"];
 describe("UserInfo", () => {
   beforeEach(() => {
     vi.mocked(useAuth).mockReturnValue(mockAuth);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("renders correctly", () => {
@@ -84,6 +89,25 @@ describe("UserInfo", () => {
   it("renders Alerts link", () => {
     renderWithProviders(<UserInfo />);
     expect(screen.getByRole("link", { name: /alerts/i })).toBeInTheDocument();
+  });
+
+  it("hides the Exports link when TSV exports are disabled", () => {
+    renderWithProviders(<UserInfo />);
+
+    expect(
+      screen.queryByRole("link", { name: "Exports" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the Exports link when TSV exports are enabled", () => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
+
+    renderWithProviders(<UserInfo />);
+
+    expect(screen.getByRole("link", { name: "Exports" })).toHaveAttribute(
+      "href",
+      ROUTES.exports.root(),
+    );
   });
 
   it("renders version info", () => {
