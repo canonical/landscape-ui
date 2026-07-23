@@ -45,7 +45,8 @@ describe("InstancesPage", () => {
   });
 
   it("does not show the report panel for a stale report side path when feature is disabled", async () => {
-    vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
+vi.restoreAllMocks();
+vi.spyOn(Constants, "REPORT_VIEW_ENABLED", "get").mockReturnValue(false);
 
     renderWithProviders(<InstancesPage />, {}, "/?sidePath=report");
 

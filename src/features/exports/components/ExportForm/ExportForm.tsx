@@ -237,20 +237,22 @@ const ExportForm: FC<ExportFormProps> = ({
             error={getFormikError(formik, "retainUntil")}
             {...formik.getFieldProps("retainUntil")}
           />
-          <Blocks.Item title="Attributes">
-            <SearchBox
-              id="export-attributes-searchbox"
-              label="Search attributes"
-              placeholder="Search attributes"
-              externallyControlled
-              value={attributeSearch}
-              aria-label="Search attributes"
-              searchButtonType="button"
-              onChange={(value) => {
-                setAttributeSearch(value);
-              }}
-            />
-          </Blocks.Item>
+          <Blocks>
+            <Blocks.Item title="Attributes">
+              <SearchBox
+                id="export-attributes-searchbox"
+                label="Search attributes"
+                placeholder="Search attributes"
+                externallyControlled
+                value={attributeSearch}
+                aria-label="Search attributes"
+                searchButtonType="button"
+                onChange={(value) => {
+                  setAttributeSearch(value);
+                }}
+              />
+            </Blocks.Item>
+          </Blocks>
         </div>
         <div className={classNames({ "is-error": !!selectedFieldIdsError })}>
           {!!selectedFieldIdsError && (
