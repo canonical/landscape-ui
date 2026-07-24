@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import PublishMirrorContentsBlock from "./PublishMirrorContentsBlock";
 import { publications } from "@/tests/mocks/publications";
 import { mirrors } from "@/tests/mocks/mirrors";
+import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const [mirror] = mirrors;
 const [publication] = publications;
@@ -20,7 +21,7 @@ describe("PublishMirrorContentsBlock", () => {
     expect(screen.getByText(publication.distribution)).toBeInTheDocument();
     expect(screen.getByText(mirror.components.join(", "))).toBeInTheDocument();
     expect(
-      screen.getByText(publication.architectures.join(", ")),
+      screen.getByText((publication.architectures ?? []).join(", ")),
     ).toBeInTheDocument();
   });
 
@@ -37,7 +38,21 @@ describe("PublishMirrorContentsBlock", () => {
 
     expect(screen.getByText(mirror.distribution)).toBeInTheDocument();
     expect(
-      screen.getByText(publication.architectures.join(", ")),
+      screen.getByText((publication.architectures ?? []).join(", ")),
     ).toBeInTheDocument();
+  });
+
+  it("renders no data for architectures when the publication omits them", () => {
+    renderWithProviders(
+      <PublishMirrorContentsBlock
+        mirror={mirror}
+        publication={{
+          ...publication,
+          architectures: undefined,
+        }}
+      />,
+    );
+
+    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
   });
 });

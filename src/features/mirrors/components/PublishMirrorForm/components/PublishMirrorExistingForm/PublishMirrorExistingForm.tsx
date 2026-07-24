@@ -38,7 +38,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
 
     onSubmit: async (values) => {
       try {
-        await publishPublication({ name: values.name });
+        await publishPublication({ name: values.name ?? "" });
 
         closeSidePanel();
 
@@ -79,7 +79,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
       <Blocks>
         <Blocks.Item title="Details">
           <Select
-            label="Publication name"
+            label="Publication"
             required
             options={publicationOptions}
             error={getFormikError(formik, "name")}
