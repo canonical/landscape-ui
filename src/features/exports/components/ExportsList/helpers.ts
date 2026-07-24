@@ -12,5 +12,13 @@ export const getStatusIcon = (job: ExportJob): string => {
   }
 };
 
-export const getTypeIcon = (job: ExportJob): string =>
-  job.type === "activity" ? "switcher-environments" : "machines";
+export const getTypeIcon = (job: ExportJob): string => {
+  switch (job.type) {
+    case "activity":
+      return "switcher-environments";
+    case "report":
+      return "file";
+    default:
+      return "machines";
+  }
+};

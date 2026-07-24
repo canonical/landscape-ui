@@ -5,6 +5,7 @@ import {
   completedExportJob,
   processingExportJob,
   failedExportJob,
+  newComplianceExportJob,
 } from "@/tests/mocks/exports";
 import ExportsList from "./ExportsList";
 
@@ -24,6 +25,12 @@ describe("ExportsList", () => {
 
     const typeCells = screen.getAllByText("Instances");
     expect(typeCells.length).toBe(3);
+  });
+
+  it('renders "Report" as the type label for report exports', () => {
+    renderWithProviders(<ExportsList exportJobs={[newComplianceExportJob]} />);
+
+    expect(screen.getByText("Report")).toBeInTheDocument();
   });
 
   it("renders the status labels", () => {

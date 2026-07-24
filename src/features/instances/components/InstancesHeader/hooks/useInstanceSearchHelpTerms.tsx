@@ -348,6 +348,40 @@ const useInstanceSearchHelpTerms = () => {
       ),
     },
     {
+      term: "last-ping-minutes:<nr-of-minutes>",
+      description: (
+        <span>
+          Instances that were active in the last{" "}
+          <code>&lt;nr-of-minutes&gt;</code> minutes, where{" "}
+          <code>&lt;nr-of-minutes&gt;</code> is a value between 1 and 525600.
+        </span>
+      ),
+    },
+    {
+      term: "usn-outstanding:<nr-of-days>",
+      description: (
+        <span>
+          Instances with unresolved USNs released more than{" "}
+          <code>&lt;nr-of-days&gt;</code> days ago.
+        </span>
+      ),
+    },
+    {
+      term: "usn-applied-in:<nr-of-days>",
+      description: (
+        <span>
+          Instances which applied all recently released USNs within{" "}
+          <code>&lt;nr-of-days&gt;</code> days.
+        </span>
+      ),
+    },
+    {
+      term: "has:upgrade-profile",
+      description: (
+        <span>Instances covered by at least one upgrade profile.</span>
+      ),
+    },
+    {
       term: "has-pro-management:<option>",
       description: (
         <span>

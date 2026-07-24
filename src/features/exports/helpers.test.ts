@@ -11,6 +11,7 @@ import {
   completedActivitiesExportJob,
   failedExportJob,
   processingExportJob,
+  newComplianceExportJob,
 } from "@/tests/mocks/exports";
 
 describe("buildExportQuery", () => {
@@ -112,5 +113,9 @@ describe("getTypeLabel", () => {
 
   it('returns "Activities" for activity exports', () => {
     expect(getTypeLabel(completedActivitiesExportJob)).toBe("Activities");
+  });
+
+  it('returns "Report" for report exports', () => {
+    expect(getTypeLabel(newComplianceExportJob)).toBe("Report");
   });
 });
