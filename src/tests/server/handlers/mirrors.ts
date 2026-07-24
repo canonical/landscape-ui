@@ -98,9 +98,7 @@ export default [
         mirrorId,
         name: `mirrors/${mirrorId}`,
         ...requestBody,
-        distribution: requestBody.distribution?.trim()
-          ? requestBody.distribution
-          : "jammy",
+        distribution: requestBody.distribution?.trim() || "jammy",
         architectures: requestBody.architectures?.length
           ? requestBody.architectures
           : ["amd64"],
