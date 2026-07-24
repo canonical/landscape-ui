@@ -162,7 +162,7 @@ describe("MirrorDetails", () => {
       screen.queryByRole("button", { name: "Update" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText("Signature preserving mirrors can't be updated."),
+      screen.getByText(/Signature-preserving mirrors/i),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Close notification" }),
