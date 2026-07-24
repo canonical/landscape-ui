@@ -4,6 +4,7 @@ import {
   Button,
   Icon,
   ICONS,
+  Notification,
   Tabs,
   Tooltip,
 } from "@canonical/react-components";
@@ -133,32 +134,33 @@ const MirrorDetails: FC = () => {
             <Icon name="edit" />
             <span>Edit</span>
           </Button>
-          {operation && !operation.done ? (
-            <Tooltip
-              message="You must wait for this action to be completed to trigger a new update."
-              position="btm-center"
-            >
+          {!mirror.preserveSignatures &&
+            (operation && !operation.done ? (
+              <Tooltip
+                message="You must wait for this action to be completed to trigger a new update."
+                position="btm-center"
+              >
+                <Button
+                  type="button"
+                  hasIcon
+                  className="p-segmented-control__button"
+                  disabled
+                >
+                  <Icon name="spinner" className="u-animation--spin" />
+                  <span>Updating</span>
+                </Button>
+              </Tooltip>
+            ) : (
               <Button
                 type="button"
                 hasIcon
                 className="p-segmented-control__button"
-                disabled
+                onClick={openUpdateModal}
               >
-                <Icon name="spinner" className="u-animation--spin" />
-                <span>Updating</span>
+                <Icon name="restart" />
+                <span>Update</span>
               </Button>
-            </Tooltip>
-          ) : (
-            <Button
-              type="button"
-              hasIcon
-              className="p-segmented-control__button"
-              onClick={openUpdateModal}
-            >
-              <Icon name="restart" />
-              <span>Update</span>
-            </Button>
-          )}
+            ))}
           <Button
             type="button"
             hasIcon
@@ -182,7 +184,13 @@ const MirrorDetails: FC = () => {
         <Tabs links={links} />
         {tabId === "details" && (
           <Blocks>
-            <Blocks.Item title="Details">
+            <Blocks.Item>
+              {mirror.preserveSignatures && (
+                <Notification severity="information">
+                  Signature preserving mirrors can&apos;t be updated.
+                </Notification>
+              )}
+              <h4 className="p-heading--5 p-text--small-caps">Details</h4>
               <InfoGrid dense>
                 <InfoGrid.Item label="Name" value={mirror.displayName} />
                 <InfoGrid.Item

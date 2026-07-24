@@ -158,6 +158,15 @@ describe("MirrorDetails", () => {
     const label = await screen.findByText("Preserve upstream signing key");
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("Yes");
+    expect(
+      screen.queryByRole("button", { name: "Update" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Signature preserving mirrors can't be updated."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Close notification" }),
+    ).not.toBeInTheDocument();
   });
 
   it("shows include dependencies in filter field only if mirror has filter", async () => {
@@ -231,7 +240,7 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows disabled updating action while last operation is in progress", async () => {
+  it("hides update actions when preserve signatures mirror has in-progress operation", async () => {
     const mirrorWithInProgressOperation = typedMirrors.find(
       ({ lastOperation }) => lastOperation?.includes("pppp-gggg-ssss"),
     );
@@ -250,10 +259,14 @@ describe("MirrorDetails", () => {
 
     await expectLoadingState();
 
-    const updatingButton = await screen.findByRole("button", {
-      name: "Updating",
-    });
-    expect(updatingButton).toHaveAttribute("aria-disabled", "true");
+    expect(
+      screen.queryByRole("button", { name: "Updating" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Update" }),
+    ).not.toBeInTheDocument();
+    expect(await screen.findByText("Updating")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
   it("shows authentication for legacy mirrors that have a GPG key but no mirrorType", async () => {
@@ -321,5 +334,9 @@ describe("MirrorDetails", () => {
     const label = screen.getByText("Preserve upstream signing key");
     expect(label).toBeInTheDocument();
     expect(label.closest("div")?.nextSibling?.textContent).toBe("No");
+    expect(screen.getByRole("button", { name: "Update" })).toBeInTheDocument();
+    expect(
+      screen.queryByText("Signature preserving mirrors can't be updated"),
+    ).not.toBeInTheDocument();
   });
 });
