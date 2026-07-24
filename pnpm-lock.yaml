@@ -8,8 +8,8 @@ importers:
   .:
     dependencies:
       "@canonical/ds-assets":
-        specifier: 0.29.0
-        version: 0.29.0
+        specifier: 0.31.0
+        version: 0.31.0
       "@canonical/landscape-openapi":
         specifier: 0.0.70
         version: 0.0.70(axios@1.17.0)
@@ -17,14 +17,14 @@ importers:
         specifier: 4.6.0
         version: 4.6.0(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(formik@2.4.9(@types/react@19.2.16)(react@19.2.7))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vanilla-framework@4.51.0(sass@1.100.0))
       "@canonical/react-ds-global":
-        specifier: 0.29.1
-        version: 0.29.1(@canonical/design-tokens@0.6.1)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+        specifier: 0.31.0
+        version: 0.31.0(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
       "@canonical/react-ds-global-form":
-        specifier: 0.29.1
-        version: 0.29.1(@canonical/design-tokens@0.6.1)(@canonical/ds-assets@0.29.0)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+        specifier: 0.31.0
+        version: 0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/ds-assets@0.31.0)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
       "@canonical/styles":
-        specifier: 0.29.0
-        version: 0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)
+        specifier: 0.31.0
+        version: 0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3)
       "@monaco-editor/react":
         specifier: 4.7.0
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -380,24 +380,23 @@ packages:
         integrity: sha512-eiFgzCbIneyMlLOmNG4g9xzF7Hv3Mga4LjxjcSC/ues6VYq2+gUbQI8JqNuw/ZM8tJIeIaBGpswAsqV2V7ApgA==,
       }
 
-  "@canonical/design-tokens@0.6.1":
+  "@canonical/design-tokens@0.6.2-contrasted.0":
     resolution:
       {
-        integrity: sha512-YH7S5iTZ1L4fmI+LcKirC9zj5BKU592u/nFPI/CfVgKYyusStx/d+m6phi9YXsnVn7/k7V0Re/keixVnf6WUMw==,
+        integrity: sha512-JLzc2tsSbuINFk4adbNGyFhnuKXLiIzE6ntwqigrL4vJoSTuj/OkaJLiLPB12LlQYOT3vnBiL+JmouZgDflNgQ==,
       }
     engines: { bun: ">=1.3", node: ">=22" }
-    hasBin: true
 
-  "@canonical/ds-assets@0.29.0":
+  "@canonical/ds-assets@0.31.0":
     resolution:
       {
-        integrity: sha512-d09ez1nrxOgWjWaDpn28EzYQT+Z3/b4kxequy9+tXBB6F+gTc+DOoyAA1ePgwQVIYA/e/VDvUkaTfyB39tj4gQ==,
+        integrity: sha512-jC9EY4oIAF0EuiHAWjRbByxOyIOcj1ToIirgwPzMSxzuXUPBBbYiDzZP7YyJlPcENlIzxI7BFdXAE3zljHIM9w==,
       }
 
-  "@canonical/ds-types@0.29.0":
+  "@canonical/ds-types@0.31.0":
     resolution:
       {
-        integrity: sha512-ViZZc7APIYJAJqW8NGmh1UB+H02TcKY/3uzrSCTTOg5+PqOXnlynudR7iEyLJbpk2t8AlrsMLxHU4hIyayP4zw==,
+        integrity: sha512-umdvsSH2DYb201MmDIAG4VLpCeh1R1h05B58s4lspo21ZuZjTjCQL0RdaUmtNVSoS5WTp8R+mpagfqvfuLrB6Q==,
       }
 
   "@canonical/landscape-openapi@0.0.70":
@@ -421,30 +420,36 @@ packages:
       react-dom: ^18.0.0 || ^19.0.0
       vanilla-framework: ^3.15.1 || ^4.0.0
 
-  "@canonical/react-ds-global-form@0.29.1":
+  "@canonical/react-ds-global-form@0.31.0":
     resolution:
       {
-        integrity: sha512-bGT/Y3e472YA7bs3R+590FBaTsMh5yB1LMyHn70SVEVtlcZFbLRCUs/PN0hwpK7IR4FoRycBbxaQq5IARuFkLw==,
+        integrity: sha512-u4mIVo/d3uIoHNugynZOmJsVWO30ypBcXrqsz9r1pk7f1dym4k9A7R59f3JHTdju40J48TDvdUgC7ZRFjEDJjw==,
       }
 
-  "@canonical/react-ds-global@0.29.1":
+  "@canonical/react-ds-global@0.31.0":
     resolution:
       {
-        integrity: sha512-nFRuy6IgIIy2vqEy7q1H0XhtNcBeCe5CTU3dCU6bJ74Okqh1oQ52+KylTut5i1XXNCZfnUO30fPCGLeJ8xliYg==,
+        integrity: sha512-6jRriqgNj3YwgQJYh8kEOT2gY4N7YCqHFNW9OU/AQsK1/j9LKG2IF5v+9r2YVOUk0n02ir6k8VCcjTKY7TotmQ==,
       }
 
-  "@canonical/storybook-addon-shell-theme@0.29.0":
+  "@canonical/react-hooks@0.31.0":
     resolution:
       {
-        integrity: sha512-2EVgUWCuBEUMY27HUYw+qtUh/z0kiFnTVEmwgsVqtUqsm5LVoOXMnvRZXMPv1dfqBjS0xgaywg6G+avz/pZa4g==,
+        integrity: sha512-hdyJKGaIhXtJuLHViISgDIekuY5r/GcTaoTO8H9pGE5lL0x8+b72aVF1OOgVQk9Wy6+cJVOylDIrGQoydXaAfQ==,
+      }
+
+  "@canonical/storybook-addon-shell-theme@0.31.0":
+    resolution:
+      {
+        integrity: sha512-c3Goon//fHsE+kXJ9LYlntfAhlAkMDMbpNdG3QPCNas9LI+TXKvui4WSHZIrgIc3hrCNsWmG1s4gTYSq+AbuEA==,
       }
     peerDependencies:
       storybook: ^10.3.1
 
-  "@canonical/storybook-addon-utils@0.29.0":
+  "@canonical/storybook-addon-utils@0.31.0":
     resolution:
       {
-        integrity: sha512-jIj3joDjC/AAB1Er29WTk+osMqz8hga58kqnREOiHyJd8HXOG98VVyC4AO1pz7rqSk1mvYfOWUaGWvDyTfo9nQ==,
+        integrity: sha512-WTJDXSCKN0MrB4nSABnu2QNnEFhrlK0oEqGylfbxA/b9AZilyGLidIU1lVzR3jPRMYKztgqv6YVjCNBoltWQwA==,
       }
     peerDependencies:
       "@canonical/router-core": ^0.27.1-experimental.0
@@ -461,38 +466,38 @@ packages:
       "@canonical/styles":
         optional: true
 
-  "@canonical/storybook-config@0.29.1":
+  "@canonical/storybook-config@0.31.0":
     resolution:
       {
-        integrity: sha512-JgHgSYIsIDtXKcbhFTSVrwTzMETo/r9CEmMmkFqC7eym3CAXY2pO3vjVdS+5ONyvBOEpjD44y8XzknyGuiS2dQ==,
+        integrity: sha512-pjQ9RYia+wREC9vonhzOOUS/qvfhst+DRyXJn0C8OtYXsOjzAUd5O8HS6rWY1qBNcekKDDzz48RORGjR8/onDQ==,
       }
     peerDependencies:
       typescript: ^5.9.3
 
-  "@canonical/styles-debug@0.29.0":
+  "@canonical/styles-debug@0.31.0":
     resolution:
       {
-        integrity: sha512-8t6kzw9RpiknT00UwhE2HYmnpvy/iBgnyjZ52zSyrAwostH9qWEFzGzmvw6v0lXvx8j0TCOYO/SGSmySA9pxsQ==,
+        integrity: sha512-oaSLTq8l3XQyCpeap5rlhaRJawXA7lnhDbNWEvAqZ1HTyejzjKKBwnKY3t/0GONu2nddLEt7mX0JtOn/ww3A+w==,
       }
     peerDependencies:
-      "@canonical/design-tokens": ">=0.4.0"
+      "@canonical/design-tokens": 0.6.2-contrasted.0
     peerDependenciesMeta:
       "@canonical/design-tokens":
         optional: true
 
-  "@canonical/styles-typography@0.29.0":
+  "@canonical/styles-typography@0.31.0":
     resolution:
       {
-        integrity: sha512-yI8Lh8jRrUNesYRZi7qRVV3N1fYHHQHPUD5K0a5W5s2tOimaKMQvqNEP/Q55sB7Ve0o23r7q2XUb4Z4ralHQfw==,
+        integrity: sha512-giEFGGMXTyZoCzFpkxR06EkHEHytvpD9WEz19Z8yXI8KF+PRQeDJFqHHW9jV0C7v2kP3sIzvyUgrO7kG7uUjhQ==,
       }
     hasBin: true
     peerDependencies:
       typescript: ^5.9.3
 
-  "@canonical/styles@0.29.0":
+  "@canonical/styles@0.31.0":
     resolution:
       {
-        integrity: sha512-th0Xkujb+IAFbm3hl7IFNWcc/p/4fXBwqouV2KfTBCDgiG+qHLtHkFBcA0PtwLGK+ebj6You4yxJBJCD9KJtOw==,
+        integrity: sha512-+0xvRQlcBNIDhUQeWm8+htli5vtesctt8Z44E1iwL/3ZAILWdcDWI2ERJTOgO8e9o2SC6cv+wZ5Cf8Q7aUq2ew==,
       }
     peerDependencies:
       "@canonical/ds-assets": ">=0.18.0"
@@ -515,10 +520,10 @@ packages:
       }
     engines: { bun: ">=1.3", node: ">=22" }
 
-  "@canonical/utils@0.29.0":
+  "@canonical/utils@0.31.0":
     resolution:
       {
-        integrity: sha512-wYAwUTFTpzrG+Hz5xxWOUx2qziVU57xx9D+CDwZ0NuThYlCTBmuhF0NybUa7WJduLg+e2ty84cMTmaobtLUpNA==,
+        integrity: sha512-fPbJx43DiMuYlzywlQ1YYy+085Goh/scwXQMkZ50M2WOg/Bu/GqABKp3mKjm5FQb+spnUkLYUoHw6mfj8HiFNQ==,
       }
 
   "@changesets/apply-release-plan@7.1.1":
@@ -8065,13 +8070,13 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  "@canonical/design-tokens@0.6.1":
+  "@canonical/design-tokens@0.6.2-contrasted.0":
     dependencies:
       "@canonical/terrazzo-lsp": 0.6.1
 
-  "@canonical/ds-assets@0.29.0": {}
+  "@canonical/ds-assets@0.31.0": {}
 
-  "@canonical/ds-types@0.29.0": {}
+  "@canonical/ds-types@0.31.0": {}
 
   "@canonical/landscape-openapi@0.0.70(axios@1.17.0)":
     dependencies:
@@ -8099,12 +8104,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  "@canonical/react-ds-global-form@0.29.1(@canonical/design-tokens@0.6.1)(@canonical/ds-assets@0.29.0)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)":
+  "@canonical/react-ds-global-form@0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/ds-assets@0.31.0)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)":
     dependencies:
-      "@canonical/react-ds-global": 0.29.1(@canonical/design-tokens@0.6.1)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
-      "@canonical/storybook-config": 0.29.1(@canonical/design-tokens@0.6.1)(@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
-      "@canonical/styles": 0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)
-      "@canonical/utils": 0.29.0
+      "@canonical/react-ds-global": 0.31.0(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+      "@canonical/storybook-config": 0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/styles@0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+      "@canonical/styles": 0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3)
+      "@canonical/utils": 0.31.0
       downshift: 9.3.4(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -8136,16 +8141,17 @@ snapshots:
       - vitest
       - webpack
 
-  "@canonical/react-ds-global@0.29.1(@canonical/design-tokens@0.6.1)(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)":
+  "@canonical/react-ds-global@0.31.0(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)":
     dependencies:
-      "@canonical/ds-assets": 0.29.0
-      "@canonical/storybook-config": 0.29.1(@canonical/design-tokens@0.6.1)(@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
-      "@canonical/styles": 0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)
-      "@canonical/utils": 0.29.0
+      "@canonical/design-tokens": 0.6.2-contrasted.0
+      "@canonical/ds-assets": 0.31.0
+      "@canonical/react-hooks": 0.31.0
+      "@canonical/storybook-config": 0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/styles@0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)
+      "@canonical/styles": 0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3)
+      "@canonical/utils": 0.31.0
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
     transitivePeerDependencies:
-      - "@canonical/design-tokens"
       - "@canonical/router-core"
       - "@canonical/router-react"
       - "@chromatic-com/cypress"
@@ -8170,28 +8176,35 @@ snapshots:
       - vitest
       - webpack
 
-  "@canonical/storybook-addon-shell-theme@0.29.0(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))":
+  "@canonical/react-hooks@0.31.0":
+    dependencies:
+      "@canonical/ds-types": 0.31.0
+      "@canonical/utils": 0.31.0
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+
+  "@canonical/storybook-addon-shell-theme@0.31.0(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))":
     dependencies:
       storybook: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7)
 
-  "@canonical/storybook-addon-utils@0.29.0(@canonical/design-tokens@0.6.1)(@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))":
+  "@canonical/storybook-addon-utils@0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/styles@0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))":
     dependencies:
-      "@canonical/styles-debug": 0.29.0(@canonical/design-tokens@0.6.1)
+      "@canonical/styles-debug": 0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)
       "@storybook/icons": 2.1.0(react@19.2.7)
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       storybook: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7)
     optionalDependencies:
-      "@canonical/styles": 0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)
+      "@canonical/styles": 0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3)
     transitivePeerDependencies:
       - "@canonical/design-tokens"
 
-  "@canonical/storybook-config@0.29.1(@canonical/design-tokens@0.6.1)(@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)":
+  "@canonical/storybook-config@0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/styles@0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3))(@storybook/svelte@10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1)))(@sveltejs/vite-plugin-svelte@7.2.0(svelte@5.56.4(@typescript-eslint/types@8.60.1))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1)))(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(@vitest/runner@4.1.8)(esbuild@0.27.7)(lit@3.3.3)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(svelte@5.56.4(@typescript-eslint/types@8.60.1))(typescript@6.0.3)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))(vitest@4.1.8)":
     dependencies:
-      "@canonical/ds-assets": 0.29.0
-      "@canonical/storybook-addon-shell-theme": 0.29.0(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))
-      "@canonical/storybook-addon-utils": 0.29.0(@canonical/design-tokens@0.6.1)(@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))
-      "@canonical/styles-debug": 0.29.0(@canonical/design-tokens@0.6.1)
+      "@canonical/ds-assets": 0.31.0
+      "@canonical/storybook-addon-shell-theme": 0.31.0(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))
+      "@canonical/storybook-addon-utils": 0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)(@canonical/styles@0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))
+      "@canonical/styles-debug": 0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)
       "@chromatic-com/storybook": 5.2.1(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))
       "@storybook/addon-a11y": 10.4.6(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))
       "@storybook/addon-docs": 10.4.6(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(esbuild@0.27.7)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.16)(prettier@3.8.3)(react@19.2.7))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.7)(sass-embedded@1.100.0)(sass@1.100.0)(yaml@2.8.1))
@@ -8229,23 +8242,23 @@ snapshots:
       - vitest
       - webpack
 
-  "@canonical/styles-debug@0.29.0(@canonical/design-tokens@0.6.1)":
+  "@canonical/styles-debug@0.31.0(@canonical/design-tokens@0.6.2-contrasted.0)":
     optionalDependencies:
-      "@canonical/design-tokens": 0.6.1
+      "@canonical/design-tokens": 0.6.2-contrasted.0
 
-  "@canonical/styles-typography@0.29.0(typescript@6.0.3)":
+  "@canonical/styles-typography@0.31.0(typescript@6.0.3)":
     dependencies:
-      "@canonical/design-tokens": 0.6.1
+      "@canonical/design-tokens": 0.6.2-contrasted.0
       opentype.js: 1.3.4
       typescript: 6.0.3
 
-  "@canonical/styles@0.29.0(@canonical/ds-assets@0.29.0)(typescript@6.0.3)":
+  "@canonical/styles@0.31.0(@canonical/ds-assets@0.31.0)(typescript@6.0.3)":
     dependencies:
-      "@canonical/design-tokens": 0.6.1
-      "@canonical/styles-typography": 0.29.0(typescript@6.0.3)
+      "@canonical/design-tokens": 0.6.2-contrasted.0
+      "@canonical/styles-typography": 0.31.0(typescript@6.0.3)
       normalize.css: 8.0.1
     optionalDependencies:
-      "@canonical/ds-assets": 0.29.0
+      "@canonical/ds-assets": 0.31.0
     transitivePeerDependencies:
       - typescript
 
@@ -8258,9 +8271,9 @@ snapshots:
 
   "@canonical/token-types@0.6.1": {}
 
-  "@canonical/utils@0.29.0":
+  "@canonical/utils@0.31.0":
     dependencies:
-      "@canonical/ds-types": 0.29.0
+      "@canonical/ds-types": 0.31.0
 
   "@changesets/apply-release-plan@7.1.1":
     dependencies:
@@ -8884,17 +8897,17 @@ snapshots:
       "@tybys/wasm-util": 0.10.2
     optional: true
 
-  "@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)":
-    dependencies:
-      "@emnapi/core": 1.9.2
-      "@emnapi/runtime": 1.9.2
-      "@tybys/wasm-util": 0.10.2
-    optional: true
-
   "@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)":
     dependencies:
       "@emnapi/core": 1.11.1
       "@emnapi/runtime": 1.11.1
+      "@tybys/wasm-util": 0.10.3
+    optional: true
+
+  "@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)":
+    dependencies:
+      "@emnapi/core": 1.9.2
+      "@emnapi/runtime": 1.9.2
       "@tybys/wasm-util": 0.10.3
     optional: true
 
@@ -8973,7 +8986,7 @@ snapshots:
     dependencies:
       "@emnapi/core": 1.9.2
       "@emnapi/runtime": 1.9.2
-      "@napi-rs/wasm-runtime": 1.1.4(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
+      "@napi-rs/wasm-runtime": 1.1.6(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)
     optional: true
 
   "@oxc-parser/binding-win32-arm64-msvc@0.127.0":

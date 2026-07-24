@@ -38,6 +38,9 @@
 }
 
 .secondaryNavigation__link {
+  padding-bottom: 0.85 * $sp-unit !important;
+  padding-top: 0.85 * $sp-unit !important;
+
   &:hover {
     background-color: #262626 !important;
   }
