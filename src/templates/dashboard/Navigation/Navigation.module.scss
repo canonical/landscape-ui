@@ -29,10 +29,10 @@
   }
 
   &::after {
+    align-self: center;
     background-image: vf-icon-external-link-url(
       $colors--dark-theme--icon
     ) !important;
-    align-self: center;
     margin-top: 0 !important;
   }
 }
