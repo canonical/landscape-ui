@@ -86,11 +86,8 @@ export default defineConfig({
   },
   plugins: [
     {
-      // @canonical/react-ds-global ships .js.map files whose "sources" point at
-      // src/ paths it doesn't publish. Inlining it for tests (server.deps.inline
-      // above) makes Vite read those maps and warn "points to missing source
-      // files". Strip the dangling sourcemap reference and return an empty map so
-      // Vite never looks for the missing sources. Keeps test output pristine.
+      // @canonical/react-ds-global's sourcemaps point to unpublished src/ paths.
+      // Strip them and return an empty map to silence Vite's "missing source" test warnings.
       name: "strip-pragma-sourcemaps",
       enforce: "pre",
       load(id) {
