@@ -32,13 +32,15 @@ This section is intended to aid reviewers in finding what page(s) of the ui was 
 
 - [ ] MSW must be enabled (`VITE_MSW_ENABLED=true` in `.env.local`)
 - [ ] MSW not required
+- [ ] Not Applicable
 
 **Backend**
 
 - [ ] A specific backend branch from Landscape server must be utilized locally — Branch: `______`
 - [ ] No specific backend branch required
+- [ ] Not Applicable
 
-**Where to Find the Changes**
+**Where to Find the UI Changes (if applicable)**
 
 _Describe where in the UI the changes are visible and how to navigate there (if applicable). Paste a direct URL to the new page/component if applicable (e.g. `http://localhost:5173/...`):_
 
