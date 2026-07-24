@@ -49,7 +49,7 @@ describe("PublicationDetails", () => {
       { label: "Distribution", value: publication.distribution },
       {
         label: "Architectures",
-        value: (publication.architectures ?? []).join(", "),
+        value: publication.architectures.join(", "),
       },
       { label: "Hash indexing", value: "Yes" },
       {
