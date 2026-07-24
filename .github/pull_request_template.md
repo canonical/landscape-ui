@@ -26,7 +26,7 @@ Change type (tick one):
 
 ## Reviewer Setup
 
-This section is intended to aid reviewers in finding what page(s) of the ui was changed, and knowing if any special conditions are required for running the code.
+This section is intended to help reviewers find which pages of the UI were changed, and whether any special conditions are required to run the code.
 
 **MSW (Mock Service Worker)**
 
