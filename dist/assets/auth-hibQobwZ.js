@@ -1,0 +1,1 @@
+import"./AuthTemplate-BwS3oO-5.js";
