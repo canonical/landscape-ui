@@ -94,9 +94,16 @@ export default [
 
       const requestBody = await request.json();
 
-      const displayName = requestBody.displayName?.trim();
-      const distribution = requestBody.distribution?.trim();
-      const architectures = requestBody.architectures;
+      const displayName =
+        typeof requestBody.displayName === "string"
+          ? requestBody.displayName.trim()
+          : undefined;
+
+      const distribution =
+        typeof requestBody.distribution === "string"
+          ? requestBody.distribution.trim()
+          : undefined;
+      const { architectures } = requestBody;
 
       if (
         !displayName ||
