@@ -407,12 +407,14 @@ describe("ExportForm", () => {
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
-    expect(screen.getByTestId("location-display")).toHaveTextContent(
-      "sidePath=view",
-    );
-    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
-      "sidePath=view,export",
-    );
+    await waitFor(() => {
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "sidePath=view",
+      );
+      expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+        "sidePath=view,export",
+      );
+    });
   });
 
   it("does not change the URL when advancing from step 0 to step 1", async () => {
