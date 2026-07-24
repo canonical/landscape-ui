@@ -4,7 +4,6 @@ import { describe, expect, it } from "vitest";
 import PublishMirrorContentsBlock from "./PublishMirrorContentsBlock";
 import { publications } from "@/tests/mocks/publications";
 import { mirrors } from "@/tests/mocks/mirrors";
-import { NO_DATA_TEXT } from "@/components/layout/NoData";
 
 const [mirror] = mirrors;
 const [publication] = publications;
@@ -42,7 +41,7 @@ describe("PublishMirrorContentsBlock", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders no data for architectures when the publication omits them", () => {
+  it("falls back to the mirror's architectures when the publication omits them", () => {
     renderWithProviders(
       <PublishMirrorContentsBlock
         mirror={mirror}
@@ -53,6 +52,8 @@ describe("PublishMirrorContentsBlock", () => {
       />,
     );
 
-    expect(screen.getByText(NO_DATA_TEXT)).toBeInTheDocument();
+    expect(
+      screen.getByText(mirror.architectures.join(", ")),
+    ).toBeInTheDocument();
   });
 });
