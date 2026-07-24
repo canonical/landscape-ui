@@ -1,10 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-/* Severity scale using only the Figma palette: green (#0E8420), green at 50%,
-   orange (#CC7900), orange at 50%, red (#C7162B). Red is the worst (60+ days)
-   bucket; grey is the unclassified remainder. The Vanilla tokens resolve to
-   the same Figma hex values. */
 $segment-green: $color-positive;
 $segment-green-light: rgba($color-positive, 0.5);
 $segment-orange: $color-caution;
@@ -34,8 +30,6 @@ $segment-red: $color-negative;
   min-width: 0;
 }
 
-/* The track matches the panel background so the gaps between segments read as
-   transparent rather than as a grey ring. */
 .track {
   stroke: $colors--theme--background-default;
 }
@@ -61,7 +55,6 @@ $segment-red: $color-negative;
   width: 0.5rem;
 }
 
-/* The hovered segment grows slightly to stand out. */
 .arc {
   transition: stroke-width 120ms ease;
 }

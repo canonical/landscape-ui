@@ -1,8 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-/* Track uses the Figma #f7f7f7 (background-alt, theme-aware) and the exact
-   Figma bar height of 24px. */
 .track {
   background-color: $colors--theme--background-alt;
   height: 1.5rem;
