@@ -94,25 +94,34 @@ export default [
 
       const requestBody = await request.json();
 
+      const displayName = requestBody.displayName?.trim();
       const distribution = requestBody.distribution?.trim();
-      const { architectures } = requestBody;
+      const architectures = requestBody.architectures;
 
-      if (!distribution || !architectures || architectures.length === 0) {
+      if (
+        !displayName ||
+        !distribution ||
+        !Array.isArray(architectures) ||
+        architectures.length === 0 ||
+        architectures.some((arch) => typeof arch !== "string" || !arch.trim())
+      ) {
         return HttpResponse.json(
           {
-            message: "distribution and architectures are required fields",
+            message:
+              "displayName, distribution and architectures are required fields",
           },
           { status: 400 },
         );
       }
 
-      const mirrorId = requestBody.displayName.toLowerCase();
+      const mirrorId = displayName.toLowerCase();
       const newMirror: Mirror = {
         mirrorId,
         name: `mirrors/${mirrorId}`,
         ...requestBody,
+        displayName,
         distribution,
-        architectures,
+        architectures: architectures.map((arch) => arch.trim()),
       };
       return HttpResponse.json<MirrorServiceCreateMirrorResponse>(newMirror);
     },
