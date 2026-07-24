@@ -27,7 +27,7 @@ const PublishMirrorContentsBlock: FC<PublishMirrorContentsBlockProps> = ({
       />
       <ReadOnlyField
         label="Architectures"
-        value={architectures.join(", ")}
+        value={architectures?.join(", ")}
         tooltipMessage="You can’t change the contents of an existing publication."
       />
     </Blocks.Item>
