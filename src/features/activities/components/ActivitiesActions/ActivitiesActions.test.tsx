@@ -1,20 +1,23 @@
+import * as Constants from "@/constants";
 import { resetScreenSize, setScreenSize } from "@/tests/helpers";
 import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useLocation } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Activity } from "../../types";
 import ActivitiesActions from "./ActivitiesActions";
 
 describe("ActivitiesActions", () => {
   beforeEach(() => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(true);
     setScreenSize("xxl");
   });
 
   afterEach(() => {
     resetScreenSize();
+    vi.restoreAllMocks();
   });
 
   const mockActivities = [
@@ -360,5 +363,15 @@ describe("ActivitiesActions", () => {
     expect(screen.getByTestId("location-display")).toHaveTextContent(
       "sidePath=export",
     );
+  });
+
+  it("does not render the export button when TSV exports are disabled", () => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+
+    renderWithProviders(<ActivitiesActions selected={mockActivities} />);
+
+    expect(
+      screen.queryByRole("button", { name: "Export selection as TSV" }),
+    ).not.toBeInTheDocument();
   });
 });
