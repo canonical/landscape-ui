@@ -92,6 +92,8 @@ describe("UserInfo", () => {
   });
 
   it("hides the Exports link when TSV exports are disabled", () => {
+    vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
+
     renderWithProviders(<UserInfo />);
 
     expect(

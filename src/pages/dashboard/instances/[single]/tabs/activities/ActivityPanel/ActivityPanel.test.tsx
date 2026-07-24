@@ -1,6 +1,6 @@
 import * as Constants from "@/constants";
 import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/tests/render";
 import ActivityPanel from "./ActivityPanel";
 import { expectLoadingState } from "@/tests/helpers";
@@ -12,6 +12,10 @@ const idOfInstanceWithActivity = activities.find((activity) =>
 )?.computer_id;
 
 describe("ActivityPanel", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   beforeEach(() => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
   });

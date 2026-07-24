@@ -1,12 +1,16 @@
 import * as Constants from "@/constants";
 import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setEndpointStatus } from "@/tests/controllers/controller";
 import { expectLoadingState } from "@/tests/helpers";
 import { renderWithProviders } from "@/tests/render";
 import ActivitiesPage from "./ActivitiesPage";
 
 describe("ActivitiesPage", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   beforeEach(() => {
     vi.spyOn(Constants, "TSV_EXPORTS_ENABLED", "get").mockReturnValue(false);
     setEndpointStatus("default");
