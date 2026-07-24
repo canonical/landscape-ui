@@ -166,14 +166,14 @@ describe("handleParams", () => {
     expect(result).toStrictEqual({ valid: "yes" });
   });
 
-  it("passes empty strings through to the backend on GET requests", () => {
+  it("filters out empty strings on GET requests", () => {
     const config = makeConfig({
       method: "get",
       params: { search: "" },
     });
 
     const result = handleParams({ config, isOld: false });
-    expect(result).toStrictEqual({ search: "" });
+    expect(result).toStrictEqual({});
   });
 
   it("throws when encountering an unsupported type", () => {
