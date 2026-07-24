@@ -103,10 +103,16 @@ const MirrorDetails: FC = () => {
   }));
 
   useEffect(() => {
-    if (updateModal) {
+    if (updateModal && !mirror.preserveSignatures) {
       openUpdateModal();
     }
-  }, [openUpdateModal, updateModal]);
+
+    if (updateModal && mirror.preserveSignatures) {
+      setPageParams({
+        updateModal: false,
+      });
+    }
+  }, [mirror.preserveSignatures, openUpdateModal, setPageParams, updateModal]);
 
   const closeAndClearUpdateModal = () => {
     closeUpdateModal();
@@ -187,7 +193,7 @@ const MirrorDetails: FC = () => {
             <Blocks.Item>
               {mirror.preserveSignatures && (
                 <Notification severity="information">
-                  Signature preserving mirrors can&apos;t be updated.
+                  Signature-preserving mirrors can&apos;t be updated.
                 </Notification>
               )}
               <h4 className="p-heading--5 p-text--small-caps">Details</h4>

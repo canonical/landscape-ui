@@ -314,6 +314,30 @@ describe("MirrorDetails", () => {
     ).toBeInTheDocument();
   });
 
+  it("does not open UpdateMirrorModal from query param for preserve signatures mirror", async () => {
+    const preserveSignaturesMirror = mirrors.find(
+      ({ preserveSignatures }) => preserveSignatures,
+    );
+
+    assert(preserveSignaturesMirror);
+
+    renderWithProviders(
+      <Suspense fallback={<LoadingState />}>
+        <MirrorDetails />
+      </Suspense>,
+      undefined,
+      `?name=${preserveSignaturesMirror.name}&updateModal=true`,
+    );
+
+    await expectLoadingState();
+
+    expect(
+      screen.queryByRole("heading", {
+        name: `Update ${preserveSignaturesMirror.displayName}`,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
   it("renders mirror details for a mirror with preserve signatures disabled", async () => {
     const mirrorWithoutPreserveSignatures = mirrors.find(
       ({ preserveSignatures }) => !preserveSignatures,
