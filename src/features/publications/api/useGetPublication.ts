@@ -45,6 +45,6 @@ export const useGetPublication = (publicationId: string) => {
 
   return {
     publication: data?.data,
-    isGettingPublication: isPending,
+    isGettingPublication: !!publicationId && isPending,
   };
 };
