@@ -5,7 +5,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import PublishMirrorNewForm from "./components/PublishMirrorNewForm";
 import PublishMirrorExistingForm from "./components/PublishMirrorExistingForm";
 import { useBoolean } from "usehooks-ts";
-import { useGetMirror } from "../../api/useGetMirror";
+import { useGetMirror } from "../../api";
 import usePageParams from "@/hooks/usePageParams";
 import { useGetPublicationsBySource } from "@/features/publications";
 import { useGetPublicationTargets } from "@/features/publication-targets";

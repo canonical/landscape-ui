@@ -123,7 +123,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   return (
     <>
       <SidePanel.Header>
-        Import packages to {repository?.displayName}
+        Import packages to {repository.displayName}
       </SidePanel.Header>
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>
