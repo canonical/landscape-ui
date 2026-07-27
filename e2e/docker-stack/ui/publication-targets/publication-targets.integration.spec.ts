@@ -14,8 +14,8 @@
  *
  * AUTH
  * ────
- * The debarchive service uses its own JWT auth (not the Landscape session
- * cookie). The UI's useFetchDebArchive hook manages this transparently, so the
+ * The debarchive service uses Bearer token auth (AuthUser.token). The UI's
+ * useFetchDebArchive hook attaches this token transparently, so the
  * storageState from global-setup is sufficient.
  */
 import { expect, test } from "@playwright/test";
