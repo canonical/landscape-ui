@@ -8,13 +8,16 @@ import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 
 const NOT_FOUND_STATUS = 404;
+type GetPublicationError =
+  | AxiosError<PublicationServiceGetPublicationError>
+  | Error;
 
 export const useGetPublication = (publicationId: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isPending } = useQuery<
     AxiosResponse<PublicationServiceGetPublicationResponse>,
-    AxiosError<PublicationServiceGetPublicationError>
+    GetPublicationError
   >({
     queryKey: ["publications", publicationId],
     queryFn: async () => {

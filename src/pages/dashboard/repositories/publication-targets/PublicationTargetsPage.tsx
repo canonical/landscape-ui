@@ -8,7 +8,6 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import {
   PublicationTargetAddButton,
-  EditTargetForm,
   PublicationTargetList,
   TargetDetails,
   useGetPublicationTargets,
@@ -20,6 +19,11 @@ import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 const AddPublicationTargetForm = lazy(
   async () =>
     import("@/features/publication-targets/components/AddPublicationTargetForm"),
+);
+
+const EditTargetForm = lazy(
+  async () =>
+    import("@/features/publication-targets/components/EditTargetForm"),
 );
 
 const PublicationTargetsPage: FC = () => {

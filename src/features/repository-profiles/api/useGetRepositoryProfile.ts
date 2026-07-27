@@ -8,7 +8,7 @@ import type { RepositoryProfile } from "../types";
 export function useGetRepositoryProfile(name: string) {
   const authFetch = useFetch();
 
-  return useSuspenseQuery<RepositoryProfile, AxiosError<ApiError>>({
+  return useSuspenseQuery<RepositoryProfile, AxiosError<ApiError> | Error>({
     queryKey: ["repositoryProfile", name],
     queryFn: async () => {
       const response =

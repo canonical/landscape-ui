@@ -9,13 +9,14 @@ import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 
 const NOT_FOUND_STATUS = 404;
+type GetMirrorError = AxiosError<MirrorServiceGetMirrorError> | Error;
 
 export function useGetMirror(
   mirrorName: string,
   options: Omit<
     UseQueryOptions<
       AxiosResponse<MirrorServiceGetMirrorResponse>,
-      AxiosError<MirrorServiceGetMirrorError>
+      GetMirrorError
     >,
     "queryKey" | "queryFn"
   > = {},
@@ -24,7 +25,7 @@ export function useGetMirror(
 
   const { data, isPending } = useQuery<
     AxiosResponse<MirrorServiceGetMirrorResponse>,
-    AxiosError<MirrorServiceGetMirrorError>
+    GetMirrorError
   >({
     queryKey: ["mirror", mirrorName],
     queryFn: async () => {

@@ -8,6 +8,9 @@ import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 
 const NOT_FOUND_STATUS = 404;
+type GetPublicationTargetError =
+  | AxiosError<PublicationTargetServiceGetPublicationTargetError>
+  | Error;
 
 export default function useGetPublicationTarget(
   publicationTargetId: string,
@@ -17,7 +20,7 @@ export default function useGetPublicationTarget(
 
   const { data, isPending } = useQuery<
     AxiosResponse<PublicationTargetServiceGetPublicationTargetResponse>,
-    AxiosError<PublicationTargetServiceGetPublicationTargetError>
+    GetPublicationTargetError
   >({
     queryKey: ["publication-targets", publicationTargetId],
     queryFn: async () => {

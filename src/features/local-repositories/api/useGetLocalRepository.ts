@@ -8,13 +8,14 @@ import type {
 import { useQuery } from "@tanstack/react-query";
 
 const NOT_FOUND_STATUS = 404;
+type GetLocalRepositoryError = AxiosError<LocalServiceGetLocalError> | Error;
 
 export const useGetLocalRepository = (localId: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
   const { data, isPending } = useQuery<
     AxiosResponse<LocalServiceGetLocalResponse>,
-    AxiosError<LocalServiceGetLocalError>
+    GetLocalRepositoryError
   >({
     queryKey: ["local", localId],
     queryFn: async () => {

@@ -117,7 +117,7 @@ const EditLocalRepositorySidePanel: FC = () => {
     return <SidePanel.LoadingState />;
   }
   if (!repository) {
-    throw new Error(`Local repository ${name} was not found`);
+    return <SidePanel.LoadingState />;
   }
 
   return <EditLocalRepositorySidePanelContent repository={repository} />;
