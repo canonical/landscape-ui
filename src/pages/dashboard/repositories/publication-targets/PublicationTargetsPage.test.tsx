@@ -9,7 +9,10 @@ import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 
 describe("PublicationTargetsPage", () => {
   afterEach(() => {
-    setEndpointStatus({ status: "default", path: "publicationTargets" });
+    setEndpointStatus([
+      { status: "default", path: "publicationTargets" },
+      { status: "default", path: "publicationTargets/get" },
+    ]);
   });
 
   it("renders the page title", () => {
@@ -95,5 +98,45 @@ describe("PublicationTargetsPage", () => {
         name: /remove/i,
       }),
     ).toBeInTheDocument();
+  });
+
+  it("shows an error state when fetching a publication target fails", async () => {
+    setEndpointStatus({ status: "error", path: "publicationTargets/get" });
+
+    renderWithProviders(
+      <PublicationTargetsPage />,
+      undefined,
+      "/?sidePath=view&name=aaaaaaaa-0000-0000-0000-000000000001",
+    );
+
+    await screen.findByRole("button", { name: /add publication target/i });
+
+    const sidePanel = await screen.findByLabelText("Side panel");
+
+    expect(
+      await within(sidePanel).findByText(
+        "Something went wrong",
+      ),
+    ).toBeInTheDocument();
+    expect(within(sidePanel).queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows an error state when fetching a publication target for edit fails", async () => {
+    setEndpointStatus({ status: "error", path: "publicationTargets/get" });
+
+    renderWithProviders(
+      <PublicationTargetsPage />,
+      undefined,
+      "/?sidePath=edit&name=aaaaaaaa-0000-0000-0000-000000000001",
+    );
+
+    await screen.findByRole("button", { name: /add publication target/i });
+
+    const sidePanel = await screen.findByLabelText("Side panel");
+
+    expect(
+      await within(sidePanel).findByText("Something went wrong"),
+    ).toBeInTheDocument();
+    expect(within(sidePanel).queryByRole("status")).not.toBeInTheDocument();
   });
 });

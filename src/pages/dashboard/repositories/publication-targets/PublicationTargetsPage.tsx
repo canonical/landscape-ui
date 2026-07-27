@@ -8,6 +8,7 @@ import useSetDynamicFilterValidation from "@/hooks/useDynamicFilterValidation";
 import usePageParams from "@/hooks/usePageParams";
 import {
   PublicationTargetAddButton,
+  EditTargetForm,
   PublicationTargetList,
   TargetDetails,
   useGetPublicationTargets,
@@ -19,11 +20,6 @@ import { DEBARCHIVE_DOCUMENTATION_URL } from "@/features/repositories";
 const AddPublicationTargetForm = lazy(
   async () =>
     import("@/features/publication-targets/components/AddPublicationTargetForm"),
-);
-
-const EditTargetForm = lazy(
-  async () =>
-    import("@/features/publication-targets/components/EditTargetForm"),
 );
 
 const PublicationTargetsPage: FC = () => {
@@ -46,10 +42,6 @@ const PublicationTargetsPage: FC = () => {
       </PageMain>
     );
   }
-
-  const viewTarget = publicationTargets.find(
-    (t) => t.publicationTargetId === name,
-  );
 
   const addButton = <PublicationTargetAddButton key="add" />;
 
@@ -90,7 +82,8 @@ const PublicationTargetsPage: FC = () => {
         onClose={popSidePathUntilClear}
         isOpen={
           lastSidePathSegment === "add" ||
-          (!!lastSidePathSegment && !!viewTarget)
+          ((lastSidePathSegment === "view" || lastSidePathSegment === "edit") &&
+            !!name)
         }
         size="small"
       >
@@ -103,21 +96,15 @@ const PublicationTargetsPage: FC = () => {
           </SidePanel.Suspense>
         )}
 
-        {lastSidePathSegment === "view" && viewTarget && (
+        {lastSidePathSegment === "view" && name && (
           <SidePanel.Suspense key="view">
-            <SidePanel.Header>{viewTarget.displayName}</SidePanel.Header>
-            <SidePanel.Content>
-              <TargetDetails target={viewTarget} />
-            </SidePanel.Content>
+            <TargetDetails />
           </SidePanel.Suspense>
         )}
 
-        {lastSidePathSegment === "edit" && viewTarget && (
+        {lastSidePathSegment === "edit" && name && (
           <SidePanel.Suspense key="edit">
-            <SidePanel.Header>Edit {viewTarget.displayName}</SidePanel.Header>
-            <SidePanel.Content>
-              <EditTargetForm target={viewTarget} />
-            </SidePanel.Content>
+            <EditTargetForm />
           </SidePanel.Suspense>
         )}
       </SidePanel>

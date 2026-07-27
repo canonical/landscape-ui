@@ -99,6 +99,31 @@ export default [
     return new HttpResponse(null, { status: 204 });
   }),
 
+  http.get(`${API_URL_DEB_ARCHIVE}publicationTargets/:id`, ({ params }) => {
+    if (shouldApplyEndpointStatus("publicationTargets/get")) {
+      const endpointStatus = getEndpointStatus("publicationTargets/get");
+
+      if (endpointStatus.status === "error") {
+        return createEndpointStatusError();
+      }
+
+      if (endpointStatus.status === "variant") {
+        return HttpResponse.json(endpointStatus.response);
+      }
+    }
+
+    const target = publicationTargets.find(
+      (publicationTarget) =>
+        publicationTarget.publicationTargetId === params.id,
+    );
+
+    if (!target) {
+      return new HttpResponse(null, { status: 404 });
+    }
+
+    return HttpResponse.json(target);
+  }),
+
   http.patch(
     `${API_URL_DEB_ARCHIVE}publicationTargets/:id`,
     async ({ params, request }) => {

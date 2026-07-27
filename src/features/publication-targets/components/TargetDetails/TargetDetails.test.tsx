@@ -95,7 +95,10 @@ describe("TargetDetails", () => {
       renderWithProviders(<TargetDetails target={targetWithPublications} />);
 
       expect(
-        screen.getByText(targetWithPublications.displayName),
+        screen.getByRole("heading", {
+          level: 2,
+          name: targetWithPublications.displayName,
+        }),
       ).toBeInTheDocument();
     });
 

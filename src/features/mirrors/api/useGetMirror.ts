@@ -5,7 +5,10 @@ import type {
 } from "@canonical/landscape-openapi";
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
+
+const NOT_FOUND_STATUS = 404;
 
 export function useGetMirror(
   mirrorName: string,
@@ -24,7 +27,22 @@ export function useGetMirror(
     AxiosError<MirrorServiceGetMirrorError>
   >({
     queryKey: ["mirror", mirrorName],
-    queryFn: async () => authFetchDebArchive.get(mirrorName),
+    queryFn: async () => {
+      try {
+        const response = await authFetchDebArchive.get(mirrorName);
+
+        return response;
+      } catch (error) {
+        if (
+          isAxiosError(error) &&
+          error.response?.status === NOT_FOUND_STATUS
+        ) {
+          throw new Error(`Mirror ${mirrorName} was not found`);
+        }
+
+        throw error;
+      }
+    },
     ...options,
   });
 }
