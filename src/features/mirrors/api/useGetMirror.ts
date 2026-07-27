@@ -50,6 +50,6 @@ export function useGetMirror(
 
   return {
     mirror: data?.data,
-    isGettingMirror: isPending,
+    isGettingMirror: !!mirrorName && isPending,
   };
 }

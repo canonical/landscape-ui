@@ -43,6 +43,6 @@ export const useGetLocalRepository = (localId: string) => {
 
   return {
     repository: data?.data,
-    isGettingRepository: isPending,
+    isGettingRepository: !!localId && isPending,
   };
 };
