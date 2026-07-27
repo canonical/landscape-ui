@@ -14,10 +14,16 @@ import {
 } from "./constants";
 import Blocks from "@/components/layout/Blocks";
 import ReadOnlyField from "@/components/form/ReadOnlyField";
+import type { LocalServiceGetLocalResponse } from "@canonical/landscape-openapi";
 
-const EditLocalRepositorySidePanel: FC = () => {
-  const { name, popSidePathUntilClear, closeSidePanel } = usePageParams();
-  const repository = useGetLocalRepository(name);
+interface ContentProps {
+  readonly repository: LocalServiceGetLocalResponse;
+}
+
+const EditLocalRepositorySidePanelContent: FC<ContentProps> = ({
+  repository,
+}) => {
+  const { popSidePathUntilClear, closeSidePanel } = usePageParams();
   const { updateRepository, isUpdatingRepository } = useUpdateLocalRepository();
   const debug = useDebug();
   const { notify } = useNotify();
@@ -101,6 +107,17 @@ const EditLocalRepositorySidePanel: FC = () => {
       </SidePanel.Content>
     </>
   );
+};
+
+const EditLocalRepositorySidePanel: FC = () => {
+  const { name } = usePageParams();
+  const { repository, isGettingRepository } = useGetLocalRepository(name);
+
+  if (isGettingRepository || !repository) {
+    return <SidePanel.LoadingState />;
+  }
+
+  return <EditLocalRepositorySidePanelContent repository={repository} />;
 };
 
 export default EditLocalRepositorySidePanel;

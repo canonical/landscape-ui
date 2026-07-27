@@ -5,7 +5,7 @@ import SidePanel from "@/components/layout/SidePanel";
 import PublishMirrorNewForm from "./components/PublishMirrorNewForm";
 import PublishMirrorExistingForm from "./components/PublishMirrorExistingForm";
 import { useBoolean } from "usehooks-ts";
-import { useGetMirror } from "../../api";
+import { useGetMirror } from "../../api/useGetMirror";
 import usePageParams from "@/hooks/usePageParams";
 import { useGetPublicationsBySource } from "@/features/publications";
 import { useGetPublicationTargets } from "@/features/publication-targets";
@@ -13,7 +13,7 @@ import { useGetPublicationTargets } from "@/features/publication-targets";
 const PublishMirrorForm: FC = () => {
   const { name } = usePageParams();
 
-  const mirror = useGetMirror(name).data.data;
+  const { mirror, isGettingMirror } = useGetMirror(name);
   const { publicationTargets, isGettingPublicationTargets } =
     useGetPublicationTargets();
   const { publications, isGettingPublications } =
@@ -21,7 +21,12 @@ const PublishMirrorForm: FC = () => {
 
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingPublicationTargets || isGettingPublications) {
+  if (
+    isGettingMirror ||
+    !mirror ||
+    isGettingPublicationTargets ||
+    isGettingPublications
+  ) {
     return <SidePanel.LoadingState />;
   }
 

@@ -11,14 +11,14 @@ import { useGetLocalRepository } from "../../api";
 
 const PublishLocalRepositorySidePanel: FC = () => {
   const { name } = usePageParams();
-  const repository = useGetLocalRepository(name);
+  const { repository, isGettingRepository } = useGetLocalRepository(name);
   const { publications, isGettingPublications } = useGetPublicationsBySource(
-    repository.name,
+    repository?.name,
   );
 
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingPublications) {
+  if (isGettingRepository || !repository || isGettingPublications) {
     return <SidePanel.LoadingState />;
   }
 

@@ -4,6 +4,7 @@ import type {
   PublicationTargetServiceGetPublicationTargetResponse,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 
 const NOT_FOUND_STATUS = 404;
@@ -14,34 +15,43 @@ export default function useGetPublicationTarget(
 ) {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data, error, isPending } = useQuery<
+  const { data, isPending } = useQuery<
     AxiosResponse<PublicationTargetServiceGetPublicationTargetResponse>,
     AxiosError<PublicationTargetServiceGetPublicationTargetError>
   >({
     queryKey: ["publication-target", publicationTargetId],
     queryFn: async () => {
-      const response = await authFetchDebArchive.get(
-        `publicationTargets/${publicationTargetId}`,
-      );
-
-      if (!response.data.publicationTargetId) {
-        throw new Error(
-          `Publication target ${publicationTargetId} was not found`,
+      try {
+        const response = await authFetchDebArchive.get(
+          `publicationTargets/${publicationTargetId}`,
         );
-      }
 
-      return response;
+        if (!response.data.publicationTargetId) {
+          throw new Error(
+            `Publication target ${publicationTargetId} was not found`,
+          );
+        }
+
+        return response;
+      } catch (caughtError) {
+        if (
+          isAxiosError(caughtError) &&
+          caughtError.response?.status === NOT_FOUND_STATUS
+        ) {
+          throw new Error(
+            `Publication target ${publicationTargetId} was not found`,
+          );
+        }
+
+        throw caughtError;
+      }
     },
-    enabled,
+    enabled: enabled && !!publicationTargetId,
+    throwOnError: true,
   });
 
-  if (!enabled || isPending) {
-    return undefined;
-  }
-
-  if (error?.response?.status === NOT_FOUND_STATUS || !data) {
-    throw new Error(`Publication target ${publicationTargetId} was not found`);
-  }
-
-  return data.data;
+  return {
+    publicationTarget: data?.data,
+    isGettingPublicationTarget: enabled && isPending,
+  };
 }

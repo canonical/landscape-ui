@@ -21,13 +21,17 @@ import ReadOnlyField from "@/components/form/ReadOnlyField";
 import * as Yup from "yup";
 import classes from "./EditMirrorForm.module.scss";
 import MirrorFilterHelpButton from "../MirrorFilterHelpButton";
+import type { MirrorServiceGetMirrorResponse } from "@canonical/landscape-openapi";
 
-const EditMirrorForm: FC = () => {
+interface EditMirrorFormContentProps {
+  readonly mirror: MirrorServiceGetMirrorResponse;
+}
+
+const EditMirrorFormContent: FC<EditMirrorFormContentProps> = ({ mirror }) => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { name, popSidePathUntilClear, closeSidePanel } = usePageParams();
 
-  const mirror = useGetMirror(name).data.data;
   const updateMirror = useUpdateMirror(name).mutateAsync;
 
   const formik = useFormik<FormProps>({
@@ -201,6 +205,17 @@ const EditMirrorForm: FC = () => {
       </SidePanel.Content>
     </>
   );
+};
+
+const EditMirrorForm: FC = () => {
+  const { name } = usePageParams();
+  const { mirror, isGettingMirror } = useGetMirror(name);
+
+  if (isGettingMirror || !mirror) {
+    return <SidePanel.LoadingState />;
+  }
+
+  return <EditMirrorFormContent mirror={mirror} />;
 };
 
 export default EditMirrorForm;

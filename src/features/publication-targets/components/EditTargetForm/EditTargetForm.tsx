@@ -375,10 +375,11 @@ const EditTargetFormContent: FC<EditTargetFormContentProps> = ({ target }) => {
 
 const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
   const { name } = usePageParams();
-  const fetchedTarget = useGetPublicationTarget(name, !target);
+  const { publicationTarget: fetchedTarget, isGettingPublicationTarget } =
+    useGetPublicationTarget(name, !target);
   const resolvedTarget = target ?? fetchedTarget;
 
-  if (!resolvedTarget) {
+  if (isGettingPublicationTarget || !resolvedTarget) {
     return <SidePanel.LoadingState />;
   }
 

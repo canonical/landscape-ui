@@ -16,16 +16,20 @@ import usePageParams from "@/hooks/usePageParams";
 const ViewLocalRepositorySidePanel: FC = () => {
   const { name } = usePageParams();
   const [tabId, setTabId] = useState<"details" | "packages">("details");
-  const repository = useGetLocalRepository(name);
+  const { repository, isGettingRepository } = useGetLocalRepository(name);
 
   const { operation, isGettingOperation } = useGetOperation(
-    repository.lastOperation ?? "",
+    repository?.lastOperation ?? "",
     {
-      enabled: !!repository.lastOperation,
+      enabled: !!repository?.lastOperation,
       refetchInterval: ({ state }) =>
         state.error || state.data?.data.done ? false : DEFAULT_POLLING_INTERVAL,
     },
   );
+
+  if (isGettingRepository || !repository) {
+    return <SidePanel.LoadingState />;
+  }
 
   if (!!repository.lastOperation && isGettingOperation) {
     return <SidePanel.LoadingState />;

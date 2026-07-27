@@ -22,7 +22,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   const debug = useDebug();
   const { notify } = useNotify();
   const { popSidePathUntilClear, name, closeSidePanel } = usePageParams();
-  const repository = useGetLocalRepository(name);
+  const { repository, isGettingRepository } = useGetLocalRepository(name);
 
   const { importRepositoryPackages, isImportingRepositoryPackages } =
     useImportRepositoryPackages();
@@ -85,6 +85,10 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
     }),
   });
 
+  if (isGettingRepository || !repository) {
+    return <SidePanel.LoadingState />;
+  }
+
   const handleValidate = async () => {
     const errors = await formik.validateForm();
     if (!formik.values.source || errors.source) {
@@ -119,7 +123,7 @@ const ImportRepositoryPackagesSidePanel: FC = () => {
   return (
     <>
       <SidePanel.Header>
-        Import packages to {repository.displayName}
+        Import packages to {repository?.displayName}
       </SidePanel.Header>
       <SidePanel.Content>
         <Form onSubmit={formik.handleSubmit} noValidate>

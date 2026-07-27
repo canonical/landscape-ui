@@ -41,6 +41,7 @@ import {
 const MirrorDetails: FC = () => {
   const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
     usePageParams();
+  const { mirror } = useGetMirror(name);
 
   const {
     value: isUpdateModalOpen,
@@ -60,9 +61,8 @@ const MirrorDetails: FC = () => {
 
   const [tabId, setTabId] = useState<"details" | "packages">("details");
 
-  const mirror = useGetMirror(name).data.data;
-  const { operation } = useGetOperation(mirror.lastOperation ?? "", {
-    enabled: !!mirror.lastOperation,
+  const { operation } = useGetOperation(mirror?.lastOperation ?? "", {
+    enabled: !!mirror?.lastOperation,
     refetchInterval: ({ state }) =>
       state.error || state.data?.data?.done ? false : DEFAULT_POLLING_INTERVAL,
   });
@@ -113,6 +113,10 @@ const MirrorDetails: FC = () => {
       updateModal: false,
     });
   };
+
+  if (!mirror) {
+    return <SidePanel.LoadingState />;
+  }
 
   return (
     <>

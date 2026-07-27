@@ -27,7 +27,8 @@ interface TargetDetailsProps {
 
 const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
   const { createSidePathPusher, name } = usePageParams();
-  const fetchedTarget = useGetPublicationTarget(name, !target);
+  const { publicationTarget: fetchedTarget, isGettingPublicationTarget } =
+    useGetPublicationTarget(name, !target);
   const resolvedTarget = target ?? fetchedTarget;
 
   const { publications, isGettingPublications } = useGetPublicationsByTarget(
@@ -81,7 +82,7 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
     openRemoveModal();
   };
 
-  if (!resolvedTarget) {
+  if (isGettingPublicationTarget || !resolvedTarget) {
     return <SidePanel.LoadingState />;
   }
 
