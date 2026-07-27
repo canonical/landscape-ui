@@ -18,8 +18,11 @@ const PublishLocalRepositorySidePanel: FC = () => {
 
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (isGettingRepository || !repository || isGettingPublications) {
+  if (isGettingRepository || isGettingPublications) {
     return <SidePanel.LoadingState />;
+  }
+  if (!repository) {
+    throw new Error(`Local repository ${name} was not found`);
   }
 
   return (

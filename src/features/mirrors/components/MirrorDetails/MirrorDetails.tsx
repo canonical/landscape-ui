@@ -41,7 +41,7 @@ import {
 const MirrorDetails: FC = () => {
   const { name, updateModal, createSidePathPusher, sidePath, setPageParams } =
     usePageParams();
-  const { mirror } = useGetMirror(name);
+  const { mirror, isGettingMirror } = useGetMirror(name);
 
   const {
     value: isUpdateModalOpen,
@@ -114,8 +114,11 @@ const MirrorDetails: FC = () => {
     });
   };
 
-  if (!mirror) {
+  if (isGettingMirror) {
     return <SidePanel.LoadingState />;
+  }
+  if (!mirror) {
+    throw new Error(`Mirror ${name} was not found`);
   }
 
   return (

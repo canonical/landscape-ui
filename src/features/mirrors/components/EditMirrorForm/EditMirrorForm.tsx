@@ -211,8 +211,11 @@ const EditMirrorForm: FC = () => {
   const { name } = usePageParams();
   const { mirror, isGettingMirror } = useGetMirror(name);
 
-  if (isGettingMirror || !mirror) {
+  if (isGettingMirror) {
     return <SidePanel.LoadingState />;
+  }
+  if (!mirror) {
+    throw new Error(`Mirror ${name} was not found`);
   }
 
   return <EditMirrorFormContent mirror={mirror} />;

@@ -27,8 +27,11 @@ const ViewLocalRepositorySidePanel: FC = () => {
     },
   );
 
-  if (isGettingRepository || !repository) {
+  if (isGettingRepository) {
     return <SidePanel.LoadingState />;
+  }
+  if (!repository) {
+    throw new Error(`Local repository ${name} was not found`);
   }
 
   if (!!repository.lastOperation && isGettingOperation) {

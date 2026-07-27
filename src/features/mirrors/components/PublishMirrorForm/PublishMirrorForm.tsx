@@ -21,13 +21,11 @@ const PublishMirrorForm: FC = () => {
 
   const { value: useNewPublication, toggle } = useBoolean(true);
 
-  if (
-    isGettingMirror ||
-    !mirror ||
-    isGettingPublicationTargets ||
-    isGettingPublications
-  ) {
+  if (isGettingMirror || isGettingPublicationTargets || isGettingPublications) {
     return <SidePanel.LoadingState />;
+  }
+  if (!mirror) {
+    throw new Error(`Mirror ${name} was not found`);
   }
 
   return (
