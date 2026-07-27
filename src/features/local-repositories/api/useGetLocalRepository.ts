@@ -4,18 +4,30 @@ import type {
   LocalServiceGetLocalError,
   LocalServiceGetLocalResponse,
 } from "@canonical/landscape-openapi";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetLocalRepository = (localId: string) => {
   const authFetchDebArchive = useFetchDebArchive();
 
-  const { data } = useSuspenseQuery<
+  const { data, error, isLoading } = useQuery<
     AxiosResponse<LocalServiceGetLocalResponse>,
     AxiosError<LocalServiceGetLocalError>
   >({
     queryKey: ["local", localId],
     queryFn: async () => authFetchDebArchive.get(`locals/${localId}`),
+    enabled: !!localId,
   });
 
-  return data.data;
+  const repository = data?.data.localId ? data.data : undefined;
+  const repositoryError =
+    error ??
+    (data && !data.data.localId
+      ? new Error(`Local repository ${localId} was not found`)
+      : undefined);
+
+  return {
+    repository,
+    repositoryError,
+    isGettingRepository: isLoading,
+  };
 };
