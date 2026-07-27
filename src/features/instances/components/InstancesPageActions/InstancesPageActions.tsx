@@ -7,7 +7,7 @@ import useAuth from "@/hooks/useAuth";
 import usePageParams from "@/hooks/usePageParams";
 import useSidePanel from "@/hooks/useSidePanel";
 import type { Instance } from "@/types/Instance";
-import { hasOneItem, getSelectionLabel, pluralize } from "@/utils/_helpers";
+import { hasOneItem, pluralize } from "@/utils/_helpers";
 import { Button, ContextualMenu, Icon } from "@canonical/react-components";
 import { lazy, memo, Suspense } from "react";
 import { useBoolean } from "usehooks-ts";
@@ -21,9 +21,6 @@ const RunInstanceScriptForm = lazy(
 );
 const Upgrades = lazy(
   async () => import("@/features/upgrades/components/Upgrades"),
-);
-const ReportView = lazy(
-  async () => import("@/pages/dashboard/instances/ReportView"),
 );
 const AccessGroupChange = lazy(async () => import("../AccessGroupChange"));
 const DistributionUpgrades = lazy(
@@ -50,7 +47,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
 }: InstancesPageActionsProps) {
   const { isFeatureEnabled } = useAuth();
   const { setSidePanelContent } = useSidePanel();
-  const { createSidePathPusher } = usePageParams();
+  const { createSidePathPusher, lastSidePathSegment } = usePageParams();
 
   const {
     value: rebootModalOpen,
@@ -146,15 +143,7 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const handleReportView = () => {
-    setSidePanelContent(
-      `Report for ${getSelectionLabel(selectedInstances, (instance) => instance.title, `instances`)}`,
-      <Suspense fallback={<LoadingState />}>
-        <ReportView instanceIds={selectedInstances.map(({ id }) => id)} />
-      </Suspense>,
-      "medium",
-    );
-  };
+  const handleReportView = createSidePathPusher("report");
 
   const handleAccessGroupChange = () => {
     setSidePanelContent(
@@ -192,7 +181,6 @@ const InstancesPageActions = memo(function InstancesPageActions({
     );
   };
 
-  const { lastSidePathSegment } = usePageParams();
   const handleExport = () => {
     if (lastSidePathSegment !== "export") createSidePathPusher("export")();
   };
@@ -349,19 +337,21 @@ const InstancesPageActions = memo(function InstancesPageActions({
       hasIcon: true,
       disabled: !hasInstancesToExport,
     },
-    REPORT_VIEW_ENABLED
-      ? {
-          children: (
-            <>
-              <Icon name="status" />
-              <span>View report</span>
-            </>
-          ),
-          onClick: handleReportView,
-          hasIcon: true,
-          disabled: !hasSelectedInstances,
-        }
-      : {},
+    ...(REPORT_VIEW_ENABLED
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="status" />
+                <span>View report</span>
+              </>
+            ),
+            onClick: handleReportView,
+            hasIcon: true,
+            disabled: !hasSelectedInstances,
+          },
+        ]
+      : []),
   ].filter((link) => link.children);
 
   return (

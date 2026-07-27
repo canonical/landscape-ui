@@ -15,7 +15,7 @@ dist-ssr
 .venv
 .vite-node
 coverage
-reports
+/reports
 src/**/*.module.scss.d.ts
 
 # Cache
