@@ -23,7 +23,7 @@ export const useGetPublication = (publicationId: string) => {
           `publications/${publicationId}`,
         );
 
-        if (!response.data.publicationId) {
+        if (!response.data?.publicationId) {
           throw new Error(`Publication ${publicationId} was not found`);
         }
 

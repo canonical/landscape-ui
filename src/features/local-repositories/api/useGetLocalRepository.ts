@@ -21,7 +21,7 @@ export const useGetLocalRepository = (localId: string) => {
       try {
         const response = await authFetchDebArchive.get(`locals/${localId}`);
 
-        if (!response.data.localId) {
+        if (!response.data?.localId) {
           throw new Error(`Local repository ${localId} was not found`);
         }
 

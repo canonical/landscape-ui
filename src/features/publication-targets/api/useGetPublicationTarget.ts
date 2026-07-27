@@ -19,14 +19,14 @@ export default function useGetPublicationTarget(
     AxiosResponse<PublicationTargetServiceGetPublicationTargetResponse>,
     AxiosError<PublicationTargetServiceGetPublicationTargetError>
   >({
-    queryKey: ["publication-target", publicationTargetId],
+    queryKey: ["publication-targets", publicationTargetId],
     queryFn: async () => {
       try {
         const response = await authFetchDebArchive.get(
           `publicationTargets/${publicationTargetId}`,
         );
 
-        if (!response.data.publicationTargetId) {
+        if (!response.data?.publicationTargetId) {
           throw new Error(
             `Publication target ${publicationTargetId} was not found`,
           );
