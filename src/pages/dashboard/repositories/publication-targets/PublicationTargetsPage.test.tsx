@@ -114,9 +114,7 @@ describe("PublicationTargetsPage", () => {
     const sidePanel = await screen.findByLabelText("Side panel");
 
     expect(
-      await within(sidePanel).findByText(
-        "Something went wrong",
-      ),
+      await within(sidePanel).findByText("Something went wrong"),
     ).toBeInTheDocument();
     expect(within(sidePanel).queryByRole("status")).not.toBeInTheDocument();
   });

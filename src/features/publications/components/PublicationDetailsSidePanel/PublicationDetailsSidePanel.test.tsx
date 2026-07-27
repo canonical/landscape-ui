@@ -68,9 +68,7 @@ describe("PublicationDetailsSidePanel", () => {
 
     renderPanelInSidePanel();
 
-    expect(
-      await screen.findByText("Something went wrong"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Something went wrong")).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 });
