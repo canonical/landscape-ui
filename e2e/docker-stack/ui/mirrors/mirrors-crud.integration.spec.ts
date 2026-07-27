@@ -37,13 +37,9 @@
  * Test 3 deletes the mirror via the UI. afterAll performs a best-effort API
  * cleanup in case test 3 did not run (e.g. earlier failure).
  */
-import {
-  expect,
-  test,
-  type Page,
-  type APIRequestContext,
-} from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
+import { dismissWelcomePopup } from "../../helpers/ui";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -66,13 +62,6 @@ interface DebarchiveMirror {
 interface DebarchiveMirrorList {
   mirrors: DebarchiveMirror[];
   [key: string]: unknown;
-}
-
-/** Suppress the first-run welcome modal that otherwise intercepts page clicks. */
-async function dismissWelcomePopup(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
-  });
 }
 
 /** Delete a debarchive mirror by resource name if it exists. No-op if not found. */

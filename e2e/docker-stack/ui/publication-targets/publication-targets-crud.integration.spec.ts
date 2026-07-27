@@ -37,13 +37,9 @@
  * The final step deletes the target via the UI. A finally block performs a
  * best-effort API cleanup in case the delete step did not complete.
  */
-import {
-  expect,
-  test,
-  type Page,
-  type APIRequestContext,
-} from "@playwright/test";
+import { expect, test, type APIRequestContext } from "@playwright/test";
 import { getAuthToken } from "../../helpers/auth";
+import { dismissWelcomePopup } from "../../helpers/ui";
 
 test.use({ storageState: "e2e/docker-stack/.auth/state.json" });
 
@@ -58,13 +54,6 @@ interface PublicationTarget {
 interface PublicationTargetListResponse {
   publicationTargets: PublicationTarget[];
   [key: string]: unknown;
-}
-
-/** Suppress the first-run welcome modal that otherwise intercepts page clicks. */
-async function dismissWelcomePopup(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    window.localStorage.setItem("_landscape_isWelcomePopupClosed", "true");
-  });
 }
 
 /** Delete a debarchive publication target by resource name if it exists. No-op if not found. */
