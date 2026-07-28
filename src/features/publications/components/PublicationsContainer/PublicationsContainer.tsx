@@ -55,10 +55,18 @@ const PublicationsContainer = () => {
     publicationTargetDisplayNames,
     isLoadingPublicationTargetDisplayNames,
   } = useBatchGetPublicationTargets(publicationTargetNames);
-  const { mirrorDisplayNames, isLoadingMirrorDisplayNames } =
-    useBatchGetMirrors(mirrorNames);
-  const { localDisplayNames, isLoadingLocalDisplayNames } =
+  const {
+    mirrorDisplayNames,
+    unreachableMirrors,
+    isLoadingMirrorDisplayNames,
+  } = useBatchGetMirrors(mirrorNames);
+  const { localDisplayNames, unreachableLocals, isLoadingLocalDisplayNames } =
     useBatchGetLocals(localNames);
+
+  const unreachableSourceNames = useMemo(
+    () => [...new Set([...unreachableMirrors, ...unreachableLocals])],
+    [unreachableLocals, unreachableMirrors],
+  );
 
   const sourceDisplayNames = useMemo(
     () => ({ ...mirrorDisplayNames, ...localDisplayNames }),
@@ -96,6 +104,7 @@ const PublicationsContainer = () => {
             <PublicationsList
               publications={publications}
               sourceDisplayNames={sourceDisplayNames}
+              unreachableSourceNames={unreachableSourceNames}
               publicationTargetDisplayNames={publicationTargetDisplayNames}
             />
             <TablePagination

@@ -24,12 +24,14 @@ interface PublicationDetailsProps {
   readonly publication: Publication;
   readonly sourceDisplayName: string;
   readonly publicationTargetDisplayName: string;
+  readonly isSourceNotFound?: boolean;
 }
 
 const PublicationDetails = ({
   publication,
   sourceDisplayName,
   publicationTargetDisplayName,
+  isSourceNotFound = false,
 }: PublicationDetailsProps) => {
   const {
     value: isRemoveModalOpen,
@@ -118,7 +120,18 @@ const PublicationDetails = ({
               label="Source type"
               value={getSourceType(publication.source)}
             />
-            <InfoGrid.Item label="Source" value={sourceDisplayName} />
+            <InfoGrid.Item
+              label="Source"
+              value={
+                isSourceNotFound ? (
+                  <>
+                    <Icon name={ICONS.warning} /> <span>Source not found</span>
+                  </>
+                ) : (
+                  sourceDisplayName
+                )
+              }
+            />
 
             <InfoGrid.Item
               label="Status"

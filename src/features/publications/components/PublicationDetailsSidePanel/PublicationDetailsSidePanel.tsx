@@ -34,8 +34,15 @@ const PublicationDetailsSidePanel: FC = () => {
   const { publicationTargetDisplayNames } = useBatchGetPublicationTargets(
     publicationTargetNames,
   );
-  const { mirrorDisplayNames } = useBatchGetMirrors(mirrorNames);
-  const { localDisplayNames } = useBatchGetLocals(localNames);
+  const { mirrorDisplayNames, unreachableMirrors } =
+    useBatchGetMirrors(mirrorNames);
+  const { localDisplayNames, unreachableLocals } =
+    useBatchGetLocals(localNames);
+
+  const unreachableSourceNames = useMemo(
+    () => [...new Set([...unreachableMirrors, ...unreachableLocals])],
+    [unreachableLocals, unreachableMirrors],
+  );
 
   const sourceDisplayNames = { ...mirrorDisplayNames, ...localDisplayNames };
 
@@ -49,6 +56,7 @@ const PublicationDetailsSidePanel: FC = () => {
       <SidePanel.Content>
         <PublicationDetails
           publication={publication}
+          isSourceNotFound={unreachableSourceNames.includes(publication.source)}
           sourceDisplayName={
             sourceDisplayNames[publication.source] ??
             getSourceName(publication.source)

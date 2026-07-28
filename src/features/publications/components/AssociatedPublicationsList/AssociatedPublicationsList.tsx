@@ -1,7 +1,7 @@
 import ModalTablePagination from "@/components/layout/TablePagination/components/ModalTablePagination/ModalTablePagination";
 import NoData from "@/components/layout/NoData";
 import { DISPLAY_DATE_TIME_FORMAT } from "@/constants";
-import { ModularTable } from "@canonical/react-components";
+import { Icon, ICONS, ModularTable } from "@canonical/react-components";
 import moment from "moment";
 import type { FC, ReactNode } from "react";
 import { useMemo, useState } from "react";
@@ -21,7 +21,22 @@ interface AssociatedPublicationsListProps {
   readonly openInNewTab?: boolean;
   readonly showSources?: boolean;
   readonly sourceDisplayNames?: Record<string, string>;
+  readonly unreachableSourceNames?: string[];
 }
+
+const isMissingSource = ({
+  source,
+  sourceType,
+  unreachableSourceNames,
+}: {
+  source: string;
+  sourceType: string;
+  unreachableSourceNames: string[];
+}) => {
+  const isSupportedSourceType =
+    sourceType === "Mirror" || sourceType === "Local repository";
+  return isSupportedSourceType && unreachableSourceNames.includes(source);
+};
 
 const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
   publications,
@@ -29,6 +44,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
   openInNewTab = false,
   showSources = true,
   sourceDisplayNames = EMPTY_SOURCE_DISPLAY_NAMES,
+  unreachableSourceNames = [],
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -65,8 +81,20 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
               }: CellProps<Publication>): ReactNode => {
                 const sourceType = getSourceType(source);
                 const displayName = sourceDisplayNames[source];
+                const isNotFoundSource = isMissingSource({
+                  source,
+                  sourceType,
+                  unreachableSourceNames,
+                });
                 let content: ReactNode;
-                if (sourceType === "Mirror") {
+                if (isNotFoundSource) {
+                  content = (
+                    <>
+                      <Icon name={ICONS.warning} />{" "}
+                      <span>Source not found</span>
+                    </>
+                  );
+                } else if (sourceType === "Mirror") {
                   content = (
                     <MirrorLink
                       mirrorName={source}
@@ -88,7 +116,13 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
                 return openInNewTab ? (
                   content
                 ) : (
-                  <TooltipCell message={displayName ?? source ?? ""}>
+                  <TooltipCell
+                    message={
+                      isNotFoundSource
+                        ? "Source not found"
+                        : (displayName ?? source ?? "")
+                    }
+                  >
                     {content}
                   </TooltipCell>
                 );
@@ -114,7 +148,7 @@ const AssociatedPublicationsList: FC<AssociatedPublicationsListProps> = ({
           ),
       },
     ],
-    [openInNewTab, showSources, sourceDisplayNames],
+    [openInNewTab, showSources, sourceDisplayNames, unreachableSourceNames],
   );
 
   const pagedData =
