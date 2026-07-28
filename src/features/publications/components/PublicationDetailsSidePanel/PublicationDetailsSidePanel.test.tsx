@@ -48,4 +48,19 @@ describe("PublicationDetailsSidePanel", () => {
 
     expect(await screen.findByText(mirrorDisplayName)).toBeInTheDocument();
   });
+
+  it("renders Source not found when publication source is unreachable", async () => {
+    const missingSourcePublication = publications.find(
+      (publication) => publication.source === "mirrors/non-existent-mirror",
+    );
+    assert(missingSourcePublication);
+
+    renderWithProviders(
+      <PublicationDetailsSidePanel />,
+      undefined,
+      `/?name=${missingSourcePublication.publicationId}`,
+    );
+
+    expect(await screen.findByText("Source not found")).toBeInTheDocument();
+  });
 });

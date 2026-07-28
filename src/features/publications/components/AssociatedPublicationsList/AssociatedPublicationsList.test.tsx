@@ -402,5 +402,65 @@ describe("AssociatedPublicationsList", () => {
 
       expect(screen.getByText("My Custom Local Repo")).toBeInTheDocument();
     });
+
+    it("renders Source not found and no link for missing mirror sources", () => {
+      const missingMirrorPublication = publications.find(
+        (publication) => publication.source === "mirrors/non-existent-mirror",
+      );
+      if (!missingMirrorPublication) {
+        throw new Error("Missing mock publication for non-existent mirror");
+      }
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[missingMirrorPublication]}
+          sourceDisplayNames={{
+            "mirrors/ubuntu-archive-mirror": "Ubuntu archive mirror",
+          }}
+          unreachableSourceNames={["mirrors/non-existent-mirror"]}
+        />,
+      );
+
+      expect(screen.getByText("Source not found")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: "Source not found" }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("renders Source not found and no link for missing local sources", () => {
+      const missingLocalPublication: Publication = {
+        name: "publications/missing-local-source-id",
+        publicationId: "missing-local-source-id",
+        displayName: "Missing local source publication",
+        label: "missing-local",
+        publicationTarget: "publicationTargets/test",
+        source: "locals/non-existent-local",
+        distribution: "jammy",
+        origin: "",
+        architectures: [],
+        acquireByHash: false,
+        butAutomaticUpgrades: false,
+        notAutomatic: false,
+        multiDist: false,
+        skipBz2: false,
+        skipContents: false,
+        publishTime: new Date("March 12, 2026"),
+      };
+
+      renderWithProviders(
+        <AssociatedPublicationsList
+          publications={[missingLocalPublication]}
+          sourceDisplayNames={{
+            "locals/some-local-uuid": "My Custom Local Repo",
+          }}
+          unreachableSourceNames={["locals/non-existent-local"]}
+        />,
+      );
+
+      expect(screen.getByText("Source not found")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("link", { name: "Source not found" }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

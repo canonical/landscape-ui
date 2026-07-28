@@ -7,6 +7,7 @@ import PublicationsList from "./PublicationsList";
 import { mirrors } from "@/tests/mocks/mirrors";
 import { NO_DATA_TEXT } from "@/components/layout/NoData";
 import { resetLroProgress } from "@/tests/server/handlers/operations";
+import type { Publication } from "@canonical/landscape-openapi";
 
 const buildDisplayNameMaps = (pubs: typeof publications) => {
   const sourceDisplayNames: Record<string, string> = {};
@@ -125,5 +126,64 @@ describe("PublicationsList", () => {
         'No publications found with the search: "test-publication"',
       ),
     ).toBeInTheDocument();
+  });
+
+  it("does not link unresolved mirror sources", () => {
+    const missingMirrorPublication = publications.find(
+      (pub) => pub.source === "mirrors/non-existent-mirror",
+    );
+    if (!missingMirrorPublication) {
+      throw new Error("Missing mock publication for non-existent mirror");
+    }
+
+    renderWithProviders(
+      <PublicationsList
+        publications={[missingMirrorPublication]}
+        sourceDisplayNames={sourceDisplayNames}
+        unreachableSourceNames={["mirrors/non-existent-mirror"]}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
+
+    expect(screen.getAllByText("Source not found").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole("link", { name: "Source not found" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not link unresolved local sources", () => {
+    const missingLocalPublication: Publication = {
+      name: "publications/missing-local-source-in-list",
+      publicationId: "missing-local-source-in-list",
+      displayName: "missing local source publication",
+      label: "missing-local",
+      publicationTarget:
+        "publicationTargets/aaaaaaaa-0000-0000-0000-000000000001",
+      source: "locals/non-existent-local",
+      distribution: "jammy",
+      origin: "Canonical",
+      architectures: ["amd64"],
+      acquireByHash: false,
+      butAutomaticUpgrades: false,
+      notAutomatic: false,
+      multiDist: false,
+      skipBz2: false,
+      skipContents: false,
+      publishTime: new Date("March 12, 2026"),
+    };
+
+    renderWithProviders(
+      <PublicationsList
+        publications={[missingLocalPublication]}
+        sourceDisplayNames={{ "locals/aaaa-bbbb-cccc": "Known local" }}
+        unreachableSourceNames={["locals/non-existent-local"]}
+        publicationTargetDisplayNames={publicationTargetDisplayNames}
+      />,
+    );
+
+    expect(screen.getAllByText("Source not found").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByRole("link", { name: "Source not found" }),
+    ).not.toBeInTheDocument();
   });
 });
