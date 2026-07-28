@@ -1,9 +1,6 @@
 import { delay, http, HttpResponse } from "msw";
-import { API_URL_DEB_ARCHIVE } from "@/constants";
-import {
-  paginatedPackages,
-  repositories,
-} from "@/tests/mocks/localRepositories";
+import { API_URL_DEB_ARCHIVE, DEFAULT_MODAL_PAGE_SIZE } from "@/constants";
+import { packages, repositories } from "@/tests/mocks/localRepositories";
 import type {
   ImportLocalPackagesRequest,
   BatchGetLocalsRequest,
@@ -115,15 +112,27 @@ export default [
     return HttpResponse.json();
   }),
 
-  http.get(`${API_URL_DEB_ARCHIVE}locals/:repository/packages`, () => {
-    if (shouldApplyEndpointStatus("locals")) {
-      return applyEndpointStatus({ localPackages: [] });
-    }
+  http.get(
+    `${API_URL_DEB_ARCHIVE}locals/:repository/packages`,
+    async ({ request }) => {
+      if (shouldApplyEndpointStatus("locals")) {
+        return applyEndpointStatus({ localPackages: [] });
+      }
 
-    return HttpResponse.json({
-      localPackages: paginatedPackages,
-    });
-  }),
+      const url = new URL(request.url);
+      const pageToken = Number(url.searchParams.get("pageToken")) || 0;
+      const pageSize =
+        Number(url.searchParams.get("pageSize")) || DEFAULT_MODAL_PAGE_SIZE;
+      const pageIndex = pageToken * pageSize;
+      const paginatedPackages = packages.slice(pageIndex, pageIndex + pageSize);
+      const hasNextPage = pageIndex + pageSize < packages.length;
+
+      return HttpResponse.json({
+        localPackages: paginatedPackages,
+        nextPageToken: hasNextPage ? String(pageToken + 1) : undefined,
+      });
+    },
+  ),
 
   http.post<never, ImportLocalPackagesRequest>(
     `${API_URL_DEB_ARCHIVE}locals/:repository\\:importPackages`,
@@ -136,27 +145,27 @@ export default [
 
       let id = "oooo-vvvv-cccc";
 
-      if (url === "failed") {
+      if (url === "https://example.com/failed") {
         id = "ffff-llll-dddd";
       }
 
-      if (url === "timeout") {
+      if (url === "https://example.com/timeout") {
         id = "tttt-mmmm-oooo";
       }
 
-      if (url === "idle") {
+      if (url === "https://example.com/idle") {
         id = "iiii-dddd-llll";
       }
 
-      if (url === "in/progress") {
+      if (url === "https://example.com/in/progress") {
         id = "pppp-gggg-ssss";
       }
 
-      if (url === "empty") {
+      if (url === "https://example.com/empty") {
         id = "mmmm-pppp-tttt";
       }
 
-      if (url === "succeeded") {
+      if (url === "https://example.com/succeeded") {
         id = "ssss-cccc-dddd";
       }
 

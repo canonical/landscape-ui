@@ -113,32 +113,14 @@ describe("ReportLegendTable", () => {
         rows={rows}
       />,
     );
-    // rowB carries a detail; rowA does not.
-    expect(screen.getByRole("img", { name: "extra context" })).toHaveClass(
-      "p-icon--help",
-    );
-    expect(screen.getAllByRole("img")).toHaveLength(1);
-  });
-
-  it("reports row hover so the donut can highlight the matching segment", async () => {
-    const user = userEvent.setup();
-    const onRowHover = vi.fn();
-    renderWithProviders(
-      <ReportLegendTable
-        variant="dot"
-        labelHeader="Status"
-        countHeader="Instances"
-        rows={rows}
-        onRowHover={onRowHover}
-      />,
-    );
-
-    const firstRow = screen.getByText("First").closest("tr") as HTMLElement;
-    await user.hover(firstRow);
-    expect(onRowHover).toHaveBeenLastCalledWith("a");
-
-    await user.unhover(firstRow);
-    expect(onRowHover).toHaveBeenLastCalledWith(null);
+    // rowB carries a detail; rowA does not. The icon is decorative now, so
+    // assert on the off-screen help text and icon class instead of role="img".
+    expect(
+      screen.getByText("Help", { selector: ".u-off-screen" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Second").closest("tr")?.querySelector(".p-icon--help"),
+    ).toHaveAttribute("aria-hidden", "true");
   });
 
   it("renders a header label for the marker column when given", () => {

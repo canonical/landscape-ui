@@ -50,11 +50,7 @@ export const repositories = [
   },
 ] as const satisfies Local[];
 
-export const paginatedPackages = Array.from(
+export const packages = Array.from(
   { length: 25 },
   (_, i) => `package-${i + 1}`,
-);
-
-export const sortedPackages = paginatedPackages.toSorted((a, b) =>
-  a.localeCompare(b),
 );

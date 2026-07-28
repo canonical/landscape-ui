@@ -8,6 +8,7 @@ import {
   processingExportJob,
   failedExportJob,
   completedActivitiesExportJob,
+  newComplianceExportJob,
 } from "@/tests/mocks/exports";
 import ExportsContainer from "./ExportsContainer";
 
@@ -59,5 +60,20 @@ describe("ExportsContainer", () => {
     await expectLoadingState();
 
     expect(screen.getByRole("button", { name: /type/i })).toBeInTheDocument();
+  });
+
+  it('renders report exports with the "Report" type label', async () => {
+    setEndpointStatus({
+      status: "variant",
+      path: "exports",
+      response: [newComplianceExportJob],
+    });
+
+    renderWithProviders(<ExportsContainer />);
+
+    await expectLoadingState();
+
+    expect(screen.getByText(newComplianceExportJob.name)).toBeInTheDocument();
+    expect(screen.getByText("Report")).toBeInTheDocument();
   });
 });

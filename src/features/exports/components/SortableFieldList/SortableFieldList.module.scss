@@ -3,10 +3,18 @@
 
 .selectedColumns {
   padding-top: $spv--small;
+
+  :global(table) {
+    margin-bottom: 0;
+  }
 }
 
-.selectedColumnsIntro {
+.selectedColumnsHeader {
   margin-bottom: $spv--medium;
+}
+
+.resetButton {
+  white-space: nowrap;
 }
 
 .nameCell {
@@ -21,9 +29,11 @@
 }
 
 .orderColumn {
-  text-align: right;
+  text-align: left;
   white-space: nowrap;
-  width: 12rem;
+
+  // Fixed width to left-align header over row content columns (matches .orderInput width + flex gap + padding)
+  width: 10.5rem;
 }
 
 .orderControls {
@@ -34,9 +44,16 @@
 }
 
 .orderInput {
+  appearance: textfield;
   min-width: 0;
   text-align: center;
   width: 5rem;
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
 }
 
 .orderInputWrapper {
@@ -65,6 +82,7 @@
  */
 .selectedColumns :global(td) {
   transition: box-shadow 0.15s ease;
+  vertical-align: middle;
 }
 
 /* Fully-opaque card overlay that follows the cursor during drag.

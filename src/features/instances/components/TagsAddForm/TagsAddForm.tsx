@@ -96,6 +96,14 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
   };
 
   const submit = async () => {
+    if (!selectedTags.length) {
+      notify.error({
+        title: "No tags selected",
+        message: "Select at least one tag to assign.",
+      });
+      return;
+    }
+
     const getProfileChangesResponse = await refetchProfileChanges();
 
     if (!getProfileChangesResponse.isSuccess) {
@@ -110,17 +118,20 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
     }
   };
 
-  const filteredTags =
-    tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase())) ??
-    [];
+  const filteredTags = useMemo(
+    () =>
+      tags.filter((tag) => tag.toLowerCase().includes(search.toLowerCase())) ??
+      [],
+    [tags, search],
+  );
 
-  const toggleAll = () => {
+  const toggleAll = useCallback(() => {
     if (filteredTags.every((tag) => selectedTags.includes(tag))) {
       setSelectedTags([]);
     } else {
       setSelectedTags(filteredTags);
     }
-  };
+  }, [filteredTags, selectedTags]);
 
   const toggleTag = useCallback(
     (tag: string) => {
@@ -190,7 +201,7 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
         },
       },
     ],
-    [selectedTags, filteredTags, toggleTag],
+    [selectedTags, filteredTags, toggleTag, selected, toggleAll],
   );
 
   if (isGettingTags) {
@@ -231,7 +242,6 @@ const TagsAddForm: FC<TagsAddFormProps> = ({ selected }) => {
 
       <SidePanelFormButtons
         onSubmit={submit}
-        submitButtonDisabled={!selectedTags.length}
         submitButtonLoading={
           isAddingTagsToInstances || isFetchingProfileChanges
         }

@@ -121,7 +121,6 @@ const PackageProfileAddSidePanel: FC = () => {
           <PackageProfileConstraintsTypeBlock formik={formik} />
 
           <SidePanelFormButtons
-            submitButtonDisabled={!formik.isValid}
             submitButtonLoading={formik.isSubmitting}
             submitButtonText="Add package profile"
             onCancel={closeSidePanel}

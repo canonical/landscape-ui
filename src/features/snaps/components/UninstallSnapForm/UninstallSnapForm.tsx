@@ -73,7 +73,7 @@ const UninstallSnapForm: FC<UninstallSnapFormProps> = ({ installedSnaps }) => {
       <SidePanelFormButtons
         submitButtonText="Uninstall"
         submitButtonAppearance="negative"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );

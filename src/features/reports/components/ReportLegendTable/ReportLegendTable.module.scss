@@ -1,9 +1,6 @@
 @import "vanilla-framework/scss/settings_colors";
 @import "vanilla-framework/scss/settings_spacing";
 
-/* Nest the element rules under the local `.table` class. CSS modules do not
-   scope bare element selectors, so a top-level `th`/`td` would compile to a
-   global rule and leak table styling across the whole app. */
 .table {
   border-collapse: collapse;
   width: 100%;
@@ -35,11 +32,6 @@
   }
 }
 
-/* Fixed widths for the marker and count columns (count matches the Figma 96px
-   column and comfortably fits the values + the "INSTANCES" header, so the
-   global overflow:hidden never clips). The label column is auto, so it absorbs
-   the remaining space and the table is always exactly 100% wide — no horizontal
-   overflow — while long labels still truncate with the inherited ellipsis. */
 .markerCell {
   white-space: nowrap;
   width: 1.5rem;
@@ -74,8 +66,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Hover coordination: the hovered row stays full strength with a bolder label
-   while the rest dim, so the matching donut segment reads clearly. */
 .rowActive td {
   transition: opacity 100ms ease;
 }

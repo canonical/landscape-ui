@@ -32,7 +32,7 @@ describe("PackagesInstallForm", () => {
       ).toBeInTheDocument();
     });
 
-    it("install button is disabled when no packages selected", () => {
+    it("keeps install button enabled and blocks empty submission", async () => {
       renderWithProviders(
         <PackagesInstallForm />,
         {},
@@ -43,7 +43,34 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).toHaveAttribute("aria-disabled", "true");
+      expect(installButton).not.toHaveAttribute("aria-disabled", "true");
+
+      await user.click(installButton);
+
+      expect(
+        await screen.findByText(/select at least one package to install/i),
+      ).toBeInTheDocument();
+    });
+
+    it("shows 'No packages selected' notification on empty submission", async () => {
+      renderWithProviders(
+        <PackagesInstallForm />,
+        {},
+        instancePageUrl,
+        instancePath,
+      );
+
+      const installButton = screen.getByRole("button", {
+        name: "Install packages",
+      });
+      await user.click(installButton);
+
+      expect(
+        await screen.findByText("No packages selected"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Select at least one package to install."),
+      ).toBeInTheDocument();
     });
   });
 
@@ -69,8 +96,7 @@ describe("PackagesInstallForm", () => {
       const installButton = screen.getByRole("button", {
         name: "Install packages",
       });
-      expect(installButton).not.toHaveAttribute("aria-disabled");
-      expect(installButton).toBeEnabled();
+      expect(installButton).not.toHaveAttribute("aria-disabled", "true");
     });
 
     it("submits form and shows success notification for single package", async () => {
@@ -141,6 +167,11 @@ describe("PackagesInstallForm", () => {
     const installButton = screen.getByRole("button", {
       name: "Install packages",
     });
-    expect(installButton).toHaveAttribute("aria-disabled", "true");
+    expect(installButton).not.toHaveAttribute("aria-disabled", "true");
+
+    await user.click(installButton);
+    expect(
+      await screen.findByText(/select at least one package to install/i),
+    ).toBeInTheDocument();
   });
 });

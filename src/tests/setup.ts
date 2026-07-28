@@ -1,8 +1,10 @@
 import "@testing-library/jest-dom";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { cleanup, configure } from "@testing-library/react";
+import fs from "fs";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
 import { setEndpointStatus } from "./controllers/controller";
+import { MANIFEST_PATH, REGISTRY_PATH } from "./contract-coverage/paths";
 import {
   mockRangeBoundingClientRect,
   resetScreenSize,
@@ -20,6 +22,104 @@ expect.extend(matchers);
 // the merge-queue branch where workers contend for CPU. Give them more headroom
 // so load-sensitive tests don't flake (and silently drop the PR from the queue).
 configure({ asyncUtilTimeout: 5000 });
+
+// --- MSW Interaction Recorder Config ---
+
+/**
+ * Safely extracts and parses payloads from cloned network streams
+ */
+async function extractPayload(streamOwner: Request | Response) {
+  if (!streamOwner.body) return null;
+  try {
+    const clone = streamOwner.clone();
+    const text = await clone.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text || null;
+    }
+  } catch {
+    return null; // Fallback if streams are unreadable or locked
+  }
+}
+
+// Keep JSONL lines short enough for a single O_APPEND write syscall to be
+// effectively atomic across concurrent Vitest worker threads. Payloads larger
+// than this are replaced with a sentinel so the line stays well under 4 KB.
+const MAX_PAYLOAD_BYTES = 2048;
+
+function truncateForLog(payload: unknown): unknown {
+  if (payload === null) return null;
+  const serialized = JSON.stringify(payload);
+  const bytes = Buffer.byteLength(serialized, "utf8");
+  if (bytes <= MAX_PAYLOAD_BYTES) return payload;
+  return { __truncated: true, originalBytes: bytes };
+}
+
+async function logInteraction(request: Request, response: Response) {
+  try {
+    const requestPayload = truncateForLog(await extractPayload(request));
+    const responsePayload = truncateForLog(await extractPayload(response));
+
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      method: request.method,
+      url: request.url,
+      status: response.status,
+      requestPayload,
+      responsePayload,
+    };
+
+    await fs.promises.appendFile(
+      REGISTRY_PATH,
+      JSON.stringify(logEntry) + "\n",
+    );
+  } catch (error) {
+    console.error("Failed to write MSW interaction registry entry:", error);
+  }
+}
+
+const pendingLogs: Promise<void>[] = [];
+
+// Attach listeners immediately to capture traffic in this worker's context
+server.events.on("response:mocked", ({ request, response }) => {
+  const p = logInteraction(request, response).finally(() => {
+    const idx = pendingLogs.indexOf(p);
+    if (idx !== -1) pendingLogs.splice(idx, 1);
+  });
+  pendingLogs.push(p);
+});
+
+// Dump the declared handler patterns for the coverage aggregator, which runs
+// outside Vite and cannot import the handler modules (import.meta.env).
+// Content is identical across workers, so concurrent rewrites are harmless.
+// A failed write must fail hard — a stale manifest would silently skew the
+// coverage report.
+try {
+  const manifest = server.listHandlers().map((handler) => {
+    const info = handler.info as { method?: unknown; path?: unknown };
+    return {
+      method: String(info.method ?? ""),
+      path: String(info.path ?? ""),
+      isRegExpPath: info.path instanceof RegExp,
+    };
+  });
+  try {
+    fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), {
+      flag: "wx",
+    });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EEXIST") {
+      throw error;
+    }
+  }
+} catch (error) {
+  throw new Error(
+    `[FATAL] MSW manifest write failed at ${MANIFEST_PATH}: ${String(error)}`,
+  );
+}
+
+// ----------------------------------------
 
 interface ResizeObserverInstance {
   observe: ReturnType<typeof vi.fn>;
@@ -101,8 +201,9 @@ beforeAll(() => {
   resetScreenSize();
 });
 
-afterAll(() => {
+afterAll(async () => {
   server.close();
+  await Promise.allSettled(pendingLogs);
   restoreRangeBoundingClientRect();
 });
 

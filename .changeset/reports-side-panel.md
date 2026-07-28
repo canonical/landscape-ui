@@ -2,4 +2,4 @@
 "landscape-ui": minor
 ---
 
-Redesign the instances reports side panel on a single V2 `computers/report` endpoint, with deep-linked counts and a working CSV download. Gated behind the `instance-reports` feature flag (on by default).
+Gate the instances report side panel behind the server-driven `instance-reports` feature flag, replacing the build-time `VITE_REPORT_VIEW_ENABLED` environment variable.

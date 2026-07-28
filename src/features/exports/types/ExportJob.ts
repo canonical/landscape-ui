@@ -1,4 +1,4 @@
-export type ExportJobType = "instance" | "activity";
+export type ExportJobType = "instance" | "activity" | "report";
 
 export type ExportJobStatus = "processing" | "completed" | "failed";
 
@@ -15,4 +15,5 @@ export interface ExportJob {
   download_ready: boolean;
   retain_until: string;
   query?: string | null;
+  description?: string | null;
 }

@@ -156,7 +156,7 @@ const HoldSnapForm: FC<HoldSnapFormProps> = ({ installedSnaps }) => {
       <SidePanelFormButtons
         submitButtonText="Hold"
         submitButtonAppearance="positive"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
       />
     </Form>
   );

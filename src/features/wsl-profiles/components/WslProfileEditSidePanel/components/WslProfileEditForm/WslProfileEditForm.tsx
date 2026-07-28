@@ -146,7 +146,7 @@ const WslProfileEditForm: FC<WslProfileEditFormProps> = ({ profile }) => {
 
       <SidePanelFormButtons
         submitButtonText="Save changes"
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         onCancel={popSidePathUntilClear}
       />
     </Form>

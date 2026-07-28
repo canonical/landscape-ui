@@ -14,6 +14,7 @@ import {
   Form,
   Icon,
   ICONS,
+  Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -29,10 +30,6 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
 }) => {
   const [currentAdministrator, setCurrentAdministrator] =
     useState(administrator);
-
-  useEffect(() => {
-    setCurrentAdministrator(administrator);
-  }, [administrator]);
 
   const { notify } = useNotify();
   const debug = useDebug();
@@ -70,6 +67,14 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
   };
 
   const handleSubmit = async (values: { roles: string[] }) => {
+    const isUnchanged =
+      values.roles.length === currentAdministrator.roles.length &&
+      values.roles.every((role) => currentAdministrator.roles.includes(role));
+
+    if (isUnchanged) {
+      return;
+    }
+
     try {
       await editAdministrator({ id: administrator.id, roles: values.roles });
 
@@ -98,8 +103,21 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
     formik.setValues({ roles: currentAdministrator.roles });
   }, [currentAdministrator]);
 
+  const isUnchanged =
+    formik.values.roles.length === currentAdministrator.roles.length &&
+    formik.values.roles.every((role) =>
+      currentAdministrator.roles.includes(role),
+    );
+
+  const showUnchangedError = isUnchanged && formik.submitCount > 0;
+
   return (
     <Form onSubmit={formik.handleSubmit} noValidate>
+      {showUnchangedError && (
+        <Notification severity="caution">
+          No changes to save. Update the administrator roles before saving.
+        </Notification>
+      )}
       <ConfirmationButton
         type="button"
         className="has-icon u-no-margin"
@@ -149,13 +167,7 @@ const EditAdministratorForm: FC<EditAdministratorFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          formik.isSubmitting ||
-          (formik.values.roles.length === currentAdministrator.roles.length &&
-            formik.values.roles.every((role) =>
-              currentAdministrator.roles.includes(role),
-            ))
-        }
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Save changes"
       />
     </Form>

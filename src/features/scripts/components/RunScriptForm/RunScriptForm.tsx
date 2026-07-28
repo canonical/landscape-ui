@@ -348,7 +348,7 @@ const RunScriptForm: FC<RunScriptFormProps> = ({
         <DeliveryBlock formik={formik} />
 
         <SidePanelFormButtons
-          submitButtonDisabled={formik.isSubmitting}
+          submitButtonLoading={formik.isSubmitting}
           onBackButtonPress={onBack}
           hasBackButton={!!onBack}
           submitButtonText={codeChanged ? "Save and run" : "Run script"}

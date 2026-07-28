@@ -9,11 +9,12 @@ import {
 import { renderWithProviders } from "@/tests/render";
 import server from "@/tests/server";
 import { generatePaginatedResponse } from "@/tests/server/handlers/_helpers";
-import { screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import type { ComponentProps } from "react";
-import { beforeEach } from "vitest";
+import { useLocation } from "react-router";
+import { afterEach, beforeEach, vi } from "vitest";
 import InstancesPageActions from "./InstancesPageActions";
 import { pluralize } from "@/utils/_helpers";
 import { setEndpointStatus } from "@/tests/controllers/controller";
@@ -41,19 +42,16 @@ const OPERATIONS_LABELS = [
 const GROUPING_LABELS = ["Assign access group", "Assign tag"];
 
 const UBUNTU_PRO_LABELS = ["Attach token", "Detach token"];
-const exportParams = {
-  query: "",
-  archived_only: false,
-  wsl_children: false,
-  wsl_parents: false,
-};
 
 const defaultProps: ComponentProps<typeof InstancesPageActions> = {
-  exportParams,
-  instanceCount: selected.length,
   isGettingInstances: false,
   selectedInstances: selected,
   isAllSelected: false,
+};
+
+const LocationDisplay = () => {
+  const { search } = useLocation();
+  return <div data-testid="location-display">{search}</div>;
 };
 
 const renderPageActions = (
@@ -68,6 +66,7 @@ describe("InstancesPageActions", () => {
 
   afterEach(() => {
     resetScreenSize();
+    vi.restoreAllMocks();
   });
 
   it("should render correct action groups", async () => {
@@ -94,7 +93,7 @@ describe("InstancesPageActions", () => {
 
   describe("Disabled and visible states", () => {
     it("should disable all groups when no instances are available to export", () => {
-      renderPageActions({ instanceCount: 0, selectedInstances: [] });
+      renderPageActions({ selectedInstances: [] });
 
       const buttons = screen.getAllByRole("button");
 
@@ -108,7 +107,6 @@ describe("InstancesPageActions", () => {
     it("should disable buttons while getting instances", () => {
       renderPageActions({
         isGettingInstances: true,
-        instanceCount: 0,
         selectedInstances: [],
       });
 
@@ -266,21 +264,6 @@ describe("InstancesPageActions", () => {
       renderPageActions();
     });
 
-    it("'Export' menu item", async () => {
-      await userEvent.click(
-        screen.getByRole("button", { name: MENU_LABELS[0] }),
-      );
-      await userEvent.click(
-        screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
-      );
-
-      expect(
-        screen.getByRole("heading", {
-          name: `Export ${pluralize(selected.length, ["instance"], "exact")} as TSV`,
-        }),
-      ).toBeInTheDocument();
-    });
-
     it("'Shutdown' menu item", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
@@ -343,6 +326,15 @@ describe("InstancesPageActions", () => {
     });
 
     it("'View report' menu item", async () => {
+      cleanup();
+
+      renderWithProviders(
+        <>
+          <InstancesPageActions {...defaultProps} />
+          <LocationDisplay />
+        </>,
+      );
+
       await userEvent.click(
         screen.getByRole("button", { name: MENU_LABELS[0] }),
       );
@@ -350,11 +342,9 @@ describe("InstancesPageActions", () => {
         screen.getByRole("menuitem", { name: /view report/i }),
       );
 
-      expect(
-        screen.getByRole("heading", {
-          name: `Report for ${selected.length} instances`,
-        }),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("location-display")).toHaveTextContent(
+        "sidePath=report",
+      );
     });
 
     it("'Upgrade' menu item", async () => {
@@ -469,6 +459,47 @@ describe("InstancesPageActions", () => {
     expect(
       screen.getByRole("heading", { name: /replace Ubuntu Pro token/i }),
     ).toBeInTheDocument();
+  });
+
+  it("'Export' menu item pushes sidePath=export", async () => {
+    renderWithProviders(
+      <>
+        <InstancesPageActions {...defaultProps} />
+        <LocationDisplay />
+      </>,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
+    );
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
+  });
+
+  it("'Export' menu item does not append duplicate export sidePath", async () => {
+    renderWithProviders(
+      <>
+        <InstancesPageActions {...defaultProps} />
+        <LocationDisplay />
+      </>,
+      undefined,
+      "/?sidePath=export",
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: MENU_LABELS[0] }));
+    await userEvent.click(
+      screen.getByRole("menuitem", { name: /^export selection as tsv$/i }),
+    );
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
+    expect(screen.getByTestId("location-display")).not.toHaveTextContent(
+      "sidePath=export,export",
+    );
   });
 
   describe("Run script form warning", () => {

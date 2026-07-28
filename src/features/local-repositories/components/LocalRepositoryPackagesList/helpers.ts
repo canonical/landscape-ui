@@ -1,9 +1,9 @@
 import type { HTMLProps } from "react";
 import type { Cell, TableCellProps } from "react-table";
-import type { LocalPackage } from "../../types";
+import type { SourcePackage } from "@/features/repositories";
 
 export const getCellProps = (
-  cell: Cell<LocalPackage>,
+  cell: Cell<SourcePackage>,
 ): Partial<TableCellProps & HTMLProps<HTMLTableCellElement>> => {
   const { column, row } = cell;
 

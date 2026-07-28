@@ -1,6 +1,5 @@
 import useDebug from "@/hooks/useDebug";
 import useNotify from "@/hooks/useNotify";
-import useSidePanel from "@/hooks/useSidePanel";
 import usePageParams from "@/hooks/usePageParams";
 import { ROUTES } from "@/libs/routes";
 import {
@@ -27,13 +26,12 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
   exportParams,
   selectedInstanceIds,
 }) => {
-  const { closeSidePanel } = useSidePanel();
   const { notify } = useNotify();
   const navigate = useNavigate();
   const debug = useDebug();
   const { exportInstancesTsv, isExportInstancesTsvLoading } =
     useExportInstancesTsv();
-  const { disabledColumns } = usePageParams();
+  const { disabledColumns, popSidePath } = usePageParams();
 
   const handleGenerate = async ({
     values,
@@ -64,7 +62,7 @@ const InstancesExportForm: FC<InstancesExportFormProps> = ({
         selectionForms: ["selected instance", "selected instances"],
       });
 
-      closeSidePanel();
+      popSidePath();
       notify.success({
         title: "TSV export in progress",
         message: `Your instances export "${values.name.trim()}"${exportScope} is being generated.`,

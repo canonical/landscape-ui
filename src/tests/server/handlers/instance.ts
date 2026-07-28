@@ -13,6 +13,7 @@ import {
   getMockRecoveryKeyActivity,
   RELEASE_UPGRADE_ACTIVITY,
 } from "@/tests/mocks/activity";
+import { newComplianceExportJob } from "@/tests/mocks/exports";
 import {
   instanceCanceledActivityNoKey,
   instanceCanceledActivityWithKey,
@@ -342,7 +343,7 @@ export default [
 
   http.post(`${API_URL}computers/release-upgrades`, async () => {
     if (shouldApplyEndpointStatus("computers/release-upgrades")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/release-upgrades");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -354,7 +355,7 @@ export default [
 
   http.post(`${API_URL}computers/upgrade-packages`, async () => {
     if (shouldApplyEndpointStatus("computers/upgrade-packages")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/upgrade-packages");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -365,7 +366,7 @@ export default [
 
   http.post(`${API_URL}computers/:computerId/restart`, async () => {
     if (shouldApplyEndpointStatus("computers/:computerId/restart")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/:computerId/restart");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -382,7 +383,7 @@ export default [
     }
 
     if (shouldApplyEndpointStatus("computers/:computerId")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/:computerId");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -398,7 +399,7 @@ export default [
 
   http.put(`${API_URL}computers/:computerId`, async () => {
     if (shouldApplyEndpointStatus("editInstance")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("editInstance");
       if (status === "error") {
         throw createEndpointStatusError();
       }
@@ -411,7 +412,7 @@ export default [
     `${API_URL}computers/:computerId/usergroups/update_bulk`,
     async () => {
       if (shouldApplyEndpointStatus("userGroups")) {
-        const { status } = getEndpointStatus();
+        const { status } = getEndpointStatus("userGroups");
         if (status === "error") {
           throw createEndpointStatusError();
         }
@@ -671,7 +672,7 @@ export default [
 
   http.post(`${API_URL}computers/exports`, async ({ request }) => {
     if (shouldApplyEndpointStatus("computers/exports")) {
-      const { status } = getEndpointStatus();
+      const { status } = getEndpointStatus("computers/exports");
       if (status === "error") {
         return createEndpointStatusError();
       }
@@ -692,6 +693,30 @@ export default [
           ? body.retain_until
           : moment().add(3, "years").toISOString(),
       query: typeof body.query === "string" ? body.query : null,
+    };
+    return HttpResponse.json(job, { status: 201 });
+  }),
+
+  http.post(`${API_URL}computers/report\\:export`, async ({ request }) => {
+    if (shouldApplyEndpointStatus("computers/report:export")) {
+      const { status } = getEndpointStatus("computers/report:export");
+      if (status === "error") {
+        return createEndpointStatusError();
+      }
+    }
+    const body = (await request.json()) as Record<string, unknown>;
+    const job: ExportJob = {
+      ...newComplianceExportJob,
+      name:
+        typeof body.name === "string" ? body.name : newComplianceExportJob.name,
+      retain_until:
+        typeof body.retain_until === "string"
+          ? body.retain_until
+          : newComplianceExportJob.retain_until,
+      query:
+        typeof body.query === "string"
+          ? body.query
+          : newComplianceExportJob.query,
     };
     return HttpResponse.json(job, { status: 201 });
   }),

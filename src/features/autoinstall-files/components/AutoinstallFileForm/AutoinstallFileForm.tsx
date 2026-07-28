@@ -11,6 +11,7 @@ import {
   Form,
   Icon,
   Input,
+  Notification,
 } from "@canonical/react-components";
 import { useFormik } from "formik";
 import type { FC } from "react";
@@ -28,11 +29,7 @@ import {
 import { removeAutoinstallFileExtension } from "../../helpers";
 import classes from "./AutoinstallFileForm.module.scss";
 import { DEFAULT_FILE, VALIDATION_SCHEMA } from "./constants";
-import {
-  areTextsIdentical,
-  isAutoinstallOverrideWarning,
-  parseFields,
-} from "./helpers";
+import { isAutoinstallOverrideWarning, parseFields } from "./helpers";
 import type { FormikProps } from "./types";
 
 interface AutoinstallFileFormProps {
@@ -95,6 +92,17 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     },
     validationSchema: VALIDATION_SCHEMA,
     onSubmit: async (file) => {
+      if (!IS_CREATING) {
+        const isUnchanged =
+          file.contents === formik.initialValues.contents &&
+          file.filename === formik.initialValues.filename &&
+          file.is_default === formik.initialValues.is_default;
+
+        if (isUnchanged) {
+          return;
+        }
+      }
+
       try {
         await validateAutoinstallFile({
           contents: file.contents,
@@ -152,8 +160,21 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
     inputRef.current?.click();
   };
 
+  const isUnchanged =
+    !IS_CREATING &&
+    formik.values.contents === formik.initialValues.contents &&
+    formik.values.filename === formik.initialValues.filename &&
+    formik.values.is_default === formik.initialValues.is_default;
+
+  const showUnchangedError = isUnchanged && formik.submitCount > 0;
+
   return (
     <Form className={classes.form} noValidate onSubmit={formik.handleSubmit}>
+      {showUnchangedError && (
+        <Notification severity="caution">
+          No changes to save. Update the file before saving.
+        </Notification>
+      )}
       <span>{description}</span>
 
       <div className={classes.inputContainer}>
@@ -214,11 +235,6 @@ const AutoinstallFileForm: FC<AutoinstallFileFormProps> = ({
       />
 
       <SidePanelFormButtons
-        submitButtonDisabled={
-          areTextsIdentical(formik.values.contents, initialFile.contents) ||
-          formik.isSubmitting ||
-          isAutoinstallFileValidating
-        }
         submitButtonLoading={isAutoinstallFileValidating || formik.isSubmitting}
         submitButtonText={buttonText}
       />

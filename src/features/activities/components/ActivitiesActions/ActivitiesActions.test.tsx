@@ -3,6 +3,7 @@ import { activities } from "@/tests/mocks/activity";
 import { renderWithProviders } from "@/tests/render";
 import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useLocation } from "react-router";
 import { describe, expect, it } from "vitest";
 import type { Activity } from "../../types";
 import ActivitiesActions from "./ActivitiesActions";
@@ -337,5 +338,27 @@ describe("ActivitiesActions", () => {
       expect(cancelButton).not.toHaveAttribute("aria-disabled");
       expect(cancelButton).toBeEnabled();
     });
+  });
+
+  it("Export button pushes sidePath=export", async () => {
+    const LocationDisplay = () => {
+      const { search } = useLocation();
+      return <div data-testid="location-display">{search}</div>;
+    };
+
+    renderWithProviders(
+      <>
+        <ActivitiesActions selected={mockActivities} />
+        <LocationDisplay />
+      </>,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Export selection as TSV" }),
+    );
+
+    expect(screen.getByTestId("location-display")).toHaveTextContent(
+      "sidePath=export",
+    );
   });
 });

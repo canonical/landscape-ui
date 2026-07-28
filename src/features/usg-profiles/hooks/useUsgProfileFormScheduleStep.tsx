@@ -16,6 +16,8 @@ export default function useUsgProfileFormScheduleStep<
       !formik.errors.start_type &&
       !formik.errors.start_date &&
       !formik.errors.every &&
+      !formik.errors.days &&
+      !formik.errors.months &&
       !formik.errors.end_date &&
       !formik.errors.deliver_delay_window &&
       !formik.errors.restart_deliver_delay,

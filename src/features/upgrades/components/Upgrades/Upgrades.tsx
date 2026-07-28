@@ -130,7 +130,7 @@ const Upgrades: FC<UpgradesProps> = ({ selectedInstances }) => {
       </AppErrorBoundary>
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Upgrade"
       />
     </Form>

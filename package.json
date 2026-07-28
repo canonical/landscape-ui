@@ -18,6 +18,8 @@
     "test:ui": "pnpm exec playwright test --ui",
     "vitest": "vitest",
     "coverage": "vitest run --coverage",
+    "coverage-report": "tsx src/tests/aggregate-coverage.ts",
+    "coverage:full": "pnpm run coverage && pnpm run coverage-report",
     "test:codegen": "pnpm exec playwright codegen",
     "test:report": "pnpm exec playwright show-report",
     "tcm:run": "tcm \"src/**\" --pattern *.module.scss",
@@ -68,10 +70,12 @@
     "stylelint": "17.12.0",
     "stylelint-config-standard-scss": "17.0.0",
     "stylelint-order": "8.1.1",
+    "tsx": "4.23.1",
     "typed-css-modules": "0.9.1",
     "typescript": "6.0.3",
     "typescript-eslint": "8.60.1",
     "vite": "8.0.16",
-    "vitest": "4.1.8"
+    "vitest": "4.1.8",
+    "yaml": "2.9.0"
   }
 }

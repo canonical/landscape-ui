@@ -103,7 +103,7 @@ const RunInstanceScriptForm: FC<RunInstanceScriptFormProps> = ({
       <DeliveryBlock formik={formik} />
 
       <SidePanelFormButtons
-        submitButtonDisabled={formik.isSubmitting}
+        submitButtonLoading={formik.isSubmitting}
         submitButtonText="Run script"
       />
     </Form>

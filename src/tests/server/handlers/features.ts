@@ -9,11 +9,12 @@ import { createEndpointStatusNetworkError } from "./_constants";
 const matchesFeaturesPath = (endpointPath?: string) =>
   !endpointPath || endpointPath.includes("features");
 
-// The reports side panel ships on by default in production, so the MSW mock
-// always reports `instance-reports` as enabled — even when the features
-// endpoint is otherwise emptied — so "View report" is available whenever
-// developing or testing against MSW. To test the disabled state, override the
-// features endpoint with `server.use(...)` returning the feature as disabled.
+// Keep `instance-reports` present even when the features endpoint is mocked as
+// empty, so tests/dev scenarios that rely on `useAuth().isFeatureEnabled(...)`
+// can still opt into report-related UI when using MSW.
+//
+// To test a disabled state under MSW, override the features endpoint with
+// `server.use(...)` and return the feature as disabled.
 const alwaysEnabledFeatures = features.filter(
   (feature) => feature.key === "instance-reports",
 );

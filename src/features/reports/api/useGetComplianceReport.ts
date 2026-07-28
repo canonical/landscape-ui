@@ -6,7 +6,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 import type { ComplianceReport } from "../types";
 
 export interface GetComplianceReportParams {
-  query: string;
+  query?: string;
 }
 
 export const useGetComplianceReport = (
@@ -18,13 +18,19 @@ export const useGetComplianceReport = (
 ) => {
   const authFetch = useFetch();
 
+  const resolvedParams = {
+    ...params,
+    query: params.query || undefined,
+  };
+
   const {
     data: response,
     isLoading,
     isError,
   } = useQuery<AxiosResponse<ComplianceReport>, AxiosError<ApiError>>({
-    queryKey: ["complianceReport", params],
-    queryFn: async () => authFetch.get("computers/report", { params }),
+    queryKey: ["complianceReport", resolvedParams],
+    queryFn: async () =>
+      authFetch.get("computers/report", { params: resolvedParams }),
     ...options,
   });
 

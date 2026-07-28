@@ -66,6 +66,35 @@ describe("InstalledPackagesActionForm", () => {
     expect(await screen.findByText(/to be downgraded/i)).toBeInTheDocument();
   });
 
+  it("shows validation error when no downgrade version is selected", async () => {
+    renderWithProviders(
+      <InstalledPackagesActionForm
+        action="downgrade"
+        packages={[installedPackage]}
+      />,
+    );
+
+    const submitButton = await screen.findByRole("button", {
+      name: /downgrade/i,
+    });
+    await user.click(submitButton);
+
+    expect(
+      await screen.findByText(/this field is required/i),
+    ).toBeInTheDocument();
+  });
+
+  it("does not render submit action for downgrade when packages is empty", () => {
+    renderWithProviders(
+      <InstalledPackagesActionForm action="downgrade" packages={[]} />,
+    );
+
+    expect(screen.getByText(/no downgrade versions/i)).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /downgrade/i }),
+    ).not.toBeInTheDocument();
+  });
+
   describe("Remove action", () => {
     it("renders remove form with delivery options", () => {
       renderWithProviders(

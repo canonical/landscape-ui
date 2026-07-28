@@ -372,3 +372,8 @@ export const mirrors = [
     lastDownloadDate: new Date("2024-01-30T12:00:00Z"),
   },
 ] as const satisfies Mirror[];
+
+export const packages = Array.from(
+  { length: 1020 },
+  (_, i) => `package-${i + 1}`,
+);
