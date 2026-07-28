@@ -41,12 +41,20 @@ const getPublicationTargetsResponse = (requestUrl: string) => {
 const getBatchPublicationTargetsResponse = async (
   request: Request,
 ): Promise<StrictResponse<BatchGetPublicationTargetsResponse>> => {
-  const body = (await request.json()) as { names?: string[] };
+  const body = (await request.json()) as {
+    names?: string[];
+    return_partial_success?: boolean;
+  };
   const requestedNames = body.names ?? [];
   const matched = publicationTargets.filter(({ name }) =>
     name ? requestedNames.includes(name) : false,
   );
-  return HttpResponse.json({ publicationTargets: matched });
+  const matchedNames = new Set(matched.map(({ name }) => name));
+  const unreachable = body.return_partial_success
+    ? requestedNames.filter((name) => !matchedNames.has(name))
+    : [];
+
+  return HttpResponse.json({ publicationTargets: matched, unreachable });
 };
 
 export default [

@@ -377,3 +377,8 @@ export const packages = Array.from(
   { length: 1020 },
   (_, i) => `package-${i + 1}`,
 );
+
+export const batchGetMirrorNamesWithMissing = [
+  "mirrors/ubuntu-archive-mirror",
+  "mirrors/non-existent-mirror",
+] as const;

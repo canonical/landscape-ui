@@ -46,12 +46,20 @@ const getMirrorsResponse = (requestUrl: string) => {
 const getBatchMirrorsResponse = async (
   request: Request,
 ): Promise<StrictResponse<BatchGetMirrorsResponse>> => {
-  const body = (await request.json()) as { names?: string[] };
+  const body = (await request.json()) as {
+    names?: string[];
+    return_partial_success?: boolean;
+  };
   const requestedNames = body.names ?? [];
   const matched = mirrors.filter(({ name }) =>
     name ? requestedNames.includes(name) : false,
   );
-  return HttpResponse.json({ mirrors: matched });
+  const matchedNames = new Set(matched.map(({ name }) => name));
+  const unreachable = body.return_partial_success
+    ? requestedNames.filter((name) => !matchedNames.has(name))
+    : [];
+
+  return HttpResponse.json({ mirrors: matched, unreachable });
 };
 
 export default [

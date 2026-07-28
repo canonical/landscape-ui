@@ -68,14 +68,26 @@ export default [
   http.post<never, BatchGetLocalsRequest>(
     `${API_URL_DEB_ARCHIVE}locals\\:batchGet`,
     async ({ request }) => {
-      const { names } = await request.json();
+      const body = (await request.json()) as BatchGetLocalsRequest & {
+        return_partial_success?: boolean;
+      };
+      const names = body.names ?? [];
 
       if (shouldApplyEndpointStatus("locals")) {
         return applyEndpointStatus({ locals: [] });
       }
 
+      const matchedLocals = repositories.filter(({ name }) =>
+        names.includes(name ?? ""),
+      );
+      const matchedNames = new Set(matchedLocals.map(({ name }) => name));
+      const unreachable = body.return_partial_success
+        ? names.filter((name) => !matchedNames.has(name))
+        : [];
+
       return HttpResponse.json({
-        locals: repositories.filter(({ name }) => names.includes(name ?? "")),
+        locals: matchedLocals,
+        unreachable,
       });
     },
   ),

@@ -43,17 +43,26 @@ const getOperationResponse = (operation: Operation) => {
 };
 
 export default [
-  http.post<never, { names: string[] }>(
+  http.post<never, { names?: string[]; return_partial_success?: boolean }>(
     `${API_URL_DEB_ARCHIVE}operations\\:batchGet`,
     async ({ request }) => {
-      const { names } = await request.json();
+      const body = await request.json();
+      const names = body.names ?? [];
+
+      const matchedOperations = operations
+        .filter(({ name }) => names.includes(name ?? ""))
+        .map((operation) => {
+          return getOperationResponse(operation);
+        });
+
+      const matchedNames = new Set(matchedOperations.map(({ name }) => name));
+      const unreachable = body.return_partial_success
+        ? names.filter((name) => !matchedNames.has(name))
+        : [];
 
       return HttpResponse.json({
-        operations: operations
-          .filter(({ name }) => names.includes(name ?? ""))
-          .map((operation) => {
-            return getOperationResponse(operation);
-          }),
+        operations: matchedOperations,
+        unreachable,
       });
     },
   ),
