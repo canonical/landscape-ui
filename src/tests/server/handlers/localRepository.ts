@@ -80,7 +80,9 @@ export default [
       const matchedLocals = repositories.filter(({ name }) =>
         names.includes(name ?? ""),
       );
-      const matchedNames = new Set(matchedLocals.map(({ name }) => name));
+      const matchedNames = new Set<string>(
+        matchedLocals.flatMap(({ name }) => (name ? [name] : [])),
+      );
       const unreachable = body.return_partial_success
         ? names.filter((name) => !matchedNames.has(name))
         : [];
