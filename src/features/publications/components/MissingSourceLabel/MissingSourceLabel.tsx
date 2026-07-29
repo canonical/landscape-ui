@@ -4,7 +4,6 @@ import classes from "./MissingSourceLabel.module.scss";
 
 interface MissingSourceLabelProps {
   readonly className?: string;
-  readonly iconClassName?: string;
 }
 
 const MissingSourceLabel: FC<MissingSourceLabelProps> = ({ className }) => {
