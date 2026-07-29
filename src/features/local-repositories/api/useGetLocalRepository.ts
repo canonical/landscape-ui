@@ -1,13 +1,12 @@
 import useFetchDebArchive from "@/hooks/useFetchDebArchive";
+import { rethrowWithNotFoundMessage } from "@/utils/queryErrors";
 import type { AxiosError, AxiosResponse } from "axios";
-import { isAxiosError } from "axios";
 import type {
   LocalServiceGetLocalError,
   LocalServiceGetLocalResponse,
 } from "@canonical/landscape-openapi";
 import { useQuery } from "@tanstack/react-query";
 
-const NOT_FOUND_STATUS = 404;
 type GetLocalRepositoryError = AxiosError<LocalServiceGetLocalError> | Error;
 
 export const useGetLocalRepository = (localId: string) => {
@@ -28,14 +27,10 @@ export const useGetLocalRepository = (localId: string) => {
 
         return response;
       } catch (caughtError) {
-        if (
-          isAxiosError(caughtError) &&
-          caughtError.response?.status === NOT_FOUND_STATUS
-        ) {
-          throw new Error(`Local repository ${localId} was not found`);
-        }
-
-        throw caughtError;
+        return rethrowWithNotFoundMessage(
+          caughtError,
+          `Local repository ${localId} was not found`,
+        );
       }
     },
     enabled: !!localId,

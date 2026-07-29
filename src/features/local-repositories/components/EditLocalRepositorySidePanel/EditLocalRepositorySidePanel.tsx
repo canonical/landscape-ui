@@ -113,11 +113,15 @@ const EditLocalRepositorySidePanel: FC = () => {
   const { name } = usePageParams();
   const { repository, isGettingRepository } = useGetLocalRepository(name);
 
+  if (!name) {
+    return null;
+  }
+
   if (isGettingRepository) {
     return <SidePanel.LoadingState />;
   }
   if (!repository) {
-    return <SidePanel.LoadingState />;
+    throw new Error(`Local repository ${name} was not found`);
   }
 
   return <EditLocalRepositorySidePanelContent repository={repository} />;

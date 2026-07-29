@@ -82,8 +82,11 @@ const TargetDetails: FC<TargetDetailsProps> = ({ target }) => {
     openRemoveModal();
   };
 
-  if (isGettingPublicationTarget || !resolvedTarget) {
+  if (isGettingPublicationTarget) {
     return <SidePanel.LoadingState />;
+  }
+  if (!resolvedTarget) {
+    throw new Error(`Publication target ${name} was not found`);
   }
 
   const { s3, swift, filesystem } = resolvedTarget;

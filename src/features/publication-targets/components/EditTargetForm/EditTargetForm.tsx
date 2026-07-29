@@ -379,8 +379,11 @@ const EditTargetForm: FC<EditTargetFormProps> = ({ target }) => {
     useGetPublicationTarget(name, !target);
   const resolvedTarget = target ?? fetchedTarget;
 
-  if (isGettingPublicationTarget || !resolvedTarget) {
+  if (isGettingPublicationTarget) {
     return <SidePanel.LoadingState />;
+  }
+  if (!resolvedTarget) {
+    throw new Error(`Publication target ${name} was not found`);
   }
 
   return <EditTargetFormContent target={resolvedTarget} />;

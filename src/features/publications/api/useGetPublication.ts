@@ -3,11 +3,10 @@ import type {
   PublicationServiceGetPublicationError,
   PublicationServiceGetPublicationResponse,
 } from "@canonical/landscape-openapi";
+import { rethrowWithNotFoundMessage } from "@/utils/queryErrors";
 import { useQuery } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 
-const NOT_FOUND_STATUS = 404;
 type GetPublicationError =
   | AxiosError<PublicationServiceGetPublicationError>
   | Error;
@@ -32,14 +31,10 @@ export const useGetPublication = (publicationId: string) => {
 
         return response;
       } catch (caughtError) {
-        if (
-          isAxiosError(caughtError) &&
-          caughtError.response?.status === NOT_FOUND_STATUS
-        ) {
-          throw new Error(`Publication ${publicationId} was not found`);
-        }
-
-        throw caughtError;
+        return rethrowWithNotFoundMessage(
+          caughtError,
+          `Publication ${publicationId} was not found`,
+        );
       }
     },
     enabled: !!publicationId,
