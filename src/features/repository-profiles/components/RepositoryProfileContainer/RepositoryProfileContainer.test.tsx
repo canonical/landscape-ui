@@ -12,6 +12,7 @@ import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { RepositoryProfile } from "../../types";
 import RepositoryProfileContainer from "./RepositoryProfileContainer";
+import { MANAGE_REPOSITORIES_DOCUMENTATION_URL } from "./constants";
 
 type UnfilteredResult = UseQueryResult<
   AxiosResponse<ApiPaginatedResponse<RepositoryProfile>>
@@ -92,6 +93,11 @@ describe("RepositoryProfileContainer", () => {
         name: "How to manage repositories in Landscape",
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", {
+        name: "How to manage repositories in Landscape",
+      }),
+    ).toHaveAttribute("href", MANAGE_REPOSITORIES_DOCUMENTATION_URL);
     expect(
       screen.getByRole("button", { name: /Add profile/i }),
     ).toBeInTheDocument();
