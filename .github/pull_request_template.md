@@ -24,6 +24,42 @@ Change type (tick one):
 - [ ] **UI verified** — I have verified the changes locally.
 - [ ] **Linting clean** — No linting errors are present (especially in `scripts/`).
 
+## Reviewer Setup
+
+This section is intended to help reviewers find which pages of the UI were changed, and whether any special conditions are required to run the code.
+
+**MSW (Mock Service Worker)**
+
+- [ ] MSW must be enabled (`VITE_MSW_ENABLED=true` in `.env.local`)
+- [ ] MSW not required
+- [ ] Not Applicable
+
+**Backend**
+
+- [ ] A specific backend branch from Landscape server must be utilized locally — Branch: `______`
+- [ ] No specific backend branch required
+- [ ] Not Applicable
+
+**Where to Find the UI Changes (if applicable)**
+
+_Describe where in the UI the changes are visible and how to navigate there (if applicable). Paste a direct URL to the new page/component if applicable (e.g. `http://localhost:5173/...`):_
+
+> **Example:** To test restarting an instance — navigate to the home page → click **Instances** → select an instance → open the **Operations** action menu → click **Restart**.
+>
+> _describe here_
+
+**Testing Instructions** _(optional)_
+
+_Describe any special testing instructions:_
+
+1.
+
+**Screenshots** _(optional)_
+
+<!-- Attach screenshots of UI changes -->
+
+---
+
 ## Versioning Reminder
 
 > [!IMPORTANT]

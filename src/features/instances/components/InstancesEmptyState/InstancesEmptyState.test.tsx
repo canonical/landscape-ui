@@ -2,6 +2,7 @@ import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import InstancesEmptyState from "./InstancesEmptyState";
+import { MANAGE_INSTANCES_DOCUMENTATION_URL } from "./constants";
 
 describe("InstancesEmptyState", () => {
   it("renders empty-state title and body copy", () => {
@@ -24,7 +25,7 @@ describe("InstancesEmptyState", () => {
 
     expect(docsLink).toHaveAttribute(
       "href",
-      "https://documentation.ubuntu.com/landscape/how-to-guides/landscape-installation-and-set-up/configure-landscape-client/",
+      MANAGE_INSTANCES_DOCUMENTATION_URL,
     );
     expect(docsLink).toHaveAttribute("target", "_blank");
     expect(docsLink).toHaveAttribute("rel", "nofollow noopener noreferrer");
