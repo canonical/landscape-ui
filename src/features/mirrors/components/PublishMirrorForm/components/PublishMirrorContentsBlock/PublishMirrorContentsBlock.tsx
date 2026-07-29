@@ -12,7 +12,7 @@ const PublishMirrorContentsBlock: FC<PublishMirrorContentsBlockProps> = ({
   mirror,
   publication,
 }) => {
-  const { architectures } = publication;
+  const architectures = publication.architectures ?? mirror.architectures;
   return (
     <Blocks.Item title="Contents">
       <ReadOnlyField
@@ -27,7 +27,7 @@ const PublishMirrorContentsBlock: FC<PublishMirrorContentsBlockProps> = ({
       />
       <ReadOnlyField
         label="Architectures"
-        value={(architectures ?? mirror.architectures)?.join(", ")}
+        value={architectures.join(", ")}
         tooltipMessage="You can’t change the contents of an existing publication."
       />
     </Blocks.Item>

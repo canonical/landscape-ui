@@ -19,8 +19,9 @@ describe("PublishMirrorContentsBlock", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(publication.distribution)).toBeInTheDocument();
     expect(screen.getByText(mirror.components.join(", "))).toBeInTheDocument();
+    assert(publication.architectures);
     expect(
-      screen.getByText((publication.architectures ?? []).join(", ")),
+      screen.getByText(publication.architectures.join(", ")),
     ).toBeInTheDocument();
   });
 
