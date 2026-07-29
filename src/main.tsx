@@ -1,4 +1,6 @@
 import "./styles/index.scss";
+import "@canonical/styles";
+import "@canonical/react-ds-global-form/dist/esm/index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";

@@ -16,16 +16,18 @@
 }
 
 .link {
-  padding-bottom: 0.7 * $sp-unit !important;
+  line-height: inherit !important;
+  padding-bottom: 0.85 * $sp-unit !important;
   padding-left: 4.5 * $sp-unit !important;
-  padding-top: 0.7 * $sp-unit !important;
+  padding-top: 0.85 * $sp-unit !important;
 
   &::before {
     width: 1px !important;
   }
 
   &::after {
-    margin-top: $spv--x-small !important;
+    align-self: center;
+    margin-top: 0 !important;
   }
 }
 
@@ -41,9 +43,15 @@
 }
 
 .accordionButton {
-  padding-bottom: 0.7 * $sp-unit !important;
+  line-height: inherit !important;
+  padding-bottom: 0.85 * $sp-unit !important;
   padding-left: 4.5 * $sp-unit !important;
-  padding-top: 0.7 * $sp-unit !important;
+  padding-top: 0.85 * $sp-unit !important;
+
+  .icon {
+    top: 50% !important;
+    transform: translateY(-50%);
+  }
 
   &::before {
     content: none !important;
@@ -72,5 +80,6 @@
   color: $color-mid;
   font-family: monospace;
   font-size: 10px;
+  margin-top: $spv--medium;
   padding: 0 $sph--small;
 }
