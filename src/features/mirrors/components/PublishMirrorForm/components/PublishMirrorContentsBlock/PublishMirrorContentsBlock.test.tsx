@@ -1,6 +1,6 @@
 import { renderWithProviders } from "@/tests/render";
 import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, assert } from "vitest";
 import PublishMirrorContentsBlock from "./PublishMirrorContentsBlock";
 import { publications } from "@/tests/mocks/publications";
 import { mirrors } from "@/tests/mocks/mirrors";
