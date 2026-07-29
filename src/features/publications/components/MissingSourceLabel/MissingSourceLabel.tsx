@@ -1,23 +1,17 @@
 import { Icon, ICONS } from "@canonical/react-components";
 import type { FC } from "react";
+import classes from "./MissingSourceLabel.module.scss";
 
 interface MissingSourceLabelProps {
   readonly className?: string;
   readonly iconClassName?: string;
 }
 
-const MissingSourceLabel: FC<MissingSourceLabelProps> = ({
-  className,
-  iconClassName,
-}) => {
-  const resolvedIconClassName = ["u-margin-right--x-small", iconClassName]
-    .filter(Boolean)
-    .join(" ");
-
+const MissingSourceLabel: FC<MissingSourceLabelProps> = ({ className }) => {
   return (
     <span className={className}>
-      <Icon name={ICONS.warning} className={resolvedIconClassName} />
-      <span>Source not found</span>
+      <Icon name={ICONS.warning} />
+      <span className={classes.label}>Source not found</span>
     </span>
   );
 };
