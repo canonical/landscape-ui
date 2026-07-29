@@ -59,7 +59,7 @@ describe("PublishMirrorForm", () => {
     });
 
     expect(
-      screen.getByRole("combobox", { name: /^publication$/i }),
+      screen.getByRole("combobox", { name: /publication name/i }),
     ).toBeInTheDocument();
   });
 });

@@ -79,7 +79,7 @@ const PublishMirrorExistingForm: FC<PublishMirrorExistingFormProps> = ({
       <Blocks>
         <Blocks.Item title="Details">
           <Select
-            label="Publication"
+            label="Publication name"
             required
             options={publicationOptions}
             error={getFormikError(formik, "name")}
