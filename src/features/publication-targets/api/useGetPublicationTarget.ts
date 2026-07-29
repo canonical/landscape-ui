@@ -55,6 +55,6 @@ export default function useGetPublicationTarget(
 
   return {
     publicationTarget: data?.data,
-    isGettingPublicationTarget: enabled && isPending,
+    isGettingPublicationTarget: enabled && !!publicationTargetId && isPending,
   };
 }
